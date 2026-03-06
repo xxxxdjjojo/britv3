@@ -283,13 +283,173 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be populated by roadmapper) | | |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 1 | Pending |
+| AUTH-07 | Phase 1 | Pending |
+| AUTH-08 | Phase 1 | Pending |
+| AUTH-09 | Phase 1 | Pending |
+| AUTH-10 | Phase 1 | Pending |
+| AUTH-11 | Phase 1 | Pending |
+| AUTH-12 | Phase 1 | Pending |
+| AUTH-13 | Phase 1 | Pending |
+| AUTH-14 | Phase 1 | Pending |
+| SRCH-01 | Phase 2 | Pending |
+| SRCH-02 | Phase 2 | Pending |
+| SRCH-03 | Phase 2 | Pending |
+| SRCH-04 | Phase 2 | Pending |
+| SRCH-05 | Phase 2 | Pending |
+| SRCH-06 | Phase 2 | Pending |
+| SRCH-07 | Phase 4 | Pending |
+| SRCH-08 | Phase 4 | Pending |
+| SRCH-09 | Phase 4 | Pending |
+| SRCH-10 | Phase 2 | Pending |
+| SRCH-11 | Phase 2 | Pending |
+| SRCH-12 | Phase 2 | Pending |
+| SRCH-13 | Phase 2 | Pending |
+| LIST-01 | Phase 2 | Pending |
+| LIST-02 | Phase 2 | Pending |
+| LIST-03 | Phase 2 | Pending |
+| LIST-04 | Phase 2 | Pending |
+| LIST-05 | Phase 4 | Pending |
+| LIST-06 | Phase 2 | Pending |
+| LIST-07 | Phase 2 | Pending |
+| LIST-08 | Phase 2 | Pending |
+| HBDB-01 | Phase 3 | Pending |
+| HBDB-02 | Phase 3 | Pending |
+| HBDB-03 | Phase 3 | Pending |
+| HBDB-04 | Phase 3 | Pending |
+| HBDB-05 | Phase 3 | Pending |
+| HBDB-06 | Phase 3 | Pending |
+| HBDB-07 | Phase 3 | Pending |
+| HBDB-08 | Phase 3 | Pending |
+| HBDB-09 | Phase 3 | Pending |
+| RNDB-01 | Phase 3 | Pending |
+| RNDB-02 | Phase 3 | Pending |
+| RNDB-03 | Phase 3 | Pending |
+| RNDB-04 | Phase 3 | Pending |
+| RNDB-05 | Phase 3 | Pending |
+| RNDB-06 | Phase 3 | Pending |
+| RNDB-07 | Phase 3 | Pending |
+| SLDB-01 | Phase 3 | Pending |
+| SLDB-02 | Phase 3 | Pending |
+| SLDB-03 | Phase 3 | Pending |
+| SLDB-04 | Phase 3 | Pending |
+| SLDB-05 | Phase 3 | Pending |
+| SLDB-06 | Phase 3 | Pending |
+| LLDB-01 | Phase 3 | Pending |
+| LLDB-02 | Phase 3 | Pending |
+| LLDB-03 | Phase 3 | Pending |
+| LLDB-04 | Phase 3 | Pending |
+| LLDB-05 | Phase 3 | Pending |
+| LLDB-06 | Phase 3 | Pending |
+| LLDB-07 | Phase 3 | Pending |
+| LLDB-08 | Phase 3 | Pending |
+| AGDB-01 | Phase 3 | Pending |
+| AGDB-02 | Phase 3 | Pending |
+| AGDB-03 | Phase 3 | Pending |
+| AGDB-04 | Phase 3 | Pending |
+| AGDB-05 | Phase 3 | Pending |
+| AGDB-06 | Phase 3 | Pending |
+| AGDB-07 | Phase 3 | Pending |
+| AGDB-08 | Phase 3 | Pending |
+| PVDB-01 | Phase 3 | Pending |
+| PVDB-02 | Phase 3 | Pending |
+| PVDB-03 | Phase 3 | Pending |
+| PVDB-04 | Phase 3 | Pending |
+| PVDB-05 | Phase 3 | Pending |
+| PVDB-06 | Phase 3 | Pending |
+| PVDB-07 | Phase 3 | Pending |
+| PVDB-08 | Phase 3 | Pending |
+| PVDB-09 | Phase 3 | Pending |
+| MKT-01 | Phase 5 | Pending |
+| MKT-02 | Phase 5 | Pending |
+| MKT-03 | Phase 5 | Pending |
+| MKT-04 | Phase 5 | Pending |
+| MKT-05 | Phase 5 | Pending |
+| MKT-06 | Phase 5 | Pending |
+| MKT-07 | Phase 5 | Pending |
+| MKT-08 | Phase 5 | Pending |
+| MKT-09 | Phase 5 | Pending |
+| MKT-10 | Phase 5 | Pending |
+| MKT-11 | Phase 5 | Pending |
+| MKT-12 | Phase 5 | Pending |
+| MKT-13 | Phase 5 | Pending |
+| MKT-14 | Phase 5 | Pending |
+| MKT-15 | Phase 5 | Pending |
+| MKT-16 | Phase 5 | Pending |
+| COM-01 | Phase 2 | Pending |
+| COM-02 | Phase 2 | Pending |
+| COM-03 | Phase 2 | Pending |
+| COM-04 | Phase 2 | Pending |
+| COM-05 | Phase 2 | Pending |
+| COM-06 | Phase 2 | Pending |
+| COM-07 | Phase 2 | Pending |
+| COM-08 | Phase 2 | Pending |
+| COM-09 | Phase 2 | Pending |
+| COM-10 | Phase 2 | Pending |
+| COM-11 | Phase 2 | Pending |
+| COM-12 | Phase 2 | Pending |
+| AI-01 | Phase 4 | Pending |
+| AI-02 | Phase 4 | Pending |
+| AI-03 | Phase 4 | Pending |
+| AI-04 | Phase 4 | Pending |
+| AI-05 | Phase 4 | Pending |
+| AI-06 | Phase 4 | Pending |
+| AI-07 | Phase 4 | Pending |
+| AI-08 | Phase 4 | Pending |
+| AI-09 | Phase 4 | Pending |
+| AI-10 | Phase 4 | Pending |
+| LL-01 | Phase 6 | Pending |
+| LL-02 | Phase 6 | Pending |
+| LL-03 | Phase 6 | Pending |
+| LL-04 | Phase 6 | Pending |
+| LL-05 | Phase 6 | Pending |
+| LL-06 | Phase 6 | Pending |
+| LL-07 | Phase 6 | Pending |
+| LL-08 | Phase 6 | Pending |
+| LL-09 | Phase 6 | Pending |
+| FIN-01 | Phase 5 | Pending |
+| FIN-02 | Phase 5 | Pending |
+| FIN-03 | Phase 5 | Pending |
+| FIN-04 | Phase 5 | Pending |
+| FIN-05 | Phase 5 | Pending |
+| FIN-06 | Phase 5 | Pending |
+| MOB-01 | Phase 7 | Pending |
+| MOB-02 | Phase 7 | Pending |
+| MOB-03 | Phase 7 | Pending |
+| MOB-04 | Phase 7 | Pending |
+| MOB-05 | Phase 7 | Pending |
+| ADM-01 | Phase 7 | Pending |
+| ADM-02 | Phase 7 | Pending |
+| ADM-03 | Phase 7 | Pending |
+| ADM-04 | Phase 7 | Pending |
+| ADM-05 | Phase 7 | Pending |
+| ADM-06 | Phase 7 | Pending |
+| ADM-07 | Phase 7 | Pending |
+| ADM-08 | Phase 7 | Pending |
+| TXN-01 | Phase 6 | Pending |
+| TXN-02 | Phase 6 | Pending |
+| TXN-03 | Phase 6 | Pending |
+| TXN-04 | Phase 6 | Pending |
+| TXN-05 | Phase 6 | Pending |
+| TXN-06 | Phase 6 | Pending |
+| TXN-07 | Phase 6 | Pending |
+| CMP-01 | Phase 7 | Pending |
+| CMP-02 | Phase 7 | Pending |
+| CMP-03 | Phase 7 | Pending |
+| CMP-04 | Phase 7 | Pending |
+| CMP-05 | Phase 7 | Pending |
+| CMP-06 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 126 total
-- Mapped to phases: 0
-- Unmapped: 126
+- v1 requirements: 161 total
+- Mapped to phases: 161
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-06*
-*Last updated: 2026-03-06 after initial definition*
+*Last updated: 2026-03-06 after roadmap creation*
