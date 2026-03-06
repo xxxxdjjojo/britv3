@@ -1,0 +1,277 @@
+Epic 6: AI-Powered Features Implementation
+Epic Number: E06
+Epic Title: AI-Powered Features Implementation
+Date Created: May 13, 2025
+Last Updated: May 13, 2025
+Product Manager: [Your Name/PM Agent]
+Target Release: MVP Phase 1 / Phase 2 (some features might be staged)
+
+1. Description
+This Epic focuses on integrating Artificial Intelligence (AI) capabilities across the Britestate platform to enhance user experience, automate tasks, and provide intelligent insights. This includes deploying and configuring AI models (e.g., DeepSeek), developing AI-driven property search and recommendations, implementing an AI Personal Assistant for service providers, and leveraging AI for content generation and communication assistance.
+
+2. Goals
+To significantly improve property discovery through AI-enhanced search and personalized recommendations.
+To provide service providers with an AI Personal Assistant that automates communications, assists with quoting, and manages scheduling.
+To leverage AI for generating and enhancing content, such as property descriptions.
+To offer AI-powered insights from market data to users.
+To establish a scalable infrastructure for hosting and utilizing AI models.
+3. Scope
+In Scope:
+
+AI Infrastructure Setup:
+Deployment and configuration of selected AI models (e.g., DeepSeek LLM) on AWS, including containerization and basic auto-scaling.
+Secure API gateway for accessing AI services.
+Initial model fine-tuning or prompt engineering for specific Britestate tasks.
+AI-Enhanced Property Search & Recommendations:
+Basic Natural Language Processing (NLP) for property search queries (e.g., "3 bed house with garden near London Bridge").
+Enhanced personalized property recommendations based on user behavior, explicit preferences, and property features (improving on any basic logic from Epic 2).
+AI-powered matching of homebuyers/renters with suitable properties.
+AI-driven property valuation estimates (AVM) – basic implementation using available data & models.
+AI Personal Assistant for Service Providers:
+Context management system (provider profile, services, pricing models, conversation history).
+Conversation classification (inquiry type, urgency, sentiment).
+Automated responses to common client inquiries via integrated communication channels (Twilio SMS/WhatsApp from Epic 5).
+AI assistance in generating quotes based on service requirements and provider pricing (building on quoting tools from Epic 4).
+AI-assisted scheduling suggestions (integrating with booking system from Epic 4).
+Basic smart delegation system (flagging complex queries for human review).
+AI for Content & Communication:
+AI-assisted generation of property listing descriptions for agents/landlords.
+Smart reply suggestions within the platform's messaging system (enhancing Epic 5).
+Basic AI-powered insights from aggregated market data (e.g., "Trending features in your area").
+Out of Scope:
+
+Highly advanced predictive analytics for market forecasting (complex models beyond initial AVM).
+Full, unsupervised AI autonomy for all service provider tasks (human-in-the-loop will be essential).
+Complex AI-driven document analysis (e.g., legal contract review).
+Voice-controlled AI interactions (separate Epic if prioritized).
+AR features powered by AI (separate Epic if prioritized).
+4. User Stories
+Story ID	User Story	Priority	Status	Notes
+E06-S01	As a Developer, I want to deploy and configure the DeepSeek (or chosen LLM) model on AWS with a secure API endpoint, so that it can be integrated into Britestate features.	Must	To Do	Includes containerization (Docker), basic auto-scaling, monitoring, and logging setup for the AI service.
+E06-S02	As a Developer, I want to implement a context management system for the AI Personal Assistant, so it can access provider-specific information (profile, services, pricing, history) to generate relevant responses.	Must	To Do	Store and retrieve context from Supabase.
+E06-S03	As a Service Provider, I want my AI Personal Assistant to automatically handle common client inquiries (e.g., about my services, availability basics) via SMS/WhatsApp, so I can save time.	Must	To Do	AI uses provider context. Integrates with Twilio via communication platform (Epic 5).
+E06-S04	As a Service Provider, I want my AI Personal Assistant to help me draft quotes by analyzing client requirements from messages and using my predefined pricing models, so I can respond to leads faster.	Must	To Do	Provider reviews and sends the AI-drafted quote (human-in-the-loop).
+E06-S05	As a Service Provider, I want my AI Personal Assistant to suggest appropriate responses or actions based on the sentiment and intent of client messages, so I can manage communications effectively.	Should	To Do	Basic intent classification (e.g., inquiry, quote request, complaint) and sentiment analysis (positive, neutral, negative).
+E06-S06	As an Estate Agent/Landlord, I want AI assistance to generate engaging and accurate descriptions for my property listings based on key features I input, so I can create listings more efficiently.	Must	To Do	
+E06-S07	As a Homebuyer/Renter, I want the property search to understand more natural language queries (e.g., "modern flat with a balcony"), so my search experience is more intuitive.	Should	To Do	Basic NLP implementation.
+E06-S08	As a Homebuyer/Renter, I want to receive more accurate and personalized property recommendations based on my evolving preferences and Browse behavior, so I can discover relevant properties faster.	Must	To Do	AI models analyze interaction data.
+E06-S09	As a User, I want to see an estimated market value (AVM) for properties, generated by AI using recent sales data and property characteristics, so I can get a sense of pricing.	Should	To Do	Clearly label as an estimate. Use available market data.
+E06-S10	As a User, I want to receive smart reply suggestions when messaging other users (e.g., quick responses like "Yes," "No," "I'll check"), so I can reply faster.	Should	To Do	Integrates with messaging system from Epic 5.
+E06-S11	As a Service Provider, I want to be able to configure basic settings for my AI Personal Assistant (e.g., tone, types of inquiries it handles), so it aligns with my business style.	Should	To Do	Simple dashboard interface for AI settings.
+E06-S12	As a Developer, I want to create a feedback mechanism for AI-generated content and responses, so the AI models can be improved over time.	Must	To Do	E.g., thumbs up/down for AI responses, ability for providers to correct AI-drafted quotes.
+
+Export to Sheets
+5. Acceptance Criteria (General for the Epic)
+The chosen AI model (e.g., DeepSeek) is successfully deployed on AWS and accessible via a secure API.
+The AI Personal Assistant for service providers can handle common inquiries, assist with quote drafting, and integrate with communication channels.
+AI-powered property search understands basic natural language queries and provides improved personalized recommendations.
+AI-assisted property description generation is functional for agents/landlords.
+Basic AVMs are displayed for properties.
+Smart reply suggestions are available in the messaging system.
+Infrastructure for AI model operation (logging, monitoring, basic scaling) is in place.
+Feedback mechanisms for AI performance are implemented.
+All user stories within this Epic meet their individual acceptance criteria.
+6. Dependencies
+Epic 1: Platform Foundation & User Authentication: Core user data and authentication.
+Epic 2: Property Search & Listings Management: Property data for AI search, recommendations, valuations, and description generation.
+Epic 3: User Dashboards & Profile Management: Provider profiles and settings for AI assistant configuration.
+Epic 4: Service Provider Marketplace & Integration: Quoting tools and provider service data for AI assistant.
+Epic 5: Communication & Collaboration Platform: Messaging system for AI assistant integration and smart replies. Twilio integration.
+AWS Account & Services: For hosting AI models (EC2, S3, API Gateway, etc.).
+AI Model Access: Access to DeepSeek API or other chosen LLM/ML models and their documentation.
+Clear definition of AI prompt templates and fine-tuning data if required.
+7. Technical Considerations
+AI Model Selection & Hosting: Confirm the suitability of DeepSeek for all planned features. Plan for GPU instances if needed. Optimize for cost and performance.
+API Design for AI Services: Design robust and versioned internal APIs to interact with the AI models.
+Prompt Engineering: Develop effective prompts for the LLM to achieve desired outputs for various tasks (description generation, quote assistance, chat responses).
+Data for AI: Identify and prepare data needed for AI model context, fine-tuning (if any), and evaluation. This includes property data, user preferences, service provider information, etc.
+Scalability of AI Services: Ensure the AI inference endpoints can scale with user demand.
+Latency: AI responses should be timely to ensure a good user experience. Optimize model inference speed.
+Cost Management: Monitor AI API usage and hosting costs closely.
+Ethical AI: Consider biases in AI models and data, and strive for fair and ethical outcomes. Provide transparency where AI is used.
+Human-in-the-Loop: Implement workflows where AI suggestions can be reviewed and approved/edited by humans, especially for critical tasks like quote finalization.
+Logging and Monitoring: Detailed logging of AI requests, responses, and performance for debugging and improvement.
+8. Design & UX Notes
+Clearly indicate to users when they are interacting with an AI or when content is AI-generated (e.g., "Suggested reply by AI," "Description drafted by AI").
+Provide users with control over AI features where appropriate (e.g., enabling/disabling AI assistant features, editing AI-generated content).
+Design feedback mechanisms that are easy for users to engage with.
+For AVMs, clearly state that they are estimates and provide context or confidence levels if possible.
+Ensure AI-generated content (like descriptions) is of high quality and can be easily edited.
+9. QA & Testing Strategy
+AI Model Testing:
+Evaluate AI model performance for specific tasks (e.g., accuracy of query understanding, relevance of recommendations, quality of generated text).
+Test for biases and edge cases.
+Integration Tests: Test the integration points between Britestate backend/frontend and the AI services API.
+End-to-End (E2E) Tests:
+User performs an NLP search and gets relevant results.
+Service provider receives an AI-drafted quote for review.
+User receives an automated response from a service provider's AI assistant.
+Manual Testing / Human Evaluation:
+Assess the quality and usefulness of AI-generated content and recommendations.
+Evaluate the conversational flow and helpfulness of the AI Personal Assistant.
+Usability testing of AI-powered features.
+Performance Testing: Test the latency of AI-driven features.
+Security Testing: Ensure the AI services API and data handling are secure.
+Gather user feedback continuously post-launch to refine AI models and prompts.
+
+Epic 6: AI-Powered Features Implementation
+
+(Keeping Epic Description, Goals, Scope, Dependencies, Technical Considerations, Design/UX Notes, and QA Strategy as defined previously, focusing on detailed User Stories and Acceptance Criteria here.)
+
+4. User Stories & Acceptance Criteria
+Story ID: E06-S01
+
+User Story: As a Developer, I want to deploy and configure the DeepSeek (or chosen LLM) model on AWS with a secure API endpoint, so that it can be integrated into Britestate features.
+Priority: Must
+Status: To Do
+Notes: Includes containerization (Docker), basic auto-scaling, monitoring, and logging setup for the AI service. Refers to "DeepSeek LLM Production Deployment" and "Service Provider AI Assistant Implementation Tasks - DeepSeek AI Setup on AWS" in task.txt.
+Acceptance Criteria:
+The chosen LLM (e.g., DeepSeek-Coder-7B-Base as per task.txt or suitable alternative) is successfully deployed to an AWS environment (e.g., EC2 instance, SageMaker endpoint).
+The deployment is containerized using Docker for portability and scalability.
+Basic auto-scaling rules are configured based on anticipated load (e.g., CPU/memory utilization triggers).
+A secure API endpoint (e.g., via API Gateway) is established to interact with the deployed LLM.
+Access to the API endpoint is authenticated and authorized.
+Basic monitoring and logging (e.g., CloudWatch) are configured for the AI service to track requests, errors, and performance.
+A deployment pipeline (e.g., using GitHub Actions, AWS CodePipeline) is set up for updating the AI model or service configuration.
+The deployment includes error handling and fallback mechanisms for the AI service.
+Quantization (e.g., AWQ 4-bit as per task.txt) is applied if necessary to balance performance and cost.
+Story ID: E06-S02
+
+User Story: As a Developer, I want to implement a context management system for the AI Personal Assistant, so it can access provider-specific information (profile, services, pricing, history) to generate relevant responses.
+Priority: Must
+Status: To Do
+Notes: Store and retrieve context from Supabase. Refers to "AI Context Management System" in task.txt.
+Acceptance Criteria:
+A system is in place to securely fetch relevant context for a specific service provider from Supabase (profile details from Epic 3, service definitions, indicative pricing from Epic 4).
+Conversation history (from Epic 5) for the current interaction can be loaded and provided as context to the LLM.
+The context management system can handle and optimize context window limitations of the LLM (e.g., summarization, truncation strategies for long histories).
+Provider-specific AI settings (e.g., preferred tone, response templates - from E06-S11) are loaded as part of the context.
+Client history with the provider (e.g., past jobs, preferences - if available) can be incorporated into the context.
+Location context (provider's service area, client's location for RFQ) is available to the AI.
+Story ID: E06-S03
+
+User Story: As a Service Provider, I want my AI Personal Assistant to automatically handle common client inquiries (e.g., about my services, availability basics) via SMS/WhatsApp, so I can save time.
+Priority: Must
+Status: To Do
+Notes: AI uses provider context. Integrates with Twilio via communication platform (Epic 5). Refers to "Automated Communication Management" in prd britestate.txt for PropertyUnity (Britestate).
+Acceptance Criteria:
+Incoming messages (SMS/WhatsApp via Twilio from Epic 5) designated for AI handling are routed to the AI Personal Assistant.
+The AI Assistant uses the provider's context (E06-S02) to generate responses to common questions (e.g., "What services do you offer?", "What areas do you cover?", "Are you available next Tuesday?").
+AI-generated responses are sent back to the client via the original communication channel (SMS/WhatsApp).
+The AI can identify when it cannot answer a question and respond with a polite message to that effect, or trigger an escalation to the service provider (see E06-S05).
+Responses are generated within an acceptable timeframe (e.g., < 5-10 seconds).
+A log of AI-handled conversations is maintained and visible to the service provider.
+Story ID: E06-S04
+
+User Story: As a Service Provider, I want my AI Personal Assistant to help me draft quotes by analyzing client requirements from messages and using my predefined pricing models, so I can respond to leads faster.
+Priority: Must
+Status: To Do
+Notes: Provider reviews and sends the AI-drafted quote (human-in-the-loop). Refers to "AI Quote Generation" tasks.
+Acceptance Criteria:
+The AI Assistant can extract key service requirements (e.g., type of job, location, urgency) from client messages or RFQs (from Epic 4).
+Using the provider's service definitions and indicative pricing models (from Epic 3/4 context), the AI drafts a preliminary quote.
+The drafted quote includes a breakdown of services, estimated costs, and any standard terms.
+The drafted quote is presented to the Service Provider within their dashboard for review, editing, and approval before sending to the client.
+The AI can learn from provider edits to improve future quote drafting (long-term, basic drafting for MVP).
+If the AI cannot confidently draft a quote, it informs the provider.
+Story ID: E06-S05
+
+User Story: As a Service Provider, I want my AI Personal Assistant to suggest appropriate responses or actions based on the sentiment and intent of client messages, so I can manage communications effectively.
+Priority: Should
+Status: To Do
+Notes: Basic intent classification (e.g., inquiry, quote request, complaint) and sentiment analysis (positive, neutral, negative). Refers to "Conversation Classification System" in task.txt.
+Acceptance Criteria:
+Incoming client messages are processed by the AI to classify basic intent (e.g., General Inquiry, Quote Request, Scheduling Request, Complaint, Compliment).
+Basic sentiment analysis (Positive, Neutral, Negative) is performed on messages.
+The AI Assistant uses this classification to:
+Route messages appropriately (e.g., quote requests to quote drafting E06-S04).
+Suggest pre-defined template responses or AI-drafted replies tailored to the intent/sentiment.
+Flag messages with negative sentiment or urgent intent for immediate human attention.
+The identified intent and sentiment are visible to the service provider in their communication interface.
+Confidence scores for classification are available internally for tuning.
+Story ID: E06-S06
+
+User Story: As an Estate Agent/Landlord, I want AI assistance to generate engaging and accurate descriptions for my property listings based on key features I input, so I can create listings more efficiently.
+Priority: Must
+Status: To Do
+Notes: PRD 6.4.3.
+Acceptance Criteria:
+In the property listing creation/edit form (from Epic 2), an option "Generate Description with AI" is available.
+The AI uses structured input provided by the agent/landlord (e.g., property type, number of beds/baths, key features, location highlights, target audience) to generate a draft property description.
+The generated description is engaging, highlights key selling points, and is grammatically correct.
+Multiple variations or tones (e.g., "concise," "detailed," "family-friendly") can be optionally requested.
+The agent/landlord can easily edit the AI-generated description before saving/publishing.
+The AI avoids making up unverifiable facts or using discriminatory language (prompt engineering).
+Story ID: E06-S07
+
+User Story: As a Homebuyer/Renter, I want the property search to understand more natural language queries (e.g., "modern flat with a balcony near London Bridge"), so my search experience is more intuitive.
+Priority: Should
+Status: To Do
+Notes: Basic NLP implementation. PRD 6.4.1.
+Acceptance Criteria:
+The main property search bar accepts free-text natural language queries in addition to structured filters.
+The AI parses the query to identify key entities (e.g., property type: "flat", features: "balcony", location: "near London Bridge", style: "modern").
+These extracted entities are used to pre-fill or augment the structured search filters (from Epic 2).
+Search results reflect the interpretation of the natural language query.
+If the query is ambiguous, the system may ask for clarification or show broader results with a note.
+The system can handle common synonyms and variations in phrasing for property features and locations.
+Story ID: E06-S08
+
+User Story: As a Homebuyer/Renter, I want to receive more accurate and personalized property recommendations based on my evolving preferences and Browse behavior, so I can discover relevant properties faster.
+Priority: Must
+Status: To Do
+Notes: AI models analyze interaction data. PRD 6.4.1.
+Acceptance Criteria:
+The platform tracks user interactions (properties viewed, favorited, search criteria used, time spent on listings) with user consent.
+An AI recommendation engine uses this interaction data, along with explicit preferences (from profile/saved searches), to generate personalized property recommendations.
+Recommendations are displayed in a dedicated section on the user's dashboard (from Epic 3) or as "You might also like" suggestions on property detail pages.
+The relevance of recommendations improves over time as the user interacts more with the platform.
+Users can provide feedback on recommendations (e.g., "Not interested," "Already seen") to refine the model.
+The system avoids recommending properties the user has already explicitly dismissed or viewed extensively unless criteria change.
+Story ID: E06-S09
+
+User Story: As a User, I want to see an estimated market value (AVM) for properties, generated by AI using recent sales data and property characteristics, so I can get a sense of pricing.
+Priority: Should
+Status: To Do
+Notes: Clearly label as an estimate. Use available market data. PRD 6.4.1.
+Acceptance Criteria:
+For listed properties (and potentially off-market properties if data is available later), an AI-generated Automated Valuation Model (AVM) estimate is displayed.
+The AVM takes into account property characteristics (type, size, beds, baths, condition if known) and recent comparable sales data in the local area.
+The displayed value is clearly labeled as an "Estimated Value" and includes a disclaimer about its accuracy.
+A confidence range or a note about the data used for the estimate may be provided.
+The AVM is regularly updated as new market data becomes available.
+Story ID: E06-S10
+
+User Story: As a User, I want to receive smart reply suggestions when messaging other users (e.g., quick responses like "Yes," "No," "I'll check"), so I can reply faster.
+Priority: Should
+Status: To Do
+Notes: Integrates with messaging system from Epic 5. PRD 6.4.3.
+Acceptance Criteria:
+When viewing an incoming message in the chat interface (from Epic 5), the AI suggests 2-3 contextually relevant short replies.
+Suggested replies are based on the content of the last received message and common conversational patterns.
+Examples: "Okay, thanks!", "When are you available?", "Can you send more details?".
+Clicking a suggested reply populates the message input field, allowing the user to send it directly or edit it first.
+The quality and relevance of suggestions are generally helpful and not intrusive.
+Story ID: E06-S11
+
+User Story: As a Service Provider, I want to be able to configure basic settings for my AI Personal Assistant (e.g., tone, types of inquiries it handles), so it aligns with my business style.
+Priority: Should
+Status: To Do
+Notes: Simple dashboard interface for AI settings. Refers to "Service Provider Dashboard Integration - AI settings configuration panel" in task.txt.
+Acceptance Criteria:
+A section in the Service Provider dashboard allows configuration of basic AI Personal Assistant settings.
+Providers can choose a general response tone (e.g., Formal, Friendly, Concise).
+Providers can enable/disable AI handling for specific inquiry types (e.g., "Handle general questions but not quote requests automatically").
+Providers can provide specific business information (e.g., standard opening hours, out-of-office messages) for the AI to use.
+Changes to settings are saved and reflected in the AI Assistant's behavior.
+Story ID: E06-S12
+
+User Story: As a Developer, I want to create a feedback mechanism for AI-generated content and responses, so the AI models can be improved over time.
+Priority: Must
+Status: To Do
+Notes: E.g., thumbs up/down for AI responses, ability for providers to correct AI-drafted quotes. Refers to "AI Training and Improvement - feedback collection" in task.txt.
+Acceptance Criteria:
+Users (especially Service Providers interacting with their AI assistant) can provide feedback on AI-generated responses or suggestions (e.g., thumbs up/down, star rating, short comment).
+For AI-drafted content (like property descriptions or quotes), users can indicate if the draft was helpful or required significant editing.
+This feedback is collected and stored in a structured way for later analysis and model retraining/prompt refinement.
+The feedback mechanism is unobtrusive and easy to use.

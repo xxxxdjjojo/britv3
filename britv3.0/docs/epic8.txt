@@ -1,0 +1,389 @@
+Epic 8: Financial Tools & Transaction Management (Revised)
+Epic Number: E08
+Epic Title: Financial Tools, Personalized Affordability & Transaction Management
+Date Created: May 13, 2025
+Last Updated: May 13, 2025
+Product Manager: [Your Name/PM Agent]
+Target Release: MVP Phase 1 / Phase 2
+
+1. Description
+This Epic focuses on equipping users with essential financial tools, including personalized affordability insights displayed directly on property listings. It also streamlines the offer and transaction management process and integrates secure payment and e-signature capabilities. This includes various calculators, a digital offer management system, transaction progress tracking, and payment processing.
+
+2. Goals
+To provide users with a suite of financial calculators to help them understand costs, affordability, and investment potential.
+To display personalized estimated monthly mortgage payments on property listings based on user's calculator inputs, enhancing immediate affordability assessment.
+To digitize and streamline the property offer and negotiation process.
+To offer users a clear and transparent way to track the progress of their property transactions.
+To integrate secure payment solutions for platform services, service provider fees, and potentially rent collection.
+To implement e-signature functionality for key documents to expedite agreements.
+3. Scope
+In Scope:
+
+Financial Calculators (all UK-focused where applicable):
+Affordability Calculator: Based on income, debts, and down payment.
+Mortgage Payment Calculator: Estimating monthly payments (PITI). Inputs (deposit, interest rate, term) from this calculator can be optionally saved by the user to power personalized affordability displays on listings.
+Stamp Duty Land Tax (SDLT) Calculator: For England & NI, with considerations/stubs for LBTT (Scotland) and LTT (Wales).
+Rent vs. Buy Calculator: Comparing costs over time.
+Renovation Cost Calculator: Approximate costs for various renovation projects.
+Moving Cost Calculator: Estimating costs for local/regional moves.
+Personalized Affordability Display on Listings:
+Option for users to save their mortgage parameters (deposit amount, interest rate, loan term) from the mortgage calculator.
+Display of an estimated monthly payment next to the asking price on property search results and property detail pages, calculated using the property's price and the user's saved mortgage parameters.
+Ability for users to clear or update their saved mortgage parameters.
+Offer Management System:
+Interface for buyers to digitally submit property offers with terms.
+Functionality for sellers/agents to review, accept, reject, or counter offers.
+Secure audit trail of offer history and communications related to offers.
+Transaction Progress Tracking:
+Visual timeline for key stages of property sale/purchase.
+Checklists and informational guidance for users at each stage.
+Shared view of progress for relevant parties.
+Secure Payment Integration:
+Integration with a payment gateway (e.g., Stripe).
+Payments for service providers, platform fees, basic online rent collection.
+Secure handling of payment information.
+Basic invoices/receipts.
+E-Signature Integration:
+Integration with an e-signature service.
+Preparation and sending of documents for e-signature.
+Tracking of signature status and storage of signed documents.
+Out of Scope: (Same as previous version of Epic 8)
+
+Direct mortgage applications or brokerage services.
+Advanced investment analysis tools beyond the provided calculators.
+Full escrow account management.
+Complex tax advisory services.
+Direct integration with users' personal bank accounts.
+4. User Stories
+(Existing stories E08-S01, S03-S06 remain as previously defined)
+
+Story ID	User Story	Priority	Status	Notes
+E08-S01	As a Homebuyer/Renter, I want to use an Affordability Calculator to understand how much I can realistically afford based on my income, debts, and savings, so I can set a budget.	Must	To Do	PRD 6.8.1, task.txt "Affordability Calculator".
+E08-S02	As a Homebuyer, I want to use a Mortgage Payment Calculator to estimate my potential monthly mortgage payments (including PITI), and optionally save my inputs (deposit, interest rate, term) for personalized affordability views.	Must	To Do	PRD 6.8.1. Saving inputs is key for the new feature.
+E08-S03	As a Homebuyer, I want to use a Stamp Duty Land Tax (SDLT) Calculator to estimate the tax payable on a property purchase in the UK, so I can factor it into my budget.	Must	To Do	PRD 6.8.1, task.txt "Stamp Duty Calculator". Initial focus England/NI.
+E08-S04	As a User, I want to use a Rent vs. Buy Calculator to compare the financial implications of renting versus buying a property over time, so I can make an informed decision.	Should	To Do	task.txt "Rent vs Buy Calculator".
+E08-S05	As a Homeowner/Buyer, I want to use a Renovation Cost Calculator to get an approximate cost for potential renovation projects, so I can budget for improvements.	Should	To Do	task.txt "Renovation Cost Calculator". Based on predefined parameters.
+E08-S06	As a User preparing to move, I want to use a Moving Cost Calculator to estimate the expenses involved in my move, so I can plan my budget.	Should	To Do	task.txt "Moving Cost Calculator".
+E08-S07 (New)	As a Homebuyer, after using the mortgage calculator and saving my inputs, I want these financial inputs (deposit, interest rate, term) to be remembered by the platform (e.g., in my session or profile).	Must	To Do	Secure storage of these parameters if persistent.
+E08-S08 (New)	As a Homebuyer with saved mortgage inputs, when I browse property listings (search results, detail pages), I want to see an estimated monthly mortgage payment displayed for each property, calculated using its price and my saved inputs.	Must	To Do	Clearly indicate this is a personalized estimate.
+E08-S09 (New)	As a Homebuyer, I want to be able to easily clear or update my saved mortgage inputs from my profile or the mortgage calculator, so the personalized affordability estimates on listings reflect my current situation.	Must	To Do	
+E08-S10	As a Homebuyer, I want to be able to digitally submit an offer for a property with my proposed price and terms, so the process is efficient and documented.	Must	To Do	PRD 6.8.3. Was S07.
+E08-S11	As a Seller/Estate Agent, I want to receive digital offers, review their details, and be able to accept, reject, or make a counter-offer, so I can manage negotiations.	Must	To Do	PRD 6.8.3. Was S08.
+E08-S12	As a User involved in a property transaction, I want to view a clear timeline of the key stages and track progress (e.g., offer accepted, conveyancing), so I know what's happening.	Must	To Do	PRD 6.8.4. Initial manual updates by agents/users. Was S09.
+E08-S13	As a User paying for a service (from Marketplace), I want to be able to make secure online payments through the platform, so it's convenient and trustworthy.	Must	To Do	Integration with Stripe (or chosen gateway). For services in Epic 4. Was S10.
+E08-S14	As a Service Provider, I want to receive payments for my completed jobs securely through the platform, so I get paid efficiently.	Must	To Do	Via Stripe Connect or similar. Was S11.
+E08-S15	As a Landlord, I want the option for my tenants to pay rent online through the platform, and for me to track these payments, so rent collection is easier.	Should	To Do	Builds on Epic 7 manual tracking. Was S12.
+E08-S16	As a User (Agent, Landlord, Buyer, Seller), I want to be able to send and receive documents for e-signature (e.g., offer letters, tenancy agreements), so we can expedite agreements legally.	Must	To Do	PRD 6.5.3. Was S13.
+E08-S17	As a User, I want to securely store and access my digitally signed documents within the platform, so I have a record.	Must	To Do	Links to document management in Epic 5 & 7. Was S14.
+E08-S18	As a Developer, I need to integrate a secure payment gateway (e.g., Stripe) and manage financial transaction data, so payments are processed correctly and securely.	Must	To Do	PCI DSS compliance via gateway. Was S15.
+E08-S19	As a Developer, I need to integrate an e-signature service API, so that documents can be sent for signature and their status tracked.	Must	To Do	Was S16.
+E08-S20	As a Developer, I need to implement the logic to store a user's mortgage parameters (deposit, interest rate, term) and use them to calculate and display estimated monthly payments on property listings.	Must	To Do	New story. Logic for client-side or server-side calculation.
+
+Export to Sheets
+5. Acceptance Criteria (General for the Epic)
+All specified financial calculators are implemented and functional.
+Authenticated users can opt to save their mortgage calculation parameters.
+Property listings (search results and detail pages) display a personalized estimated monthly payment if the user has saved their mortgage parameters.
+Users can clear or update their saved mortgage parameters.
+Users can digitally submit, review, and manage property offers.
+A visual transaction progress tracker is available.
+Secure online payments for services and platform fees are functional.
+Basic online rent collection capability is available.
+E-signature functionality is integrated.
+Financial data and transactions are handled securely.
+All user stories within this Epic meet their individual acceptance criteria.
+6. Dependencies
+(Same as previous version of Epic 8)
+Epic 2: Property Search & Listings Management: Property listing components will need to be modified to display the personalized estimated monthly payment.
+UI/UX designs for how and where the personalized payment is displayed on listings, and how users manage their saved financial parameters.
+7. Technical Considerations
+(Additions to previous version of Epic 8)
+Storing User Financial Context: Decide whether to store mortgage parameters (deposit, rate, term) in user session (temporary) or user profile (persistent for logged-in users). Ensure secure storage if persistent.
+Client-Side vs. Server-Side Calculation for Listing Display:
+Client-Side: When property data is fetched, the client can use the stored user parameters to calculate and display the personalized monthly payment. This is often more responsive.
+Server-Side: Could be done if listings are server-rendered and user context is available. Might be less flexible if parameters change frequently.
+A hybrid approach could also be considered.
+Updating Property Listing Components: Modify React components for property cards and detail pages (from Epic 2) to include the new display logic for personalized payments.
+Clarity of Estimates: Ensure it's very clear to the user that the displayed monthly payment on listings is an estimate based on their inputs and the property's price, and not an official quote.
+Default Values: Consider what happens if the user hasn't used the mortgage calculator or saved parameters. No personalized estimate should be shown, or a generic one with clear disclaimers.
+8. Design & UX Notes
+(Additions to previous version of Epic 8)
+Personalized Payment Display: Design how the estimated monthly payment appears on property listings (e.g., "Est. £X,XXX/month for you"). It should be prominent but clearly distinct from the asking price.
+Managing Saved Inputs: Provide an intuitive way for users to see, update, or clear their saved mortgage parameters (e.g., in their profile settings or linked from the mortgage calculator).
+Tooltips/Info Icons: Use tooltips to explain how the personalized estimate is calculated and that it's not a formal mortgage offer.
+Opt-In: Saving financial parameters for this feature should likely be an explicit opt-in by the user for privacy reasons.
+9. QA & Testing Strategy
+(Additions to previous version of Epic 8)
+Test Personalized Payment Display:
+Verify that calculations on listings are correct based on saved user inputs and varying property prices.
+Test how the display handles missing user inputs (e.g., if only deposit is saved).
+Test updating and clearing saved financial parameters and ensure listing displays reflect changes.
+Test across various property prices and user input scenarios.
+Ensure all acceptance criteria for user stories, including the new ones, are met.
+
+
+Epic 8: Financial Tools, Personalized Affordability & Transaction Management (Revised)
+
+(Keeping Epic Description, Goals, Scope, Dependencies, Technical Considerations, Design/UX Notes, and QA Strategy as defined in the revised version previously, focusing on detailed User Stories and Acceptance Criteria here.)
+
+4. User Stories & Acceptance Criteria
+Story ID: E08-S01
+
+User Story: As a Homebuyer/Renter, I want to use an Affordability Calculator to understand how much I can realistically afford based on my income, debts, and savings, so I can set a budget.
+Priority: Must
+Status: To Do
+Notes: PRD 6.8.1, task.txt "Affordability Calculator".
+Acceptance Criteria:
+An "Affordability Calculator" page or section is available.
+The calculator accepts inputs for: gross annual household income, monthly debt obligations (e.g., loans, credit cards), available deposit amount, and potentially desired mortgage term.
+The calculator uses standard UK lending rules (e.g., income multiples, debt-to-income ratios - to be defined) to estimate an affordable property price range.
+Results clearly display the estimated affordable property price and the maximum mortgage amount.
+Clear explanations or tooltips define each input field and the assumptions made by the calculator.
+A disclaimer states that the results are estimates and not a formal mortgage offer.
+The calculator is responsive and provides results quickly after input.
+Story ID: E08-S02 (Revised)
+
+User Story: As a Homebuyer, I want to use a Mortgage Payment Calculator to estimate my potential monthly mortgage payments (including PITI), and optionally save my inputs (deposit, interest rate, term) for personalized affordability views.
+Priority: Must
+Status: To Do
+Notes: PRD 6.8.1. Saving inputs is key for the new feature.
+Acceptance Criteria:
+A "Mortgage Payment Calculator" page or section is available.
+The calculator accepts inputs for: property price, deposit amount (or percentage), mortgage interest rate, and loan term (years).
+It calculates and displays the estimated monthly mortgage payment (Principal & Interest).
+It optionally allows input for estimated property taxes (Council Tax) and home insurance to show an estimated PITI (Principal, Interest, Taxes, Insurance) payment. (Taxes/Insurance might be simplified estimates or user inputs).
+Results are clearly displayed with a breakdown of principal and interest if possible.
+A disclaimer states results are estimates.
+For authenticated users, an option ("Save these inputs for personalized estimates" or similar checkbox/button) allows saving their deposit amount, interest rate, and loan term to their profile/session.
+If inputs are saved, a confirmation message is shown.
+Story ID: E08-S03
+
+User Story: As a Homebuyer, I want to use a Stamp Duty Land Tax (SDLT) Calculator to estimate the tax payable on a property purchase in the UK, so I can factor it into my budget.
+Priority: Must
+Status: To Do
+Notes: PRD 6.8.1, task.txt "Stamp Duty Calculator". Initial focus England/NI.
+Acceptance Criteria:
+An "SDLT Calculator" page or section is available.
+The calculator accepts inputs for: property purchase price, buyer status (e.g., First-Time Buyer, Home Mover, Additional Property Buyer), and property location (to distinguish England/NI rules).
+It accurately calculates the SDLT payable based on current HMRC tax bands and rules for the specified inputs.
+The results clearly display the total SDLT amount and a breakdown of the calculation if applicable.
+Links to official HMRC guidance on SDLT are provided.
+A disclaimer states that the tool provides an estimate and users should seek professional advice.
+Consideration for LBTT (Scotland) and LTT (Wales) is noted, and the calculator clearly states if it only covers England/NI for MVP.
+Story ID: E08-S04
+
+User Story: As a User, I want to use a Rent vs. Buy Calculator to compare the financial implications of renting versus buying a property over time, so I can make an informed decision.
+Priority: Should
+Status: To Do
+Notes: task.txt "Rent vs Buy Calculator".
+Acceptance Criteria:
+A "Rent vs. Buy Calculator" page or section is available.
+The calculator accepts inputs for: current monthly rent, desired property price (for buying), deposit amount, estimated mortgage interest rate, loan term, estimated ongoing buying costs (maintenance, insurance, taxes), estimated ongoing renting costs (renter's insurance), expected property appreciation rate, expected investment return rate (for deposit if not buying), and comparison time period (e.g., 5, 10, 20 years).
+The calculator compares the total estimated costs of renting versus buying over the specified period.
+Results are displayed clearly, possibly with charts showing the crossover point or cumulative costs.
+Assumptions made by the calculator are clearly stated.
+A disclaimer emphasizes the results are estimates based on inputs.
+Story ID: E08-S05
+
+User Story: As a Homeowner/Buyer, I want to use a Renovation Cost Calculator to get an approximate cost for potential renovation projects, so I can budget for improvements.
+Priority: Should
+Status: To Do
+Notes: task.txt "Renovation Cost Calculator". Based on predefined parameters.
+Acceptance Criteria:
+A "Renovation Cost Calculator" page or section is available.
+Users can select the type of renovation (e.g., Kitchen, Bathroom, Loft Conversion, Extension).
+Users can input key parameters (e.g., room size (sq m/ft), level of finish (Budget, Standard, Premium)).
+The calculator provides an estimated cost range based on average UK costs for that type of renovation and parameters.
+The calculator clearly states that these are rough estimates and actual costs will vary based on location, materials, and contractor.
+Optionally, it can link to the Service Provider marketplace (Epic 4) for finding relevant contractors.
+Story ID: E08-S06
+
+User Story: As a User preparing to move, I want to use a Moving Cost Calculator to estimate the expenses involved in my move, so I can plan my budget.
+Priority: Should
+Status: To Do
+Notes: task.txt "Moving Cost Calculator".
+Acceptance Criteria:
+A "Moving Cost Calculator" page or section is available.
+The calculator accepts inputs like: distance of move (local, long-distance), size of property (e.g., number of bedrooms), level of service required (e.g., packing, self-move with van rental).
+It provides an estimated cost range for the move based on these inputs and average UK moving costs.
+The calculator itemizes potential costs (e.g., van rental, professional movers, packing supplies, insurance).
+A disclaimer states that these are estimates and users should get direct quotes.
+Optionally, it can link to the Service Provider marketplace (Epic 4) for finding removal services.
+Story ID: E08-S07 (New)
+
+User Story: As a Homebuyer, after using the mortgage calculator and saving my inputs, I want these financial inputs (deposit, interest rate, term) to be remembered by the platform (e.g., in my session or profile).
+Priority: Must
+Status: To Do
+Notes: Secure storage of these parameters if persistent.
+Acceptance Criteria:
+When an authenticated user explicitly saves their inputs in the Mortgage Payment Calculator (E08-S02), the deposit amount, interest rate, and loan term are stored.
+The storage mechanism is chosen (session for temporary, user profile/database for persistent - persistent preferred for logged-in users).
+If stored persistently, data is saved securely to the user's profile in Supabase.
+The user receives a confirmation that their preferences have been saved.
+The Mortgage Payment Calculator pre-fills with these saved values if the user revisits it.
+Story ID: E08-S08 (New)
+
+User Story: As a Homebuyer with saved mortgage inputs, when I browse property listings (search results, detail pages), I want to see an estimated monthly mortgage payment displayed for each property, calculated using its price and my saved inputs.
+Priority: Must
+Status: To Do
+Notes: Clearly indicate this is a personalized estimate.
+Acceptance Criteria:
+If a logged-in user has saved mortgage parameters (from E08-S07), property listing cards (Epic 2) and property detail pages (Epic 2) display an additional piece of information: "Est. Monthly Payment: £X,XXX (for you)".
+This estimate is calculated by taking the current property's asking price, subtracting the user's saved deposit amount, and then calculating the mortgage payment using the user's saved interest rate and term for the resulting loan amount.
+The calculation logic matches that of the main Mortgage Payment Calculator.
+The display is clear, and a tooltip or small text explains it's a personalized estimate based on their saved inputs and is not a mortgage offer.
+If the user has not saved any parameters, this personalized estimate is not shown.
+The calculation happens efficiently (e.g., client-side as listings are rendered) without significant performance impact.
+Story ID: E08-S09 (New)
+
+User Story: As a Homebuyer, I want to be able to easily clear or update my saved mortgage inputs from my profile or the mortgage calculator, so the personalized affordability estimates on listings reflect my current situation.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+An option to "Clear Saved Mortgage Inputs" is available in the user's profile settings (Epic 3) or on the Mortgage Payment Calculator page.
+Clearing the inputs removes the saved parameters and stops the personalized monthly payment display on listings.
+Users can update their saved inputs by re-using the "Save" function in the Mortgage Payment Calculator (E08-S02), which overwrites previous saved values.
+A confirmation message is shown when inputs are cleared or updated.
+Story ID: E08-S10 (was S07)
+
+User Story: As a Homebuyer, I want to be able to digitally submit an offer for a property with my proposed price and terms, so the process is efficient and documented.
+Priority: Must
+Status: To Do
+Notes: PRD 6.8.3.
+Acceptance Criteria:
+An "Make an Offer" button is available on property detail pages for properties listed for sale.
+The offer submission form allows input for: offer price, deposit amount/proof of funds (text or upload stub), mortgage status (e.g., AIP obtained, cash buyer), any conditions of the offer (text), buyer's conveyancer details (optional).
+The submitted offer is recorded in the system, linked to the property and the buyer.
+The listing agent/seller receives a notification (Epic 5) about the new offer.
+The buyer receives confirmation that their offer has been submitted.
+Story ID: E08-S11 (was S08)
+
+User Story: As a Seller/Estate Agent, I want to receive digital offers, review their details, and be able to accept, reject, or make a counter-offer, so I can manage negotiations.
+Priority: Must
+Status: To Do
+Notes: PRD 6.8.3.
+Acceptance Criteria:
+Sellers/Agents have an interface in their dashboard to view offers received for their properties.
+They can see all details of an offer (price, conditions, buyer info summary).
+They can update the status of an offer to "Accepted," "Rejected," or "Counter-Offered."
+If "Counter-Offered," they can input their counter-offer terms, which are then communicated to the buyer.
+The buyer receives a notification (Epic 5) of the offer status update.
+An audit trail of offer changes and communications is maintained.
+Story ID: E08-S12 (was S09)
+
+User Story: As a User involved in a property transaction, I want to view a clear timeline of the key stages and track progress (e.g., offer accepted, conveyancing), so I know what's happening.
+Priority: Must
+Status: To Do
+Notes: PRD 6.8.4. Initial manual updates by agents/users.
+Acceptance Criteria:
+Once an offer is "Accepted," a transaction progress timeline becomes visible to the buyer, seller, and their respective agents.
+The timeline displays predefined key stages (e.g., Offer Accepted, Solicitors Instructed, Mortgage Offer Received, Searches Ordered, Survey Completed, Contracts Exchanged, Completion Date Set, Completed).
+Designated users (e.g., the agent) can manually update the status of each stage and add relevant dates or notes.
+The visual timeline clearly shows completed stages, the current stage, and upcoming stages.
+All parties involved in the transaction receive notifications (Epic 5) on significant stage updates.
+Story ID: E08-S13 (was S10)
+
+User Story: As a User paying for a service (from Marketplace), I want to be able to make secure online payments through the platform, so it's convenient and trustworthy.
+Priority: Must
+Status: To Do
+Notes: Integration with Stripe (or chosen gateway). For services in Epic 4.
+Acceptance Criteria:
+After a service is agreed upon (e.g., quote accepted from Epic 4, or for platform fees), users are prompted to make a payment.
+The platform integrates with a payment gateway (e.g., Stripe Elements/Checkout) for collecting payment details (card info, etc.).
+Payment processing is secure and PCI DSS compliant (via the gateway).
+Users receive confirmation of successful payment, and the service provider is notified.
+Failed payments are handled gracefully with clear error messages and retry options if appropriate.
+Transaction records are created in the system.
+Story ID: E08-S14 (was S11)
+
+User Story: As a Service Provider, I want to receive payments for my completed jobs securely through the platform, so I get paid efficiently.
+Priority: Must
+Status: To Do
+Notes: Via Stripe Connect or similar.
+Acceptance Criteria:
+Service Providers can connect their bank accounts via a secure mechanism provided by the payment gateway (e.g., Stripe Connect onboarding).
+Once a client payment (from E08-S13) is successfully processed and any platform commission is deducted, the net amount is disbursed to the service provider's connected account.
+Providers can view a history of their earnings and payouts within their dashboard.
+Payout schedules are clearly communicated (e.g., daily, weekly, after X days).
+Story ID: E08-S15 (was S12)
+
+User Story: As a Landlord, I want the option for my tenants to pay rent online through the platform, and for me to track these payments, so rent collection is easier.
+Priority: Should
+Status: To Do
+Notes: Builds on Epic 7 manual tracking.
+Acceptance Criteria:
+If a landlord opts-in, tenants associated with their properties (from Epic 7) can see an option to "Pay Rent Online."
+Tenants can securely make rent payments using the integrated payment gateway.
+Successful payments are recorded against the tenancy, and the landlord is notified.
+The rent payment log (from Epic 7) is automatically updated for online payments.
+Options for setting up recurring payments for tenants could be considered (basic for MVP: one-time payment).
+Clear fee structure for online rent collection (if any) is communicated to landlords/tenants.
+Story ID: E08-S16 (was S13)
+
+User Story: As a User (Agent, Landlord, Buyer, Seller), I want to be able to send and receive documents for e-signature (e.g., offer letters, tenancy agreements), so we can expedite agreements legally.
+Priority: Must
+Status: To Do
+Notes: PRD 6.5.3.
+Acceptance Criteria:
+An option to "Send for E-Signature" is available for relevant documents within the platform (e.g., offer letters generated, tenancy agreements from Epic 7).
+The system integrates with a chosen e-signature service API.
+Users can specify recipients (signers) for the document.
+The document is sent to recipients via the e-signature service.
+The sender can track the signature status of the document (e.g., Sent, Viewed, Signed, Declined) within Britestate.
+Signers receive an email from the e-signature service to review and sign the document.
+Story ID: E08-S17 (was S14)
+
+User Story: As a User, I want to securely store and access my digitally signed documents within the platform, so I have a record.
+Priority: Must
+Status: To Do
+Notes: Links to document management in Epic 5 & 7.
+Acceptance Criteria:
+Once a document is fully signed via the e-signature service, the completed (signed) PDF is automatically retrieved and stored securely within Britestate (e.g., in Supabase Storage).
+The signed document is linked to the relevant transaction, tenancy, or context.
+All involved parties (who have permission) can access and download the final signed version of the document from the platform.
+The document's status is updated to "Signed" or "Completed."
+Story ID: E08-S18 (was S15)
+
+User Story: As a Developer, I need to integrate a secure payment gateway (e.g., Stripe) and manage financial transaction data, so payments are processed correctly and securely.
+Priority: Must
+Status: To Do
+Notes: PCI DSS compliance via gateway.
+Acceptance Criteria:
+The chosen payment gateway (e.g., Stripe) SDK/API is integrated into the backend.
+Frontend components (e.g., Stripe Elements) are used for secure collection of payment information.
+Payment intents are created and confirmed correctly.
+Webhooks from the payment gateway are handled reliably to update transaction statuses.
+Sensitive payment data is not stored on Britestate servers (handled by the gateway).
+A transactions table is created to log platform-related financial events (payment ID, user ID, amount, status, type, timestamp).
+Story ID: E08-S19 (was S16)
+
+User Story: As a Developer, I need to integrate an e-signature service API, so that documents can be sent for signature and their status tracked.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+The chosen e-signature service API (e.g., DocuSign, HelloSign) SDK/API is integrated.
+Functions are created to:
+Upload a document to the e-signature service.
+Define signers and signature fields (basic placement).
+Send a document for signature.
+Poll or receive webhooks for signature status updates.
+Retrieve the signed document.
+API credentials are securely managed.
+Error handling for API interactions is robust.
+Story ID: E08-S20
+
+User Story: As a Developer, I need to implement the logic to store a user's mortgage parameters (deposit, interest rate, term) and use them to calculate and display estimated monthly payments on property listings.
+Priority: Must
+Status: To Do
+Notes: New story. Logic for client-side or server-side calculation.
+Acceptance Criteria:
+Database schema (e.g., in profiles or a new user_financial_preferences table) allows storing user's saved deposit, interest rate, and loan term.
+API endpoints (or Supabase functions) are available to save and retrieve these parameters for an authenticated user.
+Frontend logic is implemented in property listing components (search results, detail page) to:
+Check if the user has saved mortgage parameters.
+If yes, retrieve the property price.
+Calculate loan_amount = property_price - saved_deposit.
+Use a standard mortgage calculation formula with the loan amount, saved interest rate, and saved term to determine estimated monthly payment.
+Display this estimate.
+The calculation function is accurate and reusable.
+The display logic gracefully handles cases where parameters are missing or the deposit is greater than the property price.

@@ -1,0 +1,267 @@
+Epic 10: Admin Panel & Support Infrastructure
+Epic Number: E10
+Epic Title: Admin Panel & Support Infrastructure
+Date Created: May 13, 2025
+Last Updated: May 13, 2025
+Product Manager: [Your Name/PM Agent]
+Target Release: MVP Phase 1 / Phase 2 (some advanced admin features might be staged)
+
+1. Description
+This Epic focuses on developing a comprehensive Admin Panel for the Britestate team to manage platform operations, oversee user activity, moderate content, and handle support requests. It also includes setting up the foundational support infrastructure, such as a help center/knowledge base and a system for managing user support tickets.
+
+2. Goals
+To provide administrators with the tools necessary to manage users, listings, and service providers effectively.
+To enable content moderation and ensure the quality and compliance of platform content.
+To facilitate the service provider verification process from the admin side.
+To offer tools for managing user reviews and handling disputes.
+To set up a scalable support infrastructure to assist users.
+To provide basic oversight of platform health and key metrics.
+3. Scope
+In Scope:
+
+Admin Dashboard:
+Overview of key platform statistics (e.g., new users, new listings, pending verifications, open support tickets).
+Quick links to common admin tasks.
+User Management (Admin):
+Search, view, and filter user accounts.
+View user details and activity logs (basic).
+Ability to edit basic user information (e.g., user type, verify email manually).
+Ability to suspend or activate user accounts.
+Manage admin user roles and permissions (basic).
+Listing & Content Moderation (Admin):
+Interface to review and moderate new/edited property listings (approve, reject, flag for issues).
+Interface to review and moderate service provider profiles/service listings.
+Verification Management (Admin):
+Dedicated queue/interface for reviewing service provider verification submissions (from Epic 4).
+Ability to view submitted documents.
+Tools to approve or reject verification status with reasons.
+Log of verification decisions.
+Reviews & Reputation Management (Admin):
+Interface to moderate user-submitted reviews (for properties, services).
+Ability to handle flagged reviews or resolve disputes related to reviews (basic workflow).
+Basic Financial Oversight (Admin):
+View summaries of platform transactions (e.g., service booking commissions, subscription statuses - if applicable). (Read-only views, not for direct financial operations).
+Support Infrastructure:
+Help Center / Knowledge Base:
+Admin interface to create, edit, categorize, and publish help articles, FAQs, and tutorials.
+Public-facing, searchable help center for users.
+Support Ticket System:
+Integration with a third-party support ticket system (e.g., Zendesk, Freshdesk - basic integration) OR a simple built-in ticket management system for admins to view and respond to user queries submitted via a contact form.
+Out of Scope:
+
+Advanced business intelligence or analytics dashboards for admins (focus on operational tools for MVP).
+Direct financial transaction processing or accounting tools within the admin panel (handled by payment gateways and external accounting).
+Complex system configuration tools (most settings managed via code/config files initially).
+Automated fraud detection systems (manual review for MVP).
+Direct user communication tools for admins beyond support ticket responses (e.g., mass emailing users).
+4. User Stories
+Story ID	User Story	Priority	Status	Notes
+E10-S01	As an Administrator, I want a secure login to access the Admin Panel, so that platform management tools are protected.	Must	To Do	Separate admin roles/permissions in Supabase.
+E10-S02	As an Administrator, I want an Admin Dashboard that shows key platform metrics and pending tasks (e.g., users to verify, listings to moderate), so I can prioritize my work.	Must	To Do	
+E10-S03	As an Administrator, I want to be able to search for users, view their details (profile, activity basics), and manage their account status (e.g., suspend, activate), so I can handle user-related issues.	Must	To Do	
+E10-S04	As an Administrator, I want to be able to moderate new and edited property listings, ensuring they meet platform guidelines before being publicly visible, so I can maintain content quality.	Must	To Do	Approve/reject/edit basic listing details.
+E10-S05	As an Administrator, I want to manage the verification process for service providers by reviewing their submitted documents and approving or rejecting their verified status, so we maintain a trusted marketplace.	Must	To Do	Interface to view documents uploaded in Epic 4.
+E10-S06	As an Administrator, I want to be able to moderate user-submitted reviews and ratings, removing inappropriate content or handling disputes, so the review system remains fair and useful.	Should	To Do	Basic flagging and removal capabilities.
+E10-S07	As an Administrator, I want to be able to create, edit, and publish articles in a searchable Help Center / Knowledge Base, so users can find answers to common questions.	Must	To Do	Rich text editor for content creation.
+E10-S08	As a Support Agent (Admin role), I want to view and respond to user support inquiries submitted through the platform (e.g., contact form or basic ticketing), so I can assist users.	Must	To Do	Either simple built-in system or integration with a 3rd party tool.
+E10-S09	As an Administrator, I want to view basic summaries of platform financial activity (e.g., number of subscriptions, commission totals), so I have an overview of monetization.	Should	To Do	Read-only data, aggregated from Stripe or other payment systems.
+E10-S10	As a Developer, I need to build a separate, secure frontend application for the Admin Panel.	Must	To Do	Could be a separate Next.js app or a protected section within the main app with distinct layout/auth.
+E10-S11	As a Developer, I need to define robust admin roles and permissions in Supabase to control access to different Admin Panel functionalities.	Must	To Do	E.g., Super Admin, Content Moderator, Support Agent.
+
+Export to Sheets
+5. Acceptance Criteria (General for the Epic)
+Administrators can securely log in and access the Admin Panel.
+Core user management functionalities (search, view, status change) are operational.
+Admins can effectively moderate property listings and service provider profiles.
+The service provider verification workflow (admin side) is functional.
+Admins can manage and publish content for the Help Center/Knowledge Base.
+A system for handling user support tickets is in place and usable by support staff.
+Basic oversight of platform metrics and financial summaries is available to admins.
+All user stories within this Epic meet their individual acceptance criteria.
+6. Dependencies
+Epic 1: Platform Foundation & User Authentication: For admin user accounts and roles.
+Epic 2, Epic 4, Epic 7: Data from these epics (listings, provider profiles, verification requests, reviews) will be managed/moderated here.
+Definition of admin roles and their specific permissions.
+Decision on whether to use a third-party support ticket system or build a simple one.
+UI/UX designs for all Admin Panel interfaces and the public-facing Help Center.
+7. Technical Considerations
+Security: The Admin Panel must be highly secure with strict access controls. Implement IP whitelisting or VPN access if necessary for added security. Audit all admin actions.
+Admin UI: Build a clean, efficient, and user-friendly interface for admins. It might use the same tech stack (Next.js, Shadcn UI) but with a different layout optimized for data management.
+Data Integrity: Admin actions should have safeguards to prevent accidental data loss or corruption. Consider soft deletes, audit trails for changes.
+Performance: Admin interfaces dealing with large datasets (e.g., user lists, listings) must be performant with proper pagination and filtering.
+Scalability of Support Tools: If building a custom ticket system, consider its scalability as user base grows.
+Help Center Technology: Decide on how the knowledge base will be built (e.g., dedicated headless CMS, static site generator with markdown, or built into the admin panel).
+8. Design & UX Notes
+Admin Panel UX should prioritize efficiency for repetitive tasks.
+Clear separation of modules within the Admin Panel (User Mgt, Content Mod, Verification, etc.).
+Provide robust search and filtering capabilities within all admin management sections.
+Help Center should be easily searchable and well-organized for end-users.
+Support ticket interface (for admins) should allow for easy tracking and response.
+9. QA & Testing Strategy
+Unit Tests: For admin panel components, permission logic.
+Integration Tests: Test interactions with the database for managing users, listings, verifications.
+End-to-End (E2E) Tests:
+Admin logs in, searches for a user, suspends their account.
+Admin reviews and approves a service provider verification.
+Admin moderates a property listing.
+Admin creates and publishes a help article.
+Support agent views and responds to a test support ticket.
+Manual Testing:
+Thoroughly test all admin functionalities with different admin roles.
+Security testing: attempt unauthorized access to admin functions.
+Verify data integrity after admin actions.
+Test usability of the Admin Panel and the public Help Center.
+Ensure all acceptance criteria for user stories are met.
+
+Epic 10: Admin Panel & Support Infrastructure
+
+(Keeping Epic Description, Goals, Scope, Dependencies, Technical Considerations, Design/UX Notes, and QA Strategy as defined previously, focusing on detailed User Stories and Acceptance Criteria here.)
+
+4. User Stories & Acceptance Criteria
+Story ID: E10-S01
+
+User Story: As an Administrator, I want a secure login to access the Admin Panel, so that platform management tools are protected.
+Priority: Must
+Status: To Do
+Notes: Separate admin roles/permissions in Supabase.
+Acceptance Criteria:
+A dedicated login interface exists for the Admin Panel (e.g., /admin/login).
+Only users with designated 'admin' or specific sub-admin roles in Supabase can successfully authenticate.
+Authentication uses Supabase Auth, potentially with stricter policies (e.g., mandatory MFA if configured later).
+Upon successful login, the admin is redirected to the Admin Dashboard.
+Failed login attempts are handled securely (e.g., rate limiting, clear error messages that don't reveal specific failure reasons like "invalid username" vs "invalid password").
+Admin sessions are managed securely and have appropriate timeout settings.
+Story ID: E10-S02
+
+User Story: As an Administrator, I want an Admin Dashboard that shows key platform metrics and pending tasks (e.g., users to verify, listings to moderate), so I can prioritize my work.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+The main Admin Dashboard page displays summary widgets for:
+New user registrations (e.g., count for today/last 7 days).
+Number of new property listings created.
+Number of service provider verification requests pending review.
+Number of property listings/service provider profiles awaiting moderation.
+Number of open support tickets (if using a built-in system).
+Basic platform health indicators (e.g., error rate summary if available from monitoring tools).
+Each widget provides a quick count and a link to the relevant management section.
+The dashboard layout is clear, concise, and helps admins quickly identify areas needing attention.
+Data displayed is up-to-date (or indicates last refresh time).
+Story ID: E10-S03
+
+User Story: As an Administrator, I want to be able to search for users, view their details (profile, activity basics), and manage their account status (e.g., suspend, activate), so I can handle user-related issues.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+A "User Management" section allows admins to search for users by email, name, user ID, or user type.
+Search results are paginated and display key user information (name, email, user type, registration date, status).
+Admins can view a detailed user profile page showing all stored user information (from users and profiles tables) and a basic activity log (from E03-S04).
+Admins can change a user's account status (e.g., from 'active' to 'suspended' or vice-versa).
+Admins can manually verify a user's email if necessary.
+Admins can edit certain non-critical user profile fields if required for support reasons (e.g., correct a typo in a name).
+Actions taken by admins are logged for audit purposes.
+Admins with appropriate permissions can manage user roles (e.g., assign/remove admin sub-roles - see E10-S11).
+Story ID: E10-S04
+
+User Story: As an Administrator, I want to be able to moderate new and edited property listings, ensuring they meet platform guidelines before being publicly visible, so I can maintain content quality.
+Priority: Must
+Status: To Do
+Notes: Approve/reject/edit basic listing details.
+Acceptance Criteria:
+A "Listing Moderation" queue displays property listings that are newly created or edited and awaiting admin approval.
+Admins can view the full details of a pending listing, including all text, images, and media.
+Admins can "Approve" a listing, making it publicly visible (or updating its public version).
+Admins can "Reject" a listing, preventing it from being public and optionally providing a reason to the lister.
+Admins can make minor edits to a listing for compliance or clarity before approving.
+Clear guidelines for moderation are available to admins.
+The system logs moderation actions (who, what, when, reason).
+Story ID: E10-S05
+
+User Story: As an Administrator, I want to manage the verification process for service providers by reviewing their submitted documents and approving or rejecting their verified status, so we maintain a trusted marketplace.
+Priority: Must
+Status: To Do
+Notes: Interface to view documents uploaded in Epic 4.
+Acceptance Criteria:
+A "Service Provider Verification" queue displays providers who have submitted documents for verification (from E04-S01).
+Admins can view the provider's profile information and all uploaded verification documents (securely).
+Admins can mark individual documents as "Verified" or "Issue Found."
+Admins can set the overall provider verification status to "Pending," "Verified," "Rejected," or "Requires More Information."
+If rejecting or requiring more info, admins can add notes/reasons that can be communicated to the provider.
+The provider's profile is updated with the new verification status, and the "Verified" badge (E04-S03) is displayed/hidden accordingly.
+Verification actions are logged.
+Story ID: E10-S06
+
+User Story: As an Administrator, I want to be able to moderate user-submitted reviews and ratings, removing inappropriate content or handling disputes, so the review system remains fair and useful.
+Priority: Should
+Status: To Do
+Notes: Basic flagging and removal capabilities.
+Acceptance Criteria:
+An interface allows admins to view recently submitted reviews (for properties, services - from Epic 4).
+Admins can filter reviews (e.g., by flagged status, by date, by rating).
+Users (or admins) can flag reviews as potentially inappropriate. Flagged reviews appear in a moderation queue.
+Admins can approve, edit (for minor issues like PII removal with consent), or delete reviews that violate platform guidelines.
+A log of review moderation actions is kept.
+Basic tools for handling disputes between a reviewer and a provider/agent (e.g., internal notes, status updates).
+Story ID: E10-S07
+
+User Story: As an Administrator, I want to be able to create, edit, and publish articles in a searchable Help Center / Knowledge Base, so users can find answers to common questions.
+Priority: Must
+Status: To Do
+Notes: Rich text editor for content creation.
+Acceptance Criteria:
+An admin interface for managing Help Center content exists.
+Admins can create new help articles with a title and content using a rich text editor (WYSIWYG).
+Admins can categorize and tag articles for better organization and searchability.
+Admins can edit, publish, unpublish, and delete existing articles.
+A public-facing, searchable Help Center displays published articles to all users.
+The Help Center search allows users to find articles based on keywords in titles or content.
+Story ID: E10-S08
+
+User Story: As a Support Agent (Admin role), I want to view and respond to user support inquiries submitted through the platform (e.g., contact form or basic ticketing), so I can assist users.
+Priority: Must
+Status: To Do
+Notes: Either simple built-in system or integration with a 3rd party tool.
+Acceptance Criteria:
+User support inquiries (e.g., from a website contact form) are collected into a centralized queue visible to Support Agents.
+Support Agents can view the details of each inquiry (user contact info, message, submission time).
+Support Agents can assign tickets to themselves or other agents (if team support).
+Support Agents can update the status of a ticket (e.g., Open, In Progress, Resolved, Closed).
+Support Agents can respond to users (e.g., via email, or an integrated messaging interface if built).
+A history of communication for each ticket is maintained.
+If a 3rd party system (e.g., Zendesk, Freshdesk) is used, basic integration (e.g., SSO for agents, linking to user profiles in Britestate) is established. For MVP, a simple built-in system is acceptable.
+Story ID: E10-S09
+
+User Story: As an Administrator, I want to view basic summaries of platform financial activity (e.g., number of subscriptions, commission totals), so I have an overview of monetization.
+Priority: Should
+Status: To Do
+Notes: Read-only data, aggregated from Stripe or other payment systems.
+Acceptance Criteria:
+A section in the Admin Panel displays basic financial summaries.
+This includes (read-only):
+Total number of active subscriptions by tier (if subscriptions are implemented).
+Total commission revenue earned over a period (e.g., last month, YTD - from service marketplace Epic 4, payment Epic 8).
+Number of successful platform fee transactions.
+Data is aggregated and does not expose individual sensitive payment details.
+The summaries provide a high-level overview of platform monetization performance.
+Story ID: E10-S10
+
+User Story: As a Developer, I need to build a separate, secure frontend application or a protected section for the Admin Panel.
+Priority: Must
+Status: To Do
+Notes: Could be a separate Next.js app or a protected section within the main app with distinct layout/auth.
+Acceptance Criteria:
+The Admin Panel is developed as a distinct application or a clearly segregated and protected area of the main application.
+It uses the same frontend stack (Next.js, TypeScript, TailwindCSS, Shadcn UI) for consistency, but may have a different layout optimized for administrative tasks.
+Access is strictly controlled via admin-specific authentication (E10-S01).
+The Admin Panel is not discoverable or accessible by regular platform users.
+Story ID: E10-S11
+
+User Story: As a Developer, I need to define robust admin roles and permissions in Supabase to control access to different Admin Panel functionalities.
+Priority: Must
+Status: To Do
+Notes: E.g., Super Admin, Content Moderator, Support Agent, Verification Officer.
+Acceptance Criteria:
+A system for defining admin roles is implemented (e.g., using Supabase custom claims or a dedicated admin_roles table).
+At least three distinct admin roles are defined with different permission sets (e.g., Super Admin: full access; Content Moderator: access to listing/review moderation only; Support Agent: access to tickets and user lookup only).
+The Admin Panel UI dynamically shows/hides functionalities based on the logged-in admin's role and permissions.
+Backend APIs for admin functions enforce these permissions.

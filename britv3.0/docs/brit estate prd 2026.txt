@@ -1,0 +1,1544 @@
+# Britestate Product Requirements Document
+## The World's #1 Property Portal
+
+**Version:** 2.0
+**Last Updated:** January 2026
+**Status:** Production Ready (92%)
+**Document Owner:** Britestate Product Team
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#1-executive-summary)
+2. [Product Overview](#2-product-overview)
+3. [Feature Specifications](#3-feature-specifications)
+4. [Technical Architecture](#4-technical-architecture)
+5. [Non-Functional Requirements](#5-non-functional-requirements)
+6. [Launch Readiness Checklist](#6-launch-readiness-checklist)
+7. [Success Metrics & KPIs](#7-success-metrics--kpis)
+8. [Roadmap](#8-roadmap)
+9. [Appendices](#9-appendices)
+
+---
+
+## 1. Executive Summary
+
+### 1.1 Vision Statement
+
+> **"Britestate: The operating system for UK property."**
+
+We are building the world's #1 property portal by transforming the complex, fragmented property journey into a transparent, efficient, AI-powered experience. Britestate is not just another property listing site—it's an intelligent platform that guides users from initial search through to completion, integrating every service, stakeholder, and data point needed along the way.
+
+### 1.2 Mission Statement
+
+To democratize the UK property market by providing:
+- **65% reduction** in property search time through AI-powered matching
+- **Single ecosystem** replacing 12+ fragmented services
+- **Complete transparency** in transactions, fees, and timelines
+- **Verified trust** through comprehensive provider verification
+
+### 1.3 Market Positioning
+
+#### The Problem
+The UK property market is fragmented across multiple platforms:
+- Property search: Rightmove, Zoopla, OnTheMarket
+- Services: Checkatrade, Bark, MyBuilder
+- Finance: Compare the Market, MoneySupermarket
+- Legal: Individual solicitor searches
+- Moving: Various comparison sites
+
+Users navigate 12+ platforms, make 40+ decisions, and spend 6+ months on average completing a property transaction.
+
+#### Our Solution
+Britestate consolidates the entire property journey into one intelligent platform:
+
+| Competitor | Britestate Advantage |
+|------------|---------------------|
+| Rightmove/Zoopla | AI-powered matching vs. passive listings |
+| Checkatrade | Integrated marketplace vs. separate searches |
+| Individual agents | Multi-agent comparison with transparency |
+| Spreadsheets | Automated transaction tracking |
+
+#### Key Differentiators
+
+1. **AI-Powered Decision Engine**
+   - Semantic property search understanding natural language
+   - Personalized recommendations learning from behavior
+   - Automated valuation models (AVM) with confidence scoring
+   - Market trend predictions and investment analysis
+
+2. **Integrated Services Marketplace**
+   - 27+ verified service categories
+   - Request-for-quote (RFQ) system
+   - Verified providers with insurance and qualifications
+   - Integrated payments via Stripe Connect
+
+3. **Transaction Transparency**
+   - Real-time transaction timeline
+   - Chain visualization for complex deals
+   - Document repository with e-signatures
+   - Fee breakdown with no hidden costs
+
+4. **Multi-Role Platform**
+   - Single ecosystem serving all property stakeholders
+   - Role-specific dashboards with tailored features
+   - Cross-role communication and coordination
+
+5. **Advanced Analytics**
+   - Behavioral insights and user journey tracking
+   - Market predictions and price forecasting
+   - ROI analysis for investment properties
+   - Performance metrics for professionals
+
+### 1.4 Strategic Objectives
+
+#### Year 1: Market Penetration
+- 100,000 Monthly Active Users (MAU)
+- 5,000 verified service providers
+- 500 estate agent partnerships
+- £2M Gross Marketplace Volume (GMV)
+
+#### Year 2-3: Market Leadership
+- 500,000 MAU
+- 15% UK property search market share
+- £20M ARR
+- Profitability milestone
+
+#### Year 5: Expansion
+- 2M MAU
+- International expansion (EU markets)
+- £100M ARR
+- IPO preparation
+
+---
+
+## 2. Product Overview
+
+### 2.1 Core Value Proposition
+
+**For Homebuyers & Renters:**
+> "Find your perfect property faster with AI-powered matching, transparent fees, and all services in one place."
+
+**For Landlords:**
+> "Manage your portfolio efficiently with automated tenant management, maintenance coordination, and financial reporting."
+
+**For Estate Agents:**
+> "Grow your business with qualified leads, powerful CRM tools, and market insights that close deals."
+
+**For Service Providers:**
+> "Win more jobs with verified credentials, automated quoting, and integrated payments."
+
+### 2.2 Target Users
+
+#### 2.2.1 Primary Personas
+
+**Alex - First-Time Homebuyer**
+- Age: 28-35
+- Income: £45,000-£70,000
+- Goals: Find affordable first home, understand the process
+- Pain Points: Overwhelmed by options, unclear costs, don't know where to start
+- Britestate Value: Step-by-step guidance, AI recommendations, total cost calculator
+
+**Sarah - Professional Renter**
+- Age: 25-35
+- Income: £35,000-£55,000
+- Goals: Find quality rental quickly, smooth application process
+- Pain Points: Slow responses, multiple applications, unclear requirements
+- Britestate Value: Instant applications, status tracking, verified landlords
+
+#### 2.2.2 Secondary Personas
+
+**David - Landlord (2-5 properties)**
+- Age: 40-55
+- Portfolio: 2-5 buy-to-let properties
+- Goals: Maximize yield, minimize hassle, stay compliant
+- Pain Points: Multiple platforms, maintenance coordination, compliance complexity
+- Britestate Value: Single dashboard, automated compliance, contractor network
+
+**Emma - Independent Estate Agent**
+- Age: 30-45
+- Business: Independent or small agency
+- Goals: Compete with large agencies, generate leads, close faster
+- Pain Points: Limited marketing budget, admin overhead, lead quality
+- Britestate Value: Qualified leads, CRM tools, market analytics
+
+#### 2.2.3 Tertiary Personas
+
+**Michael - Service Provider (Plumber)**
+- Age: 35-50
+- Business: Self-employed tradesperson
+- Goals: Steady work, fair payment, good reviews
+- Pain Points: Price-driven competition, payment delays, admin burden
+- Britestate Value: Verified credentials, instant payments, job management
+
+**Rachel - Property Seller**
+- Age: 35-55
+- Situation: Moving home (up-sizing/down-sizing)
+- Goals: Best price, quick sale, minimal stress
+- Pain Points: Agent selection, chain coordination, timeline uncertainty
+- Britestate Value: Agent comparison, chain visibility, transaction timeline
+
+### 2.3 User Journey Maps
+
+#### Homebuyer Journey
+
+```
+AWARENESS          CONSIDERATION        DECISION           ACTION             RETENTION
+    |                   |                  |                 |                   |
+    v                   v                  v                 v                   v
+[Discover]         [Search]           [Compare]         [Transact]         [Advocate]
+    |                   |                  |                 |                   |
+- Land on site     - AI-powered       - Save properties  - Book viewings    - Leave reviews
+- Create account     search           - Compare fees     - Make offers      - Refer friends
+- Set preferences  - View listings    - Get mortgage     - Manage chain     - Use services
+- Complete profile - Apply filters      quotes           - Complete sale    - Future moves
+```
+
+#### Landlord Journey
+
+```
+ONBOARD            SETUP              MANAGE             OPTIMIZE           SCALE
+    |                |                   |                  |                 |
+    v                v                   v                  v                 v
+[Register]      [Add Properties]    [Daily Ops]        [Analyze]         [Grow]
+    |                |                   |                  |                 |
+- Verify ID      - Property details  - Tenant comms     - ROI analysis    - Add properties
+- Add portfolio  - Set rent          - Rent collection  - Market trends   - Team members
+- Connect bank   - List for tenants  - Maintenance      - Tax reporting   - Agency services
+- Compliance     - Screen tenants    - Compliance       - Optimization    - Portfolio tools
+```
+
+### 2.4 Platform Principles
+
+1. **Transparency First**
+   - All fees displayed upfront
+   - No hidden costs or surprises
+   - Clear timelines and expectations
+
+2. **AI-Augmented, Human-Controlled**
+   - AI provides recommendations, humans decide
+   - Explainable AI with confidence scores
+   - Easy override and customization
+
+3. **Trust Through Verification**
+   - Multi-stage provider verification
+   - Insurance and qualification checks
+   - Review authenticity verification
+
+4. **Mobile-First Design**
+   - Responsive across all devices
+   - Progressive Web App capabilities
+   - Key actions available on mobile
+
+5. **Privacy by Design**
+   - GDPR compliant from ground up
+   - Minimal data collection
+   - User control over data
+
+---
+
+## 3. Feature Specifications
+
+### 3.1 Authentication & User Management
+
+**Implementation Status:** 100% Complete (Epic 1)
+
+#### 3.1.1 Multi-Role Authentication
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Email/Password | Standard authentication with secure password requirements | Complete |
+| Google OAuth | Single sign-on with Google accounts | Complete |
+| Magic Links | Passwordless email-based authentication | Complete |
+| MFA/2FA | TOTP and SMS-based two-factor authentication | Complete |
+| Role Selection | Post-registration role selection with multi-role support | Complete |
+| Session Management | Secure JWT-based sessions with refresh tokens | Complete |
+
+#### 3.1.2 Role Switching
+
+Users can hold multiple roles and switch between them:
+- Homebuyer searching while also being a Landlord
+- Agent also operating as a Service Provider
+- Seamless context switching with role-specific dashboards
+
+#### 3.1.3 Verification Workflows
+
+**User Verification Levels:**
+
+| Level | Requirements | Unlocks |
+|-------|--------------|---------|
+| Basic | Email verified | Property search, saved properties |
+| Standard | Phone verified | Messaging, viewing requests |
+| Enhanced | ID verified | Offers, applications, transactions |
+| Professional | Business verified | Provider services, agent features |
+
+**Provider Verification Pipeline:**
+1. Email & phone verification
+2. Identity document upload
+3. Insurance certificate validation
+4. Qualification verification
+5. Business registration check (Companies House)
+6. Admin review and approval
+
+#### 3.1.4 GDPR Consent Management
+
+- Granular consent options for marketing, analytics, third-party sharing
+- Easy data export (JSON format)
+- Right to deletion with automated data purge
+- Consent audit trail
+
+### 3.2 Property Search & Discovery Engine
+
+**Implementation Status:** 100% Complete (Epic 2)
+
+#### 3.2.1 Search Capabilities
+
+**Standard Filters:**
+- Location (postcode, area, region)
+- Property type (house, flat, bungalow, etc.)
+- Price range (min/max)
+- Bedrooms (min/max)
+- Bathrooms (min/max)
+- Amenities (garden, parking, etc.)
+- EPC rating
+- New build / established
+
+**Advanced Filters:**
+- Travel time search (commute to work location)
+- School catchment areas
+- Crime statistics overlay
+- Flood risk zones
+- Planning applications nearby
+- Recent sold prices in area
+
+#### 3.2.2 Map-Based Search
+
+**MapTiler/MapLibre Integration:**
+- Interactive vector maps with custom UK styling
+- Property clustering for performance
+- Draw custom search area tools
+- Satellite/street view toggle
+- Points of interest overlay
+- School, transport, amenity markers
+
+**Map Features:**
+| Feature | Description |
+|---------|-------------|
+| Clustering | Properties grouped at zoom levels for performance |
+| Custom Drawing | Users draw polygon to define search area |
+| Layers | Toggle schools, transport, amenities, crime |
+| 3D Buildings | Building height visualization in key areas |
+| Street View | Integration with imagery services |
+
+#### 3.2.3 AI-Powered Search
+
+**Semantic Search:**
+- Natural language queries: "3 bed house near good schools in Surrey under 500k"
+- Intent understanding: "quiet neighborhood for family" → low crime, parks, schools
+- Embedding-based similarity matching
+- Query expansion and refinement suggestions
+
+**Personalized Recommendations:**
+- Learning from saved properties and searches
+- Behavioral pattern analysis
+- Preference inference from interactions
+- "Properties like this" suggestions
+- Weekly personalized email digests
+
+**Match Scoring:**
+- 0-100 match score for each property
+- Breakdown by criteria (location: 95%, price: 80%, size: 90%)
+- Explanation of why property matches
+- Confidence level indicator
+
+#### 3.2.4 Saved Searches & Alerts
+
+- Save unlimited search criteria
+- Instant alerts for new matching properties
+- Daily/weekly digest options
+- SMS alerts for high-priority matches
+- One-click search modification
+
+### 3.3 Property Listing Management
+
+**Implementation Status:** 100% Complete (Epic 2)
+
+#### 3.3.1 Listing Creation
+
+**Property Details:**
+- Address with postcode lookup
+- Property type and style
+- Bedrooms, bathrooms, receptions
+- Floor area (sq ft / sq m)
+- Tenure (freehold/leasehold)
+- EPC rating
+- Council tax band
+- Key features (up to 10)
+- Full description (AI-assisted)
+
+**Media Management:**
+- Up to 30 photos per listing
+- Video tour upload (up to 5 minutes)
+- 360° virtual tour embedding
+- Floor plan upload
+- Document attachments (EPC, brochures)
+
+**Pricing:**
+- Sale price / rental price
+- Price qualifiers (offers over, guide price, POA)
+- Price history tracking
+- Automatic market comparison
+
+#### 3.3.2 AI-Generated Descriptions
+
+- Automatic description generation from property details
+- Multiple tone options (professional, friendly, luxury)
+- SEO optimization with relevant keywords
+- Highlight extraction from features
+- Multi-language support (planned)
+
+#### 3.3.3 Listing Analytics
+
+**Metrics Tracked:**
+- Views (total, unique, by source)
+- Saves (to shortlists)
+- Enquiries generated
+- Viewing requests
+- Time on listing
+- Comparison to similar properties
+
+**Insights Provided:**
+- Best performing photos
+- Optimal viewing times
+- Price positioning advice
+- Description effectiveness
+
+### 3.4 Role-Specific Dashboards
+
+**Implementation Status:** 100% Complete (Epic 3)
+
+#### 3.4.1 Homebuyer Dashboard
+
+**Location:** `/dashboard/homebuyer`
+
+| Section | Features |
+|---------|----------|
+| Overview | Saved properties count, active searches, new matches, upcoming viewings |
+| Saved Properties | Full shortlist with comparison tools, notes, remove option |
+| Searches | Saved search criteria, edit, delete, notification settings |
+| Viewings | Calendar view, upcoming/past viewings, reschedule option |
+| Recommendations | AI-powered property suggestions with match scores |
+| Financial Tools | Mortgage calculator, stamp duty calculator, affordability check |
+| Transaction | Offer tracking, document repository, timeline (when in transaction) |
+| Services | RFQ creation, quote comparison, booking |
+| Insights | Market trends, area analysis, price forecasts |
+
+**Key Widgets:**
+- Property match carousel
+- Viewing countdown timer
+- Mortgage pre-qualification status
+- Document checklist
+- Activity feed
+
+#### 3.4.2 Renter Dashboard
+
+**Location:** `/dashboard/renter`
+
+| Section | Features |
+|---------|----------|
+| Overview | Saved rentals, applications status, upcoming viewings |
+| Search | Quick search, saved searches, alert management |
+| Applications | Application tracker, document uploads, status updates |
+| Viewings | Scheduled viewings, calendar sync, directions |
+| Tenancy | Current tenancy details (if active), rent payments, maintenance |
+| Profile | Rental profile completion, references, employment details |
+| Messages | Landlord/agent communication |
+| Alerts | New property notifications, application updates |
+
+**Application Flow:**
+1. Express interest → 2. Submit application → 3. Reference check → 4. Decision → 5. Tenancy start
+
+#### 3.4.3 Seller Dashboard
+
+**Location:** `/dashboard/seller`
+
+| Section | Features |
+|---------|----------|
+| Overview | Listing performance, viewing requests, offers |
+| Listings | Active/draft listings, create new, edit existing |
+| Viewings | Manage requests, confirm times, feedback capture |
+| Offers | Offer management, accept/reject/negotiate |
+| Analytics | Views, enquiries, market position |
+| Messages | Buyer/agent communication |
+| Transaction | Sale progress tracking (when accepted offer) |
+
+#### 3.4.4 Landlord Dashboard
+
+**Location:** `/dashboard/landlord`
+
+| Section | Features |
+|---------|----------|
+| Portfolio Overview | Total properties, occupancy rate, monthly income, upcoming actions |
+| Properties | Property cards with status, tenant info, next rent date |
+| Tenants | Tenant list, lease details, communication history |
+| Rent Collection | Payment tracking, automated reminders, payment history |
+| Maintenance | Request pipeline (new/in-progress/complete), contractor assignment |
+| Compliance | Certificate tracker (gas, electrical, EPC), renewal reminders |
+| Financials | Income/expense tracking, reports, tax summary |
+| Templates | Tenancy agreement templates, notice templates |
+| Contractors | Preferred contractor list, rating, quick assignment |
+
+**Portfolio Analytics:**
+- Yield by property
+- Void period tracking
+- Rent vs. market comparison
+- Expense categorization
+- Annual return calculation
+
+#### 3.4.5 Estate Agent Dashboard
+
+**Location:** `/dashboard/agent`
+
+| Section | Features |
+|---------|----------|
+| Overview | Active listings, leads pipeline, viewings today, monthly revenue |
+| Listings | Property portfolio, draft/live/featured status, bulk actions |
+| Leads | Lead management CRM, qualification stages, follow-up tasks |
+| Viewings | Calendar with all viewings, team assignment, feedback capture |
+| Offers | Offer management across all properties, negotiation tracking |
+| Clients | Client database, vendor/buyer tracking, relationship notes |
+| Analytics | Performance metrics, commission tracking, market analysis |
+| Team | Team member management, assignment, performance |
+| Settings | Agency profile, branding, notification preferences |
+
+**Lead Stages:**
+New → Contacted → Qualified → Viewing Booked → Offer Made → Agreed → Completed
+
+**Commission Tracking:**
+- Pipeline value
+- Agreed sales value
+- Completed revenue
+- Commission per property
+- Monthly/quarterly/annual summaries
+
+#### 3.4.6 Service Provider Dashboard
+
+**Location:** `/dashboard/provider`
+
+| Section | Features |
+|---------|----------|
+| Overview | Verification status, active jobs, average rating, monthly earnings |
+| Jobs | Browse RFQs, active jobs, completed history |
+| Quotes | Quote creation, sent quotes, accepted/rejected tracking |
+| Calendar | Availability management, job scheduling, time blocking |
+| Bookings | Upcoming appointments, job details, customer info |
+| Earnings | Payment history, pending payments, invoice generation |
+| Reviews | Review management, response to reviews, rating breakdown |
+| Profile | Service description, portfolio, certifications, coverage areas |
+| Verification | Verification progress, document uploads, status |
+| Referrals | Referral program, rewards tracking |
+| AI Assistant | Business insights, pricing suggestions, response templates |
+
+**Verification Badges:**
+- Email Verified
+- Phone Verified
+- ID Verified
+- Insurance Verified
+- Qualifications Verified
+- Background Checked
+
+### 3.5 Service Provider Marketplace
+
+**Implementation Status:** 100% Complete (Epic 4)
+
+#### 3.5.1 Service Categories
+
+**27+ Service Categories:**
+
+| Category | Services |
+|----------|----------|
+| Legal | Conveyancing, Surveys, Searches |
+| Finance | Mortgages, Insurance, Financial Advice |
+| Moving | Removals, Storage, Cleaning |
+| Property | Estate Agents, Letting Agents, Property Management |
+| Trades | Plumbing, Electrical, Building, Roofing, etc. |
+| Home | Gardening, Cleaning, Security, Smart Home |
+| Specialist | Architecture, Interior Design, Energy Assessment |
+
+#### 3.5.2 Request for Quote (RFQ) System
+
+**RFQ Creation Flow:**
+1. Select service category
+2. Describe requirements
+3. Add property details (if applicable)
+4. Set budget range (optional)
+5. Upload supporting documents/photos
+6. Set response deadline
+7. Choose matched providers or broadcast
+
+**Provider Matching:**
+- Location-based matching (coverage area)
+- Service specialization matching
+- Availability matching
+- Rating threshold filtering
+- Price range alignment
+
+**Quote Response:**
+- Itemized pricing
+- Timeline estimate
+- Terms and conditions
+- Validity period
+- Accept/decline actions
+
+#### 3.5.3 Booking & Scheduling
+
+- Calendar integration for providers
+- Real-time availability display
+- Instant booking for available slots
+- Rescheduling workflow
+- Cancellation policy enforcement
+- Automated reminders (24h, 1h before)
+
+#### 3.5.4 Review & Rating System
+
+**Review Components:**
+- Overall rating (1-5 stars)
+- Category ratings (quality, communication, value, timeliness)
+- Written review
+- Photo uploads
+- Response from provider
+- Verification badge (verified customer)
+
+**Review Moderation:**
+- Automated profanity filtering
+- Fake review detection
+- Dispute resolution process
+- Review removal criteria
+
+#### 3.5.5 Payments (Stripe Connect)
+
+**Payment Features:**
+- Secure payment processing
+- Escrow capability for large jobs
+- Milestone payments for projects
+- Instant payout to providers
+- 2.5% platform commission
+- Invoice generation
+- Payment dispute handling
+
+### 3.6 Communication Platform
+
+**Implementation Status:** 100% Complete (Epic 5)
+
+#### 3.6.1 Messaging System
+
+**Core Features:**
+- Direct messaging between users
+- Group conversations
+- Read receipts
+- Online presence indicators
+- Message search
+- File attachments
+- Image sharing
+- Link previews
+
+**Real-Time Updates:**
+- Instant message delivery (Supabase Realtime)
+- Typing indicators
+- Online/offline status
+- Push notifications (web)
+- Email notifications (configurable)
+
+#### 3.6.2 Conversation Types
+
+| Type | Participants | Use Case |
+|------|--------------|----------|
+| Property Inquiry | Buyer ↔ Agent | Questions about listings |
+| Viewing Request | Buyer ↔ Agent/Seller | Scheduling viewings |
+| Application | Renter ↔ Landlord | Rental applications |
+| Job Discussion | Customer ↔ Provider | Service job details |
+| Transaction | All parties | Sale/purchase coordination |
+| Support | User ↔ Admin | Help and support |
+
+#### 3.6.3 Notification System
+
+**Channels:**
+- In-app notifications (bell icon)
+- Email notifications (Resend)
+- SMS notifications (optional)
+- Push notifications (PWA)
+
+**Notification Types:**
+- New messages
+- Property matches
+- Viewing confirmations
+- Offer updates
+- Review received
+- Verification status
+- Payment confirmations
+- System announcements
+
+**Preferences:**
+- Per-channel toggles
+- Quiet hours setting
+- Digest frequency (instant/daily/weekly)
+- Category-specific controls
+
+### 3.7 AI-Powered Features
+
+**Implementation Status:** 100% Complete (Epic 6)
+
+#### 3.7.1 Property Recommendations
+
+**Algorithm Components:**
+- Content-based filtering (property attributes)
+- Collaborative filtering (user behavior patterns)
+- Location-based scoring
+- Price range alignment
+- Lifestyle matching
+
+**Data Sources:**
+- Saved properties
+- Search history
+- Viewing history
+- Time spent on listings
+- Explicit preferences
+- Similar user patterns
+
+#### 3.7.2 Semantic Search
+
+**Implementation:**
+- Text embeddings using Sentence Transformers
+- Vector storage in PostgreSQL (pgvector)
+- Similarity search with cosine distance
+- Query understanding with Claude AI
+- Intent classification
+
+**Query Examples:**
+- "Modern flat with balcony near tube" → Filters: flat + balcony + transport proximity
+- "Family home with garden in quiet area" → Filters: 3+ beds + garden + low crime
+- "Investment property with good yield" → Filters: price-to-rent ratio analysis
+
+#### 3.7.3 Automated Valuation Model (AVM)
+
+**Inputs:**
+- Property characteristics
+- Recent comparable sales
+- Market trends
+- Location factors
+- Condition adjustments
+
+**Outputs:**
+- Estimated value
+- Confidence score (1-100)
+- Value range (low-mid-high)
+- Comparison to asking price
+- Market position analysis
+
+#### 3.7.4 AI Assistant Features
+
+**For Providers:**
+- Optimal pricing suggestions
+- Response template generation
+- Job prioritization recommendations
+- Business insights and trends
+
+**For Users:**
+- Search refinement suggestions
+- Property comparison summaries
+- Neighborhood insights
+- Decision support
+
+#### 3.7.5 Content Generation
+
+**Auto-Generated Content:**
+- Property descriptions from attributes
+- Email templates for communications
+- Review response suggestions
+- SEO meta descriptions
+- Social media snippets
+
+### 3.8 Financial Tools
+
+**Implementation Status:** 100% Complete (Epic 8)
+
+#### 3.8.1 Mortgage Calculator
+
+**Inputs:**
+- Property price
+- Deposit amount
+- Interest rate (or use market average)
+- Term length
+- Repayment type (repayment/interest-only)
+
+**Outputs:**
+- Monthly payment
+- Total repayment amount
+- Total interest paid
+- Amortization schedule
+- Comparison scenarios
+
+#### 3.8.2 Stamp Duty Calculator
+
+**UK Stamp Duty Rules:**
+- Standard rates
+- First-time buyer relief
+- Additional property surcharge
+- Non-UK resident surcharge
+- Welsh LTT rates
+- Scottish LBTT rates
+
+**Outputs:**
+- Total stamp duty
+- Effective rate
+- Band breakdown
+- Comparison with/without reliefs
+
+#### 3.8.3 Total Cost Calculator
+
+**Included Costs:**
+- Property price
+- Stamp duty
+- Legal fees estimate
+- Survey costs
+- Mortgage arrangement fees
+- Moving costs estimate
+- Insurance estimates
+
+**Outputs:**
+- Total purchase cost
+- Monthly ongoing costs
+- First year total outlay
+- Budget recommendations
+
+#### 3.8.4 Investment Analysis
+
+**For Buy-to-Let:**
+- Gross yield calculation
+- Net yield after costs
+- Cash-on-cash return
+- ROI over time
+- Break-even analysis
+- Comparison to alternatives
+
+**For Sellers:**
+- Capital gains estimate
+- Net proceeds calculation
+- Price optimization suggestions
+
+### 3.9 Transaction Management
+
+**Implementation Status:** 85% Complete (Epic 10)
+
+#### 3.9.1 Offer Management
+
+**Offer Flow:**
+1. Submit offer (price, conditions, timeline)
+2. Agent/seller review
+3. Accept / Reject / Counter
+4. Negotiation rounds
+5. Final acceptance
+6. Memorandum of sale
+
+**Offer Tracking:**
+- All offers on property visible to relevant parties
+- Status updates in real-time
+- Communication thread per offer
+- Document attachment capability
+
+#### 3.9.2 Transaction Timeline
+
+**Milestones:**
+- Offer accepted
+- Memorandum issued
+- Searches ordered
+- Survey completed
+- Mortgage approved
+- Contract signed
+- Exchange
+- Completion
+
+**Features:**
+- Visual timeline display
+- Estimated dates
+- Task assignments
+- Delay alerts
+- Chain visualization
+
+#### 3.9.3 Document Repository
+
+**Supported Documents:**
+- Property information forms
+- Fixture and fittings lists
+- Survey reports
+- Search results
+- Mortgage offers
+- Contracts
+- Identification documents
+
+**Features:**
+- Secure upload/download
+- Version control
+- Sharing permissions
+- E-signature integration (HelloSign)
+- Audit trail
+
+### 3.10 Admin Panel
+
+**Implementation Status:** 100% Complete (Epic 10)
+
+#### 3.10.1 User Management
+
+- User search and filtering
+- Role management
+- Account status control
+- Verification override
+- Activity history
+- Communication history
+
+#### 3.10.2 Content Moderation
+
+- Listing review queue
+- Review moderation
+- Message flagging
+- Report handling
+- Automated detection alerts
+
+#### 3.10.3 Provider Verification
+
+- Verification queue management
+- Document review interface
+- Approval/rejection workflow
+- Communication templates
+- Verification status tracking
+
+#### 3.10.4 Support Tickets
+
+- Ticket management system
+- Priority levels
+- Assignment workflow
+- Resolution tracking
+- Customer satisfaction surveys
+
+#### 3.10.5 Analytics Dashboard
+
+- Platform metrics overview
+- User growth charts
+- Revenue tracking
+- Performance metrics
+- Health indicators
+
+#### 3.10.6 Audit Logging
+
+- Complete audit trail
+- User action logging
+- Admin action logging
+- Data access logging
+- Export capability
+
+---
+
+## 4. Technical Architecture
+
+### 4.1 Technology Stack
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| Frontend Framework | Next.js 15.5.3 | SSR, routing, API routes |
+| UI Library | React 18.3.1 | Component rendering |
+| Language | TypeScript 5.6.3 | Type safety |
+| Styling | TailwindCSS 3.4.0 | Utility-first CSS |
+| Components | Shadcn UI + Radix | Accessible components |
+| State Management | React Query 5.x | Server state caching |
+| Database | Supabase (PostgreSQL) | Data persistence |
+| Auth | Supabase Auth | Authentication |
+| Real-time | Supabase Realtime | WebSocket subscriptions |
+| Storage | Supabase Storage | File storage |
+| Maps | MapTiler + MapLibre | Vector maps |
+| Payments | Stripe + Stripe Connect | Payment processing |
+| Email | Resend + React Email | Transactional email |
+| AI | Anthropic Claude | AI features |
+| Embeddings | Sentence Transformers | Semantic search |
+| Caching | Redis (Upstash) | Rate limiting, caching |
+| Jobs | BullMQ | Background processing |
+| Monitoring | Sentry | Error tracking |
+| Analytics | PostHog | Product analytics |
+
+### 4.2 System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CDN (Vercel Edge)                        │
+└─────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Next.js Application                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   Pages     │  │  API Routes │  │   Server Components     │  │
+│  │  (SSR/SSG)  │  │  (/api/*)   │  │   (Data Fetching)       │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+         │                    │                      │
+         ▼                    ▼                      ▼
+┌─────────────┐    ┌─────────────────┐    ┌─────────────────────┐
+│   Supabase  │    │  External APIs  │    │    Background       │
+│  ┌───────┐  │    │  ┌───────────┐  │    │    Workers          │
+│  │ Auth  │  │    │  │  Stripe   │  │    │  ┌───────────────┐  │
+│  ├───────┤  │    │  ├───────────┤  │    │  │   BullMQ      │  │
+│  │  DB   │  │    │  │  MapTiler │  │    │  │   (Redis)     │  │
+│  │(Postgres)│    │  ├───────────┤  │    │  └───────────────┘  │
+│  ├───────┤  │    │  │  Claude   │  │    └─────────────────────┘
+│  │Storage│  │    │  ├───────────┤  │
+│  ├───────┤  │    │  │  Resend   │  │
+│  │Realtime│ │    │  └───────────┘  │
+│  └───────┘  │    └─────────────────┘
+└─────────────┘
+```
+
+### 4.3 Data Architecture
+
+#### 4.3.1 Database Schema Overview
+
+**Core Domains:**
+
+| Domain | Tables | Description |
+|--------|--------|-------------|
+| Users | 8 tables | User accounts, profiles, preferences |
+| Properties | 12 tables | Listings, media, features, embeddings |
+| Marketplace | 10 tables | Providers, RFQs, quotes, bookings |
+| Transactions | 8 tables | Offers, documents, timelines |
+| Communication | 6 tables | Messages, conversations, notifications |
+| Analytics | 10 tables | Events, behavior, metrics |
+| Admin | 6 tables | Audit logs, moderation, support |
+
+**Total: 266 tables**
+
+#### 4.3.2 Key Relationships
+
+```
+users
+  ├── user_profiles (1:1)
+  ├── saved_properties (1:many)
+  ├── saved_searches (1:many)
+  ├── conversations (many:many)
+  └── service_provider_profiles (1:1, optional)
+
+properties
+  ├── property_media (1:many)
+  ├── property_features (1:many)
+  ├── property_embeddings (1:1)
+  ├── saved_by_users (many:many)
+  └── viewing_schedules (1:many)
+
+service_providers
+  ├── service_categories (many:many)
+  ├── coverage_areas (1:many)
+  ├── quotes (1:many)
+  ├── reviews (1:many)
+  └── verification_status (1:1)
+```
+
+#### 4.3.3 Row-Level Security (RLS)
+
+All tables implement RLS policies:
+- Users can only read/write their own data
+- Properties visible based on status and ownership
+- Messages only accessible to conversation participants
+- Admin roles have elevated access with audit logging
+
+### 4.4 Integration Architecture
+
+#### 4.4.1 Third-Party Services
+
+| Service | Purpose | Integration Type |
+|---------|---------|------------------|
+| Stripe | Payments | API + Webhooks |
+| Stripe Connect | Marketplace payments | API + OAuth |
+| MapTiler | Maps | SDK + API |
+| Anthropic Claude | AI features | API |
+| Resend | Email | API |
+| Sentry | Error tracking | SDK |
+| PostHog | Analytics | SDK |
+| HelloSign | E-signatures | API |
+| Companies House | Business verification | API |
+
+#### 4.4.2 Webhook Handling
+
+```
+Incoming Webhooks
+├── /api/webhooks/stripe - Payment events
+├── /api/webhooks/supabase - Database events
+└── /api/webhooks/hellosign - Signature events
+```
+
+### 4.5 Security Architecture
+
+#### 4.5.1 Authentication Flow
+
+```
+1. User submits credentials
+2. Supabase Auth validates
+3. JWT token issued (access + refresh)
+4. Access token included in requests
+5. API routes validate token
+6. RLS policies enforce data access
+7. Token refresh as needed
+```
+
+#### 4.5.2 Data Protection
+
+- Encryption at rest (AES-256)
+- Encryption in transit (TLS 1.3)
+- PII data masking in logs
+- Regular security audits
+- Penetration testing (quarterly)
+
+---
+
+## 5. Non-Functional Requirements
+
+### 5.1 Performance Requirements
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Largest Contentful Paint (LCP) | < 2.5s | Web Vitals |
+| First Input Delay (FID) | < 100ms | Web Vitals |
+| Cumulative Layout Shift (CLS) | < 0.1 | Web Vitals |
+| Time to Interactive (TTI) | < 3.5s | Lighthouse |
+| API Response Time (p50) | < 200ms | APM |
+| API Response Time (p99) | < 500ms | APM |
+| Search Results Return | < 2s | APM |
+| Map Load Time | < 3s | Custom metric |
+| Image Load Time | < 1s | Custom metric |
+
+**Capacity Targets:**
+- 1M+ Monthly Active Users
+- 10,000 concurrent users
+- 1M+ property listings
+- 100,000+ daily searches
+
+### 5.2 Security Requirements
+
+#### 5.2.1 Compliance
+
+| Standard | Requirement | Status |
+|----------|-------------|--------|
+| GDPR | Full compliance for UK/EU users | Complete |
+| PCI DSS | Level 4 (via Stripe) | Complete |
+| OWASP Top 10 | All vulnerabilities addressed | Complete |
+| SOC 2 | Preparation in progress | In Progress |
+
+#### 5.2.2 Security Controls
+
+- **Authentication:** MFA for sensitive operations
+- **Authorization:** Role-based access control (RBAC)
+- **Data:** Encryption at rest and in transit
+- **Audit:** Complete audit logging
+- **Testing:** Quarterly penetration tests
+- **Monitoring:** Real-time security alerting
+
+### 5.3 Scalability Requirements
+
+#### 5.3.1 Horizontal Scaling
+
+- Stateless application tier
+- Database connection pooling
+- CDN for static assets
+- Edge caching for API responses
+- Database read replicas (planned)
+
+#### 5.3.2 Data Management
+
+- Database partitioning for high-volume tables
+- Archive strategy for old data
+- Efficient indexing strategy
+- Query optimization monitoring
+
+### 5.4 Reliability Requirements
+
+| Metric | Target |
+|--------|--------|
+| Uptime SLA | 99.9% (8.76 hours/year downtime max) |
+| Recovery Point Objective (RPO) | 1 hour |
+| Recovery Time Objective (RTO) | 4 hours |
+| Backup Frequency | Hourly incremental, daily full |
+| Data Retention | 7 years (legal requirement) |
+
+#### 5.4.1 Disaster Recovery
+
+- Multi-region database backups
+- Automated failover capability
+- Documented recovery procedures
+- Regular DR testing (quarterly)
+
+### 5.5 Accessibility Requirements
+
+**WCAG 2.1 Level AA Compliance:**
+
+| Principle | Requirements |
+|-----------|--------------|
+| Perceivable | Alt text, captions, color contrast 4.5:1 |
+| Operable | Keyboard navigation, focus indicators, no seizure triggers |
+| Understandable | Clear language, consistent navigation, error prevention |
+| Robust | Valid HTML, ARIA labels, screen reader compatible |
+
+**Testing:**
+- Automated accessibility testing in CI/CD
+- Manual testing with screen readers
+- User testing with disabled users (planned)
+
+### 5.6 Monitoring & Observability
+
+#### 5.6.1 Monitoring Stack
+
+| Tool | Purpose |
+|------|---------|
+| Sentry | Error tracking, performance monitoring |
+| PostHog | Product analytics, feature flags |
+| Vercel Analytics | Web Vitals, deployment metrics |
+| Supabase Dashboard | Database metrics, auth metrics |
+| Custom Dashboards | Business metrics |
+
+#### 5.6.2 Alerting
+
+**Alert Channels:**
+- Slack for non-critical alerts
+- PagerDuty for critical alerts (planned)
+- Email for daily summaries
+
+**Alert Thresholds:**
+- Error rate > 1%: Warning
+- Error rate > 5%: Critical
+- API latency p99 > 2s: Warning
+- API latency p99 > 5s: Critical
+- Uptime < 99.9%: Critical
+
+---
+
+## 6. Launch Readiness Checklist
+
+### 6.1 Technical Readiness
+
+#### Core Functionality
+- [x] User authentication and authorization
+- [x] Property search and listings
+- [x] User dashboards (all 6 roles)
+- [x] Service provider marketplace
+- [x] Messaging and notifications
+- [x] Payment processing
+- [x] AI features (recommendations, search)
+- [x] Admin panel
+- [ ] Global error pages (error.tsx, not-found.tsx)
+
+#### Performance
+- [x] Core Web Vitals targets met
+- [x] Load testing completed (10K concurrent)
+- [x] Database query optimization
+- [x] Image optimization
+- [x] Code splitting implemented
+
+#### Security
+- [x] Authentication security audit
+- [x] RLS policies verified
+- [x] Input validation comprehensive
+- [x] XSS/CSRF protection
+- [x] Rate limiting implemented
+- [ ] Penetration test (scheduled)
+
+#### Testing
+- [x] Unit test coverage > 85%
+- [x] Integration tests for all API routes
+- [x] E2E tests for critical journeys
+- [x] Cross-browser testing
+- [x] Mobile responsive testing
+
+### 6.2 Content Readiness
+
+#### Legal Content
+- [x] Privacy Policy
+- [x] Terms of Service
+- [x] Cookie Policy
+- [x] Acceptable Use Policy
+- [ ] GDPR-specific page
+- [ ] Data Protection page
+
+#### Help Content
+- [x] FAQ sections
+- [x] Help center articles
+- [x] User guides
+- [ ] Video tutorials (planned)
+
+#### Marketing Content
+- [x] Landing page content
+- [x] Feature pages
+- [x] About page
+- [x] Contact information
+
+### 6.3 Operational Readiness
+
+#### Documentation
+- [x] API documentation
+- [x] Deployment runbook
+- [x] Incident response plan
+- [x] Monitoring playbook
+- [ ] On-call rotation (planned)
+
+#### Support
+- [x] Support ticket system
+- [x] Email support configured
+- [ ] Live chat (planned Phase 2)
+- [ ] Phone support (planned Phase 3)
+
+#### Processes
+- [x] User verification workflow
+- [x] Provider onboarding process
+- [x] Content moderation workflow
+- [x] Payment dispute process
+- [x] Data deletion process
+
+### 6.4 Business Readiness
+
+#### Payments
+- [x] Stripe integration live
+- [x] Stripe Connect configured
+- [x] Pricing tiers defined
+- [x] Invoice generation working
+
+#### Analytics
+- [x] Product analytics configured
+- [x] Conversion tracking
+- [x] Revenue tracking
+- [x] User journey tracking
+
+#### Marketing
+- [x] SEO optimization
+- [x] Social sharing configured
+- [x] Email marketing integration
+- [ ] Launch campaign prepared
+
+---
+
+## 7. Success Metrics & KPIs
+
+### 7.1 User Acquisition & Engagement
+
+| Metric | Year 1 Target | Measurement |
+|--------|---------------|-------------|
+| Monthly Active Users (MAU) | 100,000 | PostHog |
+| User Registration Rate | 15-20% of visitors | Analytics |
+| Free-to-Paid Conversion | 3-5% marketplace, 8-12% subscriptions | Stripe + Analytics |
+| User Retention (30-day) | 40% | Cohort analysis |
+| Session Duration | 4-6 minutes | PostHog |
+| Pages per Session | 5-8 | PostHog |
+| Mobile vs Desktop | 60/40 split | Analytics |
+
+### 7.2 Business & Revenue Metrics
+
+| Metric | Year 1 Target | Measurement |
+|--------|---------------|-------------|
+| Gross Marketplace Volume (GMV) | £2M | Stripe |
+| Monthly Recurring Revenue (MRR) | £150K by EOY | Stripe |
+| Annual Recurring Revenue (ARR) | £1.8M run rate | Calculated |
+| Customer Lifetime Value (CLV) | £75-150 | Calculated |
+| Customer Acquisition Cost (CAC) | £15-25 | Marketing spend / new users |
+| LTV:CAC Ratio | 3:1 minimum | Calculated |
+| Transaction Fee Revenue | £50K | Stripe Connect |
+
+### 7.3 Platform Performance Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Property Search Conversion | 15% (search → save) | Analytics |
+| Inquiry-to-Viewing Rate | 30% | Analytics |
+| Service Booking Rate | 25% (RFQ → booking) | Analytics |
+| AI Match Relevance | 80% user satisfaction | Surveys |
+| Provider Verification Rate | 90% completion | Admin metrics |
+| Review Submission Rate | 40% post-transaction | Analytics |
+
+### 7.4 Operational Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| System Uptime | 99.9% | Monitoring |
+| API Response Time (p99) | < 500ms | APM |
+| Error Rate | < 0.1% | Sentry |
+| Support Ticket Resolution | 24 hours average | Support system |
+| Provider Verification Time | 48 hours average | Admin metrics |
+| Content Moderation Time | 4 hours average | Admin metrics |
+
+### 7.5 Quality Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Net Promoter Score (NPS) | > 40 | Surveys |
+| Customer Satisfaction (CSAT) | > 4.2/5 | Surveys |
+| App Store Rating | > 4.5/5 | Stores (when app launches) |
+| Bug Report Rate | < 1 per 1000 sessions | Support tickets |
+| Feature Request Rate | Track and analyze | Support tickets |
+
+---
+
+## 8. Roadmap
+
+### 8.1 Current State (Launch Ready)
+
+**Completed Epics:**
+
+| Epic | Status | Key Deliverables |
+|------|--------|------------------|
+| Epic 1: Authentication | 100% | Multi-role auth, verification, GDPR |
+| Epic 2: Property Engine | 100% | Search, listings, AI matching |
+| Epic 3: Dashboards | 100% | 6 role-specific dashboards |
+| Epic 4: Marketplace | 100% | Provider platform, RFQ, payments |
+| Epic 5: Communication | 100% | Messaging, notifications, real-time |
+| Epic 6: AI Features | 100% | Recommendations, semantic search, AVM |
+| Epic 7: Landlord | 100% | Portfolio management, compliance |
+| Epic 8: Financial Tools | 100% | Calculators, analysis tools |
+| Epic 9: Mobile | 100% | Responsive design, PWA |
+| Epic 10: Admin | 100% | User management, moderation |
+| Epic 11: Compliance | 100% | GDPR, audit logging |
+| Epic 12: Monitoring | 100% | Error tracking, analytics |
+
+**Remaining Launch Items (8% gap):**
+- Global error pages (1 day)
+- Legal compliance pages (1 day)
+- Support pages (2 days)
+
+### 8.2 Phase 2: Post-Launch (Months 1-3)
+
+**Focus: Optimization & Feedback**
+
+| Feature | Priority | Effort |
+|---------|----------|--------|
+| User feedback implementation | High | 2 weeks |
+| Performance optimization | High | 2 weeks |
+| Enhanced AI recommendations | Medium | 3 weeks |
+| Advanced search filters | Medium | 2 weeks |
+| Provider analytics dashboard | Medium | 2 weeks |
+| Video property tours | Low | 3 weeks |
+
+### 8.3 Phase 3: Growth (Months 4-6)
+
+**Focus: Feature Expansion**
+
+| Feature | Priority | Effort |
+|---------|----------|--------|
+| Full transaction management | High | 6 weeks |
+| Chain visualization | High | 3 weeks |
+| Native mobile apps (iOS/Android) | High | 8 weeks |
+| Advanced landlord reporting | Medium | 3 weeks |
+| White-label solution for agents | Medium | 4 weeks |
+| Mortgage comparison integration | Medium | 3 weeks |
+
+### 8.4 Phase 4: Scale (Months 7-12)
+
+**Focus: Market Leadership**
+
+| Feature | Priority | Effort |
+|---------|----------|--------|
+| AR property visualization | Medium | 6 weeks |
+| Voice search integration | Low | 3 weeks |
+| Predictive market analytics | High | 4 weeks |
+| Portfolio management suite | Medium | 4 weeks |
+| Developer API marketplace | Medium | 4 weeks |
+| Enterprise features | High | 6 weeks |
+
+### 8.5 Phase 5: Expansion (Year 2+)
+
+**Focus: Market Dominance**
+
+| Feature | Priority | Effort |
+|---------|----------|--------|
+| International expansion (Ireland) | High | 12 weeks |
+| Smart home integration | Medium | 6 weeks |
+| Blockchain property records (research) | Low | Research |
+| AI-powered virtual staging | Medium | 4 weeks |
+| Predictive maintenance for landlords | Medium | 4 weeks |
+| Commercial property vertical | High | 12 weeks |
+
+---
+
+## 9. Appendices
+
+### 9.1 Glossary
+
+| Term | Definition |
+|------|------------|
+| AVM | Automated Valuation Model - AI-based property valuation |
+| EPC | Energy Performance Certificate - UK property energy rating |
+| GMV | Gross Marketplace Volume - total transaction value |
+| LTV | Lifetime Value - total revenue from a customer |
+| MAU | Monthly Active Users |
+| RFQ | Request for Quote - service inquiry system |
+| RLS | Row-Level Security - database access control |
+| SSR | Server-Side Rendering |
+
+### 9.2 Competitor Analysis
+
+| Feature | Britestate | Rightmove | Zoopla | Checkatrade |
+|---------|------------|-----------|--------|-------------|
+| Property Search | Yes | Yes | Yes | No |
+| AI Recommendations | Yes | Limited | Limited | No |
+| Service Marketplace | Yes | No | No | Yes |
+| Transaction Management | Yes | No | No | No |
+| Landlord Tools | Yes | Limited | Yes | No |
+| Integrated Payments | Yes | No | No | Yes |
+| Real-time Messaging | Yes | No | Limited | Yes |
+
+### 9.3 User Research Insights
+
+**Key Findings from User Research:**
+
+1. **Pain Point #1:** Users visit 5+ websites during property search
+   - Britestate Solution: All-in-one platform
+
+2. **Pain Point #2:** Difficulty comparing service providers
+   - Britestate Solution: Verified marketplace with reviews
+
+3. **Pain Point #3:** Lack of transparency in transaction process
+   - Britestate Solution: Real-time transaction timeline
+
+4. **Pain Point #4:** Information overload in property details
+   - Britestate Solution: AI-summarized key information
+
+5. **Pain Point #5:** Poor mobile experience on competitor sites
+   - Britestate Solution: Mobile-first responsive design
+
+### 9.4 Technical Dependencies
+
+| Dependency | Version | License | Risk Level |
+|------------|---------|---------|------------|
+| Next.js | 15.5.3 | MIT | Low |
+| React | 18.3.1 | MIT | Low |
+| Supabase | 2.45.4 | Apache 2.0 | Medium |
+| Stripe SDK | 18.5.0 | MIT | Low |
+| MapTiler SDK | 3.8.0 | BSD | Low |
+| Anthropic SDK | 0.67.0 | MIT | Medium |
+| TailwindCSS | 3.4.0 | MIT | Low |
+
+### 9.5 Contact Information
+
+**Product Team:**
+- Product Owner: [TBD]
+- Tech Lead: [TBD]
+- Design Lead: [TBD]
+
+**External Partners:**
+- Supabase Support: support@supabase.io
+- Stripe Support: support@stripe.com
+- Legal Counsel: [TBD]
+
+---
+
+*This PRD is a living document and will be updated as the product evolves.*
+
+**Document History:**
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 2.0 | January 2026 | Product Team | Launch preparation version |
+
+---
+
+**End of Product Requirements Document**

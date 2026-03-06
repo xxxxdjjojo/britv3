@@ -1,0 +1,285 @@
+Epic 7: Property Management Tools (Landlords & Agents)
+Epic Number: E07
+Epic Title: Property Management Tools (Landlords & Agents)
+Date Created: May 13, 2025
+Last Updated: May 13, 2025
+Product Manager: [Your Name/PM Agent]
+Target Release: MVP Phase 1 / Phase 2 (some financial reporting features might be basic in Phase 1)
+
+1. Description
+This Epic focuses on developing a suite of tools for Landlords and Estate Agents to efficiently manage their rental property portfolios. This includes features for tenant onboarding and management, handling maintenance requests (including integration with the service provider marketplace), tracking rental finances, managing property-related documents, and ensuring compliance with UK rental regulations.
+
+2. Goals
+To provide Landlords and Estate Agents with a centralized system to manage their rental properties.
+To streamline tenant lifecycle management from application to move-out.
+To simplify the process of handling and tracking property maintenance.
+To offer tools for basic financial tracking and reporting related to rental income and expenses.
+To help users stay compliant with essential rental regulations and document renewals.
+3. Scope
+In Scope:
+
+Property Portfolio Management:
+Ability for Landlords/Agents to add and manage details of their rental properties within their portfolio.
+View overview of all managed properties with key status indicators (e.g., Vacant, Occupied, Maintenance Required).
+Tenant Onboarding & Management:
+System for managing rental applications (received via listings or manually added).
+Integration points/guidance for tenant screening (e.g., links to third-party referencing services; Britestate itself won't perform checks initially).
+Storage for tenant details and lease agreement information.
+Basic digital lease agreement template generation (customizable fields).
+Tracking of lease start/end dates and renewal reminders.
+Maintenance Management:
+System for Landlords/Agents to log and track maintenance issues reported by tenants (or proactively).
+Ability to assign maintenance jobs to verified service providers from the Britestate marketplace (Epic 4).
+Tracking of maintenance job status (e.g., Reported, Assigned, In Progress, Awaiting Invoice, Completed).
+Storage of maintenance history per property.
+Basic Financial Management (for rentals):
+Manual tracking of rent payments received (mark as paid/overdue).
+System for logging property-related expenses (e.g., repairs, service charges, insurance).
+Simple financial overview per property (income vs. expenses).
+Document Management (property & tenancy specific):
+Secure storage for important documents linked to specific properties or tenancies (e.g., safety certificates, lease agreements, inspection reports).
+Automated reminders for key document expiry dates (e.g., Gas Safety Certificate, EPC).
+Compliance Management (Basic):
+Checklist or guidance on common UK rental compliance requirements.
+Linking document storage to compliance items.
+Out of Scope:
+
+Direct online rent payment collection via payment gateways (will be part of Epic 8).
+Advanced financial accounting or tax calculation features.
+Automated tenant communication sequences (beyond basic notifications).
+Full property inspection scheduling and reporting tools (manual document upload is fine).
+Direct integration with accounting software (e.g., Xero, QuickBooks).
+4. User Stories
+Story ID	User Story	Priority	Status	Notes
+E07-S01	As a Landlord/Agent, I want to add my rental properties to a portfolio dashboard, so I can manage them centrally.	Must	To Do	Link to existing listings from Epic 2 or create new entries for management.
+E07-S02	As a Landlord/Agent, I want to view key information for each property in my portfolio (e.g., address, current tenant, rent amount, lease end date, maintenance status).	Must	To Do	Dashboard widget/list view.
+E07-S03	As a Landlord/Agent, I want to manage rental applications, including viewing applicant details and updating their status (e.g., Pending, Approved, Rejected).	Must	To Do	Applications could come from Britestate listings or be manually entered.
+E07-S04	As a Landlord/Agent, I want to be able to store tenant information (contact details, lease terms) securely for each occupied property, so I have all details in one place.	Must	To Do	Compliance with GDPR for storing PII.
+E07-S05	As a Landlord/Agent, I want to generate a basic digital lease agreement using a template with customizable fields, so I can streamline tenant onboarding.	Should	To Do	E-signature itself is Epic 8; this is about template generation and storage.
+E07-S06	As a Landlord/Agent, I want to log maintenance issues reported for my properties and track their status (e.g., New, Assigned, In Progress, Resolved), so I can manage repairs efficiently.	Must	To Do	Tenant reporting via their dashboard/communication from Epic 5 can feed into this.
+E07-S07	As a Landlord/Agent, I want to be able to assign a logged maintenance job to a verified service provider from the Britestate marketplace, so I can get issues resolved.	Must	To Do	Integration with Epic 4.
+E07-S08	As a Landlord/Agent, I want to manually track rent payments received for each tenancy and mark them as paid or overdue, so I can monitor my rental income.	Must	To Do	Online payments are Epic 8. This is for status tracking.
+E07-S09	As a Landlord/Agent, I want to log property-related expenses (e.g., maintenance costs, insurance), so I can keep track of my outgoings.	Must	To Do	Simple expense entry form.
+E07-S10	As a Landlord/Agent, I want a simple financial overview for each property showing income (rent) versus expenses, so I can understand its basic financial performance.	Should	To Do	Basic report/dashboard view.
+E07-S11	As a Landlord/Agent, I want to upload and store important documents (e.g., safety certificates, tenancy agreements, EPCs) for each property/tenancy, so they are organized and accessible.	Must	To Do	Secure storage using Supabase Storage, linked to property/tenancy records.
+E07-S12	As a Landlord/Agent, I want to receive automated reminders for the renewal of key compliance documents (e.g., Gas Safety Certificate), so I can stay compliant.	Must	To Do	Based on expiry dates entered for documents.
+E07-S13	As a Developer, I need to extend the database schema to support property portfolios, tenancies, maintenance requests, rental finances, and compliance document tracking.	Must	To Do	E.g., portfolios, tenancies, maintenance_requests, rental_payments, property_expenses, property_documents tables.
+
+Export to Sheets
+5. Acceptance Criteria (General for the Epic)
+Landlords and Agents can create and manage a portfolio of their rental properties.
+Tenant application and lease information can be managed within the system.
+Maintenance issues can be logged, tracked, and assigned to service providers from the marketplace.
+Basic tracking of rental income and property expenses is functional.
+Property and tenancy-related documents can be securely stored, with reminders for renewals.
+The system provides guidance or checklists for common UK rental compliance requirements.
+All user stories within this Epic meet their individual acceptance criteria.
+6. Dependencies
+Epic 1: Platform Foundation & User Authentication: For Landlord/Agent accounts.
+Epic 2: Property Search & Listings Management: Properties listed for rent will be part of the portfolio.
+Epic 3: User Dashboards & Profile Management: Landlord/Agent dashboards will house these property management tools.
+Epic 4: Service Provider Marketplace & Integration: For assigning maintenance jobs to service providers.
+Epic 5: Communication & Collaboration Platform: For communication with tenants regarding applications, maintenance, etc.
+Epic 8: Financial Tools & Transaction Management: Will build upon the financial tracking here with online payments and e-signatures.
+UI/UX designs for portfolio views, tenant management, maintenance tracking, and financial logging interfaces.
+7. Technical Considerations
+Data Model: Robust data model for linking properties, tenants, leases, maintenance jobs, financials, and documents.
+Security & Privacy: Strict adherence to GDPR for handling tenant PII and financial data. Secure document storage with appropriate access controls.
+Workflow Management: Design clear workflows for maintenance requests (from reporting to resolution) and tenant onboarding.
+Reminder System: Implement a reliable background job or scheduling mechanism for document renewal and other reminders.
+Scalability: The system should handle landlords/agents with potentially large property portfolios.
+Integration Points: Ensure smooth integration with the Service Provider Marketplace (Epic 4) and Communication Platform (Epic 5).
+Reporting: Even for basic financial overviews, ensure queries are performant.
+8. Design & UX Notes
+Property portfolio view should provide a clear snapshot of all properties and their statuses.
+Tenant and maintenance management interfaces should be intuitive and allow for quick updates.
+Document upload and organization should be simple.
+Financial logging should be quick and easy.
+Reminders and compliance information should be clearly presented and actionable.
+Consider the different needs of individual landlords vs. estate agents managing multiple portfolios.
+9. QA & Testing Strategy
+Unit Tests: For financial calculation logic (if any), form validations, reminder generation logic.
+Integration Tests: Test integration with service provider assignment, document storage, and communication triggers.
+End-to-End (E2E) Tests:
+Landlord adds a property, onboards a tenant, logs rent, creates a maintenance request, assigns it to a provider, and marks it complete.
+Test document upload, renewal reminder generation, and compliance checklist usage.
+Manual Testing:
+Verify all property management workflows for both individual landlords and agents.
+Check accuracy of financial summaries and document tracking.
+Test usability of all forms and dashboards related to property management.
+Ensure compliance features correctly reflect basic UK rental regulations.
+Ensure all user stories within this Epic meet their individual acceptance criteria.
+
+Epic 7: Property Management Tools (Landlords & Agents)
+
+(Keeping Epic Description, Goals, Scope, Dependencies, Technical Considerations, Design/UX Notes, and QA Strategy as defined previously, focusing on detailed User Stories and Acceptance Criteria here.)
+
+4. User Stories & Acceptance Criteria
+Story ID: E07-S01
+
+User Story: As a Landlord/Agent, I want to add my rental properties to a portfolio dashboard, so I can manage them centrally.
+Priority: Must
+Status: To Do
+Notes: Link to existing listings from Epic 2 or create new entries for management.
+Acceptance Criteria:
+Landlords/Agents can access a "My Portfolio" or "Managed Properties" section from their dashboard (Epic 3).
+An interface allows adding a new property specifically for rental management. This can either:
+Link an existing property listing (from Epic 2) to their management portfolio.
+Allow creating a new property record solely for management purposes (not necessarily a public listing) with core details (address, type, rooms).
+Each property in the portfolio can be distinctly identified (e.g., by address).
+The system stores portfolio properties associated with the Landlord/Agent user.
+Story ID: E07-S02
+
+User Story: As a Landlord/Agent, I want to view key information for each property in my portfolio (e.g., address, current tenant, rent amount, lease end date, maintenance status).
+Priority: Must
+Status: To Do
+Notes: Dashboard widget/list view.
+Acceptance Criteria:
+The portfolio section displays a list or card view of all managed rental properties.
+For each property, summary information is displayed:
+Property Address.
+Current Tenancy Status (e.g., Vacant, Occupied by [Tenant Name/ID]).
+Current Rent Amount (if occupied).
+Lease End Date (if occupied).
+Number of open/active maintenance requests.
+Users can click on a property to navigate to its detailed management page.
+Story ID: E07-S03
+
+User Story: As a Landlord/Agent, I want to manage rental applications, including viewing applicant details and updating their status (e.g., Pending, Approved, Rejected).
+Priority: Must
+Status: To Do
+Notes: Applications could come from Britestate listings or be manually entered.
+Acceptance Criteria:
+For vacant properties or properties nearing lease end, Landlords/Agents can view a list of received rental applications.
+Applications can be manually created by the Landlord/Agent if received externally, or linked if submitted via a Britestate listing.
+Applicant details (name, contact, basic info provided during application) are viewable.
+Landlords/Agents can update the status of an application (e.g., "New," "Under Review," "Approved," "Rejected," "Waitlisted").
+The applicant (if they are a Britestate user) is notified of status changes where appropriate (linking to Epic 5 notifications).
+Basic filtering or sorting of applications (e.g., by date, by status) is available.
+Story ID: E07-S04
+
+User Story: As a Landlord/Agent, I want to be able to store tenant information (contact details, lease terms) securely for each occupied property, so I have all details in one place.
+Priority: Must
+Status: To Do
+Notes: Compliance with GDPR for storing PII.
+Acceptance Criteria:
+Once a tenant is approved (from E07-S03) and a lease is active, Landlords/Agents can create/link a tenant record to a specific property.
+The system allows storing tenant details:
+Name(s) of tenant(s).
+Contact information (email, phone).
+Lease start and end dates.
+Agreed rent amount and payment frequency.
+Deposit amount and scheme details (text input).
+This information is stored securely and complies with GDPR principles.
+Only authorized Landlords/Agents can access their tenants' PII.
+Ability to mark a tenancy as "Current" or "Past."
+Story ID: E07-S05
+
+User Story: As a Landlord/Agent, I want to generate a basic digital lease agreement using a template with customizable fields, so I can streamline tenant onboarding.
+Priority: Should
+Status: To Do
+Notes: E-signature itself is Epic 8; this is about template generation and storage.
+Acceptance Criteria:
+A basic, standard UK tenancy agreement template (e.g., Assured Shorthold Tenancy) is available.
+Landlords/Agents can select the template and pre-fill it with property details (from property record) and tenant details (from E07-S04).
+Key customizable fields include: rent amount, payment due date, lease term, specific clauses (simple text input for additional clauses).
+The generated document can be downloaded as a PDF.
+The generated document can be saved within the platform, associated with the tenancy (see E07-S11).
+A disclaimer advises users to seek legal advice as the template is for guidance only.
+Story ID: E07-S06
+
+User Story: As a Landlord/Agent, I want to log maintenance issues reported for my properties and track their status (e.g., New, Assigned, In Progress, Resolved), so I can manage repairs efficiently.
+Priority: Must
+Status: To Do
+Notes: Tenant reporting via their dashboard/communication from Epic 5 can feed into this.
+Acceptance Criteria:
+Landlords/Agents can create a new maintenance request for a specific property in their portfolio.
+The request includes fields for: issue description, reported date, priority level (Low, Medium, High), photos (optional upload).
+A list of all maintenance requests is viewable, filterable by property and status.
+Each request can have its status updated: "New," "Acknowledged," "Awaiting Quote," "Assigned to Provider," "In Progress," "Awaiting Tenant Confirmation," "Resolved," "Closed."
+Tenant-reported issues (if tenant portal exists from another Epic or is part of communication in Epic 5) can automatically create a maintenance request or be manually logged by the Landlord/Agent.
+Story ID: E07-S07
+
+User Story: As a Landlord/Agent, I want to be able to assign a logged maintenance job to a verified service provider from the Britestate marketplace, so I can get issues resolved.
+Priority: Must
+Status: To Do
+Notes: Integration with Epic 4.
+Acceptance Criteria:
+From a maintenance request (E07-S06), Landlords/Agents can initiate a search for suitable service providers within the Britestate marketplace (Epic 4).
+Search can be filtered by service type relevant to the maintenance issue.
+Landlords/Agents can select a provider and send them the job details (effectively creating an RFQ or direct job offer).
+Once a provider accepts/quotes and is chosen, the maintenance request status can be updated to "Assigned to [Provider Name]".
+Communication with the assigned provider can be initiated (linking to Epic 5).
+Story ID: E07-S08
+
+User Story: As a Landlord/Agent, I want to manually track rent payments received for each tenancy and mark them as paid or overdue, so I can monitor my rental income.
+Priority: Must
+Status: To Do
+Notes: Online payments are Epic 8. This is for status tracking.
+Acceptance Criteria:
+For each active tenancy, a simple rent payment log is available.
+Landlords/Agents can manually record rent payments received: date paid, amount paid.
+The system displays expected rent due dates based on lease terms.
+Payments can be marked as "Paid," "Partially Paid," or "Overdue."
+A simple visual indicator shows the payment status for the current period.
+A history of logged payments is maintained for each tenancy.
+Story ID: E07-S09
+
+User Story: As a Landlord/Agent, I want to log property-related expenses (e.g., maintenance costs, insurance), so I can keep track of my outgoings.
+Priority: Must
+Status: To Do
+Notes: Simple expense entry form.
+Acceptance Criteria:
+A section allows Landlords/Agents to log expenses associated with a specific property.
+The expense entry form includes fields for: date, expense category (e.g., Maintenance, Insurance, Service Charge, Other), amount, description, and an option to upload a receipt/invoice (PDF/image).
+Logged expenses are listed per property with date, category, and amount.
+Basic filtering/sorting of expenses (e.g., by date, category) is available.
+Story ID: E07-S10
+
+User Story: As a Landlord/Agent, I want a simple financial overview for each property showing income (rent) versus expenses, so I can understand its basic financial performance.
+Priority: Should
+Status: To Do
+Notes: Basic report/dashboard view.
+Acceptance Criteria:
+For each managed property, a summary section displays total logged rent income and total logged expenses over a selected period (e.g., Last Month, Year to Date).
+A simple net income (Income - Expenses) figure is shown.
+This overview is presented in an easy-to-understand format on the property management page or dashboard.
+Does not include complex accounting or tax calculations.
+Story ID: E07-S11
+
+User Story: As a Landlord/Agent, I want to upload and store important documents (e.g., safety certificates, tenancy agreements, EPCs) for each property/tenancy, so they are organized and accessible.
+Priority: Must
+Status: To Do
+Notes: Secure storage using Supabase Storage, linked to property/tenancy records.
+Acceptance Criteria:
+A "Documents" section is available for each managed property and/or tenancy.
+Landlords/Agents can upload various document types (PDF, DOC, JPG, etc.) with a name, category (e.g., Gas Safety, EPC, Lease Agreement, Insurance), and optional expiry date.
+Uploaded documents are securely stored in Supabase Storage and linked to the relevant property/tenancy.
+Users can view a list of uploaded documents, with details like name, upload date, category, and expiry date.
+Users can download or view the stored documents.
+Documents can be deleted by the uploader.
+Story ID: E07-S12
+
+User Story: As a Landlord/Agent, I want to receive automated reminders for the renewal of key compliance documents (e.g., Gas Safety Certificate), so I can stay compliant.
+Priority: Must
+Status: To Do
+Notes: Based on expiry dates entered for documents.
+Acceptance Criteria:
+When a document is uploaded with an expiry date (E07-S11), the system logs this date.
+Automated reminders (in-app and/or email via Epic 5) are sent to the Landlord/Agent in advance of the document's expiry (e.g., 1 month before, 1 week before).
+The reminder specifies which document for which property is due for renewal.
+A section on the dashboard may highlight upcoming document renewals.
+Users can mark a document as renewed (perhaps by uploading a new version).
+Story ID: E07-S13
+
+User Story: As a Developer, I need to extend the database schema to support property portfolios, tenancies, maintenance requests, rental finances, and compliance document tracking.
+Priority: Must
+Status: To Do
+Notes: E.g., landlord_portfolios (linking users to properties they manage), tenancies (property_id, tenant_user_id, start_date, end_date, rent_amount, deposit_info), maintenance_requests (property_id, description, status, assigned_provider_id), rental_payments (tenancy_id, date_due, date_paid, amount), property_expenses (property_id, date, category, amount, receipt_url), property_documents (property_id/tenancy_id, name, category, file_url, expiry_date).
+Acceptance Criteria:
+SQL migration scripts are created and successfully run for new tables or alterations to existing tables to support all property management features.
+Tables include appropriate fields, data types, primary keys, foreign keys, and indexes for relationships and query performance.
+RLS policies are defined to ensure Landlords/Agents can only access and manage data related to their own properties and tenants.
+The schema supports linking maintenance requests to service providers and properties.
+The schema allows for tracking financial transactions (rent, expenses) per property/tenancy.
+The schema supports storing document metadata, including expiry dates for reminders.

@@ -1,0 +1,415 @@
+Epic 9: Mobile Application Development (Phase 1 - Key User Journeys)
+Epic Number: E09
+Epic Title: Mobile Application Development (Phase 1 - Key User Journeys)
+Date Created: May 13, 2025
+Last Updated: May 13, 2025
+Product Manager: [Your Name/PM Agent]
+Target Release: MVP Phase 2 (Staged rollout after core web platform is stable)
+
+1. Description
+This Epic focuses on the initial design, development, and release of native mobile applications (iOS and Android, likely using React Native) for key Britestate user roles: Homebuyers/Renters, Estate Agents, Service Providers, and Landlords. Phase 1 will prioritize essential on-the-go features and core user journeys for each app, rather than full feature parity with the web platform.
+
+2. Goals
+To extend the reach and accessibility of Britestate by providing dedicated mobile applications.
+To deliver a user-friendly and performant mobile experience for core tasks relevant to each user role.
+To leverage mobile-specific capabilities such as push notifications and location services.
+To ensure seamless authentication and data synchronization between mobile apps and the web platform.
+3. Scope
+In Scope (Phase 1 Features per App):
+
+Common Mobile Features:
+Secure user authentication (login, registration stubs linking to web/simplified flow).
+Push notification integration and handling.
+Basic offline data caching for critical information (e.g., saved items, upcoming appointments).
+Touch-optimized UI and navigation.
+Access to user profile (view, basic edits).
+Homebuyer/Renter App (Phase 1):
+Property search with essential filters and map view (location-aware using GPS).
+View property details.
+Save/unsave favorite properties.
+Access saved searches (run existing, view results).
+Basic viewing scheduling (request, view confirmed appointments).
+Access to communication center (read/send messages - from Epic 5).
+Estate Agent App (Phase 1):
+View and manage own active listings (basic status updates, key detail edits).
+Receive and view new leads (notifications, basic lead list).
+Manage viewing schedule (view upcoming, confirm/reschedule basics).
+Client communication (read/send messages - from Epic 5).
+Service Provider App (Phase 1):
+Receive and view new job leads/RFQs (notifications, basic list).
+View job details.
+Submit quotes (simplified version of web, or link to web for complex quotes).
+Manage bookings (accept/decline, update basic job status e.g., "En Route", "Started", "Completed").
+Client communication (read/send messages - from Epic 5).
+Camera integration for uploading job photos (before/after).
+Landlord App (Phase 1):
+Overview of property portfolio (list of properties, basic status).
+View tenant details (contact info, lease end date).
+Track and update maintenance requests (view reported, assign basic status).
+Basic communication with tenants (read/send messages - from Epic 5).
+Access key documents (view only).
+Out of Scope (for Phase 1 Mobile Apps - may be in web MVP or future mobile phases):
+
+Full feature parity with the web platform for all user roles.
+Advanced settings and configuration options.
+Complex administrative tasks.
+Creation of new property listings from scratch on mobile (editing key fields is in scope for agents).
+Advanced financial reporting or detailed analytics.
+AR/VR features (unless specifically prioritized for mobile early).
+Offline creation of new data (focus on viewing and basic updates).
+4. User Stories
+(Note: Stories will be grouped by app for clarity, with common stories first)
+
+Common Mobile App Stories:
+
+Story ID	User Story	Priority	Status	Notes
+E09-S-CM01	As a Mobile User, I want to be able to log in to my Britestate account securely using my existing credentials, so I can access my data on the go.	Must	To Do	Use Supabase auth.
+E09-S-CM02	As a Mobile User, I want to receive push notifications for important updates relevant to my role (e.g., new messages, new leads, viewing reminders), so I can stay informed in real-time.	Must	To Do	Requires setup of FCM/APNS.
+E09-S-CM03	As a Mobile User, I want the app to store some critical data offline (e.g., my upcoming viewings, saved properties), so I can access it even with poor connectivity.	Should	To Do	Basic caching.
+E09-S-CM04	As a Mobile User, I want an intuitive, touch-optimized navigation system within the app, so I can easily find what I need.	Must	To Do	E.g., tab bars, drawer navigation.
+E09-S-CM05	As a Mobile User, I want to be able to view my basic profile information within the app, so I can reference my details.	Must	To Do	Editing might be limited in Phase 1.
+
+Export to Sheets
+Homebuyer/Renter App Stories:
+
+Story ID	User Story	Priority	Status	Notes
+E09-S-HR01	As a Homebuyer/Renter, I want to search for properties using essential filters and a map view on my mobile, so I can find properties while on the move.	Must	To Do	GPS for "near me" search.
+E09-S-HR02	As a Homebuyer/Renter, I want to view property details, including images and key information, on my mobile app, so I can assess properties easily.	Must	To Do	Optimized image loading.
+E09-S-HR03	As a Homebuyer/Renter, I want to save/unsave properties to my favorites list from the mobile app, so my preferences are synced with the web.	Must	To Do	
+E09-S-HR04	As a Homebuyer/Renter, I want to access my saved searches and view matching properties on the mobile app, so I can keep track of relevant listings.	Must	To Do	
+E09-S-HR05	As a Homebuyer/Renter, I want to request viewings for properties and see my confirmed viewing schedule on the mobile app, so I can manage appointments.	Should	To Do	Basic request flow, view calendar.
+E09-S-HR06	As a Homebuyer/Renter, I want to access my messages with agents/landlords on the mobile app, so I can communicate conveniently.	Must	To Do	Integration with Epic 5.
+
+Export to Sheets
+Estate Agent App Stories:
+
+Story ID	User Story	Priority	Status	Notes
+E09-S-EA01	As an Estate Agent, I want to view my active listings on my mobile app and make basic updates (e.g., status, price), so I can manage them remotely.	Must	To Do	
+E09-S-EA02	As an Estate Agent, I want to receive push notifications for new leads and view lead details on my mobile app, so I can respond quickly.	Must	To Do	
+E09-S-EA03	As an Estate Agent, I want to manage my viewing schedule (view upcoming, confirm/reschedule basics) on the mobile app, so I can stay organized.	Should	To Do	
+E09-S-EA04	As an Estate Agent, I want to communicate with my clients (buyers, sellers, landlords) via messages on the mobile app, so I can provide timely updates.	Must	To Do	Integration with Epic 5.
+
+Export to Sheets
+Service Provider App Stories:
+
+Story ID	User Story	Priority	Status	Notes
+E09-S-SP01	As a Service Provider, I want to receive push notifications for new RFQs/job leads and view their details on my mobile app, so I can react promptly.	Must	To Do	
+E09-S-SP02	As a Service Provider, I want to be able to submit a simplified quote or express interest for a job from my mobile app, so I can secure work on the go.	Should	To Do	Complex quotes might direct to web.
+E09-S-SP03	As a Service Provider, I want to manage my bookings (accept/decline, update job status like "Started", "Completed") on the mobile app, so I can keep clients informed.	Must	To Do	
+E09-S-SP04	As a Service Provider, I want to use my phone's camera to upload photos related to a job (e.g., before/after, proof of work) via the mobile app.	Should	To Do	
+E09-S-SP05	As a Service Provider, I want to communicate with my clients regarding jobs via messages on the mobile app, so I can coordinate effectively.	Must	To Do	Integration with Epic 5.
+
+Export to Sheets
+Landlord App Stories:
+
+Story ID	User Story	Priority	Status	Notes
+E09-S-LL01	As a Landlord, I want to view an overview of my property portfolio and their basic status (vacant/occupied) on my mobile app, so I can stay informed.	Must	To Do	
+E09-S-LL02	As a Landlord, I want to access key tenant contact information and lease end dates from the mobile app, so I have details handy when needed.	Should	To Do	
+E09-S-LL03	As a Landlord, I want to view and update the status of maintenance requests for my properties on the mobile app, so I can manage repairs remotely.	Must	To Do	Assigning to provider might be simplified or link to web.
+E09-S-LL04	As a Landlord, I want to communicate with my tenants regarding maintenance or other issues via messages on the mobile app, so I can be responsive.	Must	To Do	Integration with Epic 5.
+
+Export to Sheets
+5. Acceptance Criteria (General for the Epic)
+Separate native mobile applications (iOS and Android) are developed and deployed for Homebuyers/Renters, Estate Agents, Service Providers, and Landlords.
+Users can securely log in to the mobile apps using their Britestate credentials.
+Core Phase 1 features for each app (as defined in user stories) are functional and provide a good user experience.
+Push notifications are working reliably for key events.
+Basic offline caching provides access to essential data.
+Apps are performant and responsive on target mobile devices.
+Data is synchronized between the mobile apps and the web platform via backend APIs.
+All user stories within this Epic meet their individual acceptance criteria.
+6. Dependencies
+All previous Epics (1-8) that define the core platform APIs and data structures are largely complete, as mobile apps will consume these.
+Finalized UI/UX designs and specifications for each mobile application and screen.
+Setup of push notification services (Firebase Cloud Messaging for Android, Apple Push Notification service for iOS).
+Developer accounts for Apple App Store and Google Play Store for app distribution.
+Backend APIs must be mobile-friendly (e.g., efficient data payloads, authentication suitable for mobile clients).
+7. Technical Considerations
+Cross-Platform Development: Likely React Native for efficiency, as suggested in PRD. Confirm this choice with Architect.
+API Design for Mobile: Ensure backend APIs are optimized for mobile consumption (e.g., minimizing data transfer, handling intermittent connectivity). GraphQL could be an option if not already used for web.
+State Management: Choose an appropriate state management solution for mobile apps (e.g., Redux, Zustand, React Context).
+Offline Storage: Implement a strategy for offline data storage and synchronization (e.g., SQLite, AsyncStorage, WatermelonDB).
+Performance: Optimize app startup time, screen transitions, and data loading for a smooth mobile experience. Profile and address performance bottlenecks.
+Security: Securely store credentials and API tokens on the device. Implement SSL pinning if deemed necessary. Protect against common mobile vulnerabilities.
+Native Device Features: Plan for accessing native features like camera, GPS, and push notifications.
+Testing: Implement a mobile-specific testing strategy, including unit tests, integration tests, E2E tests on emulators/simulators and real devices. Consider cloud device farms for broader testing.
+App Store Submission Process: Allocate time and resources for the app store review and submission process.
+8. Design & UX Notes
+Follow platform-specific design guidelines (iOS Human Interface Guidelines, Android Material Design) while maintaining Britestate's brand identity.
+Design for various screen sizes and resolutions within each platform.
+Prioritize simplicity and ease of use for on-the-go interactions.
+Ensure clear and concise information display.
+Optimize for touch interactions and gestures.
+Design for intermittent network connectivity (graceful error handling, offline indicators).
+9. QA & Testing Strategy
+Emulators/Simulators: Extensive testing on a range of emulated devices.
+Real Device Testing: Test on a pool of physical iOS and Android devices covering different manufacturers, OS versions, and screen sizes.
+Performance Testing: Measure app launch time, UI responsiveness, battery consumption, and network data usage.
+Usability Testing: Conduct usability tests with target users for each mobile app.
+Platform-Specific Testing: Test push notification delivery, offline functionality, and native feature integrations.
+App Store Pre-Submission Checklist: Ensure all app store requirements are met.
+Ensure all acceptance criteria for user stories are met.
+
+
+Epic 9: Mobile Application Development (Phase 1 - Key User Journeys)
+
+(Keeping Epic Description, Goals, Scope, Dependencies, Technical Considerations, Design/UX Notes, and QA Strategy as defined previously, focusing on detailed User Stories and Acceptance Criteria here.)
+
+4. User Stories & Acceptance Criteria
+Common Mobile App Stories
+(These apply to all mobile apps unless specified otherwise)
+
+Story ID: E09-S-CM01
+
+User Story: As a Mobile User, I want to be able to log in to my Britestate account securely using my existing credentials, so I can access my data on the go.
+Priority: Must
+Status: To Do
+Notes: Use Supabase auth.
+Acceptance Criteria:
+The mobile app presents a login screen with fields for email and password.
+Users can successfully log in using their existing Britestate email/password credentials.
+"Log in with Google" and "Log in with Apple" options are available and functional for existing linked accounts.
+Secure session management (e.g., storing JWTs securely) is implemented.
+Upon successful login, the user is directed to their role-specific mobile dashboard.
+Appropriate error messages are displayed for failed login attempts (e.g., incorrect credentials, network errors).
+A "Forgot Password?" link redirects to a mobile-friendly web view or initiates the password reset flow.
+Basic registration options (e.g., link to web registration or a simplified in-app flow) are available if a new user tries to log in.
+Story ID: E09-S-CM02
+
+User Story: As a Mobile User, I want to receive push notifications for important updates relevant to my role (e.g., new messages, new leads, viewing reminders), so I can stay informed in real-time.
+Priority: Must
+Status: To Do
+Notes: Requires setup of FCM/APNS.
+Acceptance Criteria:
+The mobile app requests permission to send push notifications upon first launch or relevant action.
+Push notifications are successfully received on both iOS and Android devices when the app is in the foreground, background, or closed.
+Notifications are generated for key events as defined in other Epics (e.g., new chat message from Epic 5, new RFQ for provider from Epic 4).
+Tapping a push notification opens the relevant screen within the app (deep linking).
+Users can manage basic push notification preferences within the app settings (if distinct from web preferences in Epic 3, or synced).
+Notification badges appear on the app icon for unread notifications (iOS and supported Android launchers).
+Story ID: E09-S-CM03
+
+User Story: As a Mobile User, I want the app to store some critical data offline (e.g., my upcoming viewings, saved properties), so I can access it even with poor connectivity.
+Priority: Should
+Status: To Do
+Notes: Basic caching.
+Acceptance Criteria:
+Key read-only data for the user's role (e.g., Homebuyer: saved property summaries, scheduled viewing times/addresses; Service Provider: upcoming job summaries) is cached locally on the device.
+This cached data is accessible when the device is offline.
+The app clearly indicates when it is operating in offline mode and data may not be up-to-date.
+A strategy for data synchronization is in place when connectivity is restored (e.g., refresh on app open).
+Offline storage limits are reasonable and managed.
+Story ID: E09-S-CM04
+
+User Story: As a Mobile User, I want an intuitive, touch-optimized navigation system within the app, so I can easily find what I need.
+Priority: Must
+Status: To Do
+Notes: E.g., tab bars, drawer navigation.
+Acceptance Criteria:
+The app implements a primary navigation pattern suitable for mobile (e.g., bottom tab bar for main sections, hamburger menu for less frequent items).
+Navigation is consistent across the app.
+Touch targets are appropriately sized for ease of use.
+Screen transitions are smooth and provide appropriate feedback.
+Standard mobile gestures (swipe, tap, pinch-to-zoom on maps/images) are supported where relevant.
+Story ID: E09-S-CM05
+
+User Story: As a Mobile User, I want to be able to view my basic profile information within the app, so I can reference my details.
+Priority: Must
+Status: To Do
+Notes: Editing might be limited in Phase 1.
+Acceptance Criteria:
+A "Profile" or "Account" section is accessible within the app.
+Users can view their display name, email, phone number (if provided), and profile picture.
+For Phase 1, editing these details might link to the web profile page or allow editing of only very basic fields (e.g., display name).
+A clear "Log Out" option is available in the profile/account section.
+Homebuyer/Renter App Stories
+Story ID: E09-S-HR01
+
+User Story: As a Homebuyer/Renter, I want to search for properties using essential filters and a map view on my mobile, so I can find properties while on the move.
+Priority: Must
+Status: To Do
+Notes: GPS for "near me" search.
+Acceptance Criteria:
+A property search interface allows input for location (with "use current location" GPS option), property type, listing type (sale/rent), price range, beds, baths.
+Search results are displayed in a mobile-friendly list/card view.
+A map view displays property pins, allowing users to explore geographically. Map interactions are touch-optimized.
+Users can toggle between list and map views.
+Search performance is optimized for mobile networks.
+Story ID: E09-S-HR02
+
+User Story: As a Homebuyer/Renter, I want to view property details, including images and key information, on my mobile app, so I can assess properties easily.
+Priority: Must
+Status: To Do
+Notes: Optimized image loading.
+Acceptance Criteria:
+Tapping a property in search results opens a detailed view.
+The view includes a swipeable image gallery, property description, key features, price, beds/baths, and map location.
+Images are optimized for mobile screens and data usage (e.g., responsive images, lazy loading).
+Agent/Landlord contact information is displayed with options to call or message (initiating message via Epic 5).
+Story ID: E09-S-HR03
+
+User Story: As a Homebuyer/Renter, I want to save/unsave properties to my favorites list from the mobile app, so my preferences are synced with the web.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+A "Favorite" button is available on property listings and detail views.
+Toggling the button updates the user's favorites list, and this status is synced with the backend.
+The user can access their list of saved/favorited properties within the app.
+Story ID: E09-S-HR04
+
+User Story: As a Homebuyer/Renter, I want to access my saved searches and view matching properties on the mobile app, so I can keep track of relevant listings.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+Users can view their list of saved searches (created on web or mobile).
+Tapping a saved search executes the search and displays matching properties within the mobile app.
+The app can receive push notifications for new properties matching saved searches (links to E09-S-CM02).
+Story ID: E09-S-HR05
+
+User Story: As a Homebuyer/Renter, I want to request viewings for properties and see my confirmed viewing schedule on the mobile app, so I can manage appointments.
+Priority: Should
+Status: To Do
+Notes: Basic request flow, view calendar.
+Acceptance Criteria:
+A "Request Viewing" button is available on property detail pages.
+Users can submit preferred dates/times (or select from available slots if that feature evolves).
+A section in the app displays their upcoming confirmed viewings with property details, date, time, and agent contact.
+Users receive push notifications for viewing confirmations or changes.
+Story ID: E09-S-HR06
+
+User Story: As a Homebuyer/Renter, I want to access my messages with agents/landlords on the mobile app, so I can communicate conveniently.
+Priority: Must
+Status: To Do
+Notes: Integration with Epic 5.
+Acceptance Criteria:
+A "Messages" or "Inbox" section is available in the app.
+Users can view conversation threads with agents/landlords.
+Users can send and receive text messages and basic attachments (as per Epic 5 capabilities).
+Push notifications are received for new messages.
+Estate Agent App Stories
+Story ID: E09-S-EA01
+
+User Story: As an Estate Agent, I want to view my active listings on my mobile app and make basic updates (e.g., status, price), so I can manage them remotely.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+Agents can view a list of their active property listings.
+For each listing, they can view key details.
+Agents can perform basic edits, such as updating the listing status (e.g., "Under Offer," "Sold") or making minor price adjustments.
+Changes are synced with the web platform.
+Story ID: E09-S-EA02
+
+User Story: As an Estate Agent, I want to receive push notifications for new leads (e.g., viewing requests, messages on listings) and view lead details on my mobile app, so I can respond quickly.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+Push notifications alert the agent to new inquiries or viewing requests.
+A "Leads" section in the app lists new and ongoing leads with summary information.
+Agents can tap a lead to view more details (e.g., user contact info, property of interest, message content).
+Story ID: E09-S-EA03
+
+User Story: As an Estate Agent, I want to manage my viewing schedule (view upcoming, confirm/reschedule basics) on the mobile app, so I can stay organized.
+Priority: Should
+Status: To Do
+Acceptance Criteria:
+Agents can view their calendar of scheduled viewings.
+They can see details of each viewing (property, user, time).
+Basic actions like "Confirm Viewing" or seeing contact details to reschedule are available.
+Push notifications for new viewing requests or cancellations.
+Story ID: E09-S-EA04
+
+User Story: As an Estate Agent, I want to communicate with my clients (buyers, sellers, landlords) via messages on the mobile app, so I can provide timely updates.
+Priority: Must
+Status: To Do
+Notes: Integration with Epic 5.
+Acceptance Criteria:
+A "Messages" section allows agents to access conversation threads with their various contacts.
+Agents can send and receive text messages and basic attachments.
+Push notifications for new messages.
+Service Provider App Stories
+Story ID: E09-S-SP01
+
+User Story: As a Service Provider, I want to receive push notifications for new RFQs/job leads and view their details on my mobile app, so I can react promptly.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+Push notifications alert the provider to new RFQs matching their profile.
+An "RFQs" or "Leads" section lists new and active job opportunities.
+Providers can view RFQ details (job description, location, user info summary).
+Story ID: E09-S-SP02
+
+User Story: As a Service Provider, I want to be able to submit a simplified quote or express interest for a job from my mobile app, so I can secure work on the go.
+Priority: Should
+Status: To Do
+Notes: Complex quotes might direct to web.
+Acceptance Criteria:
+From an RFQ detail view, providers can submit a quote using a simplified form (e.g., price, brief scope, estimated time).
+Alternatively, an "Express Interest" option sends a notification to the user, and the provider can follow up with a full quote via web/message.
+Submitted quotes/interest are synced with the platform.
+Story ID: E09-S-SP03
+
+User Story: As a Service Provider, I want to manage my bookings (accept/decline, update job status like "Started", "Completed") on the mobile app, so I can keep clients informed.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+A "Jobs" or "Bookings" section lists confirmed and ongoing jobs.
+Providers can update job status (e.g., "Accepted," "Scheduled," "En Route," "In Progress," "Completed," "Cancelled").
+Status updates trigger notifications to the client.
+Story ID: E09-S-SP04
+
+User Story: As a Service Provider, I want to use my phone's camera to upload photos related to a job (e.g., before/after, proof of work) via the mobile app.
+Priority: Should
+Status: To Do
+Acceptance Criteria:
+Within a job detail view, providers can access the device camera or photo library.
+They can upload images and associate them with the specific job.
+Uploaded images are synced and potentially visible to the client or stored for provider records.
+Story ID: E09-S-SP05
+
+User Story: As a Service Provider, I want to communicate with my clients regarding jobs via messages on the mobile app, so I can coordinate effectively.
+Priority: Must
+Status: To Do
+Notes: Integration with Epic 5.
+Acceptance Criteria:
+A "Messages" section allows providers to access conversation threads with clients for active jobs.
+Providers can send and receive text messages and basic attachments.
+Push notifications for new messages.
+Landlord App Stories
+Story ID: E09-S-LL01
+
+User Story: As a Landlord, I want to view an overview of my property portfolio and their basic status (vacant/occupied) on my mobile app, so I can stay informed.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+A "My Properties" section lists the landlord's managed properties.
+Each property displays key summary info: address, current tenancy status (Vacant/Occupied).
+Landlords can tap a property for a slightly more detailed view (key lease dates if occupied).
+Story ID: E09-S-LL02
+
+User Story: As a Landlord, I want to access key tenant contact information and lease end dates from the mobile app, so I have details handy when needed.
+Priority: Should
+Status: To Do
+Acceptance Criteria:
+Within a property's detailed view (if occupied), landlords can see basic tenant contact details (name, phone/email if permitted).
+Lease start and end dates are visible.
+Story ID: E09-S-LL03
+
+User Story: As a Landlord, I want to view and update the status of maintenance requests for my properties on the mobile app, so I can manage repairs remotely.
+Priority: Must
+Status: To Do
+Notes: Assigning to provider might be simplified or link to web.
+Acceptance Criteria:
+A "Maintenance" section lists open and recent maintenance requests across their properties.
+Landlords can view details of each request.
+They can update the status of a request (e.g., "Acknowledged," "Awaiting Quotes," "Provider Assigned," "Work Completed").
+Basic functionality to assign to a provider (e.g., select from existing connected providers, or mark as "Assigned Externally").
+Story ID: E09-S-LL04
+
+User Story: As a Landlord, I want to communicate with my tenants regarding maintenance or other issues via messages on the mobile app, so I can be responsive.
+Priority: Must
+Status: To Do
+Notes: Integration with Epic 5.
+Acceptance Criteria:
+A "Messages" section allows landlords to access conversation threads with their tenants.
+Landlords can send and receive text messages and basic attachments.
+Push notifications for new messages from tenants.

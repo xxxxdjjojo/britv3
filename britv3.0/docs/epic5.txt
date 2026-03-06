@@ -1,0 +1,254 @@
+Epic 5: Communication & Collaboration Platform
+Epic Number: E05
+Epic Title: Communication & Collaboration Platform
+Date Created: May 13, 2025
+Last Updated: May 13, 2025
+Product Manager: [Your Name/PM Agent]
+Target Release: MVP Phase 1 / Phase 2 (depending on complexity of real-time chat)
+
+1. Description
+This Epic focuses on building a secure and integrated communication system to facilitate interaction between different user types on the Britestate platform. It includes a real-time messaging system, a comprehensive notification system for key platform events, and basic tools for collaboration, such as secure document sharing and milestone tracking for transactions or service jobs.
+
+2. Goals
+To enable seamless and secure communication between users (e.g., Homebuyers/Renters with Agents, Users with Service Providers, Landlords with Tenants).
+To provide timely and relevant notifications to users about important platform activities and updates.
+To offer basic collaboration tools that support property transactions and service delivery.
+To centralize communication within the platform, reducing reliance on external channels and keeping a record of interactions.
+3. Scope
+In Scope:
+
+Secure Messaging System:
+One-to-one real-time chat functionality between authenticated users in specific contexts (e.g., User <> Agent for a listing, User <> Service Provider after booking).
+Message threads, read receipts, and user online/offline status indicators.
+Ability to send and receive text messages.
+Ability to share file attachments (images, documents) within chats, utilizing Supabase Storage.
+Access to message history.
+Contextual chat initiation (e.g., from a property listing, a service booking, or a user profile).
+Automated Notification System:
+In-app notification center/feed displaying a list of recent notifications.
+Generation of notifications for key events:
+New messages received.
+Property alerts (new listings matching saved search - from Epic 2).
+RFQ responses and quote submissions (from Epic 4).
+Booking confirmations and status updates (from Epic 4).
+Document sharing notifications.
+Milestone updates.
+Functional user preferences for notifications (building on Epic 3).
+Email notifications for critical alerts and as a fallback for users who are offline (utilizing Supabase's email capabilities or a simple integration with an email service).
+Basic Collaboration Tools:
+Secure document sharing area linked to specific contexts (e.g., a property transaction, a service job). Users involved can upload, view, and manage shared files.
+Basic milestone tracking for property transactions (e.g., Offer Accepted, Survey, Contracts Exchanged, Completion) and potentially for service jobs (e.g., Job Scheduled, Work Started, Work Completed). Initially, these milestones might be manually updated by involved parties (agent, provider, user).
+Out of Scope:
+
+Group chat functionality (beyond two parties).
+Video or voice call integration.
+Advanced document management features like version control or e-signatures (e-signatures in Epic 8).
+Automated milestone updates based on external triggers (initially manual).
+AI-powered communication assistance (part of Epic 6).
+Public forums or community discussion boards.
+4. User Stories
+Story ID	User Story	Priority	Status	Notes
+E05-S01	As a User, I want to be able to send and receive real-time text messages with another connected user (e.g., my estate agent, a booked service provider), so I can communicate efficiently within the platform.	Must	To Do	Supabase Realtime for chat.
+E05-S02	As a User, I want to see if my messages have been read and when the other user was last active/is online, so I have context for our communication.	Should	To Do	Read receipts, basic presence indicators.
+E05-S03	As a User, I want to be able to share relevant files (images, PDFs) within a chat conversation, so I can easily exchange documents related to our interaction.	Must	To Do	Supabase Storage for attachments, security considerations for file types.
+E05-S04	As a User, I want to have a message history for each conversation, so I can refer back to previous discussions.	Must	To Do	
+E05-S05	As a User, I want to be able to start a conversation from relevant contexts (e.g., a property listing page with the agent, a booking with a service provider), so it's easy to initiate communication.	Must	To Do	
+E05-S06	As a User, I want to receive in-app notifications for important events such as new messages, property alerts, and service updates, so I stay informed.	Must	To Do	Consolidated notification center/feed in the UI.
+E05-S07	As a User, I want to receive email notifications for critical alerts or when I'm offline, so I don't miss important information if I'm not actively using the app.	Should	To Do	
+E05-S08	As a User involved in a property transaction or service job, I want a dedicated space to securely share and access relevant documents with other involved parties, so we can collaborate effectively.	Must	To Do	E.g., specific folder in Supabase Storage per transaction/job, with access controls.
+E05-S09	As a User (e.g., Buyer, Seller, Agent), I want to be able to track key milestones for my property transaction (e.g., Offer Accepted, Completion), so I can see the progress.	Should	To Do	Initially manual updates by relevant parties. Simple UI to display milestones and statuses.
+E05-S10	As a Developer, I want to implement a robust system for managing notification preferences (building on Epic 3), so users can control what notifications they receive.	Must	To Do	Backend logic to honor user preferences.
+E05-S11	As a Developer, I need to define database schema for messages, conversations, notifications, shared documents, and milestones.	Must	To Do	E.g., conversations, messages, user_notifications, shared_documents, transaction_milestones tables.
+
+Export to Sheets
+5. Acceptance Criteria (General for the Epic)
+Users can engage in secure, real-time one-to-one messaging with file attachment capabilities.
+A functional in-app notification system alerts users to key platform events, respecting user preferences.
+Email notifications are sent for critical alerts.
+Users can securely share and access documents within the context of a transaction or service.
+Basic milestone tracking is available for property transactions and service jobs, with manual updates.
+All communication and collaboration features are integrated smoothly into the user experience.
+All user stories within this Epic meet their individual acceptance criteria.
+6. Dependencies
+Epic 1: Platform Foundation & User Authentication: Users must be authenticated.
+Epic 2: Property Search & Listings Management: Context for initiating chats (e.g., with listing agent) and for property alert notifications.
+Epic 3: User Dashboards & Profile Management: Notification preferences are set here; dashboards link to messaging/notifications.
+Epic 4: Service Provider Marketplace & Integration: Context for initiating chats (e.g., with booked provider) and for RFQ/quote/booking notifications.
+Supabase Realtime subscriptions for chat functionality.
+Supabase Storage for file attachments and shared documents.
+An email service provider (Supabase's built-in, or SendGrid/Postmark for more advanced needs).
+UI/UX designs for chat interface, notification center, document sharing areas, and milestone tracking displays.
+7. Technical Considerations
+Real-time Messaging: Evaluate Supabase Realtime capabilities. Ensure efficient message delivery, presence tracking, and scalability. Consider alternatives if Supabase Realtime doesn't meet all needs for a complex chat.
+Notification Scalability: Design the notification system to handle a large volume of events without performance degradation. Use background jobs or queues if necessary for generating and sending notifications.
+Security:
+Ensure end-to-end security for messages and file attachments.
+Implement strict access controls for shared documents (only involved parties can access).
+Sanitize user inputs to prevent XSS in chat.
+File Handling: Securely manage uploaded files (type validation, size limits, virus scanning if possible).
+Data Storage: Optimize database queries for fetching messages, notifications, and documents.
+User Experience: Ensure chat is responsive and notifications are non-intrusive yet noticeable.
+Atomicity for Notifications: Ensure that notifications are reliably generated alongside the events they correspond to (e.g., if a message is saved, its notification must be queued).
+8. Design & UX Notes
+Chat interface should be familiar and intuitive (similar to popular messaging apps).
+Notification center should be easily accessible and allow users to quickly see what's new.
+Document sharing should clearly indicate who has access and make it easy to upload/download files.
+Milestone tracking should provide a clear visual overview of progress.
+Clear distinction between read/unread messages and notifications.
+Provide options to mute conversations or specific notification types if not covered by general preferences.
+9. QA & Testing Strategy
+Unit Tests: For message handling logic, notification generation, file upload validation.
+Integration Tests: Test real-time message sending/receiving with Supabase Realtime. Test notification delivery pipeline. Test document upload/download with Supabase Storage.
+End-to-End (E2E) Tests:
+Simulate full chat conversations between different user roles.
+Test that notifications are generated and displayed correctly for various platform events.
+Verify document sharing and access control between relevant parties.
+Test milestone tracking updates and display.
+Manual Testing:
+Test chat responsiveness and reliability across different network conditions.
+Verify email notification delivery and content.
+Check file attachment functionality with various file types and sizes.
+Usability testing for chat, notifications, and collaboration features.
+Test across different browsers and devices.
+Ensure all acceptance criteria for user stories are met.
+
+Epic 5: Communication & Collaboration Platform
+
+(Keeping Epic Description, Goals, Scope, Dependencies, Technical Considerations, Design/UX Notes, and QA Strategy as defined previously, focusing on detailed User Stories and Acceptance Criteria here.)
+
+4. User Stories & Acceptance Criteria
+Story ID: E05-S01
+
+User Story: As a User, I want to be able to send and receive real-time text messages with another connected user (e.g., my estate agent, a booked service provider), so I can communicate efficiently within the platform.
+Priority: Must
+Status: To Do
+Notes: Supabase Realtime for chat.
+Acceptance Criteria:
+A dedicated chat interface is available within the platform.
+Users can select a specific contact (e.g., an agent associated with a listing they inquired about, a service provider they booked) to initiate or continue a 1-to-1 chat.
+Text messages sent by one user appear in near real-time (e.g., within 1-2 seconds under normal network conditions) in the chat interface of the recipient.
+Sent messages are displayed with a timestamp.
+The interface supports sending messages using an input field and a "Send" button or Enter key.
+Basic UI elements like chat bubbles distinguish between sender and receiver messages.
+Story ID: E05-S02
+
+User Story: As a User, I want to see if my messages have been read and when the other user was last active/is online, so I have context for our communication.
+Priority: Should
+Status: To Do
+Notes: Read receipts, basic presence indicators.
+Acceptance Criteria:
+A "Read" status indicator (e.g., double ticks, "Seen at [time]") is displayed next to messages once the recipient has viewed them.
+A basic presence indicator (e.g., "Online," "Last seen [timestamp/date]") is displayed for users in the chat list or chat header.
+These statuses update in near real-time.
+Users have a privacy setting (developed in Epic 3 or later) to control the visibility of their own "last active" status or read receipts (for MVP, default can be on).
+Story ID: E05-S03
+
+User Story: As a User, I want to be able to share relevant files (images, PDFs) within a chat conversation, so I can easily exchange documents related to our interaction.
+Priority: Must
+Status: To Do
+Notes: Supabase Storage for attachments, security considerations for file types.
+Acceptance Criteria:
+A button or option within the chat interface allows users to select and upload files.
+Supported file types include common image formats (JPG, PNG, GIF) and documents (PDF, DOCX, TXT) up to a defined size limit (e.g., 10MB).
+Uploaded files are securely stored in Supabase Storage, linked to the conversation.
+A thumbnail or file icon and filename are displayed in the chat message for shared files.
+Users can click to download or view (if browser supported) the shared files.
+File uploads include progress indicators.
+Appropriate error handling for failed uploads or unsupported file types.
+Story ID: E05-S04
+
+User Story: As a User, I want to have a message history for each conversation, so I can refer back to previous discussions.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+All messages within a conversation are persistently stored and associated with the correct users and conversation thread.
+When a user opens a chat, the previous message history is loaded and displayed in chronological order.
+The interface supports scrolling back through older messages (e.g., lazy loading or pagination for long histories).
+Message history is retained unless explicitly deleted by platform policy or user action (deletion not in scope for this story).
+Story ID: E05-S05
+
+User Story: As a User, I want to be able to start a conversation from relevant contexts (e.g., a property listing page with the agent, a booking with a service provider), so it's easy to initiate communication.
+Priority: Must
+Status: To Do
+Acceptance Criteria:
+On a property detail page, a logged-in user can click a "Message Agent/Landlord" button to open or initiate a chat with the lister.
+On a service booking confirmation page (from Epic 4), a user can click a "Message Provider" button to open or initiate a chat.
+Similarly, Agents/Providers can initiate chats from relevant contexts (e.g., a lead, a booking).
+When a chat is initiated contextually, the conversation is automatically linked or pre-filled with context (e.g., "Regarding property [Address]").
+Story ID: E05-S06
+
+User Story: As a User, I want to receive in-app notifications for important events such as new messages, property alerts, and service updates, so I stay informed.
+Priority: Must
+Status: To Do
+Notes: Consolidated notification center/feed in the UI.
+Acceptance Criteria:
+An in-app notification icon/area is present in the main platform header/navigation.
+A visual indicator (e.g., a badge with a count) shows the number of unread notifications.
+Clicking the icon opens a notification center/dropdown listing recent notifications in chronological order.
+Notifications are generated for:
+New chat messages received.
+New property listings matching a saved search (from E02-S12).
+RFQ responses and new quotes received (from E04-S09).
+Booking confirmations and job status updates (from E04-S11, E04-S12).
+(Other events as defined in their respective Epics).
+Each notification includes a brief summary and a link to the relevant item/page.
+Notifications can be marked as "read," and the unread count updates accordingly.
+Story ID: E05-S07
+
+User Story: As a User, I want to receive email notifications for critical alerts or when I'm offline, so I don't miss important information if I'm not actively using the app.
+Priority: Should
+Status: To Do
+Acceptance Criteria:
+Email notifications are sent for selected critical events (e.g., new message if user hasn't been active for X hours, urgent booking updates, password reset requests).
+The content of email notifications is informative and includes a clear call to action (e.g., "View Message," "View Property").
+Emails are professionally formatted and branded with Britestate identity.
+Users can manage their email notification preferences (as per E03-S02).
+An unsubscribe link is present in marketing-related or non-critical notification emails.
+Story ID: E05-S08
+
+User Story: As a User involved in a property transaction or service job, I want a dedicated space to securely share and access relevant documents with other involved parties, so we can collaborate effectively.
+Priority: Must
+Status: To Do
+Notes: E.g., specific folder in Supabase Storage per transaction/job, with access controls.
+Acceptance Criteria:
+For a given context (e.g., an accepted offer for a property, a confirmed service booking), a "Shared Documents" area can be accessed by permitted users.
+Permitted users can upload relevant documents (e.g., PDFs, Word docs, images) to this shared space.
+Uploaded documents are stored securely in Supabase Storage with access restricted to only the authorized parties for that transaction/job.
+Users can view a list of shared documents, see who uploaded them and when, and download them.
+Basic versioning or overwrite warnings are provided if a file with the same name is uploaded (simple overwrite for MVP).
+Notifications are sent when new documents are added to a shared space the user has access to.
+Story ID: E05-S09
+
+User Story: As a User (e.g., Buyer, Seller, Agent), I want to be able to track key milestones for my property transaction (e.g., Offer Accepted, Completion), so I can see the progress.
+Priority: Should
+Status: To Do
+Notes: Initially manual updates by relevant parties. Simple UI to display milestones and statuses.
+Acceptance Criteria:
+A "Transaction Progress" or "Milestones" view is available for active property transactions (e.g., after an offer is accepted - see Epic 8).
+A predefined list of standard UK property transaction milestones is displayed (e.g., Offer Accepted, Mortgage Application Submitted, Survey Completed, Conveyancing Started, Contracts Exchanged, Completion).
+The agent or a designated party can manually update the status of each milestone (e.g., Not Started, In Progress, Completed) and add optional notes or dates.
+All relevant parties to the transaction (buyer, seller, their respective agents if applicable) can view the current status of these milestones.
+The UI clearly visualizes the progress (e.g., a checklist, a progress bar).
+Story ID: E05-S10
+
+User Story: As a Developer, I want to implement a robust system for managing notification preferences (building on Epic 3), so users can control what notifications they receive.
+Priority: Must
+Status: To Do
+Notes: Backend logic to honor user preferences.
+Acceptance Criteria:
+The backend system correctly reads and applies user-defined notification preferences (from E03-S02) before sending any in-app or email notification.
+If a user has disabled a specific type of notification, they do not receive it.
+The system allows for easy addition of new notification types and their corresponding user preference toggles in the future.
+Default notification settings are applied for new users.
+Story ID: E05-S11
+
+User Story: As a Developer, I need to define database schema for messages, conversations, notifications, shared documents, and milestones.
+Priority: Must
+Status: To Do
+Notes: E.g., conversations (id, participants_array), messages (id, conversation_id, sender_id, content, attachments_json, created_at), user_notifications (id, user_id, type, content, link, read_status, created_at), shared_documents (id, context_id, context_type, uploader_user_id, file_name, file_url, created_at), transaction_milestones (id, transaction_id, milestone_name, status, completed_date, notes).
+Acceptance Criteria:
+SQL migration scripts are created and successfully run for tables: conversations, messages, user_notifications, shared_documents, and transaction_milestones (or similar naming).
+Tables include all necessary fields, types, relationships (PKs, FKs), and indexes for efficient querying (e.g., index on conversation_id and created_at for messages).
+messages table stores message content and references to attachments (URLs from Supabase Storage).
+user_notifications table stores individual notifications for each user.
+RLS policies are implemented to ensure users can only access their own conversations, messages, and notifications, and only authorized users can access shared documents and transaction milestones.

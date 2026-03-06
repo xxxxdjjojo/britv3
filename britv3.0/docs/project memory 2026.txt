@@ -1,0 +1,1221 @@
+# Britestate Project Memory
+## Developer Reference & Onboarding Guide
+
+**Version:** 2.0
+**Last Updated:** January 2026
+**Status:** Production Ready (92%)
+
+---
+
+## Table of Contents
+
+1. [Project Context & History](#1-project-context--history)
+2. [Architecture Decisions](#2-architecture-decisions)
+3. [Codebase Organization](#3-codebase-organization)
+4. [Development Workflows](#4-development-workflows)
+5. [Testing Strategy](#5-testing-strategy)
+6. [Deployment Procedures](#6-deployment-procedures)
+7. [Known Issues & Workarounds](#7-known-issues--workarounds)
+8. [Quick Reference](#8-quick-reference)
+
+---
+
+## 1. Project Context & History
+
+### 1.1 Project Overview
+
+| Attribute | Value |
+|-----------|-------|
+| **Project Name** | Britestate |
+| **Version** | 2.0.0 |
+| **Repository** | britestate-v2 |
+| **Description** | UK's Leading Property Platform |
+| **Status** | 92% Production Ready |
+| **Launch Target** | January 2026 |
+
+### 1.2 Vision
+
+Britestate aims to become "the world's #1 property portal" - the operating system for UK property. We transform the complex, fragmented property journey into a transparent, efficient, AI-powered experience.
+
+### 1.3 Project Statistics
+
+| Metric | Count |
+|--------|-------|
+| **Frontend Pages** | 319+ |
+| **API Endpoints** | 649 |
+| **Database Tables** | 266 |
+| **Database Migrations** | 204 |
+| **Test Files** | 480+ |
+| **E2E Test Files** | 136 |
+| **Service Files** | 209 |
+| **Component Directories** | 120+ |
+| **Type Definition Files** | 154+ |
+| **Documentation Files** | 638 |
+
+### 1.4 Development Timeline
+
+| Phase | Epic | Status | Completion Date |
+|-------|------|--------|-----------------|
+| Foundation | Epic 1: Authentication | Complete | Oct 2025 |
+| Core | Epic 2: Property Engine | Complete | Oct 2025 |
+| Core | Epic 3: Dashboards | Complete | Oct 2025 |
+| Marketplace | Epic 4: Service Provider | Complete | Oct 2025 |
+| Communication | Epic 5: Messaging | Complete | Oct 2025 |
+| Intelligence | Epic 6: AI Features | Complete | Oct 2025 |
+| Management | Epic 7: Landlord | Complete | Oct 2025 |
+| Tools | Epic 8: Financial | Complete | Oct 2025 |
+| Mobile | Epic 9: Optimization | Complete | Oct 2025 |
+| Admin | Epic 10: Admin Panel | Complete | Nov 2025 |
+| Compliance | Epic 11: GDPR/Legal | Complete | Nov 2025 |
+| Operations | Epic 12: Monitoring | Complete | Nov 2025 |
+| Dev Tools | Epic 13: Developer | Complete | Nov 2025 |
+
+### 1.5 Key Milestones
+
+- **May 2025:** Project inception
+- **August 2025:** Core features complete (Epic 1-4)
+- **October 2025:** Full feature set complete (Epic 5-9)
+- **November 2025:** Production hardening (Epic 10-13)
+- **January 2026:** Production launch target
+
+---
+
+## 2. Architecture Decisions
+
+### 2.1 ADR-001: Next.js App Router
+
+**Decision:** Use Next.js 15 with App Router (not Pages Router)
+
+**Context:**
+- Need for SEO optimization (SSR/SSG)
+- Complex routing requirements (6+ user roles)
+- Server Components for performance
+- API routes for backend functionality
+
+**Rationale:**
+- App Router provides better data fetching patterns
+- Server Components reduce client-side JavaScript
+- Nested layouts for dashboard structures
+- Built-in API routes eliminate separate backend
+
+**Trade-offs:**
+- Learning curve for team (App Router is newer)
+- Async params migration required (Next.js 15)
+- Some third-party libraries need adaptation
+
+**Consequences:**
+- All routes use `/app` directory
+- Server Components are default
+- Client Components marked with `"use client"`
+- API routes in `/app/api/**/route.ts`
+
+### 2.2 ADR-002: Supabase as Backend-as-a-Service
+
+**Decision:** Use Supabase for auth, database, storage, and real-time
+
+**Context:**
+- Need for rapid development
+- PostgreSQL requirement for geospatial (PostGIS)
+- Real-time requirements for messaging
+- File storage for property media
+
+**Rationale:**
+- Single platform for multiple backend needs
+- PostgreSQL with full SQL capabilities
+- Built-in Row-Level Security (RLS)
+- Real-time subscriptions out of the box
+- Generous free tier for development
+
+**Trade-offs:**
+- Vendor lock-in considerations
+- Scaling limits at higher tiers
+- Learning curve for RLS policies
+
+**Consequences:**
+- All data access through Supabase client
+- RLS policies for every table
+- Real-time subscriptions for messaging
+- Storage buckets for media files
+
+### 2.3 ADR-003: TypeScript Strict Mode
+
+**Decision:** Enable strict TypeScript configuration
+
+**Context:**
+- Large codebase (300+ files)
+- Multiple developers contributing
+- Need for maintainability
+- Catch errors at compile time
+
+**Rationale:**
+- Type safety prevents runtime errors
+- Better IDE support and autocomplete
+- Self-documenting code
+- Easier refactoring
+
+**Trade-offs:**
+- Slower initial development
+- Migration effort for existing code
+- Some third-party types incomplete
+
+**Configuration:**
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}
+```
+
+### 2.4 ADR-004: Shadcn UI + TailwindCSS
+
+**Decision:** Use Shadcn UI components with TailwindCSS
+
+**Context:**
+- Need for accessible components
+- Consistent design system
+- Customization requirements
+- Performance considerations
+
+**Rationale:**
+- Shadcn provides accessible primitives (Radix)
+- Copy-paste model allows full customization
+- TailwindCSS for utility-first styling
+- No runtime CSS-in-JS overhead
+
+**Trade-offs:**
+- Manual component management
+- No automatic updates
+- Learning TailwindCSS syntax
+
+**Component Location:** `src/components/ui/`
+
+### 2.5 ADR-005: AI Integration Strategy
+
+**Decision:** Anthropic Claude as primary AI, local embeddings for search
+
+**Context:**
+- AI-powered property recommendations
+- Semantic search requirements
+- Cost management
+- UK data residency considerations
+
+**Rationale:**
+- Claude provides high-quality reasoning
+- Local embeddings (Sentence Transformers) for cost efficiency
+- Hybrid approach: Claude for generation, local for search
+- Circuit breaker pattern for resilience
+
+**Trade-offs:**
+- API costs for Claude
+- Latency for AI operations
+- Embedding storage requirements
+
+**Implementation:**
+- Claude SDK: `@anthropic-ai/sdk`
+- Embeddings: `@xenova/transformers`
+- Vector storage: PostgreSQL with pgvector
+- Fallback: DeepSeek AI
+
+### 2.6 ADR-006: MapTiler over Google Maps
+
+**Decision:** Use MapTiler/MapLibre for mapping
+
+**Context:**
+- Property search with map interface
+- Custom styling requirements
+- Cost considerations at scale
+- UK-specific map data
+
+**Rationale:**
+- Significantly lower cost than Google Maps
+- Full style customization
+- Open-source MapLibre renderer
+- Vector tiles for performance
+
+**Trade-offs:**
+- Fewer features than Google Maps
+- Less name recognition
+- Some UK data quality gaps
+
+**Implementation:**
+- `@maptiler/sdk` for API
+- `maplibre-gl` for rendering
+- PostGIS for geospatial queries
+
+### 2.7 ADR-007: Stripe Connect for Marketplace
+
+**Decision:** Use Stripe Connect for service provider payments
+
+**Context:**
+- Multi-party marketplace payments
+- UK regulatory compliance
+- Provider payouts
+- Platform fees
+
+**Rationale:**
+- Built for marketplaces
+- Handles regulatory compliance
+- Escrow capabilities
+- Instant payouts option
+
+**Trade-offs:**
+- Commission fees (2.5% + Stripe fees)
+- Provider onboarding friction
+- Stripe account requirement
+
+**Implementation:**
+- Standard Connect accounts
+- Platform collects 2.5% fee
+- Direct charges model
+- Webhook handling for events
+
+---
+
+## 3. Codebase Organization
+
+### 3.1 Directory Structure
+
+```
+britestate-v2/
+├── .claude/                 # Claude Code configuration
+│   ├── agents/              # Custom agent definitions
+│   └── commands/            # Custom slash commands
+├── .github/                 # GitHub Actions workflows
+│   └── workflows/           # CI/CD pipelines
+├── docs/                    # Documentation
+│   ├── PRD/                 # Product requirements
+│   ├── api/                 # API documentation
+│   └── archive/             # Historical docs
+├── public/                  # Static assets
+│   ├── images/              # Image assets
+│   └── icons/               # Icon assets
+├── scripts/                 # Build and utility scripts
+├── src/                     # Source code
+│   ├── app/                 # Next.js App Router
+│   ├── components/          # React components
+│   ├── contexts/            # React contexts
+│   ├── hooks/               # Custom hooks
+│   ├── lib/                 # Utility libraries
+│   ├── services/            # Business logic
+│   ├── types/               # TypeScript types
+│   └── utils/               # Helper functions
+├── supabase/                # Supabase configuration
+│   └── migrations/          # Database migrations
+├── tests/                   # Test files
+│   ├── e2e/                 # Playwright E2E tests
+│   ├── integration/         # Integration tests
+│   └── unit/                # Unit tests
+└── workers/                 # Background workers
+```
+
+### 3.2 App Router Structure
+
+```
+src/app/
+├── (auth)/                  # Authentication routes (grouped)
+│   ├── login/
+│   ├── signup/
+│   ├── forgot-password/
+│   └── reset-password/
+├── (main)/                  # Public routes (grouped)
+│   ├── page.tsx             # Homepage
+│   ├── about/
+│   ├── contact/
+│   └── search/
+├── (protected)/             # Protected routes (grouped)
+│   └── ...
+├── admin/                   # Admin panel
+│   ├── page.tsx
+│   ├── users/
+│   ├── moderation/
+│   └── verification/
+├── api/                     # API routes
+│   ├── auth/
+│   ├── properties/
+│   ├── v1/                  # Versioned API
+│   └── webhooks/
+├── dashboard/               # Role-specific dashboards
+│   ├── homebuyer/
+│   ├── renter/
+│   ├── seller/
+│   ├── landlord/
+│   ├── agent/
+│   └── provider/
+├── legal/                   # Legal pages
+├── services/                # Service pages
+└── layout.tsx               # Root layout
+```
+
+### 3.3 Component Organization
+
+```
+src/components/
+├── ui/                      # Shadcn UI base components
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   └── ...
+├── auth/                    # Authentication components
+│   ├── LoginForm.tsx
+│   ├── SignupForm.tsx
+│   └── RoleSelector.tsx
+├── dashboard/               # Dashboard widgets
+│   ├── MetricCard.tsx
+│   ├── ActivityFeed.tsx
+│   └── StatWidget.tsx
+├── navigation/              # Navigation components
+│   ├── MainNav.tsx
+│   ├── DashboardNav.tsx
+│   └── Footer.tsx
+├── properties/              # Property components
+│   ├── PropertyCard.tsx
+│   ├── PropertyGrid.tsx
+│   ├── PropertyMap.tsx
+│   └── SearchFilters.tsx
+├── marketplace/             # Marketplace components
+│   ├── ProviderCard.tsx
+│   ├── QuoteForm.tsx
+│   └── ReviewList.tsx
+└── [feature]/               # Feature-specific components
+```
+
+### 3.4 Service Layer
+
+```
+src/services/
+├── analytics/               # Analytics services
+│   ├── analytics-service.ts
+│   ├── behavioral-analytics-service.ts
+│   └── search-analytics-service.ts
+├── ai/                      # AI services
+│   ├── ai-property-intelligence.ts
+│   ├── ai-property-recommendations.ts
+│   ├── ai-property-valuation.ts
+│   └── embedding-service.ts
+├── auth/                    # Authentication services
+│   ├── auth-service.ts
+│   └── verification-service.ts
+├── marketplace/             # Marketplace services
+│   ├── rfq-service.ts
+│   ├── quote-service.ts
+│   └── booking-service.ts
+├── messaging/               # Communication services
+│   ├── message-service.ts
+│   └── notification-service.ts
+├── payments/                # Payment services
+│   ├── stripe-service.ts
+│   └── subscription-service.ts
+└── properties/              # Property services
+    ├── property-service.ts
+    ├── search-service.ts
+    └── listing-service.ts
+```
+
+### 3.5 Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | PascalCase | `PropertyCard.tsx` |
+| Hooks | camelCase with `use` | `usePropertySearch.ts` |
+| Services | kebab-case | `property-search-service.ts` |
+| Types | PascalCase | `PropertyListing.ts` |
+| API Routes | `route.ts` in folders | `api/properties/route.ts` |
+| Utilities | camelCase | `formatCurrency.ts` |
+| Constants | SCREAMING_SNAKE | `MAX_UPLOAD_SIZE` |
+
+### 3.6 Import Conventions
+
+```typescript
+// Absolute imports using @ alias
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { PropertyService } from "@/services/properties/property-service";
+import type { Property } from "@/types/property";
+
+// Type-only imports
+import type { User, Session } from "@supabase/supabase-js";
+
+// External imports first, then internal
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+import { PropertyCard } from "@/components/properties/PropertyCard";
+import { usePropertySearch } from "@/hooks/usePropertySearch";
+```
+
+---
+
+## 4. Development Workflows
+
+### 4.1 Getting Started
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd britestate-v2
+
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+
+# Configure required variables (see 4.3)
+
+# Start development server
+npm run dev
+```
+
+### 4.2 Development Commands
+
+#### Building & Running
+
+```bash
+# Development server (port 3000)
+npm run dev
+
+# Production build
+npm run build
+
+# Start production server
+npm run start
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Format code
+npm run format
+```
+
+#### Testing
+
+```bash
+# Unit tests (Vitest)
+npm test                    # Run all tests
+npm run test:watch          # Watch mode
+npm run test:ui             # UI mode
+npm run test:coverage       # Coverage report
+
+# E2E tests (Playwright)
+npm run test:e2e            # Run all E2E
+npm run test:e2e:headed     # With browser visible
+npm run test:e2e:debug      # Debug mode
+npm run test:e2e:report     # Show report
+
+# Integration tests
+npm run test:integration    # Integration tests
+npm run test:journey        # User journey tests
+```
+
+#### Database & Supabase
+
+```bash
+# Query tools
+npm run supabase:query      # Interactive query
+npm run supabase:tables     # List tables
+npm run supabase:schema     # Show schema
+
+# Migrations
+npm run supabase:migrate    # Apply migrations
+npm run supabase:diff       # Generate diff
+```
+
+#### Cache Management
+
+```bash
+# Clear caches
+npm run clean               # Clear Next.js cache
+npm run clean:cache         # Clear npm cache
+npm run clean:all           # Full reset
+```
+
+#### AI/ML Commands
+
+```bash
+# Embedding generation
+npm run ai:generate-embeddings
+npm run ai:populate-embeddings
+npm run ai:batch-worker
+```
+
+### 4.3 Environment Variables
+
+#### Required Variables
+
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+
+# Site
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# AI
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Maps
+NEXT_PUBLIC_MAPTILER_KEY=...
+
+# Email
+RESEND_API_KEY=re_...
+```
+
+#### Optional Variables
+
+```bash
+# Analytics
+NEXT_PUBLIC_POSTHOG_KEY=...
+SENTRY_DSN=...
+
+# Redis (for rate limiting)
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+
+# Storage
+SUPABASE_STORAGE_BUCKET=...
+```
+
+### 4.4 Git Workflow
+
+#### Branch Naming
+
+```
+feature/epic-1-authentication
+feature/epic-4-marketplace-rfq
+fix/login-redirect-loop
+hotfix/payment-webhook-error
+chore/update-dependencies
+docs/api-documentation
+```
+
+#### Commit Messages
+
+Follow Conventional Commits:
+
+```bash
+# Format
+type(scope): description
+
+# Types
+feat     # New feature
+fix      # Bug fix
+docs     # Documentation
+style    # Formatting
+refactor # Code restructuring
+test     # Adding tests
+chore    # Maintenance
+
+# Examples
+feat(auth): add Google OAuth integration
+fix(search): resolve map clustering issue
+docs(api): update endpoint documentation
+test(dashboard): add homebuyer journey tests
+```
+
+#### Pull Request Template
+
+```markdown
+## Summary
+Brief description of changes
+
+## Changes
+- Change 1
+- Change 2
+
+## Test Plan
+- [ ] Unit tests pass
+- [ ] E2E tests pass
+- [ ] Manual testing completed
+
+## Screenshots
+(if applicable)
+```
+
+### 4.5 Code Quality Checks
+
+```bash
+# Pre-commit (automatic)
+npm run lint
+npm run type-check
+npm run test
+
+# Full validation
+npm run validate
+
+# Security audit
+npm audit
+```
+
+---
+
+## 5. Testing Strategy
+
+### 5.1 Test Organization
+
+```
+tests/
+├── unit/                    # Colocated with source files
+│   └── (or in src/**/*.spec.ts)
+├── integration/             # API and service tests
+│   ├── api/
+│   └── services/
+├── e2e/                     # Playwright E2E
+│   ├── auth/
+│   ├── search/
+│   ├── dashboard/
+│   └── marketplace/
+├── e2e-stagehand/           # AI-assisted E2E
+├── performance/             # Load tests
+├── visual-regression/       # Visual tests
+└── fixtures/                # Test fixtures
+```
+
+### 5.2 Coverage Targets
+
+| Type | Target | Current |
+|------|--------|---------|
+| Unit Tests | > 85% | ~88% |
+| Integration | 100% API routes | Complete |
+| E2E | Critical journeys | Complete |
+| Visual | Key components | In progress |
+
+### 5.3 Unit Testing (Vitest)
+
+```typescript
+// src/services/property-service.spec.ts
+import { describe, test, expect, vi } from "vitest";
+import { calculateMortgage } from "./property-service";
+
+describe("calculateMortgage", () => {
+  test("calculates monthly payment correctly", () => {
+    const result = calculateMortgage({
+      principal: 300000,
+      interestRate: 0.05,
+      termYears: 25,
+    });
+
+    expect(result.monthlyPayment).toBeCloseTo(1753.77, 2);
+  });
+
+  test("handles zero interest rate", () => {
+    const result = calculateMortgage({
+      principal: 300000,
+      interestRate: 0,
+      termYears: 25,
+    });
+
+    expect(result.monthlyPayment).toBe(1000);
+  });
+});
+```
+
+### 5.4 E2E Testing (Playwright)
+
+```typescript
+// tests/e2e/auth/login.spec.ts
+import { test, expect } from "@playwright/test";
+
+test.describe("Login Flow", () => {
+  test("user can login with valid credentials", async ({ page }) => {
+    await page.goto("/login");
+
+    await page.fill('input[name="email"]', "test@example.com");
+    await page.fill('input[name="password"]', "password123");
+    await page.click('button[type="submit"]');
+
+    await expect(page).toHaveURL("/dashboard");
+    await expect(page.locator("h1")).toContainText("Dashboard");
+  });
+
+  test("shows error for invalid credentials", async ({ page }) => {
+    await page.goto("/login");
+
+    await page.fill('input[name="email"]', "wrong@example.com");
+    await page.fill('input[name="password"]', "wrongpassword");
+    await page.click('button[type="submit"]');
+
+    await expect(page.locator(".error-message")).toBeVisible();
+  });
+});
+```
+
+### 5.5 Critical Test Suites
+
+| Journey | Description | File |
+|---------|-------------|------|
+| Authentication | Login, signup, password reset | `e2e/auth/` |
+| Property Search | Search, filter, save | `e2e/search/` |
+| Viewing Booking | Request, confirm, complete | `e2e/viewings/` |
+| Service Booking | RFQ, quote, book | `e2e/marketplace/` |
+| Payment Flow | Checkout, complete | `e2e/payments/` |
+| Admin Actions | User management, moderation | `e2e/admin/` |
+
+### 5.6 Test Data Management
+
+```typescript
+// tests/fixtures/users.ts
+export const testUsers = {
+  homebuyer: {
+    email: "homebuyer@test.com",
+    password: "Test123!",
+    role: "homebuyer",
+  },
+  provider: {
+    email: "provider@test.com",
+    password: "Test123!",
+    role: "service_provider",
+  },
+  // ...
+};
+
+// tests/fixtures/properties.ts
+export const testProperties = {
+  londonFlat: {
+    title: "Modern 2 Bed Flat in London",
+    price: 450000,
+    bedrooms: 2,
+    // ...
+  },
+};
+```
+
+---
+
+## 6. Deployment Procedures
+
+### 6.1 Deployment Stack
+
+| Component | Service | Purpose |
+|-----------|---------|---------|
+| Application | Vercel | Next.js hosting |
+| Database | Supabase | PostgreSQL + Auth |
+| Caching | Upstash Redis | Rate limiting |
+| Email | Resend | Transactional email |
+| Payments | Stripe | Payment processing |
+| Maps | MapTiler | Vector maps |
+| Monitoring | Sentry | Error tracking |
+| Analytics | PostHog | Product analytics |
+
+### 6.2 Environment Promotion
+
+```
+Development (local)
+      ↓
+   Preview (PR branches on Vercel)
+      ↓
+   Staging (staging branch)
+      ↓
+   Production (main branch)
+```
+
+### 6.3 Pre-Deployment Checklist
+
+```markdown
+## Before Deployment
+
+### Code Quality
+- [ ] All tests pass (`npm test`)
+- [ ] E2E tests pass (`npm run test:e2e`)
+- [ ] No TypeScript errors (`npm run type-check`)
+- [ ] Linting passes (`npm run lint`)
+- [ ] Build succeeds (`npm run build`)
+
+### Database
+- [ ] Migrations reviewed and tested
+- [ ] No breaking schema changes
+- [ ] RLS policies verified
+- [ ] Indexes reviewed
+
+### Configuration
+- [ ] Environment variables verified
+- [ ] Feature flags configured
+- [ ] API keys rotated if needed
+- [ ] Webhook URLs updated
+
+### Monitoring
+- [ ] Sentry configured for environment
+- [ ] Alerts configured
+- [ ] Dashboards updated
+```
+
+### 6.4 Deployment Process
+
+```bash
+# 1. Create release branch
+git checkout main
+git pull
+git checkout -b release/v2.1.0
+
+# 2. Update version
+npm version minor
+
+# 3. Run full validation
+npm run validate
+npm run test:e2e
+
+# 4. Create PR and merge to main
+
+# 5. Vercel auto-deploys from main
+
+# 6. Verify deployment
+curl https://britestate.co/api/health
+
+# 7. Monitor error rates in Sentry
+```
+
+### 6.5 Rollback Procedures
+
+#### Vercel Rollback
+```bash
+# Via Vercel Dashboard
+# Deployments → Select previous → Instant Rollback
+
+# Or via CLI
+vercel rollback [deployment-url]
+```
+
+#### Database Rollback
+```bash
+# Revert last migration
+npm run supabase:migrate:down
+
+# Or restore from backup (via Supabase Dashboard)
+```
+
+#### Feature Flag Kill Switch
+```typescript
+// Disable feature via PostHog or config
+if (!featureFlags.newSearchEnabled) {
+  return <LegacySearch />;
+}
+```
+
+### 6.6 Health Checks
+
+```typescript
+// GET /api/health
+{
+  "status": "healthy",
+  "timestamp": "2026-01-16T12:00:00Z",
+  "version": "2.1.0",
+  "checks": {
+    "database": "ok",
+    "redis": "ok",
+    "stripe": "ok"
+  }
+}
+```
+
+### 6.7 Monitoring Alerts
+
+| Alert | Threshold | Channel |
+|-------|-----------|---------|
+| Error Rate | > 1% | Slack |
+| Error Rate | > 5% | PagerDuty |
+| API Latency p99 | > 2s | Slack |
+| API Latency p99 | > 5s | PagerDuty |
+| Uptime | < 99.9% | PagerDuty |
+| Database Connections | > 80% | Slack |
+
+---
+
+## 7. Known Issues & Workarounds
+
+### 7.1 Active Known Issues
+
+#### Next.js 15 Async Params
+**Issue:** Next.js 15 requires async handling of route params
+**Status:** Partially migrated
+**Workaround:** Use `use()` hook or async components
+
+```typescript
+// Before (Next.js 14)
+export default function Page({ params }: { params: { id: string } }) {
+  const { id } = params;
+}
+
+// After (Next.js 15)
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+}
+```
+
+#### Port 3000 Conflicts
+**Issue:** Development server fails if port 3000 is in use
+**Workaround:**
+```bash
+# Kill process on port 3000
+npx kill-port 3000
+# Or use different port
+npm run dev -- -p 3001
+```
+
+#### Storybook v9 Warnings
+**Issue:** Compatibility warnings with some addons
+**Status:** Non-blocking, cosmetic
+**Workaround:** Ignore warnings in development
+
+### 7.2 Common Troubleshooting
+
+#### Navigation Disappearing
+```bash
+# Clear cache and restart
+npm run clean
+npm run dev
+```
+
+#### Build Memory Issues
+```bash
+# Increase Node memory
+NODE_OPTIONS=--max-old-space-size=8192 npm run build
+```
+
+#### TypeScript Errors After Pull
+```bash
+# Full type check
+npm run type-check
+
+# If errors persist
+rm -rf node_modules/.cache
+npm run type-check
+```
+
+#### Supabase Connection Issues
+```bash
+# Verify credentials
+npm run supabase:tables
+
+# Check RLS policies
+npm run supabase:query
+# Run: SELECT * FROM pg_policies;
+```
+
+### 7.3 Technical Debt
+
+| Item | Priority | Effort | Notes |
+|------|----------|--------|-------|
+| Complete async params migration | Medium | 2 days | Next.js 15 requirement |
+| Improve test coverage for edge cases | Low | 3 days | Aim for 90%+ |
+| Consolidate duplicate utilities | Low | 1 day | DRY improvements |
+| Update deprecated dependencies | Medium | 1 day | Security updates |
+
+### 7.4 Deprecated Patterns
+
+**DO NOT USE:**
+
+```typescript
+// ❌ Class components
+class MyComponent extends React.Component {}
+
+// ❌ getServerSideProps (use App Router)
+export async function getServerSideProps() {}
+
+// ❌ Old Supabase client
+import { createClient } from "@supabase/supabase-js";
+
+// ❌ CSS Modules (use Tailwind)
+import styles from "./Component.module.css";
+```
+
+**USE INSTEAD:**
+
+```typescript
+// ✅ Function components
+function MyComponent() {}
+
+// ✅ Server Components
+async function Page() {}
+
+// ✅ New Supabase client
+import { createClient } from "@/lib/supabase/server";
+
+// ✅ TailwindCSS
+<div className="flex items-center p-4" />
+```
+
+---
+
+## 8. Quick Reference
+
+### 8.1 User Roles
+
+| Role | Code | Description | Dashboard |
+|------|------|-------------|-----------|
+| Homebuyer | `homebuyer` | Property buyers | `/dashboard/homebuyer` |
+| Renter | `renter` | Property renters | `/dashboard/renter` |
+| Seller | `seller` | Property sellers | `/dashboard/seller` |
+| Landlord | `landlord` | Property owners | `/dashboard/landlord` |
+| Agent | `agent` | Estate agents | `/dashboard/agent` |
+| Provider | `service_provider` | Service providers | `/dashboard/provider` |
+| Admin | `admin` | Platform admins | `/admin` |
+
+### 8.2 Key API Endpoints
+
+```
+Authentication
+POST   /api/auth/login
+POST   /api/auth/signup
+POST   /api/auth/logout
+POST   /api/auth/reset-password
+
+Properties
+GET    /api/properties                   # List/search
+GET    /api/properties/:id               # Get details
+POST   /api/properties                   # Create (agents)
+PUT    /api/properties/:id               # Update
+DELETE /api/properties/:id               # Delete
+
+Search
+GET    /api/search                       # Property search
+POST   /api/ai/search/semantic           # AI search
+GET    /api/saved-searches               # User's saved
+POST   /api/saved-searches               # Save search
+
+Marketplace
+GET    /api/v1/marketplace/providers     # List providers
+POST   /api/v1/marketplace/rfq           # Create RFQ
+POST   /api/v1/marketplace/quotes        # Submit quote
+POST   /api/v1/marketplace/bookings      # Create booking
+
+Messages
+GET    /api/messages/conversations       # User's conversations
+POST   /api/messages                     # Send message
+GET    /api/messages/:conversationId     # Get messages
+
+Admin
+GET    /api/admin/users                  # List users
+PUT    /api/admin/users/:id              # Update user
+GET    /api/admin/verification-queue     # Verification queue
+POST   /api/admin/verify/:providerId     # Approve provider
+```
+
+### 8.3 Database Key Tables
+
+```sql
+-- Users & Profiles
+users                    -- Supabase auth users
+user_profiles            -- Extended profile data
+service_provider_profiles-- Provider-specific data
+
+-- Properties
+properties               -- Main listings table
+property_media           -- Photos, videos
+property_embeddings      -- AI search vectors
+saved_properties         -- User favorites
+viewing_schedules        -- Viewing appointments
+
+-- Marketplace
+rfq                      -- Request for quotes
+quotes                   -- Provider quotes
+bookings                 -- Service bookings
+marketplace_reviews      -- Reviews
+
+-- Communication
+conversations            -- Message threads
+messages                 -- Individual messages
+notifications            -- User notifications
+
+-- Transactions
+offers                   -- Property offers
+transactions             -- Sale/rental transactions
+documents                -- Transaction documents
+
+-- Admin
+audit_logs               -- Activity logging
+admin_actions            -- Admin operations
+```
+
+### 8.4 Environment Quick Setup
+
+```bash
+# 1. Clone and install
+git clone <repo>
+cd britestate-v2
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# 3. Start development
+npm run dev
+
+# 4. Run tests
+npm test
+npm run test:e2e
+
+# 5. Build for production
+npm run build
+npm run start
+```
+
+### 8.5 Useful VS Code Extensions
+
+- **ESLint** - Linting
+- **Prettier** - Code formatting
+- **Tailwind CSS IntelliSense** - Tailwind autocomplete
+- **TypeScript Hero** - Import management
+- **GitLens** - Git integration
+- **Playwright** - Test runner
+- **PostCSS Language Support** - CSS support
+
+### 8.6 Quick Commands Reference
+
+```bash
+# Daily development
+npm run dev              # Start dev server
+npm test                 # Run unit tests
+npm run lint             # Check code style
+
+# Before committing
+npm run validate         # Full validation
+
+# Debugging
+npm run clean            # Clear caches
+npm run type-check       # TypeScript errors
+
+# Database
+npm run supabase:query   # Query database
+npm run supabase:tables  # List tables
+
+# Deployment
+npm run build            # Production build
+npm run test:e2e         # Full E2E suite
+```
+
+### 8.7 Support Contacts
+
+| Area | Contact |
+|------|---------|
+| Product Questions | Product Team |
+| Technical Issues | Tech Lead |
+| Supabase Support | support@supabase.io |
+| Stripe Support | support@stripe.com |
+| Vercel Support | support@vercel.com |
+
+---
+
+## Document History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 2.0 | January 2026 | Development Team | Launch preparation version |
+| 1.0 | October 2025 | Development Team | Initial version |
+
+---
+
+**End of Project Memory Document**
