@@ -151,11 +151,14 @@ Plans:
   3. Landlord can manually track rent payments (paid/partial/overdue) and log expenses with optional receipts
   4. Landlord can upload compliance documents with expiry dates and receive automated reminders (30-day, 7-day)
   5. Landlord can generate a standard AST lease agreement PDF client-side and view per-property financial summary
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md -- Database schema, TypeScript types, Zod schemas, shared utilities (file validation, rent period, image compression)
+- [ ] 06-02-PLAN.md -- Portfolio view and tenancy management: services, API routes, UI pages
+- [ ] 06-03-PLAN.md -- Maintenance requests and contractor assignment: services, API routes, UI pages
+- [ ] 06-04-PLAN.md -- Financial tracking: rent payments, expense logging, financial summary with RPC
+- [ ] 06-05-PLAN.md -- Document management, compliance reminders, AST lease PDF generation
 
 ### Phase 7: Production Readiness
 **Goal**: The application is production-hardened with PWA capabilities, a lightweight admin panel, monitoring, security verification, and launch readiness -- all on free tiers
@@ -189,7 +192,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Dashboards & Communication | 0/10 | Not started | - |
 | 4. Marketplace | 0/8 | Not started | - |
 | 5. AI & Financial Tools | 0/4 | Not started | - |
-| 6. Landlord Tools | 0/2 | Not started | - |
+| 6. Landlord Tools | 0/5 | Not started | - |
 | 7. Production Readiness | 0/3 | Not started | - |
 
 ---
@@ -201,3 +204,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Phase 3 planned: 2026-03-07 (10 plans, 4 waves)*
 *Phase 2 planned: 2026-03-07 (7 plans, 4 waves)*
 *Phase 5 planned: 2026-03-07 (4 plans, 2 waves)*
+*Phase 6 planned: 2026-03-07 (5 plans, 3 waves)*
