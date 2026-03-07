@@ -21,6 +21,7 @@ function buildCsp(nonce: string): string {
     "img-src 'self' data: blob: https://*.supabase.co",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
     "frame-src https://accounts.google.com https://appleid.apple.com",
+    "worker-src 'self'",
     "form-action 'self'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
@@ -121,6 +122,23 @@ export async function middleware(request: NextRequest) {
     const redirectResponse = NextResponse.redirect(dashboardUrl);
     setSecurityHeaders(redirectResponse, nonce);
     return redirectResponse;
+  }
+
+  // Admin route guard: require is_admin flag on profile
+  const isAdminRoute = pathname.startsWith("/admin");
+  if (isAdminRoute && isAuthenticated) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user!.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      const homeUrl = new URL("/", request.url);
+      const redirectResponse = NextResponse.redirect(homeUrl);
+      setSecurityHeaders(redirectResponse, nonce);
+      return redirectResponse;
+    }
   }
 
   // Set security headers on passthrough response
