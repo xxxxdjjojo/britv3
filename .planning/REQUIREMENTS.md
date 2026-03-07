@@ -102,7 +102,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MKT-09**: Provider can manage availability calendar
 - [x] **MKT-10**: User can submit multi-dimensional review with ratings
 - [x] **MKT-11**: Rule-based review spam/sentiment detection (no AI)
-- [ ] **MKT-12**: Provider can respond to reviews; helpfulness voting
+- [x] **MKT-12**: Provider can respond to reviews; helpfulness voting
 - [x] **MKT-13**: User can search and browse providers by category and location
 - [x] **MKT-14**: Async job processing via Inngest (replaces BullMQ)
 
