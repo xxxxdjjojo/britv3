@@ -36,16 +36,18 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. GDPR consent is captured at signup with granular options, user can export their data as JSON, and user can request account deletion
   5. All consent changes are recorded in an audit trail
   6. CSP headers, RBAC middleware, and public pages (home, about, terms, privacy) are in place
-**Plans**: 7 plans
+**Plans**: 9 plans
 
 Plans:
 - [ ] 01-01-PLAN.md -- Project setup: dependencies, design system, Shadcn UI, Supabase clients, test infra
 - [ ] 01-02-PLAN.md -- Database schema: migration SQL, TypeScript types, RLS policies, constants
-- [ ] 01-03-PLAN.md -- Auth core: registration, login, OAuth, password reset, email verification, session
-- [ ] 01-04-PLAN.md -- Layout & security: middleware (CSP + RBAC), responsive shell, public pages, error pages
-- [ ] 01-05-PLAN.md -- Roles & dashboards: role selection, multi-role switching, dashboard shells, verification levels
-- [ ] 01-06-PLAN.md -- GDPR compliance: consent capture, data export, account deletion, audit trail
-- [ ] 01-07-PLAN.md -- Provider verification pipeline, security settings, end-to-end integration checkpoint
+- [ ] 01-03-PLAN.md -- Auth service layer: auth-service, useAuth hook, PKCE callback, tests
+- [ ] 01-04-PLAN.md -- Auth UI pages: login, register, forgot-password, reset-password, verify-email
+- [ ] 01-05-PLAN.md -- Security middleware: CSP Level 3, RBAC route protection, security headers
+- [ ] 01-06-PLAN.md -- Layout & public pages: responsive shell, homepage, about, terms, privacy, error pages
+- [ ] 01-07-PLAN.md -- Roles & dashboards: role selection, multi-role switching, dashboard shells, verification levels
+- [ ] 01-08-PLAN.md -- GDPR compliance: consent capture, data export, account deletion, audit trail
+- [ ] 01-09-PLAN.md -- Provider verification pipeline, security settings, end-to-end integration checkpoint
 
 ### Phase 2: Property Portal
 **Goal**: Users can search for properties by location and filters, view listings on an interactive map, and agents/sellers can create and manage property listings with images
@@ -163,7 +165,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/7 | Planning complete | - |
+| 1. Foundation | 0/9 | Planning complete | - |
 | 2. Property Portal | 0/3 | Not started | - |
 | 3. Dashboards & Communication | 0/3 | Not started | - |
 | 4. Marketplace | 0/2 | Not started | - |
@@ -174,4 +176,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 ---
 *Roadmap created: 2026-03-06*
 *Rebuilt: 2026-03-07 (aligned to amended epic specs)*
-*Phase 1 planned: 2026-03-07 (7 plans, 4 waves)*
+*Phase 1 planned: 2026-03-07 (9 plans, 4 waves) -- revised from 7 plans after scope checker split*
