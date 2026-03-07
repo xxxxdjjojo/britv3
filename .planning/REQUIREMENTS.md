@@ -190,10 +190,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **FIN-01**: Mortgage payment calculator (client-side amortization formula, real-time results)
 - [x] **FIN-02**: SDLT calculator for England & NI (first-time buyer, home mover, additional property)
-- [ ] **FIN-03**: Save mortgage parameters to localStorage + optional DB sync for cross-device
-- [ ] **FIN-04**: Personalized "Est. X/mo" display on property listing cards and detail pages
+- [x] **FIN-03**: Save mortgage parameters to localStorage + optional DB sync for cross-device
+- [x] **FIN-04**: Personalized "Est. X/mo" display on property listing cards and detail pages
 - [x] **FIN-05**: SDLT rate bands in maintainable TypeScript config
-- [ ] **FIN-06**: Offer letter PDF generation (client-side via @react-pdf/renderer)
+- [x] **FIN-06**: Offer letter PDF generation (client-side via @react-pdf/renderer)
 
 **Deferred from Epic 8:**
 - Offer management system (Phase 6 scope)

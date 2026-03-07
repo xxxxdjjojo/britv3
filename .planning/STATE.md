@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-07T19:28:02.850Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-03-07T19:29:22.407Z"
 last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
@@ -191,6 +191,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Zod v4 uses .issues not .errors on ZodError objects
 - [Phase 03]: Provider details stored in profiles.provider_details JSONB column (not separate table)
 - [Phase 03]: Profile page uses numeric Tab indices (base-ui pattern) with conditional provider tab
+- [Phase 05]: Mocked tooltip in PersonalizedEstimate tests for visible content assertions
+- [Phase 05]: OfferLetterPdf tests validate React element tree, not rendered PDF (avoids browser API dependency)
+- [Phase 05]: base-ui render prop pattern used for DialogTrigger/TooltipTrigger composition
 
 ### Pending Todos
 
@@ -203,6 +206,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T19:27:56.097Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-07T19:29:22.401Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: None
