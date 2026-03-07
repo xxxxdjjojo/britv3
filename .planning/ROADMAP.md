@@ -14,7 +14,7 @@ Britestate v3.0 is built in 7 phases. Each phase delivers a complete, verifiable
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Auth, GDPR, database schema, security, public pages (Epic 1)
+- [x] **Phase 1: Foundation** - Auth, GDPR, database schema, security, public pages (Epic 1) (completed 2026-03-07)
 - [ ] **Phase 2: Property Portal** - Search, listings, map, image pipeline (Epic 2)
 - [ ] **Phase 3: Dashboards & Communication** - Role dashboards, messaging, notifications, milestones (Epic 3 + Epic 5)
 - [ ] **Phase 4: Marketplace** - Provider profiles, RFQ, quotes, bookings, reviews (Epic 4)
@@ -187,8 +187,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 8/9 | In Progress|  |
-| 2. Property Portal | 0/7 | Not started | - |
+| 1. Foundation | 9/9 | Complete   | 2026-03-07 |
+| 2. Property Portal | 2/7 | In Progress|  |
 | 3. Dashboards & Communication | 2/10 | In Progress|  |
 | 4. Marketplace | 6/8 | In Progress|  |
 | 5. AI & Financial Tools | 3/4 | In Progress|  |
