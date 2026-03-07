@@ -60,12 +60,16 @@ Plans:
   3. Agent or seller can create a full property listing with photos (up to 30, client-side compressed), floor plans, pricing qualifiers, and view listing analytics
   4. User can save search criteria and receive alerts for new matching properties
   5. Search uses optimized queries (materialized views, full-text search, cursor-based pagination)
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md -- Dependencies, database migration (PostGIS, FTS, materialized view), TypeScript types, test mocks
+- [ ] 02-02-PLAN.md -- Search service, geocoding (postcodes.io), search API route, client hooks (nuqs + react-query)
+- [ ] 02-03-PLAN.md -- Listing CRUD service, image upload pipeline (compression + sharp + storage), API routes
+- [ ] 02-04-PLAN.md -- Map integration: MapLibre + clustering + polygon draw-to-search (terra-draw)
+- [ ] 02-05-PLAN.md -- Saved properties (shortlist) and saved searches with alert checking
+- [ ] 02-06-PLAN.md -- Search page UI (list/map/split views) + property detail page + visual checkpoint
+- [ ] 02-07-PLAN.md -- Listing management UI (multi-step form, image uploader) + dashboard pages (saved, searches, analytics)
 
 ### Phase 3: Dashboards & Communication
 **Goal**: Each of the 6 user roles has a dedicated dashboard, and users can message each other, receive notifications, and track transaction/job milestones
@@ -179,7 +183,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 8/9 | In Progress|  |
-| 2. Property Portal | 0/3 | Not started | - |
+| 2. Property Portal | 0/7 | Not started | - |
 | 3. Dashboards & Communication | 0/10 | Not started | - |
 | 4. Marketplace | 0/8 | Not started | - |
 | 5. AI & Financial Tools | 0/2 | Not started | - |
@@ -193,3 +197,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Phase 4 planned: 2026-03-07 (7 plans, 4 waves)*
 *Phase 4 revised: 2026-03-07 (8 plans, 4 waves) -- split Plan 07 into 07+08 per scope checker*
 *Phase 3 planned: 2026-03-07 (10 plans, 4 waves)*
+*Phase 2 planned: 2026-03-07 (7 plans, 4 waves)*
