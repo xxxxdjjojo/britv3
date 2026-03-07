@@ -1,0 +1,92 @@
+import { createClient } from "@/lib/supabase/server";
+import { getMaintenanceRequests } from "@/services/landlord/maintenance-service";
+import { MaintenanceList } from "@/components/landlord/MaintenanceList";
+import { MAINTENANCE_STATUSES, MAINTENANCE_PRIORITIES } from "@/types/landlord";
+import type { MaintenanceStatus, MaintenancePriority } from "@/types/landlord";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+
+export default async function MaintenanceListPage(
+  props: Readonly<{
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ status?: string; priority?: string }>;
+  }>,
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { id: propertyId } = await props.params;
+  const searchParams = await props.searchParams;
+
+  const statusFilter =
+    searchParams.status &&
+    MAINTENANCE_STATUSES.includes(searchParams.status as MaintenanceStatus)
+      ? (searchParams.status as MaintenanceStatus)
+      : undefined;
+
+  const priorityFilter =
+    searchParams.priority &&
+    MAINTENANCE_PRIORITIES.includes(searchParams.priority as MaintenancePriority)
+      ? (searchParams.priority as MaintenancePriority)
+      : undefined;
+
+  const requests = await getMaintenanceRequests(supabase, propertyId, {
+    status: statusFilter,
+    priority: priorityFilter,
+  });
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Maintenance Requests
+        </h1>
+        <Link
+          href={`/dashboard/landlord/properties/${propertyId}/maintenance/new`}
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
+        >
+          New Request
+        </Link>
+      </div>
+
+      {/* Filters */}
+      <form className="flex flex-wrap gap-3">
+        <select
+          name="status"
+          defaultValue={statusFilter ?? ""}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+        >
+          <option value="">All Statuses</option>
+          {MAINTENANCE_STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s.replace("_", " ").replace(/^\w/, (c) => c.toUpperCase())}
+            </option>
+          ))}
+        </select>
+        <select
+          name="priority"
+          defaultValue={priorityFilter ?? ""}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+        >
+          <option value="">All Priorities</option>
+          {MAINTENANCE_PRIORITIES.map((p) => (
+            <option key={p} value={p}>
+              {p.charAt(0).toUpperCase() + p.slice(1)}
+            </option>
+          ))}
+        </select>
+        <button
+          type="submit"
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Filter
+        </button>
+      </form>
+
+      <MaintenanceList requests={requests} />
+    </div>
+  );
+}
