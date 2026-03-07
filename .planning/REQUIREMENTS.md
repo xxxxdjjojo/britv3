@@ -80,12 +80,12 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DASH-04**: Landlord dashboard with portfolio overview, occupancy, income
 - [ ] **DASH-05**: Agent dashboard with active listings, leads pipeline, viewings, revenue
 - [ ] **DASH-06**: Provider dashboard with verification status, active jobs, rating, earnings
-- [ ] **DASH-07**: Aggregated dashboard API (1-2 calls instead of 8-12)
+- [x] **DASH-07**: Aggregated dashboard API (1-2 calls instead of 8-12)
 - [x] **DASH-08**: Dashboard caching via Upstash Redis
 - [ ] **DASH-09**: Profile CRUD with Zod validation for all roles
 - [ ] **DASH-10**: Profile picture upload with client-side compression
 - [ ] **DASH-11**: Service provider extended profile (services, coverage area, pricing)
-- [ ] **DASH-12**: Activity log with cursor-based pagination
+- [x] **DASH-12**: Activity log with cursor-based pagination
 - [ ] **DASH-13**: Notification preferences per user
 - [ ] **DASH-14**: Real-time dashboard updates via Supabase Realtime
 
@@ -117,21 +117,21 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Communication & Collaboration (Epic 5 -- amended)
 
-- [ ] **COM-01**: User can send direct messages from listings, bookings, RFQs (contextual initiation)
+- [x] **COM-01**: User can send direct messages from listings, bookings, RFQs (contextual initiation)
 - [ ] **COM-02**: Polling-based inbox with 30s refresh (no WebSockets at MVP)
-- [ ] **COM-03**: Message thread with cursor-based pagination
+- [x] **COM-03**: Message thread with cursor-based pagination
 - [ ] **COM-04**: File attachments in messages (compressed, 2MB limit)
-- [ ] **COM-05**: Per-conversation "last read" timestamp (not per-message)
+- [x] **COM-05**: Per-conversation "last read" timestamp (not per-message)
 - [ ] **COM-06**: AI quote drafting for tradespeople via Claude Haiku (~$0.001/draft)
 - [ ] **COM-07**: AI quote drafting for estate agents via Claude Haiku
 - [ ] **COM-08**: Trader rate card management
 - [ ] **COM-09**: Market pricing intelligence data
-- [ ] **COM-10**: Event-based in-app notification feed (O(1) writes, no fan-out)
+- [x] **COM-10**: Event-based in-app notification feed (O(1) writes, no fan-out)
 - [ ] **COM-11**: Email notifications -- immediate for critical events, daily digest for non-critical
 - [ ] **COM-12**: Notification preferences (per-type, quiet hours, digest frequency)
 - [ ] **COM-13**: Files tab on bookings/transactions for document sharing
-- [ ] **COM-14**: Transaction milestones (8-step UK property pipeline)
-- [ ] **COM-15**: Service job milestones (5-step pipeline)
+- [x] **COM-14**: Transaction milestones (8-step UK property pipeline)
+- [x] **COM-15**: Service job milestones (5-step pipeline)
 
 **Deferred from Epic 5:**
 - Real-time WebSocket chat (post-MVP)

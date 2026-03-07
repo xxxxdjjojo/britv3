@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-07T18:40:29.457Z"
-last_activity: 2026-03-07 -- Completed 06-01 Landlord Schema & Types
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-07T18:40:00.000Z"
+last_activity: 2026-03-07 -- Completed 03-01 Schema, Types & Dependencies
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 43
-  completed_plans: 18
-  percent: 39
+  completed_plans: 19
+  percent: 44
 ---
 
 # Project State
@@ -63,6 +63,7 @@ Progress: [████░░░░░░] 39%
 | Phase 06 P01 | 23min | 2 tasks | 8 files |
 | Phase 03 P02 | 26min | 3 tasks | 14 files |
 | Phase 02 P01 | 21min | 2 tasks | 9 files |
+| Phase 03 P01 | 30min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -126,6 +127,11 @@ Recent decisions affecting current work:
 - [Phase 03]: Protected layout wraps children with QueryProvider for client-side async state
 - [Phase 02]: Migration numbered 003 (not 002) since 002_marketplace.sql already exists from Phase 4
 - [Phase 02]: SearchListingRow includes extra columns for richer search cards
+- [Phase 03]: Activity log uses native PostgreSQL monthly range partitioning (not pg_partman)
+- [Phase 03]: Transaction/service job milestones use deferred FKs -- parent tables in later phases
+- [Phase 03]: Market pricing allows anonymous reads; no write access for regular users
+- [Phase 03]: Platform events use O(1) writes per action (not per-recipient fan-out)
+- [Phase 03]: Dashboard types use discriminated union with role field as discriminant
 
 ### Pending Todos
 
@@ -138,6 +144,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T18:40:29.442Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-07T18:40:00.000Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
