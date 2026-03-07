@@ -81,7 +81,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DASH-05**: Agent dashboard with active listings, leads pipeline, viewings, revenue
 - [ ] **DASH-06**: Provider dashboard with verification status, active jobs, rating, earnings
 - [ ] **DASH-07**: Aggregated dashboard API (1-2 calls instead of 8-12)
-- [ ] **DASH-08**: Dashboard caching via Upstash Redis
+- [x] **DASH-08**: Dashboard caching via Upstash Redis
 - [ ] **DASH-09**: Profile CRUD with Zod validation for all roles
 - [ ] **DASH-10**: Profile picture upload with client-side compression
 - [ ] **DASH-11**: Service provider extended profile (services, coverage area, pricing)
