@@ -192,7 +192,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Dashboards & Communication | 2/10 | In Progress|  |
 | 4. Marketplace | 6/8 | In Progress|  |
 | 5. AI & Financial Tools | 3/4 | In Progress|  |
-| 6. Landlord Tools | 1/5 | In Progress|  |
+| 6. Landlord Tools | 3/5 | In Progress|  |
 | 7. Production Readiness | 0/3 | Not started | - |
 
 ---

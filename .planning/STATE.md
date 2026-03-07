@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 06-03-PLAN.md
-last_updated: "2026-03-07T18:45:31.214Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-07T18:45:41.701Z"
 last_activity: 2026-03-07 -- Completed 06-02 Portfolio & Tenancy Management
 progress:
   total_phases: 7
@@ -143,6 +143,9 @@ Recent decisions affecting current work:
 - [Phase 06]: State machine as static ALLOWED_TRANSITIONS map with canTransitionTo/getValidNextStatuses exports
 - [Phase 06]: Provider assignment is simple marketplace link + manual name/ID input (no auto-RFQ per spec)
 - [Phase 06]: StatusUpdateForm extracted as co-located client component in requestId page directory
+- [Phase 06]: zodResolver with coerce fields requires 'as any' cast due to input/output type mismatch in react-hook-form
+- [Phase 06]: Portfolio uses Supabase embedded selects (foreign key joins) for single-query data fetching
+- [Phase 06]: Tenancy detail page is client component for edit/end tenancy interactions
 
 ### Pending Todos
 
@@ -155,6 +158,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T18:45:19.035Z
-Stopped at: Completed 06-03-PLAN.md
+Last session: 2026-03-07T18:45:41.636Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None
