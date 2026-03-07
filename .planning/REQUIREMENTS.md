@@ -58,7 +58,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **SRCH-08**: User can save search criteria with notification preferences
 - [ ] **SRCH-09**: User receives alerts for new matching properties (email + in-app)
 - [ ] **SRCH-10**: User can sort results by price, date, relevance
-- [ ] **SRCH-11**: Search uses optimized queries (materialized views, full-text search, cursor-based pagination)
+- [x] **SRCH-11**: Search uses optimized queries (materialized views, full-text search, cursor-based pagination)
 - [ ] **SRCH-12**: Geocoding via postcodes.io (free UK postcode API)
 
 ### Listing Management (Epic 2)
@@ -70,7 +70,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **LIST-05**: Agent/seller can edit and update live listings
 - [ ] **LIST-06**: Agent/seller can view listing analytics (views, saves, enquiries)
 - [ ] **LIST-07**: Price history tracked for each listing
-- [ ] **LIST-08**: PostGIS geospatial support for location-based queries
+- [x] **LIST-08**: PostGIS geospatial support for location-based queries
 
 ### Dashboards (Epic 3)
 
