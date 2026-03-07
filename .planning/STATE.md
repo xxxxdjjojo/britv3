@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-03-07T18:31:35.209Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-07T18:34:39.168Z"
 last_activity: 2026-03-07 -- Completed 04-04 RFQ-to-Quote Pipeline
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 43
-  completed_plans: 13
+  completed_plans: 16
   percent: 28
 ---
 
@@ -58,6 +58,7 @@ Progress: [███░░░░░░░] 28%
 | Phase 04 P04 | 23min | 2 tasks | 12 files |
 | Phase 05 P02 | 18min | 2 tasks | 7 files |
 | Phase 04 P03 | 22min | 2 tasks | 5 files |
+| Phase 05 P03 | 23min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Provider service uses function-per-operation pattern with Supabase client injection for testability
 - [Phase 04]: Slug generated from business_name with uniqueness check and incrementing suffix
 - [Phase 04]: Base location stored as PostGIS WKT (SRID=4326;POINT(lng lat)) from geocoded first service postcode
+- [Phase 05]: Supabase query chain mocks use thenable pattern to match PostgREST builder behavior
+- [Phase 05]: Smart replies use type-first + keyword-augmented selection capped at 4 suggestions
+- [Phase 05]: PriceTrendChart extracted as client component for recharts; PriceHistory remains server component
 
 ### Pending Todos
 
@@ -121,6 +125,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T18:31:35.201Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-03-07T18:34:39.156Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
