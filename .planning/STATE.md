@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-03-07T19:15:08.595Z"
-last_activity: 2026-03-07 -- Completed 06-04 Financial Tracking
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-07T19:28:02.850Z"
+last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 43
-  completed_plans: 33
-  percent: 42
+  completed_plans: 35
+  percent: 60
 ---
 
 # Project State
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 Phase: 6 of 7 (Landlord Tools)
 Plan: 5 of 5 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 06-05 Documents, Compliance & Lease PDF
+Last activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 
 Progress: [██████░░░░] 60%
 
@@ -78,6 +78,8 @@ Progress: [██████░░░░] 60%
 | Phase 02 P04 | 12min | 2 tasks | 13 files |
 | Phase 02 P05 | 12min | 2 tasks | 11 files |
 | Phase 06 P05 | 25min | 3 tasks | 17 files |
+| Phase 03 P03 | 31min | 3 tasks | 12 files |
+| Phase 05 P04 | 30min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -181,6 +183,14 @@ Recent decisions affecting current work:
 - [Phase 02]: Duplicate saves handled via unique constraint catch (code 23505) returning null gracefully
 - [Phase 02]: favorite_count tracked via fire-and-forget RPC increment_favorite_count
 - [Phase 02]: Saved search filters stored as JSONB, re-executed with listed_after cutoff for alert checking
+- [Phase 06]: Compliance reminder logic extracted into pure module for testability across Deno and Node
+- [Phase 06]: jsPDF dynamically imported on lease page only to avoid bundle impact
+- [Phase 06]: Expiry status derived as pure function: valid (>30d), expiring (<=30d), expired, none
+- [Phase 06]: Duplicate compliance notifications prevented via 24-hour window check in Edge Function
+- [Phase 03]: Profile service uses injected Supabase client for testability (same pattern as provider-service)
+- [Phase 03]: Zod v4 uses .issues not .errors on ZodError objects
+- [Phase 03]: Provider details stored in profiles.provider_details JSONB column (not separate table)
+- [Phase 03]: Profile page uses numeric Tab indices (base-ui pattern) with conditional provider tab
 
 ### Pending Todos
 
@@ -193,6 +203,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T19:15:08.572Z
-Stopped at: Completed 02-05-PLAN.md
+Last session: 2026-03-07T19:27:56.097Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None

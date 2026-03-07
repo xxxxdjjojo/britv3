@@ -82,11 +82,11 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DASH-06**: Provider dashboard with verification status, active jobs, rating, earnings
 - [x] **DASH-07**: Aggregated dashboard API (1-2 calls instead of 8-12)
 - [x] **DASH-08**: Dashboard caching via Upstash Redis
-- [ ] **DASH-09**: Profile CRUD with Zod validation for all roles
-- [ ] **DASH-10**: Profile picture upload with client-side compression
-- [ ] **DASH-11**: Service provider extended profile (services, coverage area, pricing)
+- [x] **DASH-09**: Profile CRUD with Zod validation for all roles
+- [x] **DASH-10**: Profile picture upload with client-side compression
+- [x] **DASH-11**: Service provider extended profile (services, coverage area, pricing)
 - [x] **DASH-12**: Activity log with cursor-based pagination
-- [ ] **DASH-13**: Notification preferences per user
+- [x] **DASH-13**: Notification preferences per user
 - [ ] **DASH-14**: Real-time dashboard updates via Supabase Realtime
 
 ### Service Marketplace (Epic 4 -- amended)
