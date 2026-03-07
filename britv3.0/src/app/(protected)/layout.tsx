@@ -13,13 +13,5 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
-  return (
-    <div className="flex min-h-screen flex-col">
-      {/* Header will be added here when dashboard layout is built */}
-      <div className="flex flex-1">
-        {/* Sidebar area reserved for dashboard navigation */}
-        <main className="flex-1 p-6">{children}</main>
-      </div>
-    </div>
-  );
+  return <>{children}</>;
 }
