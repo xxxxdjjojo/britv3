@@ -132,11 +132,13 @@ Plans:
   4. Property detail pages show Land Registry Price Paid Data (free public data)
   5. Mortgage calculator and SDLT calculator work client-side with real-time results
   6. Property listing cards show personalized "Est. X/mo" based on user's saved mortgage parameters
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md -- AI service layer: Claude wrapper, rate limiting, description generation, feedback
+- [ ] 05-02-PLAN.md -- Calculator libs (TDD): mortgage amortization, SDLT with current HMRC rates
+- [ ] 05-03-PLAN.md -- Zero-cost intelligence: SQL recommendations, Land Registry data, smart replies
+- [ ] 05-04-PLAN.md -- Calculator UI: tool pages, mortgage params hook, personalized estimates, offer letter PDF
 
 ### Phase 6: Landlord Tools
 **Goal**: Landlords can manage their rental portfolio with tenant records, maintenance tracking, financial logging, compliance reminders, and lease generation
@@ -186,7 +188,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. Property Portal | 0/7 | Not started | - |
 | 3. Dashboards & Communication | 0/10 | Not started | - |
 | 4. Marketplace | 0/8 | Not started | - |
-| 5. AI & Financial Tools | 0/2 | Not started | - |
+| 5. AI & Financial Tools | 0/4 | Not started | - |
 | 6. Landlord Tools | 0/2 | Not started | - |
 | 7. Production Readiness | 0/3 | Not started | - |
 
@@ -198,3 +200,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Phase 4 revised: 2026-03-07 (8 plans, 4 waves) -- split Plan 07 into 07+08 per scope checker*
 *Phase 3 planned: 2026-03-07 (10 plans, 4 waves)*
 *Phase 2 planned: 2026-03-07 (7 plans, 4 waves)*
+*Phase 5 planned: 2026-03-07 (4 plans, 2 waves)*
