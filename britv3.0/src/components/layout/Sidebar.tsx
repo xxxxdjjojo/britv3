@@ -33,7 +33,11 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
+  Mail,
+  Bell,
+  User,
 } from "lucide-react";
+import UnreadBadge from "@/components/messaging/UnreadBadge";
 
 type NavItem = Readonly<{
   href: string;
@@ -144,6 +148,57 @@ export function Sidebar() {
             </Link>
           );
         })}
+      </nav>
+
+      {/* Common links */}
+      <nav className="space-y-1 border-t p-2" aria-label="Communication">
+        <Link
+          href="/inbox"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/inbox" || pathname.startsWith("/inbox/")
+              ? "bg-brand-primary/10 text-brand-primary"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+            collapsed && "justify-center px-2",
+          )}
+          title={collapsed ? "Inbox" : undefined}
+        >
+          <Mail className="size-5 shrink-0" />
+          {!collapsed && (
+            <>
+              <span className="flex-1">Inbox</span>
+              <UnreadBadge />
+            </>
+          )}
+        </Link>
+        <Link
+          href="/notifications"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/notifications"
+              ? "bg-brand-primary/10 text-brand-primary"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+            collapsed && "justify-center px-2",
+          )}
+          title={collapsed ? "Notifications" : undefined}
+        >
+          <Bell className="size-5 shrink-0" />
+          {!collapsed && <span>Notifications</span>}
+        </Link>
+        <Link
+          href="/profile"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/profile" || pathname.startsWith("/profile/")
+              ? "bg-brand-primary/10 text-brand-primary"
+              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+            collapsed && "justify-center px-2",
+          )}
+          title={collapsed ? "Profile" : undefined}
+        >
+          <User className="size-5 shrink-0" />
+          {!collapsed && <span>Profile</span>}
+        </Link>
       </nav>
 
       {/* Collapse toggle */}

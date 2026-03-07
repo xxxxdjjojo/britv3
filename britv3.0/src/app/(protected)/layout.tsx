@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { QueryProvider } from "@/lib/providers/QueryProvider";
+import { ProtectedHeader } from "@/components/layout/ProtectedHeader";
 
 export default async function ProtectedLayout({
   children,
@@ -14,5 +15,10 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <QueryProvider>
+      <ProtectedHeader />
+      {children}
+    </QueryProvider>
+  );
 }

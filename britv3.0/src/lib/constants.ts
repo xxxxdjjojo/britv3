@@ -191,4 +191,8 @@ export const AUTH_ROUTES: readonly string[] = [
 export const PROTECTED_ROUTES: readonly string[] = [
   "/dashboard",
   "/settings",
+  "/inbox",
+  "/notifications",
+  "/profile",
+  "/milestones",
 ] as const;
