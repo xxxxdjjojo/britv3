@@ -16,12 +16,12 @@ function generateNonce(): string {
 function buildCsp(nonce: string): string {
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com`,
+    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com",
     "frame-src https://accounts.google.com https://appleid.apple.com",
-    "worker-src 'self'",
+    "worker-src 'self' blob:",
     "form-action 'self'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
