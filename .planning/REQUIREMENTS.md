@@ -96,14 +96,14 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MKT-03**: User can create RFQ with service category, location (postcodes.io), budget, urgency
 - [x] **MKT-04**: System matches RFQ to max 10 providers by category, postcode overlap, proximity
 - [x] **MKT-05**: Provider can respond with itemized quote with versioning
-- [ ] **MKT-06**: User can compare quotes side-by-side
+- [x] **MKT-06**: User can compare quotes side-by-side
 - [x] **MKT-07**: User can create and manage bookings with conflict detection
 - [x] **MKT-08**: Booking state machine (pending -> confirmed -> in_progress -> completed -> disputed)
 - [x] **MKT-09**: Provider can manage availability calendar
 - [x] **MKT-10**: User can submit multi-dimensional review with ratings
 - [x] **MKT-11**: Rule-based review spam/sentiment detection (no AI)
 - [ ] **MKT-12**: Provider can respond to reviews; helpfulness voting
-- [ ] **MKT-13**: User can search and browse providers by category and location
+- [x] **MKT-13**: User can search and browse providers by category and location
 - [x] **MKT-14**: Async job processing via Inngest (replaces BullMQ)
 
 **Deferred from Epic 4:**

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-07T18:29:11.948Z"
-last_activity: 2026-03-07 -- Completed 04-01 Marketplace Schema & Types
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-07T18:31:35.209Z"
+last_activity: 2026-03-07 -- Completed 04-04 RFQ-to-Quote Pipeline
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 43
-  completed_plans: 11
-  percent: 23
+  completed_plans: 13
+  percent: 28
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 4 of 7 (Marketplace)
-Plan: 1 of 8 in current phase
+Plan: 4 of 8 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 04-01 Marketplace Schema & Types
+Last activity: 2026-03-07 -- Completed 04-04 RFQ-to-Quote Pipeline
 
-Progress: [██░░░░░░░░] 23%
+Progress: [███░░░░░░░] 28%
 
 ## Performance Metrics
 
@@ -55,7 +55,9 @@ Progress: [██░░░░░░░░] 23%
 | Phase 01 P08 | 16min | 2 tasks | 16 files |
 | Phase 04 P01 | 6min | 2 tasks | 3 files |
 | Phase 04 P02 | 8min | 2 tasks | 12 files |
+| Phase 04 P04 | 23min | 2 tasks | 12 files |
 | Phase 05 P02 | 18min | 2 tasks | 7 files |
+| Phase 04 P03 | 22min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -99,8 +101,14 @@ Recent decisions affecting current work:
 - [Phase 04]: Used file-type ESM import directly (no dynamic import wrapper needed)
 - [Phase 04]: Booking state machine defines 9 transitions including provider/user cancel from in_progress
 - [Phase 04]: Spam detector uses 10-char minimum before flagging excessive caps
+- [Phase 04]: Provider matching scores: category 50pts, postcode overlap 30pts, proximity 20pts, rating 4+ bonus 10pts
+- [Phase 04]: Quote acceptance uses partial unique index + catch code 23505 for race condition prevention
+- [Phase 04]: Inngest rfq-notify-providers: in-app notifications first, 1hr sleep, then email fallback for unread
 - [Phase 05]: Fixed plan SDLT 1M test expectation from 41,250 to 43,750 (correct HMRC calculation)
 - [Phase 05]: SDLT rates stored as threshold-based bands with surcharge applied additively
+- [Phase 04]: Provider service uses function-per-operation pattern with Supabase client injection for testability
+- [Phase 04]: Slug generated from business_name with uniqueness check and incrementing suffix
+- [Phase 04]: Base location stored as PostGIS WKT (SRID=4326;POINT(lng lat)) from geocoded first service postcode
 
 ### Pending Todos
 
@@ -113,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T18:29:11.942Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-07T18:31:35.201Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
