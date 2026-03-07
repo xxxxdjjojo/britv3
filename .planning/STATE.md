@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-08-PLAN.md
-last_updated: "2026-03-07T20:18:55.126Z"
+stopped_at: Completed 02-07-PLAN.md
+last_updated: "2026-03-07T20:19:26.803Z"
 last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
@@ -83,6 +83,7 @@ Progress: [██████░░░░] 60%
 | Phase 03 P06 | 22min | 3 tasks | 8 files |
 | Phase 03 P07 | 21min | 2 tasks | 8 files |
 | Phase 03 P08 | 25min | 3 tasks | 10 files |
+| Phase 02 P07 | 49min | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -205,6 +206,8 @@ Recent decisions affecting current work:
 - [Phase 03]: TooltipTrigger uses render prop pattern (base-ui) for Button composition
 - [Phase 03]: Milestone ordering uses client-side sort by template order map (not DB order column)
 - [Phase 03]: FilesTab queries messages API with attachments_only param, groups by image/document type
+- [Phase 02]: Draft-first listing creation: form creates draft on Step 1 completion to enable media uploads in Step 4
+- [Phase 02]: Zod v4 uses message instead of required_error for number schema params
 
 ### Pending Todos
 
@@ -217,6 +220,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T20:03:25.105Z
-Stopped at: Completed 03-08-PLAN.md
+Last session: 2026-03-07T20:19:26.608Z
+Stopped at: Completed 02-07-PLAN.md
 Resume file: None
