@@ -63,13 +63,13 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Listing Management (Epic 2)
 
-- [ ] **LIST-01**: Agent/seller can create property listing with full details (address, type, beds, baths, area, tenure, EPC, features)
-- [ ] **LIST-02**: Agent/seller can upload up to 30 photos per listing with client-side compression
-- [ ] **LIST-03**: Agent/seller can upload floor plans and documents
-- [ ] **LIST-04**: Agent/seller can set pricing with qualifiers (offers over, guide price, POA)
-- [ ] **LIST-05**: Agent/seller can edit and update live listings
-- [ ] **LIST-06**: Agent/seller can view listing analytics (views, saves, enquiries)
-- [ ] **LIST-07**: Price history tracked for each listing
+- [x] **LIST-01**: Agent/seller can create property listing with full details (address, type, beds, baths, area, tenure, EPC, features)
+- [x] **LIST-02**: Agent/seller can upload up to 30 photos per listing with client-side compression
+- [x] **LIST-03**: Agent/seller can upload floor plans and documents
+- [x] **LIST-04**: Agent/seller can set pricing with qualifiers (offers over, guide price, POA)
+- [x] **LIST-05**: Agent/seller can edit and update live listings
+- [x] **LIST-06**: Agent/seller can view listing analytics (views, saves, enquiries)
+- [x] **LIST-07**: Price history tracked for each listing
 - [x] **LIST-08**: PostGIS geospatial support for location-based queries
 
 ### Dashboards (Epic 3)

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-09-PLAN.md
-last_updated: "2026-03-07T18:55:48.323Z"
+stopped_at: Completed 02-03-PLAN.md
+last_updated: "2026-03-07T18:59:23.947Z"
 last_activity: 2026-03-07 -- Completed 06-02 Portfolio & Tenancy Management
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 43
-  completed_plans: 25
+  completed_plans: 26
   percent: 39
 ---
 
@@ -70,6 +70,7 @@ Progress: [████░░░░░░] 39%
 | Phase 06 P02 | 6min | 2 tasks | 15 files |
 | Phase 02 P02 | 12min | 2 tasks | 14 files |
 | Phase 01 P09 | 73min | 2 tasks | 8 files |
+| Phase 02 P03 | 15min | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -153,6 +154,10 @@ Recent decisions affecting current work:
 - [Phase 02]: Default search sort is date_desc (newest first) when no sort specified
 - [Phase 01]: Verification service uses client-side stage order enforcement
 - [Phase 01]: Middleware skips auth checks gracefully when Supabase env vars missing
+- [Phase 02]: Listing service uses Supabase client injection (function-per-operation) matching Phase 4 pattern
+- [Phase 02]: PostGIS coordinates set via fire-and-forget RPC after property insert (non-blocking)
+- [Phase 02]: Image processing: auto-rotate, EXIF strip, WebP 85 (2400x1800), thumbnail 400x300 cover crop WebP 75
+- [Phase 02]: Max 30 images per listing enforced at service layer before processing
 
 ### Pending Todos
 
@@ -165,6 +170,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T18:55:48.311Z
-Stopped at: Completed 01-09-PLAN.md
+Last session: 2026-03-07T18:59:23.938Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
