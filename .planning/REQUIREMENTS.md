@@ -118,9 +118,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Communication & Collaboration (Epic 5 -- amended)
 
 - [x] **COM-01**: User can send direct messages from listings, bookings, RFQs (contextual initiation)
-- [ ] **COM-02**: Polling-based inbox with 30s refresh (no WebSockets at MVP)
+- [x] **COM-02**: Polling-based inbox with 30s refresh (no WebSockets at MVP)
 - [x] **COM-03**: Message thread with cursor-based pagination
-- [ ] **COM-04**: File attachments in messages (compressed, 2MB limit)
+- [x] **COM-04**: File attachments in messages (compressed, 2MB limit)
 - [x] **COM-05**: Per-conversation "last read" timestamp (not per-message)
 - [ ] **COM-06**: AI quote drafting for tradespeople via Claude Haiku (~$0.001/draft)
 - [ ] **COM-07**: AI quote drafting for estate agents via Claude Haiku
