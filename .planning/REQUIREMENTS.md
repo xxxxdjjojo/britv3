@@ -122,10 +122,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **COM-03**: Message thread with cursor-based pagination
 - [x] **COM-04**: File attachments in messages (compressed, 2MB limit)
 - [x] **COM-05**: Per-conversation "last read" timestamp (not per-message)
-- [ ] **COM-06**: AI quote drafting for tradespeople via Claude Haiku (~$0.001/draft)
-- [ ] **COM-07**: AI quote drafting for estate agents via Claude Haiku
-- [ ] **COM-08**: Trader rate card management
-- [ ] **COM-09**: Market pricing intelligence data
+- [x] **COM-06**: AI quote drafting for tradespeople via Claude Haiku (~$0.001/draft)
+- [x] **COM-07**: AI quote drafting for estate agents via Claude Haiku
+- [x] **COM-08**: Trader rate card management
+- [x] **COM-09**: Market pricing intelligence data
 - [x] **COM-10**: Event-based in-app notification feed (O(1) writes, no fan-out)
 - [x] **COM-11**: Email notifications -- immediate for critical events, daily digest for non-critical
 - [x] **COM-12**: Notification preferences (per-type, quiet hours, digest frequency)
