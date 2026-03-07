@@ -83,9 +83,43 @@ describe("updateListing", () => {
     const { updateListing } = await import(
       "@/services/listings/listing-service"
     );
-    const { supabase, from, ownershipChain } = createUpdateMock();
 
-    await updateListing(supabase as never, "user-001", "listing-001", {
+    const mockListing = createMockListing();
+    const mockProperty = createMockProperty();
+
+    // Ownership check chain (first call to from("listings"))
+    const ownershipChain = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({
+        data: { ...mockListing, property_id: mockProperty.id, properties: mockProperty },
+        error: null,
+      }),
+    };
+
+    // Listing update chain (second call to from("listings"))
+    const listingUpdateChain = {
+      update: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({
+        data: { ...mockListing, price: 400000 },
+        error: null,
+      }),
+    };
+
+    let listingCallCount = 0;
+    const from = vi.fn().mockImplementation((table: string) => {
+      if (table === "listings") {
+        listingCallCount++;
+        return listingCallCount === 1 ? ownershipChain : listingUpdateChain;
+      }
+      return ownershipChain;
+    });
+
+    const sb = { from, rpc: vi.fn().mockResolvedValue({ data: null, error: null }) };
+
+    await updateListing(sb as never, "user-001", "listing-001", {
       price: 400000,
     });
 
@@ -222,7 +256,7 @@ describe("deleteListing", () => {
       return ownershipChain;
     });
 
-    const sb = { from, rpc: vi.fn() };
+    const sb = { from, rpc: vi.fn().mockResolvedValue({ data: null, error: null }) };
 
     await deleteListing(sb as never, "user-001", "listing-001");
 
