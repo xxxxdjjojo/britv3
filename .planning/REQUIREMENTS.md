@@ -215,7 +215,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MOB-07**: Static page caching (stale-while-revalidate via @serwist/next)
 - [ ] **MOB-08**: Responsive verification across 320px-1280px breakpoints
 - [ ] **MOB-09**: Touch optimization (44px targets, swipe gestures, pull-to-refresh)
-- [ ] **MOB-10**: Role-specific bottom tab bar on mobile (<768px)
+- [x] **MOB-10**: Role-specific bottom tab bar on mobile (<768px)
 - [ ] **MOB-11**: Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1)
 
 **Deferred from Epic 9:**
@@ -233,8 +233,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ADM-05**: Post-moderation of listings (auto-flag profanity, price anomaly, duplicate detection)
 - [ ] **ADM-06**: Provider verification queue with document review via signed URLs
 - [x] **ADM-07**: Review moderation queue (flagged/reported reviews)
-- [ ] **ADM-08**: Static help page with FAQ from MDX files
-- [ ] **ADM-09**: Contact form with rate limiting (email to support inbox via Resend)
+- [x] **ADM-08**: Static help page with FAQ from MDX files
+- [x] **ADM-09**: Contact form with rate limiting (email to support inbox via Resend)
 - [x] **ADM-10**: External dashboard links (Stripe, Sentry, PostHog, Supabase)
 
 **Deferred from Epic 10:**
