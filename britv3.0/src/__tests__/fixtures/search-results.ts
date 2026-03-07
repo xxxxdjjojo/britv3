@@ -1,0 +1,156 @@
+/**
+ * Test fixtures for search results.
+ * Provides factory functions and pre-built datasets for search tests.
+ */
+
+import type { SearchListingRow } from "@/types/property";
+import type { SearchResult } from "@/types/search";
+
+/** Factory to create a mock SearchListingRow with sensible defaults */
+export function createMockSearchResult(
+  overrides?: Partial<SearchListingRow>,
+): SearchListingRow {
+  return {
+    listing_id: "listing-001",
+    property_id: "property-001",
+    listing_type: "sale",
+    status: "active",
+    price: 350000,
+    property_type: "semi_detached",
+    bedrooms: 3,
+    bathrooms: 2,
+    city: "London",
+    postcode: "SW1A 1AA",
+    coordinates: { lat: 51.5014, lng: -0.1419 },
+    description_tsv: null,
+    features: { garden: true, parking: true },
+    epc_rating: "C",
+    new_build: false,
+    listed_date: "2026-03-01",
+    slug: "123-high-street-london-sale",
+    thumbnail_url: "https://storage.supabase.co/property-images/listing-001/thumb.webp",
+    title: "Charming 3-bed semi-detached in Westminster",
+    address_line1: "123 High Street",
+    rent_frequency: null,
+    price_qualifier: "guide_price",
+    reception_rooms: 2,
+    square_footage: 1200,
+    view_count: 42,
+    favorite_count: 5,
+    enquiry_count: 3,
+    ...overrides,
+  };
+}
+
+/** Diverse set of 5 search results for testing */
+export const MOCK_SEARCH_RESULTS: SearchListingRow[] = [
+  createMockSearchResult(),
+  createMockSearchResult({
+    listing_id: "listing-002",
+    property_id: "property-002",
+    listing_type: "sale",
+    price: 750000,
+    property_type: "detached",
+    bedrooms: 5,
+    bathrooms: 3,
+    city: "Manchester",
+    postcode: "M1 1AE",
+    coordinates: { lat: 53.4808, lng: -2.2426 },
+    epc_rating: "B",
+    new_build: true,
+    slug: "45-oak-avenue-manchester-sale",
+    title: "Modern 5-bed detached in Manchester",
+    address_line1: "45 Oak Avenue",
+    price_qualifier: "offers_over",
+    reception_rooms: 3,
+    square_footage: 2400,
+    view_count: 128,
+    favorite_count: 15,
+    enquiry_count: 8,
+  }),
+  createMockSearchResult({
+    listing_id: "listing-003",
+    property_id: "property-003",
+    listing_type: "rent",
+    price: 1800,
+    property_type: "flat",
+    bedrooms: 2,
+    bathrooms: 1,
+    city: "London",
+    postcode: "E1 6AN",
+    coordinates: { lat: 51.5155, lng: -0.0723 },
+    epc_rating: "D",
+    new_build: false,
+    slug: "78-tower-lane-london-rent",
+    title: "Stylish 2-bed flat in Tower Hamlets",
+    address_line1: "78 Tower Lane",
+    rent_frequency: "monthly",
+    price_qualifier: null,
+    reception_rooms: 1,
+    square_footage: 750,
+    view_count: 67,
+    favorite_count: 8,
+    enquiry_count: 4,
+  }),
+  createMockSearchResult({
+    listing_id: "listing-004",
+    property_id: "property-004",
+    listing_type: "sale",
+    price: 225000,
+    property_type: "terraced",
+    bedrooms: 2,
+    bathrooms: 1,
+    city: "Birmingham",
+    postcode: "B1 1BB",
+    coordinates: { lat: 52.4862, lng: -1.8904 },
+    epc_rating: "E",
+    new_build: false,
+    slug: "12-victoria-road-birmingham-sale",
+    title: "Cosy 2-bed terraced in Birmingham",
+    address_line1: "12 Victoria Road",
+    price_qualifier: "fixed_price",
+    reception_rooms: 1,
+    square_footage: 800,
+    view_count: 23,
+    favorite_count: 2,
+    enquiry_count: 1,
+  }),
+  createMockSearchResult({
+    listing_id: "listing-005",
+    property_id: "property-005",
+    listing_type: "rent",
+    price: 2500,
+    property_type: "penthouse",
+    bedrooms: 3,
+    bathrooms: 2,
+    city: "Leeds",
+    postcode: "LS1 1UR",
+    coordinates: { lat: 53.7997, lng: -1.5491 },
+    epc_rating: "A",
+    new_build: true,
+    slug: "1-waterfront-plaza-leeds-rent",
+    title: "Luxury 3-bed penthouse in Leeds",
+    address_line1: "1 Waterfront Plaza",
+    rent_frequency: "monthly",
+    price_qualifier: null,
+    reception_rooms: 2,
+    square_footage: 1600,
+    view_count: 95,
+    favorite_count: 12,
+    enquiry_count: 6,
+  }),
+];
+
+/** Empty search result for empty state testing */
+export const MOCK_EMPTY_RESULT: SearchResult = {
+  data: [],
+  count: 0,
+  cursor: null,
+};
+
+/** Paginated search result with cursor */
+export const MOCK_PAGINATED_RESULT: SearchResult = {
+  data: MOCK_SEARCH_RESULTS,
+  count: 42,
+  cursor: "listing-005",
+};
