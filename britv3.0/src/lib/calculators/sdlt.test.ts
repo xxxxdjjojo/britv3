@@ -17,10 +17,11 @@ describe("calculateSdlt", () => {
 
     it("calculates correctly at 1M", () => {
       // 125K @ 0% = 0, 125K @ 2% = 2,500, 675K @ 5% = 33,750, 75K @ 10% = 7,500
+      // Total = 43,750 (plan had 41,250 which was arithmetic error)
       const result = calculateSdlt(1_000_000, "standard");
-      expect(result.totalTax).toBe(41_250);
-      // Effective rate: 41,250 / 1,000,000 = 4.125%
-      expect(result.effectiveRate).toBeCloseTo(0.04125, 5);
+      expect(result.totalTax).toBe(43_750);
+      // Effective rate: 43,750 / 1,000,000 = 4.375%
+      expect(result.effectiveRate).toBeCloseTo(0.04375, 5);
     });
   });
 
