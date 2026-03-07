@@ -11,7 +11,10 @@ import {
   canTransition,
   getValidNextStatuses,
 } from "@/lib/marketplace/booking-state-machine";
-import type { TransitionActor } from "@/lib/marketplace/booking-state-machine";
+import type {
+  TransitionActor,
+  BookingStatus as StateMachineStatus,
+} from "@/lib/marketplace/booking-state-machine";
 import { bookingCreateSchema } from "@/lib/validators/marketplace-schemas";
 
 // -- Types --------------------------------------------------------------------
@@ -236,8 +239,8 @@ export async function updateBookingStatus(
     actorRole = "system";
   }
 
-  const currentStatus = booking.status as BookingStatus;
-  const transition = canTransition(currentStatus, newStatus, actorRole);
+  const currentStatus = booking.status as StateMachineStatus;
+  const transition = canTransition(currentStatus, newStatus as StateMachineStatus, actorRole);
 
   if (!transition.allowed) {
     const validNext = getValidNextStatuses(currentStatus, actorRole);
