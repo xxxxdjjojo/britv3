@@ -74,12 +74,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Dashboards (Epic 3)
 
-- [ ] **DASH-01**: Homebuyer dashboard with saved properties, active searches, upcoming viewings
-- [ ] **DASH-02**: Renter dashboard with saved rentals, application status, tenancy details
-- [ ] **DASH-03**: Seller dashboard with listing performance, viewing requests, offers
-- [ ] **DASH-04**: Landlord dashboard with portfolio overview, occupancy, income
-- [ ] **DASH-05**: Agent dashboard with active listings, leads pipeline, viewings, revenue
-- [ ] **DASH-06**: Provider dashboard with verification status, active jobs, rating, earnings
+- [x] **DASH-01**: Homebuyer dashboard with saved properties, active searches, upcoming viewings
+- [x] **DASH-02**: Renter dashboard with saved rentals, application status, tenancy details
+- [x] **DASH-03**: Seller dashboard with listing performance, viewing requests, offers
+- [x] **DASH-04**: Landlord dashboard with portfolio overview, occupancy, income
+- [x] **DASH-05**: Agent dashboard with active listings, leads pipeline, viewings, revenue
+- [x] **DASH-06**: Provider dashboard with verification status, active jobs, rating, earnings
 - [x] **DASH-07**: Aggregated dashboard API (1-2 calls instead of 8-12)
 - [x] **DASH-08**: Dashboard caching via Upstash Redis
 - [x] **DASH-09**: Profile CRUD with Zod validation for all roles
