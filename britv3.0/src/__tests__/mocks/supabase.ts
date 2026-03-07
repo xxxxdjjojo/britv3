@@ -35,6 +35,7 @@ function createMockQueryBuilder() {
     in: vi.fn().mockReturnThis(),
     contains: vi.fn().mockReturnThis(),
     containedBy: vi.fn().mockReturnThis(),
+    textSearch: vi.fn().mockReturnThis(),
     range: vi.fn().mockReturnThis(),
     order: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
