@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-03-07T21:18:26.454Z"
+stopped_at: Completed 07-05-PLAN.md
+last_updated: "2026-03-07T21:24:22.200Z"
 last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 44
+  completed_plans: 45
   percent: 60
 ---
 
@@ -89,6 +89,7 @@ Progress: [██████░░░░] 60%
 | Phase 07 P03 | 17 | 2 tasks | 9 files |
 | Phase 07 P02 | 21 | 2 tasks | 15 files |
 | Phase 07 P01 | 45 | 2 tasks | 14 files |
+| Phase 07 P05 | 4 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -226,6 +227,9 @@ Recent decisions affecting current work:
 - [Phase 07]: Serwist 9.5.6 used for PWA service worker; sw.js generation requires webpack mode, not available with Turbopack default in Next.js 16
 - [Phase 07]: PWA icons are placeholder solid-color PNGs generated with sharp; real icons to come from design team
 - [Phase 07]: britestate_visit_count localStorage key tracks visits for deferred install prompt (shows on 2nd+ visit)
+- [Phase 07]: Profanity filter uses word boundary regex anchors -- no false positives on substrings (class does not flag ass)
+- [Phase 07]: flagListing is a pure function (no DB access) combining profanity + price anomaly checks -- easy to call before listing insert
+- [Phase 07]: detectDuplicate uses Jaccard word-set similarity on normalized addresses (DUPLICATE_THRESHOLD=0.7)
 
 ### Pending Todos
 
@@ -238,6 +242,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T21:18:26.449Z
-Stopped at: Completed 07-01-PLAN.md
+Last session: 2026-03-07T21:24:22.190Z
+Stopped at: Completed 07-05-PLAN.md
 Resume file: None

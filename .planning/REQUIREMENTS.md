@@ -230,9 +230,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ADM-02**: is_admin boolean on profiles (no granular RBAC at MVP)
 - [x] **ADM-03**: Admin dashboard with 5 count cards linking to management sections
 - [ ] **ADM-04**: User management (search, view details, suspend/activate)
-- [ ] **ADM-05**: Post-moderation of listings (auto-flag profanity, price anomaly, duplicate detection)
+- [x] **ADM-05**: Post-moderation of listings (auto-flag profanity, price anomaly, duplicate detection)
 - [ ] **ADM-06**: Provider verification queue with document review via signed URLs
-- [ ] **ADM-07**: Review moderation queue (flagged/reported reviews)
+- [x] **ADM-07**: Review moderation queue (flagged/reported reviews)
 - [ ] **ADM-08**: Static help page with FAQ from MDX files
 - [ ] **ADM-09**: Contact form with rate limiting (email to support inbox via Resend)
 - [x] **ADM-10**: External dashboard links (Stripe, Sentry, PostHog, Supabase)
