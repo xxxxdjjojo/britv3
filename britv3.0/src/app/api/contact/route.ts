@@ -1,0 +1,132 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { Resend } from "resend";
+import { createRateLimiter } from "@/lib/cache/redis";
+
+// ---------------------------------------------------------------------------
+// Validation schema
+// ---------------------------------------------------------------------------
+
+const contactSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  subject: z.string().min(5, "Subject must be at least 5 characters"),
+  message: z
+    .string()
+    .min(20, "Message must be at least 20 characters")
+    .max(2000, "Message must not exceed 2000 characters"),
+});
+
+// ---------------------------------------------------------------------------
+// Rate limiter: 3 requests per hour per IP
+// ---------------------------------------------------------------------------
+
+const contactRateLimiter = createRateLimiter(3, "1 h");
+
+// ---------------------------------------------------------------------------
+// Resend client (lazy, gracefully degraded)
+// ---------------------------------------------------------------------------
+
+function getResend(): Resend | null {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("[contact] RESEND_API_KEY not set -- email disabled");
+    return null;
+  }
+  return new Resend(apiKey);
+}
+
+// ---------------------------------------------------------------------------
+// Route handler
+// ---------------------------------------------------------------------------
+
+export async function POST(request: Request): Promise<NextResponse> {
+  // 1. Rate limit check
+  const ip =
+    request.headers.get("x-forwarded-for") ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+
+  const { success: rateLimitOk } = await contactRateLimiter.limit(ip);
+  if (!rateLimitOk) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
+  // 2. Parse and validate body
+  let raw: unknown;
+  try {
+    raw = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const parsed = contactSchema.safeParse(raw);
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    return NextResponse.json(
+      { error: firstIssue?.message ?? "Validation failed" },
+      { status: 400 },
+    );
+  }
+
+  const { name, email, subject, message } = parsed.data;
+
+  // 3. Log submission (always -- useful for debugging even without email)
+  console.info("[contact] Submission from", email, "|", subject);
+
+  // 4. Send email via Resend (graceful degradation if not configured)
+  const resend = getResend();
+  const supportEmail = process.env.SUPPORT_EMAIL ?? "support@britestate.com";
+
+  if (resend) {
+    try {
+      await resend.emails.send({
+        from: "Britestate <noreply@britestate.com>",
+        to: supportEmail,
+        replyTo: email,
+        subject: `[Contact] ${subject}`,
+        html: buildEmailHtml({ name, email, subject, message }),
+      });
+    } catch (err) {
+      console.error("[contact] Failed to send email:", err);
+    }
+  }
+
+  return NextResponse.json({ success: true });
+}
+
+// ---------------------------------------------------------------------------
+// HTML email template
+// ---------------------------------------------------------------------------
+
+function buildEmailHtml(data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): string {
+  const safeMessage = data.message.replace(/\n/g, "<br>");
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#333;padding:20px;">
+  <h2 style="color:#1B4D3E;">New contact form submission</h2>
+  <table style="border-collapse:collapse;width:100%;max-width:600px;">
+    <tr>
+      <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Name:</td>
+      <td style="padding:8px 0;">${data.name}</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Email:</td>
+      <td style="padding:8px 0;"><a href="mailto:${data.email}">${data.email}</a></td>
+    </tr>
+    <tr>
+      <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Subject:</td>
+      <td style="padding:8px 0;">${data.subject}</td>
+    </tr>
+  </table>
+  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
+  <p style="margin:0;line-height:1.6;">${safeMessage}</p>
+</body>
+</html>`;
+}

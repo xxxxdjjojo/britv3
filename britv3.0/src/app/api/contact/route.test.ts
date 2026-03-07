@@ -6,17 +6,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ---------------------------------------------------------------------------
-// Mocks (must be declared before imports that use the mocked modules)
+// Hoisted mocks (vi.hoisted runs before module evaluation)
 // ---------------------------------------------------------------------------
 
-const mockEmailSend = vi.fn();
-const mockRateLimitFn = vi.fn();
-
-vi.mock("resend", () => ({
-  Resend: vi.fn().mockImplementation(() => ({
-    emails: { send: mockEmailSend },
-  })),
+const { mockEmailSend, mockRateLimitFn } = vi.hoisted(() => ({
+  mockEmailSend: vi.fn(),
+  mockRateLimitFn: vi.fn(),
 }));
+
+vi.mock("resend", () => {
+  class MockResend {
+    emails = { send: mockEmailSend };
+  }
+  return { Resend: MockResend };
+});
 
 vi.mock("@/lib/cache/redis", () => ({
   createRateLimiter: vi.fn().mockImplementation(() => ({
