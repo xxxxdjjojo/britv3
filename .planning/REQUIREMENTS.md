@@ -188,11 +188,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Financial Calculators (Epic 8 -- amended, reduced)
 
-- [ ] **FIN-01**: Mortgage payment calculator (client-side amortization formula, real-time results)
-- [ ] **FIN-02**: SDLT calculator for England & NI (first-time buyer, home mover, additional property)
+- [x] **FIN-01**: Mortgage payment calculator (client-side amortization formula, real-time results)
+- [x] **FIN-02**: SDLT calculator for England & NI (first-time buyer, home mover, additional property)
 - [ ] **FIN-03**: Save mortgage parameters to localStorage + optional DB sync for cross-device
 - [ ] **FIN-04**: Personalized "Est. X/mo" display on property listing cards and detail pages
-- [ ] **FIN-05**: SDLT rate bands in maintainable TypeScript config
+- [x] **FIN-05**: SDLT rate bands in maintainable TypeScript config
 - [ ] **FIN-06**: Offer letter PDF generation (client-side via @react-pdf/renderer)
 
 **Deferred from Epic 8:**
