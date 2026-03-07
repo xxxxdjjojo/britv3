@@ -91,16 +91,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Service Marketplace (Epic 4 -- amended)
 
-- [ ] **MKT-01**: Provider can set up extended profile (business info, services, area, pricing, qualifications)
-- [ ] **MKT-02**: Provider can upload verification documents with file-type validation
-- [ ] **MKT-03**: User can create RFQ with service category, location (postcodes.io), budget, urgency
-- [ ] **MKT-04**: System matches RFQ to max 10 providers by category, postcode overlap, proximity
-- [ ] **MKT-05**: Provider can respond with itemized quote with versioning
+- [x] **MKT-01**: Provider can set up extended profile (business info, services, area, pricing, qualifications)
+- [x] **MKT-02**: Provider can upload verification documents with file-type validation
+- [x] **MKT-03**: User can create RFQ with service category, location (postcodes.io), budget, urgency
+- [x] **MKT-04**: System matches RFQ to max 10 providers by category, postcode overlap, proximity
+- [x] **MKT-05**: Provider can respond with itemized quote with versioning
 - [ ] **MKT-06**: User can compare quotes side-by-side
-- [ ] **MKT-07**: User can create and manage bookings with conflict detection
-- [ ] **MKT-08**: Booking state machine (pending -> confirmed -> in_progress -> completed -> disputed)
-- [ ] **MKT-09**: Provider can manage availability calendar
-- [ ] **MKT-10**: User can submit multi-dimensional review with ratings
+- [x] **MKT-07**: User can create and manage bookings with conflict detection
+- [x] **MKT-08**: Booking state machine (pending -> confirmed -> in_progress -> completed -> disputed)
+- [x] **MKT-09**: Provider can manage availability calendar
+- [x] **MKT-10**: User can submit multi-dimensional review with ratings
 - [ ] **MKT-11**: Rule-based review spam/sentiment detection (no AI)
 - [ ] **MKT-12**: Provider can respond to reviews; helpfulness voting
 - [ ] **MKT-13**: User can search and browse providers by category and location

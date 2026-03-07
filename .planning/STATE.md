@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-08-PLAN.md (GDPR Compliance)
-last_updated: "2026-03-07T17:37:11.770Z"
-last_activity: 2026-03-07 -- Completed 01-06 Layout Shell & Public Pages
+stopped_at: Completed 04-01-PLAN.md (Marketplace Schema & Types)
+last_updated: "2026-03-07T17:58:15.000Z"
+last_activity: 2026-03-07 -- Completed 04-01 Marketplace Schema & Types
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 39
-  completed_plans: 8
-  percent: 56
+  completed_plans: 9
+  percent: 23
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-07)
 
 **Core value:** Users can find, compare, and transact on properties with full transparency -- AI-powered matching, integrated services, and real-time transaction tracking in one place.
-**Current focus:** Phase 1: Foundation
+**Current focus:** Phase 4: Marketplace
 
 ## Current Position
 
-Phase: 1 of 7 (Foundation)
-Plan: 6 of 9 in current phase
+Phase: 4 of 7 (Marketplace)
+Plan: 1 of 8 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 01-06 Layout Shell & Public Pages
+Last activity: 2026-03-07 -- Completed 04-01 Marketplace Schema & Types
 
-Progress: [██████░░░░] 56%
+Progress: [██░░░░░░░░] 23%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [██████░░░░] 56%
 | Phase 01 P04 | 9min | 2 tasks | 13 files |
 | Phase 01 P07 | 16min | 2 tasks | 16 files |
 | Phase 01 P08 | 16min | 2 tasks | 16 files |
+| Phase 04 P01 | 6min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,9 @@ Recent decisions affecting current work:
 - [Phase 01]: Sidebar nav items defined as Record<UserRole, NavItem[]> config for easy extension
 - [Phase 01]: Protected layout simplified to fragment-only (auth check) to avoid conflicting flex wrappers
 - [Phase 01]: OnboardingFlow forms skeletal -- preference saving deferred to later phases
+- [Phase 04]: provider_rating_stats is a regular table with incremental trigger updates, not a materialized view
+- [Phase 04]: PostGIS GEOGRAPHY(Point, 4326) for geospatial columns; search_providers() uses ST_DWithin for radius queries
+- [Phase 04]: Authenticity scoring uses database trigger heuristics (timing, caps ratio, review history)
 
 ### Pending Todos
 
@@ -102,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T17:37:11.765Z
-Stopped at: Completed 01-08-PLAN.md (GDPR Compliance)
+Last session: 2026-03-07T17:58:15.000Z
+Stopped at: Completed 04-01-PLAN.md (Marketplace Schema & Types)
 Resume file: None
