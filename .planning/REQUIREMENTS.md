@@ -226,16 +226,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Admin Panel (Epic 10 -- amended, simplified)
 
-- [ ] **ADM-01**: Admin route group `(admin)/` with sidebar layout, protected by middleware
-- [ ] **ADM-02**: is_admin boolean on profiles (no granular RBAC at MVP)
-- [ ] **ADM-03**: Admin dashboard with 5 count cards linking to management sections
+- [x] **ADM-01**: Admin route group `(admin)/` with sidebar layout, protected by middleware
+- [x] **ADM-02**: is_admin boolean on profiles (no granular RBAC at MVP)
+- [x] **ADM-03**: Admin dashboard with 5 count cards linking to management sections
 - [ ] **ADM-04**: User management (search, view details, suspend/activate)
 - [ ] **ADM-05**: Post-moderation of listings (auto-flag profanity, price anomaly, duplicate detection)
 - [ ] **ADM-06**: Provider verification queue with document review via signed URLs
 - [ ] **ADM-07**: Review moderation queue (flagged/reported reviews)
 - [ ] **ADM-08**: Static help page with FAQ from MDX files
 - [ ] **ADM-09**: Contact form with rate limiting (email to support inbox via Resend)
-- [ ] **ADM-10**: External dashboard links (Stripe, Sentry, PostHog, Supabase)
+- [x] **ADM-10**: External dashboard links (Stripe, Sentry, PostHog, Supabase)
 
 **Deferred from Epic 10:**
 - Custom CMS / WYSIWYG editor (use MDX or Notion)
