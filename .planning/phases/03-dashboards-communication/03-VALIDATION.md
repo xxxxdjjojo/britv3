@@ -2,7 +2,7 @@
 phase: 3
 slug: dashboards-communication
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-03-07
 ---
@@ -36,21 +36,17 @@ created: 2026-03-07
 
 ## Per-Task Verification Map
 
-| Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
-|---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 03-01-01 | 01 | 1 | DASH-01 | unit | `pnpm test src/services/dashboard` | W0 | pending |
-| 03-01-02 | 01 | 1 | DASH-02 | unit | `pnpm test src/components/dashboard` | W0 | pending |
-| 03-01-03 | 01 | 1 | DASH-03 | unit | `pnpm test src/hooks/useDashboard` | W0 | pending |
-| 03-02-01 | 02 | 1 | DASH-07 | unit | `pnpm test src/components/profile` | W0 | pending |
-| 03-02-02 | 02 | 1 | DASH-08 | unit | `pnpm test src/services/profile` | W0 | pending |
-| 03-03-01 | 03 | 2 | COM-01 | unit | `pnpm test src/services/messaging` | W0 | pending |
-| 03-03-02 | 03 | 2 | COM-02 | unit | `pnpm test src/components/messaging` | W0 | pending |
-| 03-03-03 | 03 | 2 | COM-03 | unit | `pnpm test src/hooks/useMessaging` | W0 | pending |
-| 03-04-01 | 04 | 2 | COM-07 | unit | `pnpm test src/services/ai-drafting` | W0 | pending |
-| 03-05-01 | 05 | 3 | COM-08 | unit | `pnpm test src/services/notifications` | W0 | pending |
-| 03-05-02 | 05 | 3 | COM-09 | unit | `pnpm test src/components/notifications` | W0 | pending |
-| 03-06-01 | 06 | 3 | COM-14 | unit | `pnpm test src/components/milestones` | W0 | pending |
-| 03-06-02 | 06 | 3 | COM-15 | unit | `pnpm test src/services/milestones` | W0 | pending |
+| Task ID | Plan | Wave | Requirement | Test Type | Automated Command | Test File | Status |
+|---------|------|------|-------------|-----------|-------------------|-----------|--------|
+| 02-T3a | 02 | 1 | DASH-08 | unit | `pnpm test src/__tests__/lib/sanitize.test.ts` | `src/__tests__/lib/sanitize.test.ts` | pending |
+| 02-T3b | 02 | 1 | DASH-08 | unit | `pnpm test src/__tests__/lib/redis.test.ts` | `src/__tests__/lib/redis.test.ts` | pending |
+| 03-T3 | 03 | 2 | DASH-09, DASH-10 | unit | `pnpm test src/__tests__/services/profile-service.test.ts` | `src/__tests__/services/profile-service.test.ts` | pending |
+| 04-T3 | 04 | 2 | COM-01, COM-02, COM-03 | unit | `pnpm test src/__tests__/services/message-service.test.ts` | `src/__tests__/services/message-service.test.ts` | pending |
+| 05-T3 | 05 | 2 | COM-10, COM-11 | unit | `pnpm test src/__tests__/services/notification-service.test.ts` | `src/__tests__/services/notification-service.test.ts` | pending |
+| 06-T3 | 06 | 3 | DASH-07, DASH-12 | unit | `pnpm test src/__tests__/services/dashboard-service.test.ts` | `src/__tests__/services/dashboard-service.test.ts` | pending |
+| 07-T2 | 07 | 3 | COM-06, COM-07 | unit | `pnpm test src/__tests__/services/quote-draft-service.test.ts` | `src/__tests__/services/quote-draft-service.test.ts` | pending |
+| 08-T3 | 08 | 3 | COM-14, COM-15 | unit | `pnpm test src/__tests__/services/milestone-service.test.ts` | `src/__tests__/services/milestone-service.test.ts` | pending |
+| 10-T2 | 10 | 4 | ALL | integration | `pnpm test --run && pnpm build` | All 8 test files | pending |
 
 *Status: pending / green / red / flaky*
 
@@ -59,12 +55,29 @@ created: 2026-03-07
 ## Wave 0 Requirements
 
 - [ ] Vitest + React Testing Library installed and configured (if not already from Phase 1)
-- [ ] `src/test/setup.ts` — test setup with mocks for Supabase client
-- [ ] `src/test/fixtures/dashboard.ts` — shared dashboard test fixtures
-- [ ] `src/test/fixtures/messaging.ts` — shared messaging test fixtures
-- [ ] `src/test/mocks/supabase.ts` — Supabase client mock factory
+- [ ] `src/__tests__/setup.ts` — test setup with mocks for Supabase client (Plan 02, Task 2)
+- [ ] `src/__tests__/fixtures/dashboard.ts` — shared dashboard test fixtures (Plan 02, Task 2)
+- [ ] `src/__tests__/fixtures/messaging.ts` — shared messaging test fixtures (Plan 02, Task 2)
+- [ ] `src/__tests__/mocks/redis.ts` — Redis mock factory (Plan 02, Task 2)
+- [ ] `src/__tests__/mocks/anthropic.ts` — Anthropic mock factory (Plan 02, Task 2)
+- [ ] `src/__tests__/mocks/resend.ts` — Resend mock factory (Plan 02, Task 2)
 
-*If none: "Existing infrastructure covers all phase requirements."*
+All Wave 0 items are created in Plan 02 (wave 1), which runs before any test-dependent plans.
+
+---
+
+## Test Distribution by Plan
+
+| Plan | Test File(s) | Test Count (est.) |
+|------|-------------|-------------------|
+| 02 | `sanitize.test.ts`, `redis.test.ts` | ~9 |
+| 03 | `profile-service.test.ts` | ~8 |
+| 04 | `message-service.test.ts` | ~9 |
+| 05 | `notification-service.test.ts` | ~10 |
+| 06 | `dashboard-service.test.ts` | ~7 |
+| 07 | `quote-draft-service.test.ts` | ~7 |
+| 08 | `milestone-service.test.ts` | ~8 |
+| **Total** | **8 test files** | **~58 tests** |
 
 ---
 
@@ -81,11 +94,12 @@ created: 2026-03-07
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify with behavioral tests or build checks
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (Plan 02 creates all fixtures and setup)
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
+- [x] Task IDs match actual plan structure (10 plans, tests distributed per-plan)
 
 **Approval:** pending
