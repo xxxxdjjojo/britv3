@@ -38,8 +38,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **AUTH-10**: User verification levels enforced (basic, standard, enhanced, professional)
 - [x] **AUTH-11**: Provider verification pipeline (email, phone, ID, insurance, qualifications, admin review)
 - [x] **AUTH-12**: GDPR consent captured at signup with granular options (marketing, analytics, third-party)
-- [ ] **AUTH-13**: User can export their data in JSON format
-- [ ] **AUTH-14**: User can request account deletion with automated data purge
+- [x] **AUTH-13**: User can export their data in JSON format
+- [x] **AUTH-14**: User can request account deletion with automated data purge
 - [x] **AUTH-15**: Complete audit trail for consent changes
 - [x] **AUTH-16**: CSP Level 3 headers and security hardening
 - [x] **AUTH-17**: RBAC middleware for route protection
