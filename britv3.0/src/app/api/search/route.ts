@@ -37,6 +37,7 @@ const searchParamsSchema = z.object({
   sort: z
     .enum(["price_asc", "price_desc", "date_desc", "date_asc", "relevance"])
     .optional() as z.ZodOptional<z.ZodType<SearchSort>>,
+  polygon: z.string().optional(),
   cursor: z.string().uuid().optional(),
   per_page: z.coerce.number().int().min(1).max(100).optional(),
 });

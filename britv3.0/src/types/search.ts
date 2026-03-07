@@ -28,6 +28,8 @@ export type SearchParams = SearchFilters &
     lng?: number;
     radius?: number;
     postcode?: string;
+    polygon?: string;
+    listed_after?: string;
     sort?: SearchSort;
     cursor?: string;
     per_page?: number;

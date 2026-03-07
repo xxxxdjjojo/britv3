@@ -21,12 +21,17 @@ export async function buildSearchQuery(
 ): Promise<SearchResult> {
   const perPage = params.per_page ?? DEFAULT_PER_PAGE;
   const isLocationSearch = params.lat != null && params.lng != null;
+  const isPolygonSearch = params.polygon != null && params.polygon.length > 0;
 
-  // Start query: RPC for location, materialized view otherwise
+  // Start query: RPC for location/polygon, materialized view otherwise
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query: any;
 
-  if (isLocationSearch) {
+  if (isPolygonSearch) {
+    query = supabase.rpc("search_listings_by_polygon", {
+      polygon_geojson: params.polygon!,
+    });
+  } else if (isLocationSearch) {
     const radiusMiles = params.radius ?? DEFAULT_RADIUS_MILES;
     query = supabase.rpc("search_listings_by_radius", {
       center_lat: params.lat!,
@@ -86,6 +91,10 @@ export async function buildSearchQuery(
     query = query.textSearch("description_tsv", params.q, {
       type: "websearch",
     });
+  }
+
+  if (params.listed_after) {
+    query = query.gte("listed_date", params.listed_after);
   }
 
   // Apply sort

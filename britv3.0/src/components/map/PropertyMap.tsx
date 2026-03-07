@@ -8,7 +8,8 @@
 import { useCallback, useRef, type ReactNode } from "react";
 import { Map, Source, Layer } from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { MapLayerMouseEvent, MapRef, GeoJSONSource } from "maplibre-gl";
+import type { MapLayerMouseEvent, GeoJSONSource } from "maplibre-gl";
+import type { MapRef } from "@vis.gl/react-maplibre";
 import type { PropertyMapPoint, MapBounds, MapViewState } from "@/types/map";
 import { propertiesToGeoJSON, CLUSTER_MAX_ZOOM, CLUSTER_RADIUS } from "@/lib/map/cluster";
 
