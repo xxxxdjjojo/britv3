@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { MortgageParams } from "@/types/calculators";
 
 const STORAGE_KEY = "britestate_mortgage_params";
@@ -32,11 +32,7 @@ function readFromStorage(): MortgageParams | null {
 }
 
 export function useMortgageParams(): UseMortgageParamsReturn {
-  const [params, setParams] = useState<MortgageParams | null>(null);
-
-  useEffect(() => {
-    setParams(readFromStorage());
-  }, []);
+  const [params, setParams] = useState<MortgageParams | null>(readFromStorage);
 
   const saveParams = useCallback((newParams: MortgageParams) => {
     try {
