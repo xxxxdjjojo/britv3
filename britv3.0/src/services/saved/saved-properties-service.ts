@@ -53,8 +53,7 @@ export async function saveProperty(
       p_listing_id: listingId,
       p_delta: 1,
     })
-    .then(() => {})
-    .catch(() => {});
+    .then(() => undefined, () => undefined);
 
   return data as SavedProperty;
 }
@@ -80,8 +79,7 @@ export async function unsaveProperty(
       p_listing_id: listingId,
       p_delta: -1,
     })
-    .then(() => {})
-    .catch(() => {});
+    .then(() => undefined, () => undefined);
 }
 
 /**

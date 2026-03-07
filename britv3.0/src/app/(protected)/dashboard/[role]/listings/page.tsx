@@ -122,7 +122,7 @@ export default async function MyListingsPage(
       <Tabs defaultValue={activeTab}>
         <TabsList>
           {STATUS_TABS.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} asChild>
+            <TabsTrigger key={tab.value} value={tab.value}>
               <Link
                 href={`/dashboard/${role}/listings${tab.value !== "all" ? `?status=${tab.value}` : ""}`}
               >

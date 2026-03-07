@@ -127,18 +127,13 @@ export async function createListing(
 
   // Set PostGIS coordinates via RPC (fire-and-forget)
   if (geo) {
-    supabase
+    void supabase
       .rpc("set_property_coordinates", {
         p_property_id: property.id,
         p_lng: geo.longitude,
         p_lat: geo.latitude,
       })
-      .then(() => {
-        // Coordinates set successfully
-      })
-      .catch(() => {
-        // Non-blocking -- coordinates can be retried
-      });
+      .then(() => undefined, () => undefined);
   }
 
   // Insert listing
@@ -160,10 +155,9 @@ export async function createListing(
   }
 
   // Fire-and-forget: refresh materialized view
-  supabase
+  void supabase
     .rpc("refresh_search_listings")
-    .then(() => {})
-    .catch(() => {});
+    .then(() => undefined, () => undefined);
 
   return {
     listing: listing as Listing,
@@ -232,10 +226,9 @@ export async function updateListing(
   }
 
   // Fire-and-forget: refresh materialized view
-  supabase
+  void supabase
     .rpc("refresh_search_listings")
-    .then(() => {})
-    .catch(() => {});
+    .then(() => undefined, () => undefined);
 
   return {
     listing: updatedListing,
@@ -367,10 +360,9 @@ export async function deleteListing(
   }
 
   // Fire-and-forget: refresh materialized view
-  supabase
+  void supabase
     .rpc("refresh_search_listings")
-    .then(() => {})
-    .catch(() => {});
+    .then(() => undefined, () => undefined);
 }
 
 /**

@@ -160,8 +160,7 @@ export async function checkNewResults(
     .from("saved_searches")
     .update({ new_results_count: count })
     .eq("id", searchId)
-    .then(() => {})
-    .catch(() => {});
+    .then(() => undefined, () => undefined);
 
   return count;
 }

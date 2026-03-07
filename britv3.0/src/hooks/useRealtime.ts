@@ -23,7 +23,10 @@ export function useRealtimeSubscription(
 ) {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const onUpdateRef = useRef(onUpdate);
-  onUpdateRef.current = onUpdate;
+
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  });
 
   useEffect(() => {
     if (!userId) return;
