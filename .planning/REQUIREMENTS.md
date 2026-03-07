@@ -208,10 +208,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **MOB-01**: Web App Manifest with installable standalone mode
 - [x] **MOB-02**: Deferred install prompt after 2nd visit
-- [ ] **MOB-03**: Push notifications via Web Push API + VAPID keys ($0/mo)
-- [ ] **MOB-04**: Notification deep linking to relevant pages
-- [ ] **MOB-05**: Push notification preferences
-- [ ] **MOB-06**: Offline access to saved properties (50), recent views (20), appointments
+- [x] **MOB-03**: Push notifications via Web Push API + VAPID keys ($0/mo)
+- [x] **MOB-04**: Notification deep linking to relevant pages
+- [x] **MOB-05**: Push notification preferences
+- [x] **MOB-06**: Offline access to saved properties (50), recent views (20), appointments
 - [x] **MOB-07**: Static page caching (stale-while-revalidate via @serwist/next)
 - [ ] **MOB-08**: Responsive verification across 320px-1280px breakpoints
 - [ ] **MOB-09**: Touch optimization (44px targets, swipe gestures, pull-to-refresh)

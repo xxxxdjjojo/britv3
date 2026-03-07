@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-06-PLAN.md
-last_updated: "2026-03-07T21:42:40.487Z"
+stopped_at: Completed 07-04-PLAN.md
+last_updated: "2026-03-07T21:45:44.458Z"
 last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 46
+  completed_plans: 47
   percent: 60
 ---
 
@@ -91,6 +91,7 @@ Progress: [██████░░░░] 60%
 | Phase 07 P01 | 45 | 2 tasks | 14 files |
 | Phase 07 P05 | 4 | 2 tasks | 5 files |
 | Phase 07 P06 | 20 | 2 tasks | 8 files |
+| Phase 07 P04 | 24 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -234,6 +235,10 @@ Recent decisions affecting current work:
 - [Phase 07]: BottomTabBarWrapper client component wraps dynamic(ssr:false) to avoid Next.js 16 Turbopack restriction on ssr:false in Server Components
 - [Phase 07]: FAQ content stored as TypeScript arrays in src/content/help-faq.ts (not MDX) for simplicity
 - [Phase 07]: Contact route returns 200 when RESEND_API_KEY missing for graceful degradation without exposing infrastructure info
+- [Phase 07]: VAPID lazy-init in push.ts on first sendPushNotification call to avoid startup errors
+- [Phase 07]: push/send route guards with Bearer SUPABASE_SERVICE_ROLE_KEY for service-to-service calls
+- [Phase 07]: IndexedDB via native API (no idb-keyval) in useOfflineData for zero-dependency offline caching
+- [Phase 07]: SW runtime caching: NetworkFirst for /api/properties/* (24h), CacheFirst for cross-origin images (7d, 100 entries)
 
 ### Pending Todos
 
@@ -246,6 +251,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T21:42:40.479Z
-Stopped at: Completed 07-06-PLAN.md
+Last session: 2026-03-07T21:45:44.451Z
+Stopped at: Completed 07-04-PLAN.md
 Resume file: None
