@@ -6,7 +6,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { useDebouncedValue } from "use-debounce";
+import { useDebounce } from "use-debounce";
 import type { GeocodedLocation } from "@/types/search";
 
 const GEOCODE_STALE_TIME = 24 * 60 * 60 * 1000; // 24 hours
@@ -42,7 +42,7 @@ export function useGeocode(postcode: string | null) {
  * Returns an array of matching postcodes as user types.
  */
 export function usePostcodeAutocomplete(partial: string | null) {
-  const [debouncedPartial] = useDebouncedValue(partial ?? "", 300);
+  const [debouncedPartial] = useDebounce(partial ?? "", 300);
 
   return useQuery<string[]>({
     queryKey: ["geocode", "autocomplete", debouncedPartial],
