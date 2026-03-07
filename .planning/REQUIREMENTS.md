@@ -101,10 +101,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MKT-08**: Booking state machine (pending -> confirmed -> in_progress -> completed -> disputed)
 - [x] **MKT-09**: Provider can manage availability calendar
 - [x] **MKT-10**: User can submit multi-dimensional review with ratings
-- [ ] **MKT-11**: Rule-based review spam/sentiment detection (no AI)
+- [x] **MKT-11**: Rule-based review spam/sentiment detection (no AI)
 - [ ] **MKT-12**: Provider can respond to reviews; helpfulness voting
 - [ ] **MKT-13**: User can search and browse providers by category and location
-- [ ] **MKT-14**: Async job processing via Inngest (replaces BullMQ)
+- [x] **MKT-14**: Async job processing via Inngest (replaces BullMQ)
 
 **Deferred from Epic 4:**
 - Stripe Connect payments (separate epic)
