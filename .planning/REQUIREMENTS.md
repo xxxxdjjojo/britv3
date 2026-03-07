@@ -146,12 +146,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### AI Features (Epic 6 -- amended, drastically reduced)
 
-- [ ] **AI-01**: Centralized AI service layer wrapping Claude API with token tracking, rate limiting, daily spend kill switch
-- [ ] **AI-02**: AI property description generation (3 tones: professional, friendly, premium; max 3 regenerations)
+- [x] **AI-01**: Centralized AI service layer wrapping Claude API with token tracking, rate limiting, daily spend kill switch
+- [x] **AI-02**: AI property description generation (3 tones: professional, friendly, premium; max 3 regenerations)
 - [x] **AI-03**: SQL-based property recommendations from saved searches and saved properties (zero AI cost)
 - [x] **AI-04**: Land Registry Price Paid Data display on property detail pages (free public data)
 - [x] **AI-05**: Static smart reply suggestions based on conversation type and keyword matching (no AI)
-- [ ] **AI-06**: AI feedback collection (thumbs up/down for prompt engineering)
+- [x] **AI-06**: AI feedback collection (thumbs up/down for prompt engineering)
 
 **Deferred from Epic 6:**
 - AI context management / RAG system

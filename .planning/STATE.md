@@ -135,6 +135,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Platform events use O(1) writes per action (not per-recipient fan-out)
 - [Phase 03]: Dashboard types use discriminated union with role field as discriminant
 - [Phase 04]: Used StateMachineStatus type cast for canTransition compatibility between marketplace.ts BookingStatus (has disputed) and booking-state-machine.ts BookingStatus (has declined)
+- [Phase 05]: Claude Haiku 4.5 selected for AI descriptions -- cost-efficient at $1/$5 per 1M tokens
+- [Phase 05]: AI rate limiters lazy-initialized to avoid startup errors when Upstash env vars missing
+- [Phase 05]: All AI calls route through callClaude wrapper for centralized cost/rate control
 
 ### Pending Todos
 
