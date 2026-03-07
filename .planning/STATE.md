@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md (Project Foundation)
-last_updated: "2026-03-07T17:01:28Z"
-last_activity: 2026-03-07 -- Completed 01-01 Project Foundation (design system, Supabase clients, test infra)
+stopped_at: Completed 01-03-PLAN.md (Auth Service & Logic)
+last_updated: "2026-03-07T17:12:25.009Z"
+last_activity: 2026-03-07 -- Completed 01-03 Auth Service & Logic
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 9
-  completed_plans: 2
-  percent: 22
+  completed_plans: 4
+  percent: 33
 ---
 
 # Project State
@@ -26,24 +26,24 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 1 of 7 (Foundation)
-Plan: 2 of 9 in current phase
+Plan: 3 of 9 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 01-01 Project Foundation
+Last activity: 2026-03-07 -- Completed 01-03 Auth Service & Logic
 
-Progress: [██░░░░░░░░] 22%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 5 min
-- Total execution time: 0.15 hours
+- Total execution time: 0.23 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2 | 9 min | 5 min |
+| 01-foundation | 3 | 14 min | 5 min |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -71,6 +71,9 @@ Recent decisions affecting current work:
 - 2026-03-07: Used zod main export (not zod/v4) for @t3-oss/env-nextjs compatibility
 - 2026-03-07: Kept Shadcn dark mode via .dark class + prefers-color-scheme auto-apply for flexibility
 - 2026-03-07: All brand colors, fonts, shadows, radii configured via Tailwind v4 @theme block in globals.css
+- 2026-03-07: Auth service uses pure functions (not class) for tree-shaking and simplicity
+- 2026-03-07: getUser() used instead of getSession() for secure server-side verification
+- 2026-03-07: Google OAuth adds access_type: offline, prompt: consent for refresh token support
 
 ### Pending Todos
 
@@ -84,5 +87,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 01-01-PLAN.md (Project Foundation)
+Stopped at: Completed 01-03-PLAN.md (Auth Service & Logic)
 Resume file: None

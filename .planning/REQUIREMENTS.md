@@ -26,12 +26,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication & Foundation (Epic 1)
 
-- [ ] **AUTH-01**: User can create account with email and password
-- [ ] **AUTH-02**: User receives email verification after signup
-- [ ] **AUTH-03**: User can log in with Google OAuth (PKCE flow)
-- [ ] **AUTH-04**: User can log in with Apple OAuth
-- [ ] **AUTH-05**: User can reset password via email link
-- [ ] **AUTH-06**: User session persists across browser refresh (JWT with refresh tokens)
+- [x] **AUTH-01**: User can create account with email and password
+- [x] **AUTH-02**: User receives email verification after signup
+- [x] **AUTH-03**: User can log in with Google OAuth (PKCE flow)
+- [x] **AUTH-04**: User can log in with Apple OAuth
+- [x] **AUTH-05**: User can reset password via email link
+- [x] **AUTH-06**: User session persists across browser refresh (JWT with refresh tokens)
 - [x] **AUTH-07**: User can select role(s) after registration (homebuyer, renter, seller, landlord, agent, provider)
 - [x] **AUTH-08**: User can hold multiple roles and switch between them
 - [ ] **AUTH-09**: Role-specific dashboard shell loads based on active role
