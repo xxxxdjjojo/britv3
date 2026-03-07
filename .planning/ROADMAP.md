@@ -79,12 +79,19 @@ Plans:
   4. AI quote drafting works for tradespeople and agents via Claude Haiku
   5. In-app notification feed and email notifications (immediate critical + daily digest) are functional with user preferences
   6. Transaction milestones (8-step) and service job milestones (5-step) display progress
-**Plans**: TBD
+**Plans**: 10 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md -- Dependencies, TypeScript types, database migration for Phase 3 tables
+- [ ] 03-02-PLAN.md -- Redis client, sanitization utils, image compression, React Query provider, test mocks
+- [ ] 03-03-PLAN.md -- Profile management: CRUD, avatar upload, provider profile, notification preferences
+- [ ] 03-04-PLAN.md -- Messaging system: inbox polling, message threads, attachments, contact form, read status
+- [ ] 03-05-PLAN.md -- Notification system: event-based feed, email notifications, daily digest, preferences
+- [ ] 03-06-PLAN.md -- Dashboard infrastructure: aggregated API, Redis caching, activity feed, Realtime
+- [ ] 03-07-PLAN.md -- AI quote drafting: Claude Haiku service, rate card, market pricing seed data
+- [ ] 03-08-PLAN.md -- Milestones and files: transaction pipeline, job pipeline, files tab
+- [ ] 03-09-PLAN.md -- Role-specific dashboards: 6 dashboard pages with widgets and stat cards
+- [ ] 03-10-PLAN.md -- Integration: layout wiring, navigation, unit tests, visual checkpoint
 
 ### Phase 4: Marketplace
 **Goal**: Users can find, compare, and hire verified service providers through an RFQ-to-booking pipeline with reviews
@@ -172,7 +179,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/9 | In Progress|  |
 | 2. Property Portal | 0/3 | Not started | - |
-| 3. Dashboards & Communication | 0/3 | Not started | - |
+| 3. Dashboards & Communication | 0/10 | Not started | - |
 | 4. Marketplace | 0/7 | Not started | - |
 | 5. AI & Financial Tools | 0/2 | Not started | - |
 | 6. Landlord Tools | 0/2 | Not started | - |
@@ -183,3 +190,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Rebuilt: 2026-03-07 (aligned to amended epic specs)*
 *Phase 1 planned: 2026-03-07 (9 plans, 4 waves) -- revised from 7 plans after scope checker split*
 *Phase 4 planned: 2026-03-07 (7 plans, 4 waves)*
+*Phase 3 planned: 2026-03-07 (10 plans, 4 waves)*
