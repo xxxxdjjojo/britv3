@@ -252,9 +252,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LCH-03**: Structured JSON logger outputting to Vercel logs
 - [x] **LCH-04**: GitHub Action for automated Supabase migration on push to main
 - [x] **LCH-05**: Feature flags via environment variables (upgrade path: PostHog free flags)
-- [ ] **LCH-06**: Full RLS policy audit across all tables with test cases
-- [ ] **LCH-07**: Dependabot vulnerability scanning enabled
-- [ ] **LCH-08**: OWASP ZAP automated security scan against staging
+- [x] **LCH-06**: Full RLS policy audit across all tables with test cases
+- [x] **LCH-07**: Dependabot vulnerability scanning enabled
+- [x] **LCH-08**: OWASP ZAP automated security scan against staging
 - [ ] **LCH-09**: Artillery load test (100 VUs, 5 key endpoints, <2s avg, <1% error)
 - [ ] **LCH-10**: Manual UAT with seeded staging data across all user roles
 - [ ] **LCH-11**: Cross-browser testing (Chrome, Firefox, Safari, Edge, iOS Safari, Android Chrome)
