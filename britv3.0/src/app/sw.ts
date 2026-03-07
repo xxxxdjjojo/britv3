@@ -1,5 +1,10 @@
 import { defaultCache } from "@serwist/next/worker";
-import { Serwist } from "serwist";
+import {
+  Serwist,
+  NetworkFirst,
+  CacheFirst,
+  ExpirationPlugin,
+} from "serwist";
 
 declare const self: ServiceWorkerGlobalScope & {
   __SW_MANIFEST: (PrecacheEntry | string)[];
@@ -15,7 +20,36 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache,
+  runtimeCaching: [
+    {
+      matcher: /^https?:\/\/[^/]+\/api\/properties\//,
+      handler: new NetworkFirst({
+        cacheName: "property-api-cache",
+        networkTimeoutSeconds: 5,
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 50,
+            maxAgeSeconds: 60 * 60 * 24,
+          }),
+        ],
+      }),
+    },
+    {
+      matcher: ({ url }: { url: URL }) =>
+        /\.(jpg|jpeg|png|webp|avif)(\?.*)?$/.test(url.pathname) &&
+        url.hostname !== self.location.hostname,
+      handler: new CacheFirst({
+        cacheName: "property-image-cache",
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 7,
+          }),
+        ],
+      }),
+    },
+    ...defaultCache,
+  ],
 });
 
 self.addEventListener("push", (event) => {

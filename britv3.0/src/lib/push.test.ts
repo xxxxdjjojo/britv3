@@ -58,14 +58,13 @@ describe("sendPushNotification", () => {
   };
 
   it("calls webpush.sendNotification with JSON-stringified payload", async () => {
-    const webpush = await import("web-push");
+    const webpushModule = await import("web-push");
     const mockSendNotification = vi.mocked(
-      (webpush.default as { sendNotification: ReturnType<typeof vi.fn> })
-        .sendNotification,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (webpushModule.default as unknown as Record<string, any>)
+        .sendNotification as ReturnType<typeof vi.fn>,
     );
-    mockSendNotification.mockResolvedValueOnce(
-      {} as Awaited<ReturnType<typeof mockSendNotification>>,
-    );
+    mockSendNotification.mockResolvedValueOnce({});
 
     const { sendPushNotification } = await import("@/lib/push");
     const result = await sendPushNotification(validSubscription, validPayload);
@@ -78,14 +77,13 @@ describe("sendPushNotification", () => {
   });
 
   it("returns success: true on successful notification delivery", async () => {
-    const webpush = await import("web-push");
+    const webpushModule = await import("web-push");
     const mockSendNotification = vi.mocked(
-      (webpush.default as { sendNotification: ReturnType<typeof vi.fn> })
-        .sendNotification,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (webpushModule.default as unknown as Record<string, any>)
+        .sendNotification as ReturnType<typeof vi.fn>,
     );
-    mockSendNotification.mockResolvedValueOnce(
-      {} as Awaited<ReturnType<typeof mockSendNotification>>,
-    );
+    mockSendNotification.mockResolvedValueOnce({});
 
     const { sendPushNotification } = await import("@/lib/push");
     const result = await sendPushNotification(validSubscription, validPayload);
@@ -94,10 +92,11 @@ describe("sendPushNotification", () => {
   });
 
   it("deletes expired subscription and returns success: false on 410 error", async () => {
-    const webpush = await import("web-push");
+    const webpushModule = await import("web-push");
     const mockSendNotification = vi.mocked(
-      (webpush.default as { sendNotification: ReturnType<typeof vi.fn> })
-        .sendNotification,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (webpushModule.default as unknown as Record<string, any>)
+        .sendNotification as ReturnType<typeof vi.fn>,
     );
     const expiredError = Object.assign(new Error("Gone"), { statusCode: 410 });
     mockSendNotification.mockRejectedValueOnce(expiredError);
@@ -106,11 +105,10 @@ describe("sendPushNotification", () => {
     const mockDeleteFn = vi.fn(() => ({
       eq: vi.fn(() => Promise.resolve({ error: null })),
     }));
-    vi.mocked(createAdminClient).mockReturnValueOnce({
-      from: vi.fn(() => ({
-        delete: mockDeleteFn,
-      })),
-    } as ReturnType<typeof createAdminClient>);
+    vi.mocked(createAdminClient).mockReturnValueOnce(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { from: vi.fn(() => ({ delete: mockDeleteFn })) } as unknown as ReturnType<typeof createAdminClient>,
+    );
 
     const { sendPushNotification } = await import("@/lib/push");
     const result = await sendPushNotification(validSubscription, validPayload);
@@ -120,10 +118,11 @@ describe("sendPushNotification", () => {
   });
 
   it("re-throws non-410 errors", async () => {
-    const webpush = await import("web-push");
+    const webpushModule = await import("web-push");
     const mockSendNotification = vi.mocked(
-      (webpush.default as { sendNotification: ReturnType<typeof vi.fn> })
-        .sendNotification,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (webpushModule.default as unknown as Record<string, any>)
+        .sendNotification as ReturnType<typeof vi.fn>,
     );
     const networkError = Object.assign(new Error("Network Error"), {
       statusCode: 500,
