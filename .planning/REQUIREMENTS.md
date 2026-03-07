@@ -44,7 +44,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **AUTH-16**: CSP Level 3 headers and security hardening
 - [ ] **AUTH-17**: RBAC middleware for route protection
 - [ ] **AUTH-18**: Public pages (home, about, terms, privacy policy)
-- [ ] **AUTH-19**: Responsive layout shell with navigation
+- [x] **AUTH-19**: Responsive layout shell with navigation
 
 ### Property Search (Epic 2)
 

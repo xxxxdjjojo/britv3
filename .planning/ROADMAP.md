@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 9 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Project setup: dependencies, design system, Shadcn UI, Supabase clients, test infra
+- [x] 01-01-PLAN.md -- Project setup: dependencies, design system, Shadcn UI, Supabase clients, test infra
 - [ ] 01-02-PLAN.md -- Database schema: migration SQL, TypeScript types, RLS policies, constants
 - [ ] 01-03-PLAN.md -- Auth service layer: auth-service, useAuth hook, PKCE callback, tests
 - [ ] 01-04-PLAN.md -- Auth UI pages: login, register, forgot-password, reset-password, verify-email
@@ -165,7 +165,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/9 | In Progress|  |
+| 1. Foundation | 2/9 | In Progress |  |
 | 2. Property Portal | 0/3 | Not started | - |
 | 3. Dashboards & Communication | 0/3 | Not started | - |
 | 4. Marketplace | 0/2 | Not started | - |
