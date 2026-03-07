@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-03-PLAN.md (Auth Service & Logic)
-last_updated: "2026-03-07T17:12:25.009Z"
-last_activity: 2026-03-07 -- Completed 01-03 Auth Service & Logic
+stopped_at: Completed 01-05-PLAN.md (Security Middleware)
+last_updated: "2026-03-07T17:11:13Z"
+last_activity: 2026-03-07 -- Completed 01-05 Security Middleware (CSP, RBAC, security headers)
 progress:
   total_phases: 7
   completed_phases: 0
@@ -26,24 +26,24 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 1 of 7 (Foundation)
-Plan: 3 of 9 in current phase
+Plan: 5 of 9 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 01-03 Auth Service & Logic
+Last activity: 2026-03-07 -- Completed 01-05 Security Middleware
 
-Progress: [███░░░░░░░] 33%
+Progress: [████░░░░░░] 44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: 5 min
-- Total execution time: 0.23 hours
+- Total execution time: 0.33 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 3 | 14 min | 5 min |
+| 01-foundation | 4 | 20 min | 5 min |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -74,6 +74,9 @@ Recent decisions affecting current work:
 - 2026-03-07: Auth service uses pure functions (not class) for tree-shaking and simplicity
 - 2026-03-07: getUser() used instead of getSession() for secure server-side verification
 - 2026-03-07: Google OAuth adds access_type: offline, prompt: consent for refresh token support
+- 2026-03-07: Middleware uses btoa(crypto.randomUUID()) for CSP nonce -- simple, crypto-strong
+- 2026-03-07: Middleware creates own Supabase client (not lib helper) for direct cookie access
+- 2026-03-07: Auth routes redirect authenticated users to /dashboard (generic, not role-specific)
 
 ### Pending Todos
 
@@ -87,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 01-03-PLAN.md (Auth Service & Logic)
+Stopped at: Completed 01-05-PLAN.md (Security Middleware)
 Resume file: None
