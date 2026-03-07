@@ -38,33 +38,36 @@ created: 2026-03-07
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 01 | 1 | MKT-01 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-01-02 | 01 | 1 | MKT-02 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-02-01 | 02 | 1 | MKT-03 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-02-02 | 02 | 1 | MKT-04 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-03-01 | 03 | 2 | MKT-05 | unit+integration | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-03-02 | 03 | 2 | MKT-06 | unit+integration | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-04-01 | 04 | 2 | MKT-07 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-04-02 | 04 | 2 | MKT-08 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-05-01 | 05 | 3 | MKT-09 | unit+integration | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-05-02 | 05 | 3 | MKT-10 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-06-01 | 06 | 3 | MKT-11 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-06-02 | 06 | 3 | MKT-12 | unit | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-07-01 | 07 | 4 | MKT-13 | integration | `pnpm test --run` | ❌ W0 | ⬜ pending |
-| 04-07-02 | 07 | 4 | MKT-14 | integration | `pnpm test --run` | ❌ W0 | ⬜ pending |
+| 04-01-01 | 01 | 1 | MKT-01 | unit | `pnpm test --run` | W0 | pending |
+| 04-01-02 | 01 | 1 | MKT-02 | unit | `pnpm test --run` | W0 | pending |
+| 04-02-01 | 02 | 1 | MKT-03 | unit | `pnpm test --run` | W0 | pending |
+| 04-02-02 | 02 | 1 | MKT-04 | unit | `pnpm test --run` | W0 | pending |
+| 04-03-01 | 03 | 2 | MKT-05 | unit+integration | `pnpm test --run` | W0 | pending |
+| 04-03-02 | 03 | 2 | MKT-06 | unit+integration | `pnpm test --run` | W0 | pending |
+| 04-04-01 | 04 | 2 | MKT-07 | unit | `pnpm test --run` | W0 | pending |
+| 04-04-02 | 04 | 2 | MKT-08 | unit | `pnpm test --run` | W0 | pending |
+| 04-05-01 | 05 | 3 | MKT-09 | unit+integration | `pnpm test --run` | W0 | pending |
+| 04-05-02 | 05 | 3 | MKT-10 | unit | `pnpm test --run` | W0 | pending |
+| 04-06-01 | 06 | 2 | MKT-11 | unit | `pnpm test --run` | W0 | pending |
+| 04-06-02 | 06 | 2 | MKT-12 | unit | `pnpm test --run` | W0 | pending |
+| 04-07-01 | 07 | 4 | MKT-13 | integration | `pnpm test --run` | W0 | pending |
+| 04-07-02 | 07 | 4 | MKT-13 | integration | `pnpm test --run` | W0 | pending |
+| 04-08-01 | 08 | 4 | MKT-14 | integration | `pnpm test --run` | W0 | pending |
+| 04-08-02 | 08 | 4 | MKT-14 | integration | `pnpm test --run` | W0 | pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+*Status: pending / green / red / flaky*
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `src/__tests__/marketplace/` — test directory structure
-- [ ] `src/__tests__/marketplace/provider-profiles.test.ts` — stubs for MKT-01, MKT-02
-- [ ] `src/__tests__/marketplace/rfq-matching.test.ts` — stubs for MKT-03, MKT-04
-- [ ] `src/__tests__/marketplace/quotes-booking.test.ts` — stubs for MKT-05, MKT-06, MKT-07, MKT-08
-- [ ] `src/__tests__/marketplace/reviews.test.ts` — stubs for MKT-09, MKT-10, MKT-11, MKT-12
-- [ ] `src/__tests__/marketplace/integration.test.ts` — stubs for MKT-13, MKT-14
+Test files are co-located with their source files, matching the pattern used in plans:
+
+- [ ] `src/services/marketplace/provider-service.test.ts` — stubs for MKT-01, MKT-02 (Plan 03)
+- [ ] `src/services/marketplace/rfq-service.test.ts` — stubs for MKT-03, MKT-04 (Plan 04)
+- [ ] `src/services/marketplace/quote-service.test.ts` — stubs for MKT-05, MKT-06 (Plan 04)
+- [ ] `src/services/marketplace/booking-service.test.ts` — stubs for MKT-07, MKT-08, MKT-09 (Plan 05)
+- [ ] `src/services/marketplace/review-service.test.ts` — stubs for MKT-10, MKT-11, MKT-12 (Plan 06)
 
 ---
 
