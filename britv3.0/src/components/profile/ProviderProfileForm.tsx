@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { providerProfileSchema } from "@/services/profile/profile-service";
+import { providerProfileSchema } from "@/lib/validators/profile-schemas";
 import type { z } from "zod";
 
 type ProviderFormValues = z.infer<typeof providerProfileSchema>;

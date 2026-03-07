@@ -7,7 +7,7 @@
 
 import { useQueryStates, parseAsString, parseAsInteger, parseAsBoolean, parseAsArrayOf } from "nuqs";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useDebouncedValue } from "use-debounce";
+import { useDebounce } from "use-debounce";
 import type { SearchResult, SearchSort } from "@/types/search";
 import type { EpcRating, PropertyType } from "@/types/property";
 
@@ -104,7 +104,7 @@ export function useSearchResults(params: {
     }
   }
 
-  const [debouncedParams] = useDebouncedValue(cleanParams, 300);
+  const [debouncedParams] = useDebounce(cleanParams, 300);
 
   // Build a stable query key from sorted params
   const queryKey = ["search", JSON.stringify(

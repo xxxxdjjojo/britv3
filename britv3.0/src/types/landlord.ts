@@ -216,6 +216,6 @@ export const documentUploadSchema = z.object({
 // -- Inferred form types from Zod schemas -------------------------------------
 
 export type TenancyFormData = z.infer<typeof tenancySchema>;
-export type MaintenanceRequestFormData = z.infer<typeof maintenanceRequestSchema>;
+export type MaintenanceRequestFormData = z.input<typeof maintenanceRequestSchema>;
 export type FinancialEntryFormData = z.infer<typeof financialEntrySchema>;
 export type DocumentUploadFormData = z.infer<typeof documentUploadSchema>;

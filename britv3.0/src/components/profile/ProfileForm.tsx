@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { profileUpdateSchema } from "@/services/profile/profile-service";
+import { profileUpdateSchema } from "@/lib/validators/profile-schemas";
 import type { z } from "zod";
 
 type ProfileFormValues = z.infer<typeof profileUpdateSchema>;
