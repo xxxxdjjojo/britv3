@@ -172,12 +172,18 @@ Plans:
   4. Sentry (errors) and PostHog (analytics) are integrated on free tiers; structured JSON logging outputs to Vercel
   5. RLS policy audit complete, Dependabot enabled, OWASP ZAP scan run, Artillery load test passes
   6. UAT complete across all roles, cross-browser verified, legal/compliance reviewed, launch runbook documented
-**Plans**: TBD
+**Plans**: 9 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
-- [ ] 07-03: TBD
+- [ ] 07-01-PLAN.md -- PWA infrastructure: manifest, Serwist service worker, install prompt, offline indicator
+- [ ] 07-02-PLAN.md -- Monitoring and DevOps: Sentry, PostHog, structured logger, feature flags, migration CI
+- [ ] 07-03-PLAN.md -- Admin foundation: database schema (is_admin, content_reports), middleware guard, dashboard with count cards
+- [ ] 07-04-PLAN.md -- Push notifications: Web Push API, VAPID subscription, deep linking, offline data caching
+- [ ] 07-05-PLAN.md -- Admin management: user search/suspend, listing moderation with auto-flagging, verification queue, review moderation
+- [ ] 07-06-PLAN.md -- Help page FAQ, contact form with rate limiting, role-specific mobile bottom tab bar
+- [ ] 07-07-PLAN.md -- Responsive verification, touch optimization (44px targets), pull-to-refresh, Core Web Vitals audit
+- [ ] 07-08-PLAN.md -- Security hardening: RLS policy audit, Dependabot config, OWASP ZAP scan script
+- [ ] 07-09-PLAN.md -- Launch prep: Artillery load test, UAT seed data and scenarios, cross-browser checklist, launch and support runbooks
 
 ## Progress
 
@@ -193,7 +199,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 4. Marketplace | 6/8 | In Progress|  |
 | 5. AI & Financial Tools | 3/4 | In Progress|  |
 | 6. Landlord Tools | 5/5 | Complete   | 2026-03-07 |
-| 7. Production Readiness | 0/3 | Not started | - |
+| 7. Production Readiness | 0/9 | Not started | - |
 
 ---
 *Roadmap created: 2026-03-06*
@@ -205,3 +211,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Phase 2 planned: 2026-03-07 (7 plans, 4 waves)*
 *Phase 5 planned: 2026-03-07 (4 plans, 2 waves)*
 *Phase 6 planned: 2026-03-07 (5 plans, 3 waves)*
+*Phase 7 planned: 2026-03-07 (9 plans, 4 waves)*
