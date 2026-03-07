@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-05-PLAN.md (Security Middleware)
-last_updated: "2026-03-07T17:11:13Z"
-last_activity: 2026-03-07 -- Completed 01-05 Security Middleware (CSP, RBAC, security headers)
+stopped_at: Completed 01-06-PLAN.md (Layout Shell & Public Pages)
+last_updated: "2026-03-07T17:15:47.070Z"
+last_activity: 2026-03-07 -- Completed 01-06 Layout Shell & Public Pages
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 9
-  completed_plans: 4
-  percent: 33
+  total_plans: 16
+  completed_plans: 6
+  percent: 56
 ---
 
 # Project State
@@ -26,30 +26,31 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 1 of 7 (Foundation)
-Plan: 5 of 9 in current phase
+Plan: 6 of 9 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 01-05 Security Middleware
+Last activity: 2026-03-07 -- Completed 01-06 Layout Shell & Public Pages
 
-Progress: [████░░░░░░] 44%
+Progress: [██████░░░░] 56%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 5 min
-- Total execution time: 0.33 hours
+- Total plans completed: 5
+- Average duration: 6 min
+- Total execution time: 0.47 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 4 | 20 min | 5 min |
+| 01-foundation | 5 | 28 min | 6 min |
 
 **Recent Trend:**
 - Last 5 plans: -
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P04 | 9min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,10 @@ Recent decisions affecting current work:
 - 2026-03-07: Middleware uses btoa(crypto.randomUUID()) for CSP nonce -- simple, crypto-strong
 - 2026-03-07: Middleware creates own Supabase client (not lib helper) for direct cookie access
 - 2026-03-07: Auth routes redirect authenticated users to /dashboard (generic, not role-specific)
+- 2026-03-07: Header uses scroll detection for shadow-sm; protected layout uses getUser() for security
+- 2026-03-07: Homepage served from (main) route group; old root page.tsx removed
+- 2026-03-07: MobileNav uses Sheet component sliding from left with close-on-click
+- [Phase 01]: useAuth hook created in Plan 04 (not Plan 03) since UI components need client-side auth state management
 
 ### Pending Todos
 
@@ -90,5 +95,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 01-05-PLAN.md (Security Middleware)
+Stopped at: Completed 01-06-PLAN.md (Layout Shell & Public Pages)
 Resume file: None
