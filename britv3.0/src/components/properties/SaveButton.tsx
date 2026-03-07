@@ -1,0 +1,67 @@
+"use client";
+
+/**
+ * Heart icon button for saving/unsaving a property to the user's shortlist.
+ * Uses optimistic updates via useSavedProperties hooks.
+ * Redirects to login if not authenticated.
+ */
+
+import { useCallback } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  useIsPropertySaved,
+  useSaveProperty,
+  useUnsaveProperty,
+} from "@/hooks/useSavedProperties";
+import { Button } from "@/components/ui/button";
+import { HeartIcon } from "lucide-react";
+
+type SaveButtonProps = Readonly<{
+  listingId: string;
+  size?: "sm" | "default";
+}>;
+
+export function SaveButton({ listingId, size = "default" }: SaveButtonProps) {
+  const { user } = useAuth();
+  const isSaved = useIsPropertySaved(listingId);
+  const saveProperty = useSaveProperty();
+  const unsaveProperty = useUnsaveProperty();
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+
+      // Require auth
+      if (!user) {
+        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login?returnTo=${returnUrl}`;
+        return;
+      }
+
+      if (isSaved) {
+        unsaveProperty.mutate({ listingId });
+      } else {
+        saveProperty.mutate({ listingId });
+      }
+    },
+    [user, isSaved, listingId, saveProperty, unsaveProperty],
+  );
+
+  const buttonSize = size === "sm" ? "icon-sm" : "icon";
+
+  return (
+    <Button
+      variant="ghost"
+      size={buttonSize}
+      onClick={handleClick}
+      className={`rounded-full bg-background/80 backdrop-blur-sm hover:bg-background ${
+        isSaved ? "text-red-500 hover:text-red-600" : "text-muted-foreground hover:text-foreground"
+      }`}
+      aria-label={isSaved ? "Remove from saved" : "Save property"}
+    >
+      <HeartIcon
+        className={`${size === "sm" ? "size-4" : "size-5"} ${isSaved ? "fill-current" : ""}`}
+      />
+    </Button>
+  );
+}
