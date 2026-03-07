@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 06-05-PLAN.md
-last_updated: "2026-03-07T19:46:16.306Z"
+stopped_at: Completed 03-06-PLAN.md
+last_updated: "2026-03-07T19:56:50.263Z"
 last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 43
-  completed_plans: 35
+  completed_plans: 37
   percent: 60
 ---
 
@@ -80,6 +80,7 @@ Progress: [██████░░░░] 60%
 | Phase 06 P05 | 25min | 3 tasks | 17 files |
 | Phase 03 P03 | 31min | 3 tasks | 12 files |
 | Phase 05 P04 | 30min | 3 tasks | 12 files |
+| Phase 03 P06 | 22min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -194,6 +195,9 @@ Recent decisions affecting current work:
 - [Phase 05]: Mocked tooltip in PersonalizedEstimate tests for visible content assertions
 - [Phase 05]: OfferLetterPdf tests validate React element tree, not rendered PDF (avoids browser API dependency)
 - [Phase 05]: base-ui render prop pattern used for DialogTrigger/TooltipTrigger composition
+- [Phase 03]: Safe query helpers with try/catch for missing tables -- dashboard works before domain tables exist
+- [Phase 03]: Single Supabase Realtime channel per user for dashboard updates (conversations + platform_events)
+- [Phase 03]: StatCard uses Lucide icon name registry lookup, matching ROLES constant pattern
 
 ### Pending Todos
 
@@ -206,6 +210,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T19:29:22.401Z
-Stopped at: Completed 06-05-PLAN.md
+Last session: 2026-03-07T19:56:50.254Z
+Stopped at: Completed 03-06-PLAN.md
 Resume file: None

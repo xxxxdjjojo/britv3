@@ -87,7 +87,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **DASH-11**: Service provider extended profile (services, coverage area, pricing)
 - [x] **DASH-12**: Activity log with cursor-based pagination
 - [x] **DASH-13**: Notification preferences per user
-- [ ] **DASH-14**: Real-time dashboard updates via Supabase Realtime
+- [x] **DASH-14**: Real-time dashboard updates via Supabase Realtime
 
 ### Service Marketplace (Epic 4 -- amended)
 
