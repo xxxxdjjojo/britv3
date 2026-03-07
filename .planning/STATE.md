@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-07-PLAN.md
-last_updated: "2026-03-07T19:13:29.198Z"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-03-07T19:15:08.595Z"
 last_activity: 2026-03-07 -- Completed 06-04 Financial Tracking
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 43
-  completed_plans: 32
+  completed_plans: 33
   percent: 42
 ---
 
@@ -75,6 +75,8 @@ Progress: [████░░░░░░] 42%
 | Phase 03 P04 | 21min | 3 tasks | 17 files |
 | Phase 03 P05 | 24min | 3 tasks | 15 files |
 | Phase 04 P07 | 26min | 2 tasks | 13 files |
+| Phase 02 P04 | 12min | 2 tasks | 13 files |
+| Phase 02 P05 | 12min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -172,6 +174,12 @@ Recent decisions affecting current work:
 - [Phase 03]: NotificationBell uses Base UI PopoverTrigger directly (asChild not supported by @base-ui/react)
 - [Phase 04]: Untyped useForm (no generic) with zodResolver to avoid react-hook-form Resolver type mismatch
 - [Phase 04]: MarketplaceSearch as client component extracted from server page for URL-synced filters
+- [Phase 02]: MapRef imported from @vis.gl/react-maplibre (not maplibre-gl) for React wrapper compatibility
+- [Phase 02]: Polygon search takes priority over radius search when both params provided
+- [Phase 02]: MapSearchSync renders null (behavior-only component) for clean separation of concerns
+- [Phase 02]: Duplicate saves handled via unique constraint catch (code 23505) returning null gracefully
+- [Phase 02]: favorite_count tracked via fire-and-forget RPC increment_favorite_count
+- [Phase 02]: Saved search filters stored as JSONB, re-executed with listed_after cutoff for alert checking
 
 ### Pending Todos
 
@@ -184,6 +192,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T19:13:29.190Z
-Stopped at: Completed 04-07-PLAN.md
+Last session: 2026-03-07T19:15:08.572Z
+Stopped at: Completed 02-05-PLAN.md
 Resume file: None

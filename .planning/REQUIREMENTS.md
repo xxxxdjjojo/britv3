@@ -51,9 +51,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SRCH-01**: User can search properties by location (postcode, area, region)
 - [x] **SRCH-02**: User can filter by property type, price range, bedrooms, bathrooms
 - [x] **SRCH-03**: User can filter by amenities, EPC rating, new build status
-- [ ] **SRCH-04**: User can search via interactive map with property pins (MapLibre + MapTiler)
-- [ ] **SRCH-05**: Map displays property clusters at zoom levels for performance
-- [ ] **SRCH-06**: User can draw custom search area on map (polygon tool)
+- [x] **SRCH-04**: User can search via interactive map with property pins (MapLibre + MapTiler)
+- [x] **SRCH-05**: Map displays property clusters at zoom levels for performance
+- [x] **SRCH-06**: User can draw custom search area on map (polygon tool)
 - [ ] **SRCH-07**: User can save properties to shortlist
 - [ ] **SRCH-08**: User can save search criteria with notification preferences
 - [ ] **SRCH-09**: User receives alerts for new matching properties (email + in-app)
