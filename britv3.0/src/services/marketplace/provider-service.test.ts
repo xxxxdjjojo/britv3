@@ -31,7 +31,7 @@ const validProfileInput = {
   business_name: "London Plumbing Co",
   business_description:
     "Professional plumbing services across London with over 20 years of experience in residential and commercial plumbing.",
-  services: ["plumber"] as const,
+  services: ["plumber"] as ("plumber")[],
   service_postcodes: ["SW1A 1AA"],
   service_radius: 25,
   years_in_business: 10,
