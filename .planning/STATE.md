@@ -86,6 +86,10 @@ Recent decisions affecting current work:
 - [Phase 01]: useAuth hook created in Plan 04 (not Plan 03) since UI components need client-side auth state management
 - [Phase 01]: Consent initialized client-side after signup to avoid server import in client component
 - [Phase 01]: Export service uses admin client (bypasses RLS) for complete Subject Access Request data
+- [Phase 01]: Role service uses server Supabase client for secure mutations, useRole hook uses browser client for state
+- [Phase 01]: Sidebar nav items defined as Record<UserRole, NavItem[]> config for easy extension
+- [Phase 01]: Protected layout simplified to fragment-only (auth check) to avoid conflicting flex wrappers
+- [Phase 01]: OnboardingFlow forms skeletal -- preference saving deferred to later phases
 
 ### Pending Todos
 

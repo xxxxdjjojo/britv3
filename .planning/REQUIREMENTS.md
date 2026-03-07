@@ -34,7 +34,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **AUTH-06**: User session persists across browser refresh (JWT with refresh tokens)
 - [x] **AUTH-07**: User can select role(s) after registration (homebuyer, renter, seller, landlord, agent, provider)
 - [x] **AUTH-08**: User can hold multiple roles and switch between them
-- [ ] **AUTH-09**: Role-specific dashboard shell loads based on active role
+- [x] **AUTH-09**: Role-specific dashboard shell loads based on active role
 - [x] **AUTH-10**: User verification levels enforced (basic, standard, enhanced, professional)
 - [x] **AUTH-11**: Provider verification pipeline (email, phone, ID, insurance, qualifications, admin review)
 - [x] **AUTH-12**: GDPR consent captured at signup with granular options (marketing, analytics, third-party)
