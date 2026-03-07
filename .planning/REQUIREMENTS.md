@@ -173,8 +173,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LL-06**: Manual expense logging with optional receipt upload
 - [x] **LL-07**: Per-property financial summary (income minus expenses via RPC function)
 - [x] **LL-08**: Document upload with expiry dates for compliance tracking
-- [ ] **LL-09**: Automated compliance reminders (30-day, 7-day before expiry)
-- [ ] **LL-10**: Client-side lease agreement (AST) PDF generation via jspdf/html2pdf.js
+- [x] **LL-09**: Automated compliance reminders (30-day, 7-day before expiry)
+- [x] **LL-10**: Client-side lease agreement (AST) PDF generation via jspdf/html2pdf.js
 
 **Deferred from Epic 7 (future premium features):**
 - Automated rent collection via payment gateway
