@@ -54,9 +54,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SRCH-04**: User can search via interactive map with property pins (MapLibre + MapTiler)
 - [x] **SRCH-05**: Map displays property clusters at zoom levels for performance
 - [x] **SRCH-06**: User can draw custom search area on map (polygon tool)
-- [ ] **SRCH-07**: User can save properties to shortlist
-- [ ] **SRCH-08**: User can save search criteria with notification preferences
-- [ ] **SRCH-09**: User receives alerts for new matching properties (email + in-app)
+- [x] **SRCH-07**: User can save properties to shortlist
+- [x] **SRCH-08**: User can save search criteria with notification preferences
+- [x] **SRCH-09**: User receives alerts for new matching properties (email + in-app)
 - [x] **SRCH-10**: User can sort results by price, date, relevance
 - [x] **SRCH-11**: Search uses optimized queries (materialized views, full-text search, cursor-based pagination)
 - [x] **SRCH-12**: Geocoding via postcodes.io (free UK postcode API)
