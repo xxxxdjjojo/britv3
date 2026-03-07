@@ -168,7 +168,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LL-01**: Portfolio view of managed rental properties (reuses listings data)
 - [x] **LL-02**: Tenant record storage (contact, lease terms, deposit info)
 - [x] **LL-03**: Maintenance request logging with status tracking and photo uploads
-- [ ] **LL-04**: Simple contractor assignment via marketplace link (no auto-RFQ)
+- [x] **LL-04**: Simple contractor assignment via marketplace link (no auto-RFQ)
 - [x] **LL-05**: Manual rent payment tracking (paid/partial/overdue derived in UI)
 - [x] **LL-06**: Manual expense logging with optional receipt upload
 - [ ] **LL-07**: Per-property financial summary (income minus expenses via RPC function)

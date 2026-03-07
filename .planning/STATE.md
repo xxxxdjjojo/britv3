@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-05-PLAN.md
-last_updated: "2026-03-07T18:43:51.035Z"
-last_activity: 2026-03-07 -- Completed 06-01 Landlord Schema & Types
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-03-07T18:45:31.214Z"
+last_activity: 2026-03-07 -- Completed 06-02 Portfolio & Tenancy Management
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 43
-  completed_plans: 21
+  completed_plans: 23
   percent: 39
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 ## Current Position
 
 Phase: 6 of 7 (Landlord Tools)
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: Executing
-Last activity: 2026-03-07 -- Completed 06-01 Landlord Schema & Types
+Last activity: 2026-03-07 -- Completed 06-02 Portfolio & Tenancy Management
 
 Progress: [████░░░░░░] 39%
 
@@ -66,6 +66,8 @@ Progress: [████░░░░░░] 39%
 | Phase 03 P01 | 30min | 3 tasks | 7 files |
 | Phase 05 P01 | 32min | 3 tasks | 11 files |
 | Phase 04 P05 | 7min | 2 tasks | 7 files |
+| Phase 06 P03 | 6min | 2 tasks | 13 files |
+| Phase 06 P02 | 6min | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -138,6 +140,9 @@ Recent decisions affecting current work:
 - [Phase 05]: Claude Haiku 4.5 selected for AI descriptions -- cost-efficient at $1/$5 per 1M tokens
 - [Phase 05]: AI rate limiters lazy-initialized to avoid startup errors when Upstash env vars missing
 - [Phase 05]: All AI calls route through callClaude wrapper for centralized cost/rate control
+- [Phase 06]: State machine as static ALLOWED_TRANSITIONS map with canTransitionTo/getValidNextStatuses exports
+- [Phase 06]: Provider assignment is simple marketplace link + manual name/ID input (no auto-RFQ per spec)
+- [Phase 06]: StatusUpdateForm extracted as co-located client component in requestId page directory
 
 ### Pending Todos
 
@@ -150,6 +155,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T18:43:51.031Z
-Stopped at: Completed 04-05-PLAN.md
+Last session: 2026-03-07T18:45:19.035Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
