@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-03-PLAN.md
-last_updated: "2026-03-07T21:12:02.819Z"
+stopped_at: Completed 07-02-PLAN.md
+last_updated: "2026-03-07T21:14:49.887Z"
 last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 53
-  completed_plans: 42
+  completed_plans: 43
   percent: 60
 ---
 
@@ -87,6 +87,7 @@ Progress: [██████░░░░] 60%
 | Phase 03 P10 | 18min | 2 tasks | 4 files |
 | Phase 03 P09 | 24min | 2 tasks | 7 files |
 | Phase 07 P03 | 17 | 2 tasks | 9 files |
+| Phase 07 P02 | 21 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -218,6 +219,9 @@ Recent decisions affecting current work:
 - [Phase 07]: Admin route group (admin)/ separate from (protected)/ with own sidebar layout -- no ProtectedHeader inheritance
 - [Phase 07]: safeCount() accepts PromiseLike not Promise to match Supabase PostgREST builder return type
 - [Phase 07]: Admin middleware guard queries profiles.is_admin directly using middleware Supabase client (cookie-based)
+- [Phase 07]: Feature flags use NEXT_PUBLIC_ENABLE_{NAME} env vars with JSDoc upgrade path to PostHog remote flags
+- [Phase 07]: PostHogProvider imported directly (not dynamic) since it has use client directive -- Next.js 16 Turbopack forbids ssr:false in Server Components
+- [Phase 07]: turbopack: {} added to next.config.ts to resolve Next.js 16 Turbopack/Serwist webpack conflict
 
 ### Pending Todos
 
@@ -230,6 +234,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T21:12:02.807Z
-Stopped at: Completed 07-03-PLAN.md
+Last session: 2026-03-07T21:14:49.883Z
+Stopped at: Completed 07-02-PLAN.md
 Resume file: None

@@ -247,11 +247,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Launch Readiness (Epic 11 -- amended, free tiers only)
 
-- [ ] **LCH-01**: Sentry Free integration for client + server error tracking
-- [ ] **LCH-02**: PostHog Free integration for product analytics (10+ tracked events)
-- [ ] **LCH-03**: Structured JSON logger outputting to Vercel logs
-- [ ] **LCH-04**: GitHub Action for automated Supabase migration on push to main
-- [ ] **LCH-05**: Feature flags via environment variables (upgrade path: PostHog free flags)
+- [x] **LCH-01**: Sentry Free integration for client + server error tracking
+- [x] **LCH-02**: PostHog Free integration for product analytics (10+ tracked events)
+- [x] **LCH-03**: Structured JSON logger outputting to Vercel logs
+- [x] **LCH-04**: GitHub Action for automated Supabase migration on push to main
+- [x] **LCH-05**: Feature flags via environment variables (upgrade path: PostHog free flags)
 - [ ] **LCH-06**: Full RLS policy audit across all tables with test cases
 - [ ] **LCH-07**: Dependabot vulnerability scanning enabled
 - [ ] **LCH-08**: OWASP ZAP automated security scan against staging
