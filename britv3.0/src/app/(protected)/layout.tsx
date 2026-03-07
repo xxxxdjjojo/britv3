@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { QueryProvider } from "@/lib/providers/QueryProvider";
 import { ProtectedHeader } from "@/components/layout/ProtectedHeader";
+import { BottomTabBarWrapper } from "@/components/mobile/BottomTabBarWrapper";
 
 export default async function ProtectedLayout({
   children,
@@ -18,7 +19,8 @@ export default async function ProtectedLayout({
   return (
     <QueryProvider>
       <ProtectedHeader />
-      {children}
+      <main className="pb-16 md:pb-0">{children}</main>
+      <BottomTabBarWrapper />
     </QueryProvider>
   );
 }
