@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-03-07T19:07:42.416Z"
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-03-07T19:09:33.747Z"
 last_activity: 2026-03-07 -- Completed 06-04 Financial Tracking
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 43
-  completed_plans: 28
+  completed_plans: 29
   percent: 42
 ---
 
@@ -73,6 +73,7 @@ Progress: [████░░░░░░] 42%
 | Phase 01 P09 | 73min | 2 tasks | 8 files |
 | Phase 02 P03 | 15min | 2 tasks | 15 files |
 | Phase 03 P04 | 21min | 3 tasks | 17 files |
+| Phase 03 P05 | 24min | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -165,6 +166,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Max 30 images per listing enforced at service layer before processing
 - [Phase 03]: Inline magic byte validation for attachments instead of file-type library
 - [Phase 03]: Conversation enrichment via sequential queries per conversation, not complex SQL join
+- [Phase 03]: Email templates use inline HTML strings for server-side dispatch (not React Email render)
+- [Phase 03]: Critical email dispatch is fire-and-forget (void promise) to not block event creation
+- [Phase 03]: NotificationBell uses Base UI PopoverTrigger directly (asChild not supported by @base-ui/react)
 
 ### Pending Todos
 
@@ -177,6 +181,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T19:07:42.409Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-03-07T19:09:33.740Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
