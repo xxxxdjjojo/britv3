@@ -1,0 +1,42 @@
+version: 2
+updates:
+  # Scan npm dependencies in the britv3.0 application directory
+  - package-ecosystem: "npm"
+    directory: "/britv3.0"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    # Group patch and minor updates to reduce noise
+    groups:
+      patch-updates:
+        applies-to: version-updates
+        update-types:
+          - "patch"
+      minor-updates:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+
+  # Scan GitHub Actions workflow files for updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
