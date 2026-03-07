@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,15 +35,12 @@ export function GenerateDescriptionButton({
     generate,
   } = useAiDescription();
 
-  const callbackRef = useRef(onDescriptionGenerated);
-  callbackRef.current = onDescriptionGenerated;
-
   // Pass generated description to parent via callback
   useEffect(() => {
     if (description) {
-      callbackRef.current(description);
+      onDescriptionGenerated(description);
     }
-  }, [description]);
+  }, [description, onDescriptionGenerated]);
 
   // Show error toast
   useEffect(() => {

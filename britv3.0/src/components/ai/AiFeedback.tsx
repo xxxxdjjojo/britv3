@@ -17,8 +17,6 @@ export function AiFeedback({ featureId, referenceId, onFeedback }: AiFeedbackPro
   const [showComment, setShowComment] = useState(false);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedRating, setSelectedRating] = useState<AiFeedbackRating | null>(null);
-
   const submitFeedback = async (rating: AiFeedbackRating, feedbackComment?: string) => {
     setIsSubmitting(true);
     try {
@@ -48,7 +46,6 @@ export function AiFeedback({ featureId, referenceId, onFeedback }: AiFeedbackPro
   };
 
   const handleThumbsDown = () => {
-    setSelectedRating("negative");
     setShowComment(true);
   };
 
