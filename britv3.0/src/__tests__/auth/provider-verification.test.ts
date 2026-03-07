@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createMockSupabaseClient } from "../mocks/supabase";
 
-// Mock the server client for verification-service
+// Mock the browser client for verification-service
 const mockClient = createMockSupabaseClient();
-vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn(async () => mockClient),
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: vi.fn(() => mockClient),
 }));
 
 import {
