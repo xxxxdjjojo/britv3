@@ -3,27 +3,31 @@ import { getRecommendations } from "./recommendations";
 
 // Mock Supabase server client
 const mockFrom = vi.fn();
-const mockRpc = vi.fn();
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn().mockResolvedValue({
     from: (...args: unknown[]) => mockFrom(...args),
-    rpc: (...args: unknown[]) => mockRpc(...args),
   }),
 }));
 
+/**
+ * Creates a Supabase-like query chain that is both chainable and thenable.
+ * Every chained method returns the same object, and awaiting it resolves to { data, error }.
+ */
 function createQueryChain(data: unknown[] | null, error: unknown = null) {
-  const chain = {
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    gte: vi.fn().mockReturnThis(),
-    lte: vi.fn().mockReturnThis(),
-    ilike: vi.fn().mockReturnThis(),
-    not: vi.fn().mockReturnThis(),
-    in: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockResolvedValue({ data, error }),
+  const result = { data, error };
+  const chain: Record<string, unknown> = {};
+
+  const methods = ["select", "eq", "gte", "lte", "ilike", "not", "in", "order", "limit", "neq"];
+  for (const method of methods) {
+    chain[method] = vi.fn().mockReturnValue(chain);
+  }
+
+  // Make the chain thenable (Supabase PostgREST builder pattern)
+  chain.then = (resolve: (val: unknown) => void, reject?: (err: unknown) => void) => {
+    return Promise.resolve(result).then(resolve, reject);
   };
+
   return chain;
 }
 
@@ -76,14 +80,10 @@ describe("getRecommendations", () => {
       },
     ];
 
-    const searchChain = createQueryChain(savedSearches);
-    const interactionChain = createQueryChain([]);
-    const propertiesChain = createQueryChain(matchingProperties);
-
     mockFrom.mockImplementation((table: string) => {
-      if (table === "saved_searches") return searchChain;
-      if (table === "property_interactions") return interactionChain;
-      if (table === "properties") return propertiesChain;
+      if (table === "saved_searches") return createQueryChain(savedSearches);
+      if (table === "property_interactions") return createQueryChain([]);
+      if (table === "properties") return createQueryChain(matchingProperties);
       return createQueryChain([]);
     });
 
@@ -111,29 +111,24 @@ describe("getRecommendations", () => {
       { property_id: "prop-dismissed" },
     ];
 
-    const searchChain = createQueryChain(savedSearches);
-    const interactionChain = createQueryChain(interactions);
-    const propertiesChain = createQueryChain([
-      {
-        id: "prop-new",
-        title: "New flat",
-        property_type: "flat",
-        price: 200000,
-        bedrooms: 2,
-        postcode: "E1 6AN",
-        match_score: 3,
-      },
-    ]);
-
     mockFrom.mockImplementation((table: string) => {
-      if (table === "saved_searches") return searchChain;
-      if (table === "property_interactions") return interactionChain;
-      if (table === "properties") return propertiesChain;
+      if (table === "saved_searches") return createQueryChain(savedSearches);
+      if (table === "property_interactions") return createQueryChain(interactions);
+      if (table === "properties") return createQueryChain([
+        {
+          id: "prop-new",
+          title: "New flat",
+          property_type: "flat",
+          price: 200000,
+          bedrooms: 2,
+          postcode: "E1 6AN",
+          match_score: 3,
+        },
+      ]);
       return createQueryChain([]);
     });
 
     const result = await getRecommendations("user-123");
-    // Should not contain viewed/saved/dismissed properties
     const ids = result.map((r) => r.id);
     expect(ids).not.toContain("prop-viewed");
     expect(ids).not.toContain("prop-saved");
@@ -152,24 +147,20 @@ describe("getRecommendations", () => {
       },
     ];
 
-    const searchChain = createQueryChain(savedSearches);
-    const interactionChain = createQueryChain([]);
-    const propertiesChain = createQueryChain(
-      Array.from({ length: 10 }, (_, i) => ({
-        id: `prop-${i}`,
-        title: `Property ${i}`,
-        property_type: "semi-detached",
-        price: 200000 + i * 10000,
-        bedrooms: 3,
-        postcode: `M1 ${i}AA`,
-        match_score: 3,
-      })),
-    );
-
     mockFrom.mockImplementation((table: string) => {
-      if (table === "saved_searches") return searchChain;
-      if (table === "property_interactions") return interactionChain;
-      if (table === "properties") return propertiesChain;
+      if (table === "saved_searches") return createQueryChain(savedSearches);
+      if (table === "property_interactions") return createQueryChain([]);
+      if (table === "properties") return createQueryChain(
+        Array.from({ length: 10 }, (_, i) => ({
+          id: `prop-${i}`,
+          title: `Property ${i}`,
+          property_type: "semi-detached",
+          price: 200000 + i * 10000,
+          bedrooms: 3,
+          postcode: `M1 ${i}AA`,
+          match_score: 3,
+        })),
+      );
       return createQueryChain([]);
     });
 
@@ -189,14 +180,10 @@ describe("getRecommendations", () => {
       },
     ];
 
-    const searchChain = createQueryChain(savedSearches);
-    const interactionChain = createQueryChain([]);
-    const propertiesChain = createQueryChain([]);
-
     mockFrom.mockImplementation((table: string) => {
-      if (table === "saved_searches") return searchChain;
-      if (table === "property_interactions") return interactionChain;
-      if (table === "properties") return propertiesChain;
+      if (table === "saved_searches") return createQueryChain(savedSearches);
+      if (table === "property_interactions") return createQueryChain([]);
+      if (table === "properties") return createQueryChain([]);
       return createQueryChain([]);
     });
 
@@ -226,14 +213,10 @@ describe("getRecommendations", () => {
       match_score: 3,
     }));
 
-    const searchChain = createQueryChain(savedSearches);
-    const interactionChain = createQueryChain([]);
-    const propertiesChain = createQueryChain(properties);
-
     mockFrom.mockImplementation((table: string) => {
-      if (table === "saved_searches") return searchChain;
-      if (table === "property_interactions") return interactionChain;
-      if (table === "properties") return propertiesChain;
+      if (table === "saved_searches") return createQueryChain(savedSearches);
+      if (table === "property_interactions") return createQueryChain([]);
+      if (table === "properties") return createQueryChain(properties);
       return createQueryChain([]);
     });
 
