@@ -213,10 +213,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MOB-05**: Push notification preferences
 - [x] **MOB-06**: Offline access to saved properties (50), recent views (20), appointments
 - [x] **MOB-07**: Static page caching (stale-while-revalidate via @serwist/next)
-- [ ] **MOB-08**: Responsive verification across 320px-1280px breakpoints
-- [ ] **MOB-09**: Touch optimization (44px targets, swipe gestures, pull-to-refresh)
+- [x] **MOB-08**: Responsive verification across 320px-1280px breakpoints
+- [x] **MOB-09**: Touch optimization (44px targets, swipe gestures, pull-to-refresh)
 - [x] **MOB-10**: Role-specific bottom tab bar on mobile (<768px)
-- [ ] **MOB-11**: Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1)
+- [x] **MOB-11**: Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1)
 
 **Deferred from Epic 9:**
 - Native iOS/Android apps (post-revenue, 50K+ MAU)
