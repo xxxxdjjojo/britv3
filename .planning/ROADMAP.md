@@ -97,11 +97,16 @@ Plans:
   3. Providers can respond with itemized quotes, users can compare quotes side-by-side, and accept/book
   4. Booking state machine works (pending -> confirmed -> in_progress -> completed) with conflict detection
   5. Users can leave multi-dimensional reviews, providers can respond, and rule-based spam detection filters content
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md -- Database schema: marketplace migration, TypeScript types, Zod validation schemas
+- [ ] 04-02-PLAN.md -- Utilities: Inngest setup, geocoding, file validator, state machine, sentiment/spam analyzers
+- [ ] 04-03-PLAN.md -- Provider profiles: service layer, search API, document upload API
+- [ ] 04-04-PLAN.md -- RFQ/Quote pipeline: RFQ creation, provider matching, quote CRUD, Inngest notifications
+- [ ] 04-05-PLAN.md -- Bookings: state machine transitions, conflict detection, availability calendar
+- [ ] 04-06-PLAN.md -- Reviews: multi-dimensional ratings, sentiment analysis, moderation queue, helpfulness voting
+- [ ] 04-07-PLAN.md -- UI: marketplace search, RFQ forms, quote comparison, booking dashboard, review interface
 
 ### Phase 5: AI & Financial Tools
 **Goal**: Platform has AI property descriptions, SQL-based recommendations, property valuations from public data, and client-side financial calculators with personalized affordability display
@@ -168,7 +173,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 1. Foundation | 4/9 | In Progress|  |
 | 2. Property Portal | 0/3 | Not started | - |
 | 3. Dashboards & Communication | 0/3 | Not started | - |
-| 4. Marketplace | 0/2 | Not started | - |
+| 4. Marketplace | 0/7 | Not started | - |
 | 5. AI & Financial Tools | 0/2 | Not started | - |
 | 6. Landlord Tools | 0/2 | Not started | - |
 | 7. Production Readiness | 0/3 | Not started | - |
@@ -177,3 +182,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Roadmap created: 2026-03-06*
 *Rebuilt: 2026-03-07 (aligned to amended epic specs)*
 *Phase 1 planned: 2026-03-07 (9 plans, 4 waves) -- revised from 7 plans after scope checker split*
+*Phase 4 planned: 2026-03-07 (7 plans, 4 waves)*
