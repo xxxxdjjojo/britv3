@@ -171,7 +171,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **LL-04**: Simple contractor assignment via marketplace link (no auto-RFQ)
 - [x] **LL-05**: Manual rent payment tracking (paid/partial/overdue derived in UI)
 - [x] **LL-06**: Manual expense logging with optional receipt upload
-- [ ] **LL-07**: Per-property financial summary (income minus expenses via RPC function)
+- [x] **LL-07**: Per-property financial summary (income minus expenses via RPC function)
 - [x] **LL-08**: Document upload with expiry dates for compliance tracking
 - [ ] **LL-09**: Automated compliance reminders (30-day, 7-day before expiry)
 - [ ] **LL-10**: Client-side lease agreement (AST) PDF generation via jspdf/html2pdf.js
