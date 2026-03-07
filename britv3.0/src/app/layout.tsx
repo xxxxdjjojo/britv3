@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+import { QueryProvider } from "@/lib/providers/QueryProvider";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import InstallPrompt from "@/components/pwa/InstallPrompt";
+import OfflineIndicator from "@/components/pwa/OfflineIndicator";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,8 +36,14 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        {children}
-        <Toaster position="top-right" richColors closeButton />
+        <QueryProvider>
+          <PostHogProvider>
+            {children}
+            <Toaster position="top-right" richColors closeButton />
+            <OfflineIndicator />
+            <InstallPrompt />
+          </PostHogProvider>
+        </QueryProvider>
       </body>
     </html>
   );
