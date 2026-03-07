@@ -3,15 +3,22 @@ import { createMockSupabaseClient } from "../mocks/supabase";
 
 const mockSupabase = createMockSupabaseClient();
 
-vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn().mockResolvedValue(mockSupabase),
-}));
+vi.mock("@/lib/supabase/server", () => {
+  const client = createMockSupabaseClient();
+  return {
+    createClient: vi.fn().mockResolvedValue(client),
+  };
+});
 
+import { createClient } from "@/lib/supabase/server";
 import { switchRole, getUserRoles, getActiveRole } from "@/services/auth/role-service";
+
+const mockedCreateClient = vi.mocked(createClient);
 
 describe("switchRole", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
   });
 
   it("updates active_role if user has the role", async () => {
@@ -80,6 +87,7 @@ describe("switchRole", () => {
 describe("getUserRoles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
   });
 
   it("returns all roles for a user", async () => {
@@ -107,6 +115,7 @@ describe("getUserRoles", () => {
 describe("getActiveRole", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
   });
 
   it("returns the current active role from profile", async () => {

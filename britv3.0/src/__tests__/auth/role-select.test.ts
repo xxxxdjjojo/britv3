@@ -1,19 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createMockSupabaseClient } from "../mocks/supabase";
 
-// Mock supabase server client
 const mockSupabase = createMockSupabaseClient();
 
-vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn().mockResolvedValue(mockSupabase),
-}));
+vi.mock("@/lib/supabase/server", () => {
+  const client = createMockSupabaseClient();
+  return {
+    createClient: vi.fn().mockResolvedValue(client),
+  };
+});
 
-// We need to import after mocking
+// Override: we'll replace the mock return per test
+import { createClient } from "@/lib/supabase/server";
 import { selectRoles } from "@/services/auth/role-service";
+
+const mockedCreateClient = vi.mocked(createClient);
 
 describe("selectRoles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
   });
 
   it("inserts roles into user_roles table and sets active_role", async () => {
