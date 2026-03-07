@@ -44,9 +44,9 @@ created: 2026-03-07
 | 05-02-01 | 02 | 1 | FIN-01 | unit | `cd britv3.0 && pnpm vitest run src/lib/calculators/mortgage.test.ts` | W0 | pending |
 | 05-02-02 | 02 | 1 | FIN-02 | unit | `cd britv3.0 && pnpm vitest run src/lib/calculators/sdlt.test.ts` | W0 | pending |
 | 05-02-03 | 02 | 1 | FIN-05 | unit | `cd britv3.0 && pnpm vitest run src/lib/calculators/sdlt-rates.test.ts` | W0 | pending |
-| 05-02-04 | 02 | 1 | FIN-03 | unit | `cd britv3.0 && pnpm vitest run src/hooks/useMortgageParams.test.ts` | W0 | pending |
-| 05-02-05 | 02 | 1 | FIN-04 | unit | `cd britv3.0 && pnpm vitest run src/components/calculators/PersonalizedEstimate.test.tsx` | W0 | pending |
-| 05-02-06 | 02 | 2 | FIN-06 | unit | `cd britv3.0 && pnpm vitest run src/components/property/OfferLetterPdf.test.tsx` | W0 | pending |
+| 05-04-01 | 04 | 2 | FIN-03 | unit | `cd britv3.0 && pnpm vitest run src/hooks/useMortgageParams.test.ts` | W0 | pending |
+| 05-04-02 | 04 | 2 | FIN-04 | unit | `cd britv3.0 && pnpm vitest run src/components/calculators/PersonalizedEstimate.test.tsx` | W0 | pending |
+| 05-04-03 | 04 | 2 | FIN-06 | unit | `cd britv3.0 && pnpm vitest run src/components/property/OfferLetterPdf.test.tsx` | W0 | pending |
 | 05-03-01 | 03 | 2 | AI-03 | unit | `cd britv3.0 && pnpm vitest run src/services/recommendations/recommendations.test.ts` | W0 | pending |
 | 05-03-02 | 03 | 2 | AI-04 | unit | `cd britv3.0 && pnpm vitest run src/services/land-registry/land-registry.test.ts` | W0 | pending |
 | 05-03-03 | 03 | 2 | AI-05 | unit | `cd britv3.0 && pnpm vitest run src/services/smart-replies/smart-replies.test.ts` | W0 | pending |
