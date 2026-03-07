@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-07-PLAN.md
-last_updated: "2026-03-07T19:51:17.000Z"
-last_activity: 2026-03-07 -- Completed 03-07 AI Quote Drafting
+stopped_at: Completed 03-08-PLAN.md
+last_updated: "2026-03-07T20:03:25.113Z"
+last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 43
   completed_plans: 38
-  percent: 62
+  percent: 60
 ---
 
 # Project State
@@ -82,6 +82,7 @@ Progress: [██████░░░░] 60%
 | Phase 05 P04 | 30min | 3 tasks | 12 files |
 | Phase 03 P06 | 22min | 3 tasks | 8 files |
 | Phase 03 P07 | 21min | 2 tasks | 8 files |
+| Phase 03 P08 | 25min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -202,6 +203,8 @@ Recent decisions affecting current work:
 - [Phase 03]: AI quote service uses callClaude wrapper (not direct Anthropic SDK) for centralized rate/cost control
 - [Phase 03]: Quote draft validation uses runtime shape checks instead of Zod for lightweight JSON parsing
 - [Phase 03]: TooltipTrigger uses render prop pattern (base-ui) for Button composition
+- [Phase 03]: Milestone ordering uses client-side sort by template order map (not DB order column)
+- [Phase 03]: FilesTab queries messages API with attachments_only param, groups by image/document type
 
 ### Pending Todos
 
@@ -214,6 +217,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07T19:51:17.000Z
-Stopped at: Completed 03-07-PLAN.md
+Last session: 2026-03-07T20:03:25.105Z
+Stopped at: Completed 03-08-PLAN.md
 Resume file: None

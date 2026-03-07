@@ -129,7 +129,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **COM-10**: Event-based in-app notification feed (O(1) writes, no fan-out)
 - [x] **COM-11**: Email notifications -- immediate for critical events, daily digest for non-critical
 - [x] **COM-12**: Notification preferences (per-type, quiet hours, digest frequency)
-- [ ] **COM-13**: Files tab on bookings/transactions for document sharing
+- [x] **COM-13**: Files tab on bookings/transactions for document sharing
 - [x] **COM-14**: Transaction milestones (8-step UK property pipeline)
 - [x] **COM-15**: Service job milestones (5-step pipeline)
 
