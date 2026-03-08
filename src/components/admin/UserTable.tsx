@@ -12,45 +12,45 @@ type Props = Readonly<{
 export function UserTable({ users, onSuspend, onActivate, onViewDetails }: Props) {
   if (users.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
+      <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-sm text-neutral-500">
         No users found.
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-      <table className="min-w-full divide-y divide-gray-200 text-sm">
-        <thead className="bg-gray-50">
+    <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+      <table className="min-w-full divide-y divide-neutral-200 text-sm">
+        <thead className="bg-neutral-50">
           <tr>
-            <th className="px-4 py-3 text-left font-medium text-gray-600">Name</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-600">Email</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-600">Role</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-600">Status</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-600">Created</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-600">Actions</th>
+            <th className="px-4 py-3 text-left font-medium text-neutral-600">Name</th>
+            <th className="px-4 py-3 text-left font-medium text-neutral-600">Email</th>
+            <th className="px-4 py-3 text-left font-medium text-neutral-600">Role</th>
+            <th className="px-4 py-3 text-left font-medium text-neutral-600">Status</th>
+            <th className="px-4 py-3 text-left font-medium text-neutral-600">Created</th>
+            <th className="px-4 py-3 text-left font-medium text-neutral-600">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-neutral-100">
           {users.map((user) => (
-            <tr key={user.id} className="hover:bg-gray-50">
-              <td className="px-4 py-3 font-medium text-gray-900">
+            <tr key={user.id} className="hover:bg-neutral-50">
+              <td className="px-4 py-3 font-medium text-neutral-900">
                 {user.full_name ?? "—"}
               </td>
-              <td className="px-4 py-3 text-gray-600">{user.email ?? "—"}</td>
-              <td className="px-4 py-3 text-gray-600">{user.role ?? "—"}</td>
+              <td className="px-4 py-3 text-neutral-600">{user.email ?? "—"}</td>
+              <td className="px-4 py-3 text-neutral-600">{user.role ?? "—"}</td>
               <td className="px-4 py-3">
                 <span
                   className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                     user.is_suspended
-                      ? "bg-red-100 text-red-700"
-                      : "bg-green-100 text-green-700"
+                      ? "bg-error-light text-error"
+                      : "bg-success-light text-success"
                   }`}
                 >
                   {user.is_suspended ? "Suspended" : "Active"}
                 </span>
               </td>
-              <td className="px-4 py-3 text-gray-600">
+              <td className="px-4 py-3 text-neutral-600">
                 {user.created_at
                   ? new Date(user.created_at).toLocaleDateString("en-GB")
                   : "—"}
@@ -59,21 +59,21 @@ export function UserTable({ users, onSuspend, onActivate, onViewDetails }: Props
                 {user.is_suspended ? (
                   <button
                     onClick={() => onActivate(user.id)}
-                    className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white hover:bg-green-700"
+                    className="rounded bg-success px-2 py-1 text-xs font-medium text-white hover:opacity-90"
                   >
                     Activate
                   </button>
                 ) : (
                   <button
                     onClick={() => onSuspend(user.id)}
-                    className="rounded bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700"
+                    className="rounded bg-error px-2 py-1 text-xs font-medium text-white hover:opacity-90"
                   >
                     Suspend
                   </button>
                 )}
                 <button
                   onClick={() => onViewDetails(user)}
-                  className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-200"
+                  className="rounded bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
                 >
                   View
                 </button>

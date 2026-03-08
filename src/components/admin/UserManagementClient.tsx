@@ -60,17 +60,17 @@ export function UserManagementClient({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or email…"
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
         />
         <button
           type="submit"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90"
         >
           Search
         </button>
       </form>
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-neutral-500">
         {total} user{total !== 1 ? "s" : ""} found
       </p>
 
@@ -83,14 +83,14 @@ export function UserManagementClient({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-500">
+          <span className="text-neutral-500">
             Page {page + 1} of {totalPages}
           </span>
           <div className="flex gap-2">
             {page > 0 && (
               <a
                 href={buildPageHref(page - 1)}
-                className="rounded border border-gray-300 px-3 py-1 hover:bg-gray-50"
+                className="rounded border border-neutral-300 px-3 py-1 hover:bg-neutral-50"
               >
                 Previous
               </a>
@@ -98,7 +98,7 @@ export function UserManagementClient({
             {page + 1 < totalPages && (
               <a
                 href={buildPageHref(page + 1)}
-                className="rounded border border-gray-300 px-3 py-1 hover:bg-gray-50"
+                className="rounded border border-neutral-300 px-3 py-1 hover:bg-neutral-50"
               >
                 Next
               </a>
