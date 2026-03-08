@@ -196,21 +196,27 @@ export function ViewingBooking({
 
       {/* Contact fields */}
       <div className="space-y-2">
+        <label htmlFor="vb-name" className="sr-only">Your name</label>
         <input
+          id="vb-name"
           type="text"
           placeholder="Your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
+        <label htmlFor="vb-email" className="sr-only">Email address</label>
         <input
+          id="vb-email"
           type="email"
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
+        <label htmlFor="vb-phone" className="sr-only">Phone number (optional)</label>
         <input
+          id="vb-phone"
           type="tel"
           placeholder="Phone number (optional)"
           value={phone}

@@ -205,7 +205,7 @@ export function PriceHistory({ history, className }: PriceHistoryProps) {
                 textAnchor="middle"
                 fontSize="11"
                 fontWeight="600"
-                fill="#111"
+                fill="var(--color-neutral-900)"
               >
                 {formatPrice(tooltip.entry.price)}
               </text>
@@ -214,7 +214,7 @@ export function PriceHistory({ history, className }: PriceHistoryProps) {
                 y={tooltip.y - 18}
                 textAnchor="middle"
                 fontSize="10"
-                fill="#666"
+                fill="var(--color-neutral-500)"
               >
                 {formatShortDate(tooltip.entry.date)}
                 {tooltip.entry.event ? ` · ${tooltip.entry.event}` : ""}
