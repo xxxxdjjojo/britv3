@@ -459,7 +459,7 @@ export default function SearchPage() {
       {/* ------------------------------------------------------------------ */}
       <div className="flex flex-1">
         {/* Desktop sidebar (280px, hidden on mobile) */}
-        <aside className="hidden w-70 shrink-0 border-r border-neutral-200 bg-white lg:flex lg:flex-col">
+        <aside className="hidden w-72 shrink-0 border-r border-neutral-200 bg-white lg:flex lg:flex-col">
           {filtersPanel}
         </aside>
 
