@@ -263,6 +263,10 @@ CREATE POLICY "Users can view own roles" ON user_roles
   FOR SELECT TO authenticated
   USING (user_id = auth.uid());
 
+CREATE POLICY "Users can insert own roles" ON user_roles
+  FOR INSERT TO authenticated
+  WITH CHECK (user_id = auth.uid());
+
 -- ---------------------------------------------------------------------------
 -- RLS Policies: consent_records
 -- ---------------------------------------------------------------------------
