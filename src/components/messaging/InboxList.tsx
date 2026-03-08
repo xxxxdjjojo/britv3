@@ -1,164 +1,161 @@
 "use client";
 
 /**
- * InboxList -- displays conversation list with filtering, search, and skeleton loading.
+ * InboxList -- Agent Messaging Center conversation list with mock data.
  */
 
 import { useState } from "react";
-import Link from "next/link";
-import { useInbox } from "@/hooks/useInbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import type { ContextType, Conversation } from "@/types/messaging";
+import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-function getInitials(name: string | null): string {
-  if (!name) return "?";
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+type MockConversation = {
+  id: string;
+  name: string;
+  initials: string;
+  lastMessage: string;
+  timeAgo: string;
+  isOnline: boolean;
+  isTyping: boolean;
+  isActive: boolean;
+};
 
-function timeAgo(date: Date | string): string {
-  const now = Date.now();
-  const then = new Date(date).getTime();
-  const diff = Math.floor((now - then) / 1000);
-
-  if (diff < 60) return "just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-  });
-}
+const MOCK_CONVERSATIONS: MockConversation[] = [
+  {
+    id: "1",
+    name: "Sarah Jenkins",
+    initials: "SJ",
+    lastMessage: "typing...",
+    timeAgo: "2m ago",
+    isOnline: true,
+    isTyping: true,
+    isActive: true,
+  },
+  {
+    id: "2",
+    name: "Mark Thompson",
+    initials: "MT",
+    lastMessage: "I've sent over the contract for your review.",
+    timeAgo: "Yesterday",
+    isOnline: false,
+    isTyping: false,
+    isActive: false,
+  },
+  {
+    id: "3",
+    name: "Elena Rodriguez",
+    initials: "ER",
+    lastMessage: "The coastal villa is now available for touring.",
+    timeAgo: "3 days ago",
+    isOnline: false,
+    isTyping: false,
+    isActive: false,
+  },
+];
 
 function ConversationRow(
-  props: Readonly<{ conversation: Conversation }>,
+  props: Readonly<{
+    conversation: MockConversation;
+    onSelect: (id: string) => void;
+  }>,
 ) {
-  const { conversation: conv } = props;
+  const { conversation: conv, onSelect } = props;
 
   return (
-    <Link
-      href={`/inbox/${conv.id}`}
-      className="flex items-center gap-3 rounded-lg px-3 py-3 transition-colors hover:bg-muted/50"
+    <button
+      type="button"
+      onClick={() => onSelect(conv.id)}
+      className={cn(
+        "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
+        conv.isActive && "bg-muted",
+      )}
     >
-      <Avatar>
-        <AvatarFallback>{getInitials(conv.participant_name)}</AvatarFallback>
-      </Avatar>
+      <div className="relative">
+        <Avatar>
+          <AvatarFallback className="bg-muted text-foreground text-sm font-medium">
+            {conv.initials}
+          </AvatarFallback>
+        </Avatar>
+        {conv.isOnline && (
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-card" />
+        )}
+      </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium truncate">
-            {conv.participant_name ?? "Unknown User"}
+          <span className="text-sm font-medium truncate text-foreground">
+            {conv.name}
           </span>
           <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {timeAgo(conv.last_message_at)}
+            {conv.timeAgo}
           </span>
         </div>
-        <p className="text-xs text-muted-foreground truncate mt-0.5">
-          {conv.last_message_preview ?? "No messages yet"}
+        <p
+          className={cn(
+            "text-xs truncate mt-0.5",
+            conv.isTyping
+              ? "text-primary italic"
+              : "text-muted-foreground",
+          )}
+        >
+          {conv.isTyping ? "typing..." : conv.lastMessage}
         </p>
       </div>
-
-      {conv.unread_count > 0 && (
-        <Badge variant="destructive" className="ml-auto shrink-0">
-          {conv.unread_count}
-        </Badge>
-      )}
-    </Link>
+    </button>
   );
 }
 
-function InboxSkeleton() {
-  return (
-    <div className="space-y-2 p-3">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <Skeleton className="h-10 w-10 rounded-full" />
-          <div className="flex-1 space-y-1.5">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-48" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export default function InboxList() {
-  const [contextType, setContextType] = useState<ContextType | undefined>();
+export default function InboxList(
+  props: Readonly<{
+    activeId?: string;
+    onSelectConversation?: (id: string) => void;
+  }>,
+) {
+  const { onSelectConversation } = props;
   const [search, setSearch] = useState("");
 
-  const { data, isLoading, isError } = useInbox({
-    context_type: contextType,
-    search: search || undefined,
-  });
-
-  const conversations = data?.conversations ?? [];
+  const filtered = MOCK_CONVERSATIONS.filter(
+    (c) =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.lastMessage.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <div className="flex flex-col h-full">
-      {/* Filters */}
-      <div className="flex gap-2 p-3 border-b">
-        <Input
-          placeholder="Search conversations..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1"
-        />
-        <Select
-          value={contextType ?? "all"}
-          onValueChange={(v) =>
-            setContextType(v === "all" ? undefined : (v as ContextType))
-          }
-        >
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder="All types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
-            <SelectItem value="listing">Listing</SelectItem>
-            <SelectItem value="booking">Booking</SelectItem>
-            <SelectItem value="rfq">Quote</SelectItem>
-            <SelectItem value="general">General</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Header */}
+      <div className="p-4 border-b">
+        <h2 className="text-lg font-semibold text-foreground mb-3">Messages</h2>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search conversations..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
       </div>
 
       {/* Conversation list */}
-      {isLoading ? (
-        <InboxSkeleton />
-      ) : isError ? (
-        <div className="p-6 text-center text-sm text-muted-foreground">
-          Failed to load conversations. Please try again.
+      <ScrollArea className="flex-1">
+        <div className="p-2 space-y-1">
+          {filtered.length === 0 ? (
+            <div className="p-6 text-center text-sm text-muted-foreground">
+              No conversations found
+            </div>
+          ) : (
+            filtered.map((conv) => (
+              <ConversationRow
+                key={conv.id}
+                conversation={conv}
+                onSelect={onSelectConversation ?? (() => {})}
+              />
+            ))
+          )}
         </div>
-      ) : conversations.length === 0 ? (
-        <div className="p-6 text-center text-sm text-muted-foreground">
-          No conversations yet
-        </div>
-      ) : (
-        <ScrollArea className="flex-1">
-          <div className="divide-y">
-            {conversations.map((conv) => (
-              <ConversationRow key={conv.id} conversation={conv} />
-            ))}
-          </div>
-        </ScrollArea>
-      )}
+      </ScrollArea>
     </div>
   );
 }
