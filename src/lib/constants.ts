@@ -188,6 +188,8 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/help",
   "/verify-email",
   "/welcome",
+  "/register/role-select",
+  "/register/onboarding",
 ] as const;
 
 /** Routes for unauthenticated users only (login, register, etc.) */

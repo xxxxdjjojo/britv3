@@ -116,7 +116,10 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  if (isAuthenticated && isAuthRoute) {
+  // Allow authenticated users to access professional registration sub-routes
+  const isProfessionalRegistration = pathname.startsWith("/register/role-select") || pathname.startsWith("/register/onboarding");
+
+  if (isAuthenticated && isAuthRoute && !isProfessionalRegistration) {
     // Authenticated user trying to access auth route -> redirect to dashboard
     const dashboardUrl = new URL("/dashboard", request.url);
     const redirectResponse = NextResponse.redirect(dashboardUrl);
