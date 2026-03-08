@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Mail, Loader2 } from "lucide-react";
+import { Mail, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -48,40 +49,48 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="space-y-6 text-center">
-      {/* Email Icon */}
+      {/* Animated Mail Icon */}
       <div className="flex justify-center">
-        <div className="flex size-20 items-center justify-center rounded-full bg-brand-primary-lighter">
-          <Mail className="size-10 text-brand-primary" />
+        <div
+          className={cn(
+            "relative flex size-20 items-center justify-center rounded-full",
+            "bg-brand-primary-lighter",
+          )}
+        >
+          {/* Pulsing ring */}
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-primary opacity-10" />
+          <Mail className="relative size-10 animate-bounce text-brand-primary" />
         </div>
       </div>
 
-      {/* Message */}
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-neutral-900">
+      {/* Heading + description */}
+      <div className="space-y-2">
+        <h2 className="font-heading text-2xl font-bold text-neutral-900">
           Check your email
-        </h1>
-        <p className="mt-2 font-body text-sm text-neutral-500">
+        </h2>
+        <p className="font-body text-sm text-neutral-500">
           {email ? (
             <>
-              We sent a verification link to{" "}
-              <span className="font-medium text-neutral-700">{email}</span>
+              We&apos;ve sent a verification link to{" "}
+              <span className="font-semibold text-brand-primary">{email}</span>
             </>
           ) : (
-            "We sent a verification link to your email address"
+            "We&apos;ve sent a verification link to your email address"
           )}
         </p>
-        <p className="mt-1 font-body text-xs text-neutral-400">
+        <p className="font-body text-xs text-neutral-400">
           Click the link in the email to verify your account
         </p>
       </div>
 
-      {/* Resend */}
+      {/* Resend section */}
       <div className="space-y-3">
         {resendSuccess && (
-          <p className="text-sm text-success">
-            Verification email sent again!
-          </p>
+          <p className="text-sm text-success">Verification email sent again!</p>
         )}
+        <p className="font-body text-sm text-neutral-500">
+          Didn&apos;t receive it?
+        </p>
         <Button
           variant="outline"
           size="lg"
@@ -102,15 +111,22 @@ export default function VerifyEmailPage() {
         </Button>
       </div>
 
-      {/* Back to Login */}
+      {/* Change email link */}
       <p className="font-body text-sm text-neutral-500">
+        Wrong address?{" "}
         <Link
-          href="/login"
+          href="/register"
           className="font-medium text-brand-accent hover:underline"
         >
-          Back to login
+          Change email address
         </Link>
       </p>
+
+      {/* Trust note */}
+      <div className="flex items-center justify-center gap-1.5 text-xs text-neutral-400">
+        <ShieldCheck className="size-3.5 shrink-0" />
+        <span>Your email is safe with us</span>
+      </div>
     </div>
   );
 }
