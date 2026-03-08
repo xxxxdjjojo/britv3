@@ -17,15 +17,15 @@ type Props = Readonly<{
 }>;
 
 const SEVERITY_STYLES: Record<string, string> = {
-  high: "bg-red-100 text-red-700",
-  medium: "bg-yellow-100 text-yellow-700",
-  low: "bg-blue-100 text-blue-700",
+  high: "bg-error-light text-error",
+  medium: "bg-warning-light text-warning",
+  low: "bg-neutral-100 text-neutral-600",
 };
 
 export function ModerationQueue({ listings, onApprove, onReject }: Props) {
   if (listings.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-8 text-center text-sm text-gray-500">
+      <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-sm text-neutral-500">
         No items to review. All listings are clear.
       </div>
     );
@@ -36,16 +36,16 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
       {listings.map((listing) => (
         <div
           key={listing.id}
-          className="rounded-lg border border-gray-200 bg-white p-4"
+          className="rounded-lg border border-neutral-200 bg-white p-4"
         >
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
-              <h3 className="font-medium text-gray-900">{listing.title}</h3>
+              <h3 className="font-medium text-neutral-900">{listing.title}</h3>
               {listing.address && (
-                <p className="mt-0.5 text-sm text-gray-500">{listing.address}</p>
+                <p className="mt-0.5 text-sm text-neutral-500">{listing.address}</p>
               )}
               {listing.created_at && (
-                <p className="mt-0.5 text-xs text-gray-400">
+                <p className="mt-0.5 text-xs text-neutral-400">
                   Listed {new Date(listing.created_at).toLocaleDateString("en-GB")}
                 </p>
               )}
@@ -53,13 +53,13 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
             <div className="flex gap-2">
               <button
                 onClick={() => onApprove(listing.id)}
-                className="rounded bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                className="rounded bg-success px-3 py-1.5 text-xs font-medium text-white hover:bg-success"
               >
                 Approve
               </button>
               <button
                 onClick={() => onReject(listing.id)}
-                className="rounded bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+                className="rounded bg-error px-3 py-1.5 text-xs font-medium text-white hover:bg-error"
               >
                 Reject
               </button>
@@ -67,7 +67,7 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
                 href={`/properties/${listing.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200"
+                className="rounded bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
               >
                 View listing
               </a>
@@ -79,12 +79,12 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
               <div key={i} className="flex items-center gap-1.5">
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    SEVERITY_STYLES[flag.severity] ?? "bg-gray-100 text-gray-700"
+                    SEVERITY_STYLES[flag.severity] ?? "bg-neutral-100 text-neutral-700"
                   }`}
                 >
                   {flag.reason.replace("_", " ")}
                 </span>
-                <span className="text-xs text-gray-500">{flag.details}</span>
+                <span className="text-xs text-neutral-500">{flag.details}</span>
               </div>
             ))}
           </div>
