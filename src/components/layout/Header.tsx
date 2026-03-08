@@ -84,6 +84,7 @@ export function Header({ transparent = false }: HeaderProps) {
           className="md:hidden"
           onClick={() => setMobileOpen((prev) => !prev)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
         >
           {mobileOpen ? (
             <X className="size-5" />
