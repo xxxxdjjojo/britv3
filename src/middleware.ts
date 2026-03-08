@@ -141,6 +141,28 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Default role fallback: if user accesses dashboard with no active_role, set homebuyer
+  if (isAuthenticated && pathname.startsWith("/dashboard")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("active_role")
+      .eq("id", user!.id)
+      .single();
+
+    if (profile && !profile.active_role) {
+      await supabase
+        .from("profiles")
+        .update({ active_role: "homebuyer" })
+        .eq("id", user!.id);
+      await supabase
+        .from("user_roles")
+        .upsert(
+          { user_id: user!.id, role: "homebuyer" },
+          { onConflict: "user_id,role" },
+        );
+    }
+  }
+
   // Set security headers on passthrough response
   setSecurityHeaders(response, nonce);
   return response;
