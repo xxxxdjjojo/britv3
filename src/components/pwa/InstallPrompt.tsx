@@ -58,7 +58,7 @@ export default function InstallPrompt() {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#005F73] text-white shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-brand-primary text-white shadow-lg">
       <div className="flex items-center justify-between px-4 py-3">
         <div>
           <p className="text-sm font-semibold">Install Britestate</p>
@@ -69,7 +69,7 @@ export default function InstallPrompt() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleInstall}
-            className="rounded bg-white px-3 py-1.5 text-sm font-semibold text-[#005F73] hover:bg-opacity-90"
+            className="rounded bg-white px-3 py-1.5 text-sm font-semibold text-brand-primary hover:bg-opacity-90"
           >
             Install
           </button>
