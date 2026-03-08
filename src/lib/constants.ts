@@ -186,6 +186,8 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/properties",
   "/marketplace",
   "/help",
+  "/verify-email",
+  "/welcome",
 ] as const;
 
 /** Routes for unauthenticated users only (login, register, etc.) */
@@ -194,8 +196,6 @@ export const AUTH_ROUTES: readonly string[] = [
   "/register",
   "/forgot-password",
   "/reset-password",
-  "/verify-email",
-  "/welcome",
 ] as const;
 
 /** Route prefixes that require authentication */
