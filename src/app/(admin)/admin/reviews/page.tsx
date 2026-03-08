@@ -13,8 +13,8 @@ export default async function AdminReviewsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Review Moderation</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-neutral-900">Review Moderation</h1>
+        <p className="mt-1 text-sm text-neutral-500">
           Review and resolve reported reviews. {reports.length} report
           {reports.length !== 1 ? "s" : ""} awaiting action.
         </p>

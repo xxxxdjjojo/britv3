@@ -9,8 +9,8 @@ export default async function AdminVerificationsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Provider Verifications</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-neutral-900">Provider Verifications</h1>
+        <p className="mt-1 text-sm text-neutral-500">
           Review pending provider verification applications.{" "}
           {verifications.length} item{verifications.length !== 1 ? "s" : ""} awaiting
           review.
