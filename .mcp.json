@@ -6,6 +6,16 @@
       "headers": {
         "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRycnhqYmNocnJkemNpYmZpbGx4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mzk1NjY5MSwiZXhwIjoyMDY5NTMyNjkxfQ.c7HqElt4urttr1HFhlJ2ezdWTvzEPrlfBvA9AT-4ZYo"
       }
+    },
+    "sentry": {
+      "type": "http",
+      "url": "https://mcp.sentry.dev/mcp"
+    },
+    "stitch": {
+      "serverUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "AQ.Ab8RN6L7qyBwFTuJ_tY1jFRhn52C7qfk0-Jzb-UytQH6wXABDQ"
+      }
     }
   }
 }

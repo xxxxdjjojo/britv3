@@ -1,0 +1,218 @@
+[
+  {
+    "id": 1,
+    "header": "4 Bed Detached, Kensington",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£1,250,000",
+    "limit": "42",
+    "reviewer": "Sarah Mitchell"
+  },
+  {
+    "id": 2,
+    "header": "2 Bed Flat, Canary Wharf",
+    "type": "Sale",
+    "status": "Under Offer",
+    "target": "£485,000",
+    "limit": "89",
+    "reviewer": "James Harper"
+  },
+  {
+    "id": 3,
+    "header": "3 Bed Semi, Guildford",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£625,000",
+    "limit": "67",
+    "reviewer": "Emma Richards"
+  },
+  {
+    "id": 4,
+    "header": "1 Bed Studio, Shoreditch",
+    "type": "Rental",
+    "status": "Let Agreed",
+    "target": "£1,850/mo",
+    "limit": "34",
+    "reviewer": "David Chen"
+  },
+  {
+    "id": 5,
+    "header": "5 Bed Victorian, Richmond",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£2,150,000",
+    "limit": "156",
+    "reviewer": "Oliver Grant"
+  },
+  {
+    "id": 6,
+    "header": "2 Bed Maisonette, Clapham",
+    "type": "Sale",
+    "status": "Sold STC",
+    "target": "£575,000",
+    "limit": "112",
+    "reviewer": "Sophie Turner"
+  },
+  {
+    "id": 7,
+    "header": "3 Bed Terraced, Wimbledon",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£895,000",
+    "limit": "78",
+    "reviewer": "James Harper"
+  },
+  {
+    "id": 8,
+    "header": "1 Bed Flat, Angel",
+    "type": "Rental",
+    "status": "Active",
+    "target": "£2,200/mo",
+    "limit": "45",
+    "reviewer": "Emily Watson"
+  },
+  {
+    "id": 9,
+    "header": "4 Bed Detached, Sevenoaks",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£785,000",
+    "limit": "91",
+    "reviewer": "Mark Anderson"
+  },
+  {
+    "id": 10,
+    "header": "2 Bed Apartment, Greenwich",
+    "type": "Rental",
+    "status": "Active",
+    "target": "£1,650/mo",
+    "limit": "28",
+    "reviewer": "Sarah Mitchell"
+  },
+  {
+    "id": 11,
+    "header": "3 Bed Cottage, Canterbury",
+    "type": "Sale",
+    "status": "Under Offer",
+    "target": "£425,000",
+    "limit": "63",
+    "reviewer": "Oliver Grant"
+  },
+  {
+    "id": 12,
+    "header": "Penthouse, South Bank",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£3,450,000",
+    "limit": "234",
+    "reviewer": "Sophie Turner"
+  },
+  {
+    "id": 13,
+    "header": "2 Bed Flat, Battersea",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£520,000",
+    "limit": "56",
+    "reviewer": "David Chen"
+  },
+  {
+    "id": 14,
+    "header": "3 Bed Semi, Croydon",
+    "type": "Sale",
+    "status": "Sold STC",
+    "target": "£445,000",
+    "limit": "98",
+    "reviewer": "Emma Richards"
+  },
+  {
+    "id": 15,
+    "header": "1 Bed Studio, Bermondsey",
+    "type": "Rental",
+    "status": "Active",
+    "target": "£1,450/mo",
+    "limit": "19",
+    "reviewer": "Emily Watson"
+  },
+  {
+    "id": 16,
+    "header": "4 Bed Townhouse, Dulwich",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£1,125,000",
+    "limit": "134",
+    "reviewer": "Mark Anderson"
+  },
+  {
+    "id": 17,
+    "header": "2 Bed Flat, Stratford",
+    "type": "Rental",
+    "status": "Let Agreed",
+    "target": "£1,750/mo",
+    "limit": "41",
+    "reviewer": "James Harper"
+  },
+  {
+    "id": 18,
+    "header": "3 Bed Detached, Tunbridge Wells",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£695,000",
+    "limit": "73",
+    "reviewer": "Sarah Mitchell"
+  },
+  {
+    "id": 19,
+    "header": "5 Bed Manor, Hampstead",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£4,750,000",
+    "limit": "312",
+    "reviewer": "Oliver Grant"
+  },
+  {
+    "id": 20,
+    "header": "1 Bed Flat, Peckham",
+    "type": "Rental",
+    "status": "Active",
+    "target": "£1,350/mo",
+    "limit": "22",
+    "reviewer": "Sophie Turner"
+  },
+  {
+    "id": 21,
+    "header": "3 Bed End Terrace, Lewisham",
+    "type": "Sale",
+    "status": "Under Offer",
+    "target": "£510,000",
+    "limit": "87",
+    "reviewer": "David Chen"
+  },
+  {
+    "id": 22,
+    "header": "2 Bed Flat, Brixton",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£465,000",
+    "limit": "51",
+    "reviewer": "Emma Richards"
+  },
+  {
+    "id": 23,
+    "header": "4 Bed Detached, Epsom",
+    "type": "Sale",
+    "status": "Active",
+    "target": "£825,000",
+    "limit": "95",
+    "reviewer": "Mark Anderson"
+  },
+  {
+    "id": 24,
+    "header": "Studio, King's Cross",
+    "type": "Rental",
+    "status": "Active",
+    "target": "£1,950/mo",
+    "limit": "38",
+    "reviewer": "Emily Watson"
+  }
+]
