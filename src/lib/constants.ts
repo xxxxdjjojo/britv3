@@ -177,6 +177,10 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/terms",
   "/privacy",
   "/overview",
+  "/search",
+  "/properties",
+  "/marketplace",
+  "/help",
 ] as const;
 
 /** Routes for unauthenticated users only (login, register, etc.) */
