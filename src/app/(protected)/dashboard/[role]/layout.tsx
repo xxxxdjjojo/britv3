@@ -30,7 +30,7 @@ export default async function RoleDashboardLayout(
     redirect("/login");
   }
 
-  // Verify user has this role
+  // Verify user has this role; if missing (e.g. just registered), grant it
   const { data: userRole } = await supabase
     .from("user_roles")
     .select("id")
@@ -39,7 +39,17 @@ export default async function RoleDashboardLayout(
     .maybeSingle();
 
   if (!userRole) {
-    redirect("/dashboard");
+    // Auto-grant the role to prevent redirect loops after registration
+    const { error } = await supabase
+      .from("user_roles")
+      .upsert(
+        { user_id: user.id, role },
+        { onConflict: "user_id,role" },
+      );
+
+    if (error) {
+      redirect("/dashboard");
+    }
   }
 
   return <>{props.children}</>;
