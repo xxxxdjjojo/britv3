@@ -9,8 +9,8 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Admin Dashboard</h1>
+        <p className="mt-1 text-sm text-neutral-500">
           Overview of platform activity and content moderation.
         </p>
       </div>
