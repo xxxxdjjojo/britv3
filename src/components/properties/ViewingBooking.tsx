@@ -78,7 +78,7 @@ export function ViewingBooking({
         )}
       >
         <div className="flex justify-center">
-          <CheckCircle className="size-14 text-green-500" />
+          <CheckCircle className="size-14 text-success" />
         </div>
         <div>
           <h3 className="text-lg font-semibold">Viewing Booked!</h3>

@@ -43,8 +43,6 @@ export function PropertyDetails(
     watch,
   } = props.form;
 
-  const listingType = watch("listing_type");
-
   return (
     <div className="space-y-6">
       {/* Listing Type */}

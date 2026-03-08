@@ -226,7 +226,7 @@ export default function HomePage() {
                   Find your perfect British home,
                   <br className="hidden sm:block" /> intelligently.
                 </h1>
-                <p className="text-gray-100 text-base sm:text-lg font-medium leading-normal drop-shadow-md opacity-90">
+                <p className="text-white/90 text-base sm:text-lg font-medium leading-normal drop-shadow-md opacity-90">
                   Search over 25,000 homes powered by Britestate Intelligence.
                 </p>
               </div>

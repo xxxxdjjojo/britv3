@@ -171,7 +171,7 @@ export default function RentalYieldCalculatorPage() {
                     </span>
                     <Info
                       className="size-4 cursor-help text-neutral-400"
-                      title="Annual rent divided by purchase price"
+                      aria-label="Annual rent divided by purchase price"
                     />
                   </div>
                   <div className="flex items-baseline gap-2">
@@ -196,7 +196,7 @@ export default function RentalYieldCalculatorPage() {
                   </span>
                   <Info
                     className="size-4 cursor-help text-brand-primary-lighter"
-                    title="Annual profit after costs divided by purchase price"
+                    aria-label="Annual profit after costs divided by purchase price"
                   />
                 </div>
                 <div className="flex items-baseline gap-2 text-white">
@@ -221,7 +221,7 @@ export default function RentalYieldCalculatorPage() {
                     </span>
                     <Info
                       className="size-4 cursor-help text-neutral-400"
-                      title="Total annual rental income minus all expenses"
+                      aria-label="Total annual rental income minus all expenses"
                     />
                   </div>
                   <div className="flex items-baseline gap-2">

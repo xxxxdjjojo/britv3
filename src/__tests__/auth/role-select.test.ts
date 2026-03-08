@@ -19,7 +19,7 @@ const mockedCreateClient = vi.mocked(createClient);
 describe("selectRoles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
+    mockedCreateClient.mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
   it("inserts roles into user_roles table and sets active_role", async () => {

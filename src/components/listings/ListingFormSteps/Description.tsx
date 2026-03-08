@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,7 +31,8 @@ export function Description(
 
   const title = watch("title") ?? "";
   const description = watch("description") ?? "";
-  const features = watch("features") ?? [];
+  const featuresWatch = watch("features");
+  const features = useMemo(() => featuresWatch ?? [], [featuresWatch]);
   const epcRating = watch("epc_rating");
 
   const [featureInput, setFeatureInput] = useState("");

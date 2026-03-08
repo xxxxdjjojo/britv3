@@ -75,9 +75,9 @@ export function PriceHistory({ history, className }: PriceHistoryProps) {
           className={cn(
             "flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium mb-1",
             isUp
-              ? "bg-green-100 text-green-700"
+              ? "bg-success-light text-success"
               : change < 0
-                ? "bg-red-100 text-red-700"
+                ? "bg-error-light text-error"
                 : "bg-muted text-muted-foreground",
           )}
         >

@@ -115,7 +115,7 @@ export function Footer() {
         <div className="border-t border-neutral-800 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-neutral-400">
-              &copy; 2025 Britestate Ltd. All rights reserved.
+              &copy; 2026 Britestate Ltd. All rights reserved.
               <span className="ml-4 text-neutral-600">Company No. 12345678</span>
             </p>
             <button

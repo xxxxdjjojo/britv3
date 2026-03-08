@@ -18,7 +18,7 @@ const mockedCreateClient = vi.mocked(createClient);
 describe("switchRole", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
+    mockedCreateClient.mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
   it("updates active_role if user has the role", async () => {
@@ -87,7 +87,7 @@ describe("switchRole", () => {
 describe("getUserRoles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
+    mockedCreateClient.mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
   it("returns all roles for a user", async () => {
@@ -115,7 +115,7 @@ describe("getUserRoles", () => {
 describe("getActiveRole", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockedCreateClient.mockResolvedValue(mockSupabase as ReturnType<Awaited<typeof createClient>>);
+    mockedCreateClient.mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
   it("returns the current active role from profile", async () => {

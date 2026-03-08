@@ -100,7 +100,7 @@ describe("ComplianceAlert rendering logic", () => {
   });
 
   it("should display correct count text for multiple documents", () => {
-    const count = 3;
+    const count: number = 3;
     const text = `${count} compliance document${count === 1 ? "" : "s"} expiring soon`;
     expect(text).toBe("3 compliance documents expiring soon");
   });

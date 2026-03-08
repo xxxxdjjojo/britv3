@@ -275,7 +275,7 @@ export default function BuyVsRentCalculatorPage() {
                         Annual Growth
                         <Info
                           className="size-3.5 text-neutral-400 cursor-help"
-                          title="Estimated annual property price appreciation"
+                          aria-label="Estimated annual property price appreciation"
                         />
                       </Label>
                       <span className="text-brand-primary font-bold">

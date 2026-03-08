@@ -18,7 +18,7 @@ export default function WelcomePage() {
 
       {/* Animated check icon */}
       <div className="flex justify-center">
-        <CheckCircle className="size-20 animate-bounce text-green-500" />
+        <CheckCircle className="size-20 animate-bounce text-success" />
       </div>
 
       {/* Heading + subtitle */}
@@ -33,11 +33,11 @@ export default function WelcomePage() {
 
       {/* CTA buttons */}
       <div className="flex flex-col gap-3">
-        <Button asChild size="lg" className="w-full">
-          <Link href="/search">Start Searching</Link>
+        <Button size="lg" className="w-full" render={<Link href="/search" />}>
+          Start Searching
         </Button>
-        <Button asChild variant="ghost" size="lg" className="w-full">
-          <Link href="/dashboard">Complete Your Profile</Link>
+        <Button variant="ghost" size="lg" className="w-full" render={<Link href="/dashboard" />}>
+          Complete Your Profile
         </Button>
       </div>
 

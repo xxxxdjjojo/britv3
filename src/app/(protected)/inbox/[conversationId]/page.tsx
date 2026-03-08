@@ -62,10 +62,7 @@ export default async function ConversationPage({ params }: PageProps) {
 
       {/* Message thread */}
       <div className="flex-1 overflow-hidden border-x bg-card">
-        <MessageThread
-          conversationId={conversationId}
-          currentUserId={user.id}
-        />
+        <MessageThread />
       </div>
 
       {/* Composer (sticky at bottom) */}
