@@ -4,7 +4,9 @@ export const dynamic = "force-dynamic";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { RoleSelector } from "@/components/auth/RoleSelector";
+import { PROFESSIONAL_ROLES } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/types/auth";
 
@@ -21,28 +23,29 @@ export default function RoleSelectPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("You must be logged in to select roles.");
-      setLoading(false);
+      // User not logged in yet — store selection and redirect to register
+      const role = roles[0];
+      router.push(`/register?professional=${role}`);
       return;
     }
 
-    const uniqueRoles = [...new Set(roles)];
+    const role = roles[0];
 
-    // Insert roles into user_roles table
+    // Insert role into user_roles table
     const { error: insertError } = await supabase
       .from("user_roles")
-      .insert(uniqueRoles.map((role) => ({ user_id: user.id, role })));
+      .insert({ user_id: user.id, role });
 
-    if (insertError) {
+    if (insertError && !insertError.message.includes("duplicate")) {
       setError(insertError.message);
       setLoading(false);
       return;
     }
 
-    // Set first selected role as active
+    // Set as active role
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ active_role: uniqueRoles[0] })
+      .update({ active_role: role })
       .eq("id", user.id);
 
     if (updateError) {
@@ -51,18 +54,18 @@ export default function RoleSelectPage() {
       return;
     }
 
-    // Navigate to onboarding for the first selected role
-    router.push(`/register/onboarding/${uniqueRoles[0]}`);
+    // Navigate to onboarding for the selected role
+    router.push(`/register/onboarding/${role}`);
   }
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-neutral-900">
-          How will you use Britestate?
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">
+          Welcome to Britestate
         </h1>
-        <p className="mt-2 text-neutral-500">
-          Select all that apply. You can add more roles later.
+        <p className="mt-2 text-sm text-neutral-500">
+          Select your professional type
         </p>
       </div>
 
@@ -72,7 +75,22 @@ export default function RoleSelectPage() {
         </div>
       )}
 
-      <RoleSelector onSubmit={handleRolesSelected} loading={loading} />
+      <RoleSelector
+        onSubmit={handleRolesSelected}
+        loading={loading}
+        roles={PROFESSIONAL_ROLES}
+        singleSelect
+      />
+
+      <p className="text-center font-body text-sm text-neutral-500">
+        Not a professional?{" "}
+        <Link
+          href="/register"
+          className="font-medium text-brand-accent hover:underline"
+        >
+          Sign up as a homebuyer
+        </Link>
+      </p>
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { UserRole } from "@/types/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,28 +11,7 @@ type OnboardingConfig = Readonly<{
   fields: readonly { name: string; label: string; placeholder: string; type?: string }[];
 }>;
 
-const ONBOARDING_CONFIG: Record<UserRole, OnboardingConfig> = {
-  homebuyer: {
-    title: "Tell us about your property search",
-    fields: [
-      { name: "location", label: "Preferred location", placeholder: "e.g. Manchester, Leeds" },
-      { name: "radius", label: "Search radius (miles)", placeholder: "e.g. 10", type: "number" },
-    ],
-  },
-  renter: {
-    title: "Tell us about your rental search",
-    fields: [
-      { name: "location", label: "Preferred location", placeholder: "e.g. London, Bristol" },
-      { name: "radius", label: "Search radius (miles)", placeholder: "e.g. 5", type: "number" },
-      { name: "budget", label: "Monthly budget (GBP)", placeholder: "e.g. 1200", type: "number" },
-    ],
-  },
-  seller: {
-    title: "Tell us about your property",
-    fields: [
-      { name: "postcode", label: "Property postcode", placeholder: "e.g. SW1A 1AA" },
-    ],
-  },
+const ONBOARDING_CONFIG: Record<string, OnboardingConfig> = {
   landlord: {
     title: "Tell us about your portfolio",
     fields: [
@@ -59,11 +37,18 @@ const ONBOARDING_CONFIG: Record<UserRole, OnboardingConfig> = {
 
 export function OnboardingFlow(
   props: Readonly<{
-    role: UserRole;
+    role: string;
   }>,
 ) {
   const router = useRouter();
   const config = ONBOARDING_CONFIG[props.role];
+
+  // If no config for this role, redirect to dashboard
+  if (!config) {
+    router.push("/dashboard");
+    return null;
+  }
+
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 

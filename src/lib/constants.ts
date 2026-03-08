@@ -54,6 +54,11 @@ export const ROLES: readonly RoleDefinition[] = [
   },
 ] as const;
 
+/** Professional roles shown on "I am a professional" path */
+export const PROFESSIONAL_ROLES: readonly RoleDefinition[] = ROLES.filter(
+  (r) => r.value === "landlord" || r.value === "agent" || r.value === "service_provider",
+);
+
 // -- Verification Levels ----------------------------------------------------
 
 export type VerificationLevelDefinition = Readonly<{
@@ -190,6 +195,7 @@ export const AUTH_ROUTES: readonly string[] = [
   "/forgot-password",
   "/reset-password",
   "/verify-email",
+  "/welcome",
 ] as const;
 
 /** Route prefixes that require authentication */

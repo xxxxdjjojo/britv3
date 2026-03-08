@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ROLES } from "@/lib/constants";
+import type { RoleDefinition } from "@/lib/constants";
 import type { UserRole } from "@/types/auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,12 +29,18 @@ export function RoleSelector(
   props: Readonly<{
     onSubmit: (roles: UserRole[]) => void;
     loading?: boolean;
+    roles?: readonly RoleDefinition[];
+    singleSelect?: boolean;
   }>,
 ) {
+  const roles = props.roles ?? ROLES;
   const [selectedRoles, setSelectedRoles] = useState<Set<UserRole>>(new Set());
 
   function toggleRole(role: UserRole) {
     setSelectedRoles((prev) => {
+      if (props.singleSelect) {
+        return new Set([role]);
+      }
       const next = new Set(prev);
       if (next.has(role)) {
         next.delete(role);
@@ -53,7 +60,7 @@ export function RoleSelector(
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {ROLES.map((role) => {
+        {roles.map((role) => {
           const Icon = ICON_MAP[role.icon];
           const isSelected = selectedRoles.has(role.value);
 
