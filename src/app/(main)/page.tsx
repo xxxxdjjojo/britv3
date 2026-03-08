@@ -206,7 +206,7 @@ export default function HomePage() {
       {/* ── 1. Hero ── */}
       <section>
         <div className="p-4 lg:p-6">
-          <div className="relative flex min-h-[520px] lg:min-h-[620px] flex-col gap-8 items-center justify-center rounded-2xl overflow-hidden p-8 text-center shadow-sm">
+          <div className="relative flex min-h-[100svh] flex-col gap-8 items-center justify-center rounded-2xl overflow-hidden p-8 text-center shadow-sm">
             <Image
               src="/images/hero/hero-bg.jpg"
               alt="Modern British home interior with large windows and natural light"
