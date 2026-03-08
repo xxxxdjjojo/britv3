@@ -110,9 +110,9 @@ export default function ContactPage() {
 
       {/* Success state */}
       {status === "success" && (
-        <div className="mt-10 rounded-xl border border-green-200 bg-green-50 p-6 text-center">
-          <p className="font-medium text-green-800">Message sent!</p>
-          <p className="mt-1 text-sm text-green-700">
+        <div className="mt-10 rounded-xl border border-success bg-success-light p-6 text-center">
+          <p className="font-medium text-success">Message sent!</p>
+          <p className="mt-1 text-sm text-success">
             Thanks for reaching out. We&apos;ll get back to you shortly.
           </p>
           <Button
@@ -128,9 +128,9 @@ export default function ContactPage() {
 
       {/* Rate limited state */}
       {status === "rate_limited" && (
-        <div className="mt-10 rounded-xl border border-amber-200 bg-amber-50 p-6 text-center">
-          <p className="font-medium text-amber-800">Too many requests</p>
-          <p className="mt-1 text-sm text-amber-700">
+        <div className="mt-10 rounded-xl border border-warning bg-warning-light p-6 text-center">
+          <p className="font-medium text-warning">Too many requests</p>
+          <p className="mt-1 text-sm text-warning">
             You have sent too many messages in the last hour. Please try again
             later.
           </p>
@@ -155,7 +155,7 @@ export default function ContactPage() {
               aria-describedby={errors.name ? "name-error" : undefined}
             />
             {errors.name && (
-              <p id="name-error" className="text-xs text-red-600">
+              <p id="name-error" className="text-xs text-error">
                 {errors.name}
               </p>
             )}
@@ -176,7 +176,7 @@ export default function ContactPage() {
               aria-describedby={errors.email ? "email-error" : undefined}
             />
             {errors.email && (
-              <p id="email-error" className="text-xs text-red-600">
+              <p id="email-error" className="text-xs text-error">
                 {errors.email}
               </p>
             )}
@@ -196,7 +196,7 @@ export default function ContactPage() {
               aria-describedby={errors.subject ? "subject-error" : undefined}
             />
             {errors.subject && (
-              <p id="subject-error" className="text-xs text-red-600">
+              <p id="subject-error" className="text-xs text-error">
                 {errors.subject}
               </p>
             )}
@@ -221,7 +221,7 @@ export default function ContactPage() {
               aria-describedby={errors.message ? "message-error" : undefined}
             />
             {errors.message && (
-              <p id="message-error" className="text-xs text-red-600">
+              <p id="message-error" className="text-xs text-error">
                 {errors.message}
               </p>
             )}
@@ -229,7 +229,7 @@ export default function ContactPage() {
 
           {/* Error state */}
           {status === "error" && (
-            <p className="text-sm text-red-600">
+            <p className="text-sm text-error">
               Something went wrong. Please try again or email us directly.
             </p>
           )}
