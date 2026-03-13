@@ -17,7 +17,8 @@ import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/types/auth";
 
 const registerSchema = z.object({
-  displayName: z.string().min(2, "Name must be at least 2 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email address"),
   password: z
     .string()
@@ -42,7 +43,8 @@ export function RegisterForm() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      displayName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       intent: "buy",
@@ -54,10 +56,11 @@ export function RegisterForm() {
 
   async function onSubmit(data: RegisterFormValues) {
     setError(null);
+    const displayName = `${data.firstName} ${data.lastName}`.trim();
     const { error: authError } = await signUp(
       data.email,
       data.password,
-      data.displayName,
+      displayName,
     );
     if (authError) {
       setError(authError.message);
@@ -95,6 +98,13 @@ export function RegisterForm() {
         </Alert>
       )}
 
+      {/* Role badge */}
+      <div className="flex justify-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-medium text-brand-primary">
+          Signing up as: {intent === "rent" ? "Renter" : "Buyer"}
+        </span>
+      </div>
+
       {/* Intent Toggle: Buy / Rent */}
       <div className="flex rounded-lg border border-neutral-200 p-1">
         <button
@@ -121,20 +131,36 @@ export function RegisterForm() {
         </button>
       </div>
 
-      {/* Full name */}
-      <div className="space-y-2">
-        <Label htmlFor="displayName">Full name</Label>
-        <Input
-          id="displayName"
-          type="text"
-          placeholder="Your full name"
-          className="h-11"
-          aria-invalid={!!errors.displayName}
-          {...register("displayName")}
-        />
-        {errors.displayName && (
-          <p className="text-xs text-error">{errors.displayName.message}</p>
-        )}
+      {/* Name fields — side by side */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <Label htmlFor="firstName">First name</Label>
+          <Input
+            id="firstName"
+            type="text"
+            placeholder="Jane"
+            className="h-11"
+            aria-invalid={!!errors.firstName}
+            {...register("firstName")}
+          />
+          {errors.firstName && (
+            <p className="text-xs text-error">{errors.firstName.message}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="lastName">Last name</Label>
+          <Input
+            id="lastName"
+            type="text"
+            placeholder="Smith"
+            className="h-11"
+            aria-invalid={!!errors.lastName}
+            {...register("lastName")}
+          />
+          {errors.lastName && (
+            <p className="text-xs text-error">{errors.lastName.message}</p>
+          )}
+        </div>
       </div>
 
       {/* Email */}

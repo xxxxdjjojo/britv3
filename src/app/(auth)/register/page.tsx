@@ -10,28 +10,28 @@ export const metadata = {
 export default function RegisterPage() {
   return (
     <div className="space-y-6">
-      <div className="text-center">
+      <div>
         <h1 className="font-heading text-2xl font-bold text-neutral-900">
-          Create account
+          Create your account
         </h1>
-      </div>
-
-      <RegisterForm />
-
-      <div className="flex items-center gap-3">
-        <div className="h-px flex-1 bg-neutral-200" />
-        <span className="font-body text-xs text-neutral-500">OR</span>
-        <div className="h-px flex-1 bg-neutral-200" />
+        <p className="mt-1 font-body text-sm text-neutral-500">
+          Find, buy, rent or sell — all in one place
+        </p>
       </div>
 
       <OAuthButtons />
 
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-neutral-200" />
+        <span className="font-body text-xs text-neutral-500">or sign up with email</span>
+        <div className="h-px flex-1 bg-neutral-200" />
+      </div>
+
+      <RegisterForm />
+
       <p className="text-center font-body text-sm text-neutral-500">
-        Have a Britestate account?{" "}
-        <Link
-          href="/login"
-          className="font-medium text-brand-accent hover:underline"
-        >
+        Already have an account?{" "}
+        <Link href="/login" className="font-medium text-brand-accent hover:underline">
           Sign in
         </Link>
       </p>
