@@ -35,10 +35,11 @@ export function PropertyDonut({ segments = DEFAULT_SEGMENTS, total = 1240, class
   const outerR = 54;
   const innerR = 36;
 
+  const totalValue = segments.reduce((acc, s) => acc + s.value, 0);
   let cumulative = 0;
   const arcs = segments.map((seg) => {
     const start = cumulative;
-    const end = cumulative + (seg.value / 100) * 360;
+    const end = cumulative + (seg.value / totalValue) * 360;
     cumulative = end;
     return { ...seg, start, end };
   });

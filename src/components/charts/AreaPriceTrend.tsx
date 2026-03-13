@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import {
   AreaChart,
   Area,
@@ -31,12 +32,13 @@ function formatPrice(value: number) {
 }
 
 export function AreaPriceTrend({ data = DEFAULT_DATA, className }: AreaPriceTrendProps) {
+  const gradientId = useId();
   return (
     <div className={className}>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
-            <linearGradient id="primaryGradient" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.2} />
               <stop offset="95%" stopColor="#1B4D3E" stopOpacity={0} />
             </linearGradient>
@@ -57,7 +59,7 @@ export function AreaPriceTrend({ data = DEFAULT_DATA, className }: AreaPriceTren
             dataKey="price"
             stroke="#1B4D3E"
             strokeWidth={3}
-            fill="url(#primaryGradient)"
+            fill={`url(#${gradientId})`}
             dot={false}
             activeDot={{ r: 5, fill: "#1B4D3E" }}
           />
