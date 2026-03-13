@@ -2,10 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { providerSearchSchema } from "@/lib/validators/marketplace-schemas";
 import { searchProviders } from "@/services/marketplace/provider-service";
+import { Redis } from "@upstash/redis";
+
+const CACHE_TTL_SECONDS = 300; // 5 minutes
+
+// Lazy-initialise Redis — only created once per Lambda warm instance.
+let redis: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return null; // Redis not configured — degrade gracefully (no cache)
+  }
+  if (!redis) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  }
+  return redis;
+}
+
+function buildCacheKey(params: Record<string, unknown>): string {
+  // Stable serialisation: sort keys so param order doesn't matter
+  const sorted = Object.keys(params)
+    .sort()
+    .reduce<Record<string, unknown>>((acc, k) => {
+      acc[k] = params[k];
+      return acc;
+    }, {});
+  return `provider-search:v1:${JSON.stringify(sorted)}`;
+}
 
 /**
  * GET /api/providers/search
  * Public endpoint -- search for verified service providers.
+ * Results are cached in Redis for 5 minutes per unique param combination.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -39,10 +70,41 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const cacheKey = buildCacheKey(parseResult.data as Record<string, unknown>);
+    const client = getRedis();
+
+    // Check cache
+    if (client) {
+      const cached = await client.get<{ data: unknown[]; count: number }>(cacheKey);
+      if (cached) {
+        return NextResponse.json(cached, {
+          status: 200,
+          headers: {
+            "Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}, stale-while-revalidate=60`,
+            "X-Cache": "HIT",
+          },
+        });
+      }
+    }
+
+    // Cache miss — query DB
     const supabase = await createClient();
     const result = await searchProviders(supabase, parseResult.data);
 
-    return NextResponse.json(result, { status: 200 });
+    // Populate cache (fire-and-forget — don't block response on cache write)
+    if (client) {
+      client.setex(cacheKey, CACHE_TTL_SECONDS, result).catch((err: unknown) => {
+        console.warn("Redis cache write failed (non-fatal):", err);
+      });
+    }
+
+    return NextResponse.json(result, {
+      status: 200,
+      headers: {
+        "Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}, stale-while-revalidate=60`,
+        "X-Cache": "MISS",
+      },
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Search failed";
     return NextResponse.json({ error: message }, { status: 500 });
