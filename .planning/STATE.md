@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 08-db-foundation-security 08-02-PLAN.md
-last_updated: "2026-03-13T22:55:06.244Z"
+stopped_at: Completed 14-landlord-dashboard 14-03-PLAN.md
+last_updated: "2026-03-13T23:05:35.596Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 110
-  completed_plans: 56
+  completed_plans: 57
   percent: 49
 ---
 
@@ -56,6 +56,7 @@ Progress: [█████░░░░░] 49%
 | Phase 17-service-provider-public-profiles P02 | 1211 | 2 tasks | 8 files |
 | Phase 14-landlord-dashboard P02 | 37 | 2 tasks | 15 files |
 | Phase 08-db-foundation-security P02 | 12 | 2 tasks | 6 files |
+| Phase 14-landlord-dashboard P03 | 23 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 14-landlord-dashboard]: VALID_TRANSITIONS state machine prevents skipping pipeline stages (received->approved fails with error)
 - [Phase 08-db-foundation-security]: Role authorization reads active_role from profiles table as authoritative source — eliminates URL-based privilege escalation
 - [Phase 08-db-foundation-security]: nanoid@5 is ESM-only; import via import { nanoid } from 'nanoid', not require()
+- [Phase 14-landlord-dashboard]: layout.tsx uses lg:pl-64 content offset matching the fixed w-64 sidebar; base-ui Sheet used for mobile drawer
+- [Phase 14-landlord-dashboard]: Create Listing wizard tries rental_listings table first, falls back to listings table with listing_type=rental
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:55:06.231Z
-Stopped at: Completed 08-db-foundation-security 08-02-PLAN.md
+Last session: 2026-03-13T23:05:35.576Z
+Stopped at: Completed 14-landlord-dashboard 14-03-PLAN.md
 Resume file: None
