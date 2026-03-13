@@ -15,6 +15,7 @@ vi.mock("@/services/geocoding/postcodes-io", () => ({
 // Mock file-validator
 vi.mock("@/lib/marketplace/file-validator", () => ({
   validateFile: vi.fn().mockResolvedValue({ mime: "application/pdf", ext: "pdf" }),
+  sanitizeBuffer: vi.fn().mockImplementation((buffer: Buffer) => Promise.resolve(buffer)),
 }));
 
 import {

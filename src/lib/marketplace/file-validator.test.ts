@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateFile, ALLOWED_TYPES, MAX_FILE_SIZE } from "./file-validator";
+import { validateFile, ALLOWED_TYPES, MAX_FILE_SIZE, sanitizeBuffer } from "./file-validator";
 
 // Magic bytes for common file types
 const JPEG_HEADER = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
@@ -77,6 +77,36 @@ describe("file-validator", () => {
       const gifHeader = Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]);
       const buf = makeBuffer(gifHeader, 1024);
       await expect(validateFile(buf)).rejects.toThrow(/not allowed/i);
+    });
+  });
+
+  describe("sanitizeBuffer", () => {
+    it("returns the original Buffer unchanged for application/pdf", async () => {
+      const buf = makeBuffer(PDF_HEADER, 1024);
+      const result = await sanitizeBuffer(buf, "application/pdf");
+      expect(result).toBe(buf); // same reference — no processing
+    });
+
+    it("returns the original Buffer unchanged for unknown mime types", async () => {
+      const buf = Buffer.from("hello");
+      const result = await sanitizeBuffer(buf, "application/octet-stream");
+      expect(result).toBe(buf);
+    });
+
+    it("calls through to sharp for image/jpeg (sharp throws on fake buffer)", async () => {
+      const buf = makeBuffer(JPEG_HEADER, 1024);
+      // sharp throws because the fake buffer is not a real JPEG — that's expected
+      await expect(sanitizeBuffer(buf, "image/jpeg")).rejects.toThrow();
+    });
+
+    it("calls through to sharp for image/png", async () => {
+      const buf = makeBuffer(PNG_HEADER, 1024);
+      await expect(sanitizeBuffer(buf, "image/png")).rejects.toThrow();
+    });
+
+    it("calls through to sharp for image/webp", async () => {
+      const buf = makeBuffer(WEBP_HEADER, 1024);
+      await expect(sanitizeBuffer(buf, "image/webp")).rejects.toThrow();
     });
   });
 });

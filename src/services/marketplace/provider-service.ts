@@ -15,7 +15,7 @@ import type {
   VerificationDocumentType,
 } from "@/types/marketplace";
 import { providerProfileSchema } from "@/lib/validators/marketplace-schemas";
-import { validateFile } from "@/lib/marketplace/file-validator";
+import { validateFile, sanitizeBuffer } from "@/lib/marketplace/file-validator";
 import { geocodePostcode } from "@/services/geocoding/postcodes-io";
 
 // -- Slug generation ---------------------------------------------------------
@@ -260,6 +260,7 @@ export async function uploadProviderDocument(
 ): Promise<ProviderDocument> {
   // Validate file via magic bytes
   const { mime, ext } = await validateFile(file);
+  const sanitized = await sanitizeBuffer(file, mime);
 
   const timestamp = Date.now();
   const storagePath = `provider-documents/${userId}/${documentType}/${timestamp}.${ext}`;
@@ -267,7 +268,7 @@ export async function uploadProviderDocument(
   // Upload to Supabase Storage
   const { error: uploadError } = await supabase.storage
     .from("provider-docs")
-    .upload(storagePath, file, {
+    .upload(storagePath, sanitized, {
       contentType: mime,
       upsert: false,
     });
@@ -289,7 +290,7 @@ export async function uploadProviderDocument(
       document_type: documentType,
       file_name: originalFilename,
       file_url: urlData.publicUrl,
-      file_size: file.length,
+      file_size: sanitized.length,
       mime_type: mime,
       verification_status: "pending",
     })

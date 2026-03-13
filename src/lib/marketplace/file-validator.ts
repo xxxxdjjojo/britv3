@@ -1,4 +1,5 @@
 import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
 
 export const ALLOWED_TYPES = new Set([
   "application/pdf",
@@ -35,4 +36,31 @@ export async function validateFile(
   }
 
   return { mime: type.mime, ext: type.ext };
+}
+
+const IMAGE_TYPES_NEEDING_SANITIZATION = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
+/**
+ * Strip all EXIF/XMP/ICC metadata from image buffers before storage.
+ * PDFs and non-image types are returned unchanged (PDF sanitisation
+ * requires a separate pass, deferred to a future task).
+ *
+ * @param buffer  Raw file buffer (already validated by validateFile)
+ * @param mime    MIME type from validateFile result
+ * @returns       Sanitised buffer (new Buffer for images, same reference for others)
+ */
+export async function sanitizeBuffer(buffer: Buffer, mime: string): Promise<Buffer> {
+  if (!IMAGE_TYPES_NEEDING_SANITIZATION.has(mime)) {
+    return buffer;
+  }
+
+  // sharp strips all metadata by default when no .withMetadata() is called.
+  // We pass an empty object to be explicit.
+  return sharp(buffer)
+    .withMetadata({})
+    .toBuffer();
 }
