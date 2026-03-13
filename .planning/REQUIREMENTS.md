@@ -8,7 +8,7 @@
 
 ### Foundation & Security (FOUND)
 
-- [ ] **FOUND-01**: DB migration creates 10 new tables (viewings, viewing_slots, offers, offer_status_history, user_documents, ai_match_preferences, ai_match_results, moving_checklist_items, referral_codes, referral_conversions) with RLS policies
+- [x] **FOUND-01**: DB migration creates 10 new tables (viewings, viewing_slots, offers, offer_status_history, user_documents, ai_match_preferences, ai_match_results, moving_checklist_items, referral_codes, referral_conversions) with RLS policies
 - [ ] **FOUND-02**: Role route authorization enforces active_role — buyers cannot navigate to /dashboard/landlord or /dashboard/agent routes
 - [ ] **FOUND-03**: All buyer dashboard API routes and Server Components call supabase.auth.getUser() server-side (defense-in-depth, not middleware-only auth)
 - [ ] **FOUND-04**: npm packages installed: react-day-picker@9, date-fns@4, tus-js-client@4, nanoid@5
@@ -93,7 +93,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 8 | Pending |
+| FOUND-01 | Phase 8 | Complete |
 | FOUND-02 | Phase 8 | Pending |
 | FOUND-03 | Phase 8 | Pending |
 | FOUND-04 | Phase 8 | Pending |

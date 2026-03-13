@@ -501,7 +501,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 5. AI & Financial Tools | v3.0 | 3/4 | In Progress | - |
 | 6. Landlord Tools | v3.0 | 5/5 | Complete | 2026-03-07 |
 | 7. Production Readiness | v3.0 | 9/10 | In Progress | - |
-| 8. DB Foundation & Security | v3.1 | 0/2 | Not started | - |
+| 8. DB Foundation & Security | 1/2 | In Progress|  | - |
 | 9. Wire Existing Pages | v3.1 | 0/4 | Not started | - |
 | 10. Viewings Booking, Offers & Docs | v3.1 | 0/6 | Not started | - |
 | 11. AI Match | v3.1 | 0/2 | Not started | - |

@@ -4,13 +4,13 @@ milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: Roadmap ready — awaiting plan-phase
 stopped_at: Completed 17-service-provider-public-profiles 17-02-PLAN.md
-last_updated: "2026-03-13T22:30:25.487Z"
+last_updated: "2026-03-13T22:44:33.628Z"
 last_activity: 2026-03-13 — v3.1 roadmap created (5 phases, 39 requirements, 16 plans)
 progress:
   total_phases: 17
   completed_phases: 4
   total_plans: 110
-  completed_plans: 53
+  completed_plans: 54
   percent: 0
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 ## Current Position
 
 Phase: 8 of 12 (DB Foundation & Security)
-Plan: 0 of 2 in current phase
-Status: Roadmap ready — awaiting plan-phase
-Last activity: 2026-03-13 — v3.1 roadmap created (5 phases, 39 requirements, 16 plans)
+Plan: 1 of 2 in current phase
+Status: In progress — executing v3.1 buyer dashboard foundation
+Last activity: 2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█████░░░░░] 49%
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | v3.0 baseline | 50 | ~900 min | ~18 min |
+| Phase 08 P01 | 49 | 2 tasks | 3 files |
 
 **Recent Trend:**
 - Last 5 plans (v3.0): Phase 07 P10 22min, Phase 07 P08 12min, Phase 07 P04 24min, Phase 07 P06 20min, Phase 07 P05 4min
@@ -74,6 +75,8 @@ Recent decisions affecting current work:
 - [Phase 14-landlord-dashboard]: get_landlord_portfolio_kpis RPC uses SECURITY DEFINER to aggregate across landlord tables without RLS blocking cross-table joins
 - [Phase 14-landlord-dashboard]: landlord-documents storage bucket covers tenancy agreements, legal notices, and inventory photos under one private bucket to simplify RLS policy management
 - [Phase 17-service-provider-public-profiles]: ProfileTabs receives typed ReactNode props (about/services/portfolio/reviews) rather than children + data-tab attributes to avoid cross-boundary Server/Client children iteration complexity
+- [Phase 08]: Migration applied via Supabase Management API (POST /v1/projects/{ref}/database/query) due to migration history tracking mismatch; CLI supabase db push not usable without DB password
+- [Phase 08]: offers table includes solicitor_id UUID FK (not in original RESEARCH.md schema) — required by user_documents RLS policy that grants read access to instructed solicitor
 
 ### Pending Todos
 
@@ -84,11 +87,10 @@ Recent decisions affecting current work:
 ### Blockers/Concerns
 
 - Phase 10 viewing booking flow requires agent-published viewing_slots to exist; if agent dashboard slot creation is not yet built, booking UI will have nothing to book against
-- Phase 8 DB migration offer state machine CHECK constraints and viewing slot RPC require careful PostgreSQL transaction review before applying (see ARCHITECTURE.md)
 - Phase 10 tus-js-client integration requires specific headers (Authorization, x-upsert) and signed upload URL flow; see STACK.md for exact pattern
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:30:25.394Z
-Stopped at: Completed 17-service-provider-public-profiles 17-02-PLAN.md
-Resume file: None
+Last session: 2026-03-13T22:44:00Z
+Stopped at: Completed 08-db-foundation-security 08-01-PLAN.md
+Resume file: .planning/phases/08-db-foundation-security/08-01-SUMMARY.md
