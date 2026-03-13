@@ -1,10 +1,14 @@
-"use client";
-
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Suspense } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { getComplianceSummary } from "@/services/landlord/document-service";
+import { getPortfolioProperties } from "@/services/landlord/portfolio-service";
+import CertificateStatusTile from "@/components/landlord/CertificateStatusTile";
+import type { CertificateCategory } from "@/components/landlord/CertificateStatusTile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -14,357 +18,301 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  CheckCircle2,
   AlertTriangle,
   XCircle,
-  Search,
-  Filter,
-  Download,
-  CalendarPlus,
-  MoreVertical,
-  Building2,
-  ClipboardCheck,
-  BadgeCheck,
-  Zap,
-  ScrollText,
-  ChevronLeft,
-  ChevronRight,
+  Upload,
+  Bell,
+  CheckCircle2,
 } from "lucide-react";
+import type { ComplianceDocument } from "@/types/landlord";
 
-type CertStatus = "valid" | "expiring" | "expired";
+// -- Helpers -----------------------------------------------------------------
 
-type CertificateCell = {
-  status: CertStatus;
-  detail: string;
+const CATEGORY_LABELS: Record<string, string> = {
+  gas_safety: "Gas Safety",
+  electrical_eicr: "EICR",
+  epc: "EPC",
+  deposit_protection: "Deposit Protection",
 };
 
-type PropertyRow = {
-  address: string;
-  region: string;
-  gasSafety: CertificateCell;
-  epc: CertificateCell;
-  eicr: CertificateCell;
-  pat: CertificateCell;
-  legionella: CertificateCell;
-  fireAlarm: CertificateCell;
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function getDaysUntil(dateStr: string): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expiry = new Date(dateStr);
+  expiry.setHours(0, 0, 0, 0);
+  return Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+// -- Tile data builder -------------------------------------------------------
+
+type TileCounts = {
+  totalProperties: number;
+  expired: number;
+  expiringSoon: number;
+  valid: number;
 };
 
-const properties: PropertyRow[] = [
-  {
-    address: "22 Baker Street, London NW1",
-    region: "London",
-    gasSafety: { status: "valid", detail: "Valid until 14 Sep 2026" },
-    epc: { status: "valid", detail: "Grade B — Valid until 2031" },
-    eicr: { status: "expiring", detail: "Expiring in 28 days" },
-    pat: { status: "valid", detail: "Valid until 20 Nov 2026" },
-    legionella: { status: "valid", detail: "Valid until 08 Mar 2027" },
-    fireAlarm: { status: "valid", detail: "Valid until 01 Jun 2026" },
-  },
-  {
-    address: "45 King Henry's Road, Manchester M3",
-    region: "Manchester",
-    gasSafety: { status: "expired", detail: "Expired 12 Jan 2026" },
-    epc: { status: "valid", detail: "Grade C — Valid until 2029" },
-    eicr: { status: "valid", detail: "Valid until 15 Aug 2028" },
-    pat: { status: "valid", detail: "Valid until 30 Apr 2026" },
-    legionella: { status: "expiring", detail: "Expiring in 14 days" },
-    fireAlarm: { status: "valid", detail: "Valid until 22 Dec 2026" },
-  },
-  {
-    address: "Flat 12, Skyline Plaza, London SE1",
-    region: "London",
-    gasSafety: { status: "valid", detail: "Valid until 03 Jul 2026" },
-    epc: { status: "valid", detail: "Grade A — Valid until 2032" },
-    eicr: { status: "valid", detail: "Valid until 19 Feb 2029" },
-    pat: { status: "valid", detail: "Valid until 11 Oct 2026" },
-    legionella: { status: "valid", detail: "Valid until 25 May 2027" },
-    fireAlarm: { status: "valid", detail: "Valid until 09 Sep 2026" },
-  },
-  {
-    address: "The Orchards, High St, Birmingham B1",
-    region: "Birmingham",
-    gasSafety: { status: "valid", detail: "Valid until 28 Nov 2026" },
-    epc: { status: "expired", detail: "Grade F — Expired 05 Feb 2026" },
-    eicr: { status: "valid", detail: "Valid until 10 Jan 2028" },
-    pat: { status: "expiring", detail: "Expiring in 21 days" },
-    legionella: { status: "valid", detail: "Valid until 17 Jul 2027" },
-    fireAlarm: { status: "valid", detail: "Valid until 04 Apr 2026" },
-  },
-];
+function buildTileCounts(
+  docs: ComplianceDocument[],
+  category: string,
+  totalProperties: number,
+): TileCounts {
+  const categoryDocs = docs.filter((d) => d.category === category);
+  return {
+    totalProperties,
+    expired: categoryDocs.filter((d) => d.status === "expired").length,
+    expiringSoon: categoryDocs.filter((d) => d.status === "expiring_soon").length,
+    valid: categoryDocs.filter((d) => d.status === "valid").length,
+  };
+}
 
-const certColumns = [
-  { key: "gasSafety" as const, label: "Gas Safety (CP12)" },
-  { key: "epc" as const, label: "EPC Status" },
-  { key: "eicr" as const, label: "EICR (5yr)" },
-  { key: "pat" as const, label: "PAT Testing" },
-  { key: "legionella" as const, label: "Legionella" },
-  { key: "fireAlarm" as const, label: "Fire Alarm" },
-];
+// -- Loading skeleton --------------------------------------------------------
 
-function StatusIcon({ status, detail }: { status: CertStatus; detail: string }) {
-  if (status === "valid") {
-    return (
-      <span title={detail} className="inline-flex items-center justify-center">
-        <CheckCircle2 className="size-5 text-brand-primary" />
-      </span>
-    );
-  }
-  if (status === "expiring") {
-    return (
-      <span title={detail} className="inline-flex items-center justify-center">
-        <AlertTriangle className="size-5 text-warning" />
-      </span>
-    );
-  }
+function ComplianceSkeleton() {
   return (
-    <span title={detail} className="inline-flex items-center justify-center">
-      <XCircle className="size-5 text-error" />
-    </span>
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-36 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
   );
 }
 
-export default function CompliancePage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "expired" | "expiring" | "compliant">("all");
-  const [regionFilter, setRegionFilter] = useState("all");
+// -- Main page ---------------------------------------------------------------
 
-  const filteredProperties = properties.filter((p) => {
-    if (searchQuery && !p.address.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
-    if (statusFilter === "expired") {
-      const certs = certColumns.map((c) => p[c.key]);
-      return certs.some((cert) => cert.status === "expired");
-    }
-    if (statusFilter === "expiring") {
-      const certs = certColumns.map((c) => p[c.key]);
-      return certs.some((cert) => cert.status === "expiring");
-    }
-    if (statusFilter === "compliant") {
-      const certs = certColumns.map((c) => p[c.key]);
-      return certs.every((cert) => cert.status === "valid");
-    }
-    if (regionFilter !== "all" && p.region !== regionFilter) {
-      return false;
-    }
-    return true;
+export default async function CompliancePage() {
+  const supabase = await createClient();
+
+  // Fetch compliance docs and portfolio in parallel
+  const [docs, properties] = await Promise.all([
+    getComplianceSummary(supabase).catch(() => [] as ComplianceDocument[]),
+    getPortfolioProperties(supabase).catch(() => []),
+  ]);
+
+  const totalProperties = properties.length;
+
+  // Build tile counts per category
+  const gasSafetyCounts = buildTileCounts(docs, "gas_safety", totalProperties);
+  const eicCounts = buildTileCounts(docs, "electrical_eicr", totalProperties);
+  const epcCounts = buildTileCounts(docs, "epc", totalProperties);
+
+  // Deposit protection: query deposit_registrations for unregistered count
+  // For now derived from docs with category deposit_protection (when added)
+  // Default to 0 unregistered until deposit_protection docs are tracked
+  const depositCounts: TileCounts = {
+    totalProperties,
+    expired: 0,
+    expiringSoon: 0,
+    valid: totalProperties,
+  };
+
+  const totalExpired =
+    gasSafetyCounts.expired +
+    eicCounts.expired +
+    epcCounts.expired +
+    depositCounts.expired;
+
+  const totalExpiringSoon =
+    gasSafetyCounts.expiringSoon +
+    eicCounts.expiringSoon +
+    epcCounts.expiringSoon +
+    depositCounts.expiringSoon;
+
+  // All certificates sorted by expiry (most urgent first)
+  const allDocs = [...docs].sort((a, b) => {
+    if (a.status === "expired" && b.status !== "expired") return -1;
+    if (a.status !== "expired" && b.status === "expired") return 1;
+    return new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime();
   });
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold tracking-tight">
-            Compliance &amp; Certification Matrix
+            Compliance Dashboard
           </h1>
           <p className="text-muted-foreground">
-            Manage regulatory status across your properties
+            Track gas safety, EPC, EICR, and deposit protection across your portfolio
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 size-4" />
-            Export CSV
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/landlord/compliance/alerts">
+              <Bell className="mr-2 size-4" />
+              View Alerts
+            </Link>
           </Button>
-          <Button size="sm">
-            <CalendarPlus className="mr-2 size-4" />
-            Schedule Inspection
+          <Button size="sm" asChild>
+            <Link href="/dashboard/landlord/compliance/upload">
+              <Upload className="mr-2 size-4" />
+              Upload Certificate
+            </Link>
           </Button>
         </div>
       </div>
 
-      {/* Metrics */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Total Properties</p>
-            <CardTitle className="text-3xl">12</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Fully Compliant</p>
-            <CardTitle className="text-3xl text-brand-primary">
-              9 <span className="text-base font-normal text-muted-foreground">(81%)</span>
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">Expiring Soon</p>
-              <Badge className="bg-warning-light text-warning border-0 text-xs">Action Req.</Badge>
-            </div>
-            <CardTitle className="text-3xl text-warning">2</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">Expired</p>
-              <Badge className="bg-error-light text-error border-0 text-xs">Critical</Badge>
-            </div>
-            <CardTitle className="text-3xl text-error">1</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search properties..."
-                className="pl-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Filter className="size-4 text-muted-foreground" />
-              <select
-                className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
-              >
-                <option value="all">All Statuses</option>
-                <option value="expired">Expired</option>
-                <option value="expiring">Expiring Soon</option>
-                <option value="compliant">Compliant</option>
-              </select>
-              <select
-                className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={regionFilter}
-                onChange={(e) => setRegionFilter(e.target.value)}
-              >
-                <option value="all">All Regions</option>
-                <option value="London">London</option>
-                <option value="Manchester">Manchester</option>
-                <option value="Birmingham">Birmingham</option>
-              </select>
-            </div>
+      {/* Critical alert banner */}
+      {(totalExpired > 0 || totalExpiringSoon > 0) && (
+        <div
+          className={`flex items-start gap-3 rounded-lg border p-4 ${
+            totalExpired > 0
+              ? "border-error bg-error-light text-error"
+              : "border-warning bg-warning-light text-warning"
+          }`}
+        >
+          {totalExpired > 0 ? (
+            <XCircle className="mt-0.5 size-5 shrink-0" />
+          ) : (
+            <AlertTriangle className="mt-0.5 size-5 shrink-0" />
+          )}
+          <div className="flex-1">
+            <p className="font-medium">
+              {totalExpired > 0
+                ? `${totalExpired} certificate${totalExpired > 1 ? "s" : ""} expired — action required`
+                : `${totalExpiringSoon} certificate${totalExpiringSoon > 1 ? "s" : ""} expiring within 30 days`}
+            </p>
+            <p className="mt-0.5 text-sm opacity-80">
+              Letting a property with expired safety certificates can lead to fines or
+              prosecution. Upload updated documents immediately.
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Button size="sm" variant="outline" asChild>
+            <Link href="/dashboard/landlord/compliance/alerts">
+              View All Alerts
+            </Link>
+          </Button>
+        </div>
+      )}
 
-      {/* Matrix Table */}
+      {/* 4 category tiles */}
+      <Suspense fallback={<ComplianceSkeleton />}>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <CertificateStatusTile
+            category={"gas_safety" as CertificateCategory}
+            {...gasSafetyCounts}
+          />
+          <CertificateStatusTile
+            category={"electrical_eicr" as CertificateCategory}
+            {...eicCounts}
+          />
+          <CertificateStatusTile
+            category={"epc" as CertificateCategory}
+            {...epcCounts}
+          />
+          <CertificateStatusTile
+            category={"deposit_protection" as CertificateCategory}
+            {...depositCounts}
+          />
+        </div>
+      </Suspense>
+
+      {/* All certificates table */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="sticky left-0 z-10 min-w-[240px] bg-muted/50">
-                    Property Address
-                  </TableHead>
-                  {certColumns.map((col) => (
-                    <TableHead key={col.key} className="text-center">
-                      {col.label}
-                    </TableHead>
-                  ))}
-                  <TableHead className="text-center">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProperties.map((property, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="sticky left-0 z-10 bg-background">
-                      <div className="flex items-center gap-3">
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
-                          <Building2 className="size-5 text-muted-foreground" />
-                        </div>
-                        <span className="font-medium">{property.address}</span>
-                      </div>
-                    </TableCell>
-                    {certColumns.map((col) => (
-                      <TableCell key={col.key} className="text-center">
-                        <StatusIcon
-                          status={property[col.key].status}
-                          detail={property[col.key].detail}
-                        />
-                      </TableCell>
-                    ))}
-                    <TableCell className="text-center">
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="size-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="flex items-center justify-between border-b px-4 py-3">
+            <p className="font-semibold">All Certificates</p>
+            <p className="text-sm text-muted-foreground">
+              Sorted by urgency
+            </p>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Showing 1 to {filteredProperties.length} of 12 properties
-        </p>
-        <div className="flex items-center gap-1">
-          <Button variant="outline" size="sm" disabled>
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button variant="outline" size="sm" className="bg-brand-primary text-white hover:bg-brand-primary-light">
-            1
-          </Button>
-          <Button variant="outline" size="sm">2</Button>
-          <Button variant="outline" size="sm">3</Button>
-          <Button variant="outline" size="sm">
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Marketplace Banner */}
-      <Card className="overflow-hidden border-0 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white">
-        <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-2">
-            <h3 className="font-heading text-lg font-semibold">
-              Need a fast compliance renewal?
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              <Badge className="border-0 bg-white/10 text-white">
-                <BadgeCheck className="mr-1 size-3" />
-                Vetted Pro
-              </Badge>
-              <Badge className="border-0 bg-white/10 text-white">
-                <Zap className="mr-1 size-3" />
-                Fast Track
-              </Badge>
-              <Badge className="border-0 bg-white/10 text-white">
-                <ScrollText className="mr-1 size-3" />
-                Digi-Cert
-              </Badge>
+          {allDocs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+              <CheckCircle2 className="size-10 text-success" />
+              <p className="font-medium">No compliance documents yet</p>
+              <p className="text-sm text-muted-foreground">
+                Upload your first compliance certificate to get started.
+              </p>
+              <Button size="sm" asChild className="mt-2">
+                <Link href="/dashboard/landlord/compliance/upload">
+                  <Upload className="mr-2 size-4" />
+                  Upload Certificate
+                </Link>
+              </Button>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-light">
-              Browse Engineers
-            </Button>
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 hover:text-white">
-              View Price List
-            </Button>
-          </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Property</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Expires</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allDocs.map((doc) => {
+                    const days = getDaysUntil(doc.expiry_date);
+                    const address = [
+                      doc.property.address_line_1,
+                      doc.property.city,
+                    ]
+                      .filter(Boolean)
+                      .join(", ");
+
+                    return (
+                      <TableRow key={doc.id}>
+                        <TableCell className="font-medium">
+                          {address || "Unknown address"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {CATEGORY_LABELS[doc.category] ?? doc.category}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="tabular-nums">
+                          {formatDate(doc.expiry_date)}
+                        </TableCell>
+                        <TableCell>
+                          {doc.status === "expired" && (
+                            <Badge className="border-0 bg-error-light text-error">
+                              Expired {Math.abs(days)}d ago
+                            </Badge>
+                          )}
+                          {doc.status === "expiring_soon" && (
+                            <Badge className="border-0 bg-warning-light text-warning">
+                              Expires in {days}d
+                            </Badge>
+                          )}
+                          {doc.status === "valid" && (
+                            <Badge className="border-0 bg-success-light text-success">
+                              Valid
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="outline" size="sm" asChild>
+                            <Link
+                              href={`/dashboard/landlord/compliance/upload?category=${doc.category}`}
+                            >
+                              Upload New
+                            </Link>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Legend */}
-      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-full border bg-background px-4 py-2 shadow-lg">
-        <span className="flex items-center gap-1 text-xs">
-          <CheckCircle2 className="size-3.5 text-brand-primary" /> Valid
-        </span>
-        <span className="flex items-center gap-1 text-xs">
-          <AlertTriangle className="size-3.5 text-warning" /> Expiring
-        </span>
-        <span className="flex items-center gap-1 text-xs">
-          <XCircle className="size-3.5 text-error" /> Expired
-        </span>
-      </div>
     </div>
   );
 }
