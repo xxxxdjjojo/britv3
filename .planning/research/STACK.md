@@ -2,13 +2,119 @@
 
 **Project:** Britestate v3.0 -- UK Property Portal
 **Researched:** 2026-03-06
-**Overall Confidence:** MEDIUM-HIGH (scaffold verified, v2.0 battle-tested patterns, library versions need npm verification)
-
-> **Caveat on versions:** WebSearch and npm registry lookups were unavailable during this session. Core framework versions are VERIFIED from the scaffold's package.json. Supporting library versions are based on training data (cutoff May 2025) and are marked with `*` where newer releases are likely. Run `npm view <package> version` before installing.
+**Updated:** 2026-03-13 (milestone v3.1: Buyer/Renter Dashboard additions)
+**Overall Confidence:** HIGH for new additions (npm-verified versions), MEDIUM-HIGH for original stack
 
 ---
 
-## Recommended Stack
+## Milestone v3.1 Additions: Buyer/Renter Dashboard
+
+> This section covers ONLY the net-new libraries needed for the 22 Buyer/Renter Dashboard pages.
+> The base stack (Next.js 16, React 19, Supabase, Recharts, TanStack Query, react-dropzone, etc.)
+> is already installed. Do not re-add anything already in package.json.
+
+### New Libraries Required
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| `react-day-picker` | `^9.14.0` | Calendar/date-picker for viewing schedules | v9 supports React 19 natively (v8 does not). Shadcn's Calendar component wraps this. Required for viewing scheduling, reschedule flows, and availability display. Verified current via npm. |
+| `date-fns` | `^4.1.0` | Date utilities (peer dep of react-day-picker) | react-day-picker v9 uses date-fns v4 for locale and date arithmetic. Also used throughout for formatting tenancy dates, offer expiry, moving timeline. Verified current via npm. |
+| `tus-js-client` | `^4.3.1` | Multi-file document upload with progress tracking | Supabase Storage natively implements the TUS resumable upload protocol. tus-js-client v4 is the official TUS client -- provides `onProgress(bytesUploaded, bytesTotal)` callbacks for per-file progress bars. Handles >6MB files (ID scans, proof-of-funds PDFs) reliably with automatic retry. react-dropzone (already installed) handles file selection UI; tus-js-client handles the actual upload. Verified current via npm. |
+| `nanoid` | `^5.1.6` | Referral code generation | Generates URL-safe, cryptographically random IDs for referral links. 130-byte zero-dependency library. Server-side only (API route / Server Action). Next.js uses it internally -- already in the node_modules tree, just not declared as a direct dependency. Declare it explicitly so the version is pinned. Verified current via npm. |
+
+### What Does NOT Need Adding
+
+| Capability | Covered By | Reason |
+|------------|-----------|--------|
+| Mortgage comparison table | `@tanstack/react-table` + shadcn Table (already installed) | Sortable/filterable table for comparing broker rates. No new library. |
+| AI match score display (gauge/ring) | `recharts` RadialBarChart (already installed) | Shadcn's radial chart pattern uses Recharts RadialBarChart with `startAngle`/`endAngle` to render a circular progress ring with centered score text. No new library. |
+| File drop zone UI | `react-dropzone` (already installed) | Handles drag-and-drop, file type validation, multiple file selection. Pair with tus-js-client for the upload step. |
+| Document upload progress bar | Tailwind + React state | Progress percentage from tus-js-client `onProgress` callback rendered with a simple `<div style={{ width: `${pct}%` }}>` div. No progress-bar library needed. |
+| Referral link display / copy | shadcn Button + `navigator.clipboard` (built-in browser API) | Copy-to-clipboard is a one-liner with no library. |
+| Mortgage amortization math | Custom utility (planned in Phase 5, plan 05-02) | Pure TypeScript, no library. Verified in roadmap. |
+
+### Installation Command
+
+```bash
+# From britv3.0/
+pnpm add react-day-picker@^9.14.0 date-fns@^4.1.0 tus-js-client@^4.3.1 nanoid@^5.1.6
+```
+
+Then scaffold the Shadcn Calendar component (copies component source into your project):
+
+```bash
+pnpm dlx shadcn@latest add calendar
+```
+
+### Integration Notes
+
+**Calendar (react-day-picker + Shadcn):**
+- `pnpm dlx shadcn@latest add calendar` generates `src/components/ui/calendar.tsx` which wraps react-day-picker v9
+- Use `mode="single"` for date selection, `mode="range"` for date range pickers, `disabled` prop for unavailable viewing slots
+- For viewing schedules: fetch booked slots from Supabase, pass as `disabled` dates to `<Calendar>`
+- Pair with Shadcn `<Popover>` for dropdown date-picker pattern (Shadcn docs: Date Picker)
+
+**Document Upload (tus-js-client + react-dropzone):**
+- react-dropzone `onDrop` callback receives `File[]` → pass each to a `new tus.Upload(file, { endpoint: supabase_tus_endpoint, ... })`
+- Supabase TUS endpoint: `${SUPABASE_URL}/storage/v1/upload/resumable`
+- Set `Authorization: Bearer <user_token>` and `x-upsert: true` headers
+- Track per-file state in React: `Map<filename, { progress: number; status: 'pending' | 'uploading' | 'done' | 'error' }>`
+- Documents (ID scans, proof of funds, AIP letters) typically 1–15 MB — TUS chunking handles these well
+
+**AI Match Score (Recharts RadialBarChart):**
+- Use shadcn chart wrapper (`src/components/ui/chart.tsx`) with `RadialBarChart`
+- Score from 0–100: set `endAngle={score * 3.6}` (360 degrees = 100%)
+- Center label via recharts `<Label>` component inside `<PolarRadiusAxis>`
+- Color-code by band: green ≥80, amber 50–79, red <50 via CSS custom properties
+- No additional library — recharts is already installed
+
+**Referral Code (nanoid):**
+- Generate on first dashboard load if no referral code exists: `import { customAlphabet } from 'nanoid'; const gen = customAlphabet('ABCDEFGHJKMNPQRSTUVWXYZ23456789', 8);`
+- Uppercase alphanumeric avoids I/O/0/1 confusion for human-readable codes
+- Store in `user_referrals` table, expose as `/invite/[code]` route
+- Server-side only: API route or Server Action — never client-side (prevents enumeration)
+
+**Mortgage Comparison:**
+- Use `@tanstack/react-table` (already installed) with shadcn `<DataTable>`
+- Columns: lender, product type, initial rate %, APRC %, monthly payment (calculated), max LTV, fee
+- Sort by monthly payment by default
+- Broker profiles fetched from Supabase `marketplace_providers` filtered by `category = 'mortgage_broker'`
+- No third-party rate feed in v3.1 -- display brokers who have added their own products
+
+### Version Compatibility
+
+| Package | Compatible With | Notes |
+|---------|----------------|-------|
+| `react-day-picker@9.14.0` | `react@19.2.3` | v9 fixed React 19 ref issues at v9.4.3; v9.14.0 is verified safe |
+| `react-day-picker@9.14.0` | `date-fns@4.1.0` | v9 requires date-fns v4; v3 is not supported |
+| `tus-js-client@4.3.1` | `@supabase/supabase-js@2.x` | Supabase Storage TUS endpoint is stable; headers documented at supabase.com/docs/guides/storage/uploads/resumable-uploads |
+| `nanoid@5.x` | `next@16.x` | ESM-only; works in Server Components and API routes. If used in Edge Runtime, import from `nanoid` (not a subpath) |
+
+### What NOT to Add
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `@uppy/core` + `@uppy/tus` | Uppy is a full upload UI system (300KB+); overkill when react-dropzone + tus-js-client covers the requirement cleanly | `react-dropzone` + `tus-js-client` |
+| `react-datepicker` | Different package from react-day-picker; not integrated with shadcn; requires separate styling | `react-day-picker` via `shadcn calendar` |
+| `react-day-picker@8.x` | Not compatible with React 19 without `--legacy-peer-deps` hacks; shadcn has migrated to v9 | `react-day-picker@9.x` |
+| `date-fns@3.x` | react-day-picker v9 requires date-fns v4; mixing causes type errors | `date-fns@4.x` |
+| `uuid` | Heavier than nanoid (more dependencies); less URL-friendly output | `nanoid` |
+| Gauge chart libraries (react-gauge-chart, etc.) | Recharts RadialBarChart already installed and sufficient; adding a dedicated gauge library adds bundle weight | Recharts `RadialBarChart` with shadcn chart wrapper |
+| React PDF for offer letters | `@react-pdf/renderer` is already installed | Already in package.json |
+
+---
+
+## Original Stack (Full Project)
+
+> The sections below document the full Britestate v3.0 stack as researched on 2026-03-06.
+> Most of these are already in package.json. Do not re-add unless explicitly noted.
+
+> **Caveat on versions in the original research:** Core framework versions are VERIFIED from package.json.
+> Supporting library versions in the original research are based on training data from that session
+> and are marked with `*` where newer releases were expected. Versions in the Milestone v3.1 section
+> above have been freshly npm-verified.
+
+---
 
 ### Core Framework (VERIFIED -- in scaffold)
 
@@ -379,7 +485,7 @@ Correct for Britestate because:
 
 | Technology | Version | Purpose | Why | Confidence |
 |------------|---------|---------|-----|------------|
-| date-fns | ^4.1* | Date utilities | Tree-shakeable, immutable. Format tenancy dates, mortgage terms, listing ages | MEDIUM |
+| date-fns | ^4.1.0 | Date utilities | Tree-shakeable, immutable. Format tenancy dates, mortgage terms, listing ages. Also required by react-day-picker v9. Version npm-verified 2026-03-13 | HIGH |
 | Intl API | (built-in) | Currency/number | `Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' })` for all price display. No library needed | HIGH |
 
 ### PWA
@@ -410,12 +516,24 @@ Correct for Britestate because:
 | ORM | Supabase client | Prisma, Drizzle | Supabase client handles DB access with RLS; adding an ORM creates a parallel data layer and bypasses RLS |
 | Auth | Supabase Auth | NextAuth/Auth.js | Supabase Auth is the auth layer -- adding a second creates confusion |
 | API layer | Server Actions + API routes | tRPC | Overkill with Supabase -- Server Actions + Supabase client are sufficient |
+| File upload (document) | react-dropzone + tus-js-client | Uppy full suite | Uppy is 300KB+ and includes UI chrome that fights with custom design; the combination of react-dropzone + tus-js-client gives the same upload capability at a fraction of the weight |
+| Calendar | react-day-picker v9 via shadcn | react-datepicker | react-datepicker is not integrated with shadcn UI and requires separate styling; react-day-picker v9 is the shadcn-native choice |
 
 ---
 
 ## Installation
 
-> **WARNING:** Verify `*`-marked versions with `npm view <package> version` before installing.
+> **For milestone v3.1 (Buyer/Renter Dashboard), run only this:**
+
+```bash
+# From britv3.0/
+pnpm add react-day-picker@^9.14.0 date-fns@^4.1.0 tus-js-client@^4.3.1 nanoid@^5.1.6
+
+# Scaffold Shadcn Calendar component
+pnpm dlx shadcn@latest add calendar
+```
+
+> **Full original stack installation (for reference -- most already installed):**
 
 ```bash
 # Core (already installed)
@@ -485,22 +603,21 @@ pnpm add -D vitest @testing-library/react @testing-library/jest-dom @playwright/
 
 ---
 
-## Sources and Confidence Notes
+## Sources
 
 | Source | What It Informed | Confidence |
 |--------|-----------------|------------|
-| Scaffolded package.json | Next.js 16.1.6, React 19.2.3, Tailwind v4, TypeScript 5 | HIGH -- directly verified |
-| v2.0 Project Memory | Architecture decisions, testing strategy (Playwright/Vitest), Stripe Connect pattern, MapTiler choice, codebase structure | HIGH -- battle-tested in 92% complete prior version |
-| v2.0 PRD | Scale requirements (100K MAU Y1, 500K Y2-3), feature scope, 266 tables | HIGH -- defines what stack must support |
-| Training data (cutoff May 2025) | Library versions, API patterns, ecosystem state | MEDIUM to LOW -- versions likely outdated |
-
-**Key verification needed before installation:**
-1. **@supabase/supabase-js** and **@supabase/ssr** -- May have had breaking changes or new major versions (possible v3)
-2. **stripe** -- Stripe SDK versions move fast; verify current major version
-3. **ai (Vercel AI SDK)** -- Was moving rapidly in 2025; verify v4 is stable and API surface matches examples above
-4. **serwist** (PWA) -- Ecosystem was fragmented; verify it is still the recommended approach for Next.js PWA
-5. **@sentry/nextjs** -- Must support Next.js 16 specifically; verify compatibility
-6. **shadcn/ui** -- Verify Tailwind v4 support is stable and init command works correctly
+| `npm view react-day-picker version` | v9.14.0 confirmed current | HIGH |
+| `npm view date-fns version` | v4.1.0 confirmed current | HIGH |
+| `npm view tus-js-client version` | v4.3.1 confirmed current | HIGH |
+| `npm view nanoid version` | v5.1.6 confirmed current | HIGH |
+| daypicker.dev | v9 React 19 compatibility, feature set | HIGH |
+| supabase.com/docs/guides/storage/uploads/resumable-uploads | TUS endpoint, tus-js-client integration pattern | HIGH |
+| github.com/gpbl/react-day-picker issues #2665 | React 19 compat fixed at v9.4.3 | HIGH |
+| ui.shadcn.com/charts/radial | RadialBarChart score display pattern using existing Recharts | HIGH |
+| Scaffolded package.json (britv3.0/) | Full list of already-installed packages | HIGH |
+| v2.0 Project Memory | Architecture decisions, testing strategy | HIGH |
 
 ---
-*Research completed: 2026-03-06*
+*Original stack research: 2026-03-06*
+*Milestone v3.1 additions researched: 2026-03-13*
