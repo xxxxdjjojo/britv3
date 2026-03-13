@@ -104,7 +104,8 @@ export default function CookiesPage() {
           {/* CookiePreferencesInlineButton inserted in Task 10 */}
           <button
             type="button"
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+            disabled
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white opacity-50 cursor-not-allowed"
           >
             Manage Cookie Preferences
           </button>

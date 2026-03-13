@@ -52,7 +52,7 @@ export default function GdprRightsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="your-rights">
           <h2 className="text-2xl font-bold font-heading">2. Your Eight Rights</h2>
 
           <section id="right-to-access">
