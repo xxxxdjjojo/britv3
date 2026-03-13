@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Landlord Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Public Sans", sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-stone-900 px-4 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Britestate</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary text-sm font-semibold border-b-2 border-primary pb-1" href="#">Portfolio</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Tenants</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Maintenance</a>
+<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Finances</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center bg-slate-100 dark:bg-stone-800 rounded-xl px-3 py-1.5 border border-slate-200 dark:border-stone-700">
+<span class="material-symbols-outlined text-slate-400 text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 placeholder:text-slate-400" placeholder="Search portfolio..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-stone-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-stone-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="size-10 rounded-full bg-primary/20 border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Landlord profile headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRiG6wzM_5CqQ0Pc5f9XORc6ZJU3KURiaUcAAq8_fPCqs-AbWPWNOvVY_eXmG1LGO_V2aCd9I0KS3p0SawdJLoZ-BSq5CUZ6k2jTQCTk1HeXOeEmSEdjy9nSH2_ruCwlb3K9BvHXjSStLOK1XG9gcVkRD68EJoR7lIOsTlT0sYcIHS4p3IH2KHoU2OISYhgxHm7QoaiIv61X50FZnVEsV3HDz6uQtUb4JcOZcV1PD54JvZXzaBhVN1Ss4TpgkHjFTwU1zbwic_KIc"/>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-10 py-8">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+<div>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white">Portfolio Overview</h1>
+<p class="text-slate-500 dark:text-slate-400">Managing 12 properties across London and Manchester</p>
+</div>
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">add</span>
+                    Add Property
+                </button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+<div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-slate-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Value</span>
+<span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+</div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white">£4,250,000</div>
+<div class="text-emerald-500 text-sm font-semibold flex items-center mt-1">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span> +2.4%
+                    </div>
+</div>
+<div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-slate-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Average Yield</span>
+<span class="material-symbols-outlined text-primary">percent</span>
+</div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white">5.8%</div>
+<div class="text-emerald-500 text-sm font-semibold flex items-center mt-1">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span> +0.2%
+                    </div>
+</div>
+<div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-slate-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Occupancy Rate</span>
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white">94%</div>
+<div class="text-orange-500 text-sm font-semibold flex items-center mt-1">
+<span class="material-symbols-outlined text-sm mr-1">trending_down</span> -1.0%
+                    </div>
+</div>
+<div class="bg-white dark:bg-stone-900 p-6 rounded-xl border border-slate-200 dark:border-stone-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Monthly Revenue</span>
+<span class="material-symbols-outlined text-primary">payments</span>
+</div>
+<div class="text-2xl font-bold text-slate-900 dark:text-white">£28,450</div>
+<div class="text-emerald-500 text-sm font-semibold flex items-center mt-1">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span> +£1,200
+                    </div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+<div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+<button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold whitespace-nowrap">All Properties</button>
+<button class="px-4 py-2 rounded-lg bg-white dark:bg-stone-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-stone-800 text-sm font-medium whitespace-nowrap hover:bg-slate-50 transition-colors">Occupied (10)</button>
+<button class="px-4 py-2 rounded-lg bg-white dark:bg-stone-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-stone-800 text-sm font-medium whitespace-nowrap hover:bg-slate-50 transition-colors">Vacant (1)</button>
+<button class="px-4 py-2 rounded-lg bg-white dark:bg-stone-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-stone-800 text-sm font-medium whitespace-nowrap hover:bg-slate-50 transition-colors">Under Offer (1)</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-sm text-slate-500">Sort by:</span>
+<select class="bg-white dark:bg-stone-900 border-slate-200 dark:border-stone-800 rounded-lg text-sm font-medium focus:ring-primary focus:border-primary">
+<option>Newest first</option>
+<option>Rent: High to Low</option>
+<option>Value: High to Low</option>
+<option>Compliance Status</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-slate-200 dark:border-stone-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern brick townhouse in London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl3_paukjJt7Y-BGeX29G0LM993FIdWwL9mGNbZRJjv7vEw2R9RyGyOMzZx5XeY5HAWaR9-rVqdr5OAGmjrskLIuZ_n6tf1AaxSHHu3oPf7aN4_8d7sC1xDOxAFKe46y3Eq7D-QnwD9GNaB9GCbZVPWA-lWvQn1_qg7v6MVsimIZM2Zttfkl171M4TOIAN15Cmh5Z-V1OzgrtITkOiDCG4ql9tFPHQGqaB4FofT9KadIm7GyZIfMcoaHeqOfjlYRzcPuN0sWbJ6hA"/>
+<div class="absolute top-3 left-3">
+<span class="px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm">Occupied</span>
+</div>
+<div class="absolute top-3 right-3 flex flex-col gap-2">
+<div class="size-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-emerald-500 shadow-sm" title="Compliance: Healthy">
+<span class="material-symbols-outlined text-lg font-bold">check_circle</span>
+</div>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1">24 Maple Gardens, London</h3>
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base mr-1">location_on</span> SE1 4XP
+                            </div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-stone-800 mb-4">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tenant</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Sarah Jenkins</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Rent</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">£1,850/mo</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+<span class="text-xs font-medium text-slate-500">Compliance: Green</span>
+</div>
+<button class="text-primary text-sm font-bold hover:underline">View Details</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-slate-200 dark:border-stone-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern apartment exterior with glass balconies" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAASq37FqU6EuarLe0TE3BH3I9Afe-DV-wN5m572pLlT5glZygrkANH8i2mmi1xW-ZESQZSLFp7V2YYPQRchuD4hV4gwsMTEIfYy3EqbO6X_HFc53rERZO7R3ayn1At1Pv5fY8vVNRqRyy7lMDXBTkPNskhFpYxRaT5oz3E43TymggiC8ITYXdivD_adYdKxVlrwV89zxwZ4_m2lzcSGLVvMu5JQVyWVORhCCTz1oEhirl5gWQddpLHPHknZrdwVod17P3hLW0dGYM"/>
+<div class="absolute top-3 left-3">
+<span class="px-3 py-1 rounded-full bg-slate-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm">Vacant</span>
+</div>
+<div class="absolute top-3 right-3 flex flex-col gap-2">
+<div class="size-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-rose-500 shadow-sm" title="Compliance: Critical Action Required">
+<span class="material-symbols-outlined text-lg font-bold">warning</span>
+</div>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1">12b High Street, Manchester</h3>
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base mr-1">location_on</span> M1 1BE
+                            </div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-stone-800 mb-4">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tenant</p>
+<p class="text-sm font-semibold text-slate-400 dark:text-slate-500">N/A</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Target Rent</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">£950/mo</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-rose-500"></div>
+<span class="text-xs font-medium text-slate-500">Compliance: Red (Gas Cert)</span>
+</div>
+<button class="text-primary text-sm font-bold hover:underline">View Details</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-slate-200 dark:border-stone-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Luxury riverside apartment with large windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJr0hiu_KRtqhWAaO7CYOb24V7HQJRGwceAIylqWjIkQs2pbgCA5KfYTYsWxQnDxAhVIwPWUSFQ9bZ_v6wUuU9ZEeUsXZaXk85nqo9ij92BlEDbuXJkKmJeEAd5zTqQM0En21kiiqOLUeBZKJNdOmMKN2kOH6WpO9coGg8v7sOicX6CfjZRclxj_WGgEf7vrIsKa10zaNEhp7Nivg_kgu0FHa-muSlh29NGjJZw2sGEaF6cnhuuWrmTdi4-ymb5oe2CzgZB-471WA"/>
+<div class="absolute top-3 left-3">
+<span class="px-3 py-1 rounded-full bg-blue-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm">Under Offer</span>
+</div>
+<div class="absolute top-3 right-3 flex flex-col gap-2">
+<div class="size-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-amber-500 shadow-sm" title="Compliance: Renewal Approaching">
+<span class="material-symbols-outlined text-lg font-bold">report_problem</span>
+</div>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1">Apartment 4, Riverside Quay</h3>
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base mr-1">location_on</span> L3 4AQ
+                            </div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-stone-800 mb-4">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Applicant</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Mark Thompson</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Agreed Rent</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">£1,200/mo</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-amber-500"></div>
+<span class="text-xs font-medium text-slate-500">Compliance: Amber</span>
+</div>
+<button class="text-primary text-sm font-bold hover:underline">View Details</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-slate-200 dark:border-stone-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern white luxury villa" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJYf8UWiDxRpjMebx3K7_gKUkawts4uNKVtDq8IOUtMWolzZc2ZeD8pyuTw4Uf-RdcKtM6D87mOGMVV13yGaYI-oVzO2m3eyUn1z3NT6XQ6RPgCTifM87KKyr9RcqOaiUnmGjXCVBmaj7-vExdrkGonfcWdxw-AWGQdsNyocYTRkczR_v_TV9Ek3FBRqKzc3wLv29AXWJPQT8AVRoyMmr78eaZq7QO-av8njcDN4wOXCXGNxLx9Z_OPrUwMHfPP2SAbvW_AHgYYZ4"/>
+<div class="absolute top-3 left-3">
+<span class="px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider shadow-sm">Occupied</span>
+</div>
+<div class="absolute top-3 right-3 flex flex-col gap-2">
+<div class="size-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-emerald-500 shadow-sm">
+<span class="material-symbols-outlined text-lg font-bold">check_circle</span>
+</div>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight mb-1">88 Victoria Road, London</h3>
+<div class="flex items-center text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-base mr-1">location_on</span> W8 5RD
+                            </div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 dark:border-stone-800 mb-4">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tenant</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Elena Petrov</p>
+</div>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Rent</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-200">£4,250/mo</p>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+<span class="text-xs font-medium text-slate-500">Compliance: Green</span>
+</div>
+<button class="text-primary text-sm font-bold hover:underline">View Details</button>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-stone-900 rounded-xl border border-dashed border-slate-300 dark:border-stone-700 flex flex-col items-center justify-center p-10 min-h-[400px] hover:bg-slate-50 dark:hover:bg-stone-800/50 transition-all cursor-pointer">
+<div class="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined text-3xl">add_home</span>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Add New Property</h3>
+<p class="text-slate-500 dark:text-slate-400 text-center text-sm max-w-[200px]">Expand your portfolio and start managing more assets</p>
+</div>
+</div>
+<div class="mt-12 bg-primary/10 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex-1">
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Compliance Action Required</h2>
+<p class="text-slate-600 dark:text-slate-400">You have 2 properties with upcoming gas certificate renewals and 1 property with an expired EPC. Take action to stay compliant.</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-white dark:bg-stone-900 text-slate-900 dark:text-white px-6 py-2.5 rounded-xl font-bold border border-slate-200 dark:border-stone-800 hover:bg-slate-50 transition-colors">Dismiss</button>
+<button class="bg-primary text-white px-6 py-2.5 rounded-xl font-bold hover:bg-primary/90 transition-colors">Review Now</button>
+</div>
+</div>
+</main>
+<footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-stone-900 mt-auto py-8">
+<div class="max-w-7xl mx-auto px-10 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="size-6 bg-primary rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xs">domain</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">Britestate © 2024</span>
+</div>
+<div class="flex gap-6">
+<a class="text-xs text-slate-500 hover:text-primary" href="#">Privacy Policy</a>
+<a class="text-xs text-slate-500 hover:text-primary" href="#">Terms of Service</a>
+<a class="text-xs text-slate-500 hover:text-primary" href="#">Support</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Maintenance Inbox</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">Britestate</h1>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">home_work</span>
+<span class="font-medium text-sm">Properties</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-medium text-sm">Maintenance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-medium text-sm">Tenants</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-medium text-sm">Finances</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-700" data-alt="Landlord user profile avatar image" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCY53aC5Qm3SgppxzqxyqCRJfqzJmLGzQMfAVtfnBxatldWMXnP5fvv1Tg37LDmj4GgTLHofvycftYMjfo9Od7NCXRTiWs6dsLwKbxE-fi-be4mbTquIbjXu4rwBrIoke5rcM8OWGuxYNWKWo6UQvheoIAN5-PS1W6GX-L8qsq_hV1XfjSvOCkpZ511tVIg-4fS0FX5h6b7OhoUdZTszSNyQWAoEM7iAOs_geI1OnvYJ_MiXaX04pPG8pZUYQ3oIKJ_3-8ogWujSiE')"></div>
+<div>
+<p class="text-xs font-bold">James Wilson</p>
+<p class="text-[10px] text-slate-500">Premium Plan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- Top Header Bar -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative max-w-md w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search maintenance requests..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-primary rounded-full ring-2 ring-white dark:ring-slate-900"></span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<div class="p-8 max-w-6xl mx-auto w-full">
+<!-- Page Header & Action -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Maintenance Inbox</h2>
+<p class="text-slate-500 mt-2">Manage portfolio repairs and coordinate with verified professionals.</p>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined">engineering</span>
+                        Find Verified Tradesperson
+                    </button>
+</div>
+<!-- Filters/Tabs -->
+<div class="flex border-b border-slate-200 dark:border-slate-800 mb-6 overflow-x-auto whitespace-nowrap">
+<button class="px-6 py-3 border-b-2 border-primary text-primary font-bold text-sm">All Requests (12)</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 font-medium text-sm hover:text-slate-700 dark:hover:text-slate-300">Urgent (3)</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 font-medium text-sm hover:text-slate-700 dark:hover:text-slate-300">In Progress (5)</button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 font-medium text-sm hover:text-slate-700 dark:hover:text-slate-300">Completed (24)</button>
+</div>
+<!-- Inbox List -->
+<div class="space-y-4">
+<!-- Request Item 1: Urgent/Plumbing -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="flex flex-wrap lg:flex-nowrap gap-5 items-center">
+<div class="size-12 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl">water_drop</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg truncate text-slate-900 dark:text-white group-hover:text-primary transition-colors">Burst Pipe - Kitchen</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 text-[10px] font-bold uppercase tracking-wider">Urgent</span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="truncate">124 Baker St., London NW1 6XE</span>
+<span class="mx-1">•</span>
+<span>Reported 45m ago</span>
+</div>
+</div>
+<div class="flex items-center gap-4 w-full lg:w-auto shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0">
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-slate-400 uppercase">Status</span>
+<span class="text-sm font-semibold flex items-center gap-1.5 text-orange-500">
+<span class="size-2 rounded-full bg-orange-500"></span>
+                                        Reported
+                                    </span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Request Item 2: Electric/In Progress -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="flex flex-wrap lg:flex-nowrap gap-5 items-center">
+<div class="size-12 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl">bolt</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg truncate text-slate-900 dark:text-white group-hover:text-primary transition-colors">Faulty Light Fixture - Bedroom 2</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Medium</span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="truncate">88 Kensington Gdns, London W2 4QH</span>
+<span class="mx-1">•</span>
+<span>Reported 2 days ago</span>
+</div>
+</div>
+<div class="flex items-center gap-4 w-full lg:w-auto shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0">
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-slate-400 uppercase">Status</span>
+<span class="text-sm font-semibold flex items-center gap-1.5 text-blue-500">
+<span class="size-2 rounded-full bg-blue-500 animate-pulse"></span>
+                                        In Progress
+                                    </span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Request Item 3: HVAC/Assigned -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="flex flex-wrap lg:flex-nowrap gap-5 items-center">
+<div class="size-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl">hvac</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg truncate text-slate-900 dark:text-white group-hover:text-primary transition-colors">Boiler Service - Annual Check</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Low</span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="truncate">15 Richmond Hill, Richmond TW10 6RW</span>
+<span class="mx-1">•</span>
+<span>Reported 5 days ago</span>
+</div>
+</div>
+<div class="flex items-center gap-4 w-full lg:w-auto shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0">
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-slate-400 uppercase">Status</span>
+<span class="text-sm font-semibold flex items-center gap-1.5 text-green-500">
+<span class="material-symbols-outlined text-sm">person_check</span>
+                                        Tradesperson Assigned
+                                    </span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Request Item 4: General/Reported -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-xl hover:shadow-md transition-shadow group cursor-pointer">
+<div class="flex flex-wrap lg:flex-nowrap gap-5 items-center">
+<div class="size-12 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl">hardware</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-bold text-lg truncate text-slate-900 dark:text-white group-hover:text-primary transition-colors">Loose Door Handle - Main Entrance</h4>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Low</span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="truncate">124 Baker St., London NW1 6XE</span>
+<span class="mx-1">•</span>
+<span>Reported 1 day ago</span>
+</div>
+</div>
+<div class="flex items-center gap-4 w-full lg:w-auto shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0">
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-slate-400 uppercase">Status</span>
+<span class="text-sm font-semibold flex items-center gap-1.5 text-orange-500">
+<span class="size-2 rounded-full bg-orange-500"></span>
+                                        Reported
+                                    </span>
+</div>
+<span class="material-symbols-outlined text-slate-300">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State Context / Info -->
+<div class="mt-12 p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col items-center text-center">
+<div class="size-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+<h3 class="text-lg font-bold">Maintenance Insights</h3>
+<p class="text-slate-500 max-w-md mt-2 mb-6">You have 3 urgent requests needing immediate action. Use Britestate's Marketplace to get instant quotes from 5-star rated local contractors.</p>
+<div class="flex gap-4">
+<button class="text-sm font-bold text-primary hover:underline">View Portfolio Analytics</button>
+<span class="text-slate-300">|</span>
+<button class="text-sm font-bold text-primary hover:underline">Bulk Assign Tasks</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
