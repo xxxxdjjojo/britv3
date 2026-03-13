@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tradesperson Search Results - Britestate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #17cf97;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display">
+<!-- Navigation -->
+<nav class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl">house</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">Britestate</span>
+</div>
+<div class="hidden md:flex relative">
+<input class="w-80 bg-slate-100 dark:bg-slate-900 border-none rounded-lg pl-10 text-sm focus:ring-2 focus:ring-primary" placeholder="Search plumbers, electricians..." type="text"/>
+<span class="material-icons absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-sm font-medium hover:text-primary transition-colors">Find Work</button>
+<button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">Post a Job</button>
+<div class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwW0tgPdmr8JigbPEvNsiz6bKLZc5O2XpxLNdhzCpVFQVH1szEzHJttS88KDuXL4nIIcg0Hzwcty14PfwDpaQJ_zxJLzhM7ObTXdioUoC-NZt492h-6nbLWNAExyLXHRNUE-C99HOf2oEKpCK7r9tDqHsI4sVj6Bj3mQQtNUT-HvR0kfQUGDk2wDG7eUuN85w7OdIpRfjrzclRqGfHQXT94O-NFUU4StW-QhKvC7kWBiysq9QQn49265ZjY85I6gQgZ1CCa9lUTpc"/>
+</div>
+</div>
+</div>
+</nav>
+<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="flex flex-col md:flex-row gap-8">
+<!-- Sidebar Filters -->
+<aside class="w-full md:w-64 flex-shrink-0 space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="font-bold text-lg">Filters</h2>
+<button class="text-xs text-primary hover:underline">Clear all</button>
+</div>
+<!-- Distance -->
+<div class="space-y-4">
+<div class="flex justify-between text-sm">
+<label class="font-semibold">Distance</label>
+<span class="text-slate-500">25 miles</span>
+</div>
+<input class="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer slider-thumb" type="range"/>
+</div>
+<!-- Rating -->
+<div class="space-y-3">
+<label class="text-sm font-semibold">Minimum Rating</label>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="text-primary focus:ring-primary border-slate-300 dark:border-slate-700 bg-transparent" name="rating" type="radio"/>
+<div class="flex text-amber-400">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm text-slate-300 dark:text-slate-700">star</span>
+</div>
+<span class="text-xs">4+ Stars</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="text-primary focus:ring-primary border-slate-300 dark:border-slate-700 bg-transparent" name="rating" type="radio"/>
+<div class="flex text-amber-400">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm text-slate-300 dark:text-slate-700">star</span>
+<span class="material-icons text-sm text-slate-300 dark:text-slate-700">star</span>
+</div>
+<span class="text-xs">3+ Stars</span>
+</label>
+</div>
+</div>
+<!-- Verification Levels -->
+<div class="space-y-3 border-t border-slate-200 dark:border-slate-800 pt-6">
+<label class="text-sm font-semibold">Verification</label>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-sm">Identity Verified</span>
+<div class="w-10 h-5 bg-primary rounded-full relative">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm">Trade Certified</span>
+<div class="w-10 h-5 bg-slate-200 dark:bg-slate-700 rounded-full relative">
+<div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm">Britestate Pro</span>
+<div class="w-10 h-5 bg-primary rounded-full relative">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Results Area -->
+<main class="flex-1">
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h1 class="text-2xl font-bold">124 Plumbers in London</h1>
+<p class="text-slate-500 text-sm">Matches for "Emergency Plumbing"</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-1 p-1">
+<button class="px-3 py-1.5 rounded bg-white dark:bg-slate-800 shadow-sm text-sm font-medium flex items-center gap-2">
+<span class="material-icons text-sm">grid_view</span> Grid
+                            </button>
+<button class="px-3 py-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white text-sm font-medium flex items-center gap-2">
+<span class="material-icons text-sm">map</span> Map
+                            </button>
+</div>
+<select class="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg text-sm px-4 py-2 focus:ring-primary">
+<option>Sort by: Recommended</option>
+<option>Highest Rating</option>
+<option>Price: Low to High</option>
+<option>Closest Distance</option>
+</select>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden hover:shadow-xl transition-shadow group">
+<div class="relative h-32 bg-primary/10">
+<div class="absolute -bottom-6 left-6 w-16 h-16 rounded-xl border-4 border-white dark:border-slate-900 overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Tradesperson portrait photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrm8MwY5q-pffWRr-pBsmSgPs4e4ijQrR9izmR_-tYhQ92jpPtzG3t1xmCpTreMLdEkZkBinOAkv-2avNYawNPSJM_BKInl9OzVynIXFi9blqU0sf3z0ciZDZhlsoYDIt_GsAltVovtQ9vd-75bXzalPNhcksZAje1xQUMuLGV4VmCeoiHIwKhbw-_eZ0yKsLLe62yfGRvkbJauCfTMX-aLs6e8RXDfr392lRpwREzpWKfQ8PHwhIJISOdJJ5LvCasdzQqMvYfefc"/>
+</div>
+<div class="absolute top-4 right-4 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-icons text-amber-400 text-sm">star</span>
+<span class="text-xs font-bold">4.9</span>
+<span class="text-[10px] text-slate-500">(128)</span>
+</div>
+</div>
+<div class="pt-8 p-6 space-y-4">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Swift Flow Plumbing</h3>
+<span class="material-icons text-primary text-lg">verified</span>
+</div>
+<p class="text-sm text-slate-500">Master Plumber &amp; Gas Engineer</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold px-2 py-1 rounded">24/7 EMERGENCY</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold px-2 py-1 rounded">LOCAL PRO</span>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-bold">Starting From</p>
+<p class="font-bold text-xl">£65<span class="text-sm font-normal text-slate-500">/hr</span></p>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:brightness-110">Get Quote</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden hover:shadow-xl transition-shadow group">
+<div class="relative h-32 bg-primary/10">
+<div class="absolute -bottom-6 left-6 w-16 h-16 rounded-xl border-4 border-white dark:border-slate-900 overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Tradesperson portrait photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK_uOHsnjHkvMiQknhxtqgrZW-ajejJb4GX7GnWq0wBmo_U9MNTpjz7bi_6bNnHcNX-36QFWiaBMt3-XW-YXsaOyE68m7yFOQZg6oGWD6kaddHCZRCtMKis1GGkv91zv40ZftTZmHEc3iVDimyV1f0bkLsi1uJRXdLb7qE_LASZ3h278eEDnVwiFTG0OyPzf6bLrnu3ZFnuR8GBtRPEo-Ug5G7_NNqA87B6vZubba8UYxa28DhZv9X0hPLZJGAzmSoTySuFPC92_g"/>
+</div>
+<div class="absolute top-4 right-4 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-icons text-amber-400 text-sm">star</span>
+<span class="text-xs font-bold">4.8</span>
+<span class="text-[10px] text-slate-500">(94)</span>
+</div>
+</div>
+<div class="pt-8 p-6 space-y-4">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Apex Leak Experts</h3>
+<span class="material-icons text-primary text-lg">verified</span>
+</div>
+<p class="text-sm text-slate-500">Commercial &amp; Domestic Specialist</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold px-2 py-1 rounded">DRAINAGE</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold px-2 py-1 rounded">INSURED</span>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-bold">Starting From</p>
+<p class="font-bold text-xl">£50<span class="text-sm font-normal text-slate-500">/hr</span></p>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:brightness-110">Get Quote</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden hover:shadow-xl transition-shadow group">
+<div class="relative h-32 bg-primary/10">
+<div class="absolute -bottom-6 left-6 w-16 h-16 rounded-xl border-4 border-white dark:border-slate-900 overflow-hidden shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Tradesperson portrait photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDikObl10TdiAyq4bkvRKc6e9tZOYleZteMjPlyyRMGibtgkQwwfdzIHLSSkCMzDCIi2gjhVpw7i49TFQmnG6n0u5qfNpfiiXDWKJaTFT2LgC7TNJYr3Qo837HldKYKMmXKuD9dgw0enk_nt9uRRYOJ5378zK7qsNb8ncFdL-gwg-wjCMu7v_kFxBnfEVmC8Fna37lDQDNzKMNJxD6RqLyfso9FDECC17K_LrR5Bm2AUQ88uqmwoD8P2kZiJHWtC51ktOeZb45zCLQ"/>
+</div>
+<div class="absolute top-4 right-4 bg-white dark:bg-slate-800 px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-icons text-amber-400 text-sm">star</span>
+<span class="text-xs font-bold">5.0</span>
+<span class="text-[10px] text-slate-500">(42)</span>
+</div>
+</div>
+<div class="pt-8 p-6 space-y-4">
+<div>
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Elite Pipes &amp; Taps</h3>
+<span class="material-icons text-primary/40 text-lg">verified_user</span>
+</div>
+<p class="text-sm text-slate-500">Luxury Bathroom Installations</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold px-2 py-1 rounded">BRITESTATE PRO</span>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-bold">Starting From</p>
+<p class="font-bold text-xl">£85<span class="text-sm font-normal text-slate-500">/hr</span></p>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:brightness-110">Get Quote</button>
+</div>
+</div>
+</div>
+</div>
+<!-- CTA Banner -->
+<div class="mt-12 bg-primary/10 border border-primary/20 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="text-center md:text-left">
+<h3 class="text-xl font-bold mb-2">Can't find what you're looking for?</h3>
+<p class="text-slate-500">Post a custom job and let certified tradespeople come to you with their best quotes.</p>
+</div>
+<button class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/20 transition-all whitespace-nowrap">Post a Job for Free</button>
+</div>
+<!-- Map View Placeholder (Normally toggled) -->
+<div class="mt-12 opacity-50 hidden">
+<div class="w-full h-64 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700">
+<div class="text-center">
+<span class="material-icons text-4xl mb-2">map</span>
+<p class="font-medium">Map View Integration</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Map Split View Mockup (Layered for visual completeness) -->
+<div class="fixed inset-0 top-16 left-[50%] right-0 z-10 hidden bg-slate-100 dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800">
+<div class="w-full h-full relative overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-40" data-alt="Stylized map showing city locations" data-location="London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrMQdMq7YUzPU4otShJBt06hXw3Bvyss7j8AaSRkbVVTPdsUpLf62wTlCCw6cZVcCPr9TPIaaEsCZM434s2QkNWNptpEVGa-stacwnt4JKTE-oeniIhFlEuOXmheVPJj8Etx0dfCBF1UbOBHo3RvaIQpNfuoqi8SeZRE8GQHHMgDmonTrl7jC6pA-ijQ9SVVWt_2hezx17Ol1434SP7QrHgGUEv5IeZem92EkPirAQ0Jb4m6qukOUlwJrBUxAsgYs7RVL5wnTjXIc"/>
+<!-- Map Pin Overlay Examples -->
+<div class="absolute top-1/4 left-1/3 p-2 bg-white dark:bg-slate-800 rounded shadow-lg flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-[10px] font-bold">£65/hr</span>
+</div>
+<div class="absolute top-1/2 left-1/2 p-2 bg-white dark:bg-slate-800 rounded shadow-lg flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-[10px] font-bold">£50/hr</span>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<footer class="max-w-7xl mx-auto px-4 py-12 border-t border-slate-200 dark:border-slate-800 mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-2 opacity-50">
+<div class="w-6 h-6 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xs">house</span>
+</div>
+<span class="text-sm font-bold tracking-tight uppercase">Britestate</span>
+</div>
+<div class="flex gap-8 text-xs font-medium text-slate-500">
+<a class="hover:text-primary" href="#">Safety Center</a>
+<a class="hover:text-primary" href="#">Verified Standards</a>
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Contact Support</a>
+</div>
+<p class="text-[10px] text-slate-400">© 2024 Britestate Trades Ltd. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

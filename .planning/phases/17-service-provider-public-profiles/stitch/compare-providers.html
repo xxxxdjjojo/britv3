@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Compare Service Providers | Britestate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 min-h-screen">
+<!-- Header / Navigation -->
+<nav class="border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+<div class="flex items-center space-x-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl">domain</span>
+</div>
+<span class="text-xl font-bold tracking-tight">BRITESTATE</span>
+</div>
+<div class="flex items-center space-x-6 text-sm font-medium">
+<a class="hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="hover:text-primary transition-colors" href="#">My Projects</a>
+<a class="text-primary border-b-2 border-primary pb-1" href="#">Comparison</a>
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="Profile picture of a professional user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0mSYzaopz8Tt-Qq0nU8tVyqw4OIIxx1POb8dSm4GbU8YYvSSWcjvrt2xlT_j_tUQGpaQDMJ2dNJbSss9vovf4guXp3TeklPbRKF4DSi8YGnRNMwQkWM4Um5oVQ3ku1VAHaWsTMt4Y21zvEgynnuEjWlYB0BkGZdWqZDmUcOhFaPDyAI36J3hv9L70Zw43Fx_EIGS7RaubTElt-wTbmlt2WWt1WQZ_WEzoUjOHR1p1fbRj_xkxZh5kLUSedNFDYr8dsoS7dwrpyw8"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 py-12">
+<!-- Page Intro -->
+<div class="mb-10">
+<h1 class="text-4xl font-bold mb-3 tracking-tight">Compare Service Providers</h1>
+<p class="text-slate-500 dark:text-slate-400 max-w-2xl">Compare your shortlisted professionals side-by-side to make the most informed decision for your renovation project.</p>
+</div>
+<!-- Comparison Container -->
+<div class="relative overflow-hidden bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl">
+<table class="w-full border-collapse">
+<!-- Sticky Table Header (Identity Row) -->
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50">
+<th class="w-1/4 p-8 text-left border-b border-slate-200 dark:border-slate-700">
+<span class="text-xs font-bold uppercase tracking-widest text-slate-400">Comparison Criteria</span>
+</th>
+<!-- Provider 1 -->
+<th class="w-1/4 p-8 text-center border-b border-slate-200 dark:border-slate-700 relative">
+<div class="flex flex-col items-center">
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full border-4 border-primary p-1">
+<img alt="Provider" class="w-full h-full object-cover rounded-full" data-alt="Portrait of professional male contractor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5KI8uMBhampm0bkvJX7lcgV4YY01LoFixqQTmElEYGO2OWKO12qv4dLeu0run-KGJcTs9bFjPX1QgaN1Qnk0S92E6Fbe-Ixg3DikaRuxmU6IRDDGZE2ZKodLoNzO7IAG6Hm91t6KUzB4felJs4e1yxNJGjvxZR0QXAX_49wbSSpwBeO0mzUoSfsKMhvPGa1b-0YA1XnBrlZMq0WcMo305ZxrV2MMqTedSDZCSzeoCPKgJlJyryfxOeWWdIfDO7y_c9m6ayG__FCE"/>
+</div>
+<div class="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Top Rated</div>
+</div>
+<h3 class="text-lg font-bold">James Harrison</h3>
+<p class="text-sm text-slate-500 font-normal">Harrison &amp; Sons Ltd</p>
+</div>
+</th>
+<!-- Provider 2 -->
+<th class="w-1/4 p-8 text-center border-b border-slate-200 dark:border-slate-700">
+<div class="flex flex-col items-center">
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full border-4 border-transparent p-1">
+<img alt="Provider" class="w-full h-full object-cover rounded-full" data-alt="Portrait of professional female contractor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD66cEjIl4CaFQ9f4sUUTnjF-MFiy1fy58SWddIf79h7V3t9eJskAaPHZc1GEhDfOAVGrLVeeIfVkiyzL0E6TH1xHhla8BRIMD1pO4zGXtzBVPZJs9Gplh6Y-qAhP10HzI_ldkHF2A6rc2dL_ccJvd-i4StQFWFBQxgRbrE016XxwZLK0krkqlpBMl3ZpkSpLKn-ORIutE-rCiRQ9TrMa_4dYJDeMYwXcDhTxV1rNzsCsanhctI24TnynlMdqGV3i9IqEz9Y3V7zNo"/>
+</div>
+</div>
+<h3 class="text-lg font-bold">Sarah Miller</h3>
+<p class="text-sm text-slate-500 font-normal">Miller Design-Build</p>
+</div>
+</th>
+<!-- Provider 3 -->
+<th class="w-1/4 p-8 text-center border-b border-slate-200 dark:border-slate-700">
+<div class="flex flex-col items-center">
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full border-4 border-transparent p-1">
+<img alt="Provider" class="w-full h-full object-cover rounded-full" data-alt="Portrait of professional male electrician" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtN7I-LElhFtGCbJkmBxKpe_1z0iVYiQatHbbqUnI1BLXxwfObe4dD7xyimwnYMN88jvo_RcgBl8blga5MmCDI65ae23urgSXwrALPGxPoIsMRTaam15keMxDWdmemGGsZCwtVV90jQ-k7d_nN9q-Jrj00CoHvAr1gxmNwBq90THPQpse7VqG00WjYaQDqqqZ3qnJG6ia_otnTmxj001yYmNIAET3nd8e3jkQ4GWPNRK2ZUB0bO0TMuxekWwv2vQTg0bTxznHDxD4"/>
+</div>
+</div>
+<h3 class="text-lg font-bold">David Chen</h3>
+<p class="text-sm text-slate-500 font-normal">Chen Electrical &amp; Plumb</p>
+</div>
+</th>
+</tr>
+</thead>
+<!-- Table Body -->
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Rating Row -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+<td class="p-8 font-semibold text-slate-600 dark:text-slate-300">Customer Rating</td>
+<td class="p-8 text-center bg-primary/5 dark:bg-primary/10">
+<div class="flex items-center justify-center space-x-1 text-primary mb-1">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+</div>
+<span class="text-lg font-bold">4.9</span>
+<span class="text-xs text-slate-400 ml-1">(128 reviews)</span>
+</td>
+<td class="p-8 text-center">
+<div class="flex items-center justify-center space-x-1 text-primary mb-1">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm text-slate-300 dark:text-slate-700">star</span>
+</div>
+<span class="text-lg font-bold">4.2</span>
+<span class="text-xs text-slate-400 ml-1">(84 reviews)</span>
+</td>
+<td class="p-8 text-center">
+<div class="flex items-center justify-center space-x-1 text-primary mb-1">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star_half</span>
+</div>
+<span class="text-lg font-bold">4.6</span>
+<span class="text-xs text-slate-400 ml-1">(52 reviews)</span>
+</td>
+</tr>
+<!-- Verification Row -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+<td class="p-8 font-semibold text-slate-600 dark:text-slate-300">Verification</td>
+<td class="p-8 text-center">
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+<span class="material-icons text-xs mr-1">verified</span> GOLD CERTIFIED
+                            </div>
+</td>
+<td class="p-8 text-center">
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs font-bold border border-slate-200 dark:border-slate-700">
+<span class="material-icons text-xs mr-1">check_circle</span> VERIFIED
+                            </div>
+</td>
+<td class="p-8 text-center">
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+<span class="material-icons text-xs mr-1">verified</span> GOLD CERTIFIED
+                            </div>
+</td>
+</tr>
+<!-- Response Time Row -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+<td class="p-8 font-semibold text-slate-600 dark:text-slate-300">Avg. Response Time</td>
+<td class="p-8 text-center">
+<span class="text-slate-500 dark:text-slate-400">Under 4 hours</span>
+</td>
+<td class="p-8 text-center bg-primary/5 dark:bg-primary/10">
+<span class="text-lg font-bold text-primary">Under 30 mins</span>
+<div class="text-[10px] uppercase font-bold tracking-wider text-primary mt-1">Fastest</div>
+</td>
+<td class="p-8 text-center">
+<span class="text-slate-500 dark:text-slate-400">Within 24 hours</span>
+</td>
+</tr>
+<!-- Experience Row -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+<td class="p-8 font-semibold text-slate-600 dark:text-slate-300">Experience</td>
+<td class="p-8 text-center">
+<span class="text-lg font-medium">12 Years</span>
+</td>
+<td class="p-8 text-center">
+<span class="text-lg font-medium">8 Years</span>
+</td>
+<td class="p-8 text-center">
+<span class="text-lg font-medium">15 Years</span>
+</td>
+</tr>
+<!-- Pricing Row -->
+<tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+<td class="p-8 font-semibold text-slate-600 dark:text-slate-300">Price Range</td>
+<td class="p-8 text-center">
+<span class="text-xl font-bold">£50 - £75</span>
+<span class="block text-xs text-slate-400 mt-1">Per Hour</span>
+</td>
+<td class="p-8 text-center">
+<span class="text-xl font-bold">£65 - £90</span>
+<span class="block text-xs text-slate-400 mt-1">Per Hour</span>
+</td>
+<td class="p-8 text-center bg-primary/5 dark:bg-primary/10">
+<span class="text-xl font-bold text-primary">£40 - £60</span>
+<span class="block text-xs text-primary/70 mt-1 font-bold">BEST VALUE</span>
+</td>
+</tr>
+<!-- Footer Action Row -->
+<tr class="bg-slate-50 dark:bg-slate-800/30">
+<td class="p-8"></td>
+<td class="p-8 text-center">
+<button class="w-full py-4 bg-primary hover:bg-primary/90 text-background-dark font-bold rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center space-x-2">
+<span>Get Quote</span>
+<span class="material-icons text-sm">arrow_forward</span>
+</button>
+</td>
+<td class="p-8 text-center">
+<button class="w-full py-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold rounded-lg transition-all flex items-center justify-center space-x-2">
+<span>Get Quote</span>
+<span class="material-icons text-sm">arrow_forward</span>
+</button>
+</td>
+<td class="p-8 text-center">
+<button class="w-full py-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold rounded-lg transition-all flex items-center justify-center space-x-2">
+<span>Get Quote</span>
+<span class="material-icons text-sm">arrow_forward</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Additional Comparison Context -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-white dark:bg-slate-800/40 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex items-start space-x-4">
+<div class="p-3 bg-primary/10 rounded-lg">
+<span class="material-icons text-primary">shield</span>
+</div>
+<div>
+<h4 class="text-lg font-bold mb-1">Britestate Guarantee</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">All providers compared here are covered by our £10k project protection policy and have passed our rigorous 20-point background check.</p>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800/40 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex items-start space-x-4">
+<div class="p-3 bg-primary/10 rounded-lg">
+<span class="material-icons text-primary">lightbulb</span>
+</div>
+<div>
+<h4 class="text-lg font-bold mb-1">Pro Tip</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">We recommend requesting quotes from at least two providers to get a better sense of local market rates for your specific project details.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-20 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark py-12 px-6">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
+<div class="flex items-center space-x-2 mb-4 md:mb-0">
+<span class="font-bold text-slate-800 dark:text-slate-200 tracking-tighter">BRITESTATE</span>
+<span>© 2024. All rights reserved.</span>
+</div>
+<div class="flex space-x-8">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Help Center</a>
+</div>
+</div>
+</footer>
+</body></html>
