@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { providerSearchSchema } from "@/lib/validators/marketplace-schemas";
-import { searchProviders } from "@/services/marketplace/provider-service";
+import type { ProviderSearchInput } from "@/lib/validators/marketplace-schemas";
+import {
+  searchProviders,
+} from "@/services/marketplace/provider-service";
+import type { ProviderSearchResult } from "@/services/marketplace/provider-service";
 import { Redis } from "@upstash/redis";
 
 const CACHE_TTL_SECONDS = 300; // 5 minutes
@@ -22,12 +26,12 @@ function getRedis(): Redis | null {
   return redis;
 }
 
-function buildCacheKey(params: Record<string, unknown>): string {
+function buildCacheKey(params: ProviderSearchInput): string {
   // Stable serialisation: sort keys so param order doesn't matter
-  const sorted = Object.keys(params)
+  const sorted = Object.keys(params as Record<string, unknown>)
     .sort()
     .reduce<Record<string, unknown>>((acc, k) => {
-      acc[k] = params[k];
+      acc[k] = (params as Record<string, unknown>)[k];
       return acc;
     }, {});
   return `provider-search:v1:${JSON.stringify(sorted)}`;
@@ -70,12 +74,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const cacheKey = buildCacheKey(parseResult.data as Record<string, unknown>);
+    const cacheKey = buildCacheKey(parseResult.data);
     const client = getRedis();
 
     // Check cache
     if (client) {
-      const cached = await client.get<{ data: unknown[]; count: number }>(cacheKey);
+      const cached = await client.get<ProviderSearchResult>(cacheKey);
       if (cached) {
         return NextResponse.json(cached, {
           status: 200,

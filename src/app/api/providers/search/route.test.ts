@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
+// NOTE: The Redis client is a module-level singleton. Tests cannot independently
+// test the HIT path without vi.resetModules() + dynamic re-import per test,
+// because clearAllMocks() does not reset the cached Redis instance.
+
 // Mock modules before importing the route
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn().mockResolvedValue({}),
@@ -48,4 +52,46 @@ describe("GET /api/providers/search", () => {
     const res = await GET(req);
     expect(res.headers.get("Cache-Control")).toContain("max-age=300");
   });
+});
+
+it("returns cached result with X-Cache: HIT when Redis has a cached value", async () => {
+  vi.resetModules();
+
+  // Provide env vars so getRedis() proceeds past the early-return guard
+  process.env.UPSTASH_REDIS_REST_URL = "https://fake.upstash.io";
+  process.env.UPSTASH_REDIS_REST_TOKEN = "fake-token";
+
+  vi.doMock("@/lib/supabase/server", () => ({
+    createClient: vi.fn().mockResolvedValue({}),
+  }));
+
+  const cachedResult = { data: [{ user_id: "prov-cached" }], count: 1 };
+
+  vi.doMock("@upstash/redis", () => {
+    const instance = {
+      get: vi.fn().mockResolvedValue(cachedResult),
+      setex: vi.fn().mockResolvedValue("OK"),
+    };
+    function RedisMock() {
+      return instance;
+    }
+    return { Redis: RedisMock };
+  });
+
+  vi.doMock("@/services/marketplace/provider-service", () => ({
+    searchProviders: vi.fn().mockResolvedValue({ data: [], count: 0 }),
+  }));
+
+  const { GET: FreshGET } = await import("./route");
+
+  const req = new NextRequest(
+    "http://localhost/api/providers/search?postcode=SW1A+1AA"
+  );
+  const res = await FreshGET(req);
+  expect(res.status).toBe(200);
+  expect(res.headers.get("X-Cache")).toBe("HIT");
+
+  // Clean up env vars added for this test
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
 });
