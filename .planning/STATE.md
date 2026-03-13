@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: milestone
-status: executing
-stopped_at: Completed 07-10-PLAN.md
-last_updated: "2026-03-07T22:10:13.682Z"
-last_activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
+milestone: v3.1
+milestone_name: Buyer/Renter Dashboard
+status: defining_requirements
+stopped_at: ~
+last_updated: "2026-03-13T00:00:00.000Z"
+last_activity: 2026-03-13 -- Milestone v3.1 started
 progress:
   total_phases: 7
   completed_phases: 4
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-07)
 
 ## Current Position
 
-Phase: 6 of 7 (Landlord Tools)
-Plan: 5 of 5 in current phase
-Status: Executing
-Last activity: 2026-03-07 -- Completed 05-04 Calculator UI & Financial Tools
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-13 — Milestone v3.1 started
 
-Progress: [██████░░░░] 60%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 

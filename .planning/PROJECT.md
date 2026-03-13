@@ -86,5 +86,23 @@ Users can find, compare, and transact on properties with full transparency — A
 | Supabase as BaaS | Combines auth, DB, realtime, storage — reduces infrastructure complexity | -- Pending |
 | Full E2E testing per epic | Catch regressions early before building on top | -- Pending |
 
+## Current Milestone: v3.1 Buyer/Renter Dashboard
+
+**Goal:** Deliver all 22 Buyer/Renter Dashboard pages at FAANG quality — full frontend + backend + browser-tested, speed-first.
+
+**Target features:**
+- Dashboard Home with activity feed, recommended listings, saved count
+- Saved Properties & Saved Searches management
+- Property Alerts / Notification Settings
+- Viewing Schedule, Booking, Confirm/Reschedule/Cancel flows
+- Offers Sent, Submit, and Status Tracking
+- Messages Inbox & Conversation Thread
+- Document Uploads (ID, proof of funds, AIP)
+- Moving Checklist / Timeline
+- AI Property Match (Preferences + Results)
+- Affordability Calculator & Mortgage Comparison Tool
+- Browse Mortgage Brokers, Conveyancers, Surveyors
+- Referral Tracker
+
 ---
-*Last updated: 2026-03-06 after initialization*
+*Last updated: 2026-03-13 after milestone v3.1 start*
