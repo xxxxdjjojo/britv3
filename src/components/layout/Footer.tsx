@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/shared/Logo";
 import { ChevronUp, Twitter, Linkedin, Instagram, Facebook } from "lucide-react";
+import { useCookieConsent } from "@/contexts/CookieConsentContext";
 
 const PROPERTIES_LINKS = [
   { href: "/search?type=buy", label: "Buy" },
@@ -28,13 +29,6 @@ const COMPANY_LINKS = [
   { href: "/help", label: "Help" },
 ] as const;
 
-const LEGAL_LINKS = [
-  { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/cookies", label: "Cookies" },
-  { href: "/accessibility", label: "Accessibility" },
-  { href: "/complaints", label: "Complaints" },
-] as const;
 
 const AREA_GUIDE_LINKS = [
   { href: "/areas/london", label: "London" },
@@ -83,6 +77,7 @@ function FooterLinkColumn({ title, links }: FooterLinkGroup) {
 }
 
 export function Footer() {
+  const { openPreferences } = useCookieConsent();
   return (
     <footer className="bg-neutral-900 pt-16 pb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -120,7 +115,37 @@ export function Footer() {
           <FooterLinkColumn title="Company" links={COMPANY_LINKS} />
 
           {/* Col 5: Legal */}
-          <FooterLinkColumn title="Legal" links={LEGAL_LINKS} />
+          <div>
+            <h4 className="mb-5 text-xs font-semibold uppercase tracking-widest text-white">Legal</h4>
+            <ul className="flex flex-col gap-3">
+              {[
+                { href: "/legal", label: "Legal Hub" },
+                { href: "/legal/terms", label: "Terms" },
+                { href: "/legal/privacy", label: "Privacy" },
+                { href: "/legal/cookies", label: "Cookies" },
+                { href: "/legal/accessibility", label: "Accessibility" },
+                { href: "/legal/complaints", label: "Complaints" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-neutral-400 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <button
+                  type="button"
+                  onClick={openPreferences}
+                  className="text-sm text-neutral-400 transition-colors hover:text-white"
+                >
+                  Cookie Preferences
+                </button>
+              </li>
+            </ul>
+          </div>
 
           {/* Col 6: Area Guides */}
           <FooterLinkColumn title="Area Guides" links={AREA_GUIDE_LINKS} />

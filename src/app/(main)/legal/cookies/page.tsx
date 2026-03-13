@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { CookiePreferencesInlineButton } from "@/components/legal/CookiePreferencesInlineButton";
 
 const LAST_UPDATED = "13 March 2026";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
@@ -101,14 +102,7 @@ export default function CookiesPage() {
         <section id="manage-preferences">
           <h2 className="text-2xl font-bold font-heading">5. Manage Preferences</h2>
           <p className="mb-4 text-neutral-600">Use the button below to update your cookie preferences at any time.</p>
-          {/* CookiePreferencesInlineButton inserted in Task 10 */}
-          <button
-            type="button"
-            disabled
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white opacity-50 cursor-not-allowed"
-          >
-            Manage Cookie Preferences
-          </button>
+          <CookiePreferencesInlineButton />
         </section>
       </div>
 
