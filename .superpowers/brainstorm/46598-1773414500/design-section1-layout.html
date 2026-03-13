@@ -1,0 +1,135 @@
+<h2>Section 1 of 5 — Shared Infrastructure</h2>
+<p class="subtitle">The split-panel AuthLayout and shared components that all 19 screens are built from</p>
+
+<div class="mockup" style="margin-bottom:24px;">
+  <div class="mockup-header">Split-Panel AuthLayout — Desktop (1280px+)</div>
+  <div class="mockup-body" style="padding:0;">
+    <div style="display:flex;height:500px;font-family:sans-serif;">
+
+      <!-- LEFT: Form Panel -->
+      <div style="width:44%;background:#fff;padding:40px;display:flex;flex-direction:column;overflow:hidden;">
+        <!-- Logo -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:40px;">
+          <div style="width:32px;height:32px;background:#1B4D3E;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:#fff;font-weight:700;font-size:14px;">B</span>
+          </div>
+          <span style="font-weight:700;font-size:16px;color:#0A0A0B;">Britestate</span>
+        </div>
+
+        <!-- Step indicator (for onboarding) -->
+        <div style="display:flex;gap:6px;margin-bottom:28px;">
+          <div style="height:3px;flex:1;background:#1B4D3E;border-radius:2px;"></div>
+          <div style="height:3px;flex:1;background:#1B4D3E;border-radius:2px;opacity:0.3;"></div>
+          <div style="height:3px;flex:1;background:#1B4D3E;border-radius:2px;opacity:0.3;"></div>
+          <div style="height:3px;flex:1;background:#1B4D3E;border-radius:2px;opacity:0.3;"></div>
+        </div>
+
+        <!-- Heading area -->
+        <div style="margin-bottom:24px;">
+          <div style="font-size:22px;font-weight:700;color:#0A0A0B;margin-bottom:6px;">Welcome back</div>
+          <div style="font-size:13px;color:#7A7A88;">Sign in to your Britestate account</div>
+        </div>
+
+        <!-- Form fields -->
+        <div style="display:flex;flex-direction:column;gap:14px;flex:1;">
+          <div style="background:#f1f1f5;height:42px;border-radius:8px;border:1px solid #e2e2e8;"></div>
+          <div style="background:#f1f1f5;height:42px;border-radius:8px;border:1px solid #e2e2e8;"></div>
+          <div style="text-align:right;font-size:12px;color:#2563EB;margin-top:-6px;">Forgot password?</div>
+          <div style="background:#1B4D3E;height:42px;border-radius:8px;margin-top:4px;"></div>
+
+          <!-- Divider -->
+          <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+            <div style="flex:1;height:1px;background:#e2e2e8;"></div>
+            <span style="font-size:11px;color:#9E9EAB;">OR CONTINUE WITH</span>
+            <div style="flex:1;height:1px;background:#e2e2e8;"></div>
+          </div>
+
+          <!-- OAuth buttons -->
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;height:38px;border:1px solid #e2e2e8;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#46464F;">Google</div>
+            <div style="flex:1;height:38px;border:1px solid #e2e2e8;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#46464F;">Apple</div>
+          </div>
+        </div>
+
+        <!-- Footer link -->
+        <div style="text-align:center;font-size:12px;color:#7A7A88;margin-top:20px;">
+          Don't have an account? <span style="color:#2563EB;font-weight:500;">Sign up</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: Image Panel -->
+      <div style="width:56%;background:linear-gradient(160deg,#0f3027 0%,#1B4D3E 35%,#2D7A5F 70%,#1B4D3E 100%);position:relative;overflow:hidden;">
+        <!-- Decorative property image suggestion -->
+        <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80') center/cover no-repeat;opacity:0.25;"></div>
+
+        <!-- Overlay content -->
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:40px;">
+          <!-- Quote card -->
+          <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin-bottom:20px;">
+            <div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.6;margin-bottom:12px;">"Found our dream home in under 2 weeks. The verification system made us feel completely safe."</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#D4A853;"></div>
+              <div>
+                <div style="font-size:11px;font-weight:600;color:#fff;">Sarah & Tom Mitchell</div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.6);">Bought in Isleworth, TW7</div>
+              </div>
+              <div style="margin-left:auto;color:#D4A853;font-size:12px;">★★★★★</div>
+            </div>
+          </div>
+
+          <!-- Stats row -->
+          <div style="display:flex;gap:12px;">
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:18px;font-weight:700;color:#fff;">25k+</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.6);">Properties</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,0.2);"></div>
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:18px;font-weight:700;color:#fff;">5k+</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.6);">Verified Pros</div>
+            </div>
+            <div style="width:1px;background:rgba(255,255,255,0.2);"></div>
+            <div style="flex:1;text-align:center;">
+              <div style="font-size:18px;font-weight:700;color:#fff;">4.8★</div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.6);">Avg Rating</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Shared Components to Build</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+    <div style="background:#f8f8fa;border-radius:8px;padding:14px;border:1px solid #e2e2e8;">
+      <div style="font-weight:600;font-size:13px;color:#0A0A0B;margin-bottom:6px;">AuthLayout (updated)</div>
+      <div style="font-size:12px;color:#5E5E6A;">Replace current centered layout with split-panel. Left slot = children. Right slot = rotating property image + testimonial. Mobile = children only (no image panel).</div>
+    </div>
+    <div style="background:#f8f8fa;border-radius:8px;padding:14px;border:1px solid #e2e2e8;">
+      <div style="font-weight:600;font-size:13px;color:#0A0A0B;margin-bottom:6px;">OnboardingLayout</div>
+      <div style="font-size:12px;color:#5E5E6A;">New layout for multi-step wizards. Inherits split-panel but adds step progress bar (thin brand-primary strip at top of left panel), step counter, Back + Continue footer.</div>
+    </div>
+    <div style="background:#f8f8fa;border-radius:8px;padding:14px;border:1px solid #e2e2e8;">
+      <div style="font-weight:600;font-size:13px;color:#0A0A0B;margin-bottom:6px;">OTPInput (new)</div>
+      <div style="font-size:12px;color:#5E5E6A;">6 individual digit boxes. Auto-advance on input, paste support, backspace-to-previous, ARIA live region for screen readers. Used by 2FA pages.</div>
+    </div>
+    <div style="background:#f8f8fa;border-radius:8px;padding:14px;border:1px solid #e2e2e8;">
+      <div style="font-weight:600;font-size:13px;color:#0A0A0B;margin-bottom:6px;">PasswordStrengthMeter (upgrade)</div>
+      <div style="font-size:12px;color:#5E5E6A;">Exists but needs visual upgrade. Animated 4-segment bar: weak/fair/good/strong. Colour transitions. Requirements checklist (8 chars, uppercase, number, symbol).</div>
+    </div>
+    <div style="background:#f8f8fa;border-radius:8px;padding:14px;border:1px solid #e2e2e8;">
+      <div style="font-weight:600;font-size:13px;color:#0A0A0B;margin-bottom:6px;">RightPanelContent</div>
+      <div style="font-size:12px;color:#5E5E6A;">Server component. Rotating testimonial + stats. Different copy per page context (login vs signup vs onboarding). Property image from public/images/.</div>
+    </div>
+    <div style="background:#f8f8fa;border-radius:8px;padding:14px;border:1px solid #e2e2e8;">
+      <div style="font-weight:600;font-size:13px;color:#0A0A0B;margin-bottom:6px;">WizardStepper</div>
+      <div style="font-size:12px;color:#5E5E6A;">Segmented progress bar + "Step N of M" label. Used in all 6 onboarding flows. Animated step transitions (slide-in-right).</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px;padding:14px;background:#E8F5EE;border-radius:8px;border-left:3px solid #1B4D3E;font-size:13px;color:#1B4D3E;">
+  <strong>Note on current AuthLayout:</strong> The existing layout.tsx wraps <em>all</em> auth pages. We'll update it in-place — same file, new split-panel structure. Pages themselves stay thin (heading + form component). Zero breaking changes.
+</div>

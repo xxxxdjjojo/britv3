@@ -52,11 +52,21 @@ export const ROLES: readonly RoleDefinition[] = [
     description: "Offer property services such as conveyancing, surveys, and removals",
     icon: "Wrench",
   },
+  {
+    value: "mortgage_broker",
+    label: "Mortgage Broker",
+    description: "Help clients find the right mortgage",
+    icon: "Landmark",
+  },
 ] as const;
 
 /** Professional roles shown on "I am a professional" path */
 export const PROFESSIONAL_ROLES: readonly RoleDefinition[] = ROLES.filter(
-  (r) => r.value === "landlord" || r.value === "agent" || r.value === "service_provider",
+  (r) =>
+    r.value === "landlord" ||
+    r.value === "agent" ||
+    r.value === "service_provider" ||
+    r.value === "mortgage_broker",
 );
 
 // -- Verification Levels ----------------------------------------------------

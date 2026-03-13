@@ -64,6 +64,11 @@ const STAT_CARDS_BY_ROLE: Record<UserRole, StatCardData[]> = {
     { label: "Rating", value: 4.8, change: 0.1, trend: "up", icon: "Star" },
     { label: "Earnings (MTD)", value: "3,200", change: 400, trend: "up", icon: "PoundSterling" },
   ],
+  mortgage_broker: [
+    { label: "Active Cases", value: 14, change: 2, trend: "up", icon: "Briefcase" },
+    { label: "Conversion Rate", value: "68%", change: 5, trend: "up", icon: "TrendingUp" },
+    { label: "Revenue (MTD)", value: "5,800", change: 900, trend: "up", icon: "PoundSterling" },
+  ],
 };
 
 export function createMockStatCards(role: UserRole): StatCardData[] {
@@ -190,6 +195,15 @@ const DASHBOARD_DATA_BY_ROLE: Record<UserRole, DashboardData> = {
     total_earnings: 3200,
     pending_quotes_count: 3,
     recent_activity: [createMockActivityLogEntry({ event_type: "quote_requested" })],
+  },
+  mortgage_broker: {
+    role: "mortgage_broker",
+    verification_status: "verified",
+    active_cases_count: 14,
+    conversion_rate: 0.68,
+    total_earnings: 5800,
+    pending_applications_count: 5,
+    recent_activity: [createMockActivityLogEntry({ event_type: "application_received" })],
   },
 };
 

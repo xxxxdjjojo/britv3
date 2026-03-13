@@ -72,6 +72,12 @@ const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Messages", href: "/messages", icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
+  mortgage_broker: [
+    { label: "Cases", href: "/dashboard/mortgage_broker/cases", icon: Briefcase },
+    { label: "Clients", href: "/dashboard/mortgage_broker/clients", icon: Users },
+    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Profile", href: "/profile", icon: User },
+  ],
 };
 
 // ---------------------------------------------------------------------------

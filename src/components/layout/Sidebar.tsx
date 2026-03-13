@@ -91,6 +91,14 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { href: "/dashboard/service_provider/verification", label: "Verification", icon: BadgeCheck },
     { href: "/dashboard/service_provider/earnings", label: "Earnings", icon: PoundSterling },
   ],
+  mortgage_broker: [
+    { href: "/dashboard/mortgage_broker", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/mortgage_broker/cases", label: "Cases", icon: FileText },
+    { href: "/dashboard/mortgage_broker/clients", label: "Clients", icon: Users },
+    { href: "/dashboard/mortgage_broker/applications", label: "Applications", icon: ClipboardList },
+    { href: "/dashboard/mortgage_broker/revenue", label: "Revenue", icon: TrendingUp },
+    { href: "/dashboard/mortgage_broker/verification", label: "Verification", icon: BadgeCheck },
+  ],
 };
 
 export function Sidebar() {

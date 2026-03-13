@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | AI-Powered UK Property Platform</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+        :root {
+            --brand-primary-lighter: #e8f5e9;
+            --brand-primary: #1b4b3d;
+            --brand-secondary: #f59e0b;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b4b3d",
+                        "primary-light": "#2a6e5a",
+                        "secondary": "#e8f5e9",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#141e1b",
+                        "neutral-50": "#f8fafc",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#131615] dark:text-gray-100 antialiased overflow-x-hidden">
+<div class="relative flex min-h-screen w-full flex-col">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f1f3f3] dark:border-b-white/10 bg-white/90 dark:bg-[#141e1b]/90 backdrop-blur-md px-6 py-4 lg:px-10 lg:py-4">
+<div class="flex items-center gap-3 text-primary dark:text-white">
+<div class="flex items-center justify-center size-8 rounded bg-primary text-white">
+<span class="material-symbols-outlined text-xl">domain</span>
+</div>
+<h2 class="text-[#131615] dark:text-white text-xl font-bold leading-tight tracking-tight">Britestate</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-center">
+<nav class="flex items-center gap-8">
+<a class="text-[#131615] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary-light transition-colors" href="#">Buy</a>
+<a class="text-[#131615] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary-light transition-colors" href="#">Rent</a>
+<a class="text-[#131615] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary-light transition-colors" href="#">Sell</a>
+<a class="text-[#131615] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary-light transition-colors" href="#">Services</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-primary hover:bg-primary-light text-white text-sm font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm">
+<span class="truncate">Sign In</span>
+</button>
+<button class="sm:hidden text-[#131615] dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow">
+<section class="@container">
+<div class="p-4 lg:p-6">
+<div class="relative flex min-h-[520px] lg:min-h-[600px] flex-col gap-8 items-center justify-center rounded-2xl overflow-hidden p-8 text-center shadow-sm">
+<div class="absolute inset-0 bg-cover bg-center bg-no-repeat z-0" data-alt="Modern British home interior with large windows and natural light" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJ0bWOk29o0te-a6cPKIdjzWDa0v_UYyUfCjoDKpE8Vhs-3lUDeE6kItfuBsmYL6kTER8PL_9aZtsebNF0NB2JnTDfxzxetCMNuDTvP5YaCFCmu5G4JKfJOJurtBoBsALkcUdCfvo8vY6vXDtk1Mk77eeMGyXV-1notT5JfyMdnQaXXedvJmQEzQGLurS9xKo-DA8OlTLImqsx9aY9oDoL1TgMvV_OaGQataaizaPByTHgRl7tvVMlCzDGyRLEZbVcUjGXyeRyRow");'></div>
+<div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 z-0"></div>
+<div class="relative z-10 flex flex-col items-center gap-6 max-w-4xl mx-auto animate-fade-in-up">
+<div class="flex flex-col gap-3">
+<h1 class="text-white text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-[-0.02em] drop-shadow-md">
+                                Find your perfect British home,<br class="hidden sm:block"/> intelligently.
+                            </h1>
+<h2 class="text-gray-100 text-base sm:text-lg font-medium leading-normal drop-shadow-md opacity-90">
+                                Search over 25,000 homes powered by Britestate Intelligence.
+                            </h2>
+</div>
+<div class="w-full max-w-[640px] mt-4">
+<div class="flex justify-center mb-4 gap-1 p-1 bg-white/20 backdrop-blur-md rounded-lg w-fit mx-auto">
+<button class="px-6 py-2 bg-white text-primary text-sm font-bold rounded shadow-sm">Buy</button>
+<button class="px-6 py-2 text-white hover:bg-white/10 text-sm font-medium rounded transition-colors">Rent</button>
+<button class="px-6 py-2 text-white hover:bg-white/10 text-sm font-medium rounded transition-colors">Services</button>
+</div>
+<label class="flex flex-col w-full group">
+<div class="flex w-full items-stretch rounded-xl h-14 sm:h-16 bg-white shadow-xl transition-shadow focus-within:shadow-2xl ring-4 ring-black/5 focus-within:ring-primary/20">
+<div class="text-gray-400 flex items-center justify-center pl-5 pr-3 rounded-l-xl">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 bg-transparent text-[#131615] placeholder:text-gray-400 text-base font-normal focus:outline-0 border-none focus:ring-0 h-full px-2" placeholder="Search by school, commute, or lifestyle..." value=""/>
+<div class="flex items-center justify-center pr-2 rounded-r-xl">
+<button class="flex items-center gap-2 h-10 sm:h-12 px-5 sm:px-6 bg-primary hover:bg-primary-light text-white text-sm sm:text-base font-bold rounded-lg transition-transform active:scale-95 shadow-md">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+<span class="hidden sm:inline">Ask AI</span>
+</button>
+</div>
+</div>
+</label>
+<div class="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 text-white/90 text-sm font-medium drop-shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">verified_user</span>
+<span>Verified Listings</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">security</span>
+<span>Secure Deposits</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base">support_agent</span>
+<span>24/7 Support</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="px-6 py-16 lg:py-24 max-w-7xl mx-auto">
+<div class="flex flex-col gap-8">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+<div>
+<h2 class="text-[#131615] dark:text-white text-3xl lg:text-4xl font-bold leading-tight tracking-tight">Featured Properties</h2>
+<p class="text-gray-500 dark:text-gray-400 mt-2 text-lg">Curated selections from across the UK.</p>
+</div>
+<div class="flex bg-gray-100 dark:bg-white/5 p-1 rounded-lg">
+<button class="px-4 py-1.5 bg-white dark:bg-[#1c2a26] text-primary dark:text-white shadow-sm rounded-md text-sm font-semibold">For Sale</button>
+<button class="px-4 py-1.5 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors text-sm font-medium">To Rent</button>
+<button class="px-4 py-1.5 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors text-sm font-medium">New Builds</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Victorian terraced house exterior in London" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBS1sHlHzHZeWlO2cagR3wZVsshajZex2OfNJf17o-Qt6pVSK7sWfw4vKcWAbiK7r67G_hEvilwlYAhNTaKvFAcyUpbkqVQ4hanhIrEj-mpsopa1PfQEtQgyAPJlHafu8le7845euQX3FcGgnkJJjE0uNMVC96z8LQYYi4ebAJu2CfCpPq9Knc_om65Q373KI6h1q1DIabiX5UiCbr_-Lx9V6RBFg_u_M3lAJDxRA1wxXmcLz95699eVu3JypG2bGvPTwOoc1aF-A8");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-xs font-bold text-primary dark:text-white uppercase tracking-wide">98% Match</span>
+</div>
+<button class="absolute top-3 right-3 size-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-[#131615] dark:text-white text-lg font-bold">£450,000</h3>
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span>4.8</span>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 font-medium truncate">Modern 2 Bed Flat</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">Clifton, Bristol</p>
+<div class="flex gap-2 mt-1">
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">2 Bed</span>
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">2 Bath</span>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Luxury modern townhouse with garden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD9NMKpK2-5I6RSShLRI_HZrYYhg39mDN9v5fd68F5qX65sV5DjMrZyuSweUNrdOoKoYmKJ_pa3sidEvxNikEII5MVk1BQ0rZELx0cybwFZMkkyDW-jLQ0Fk7lb_wdA5pHIeSLa62uDZbUwt_RAy4U1qQTGJuJVd-qhlFKG3c0ziwyBdntGYaf_yywW1yTCqLa7YT-HXFWHHHJIXD-iU3r4uHUefARNWCrVT64VH-EZyhSCPl5pfU0t9a3Gkz0Fm-tYvI_og-SrqTA");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-xs font-bold text-primary dark:text-white uppercase tracking-wide">95% Match</span>
+</div>
+<button class="absolute top-3 right-3 size-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-[#131615] dark:text-white text-lg font-bold">£850,000</h3>
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span>4.9</span>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 font-medium truncate">4 Bed Period Terrace</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">Hackney, London</p>
+<div class="flex gap-2 mt-1">
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">4 Bed</span>
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">1 Bath</span>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Traditional stone cottage in the Cotswolds" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBY5ToNJk06RFic-dfw4R0AEb1vN6K-oLba3jKonuGEqDUvDB_xOLxzvXyF5_ByPG1pjLC--wziWftcZ2HiGd1Yfvklh2RnbzxF3y_O41JEcwLItbPUrgnZs7gk-pXOt8L6lZ-Bxl2kxvDE_P4nNsmko7IMHUAx3BWxKhPyX2mqixrH4Egx953Q80f93pXRXuyNsMiXYfkJg37JQCSpTWm7EwTES_1OlfKLLKVffEb76RxY-OTKtz7obH5U55CcUlD15dTQL73qA8E");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-xs font-bold text-primary dark:text-white uppercase tracking-wide">92% Match</span>
+</div>
+<button class="absolute top-3 right-3 size-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-[#131615] dark:text-white text-lg font-bold">£600,000</h3>
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span>4.7</span>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 font-medium truncate">Stone Cottage with Annex</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">Stow-on-the-Wold</p>
+<div class="flex gap-2 mt-1">
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">3 Bed</span>
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">2 Bath</span>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Modern penthouse apartment" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBGIA5gqpfwnktY6dWf8cIqKh1jyw6JHO6zOlWCon1Idd1Rrm-HM6xRe_qGRLZ_xOdDF25V850CyEwLscyBGb5e7vV9BlcnevqL0HgsTuik19tXByec7KnyihUQCrksxJTrOjLcw0hPRZChdQrqYK5qOm3HwaNbZy1kC57e6QPvqWDT5CMYgVCj5VHas6SR49VDzGenNIPSWiS_rLGyW744ADsIuVzxMNvR-iU5wlKzCevsFfTmA4PK1c22XG0V1Nu82hwPJj9QEwQ");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span>
+<span class="text-xs font-bold text-primary dark:text-white uppercase tracking-wide">88% Match</span>
+</div>
+<button class="absolute top-3 right-3 size-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-[#131615] dark:text-white text-lg font-bold">£1,250,000</h3>
+<div class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span>5.0</span>
+</div>
+</div>
+<p class="text-gray-700 dark:text-gray-300 font-medium truncate">Penthouse with Terrace</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm truncate">Deansgate, Manchester</p>
+<div class="flex gap-2 mt-1">
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">3 Bed</span>
+<span class="text-xs text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">3 Bath</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-neutral-50 dark:bg-[#182522] py-20">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<h2 class="text-3xl lg:text-4xl font-bold text-[#131615] dark:text-white mb-4">How It Works</h2>
+<p class="text-gray-500 dark:text-gray-400 text-lg">Your journey to the perfect home, simplified by technology.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<div class="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-gray-200 dark:bg-white/10 -z-0 w-2/3 mx-auto"></div>
+<div class="flex flex-col items-center text-center relative z-10">
+<div class="size-24 rounded-full bg-white dark:bg-[#1c2a26] border-4 border-white dark:border-[#182522] shadow-lg flex items-center justify-center mb-6">
+<span class="text-primary dark:text-white font-bold text-2xl">1</span>
+</div>
+<div class="flex items-center justify-center size-16 bg-secondary dark:bg-primary/20 rounded-2xl text-primary dark:text-primary-light mb-6">
+<span class="material-symbols-outlined text-3xl">search</span>
+</div>
+<h3 class="text-xl font-bold text-[#131615] dark:text-white mb-3">Intelligent Search</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed">Describe your dream home in plain English. Our AI understands context, lifestyle, and needs.</p>
+</div>
+<div class="flex flex-col items-center text-center relative z-10">
+<div class="size-24 rounded-full bg-white dark:bg-[#1c2a26] border-4 border-white dark:border-[#182522] shadow-lg flex items-center justify-center mb-6">
+<span class="text-primary dark:text-white font-bold text-2xl">2</span>
+</div>
+<div class="flex items-center justify-center size-16 bg-secondary dark:bg-primary/20 rounded-2xl text-primary dark:text-primary-light mb-6">
+<span class="material-symbols-outlined text-3xl">handshake</span>
+</div>
+<h3 class="text-xl font-bold text-[#131615] dark:text-white mb-3">Connect &amp; View</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed">Schedule viewings instantly with verified agents and owners through our integrated calendar.</p>
+</div>
+<div class="flex flex-col items-center text-center relative z-10">
+<div class="size-24 rounded-full bg-white dark:bg-[#1c2a26] border-4 border-white dark:border-[#182522] shadow-lg flex items-center justify-center mb-6">
+<span class="text-primary dark:text-white font-bold text-2xl">3</span>
+</div>
+<div class="flex items-center justify-center size-16 bg-secondary dark:bg-primary/20 rounded-2xl text-primary dark:text-primary-light mb-6">
+<span class="material-symbols-outlined text-3xl">key</span>
+</div>
+<h3 class="text-xl font-bold text-[#131615] dark:text-white mb-3">Move In</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed">Digital contracts, secure deposits, and seamless utility setup all handled within the platform.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="px-6 py-16 lg:py-24 max-w-7xl mx-auto">
+<div class="flex flex-col gap-10">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+<div class="max-w-2xl">
+<h2 class="text-[#131615] dark:text-white text-3xl lg:text-4xl font-bold leading-tight tracking-tight">
+                            Trusted professionals, verified by us
+                        </h2>
+<p class="text-gray-500 dark:text-gray-400 mt-3 text-lg">
+                            Every professional on Britestate passes our 3-client + 3-peer verification process
+                        </p>
+</div>
+<a class="text-primary dark:text-white font-medium hover:underline flex items-center gap-1 shrink-0" href="#">
+                        Browse all services <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-[var(--brand-primary-lighter)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer h-full">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-white/60 dark:bg-black/10 rounded-xl backdrop-blur-sm text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">plumbing</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/10 text-xs font-semibold text-primary backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] fill-current">verified</span>
+                                    142 verified pros
+                                </span>
+</div>
+<h3 class="text-primary text-xl font-bold mb-2">Plumbers</h3>
+<p class="text-primary/80 text-sm leading-relaxed">
+                                Emergency repairs, installations, and maintenance.
+                            </p>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold text-sm shadow-sm group-hover:bg-primary group-hover:text-white transition-all mt-auto">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Book with AI
+                        </button>
+</div>
+<div class="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-[var(--brand-primary-lighter)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer h-full">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-white/60 dark:bg-black/10 rounded-xl backdrop-blur-sm text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">bolt</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/10 text-xs font-semibold text-primary backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] fill-current">verified</span>
+                                    98 verified pros
+                                </span>
+</div>
+<h3 class="text-primary text-xl font-bold mb-2">Electricians</h3>
+<p class="text-primary/80 text-sm leading-relaxed">
+                                Rewiring, inspections, and smart home setups.
+                            </p>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold text-sm shadow-sm group-hover:bg-primary group-hover:text-white transition-all mt-auto">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Book with AI
+                        </button>
+</div>
+<div class="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-[var(--brand-primary-lighter)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer h-full">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-white/60 dark:bg-black/10 rounded-xl backdrop-blur-sm text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">construction</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/10 text-xs font-semibold text-primary backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] fill-current">verified</span>
+                                    210 verified pros
+                                </span>
+</div>
+<h3 class="text-primary text-xl font-bold mb-2">Builders</h3>
+<p class="text-primary/80 text-sm leading-relaxed">
+                                Renovations, extensions, and new builds.
+                            </p>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold text-sm shadow-sm group-hover:bg-primary group-hover:text-white transition-all mt-auto">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Book with AI
+                        </button>
+</div>
+<div class="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-[var(--brand-primary-lighter)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer h-full">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-white/60 dark:bg-black/10 rounded-xl backdrop-blur-sm text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">real_estate_agent</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/10 text-xs font-semibold text-primary backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] fill-current">verified</span>
+                                    354 verified pros
+                                </span>
+</div>
+<h3 class="text-primary text-xl font-bold mb-2">Estate Agents</h3>
+<p class="text-primary/80 text-sm leading-relaxed">
+                                Local experts for buying, selling, and letting.
+                            </p>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold text-sm shadow-sm group-hover:bg-primary group-hover:text-white transition-all mt-auto">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Book with AI
+                        </button>
+</div>
+<div class="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-[var(--brand-primary-lighter)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer h-full">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-white/60 dark:bg-black/10 rounded-xl backdrop-blur-sm text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">calculate</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/10 text-xs font-semibold text-primary backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] fill-current">verified</span>
+                                    156 verified pros
+                                </span>
+</div>
+<h3 class="text-primary text-xl font-bold mb-2">Mortgage Brokers</h3>
+<p class="text-primary/80 text-sm leading-relaxed">
+                                Find the best rates and tailored financial advice.
+                            </p>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold text-sm shadow-sm group-hover:bg-primary group-hover:text-white transition-all mt-auto">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Book with AI
+                        </button>
+</div>
+<div class="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-[var(--brand-primary-lighter)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer h-full">
+<div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-white/60 dark:bg-black/10 rounded-xl backdrop-blur-sm text-primary shadow-sm">
+<span class="material-symbols-outlined text-2xl">architecture</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/60 dark:bg-black/10 text-xs font-semibold text-primary backdrop-blur-sm">
+<span class="material-symbols-outlined text-[14px] fill-current">verified</span>
+                                    87 verified pros
+                                </span>
+</div>
+<h3 class="text-primary text-xl font-bold mb-2">Surveyors</h3>
+<p class="text-primary/80 text-sm leading-relaxed">
+                                RICS valuations, homebuyer reports, and audits.
+                            </p>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold text-sm shadow-sm group-hover:bg-primary group-hover:text-white transition-all mt-auto">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Book with AI
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-primary text-white py-16 lg:py-20">
+<div class="max-w-4xl mx-auto px-6 flex flex-col items-center text-center">
+<div class="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1 mb-6 text-sm font-semibold">
+<span class="material-symbols-outlined text-base">shield_lock</span>
+<span>Bank-grade Security</span>
+</div>
+<h2 class="text-3xl lg:text-4xl font-bold mb-6 leading-tight max-w-3xl">Trusted by thousands of home movers across the UK</h2>
+<p class="text-primary-lighter text-lg mb-10 leading-relaxed opacity-90 max-w-2xl">We've helped over 50,000 people find their dream home, saving them an average of £2,400 in fees and 3 weeks of searching time.</p>
+<div class="flex flex-wrap justify-center gap-8 md:gap-16 border-t border-white/10 pt-10 w-full max-w-4xl">
+<div class="flex flex-col items-center">
+<span class="text-4xl font-bold">50k+</span>
+<span class="text-sm opacity-80 mt-1">Moves Completed</span>
+</div>
+<div class="hidden md:block w-px bg-white/20 h-12"></div>
+<div class="flex flex-col items-center">
+<span class="text-4xl font-bold">£1.2B</span>
+<span class="text-sm opacity-80 mt-1">Property Value</span>
+</div>
+<div class="hidden md:block w-px bg-white/20 h-12"></div>
+<div class="flex flex-col items-center">
+<span class="text-4xl font-bold">4.9/5</span>
+<span class="text-sm opacity-80 mt-1">User Rating</span>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-neutral-50 dark:bg-[#182522] py-20 overflow-hidden">
+<div class="max-w-7xl mx-auto px-6 relative">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="text-[#131615] dark:text-white text-3xl lg:text-4xl font-bold mb-3">Community Stories</h2>
+<p class="text-gray-500 dark:text-gray-400 text-lg">See how Britestate is changing the property market.</p>
+</div>
+<div class="hidden sm:flex gap-3">
+<button class="size-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 hover:bg-white hover:text-primary transition-colors shadow-sm bg-white dark:bg-transparent">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="size-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-light transition-colors shadow-sm">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+<div class="bg-white dark:bg-[#1c2a26] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex flex-col h-full relative group hover:shadow-md transition-shadow">
+<div class="absolute top-8 right-8 text-gray-100 dark:text-white/5 group-hover:text-primary/10 transition-colors">
+<span class="material-symbols-outlined text-6xl">format_quote</span>
+</div>
+<div class="flex gap-1 mb-6 text-[var(--brand-secondary)]">
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+</div>
+<blockquote class="text-[var(--brand-primary)] dark:text-white text-lg font-medium leading-relaxed mb-8 relative z-10 flex-grow">
+                            "Britestate completely changed how we looked for a house. The AI suggestions were spot on, and we found a place we wouldn't have even considered otherwise."
+                        </blockquote>
+<div class="flex items-center gap-4 mt-auto">
+<div class="size-12 rounded-full bg-gray-300 bg-cover bg-center shrink-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC-oApTAkq2DCLktj4JF5zfdz-X_B5ltlGq3m6xdUTXSZNwVvSHAjTXEbffQAnw5K2JJPAHPKASrUJuxeZBrgi-BY4irbic3hjHWzkFdXR0wojpWO_2JPZlEQgcUp93lThw5opda3nHGcJHP9LRYTVT80JoD4zzcyC61wlb2hsEvekFoj0ug55HqmLlA9Jic2RQvCdBIfCtOcsmK2n5Zi7T1Q1D6dR6v_I3MGzBYFC3P24CLp-ItewWoPj_JjEWJduZfwGjZRpLQ3A');"></div>
+<div>
+<div class="font-bold text-[#131615] dark:text-white">Sarah Jenkins</div>
+<div class="text-sm text-gray-500 dark:text-gray-400">First-time Buyer</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1c2a26] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex flex-col h-full relative group hover:shadow-md transition-shadow">
+<div class="absolute top-8 right-8 text-gray-100 dark:text-white/5 group-hover:text-primary/10 transition-colors">
+<span class="material-symbols-outlined text-6xl">format_quote</span>
+</div>
+<div class="flex gap-1 mb-6 text-[var(--brand-secondary)]">
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+</div>
+<blockquote class="text-[var(--brand-primary)] dark:text-white text-lg font-medium leading-relaxed mb-8 relative z-10 flex-grow">
+                            "As a landlord managing multiple properties, the verified tenant feature and integrated contracts have saved me countless hours of administrative work."
+                        </blockquote>
+<div class="flex items-center gap-4 mt-auto">
+<div class="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">apartment</span>
+</div>
+<div>
+<div class="font-bold text-[#131615] dark:text-white">David Chen</div>
+<div class="text-sm text-gray-500 dark:text-gray-400">Local Landlord</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1c2a26] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 flex flex-col h-full relative group hover:shadow-md transition-shadow">
+<div class="absolute top-8 right-8 text-gray-100 dark:text-white/5 group-hover:text-primary/10 transition-colors">
+<span class="material-symbols-outlined text-6xl">format_quote</span>
+</div>
+<div class="flex gap-1 mb-6 text-[var(--brand-secondary)]">
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+<span class="material-symbols-outlined fill-current text-sm">star</span>
+</div>
+<blockquote class="text-[var(--brand-primary)] dark:text-white text-lg font-medium leading-relaxed mb-8 relative z-10 flex-grow">
+                            "The best platform for finding consistent, high-quality jobs. The AI scheduling tool means I spend less time on the phone and more time working."
+                        </blockquote>
+<div class="flex items-center gap-4 mt-auto">
+<div class="size-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl">engineering</span>
+</div>
+<div>
+<div class="font-bold text-[#131615] dark:text-white">Mike Ross</div>
+<div class="text-sm text-gray-500 dark:text-gray-400">Verified Plumber</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center gap-2 mt-12">
+<button class="h-2.5 w-8 bg-primary rounded-full transition-all hover:bg-primary-light"></button>
+<button class="h-2.5 w-2.5 bg-gray-300 dark:bg-white/10 rounded-full transition-all hover:bg-primary/50"></button>
+<button class="h-2.5 w-2.5 bg-gray-300 dark:bg-white/10 rounded-full transition-all hover:bg-primary/50"></button>
+</div>
+</div>
+</section>
+<section class="bg-neutral-50 dark:bg-[#182522] py-20 border-t border-gray-200 dark:border-white/5">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+<div>
+<h2 class="text-[#131615] dark:text-white text-3xl lg:text-4xl font-bold mb-4 font-display">Latest from the Blog</h2>
+<p class="text-gray-500 dark:text-gray-400 text-lg max-w-xl">Insights, trends, and expert advice for the modern homeowner.</p>
+</div>
+<a class="text-primary dark:text-white font-medium hover:underline flex items-center gap-1 shrink-0" href="#">
+                        Read More on Our Blog <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<article class="flex flex-col group cursor-pointer bg-white dark:bg-[#1c2a26] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+<div class="relative w-full aspect-[16/9] overflow-hidden rounded-xl bg-gray-200 mb-5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Modern living room with green plants" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNBRc_F5p_G1GcD0KOsUhv8XMGwhWldRYF8qXlK_2-7dyYV2CgotCVZIpRw7kCZa67-W0nRURNnIZqAMbeyTWMJIMhqWAe3hjJ-TUgSE13zkOB4B_I5cUgFKpKE4c3v4afK68FFNqMPUiUgTJ4Jk9qPg1PBMJx9TeS32KpQr9m0tpiG2Ulp35_vUd9MDbbyuBHDLD8V_zvsZhMnRypx-Pgi77weh01YUG3cR0ygyOWZfs_cST1uHEQ2-zc4nR-FmRyb1DkPQTa2Ro");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary dark:text-white uppercase tracking-wider shadow-sm">
+                                Market Trends
+                            </div>
+</div>
+<div class="flex flex-col flex-1 px-1 pb-1">
+<span class="text-sm text-gray-400 mb-2">October 24, 2024</span>
+<h3 class="text-xl font-bold text-[#131615] dark:text-white mb-3 font-display leading-snug group-hover:text-primary transition-colors">
+                                UK Property Market Forecast: What to Expect in 2025
+                            </h3>
+<p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3 font-body">
+                                As interest rates stabilize, we analyze the potential growth areas and investment opportunities across major UK cities for the upcoming year.
+                            </p>
+<div class="mt-auto pt-2 flex items-center text-primary dark:text-white font-semibold text-sm">
+                                Read Article <span class="material-symbols-outlined text-base ml-1 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
+</div>
+</div>
+</article>
+<article class="flex flex-col group cursor-pointer bg-white dark:bg-[#1c2a26] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+<div class="relative w-full aspect-[16/9] overflow-hidden rounded-xl bg-gray-200 mb-5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Couple looking at renovation plans" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDftjmCHNnTLWSgPlPhjz-fn97coje1yGA4tHJ3fUTJer0KTjNO7xjsEdzIhIdka_aNOaN_zKXWxLTtc0vITF8_vOfOpyny_4T8pl4zdp-U0CvILhmqqV2kUh1cNfMC8qQ6KHa2SDnnNEnKsurs73gDxd9vutDu1BmL6dyDLk3roTBMgRlXea6j3aHjm729zU2pyRItR0AFwfsZp2yw0dH1gHaK5msBSKlqLu1s8wUC8pI5dExSnzjddyHRU9x2UmndbEjMAlXX6SE");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary dark:text-white uppercase tracking-wider shadow-sm">
+                                Buying Guide
+                            </div>
+</div>
+<div class="flex flex-col flex-1 px-1 pb-1">
+<span class="text-sm text-gray-400 mb-2">October 18, 2024</span>
+<h3 class="text-xl font-bold text-[#131615] dark:text-white mb-3 font-display leading-snug group-hover:text-primary transition-colors">
+                                First-Time Buyer's Checklist: From Viewing to Keys
+                            </h3>
+<p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3 font-body">
+                                Navigating your first property purchase can be daunting. Our comprehensive guide breaks down every step of the process to ensure a smooth transaction.
+                            </p>
+<div class="mt-auto pt-2 flex items-center text-primary dark:text-white font-semibold text-sm">
+                                Read Article <span class="material-symbols-outlined text-base ml-1 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
+</div>
+</div>
+</article>
+<article class="flex flex-col group cursor-pointer bg-white dark:bg-[#1c2a26] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-white/5 hover:shadow-lg transition-all duration-300">
+<div class="relative w-full aspect-[16/9] overflow-hidden rounded-xl bg-gray-200 mb-5">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Sustainable home with solar panels" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBUA-sT0urF-ZlkmlhG0eEBOdIloakvV3UUG0-hYaXECZAiH-WzxZo585lalIkbltvXzJPxhCPPB2AEudtqYVJ4tZoBNUG8QPdGGBS6JvtCmFQ1JBfmbn8vUhYtt-gDrZ26Mcsht2RZDNkzEZtBAKoCuM6yGO2modKZ804djB4PNQRiFfVR_W522TTyUYfg5krqX8oRbcX0XgEE6H6usBqUADf1MODXhZwePemCjcGvsEuuOkeV8f6NCA50f1u8P3-JuTB2GkaryVs");'></div>
+<div class="absolute top-3 left-3 bg-white/95 dark:bg-[#141e1b]/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary dark:text-white uppercase tracking-wider shadow-sm">
+                                Sustainability
+                            </div>
+</div>
+<div class="flex flex-col flex-1 px-1 pb-1">
+<span class="text-sm text-gray-400 mb-2">October 12, 2024</span>
+<h3 class="text-xl font-bold text-[#131615] dark:text-white mb-3 font-display leading-snug group-hover:text-primary transition-colors">
+                                Eco-Friendly Upgrades That Add Value to Your Home
+                            </h3>
+<p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3 font-body">
+                                Discover which sustainable improvements offer the best return on investment while lowering your carbon footprint and energy bills.
+                            </p>
+<div class="mt-auto pt-2 flex items-center text-primary dark:text-white font-semibold text-sm">
+                                Read Article <span class="material-symbols-outlined text-base ml-1 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="bg-[var(--brand-primary-lighter)] dark:bg-[#1b4b3d15] py-20">
+<div class="max-w-7xl mx-auto px-6 text-center">
+<div class="max-w-3xl mx-auto flex flex-col items-center">
+<h2 class="text-[#131615] dark:text-white text-4xl lg:text-5xl font-bold mb-6 font-display tracking-tight">Ready to get started?</h2>
+<p class="text-gray-600 dark:text-gray-300 text-lg mb-10 leading-relaxed font-body">
+                        Join thousands of homeowners and professionals on the UK's most intelligent property platform.
+                    </p>
+<div class="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+<button class="w-full sm:w-auto min-w-[200px] h-14 px-8 bg-primary hover:bg-primary-light text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                            List Your Property
+                        </button>
+<button class="w-full sm:w-auto min-w-[200px] h-14 px-8 border-2 border-primary text-primary dark:border-white/30 dark:text-white font-bold rounded-xl hover:bg-primary/5 dark:hover:bg-white/5 transition-all active:scale-95 flex items-center justify-center gap-2">
+                            Find a Professional
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-[#141e1b] border-t border-gray-100 dark:border-white/10 pt-20 pb-10">
+<div class="px-6 lg:px-10 max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+<div class="lg:col-span-2 flex flex-col gap-6 pr-0 lg:pr-12">
+<div class="flex items-center gap-2 text-primary dark:text-white">
+<div class="flex items-center justify-center size-10 rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-2xl">domain</span>
+</div>
+<h3 class="text-2xl font-bold tracking-tight">Britestate</h3>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-base leading-relaxed max-w-sm">
+                        Reinventing the British property market with artificial intelligence and human-centric design. Experience the future of real estate today.
+                    </p>
+<div class="flex items-center gap-4 pt-2">
+<a class="size-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-xl">social_leaderboard</span>
+</a>
+<a class="size-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm" href="#">
+<svg class="size-5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a>
+<a class="size-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-xl">camera</span>
+</a>
+<a class="size-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white dark:hover:bg-primary transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-xl">chat</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-[#131615] dark:text-white mb-6 uppercase text-xs tracking-widest">Discover</h4>
+<ul class="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
+<li><a class="hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2" href="#">Properties for Sale</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2" href="#">Properties to Rent</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2" href="#">New Build Homes</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2" href="#">Commercial Property</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2" href="#">International Property</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#131615] dark:text-white mb-6 uppercase text-xs tracking-widest">Services</h4>
+<ul class="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Free Property Valuation</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Mortgage Services</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Legal &amp; Conveyancing</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Find an Agent</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Help to Buy Advice</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#131615] dark:text-white mb-6 uppercase text-xs tracking-widest">Company</h4>
+<ul class="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">About Britestate</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Meet the Experts</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Careers at Britestate</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Press &amp; Media</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 py-12 border-y border-gray-100 dark:border-white/5">
+<div>
+<h4 class="font-bold text-[#131615] dark:text-white mb-6 uppercase text-xs tracking-widest">Legal</h4>
+<ul class="flex flex-col gap-4 text-sm text-gray-500 dark:text-gray-400">
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Terms of Use</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Cookie Policy</a></li>
+<li><a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Accessibility</a></li>
+</ul>
+</div>
+<div class="lg:col-span-3 flex flex-col items-start lg:items-end justify-center">
+<button class="flex items-center gap-2 text-primary dark:text-white font-bold hover:opacity-80 transition-opacity" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                        Back to top
+                        <span class="material-symbols-outlined bg-primary text-white size-8 rounded-full flex items-center justify-center">arrow_upward</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col md:flex-row items-center justify-between text-sm text-gray-400 gap-6">
+<div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+<p>© 2024 Britestate Ltd. All rights reserved.</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">shield</span>
+<span>FCA Regulated #123456</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<img alt="UK Flag" class="h-4 rounded-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVmZv10yCufKCw7mBnb8M-Y7IO2hzfCDHgpWdWr0X2mILvqJrQhsh8SNvTKJReEGU80vh470DzBnKkqH2UafGXAF6MknQ_DhhzrEn5Lt5g13Vt1bM90kjjMd6JKgZDJQFvgSV7D2uv_D_hyQFYZpC_CrS5BYM8y4TDEnzaREet2vRB26trgRsv2ZmcysJ2-fjM6nf3a_RTxgZgz0TrSv9v5jMRPpUpBadno4JQ6gmh60SPzOJaXLJNI-L8Gp12-Yt0PK-x2iZwEAU"/>
+<span class="font-medium text-gray-500">United Kingdom (English)</span>
+</div>
+</div>
+</div>
+</footer>
+</div>
+
+</body></html>

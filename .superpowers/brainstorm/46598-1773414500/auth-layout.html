@@ -1,0 +1,74 @@
+<h2>Auth Layout Structure</h2>
+<p class="subtitle">Which layout should the auth pages use? This affects every page in the flow (login, signup, forgot password, etc.)</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="split" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f8fa;padding:16px;">
+      <div style="display:flex;height:220px;border-radius:8px;overflow:hidden;border:1px solid #e2e2e8;">
+        <!-- Left form panel -->
+        <div style="width:45%;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px;">
+          <div style="width:80px;height:14px;background:#1B4D3E;border-radius:4px;margin-bottom:8px;"></div>
+          <div style="height:8px;background:#e2e2e8;border-radius:3px;width:90%;"></div>
+          <div style="height:34px;background:#f1f1f5;border-radius:6px;margin-top:4px;"></div>
+          <div style="height:34px;background:#f1f1f5;border-radius:6px;"></div>
+          <div style="height:34px;background:#1B4D3E;border-radius:6px;margin-top:4px;"></div>
+          <div style="height:8px;background:#e2e2e8;border-radius:3px;width:70%;margin-top:4px;"></div>
+        </div>
+        <!-- Right image panel -->
+        <div style="width:55%;background:linear-gradient(135deg,#1B4D3E 0%,#2D7A5F 40%,#D4A853 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:20px;">
+          <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:10px 14px;backdrop-filter:blur(4px);width:100%;max-width:160px;">
+            <div style="height:6px;background:rgba(255,255,255,0.7);border-radius:3px;margin-bottom:6px;"></div>
+            <div style="height:6px;background:rgba(255,255,255,0.5);border-radius:3px;width:70%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Split Panel <span style="color:#1B4D3E;font-size:12px;font-weight:600;background:#E8F5EE;padding:2px 8px;border-radius:12px;margin-left:6px;">Stitch Design</span></h3>
+      <p>Form on the left (45%), property image panel on the right (55%). Premium feel matching the Stitch screens. Desktop only — collapses to centered card on mobile. FAANG standard.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="centered" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f1f1f5;padding:16px;">
+      <div style="display:flex;align-items:center;justify-content:center;height:220px;">
+        <div style="width:220px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,0.1);display:flex;flex-direction:column;gap:8px;">
+          <div style="width:80px;height:14px;background:#1B4D3E;border-radius:4px;margin:0 auto 8px;"></div>
+          <div style="height:8px;background:#e2e2e8;border-radius:3px;width:90%;"></div>
+          <div style="height:32px;background:#f1f1f5;border-radius:6px;margin-top:4px;"></div>
+          <div style="height:32px;background:#f1f1f5;border-radius:6px;"></div>
+          <div style="height:32px;background:#1B4D3E;border-radius:6px;margin-top:4px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Centered Card <span style="color:#7A7A88;font-size:12px;font-weight:600;background:#f1f1f5;padding:2px 8px;border-radius:12px;margin-left:6px;">Current</span></h3>
+      <p>Current implementation. Card centered on neutral-50 background. Simpler to implement, consistent across all screen sizes. Clean but less premium.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="immersive" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f8fa;padding:16px;">
+      <div style="height:220px;border-radius:8px;overflow:hidden;position:relative;background:linear-gradient(135deg,#1B4D3E 0%,#2D7A5F 60%,#D4A853 100%);">
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <div style="background:rgba(255,255,255,0.92);border-radius:12px;padding:20px;width:55%;display:flex;flex-direction:column;gap:8px;">
+            <div style="width:70px;height:12px;background:#1B4D3E;border-radius:4px;margin:0 auto 6px;"></div>
+            <div style="height:30px;background:#f1f1f5;border-radius:6px;"></div>
+            <div style="height:30px;background:#f1f1f5;border-radius:6px;"></div>
+            <div style="height:30px;background:#1B4D3E;border-radius:6px;margin-top:2px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Full Immersive</h3>
+      <p>Property image fills the entire screen, card floats over it with a frosted/translucent treatment. Most dramatic visually but adds complexity and can hurt readability.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top:24px;padding:16px;background:#E8F5EE;border-radius:8px;border-left:3px solid #1B4D3E;">
+  <p style="margin:0;font-size:14px;color:#1B4D3E;"><strong>Recommendation:</strong> Option B (Split Panel) — it matches the Stitch designs exactly, is the gold standard for premium auth flows (Notion, Linear, Vercel all use it), and works beautifully on the property imagery Britestate has.</p>
+</div>

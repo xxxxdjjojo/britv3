@@ -1,0 +1,83 @@
+<h2>Section 4 of 5 — Account State Pages</h2>
+<p class="subtitle">3 new pages: Account Locked · Account Suspended · Account Deletion Confirmation</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:24px;">
+
+  <!-- Account Locked -->
+  <div class="mockup">
+    <div class="mockup-header">Account Locked <span style="color:#DC2626;font-size:11px;">● new</span></div>
+    <div class="mockup-body" style="padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+      <div style="width:52px;height:52px;background:#FEF9C3;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:22px;">🔒</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#0A0A0B;">Account temporarily locked</div>
+      <div style="font-size:10px;color:#7A7A88;max-width:180px;line-height:1.6;">Too many failed login attempts. For your security, access has been temporarily restricted.</div>
+
+      <!-- Countdown -->
+      <div style="background:#FEF9C3;border:1px solid #FDE047;border-radius:8px;padding:10px 16px;width:100%;">
+        <div style="font-size:9px;color:#92400E;margin-bottom:4px;">Try again in</div>
+        <div style="font-size:22px;font-weight:700;color:#92400E;letter-spacing:2px;">28:43</div>
+      </div>
+
+      <div style="width:100%;height:34px;background:#1B4D3E;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;">Reset Password Instead</div>
+      <div style="font-size:10px;color:#7A7A88;">Need help? <span style="color:#2563EB;">Contact support</span></div>
+    </div>
+  </div>
+
+  <!-- Account Suspended -->
+  <div class="mockup">
+    <div class="mockup-header">Account Suspended <span style="color:#DC2626;font-size:11px;">● new</span></div>
+    <div class="mockup-body" style="padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+      <div style="width:52px;height:52px;background:#FEE2E2;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:22px;">⚠️</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#DC2626;">Account suspended</div>
+      <div style="font-size:10px;color:#7A7A88;max-width:180px;line-height:1.6;">Your account has been suspended. This may be due to a violation of our Terms of Service.</div>
+
+      <!-- Reason pill (if available) -->
+      <div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:8px;padding:8px 12px;width:100%;text-align:left;">
+        <div style="font-size:9px;color:#991B1B;font-weight:600;margin-bottom:2px;">Reason</div>
+        <div style="font-size:10px;color:#7F1D1D;">Violation of listing accuracy policy</div>
+      </div>
+
+      <div style="width:100%;height:34px;background:#DC2626;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;">Contact Support</div>
+      <div style="width:100%;height:34px;border:1px solid #e2e2e8;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#46464F;font-size:11px;">Appeal this decision</div>
+    </div>
+  </div>
+
+  <!-- Deletion Confirmation -->
+  <div class="mockup">
+    <div class="mockup-header">Account Deletion <span style="color:#DC2626;font-size:11px;">● new</span></div>
+    <div class="mockup-body" style="padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+      <div style="width:52px;height:52px;background:#FEE2E2;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:22px;">🗑️</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#0A0A0B;">Account scheduled for deletion</div>
+      <div style="font-size:10px;color:#7A7A88;max-width:180px;line-height:1.6;">Your account and all data will be permanently deleted on:</div>
+
+      <!-- Deletion date -->
+      <div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:8px;padding:8px 16px;">
+        <div style="font-size:14px;font-weight:700;color:#DC2626;">13 Apr 2026</div>
+        <div style="font-size:9px;color:#991B1B;">30 days from request</div>
+      </div>
+
+      <div style="background:#f8f8fa;border-radius:8px;padding:8px;width:100%;text-align:left;">
+        <div style="font-size:9px;color:#5E5E6A;line-height:1.6;">What gets deleted: profile, saved searches, messages, documents, listing history.</div>
+      </div>
+
+      <div style="width:100%;height:34px;background:#1B4D3E;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;">Cancel Deletion — Keep My Account</div>
+      <div style="font-size:9px;color:#9E9EAB;">Changed your mind? You can cancel any time before 13 Apr.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="padding:14px;background:#f8f8fa;border-radius:8px;border:1px solid #e2e2e8;">
+  <strong style="font-size:13px;color:#0A0A0B;">How users reach these pages</strong>
+  <ul style="margin:8px 0 0;padding-left:16px;font-size:12px;color:#46464F;line-height:1.8;">
+    <li><strong>Locked:</strong> Middleware reads <code>profiles.locked_until</code> (set by Supabase auth rate-limiter or admin). If now &lt; locked_until → redirect to <code>/account-locked</code>. Shows countdown from that timestamp.</li>
+    <li><strong>Suspended:</strong> Middleware checks <code>profiles.status === 'suspended'</code> → redirect to <code>/account-suspended</code>. Shows reason from <code>profiles.suspension_reason</code> if set. "Contact Support" opens email. "Appeal" posts to <code>/api/appeals/create</code>.</li>
+    <li><strong>Deletion:</strong> Initiated from Settings → Privacy → Delete Account. Sets <code>profiles.deletion_scheduled_at = now + 30d</code>. User gets redirect to this page on next login. "Cancel Deletion" calls <code>/api/gdpr/cancel-deletion</code> and clears the timestamp.</li>
+    <li>All three pages use the same split-panel <code>AuthLayout</code> — right panel shows brand content, no property testimonial (inappropriate for these states).</li>
+  </ul>
+</div>

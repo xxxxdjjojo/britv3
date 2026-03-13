@@ -11,7 +11,8 @@ export type UserRole =
   | "seller"
   | "landlord"
   | "agent"
-  | "service_provider";
+  | "service_provider"
+  | "mortgage_broker";
 
 export type VerificationLevel =
   | "basic"

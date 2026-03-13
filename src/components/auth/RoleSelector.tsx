@@ -13,6 +13,7 @@ import {
   Building,
   Briefcase,
   Wrench,
+  Landmark,
   Check,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Building,
   Briefcase,
   Wrench,
+  Landmark,
 };
 
 export function RoleSelector(

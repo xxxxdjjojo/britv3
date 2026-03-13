@@ -13,6 +13,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   landlord: "Landlord",
   agent: "Estate Agent",
   service_provider: "Service Provider",
+  mortgage_broker: "Mortgage Broker",
 };
 
 export function DashboardShell({

@@ -14,14 +14,15 @@ const VALID_ROLES: UserRole[] = [
   "landlord",
   "agent",
   "service_provider",
+  "mortgage_broker",
 ];
 
 describe("Dashboard shell configuration", () => {
-  it("has nav items defined for all 6 roles", async () => {
+  it("has nav items defined for all 7 roles", async () => {
     // Dynamically import to avoid server-only module issues
     const { ROLES } = await import("@/lib/constants");
 
-    expect(ROLES).toHaveLength(6);
+    expect(ROLES).toHaveLength(7);
     for (const role of VALID_ROLES) {
       const def = ROLES.find((r) => r.value === role);
       expect(def).toBeDefined();
@@ -40,6 +41,7 @@ describe("Dashboard shell configuration", () => {
       landlord: "/dashboard/landlord",
       agent: "/dashboard/agent",
       service_provider: "/dashboard/service_provider",
+      mortgage_broker: "/dashboard/mortgage_broker",
     };
 
     for (const role of VALID_ROLES) {
@@ -47,7 +49,7 @@ describe("Dashboard shell configuration", () => {
     }
   });
 
-  it("role metric cards are defined for all 6 roles", () => {
+  it("role metric cards are defined for all 7 roles", () => {
     // Verify that each role has at least 3 metric cards defined in the page
     const ROLE_METRICS_COUNT: Record<UserRole, number> = {
       homebuyer: 3,
@@ -56,6 +58,7 @@ describe("Dashboard shell configuration", () => {
       landlord: 3,
       agent: 3,
       service_provider: 3,
+      mortgage_broker: 3,
     };
 
     for (const role of VALID_ROLES) {

@@ -143,6 +143,17 @@ export type ProviderDashboard = Readonly<{
   recent_activity: ReadonlyArray<ActivityLogEntry>;
 }>;
 
+/** Mortgage Broker dashboard: active cases, conversion rate, earnings, applications */
+export type MortgageBrokerDashboard = Readonly<{
+  role: "mortgage_broker";
+  verification_status: "pending" | "verified" | "rejected";
+  active_cases_count: number;
+  conversion_rate: number;
+  total_earnings: number;
+  pending_applications_count: number;
+  recent_activity: ReadonlyArray<ActivityLogEntry>;
+}>;
+
 // -- Union type ---------------------------------------------------------------
 
 /** Discriminated union of all role-specific dashboards */
@@ -152,7 +163,8 @@ export type DashboardData =
   | SellerDashboard
   | LandlordDashboard
   | AgentDashboard
-  | ProviderDashboard;
+  | ProviderDashboard
+  | MortgageBrokerDashboard;
 
 /** Map from role to its dashboard type */
 export type DashboardForRole<R extends UserRole> = R extends "homebuyer"
@@ -167,4 +179,6 @@ export type DashboardForRole<R extends UserRole> = R extends "homebuyer"
           ? AgentDashboard
           : R extends "service_provider"
             ? ProviderDashboard
-            : never;
+            : R extends "mortgage_broker"
+              ? MortgageBrokerDashboard
+              : never;

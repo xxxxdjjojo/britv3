@@ -1,0 +1,210 @@
+<h2>Section 5 of 5 — Onboarding Wizards</h2>
+<p class="subtitle">6 role-specific multi-step flows replacing the current stub. All use OnboardingLayout (split-panel + step progress bar). Full Supabase save on completion.</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+
+  <!-- Buyer/Renter: 4 steps -->
+  <div class="mockup">
+    <div class="mockup-header">Buyer / Renter — 4 steps</div>
+    <div class="mockup-body" style="padding:16px;font-size:11px;">
+      <!-- Progress bar -->
+      <div style="display:flex;gap:4px;margin-bottom:12px;">
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+      </div>
+      <div style="font-size:9px;color:#9E9EAB;margin-bottom:8px;">Step 1 of 4</div>
+      <div style="font-weight:700;color:#0A0A0B;margin-bottom:4px;">Where are you looking?</div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;margin-bottom:6px;display:flex;align-items:center;padding:0 10px;gap:6px;">
+        <span style="font-size:12px;">📍</span><span style="font-size:9px;color:#9E9EAB;">e.g. Isleworth, TW7</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+        <div style="background:#E8F5EE;border-radius:20px;padding:3px 8px;font-size:9px;color:#1B4D3E;display:flex;align-items:center;gap:3px;">Isleworth <span>×</span></div>
+        <div style="background:#E8F5EE;border-radius:20px;padding:3px 8px;font-size:9px;color:#1B4D3E;display:flex;align-items:center;gap:3px;">Hounslow <span>×</span></div>
+      </div>
+      <div style="font-size:9px;color:#5E5E6A;margin-bottom:4px;">Max search radius</div>
+      <div style="height:4px;background:#e2e2e8;border-radius:2px;position:relative;margin-bottom:12px;">
+        <div style="width:40%;height:4px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="position:absolute;left:40%;top:-4px;width:12px;height:12px;background:#1B4D3E;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:#9E9EAB;margin-bottom:4px;"><span>0.25 mi</span><span style="color:#1B4D3E;font-weight:600;">2 mi</span><span>10 mi</span></div>
+      <div style="border-top:1px solid #e2e2e8;margin-top:8px;padding-top:8px;display:flex;justify-content:flex-end;">
+        <div style="height:28px;background:#1B4D3E;border-radius:6px;padding:0 14px;display:flex;align-items:center;color:#fff;font-size:10px;font-weight:600;">Continue →</div>
+      </div>
+      <div style="margin-top:8px;background:#f1f1f5;border-radius:6px;padding:8px;font-size:9px;color:#5E5E6A;">
+        <strong>Steps:</strong> 1. Location + radius · 2. Budget + property type + beds · 3. Must-haves (garden, parking, chain-free, etc.) · 4. Alert preferences (instant/daily/weekly)
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#1B4D3E;"><strong>Saves to:</strong> <code>buyer_preferences</code> table (location_areas[], max_radius, budget_min/max, property_types[], bedrooms_min, must_haves[], alert_frequency)</div>
+    </div>
+  </div>
+
+  <!-- Seller: 3 steps -->
+  <div class="mockup">
+    <div class="mockup-header">Seller — 3 steps</div>
+    <div class="mockup-body" style="padding:16px;font-size:11px;">
+      <div style="display:flex;gap:4px;margin-bottom:12px;">
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+      </div>
+      <div style="font-size:9px;color:#9E9EAB;margin-bottom:8px;">Step 2 of 3</div>
+      <div style="font-weight:700;color:#0A0A0B;margin-bottom:4px;">Tell us about your property</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+        <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;display:flex;align-items:center;padding:0 8px;font-size:9px;color:#9E9EAB;">Property type</div>
+        <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;display:flex;align-items:center;padding:0 8px;font-size:9px;color:#9E9EAB;">Tenure</div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
+        <span style="font-size:9px;color:#5E5E6A;">Bedrooms</span>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <div style="width:22px;height:22px;border:1px solid #e2e2e8;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#5E5E6A;">−</div>
+          <span style="font-size:13px;font-weight:700;color:#0A0A0B;width:16px;text-align:center;">3</span>
+          <div style="width:22px;height:22px;border:1px solid #1B4D3E;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1B4D3E;">+</div>
+        </div>
+        <span style="font-size:9px;color:#5E5E6A;margin-left:8px;">Bathrooms</span>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <div style="width:22px;height:22px;border:1px solid #e2e2e8;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#5E5E6A;">−</div>
+          <span style="font-size:13px;font-weight:700;color:#0A0A0B;width:16px;text-align:center;">2</span>
+          <div style="width:22px;height:22px;border:1px solid #1B4D3E;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#1B4D3E;">+</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid #e2e2e8;margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;">
+        <div style="height:28px;border:1px solid #e2e2e8;border-radius:6px;padding:0 12px;display:flex;align-items:center;color:#5E5E6A;font-size:10px;">← Back</div>
+        <div style="height:28px;background:#1B4D3E;border-radius:6px;padding:0 14px;display:flex;align-items:center;color:#fff;font-size:10px;font-weight:600;">Continue →</div>
+      </div>
+      <div style="margin-top:8px;background:#f1f1f5;border-radius:6px;padding:8px;font-size:9px;color:#5E5E6A;">
+        <strong>Steps:</strong> 1. Property address (postcode lookup) · 2. Property details (type, beds, baths, tenure) · 3. Valuation prompt (AI estimate + find agent CTA)
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#1B4D3E;"><strong>Saves to:</strong> <code>seller_profiles</code> (property_address, property_type, bedrooms, bathrooms, tenure, estimated_value)</div>
+    </div>
+  </div>
+
+  <!-- Landlord: 3 steps -->
+  <div class="mockup">
+    <div class="mockup-header">Landlord — 3 steps</div>
+    <div class="mockup-body" style="padding:16px;font-size:11px;">
+      <div style="display:flex;gap:4px;margin-bottom:12px;">
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+      </div>
+      <div style="font-size:9px;color:#9E9EAB;margin-bottom:8px;">Step 3 of 3 — Compliance</div>
+      <div style="font-weight:700;color:#0A0A0B;margin-bottom:8px;">Quick compliance check</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#DCFCE7;border-radius:6px;border:1px solid #86EFAC;">
+          <span style="font-size:9px;color:#166534;">Gas Safety Certificate</span>
+          <span style="font-size:9px;color:#16A34A;font-weight:600;">✓ Uploaded</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#FEF9C3;border-radius:6px;border:1px solid #FDE047;">
+          <span style="font-size:9px;color:#92400E;">EPC Certificate</span>
+          <span style="font-size:9px;color:#CA8A04;font-weight:600;">⚠ Upload</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#FEE2E2;border-radius:6px;border:1px solid #FCA5A5;">
+          <span style="font-size:9px;color:#991B1B;">EICR</span>
+          <span style="font-size:9px;color:#DC2626;font-weight:600;">✗ Missing</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#f8f8fa;border-radius:6px;border:1px solid #e2e2e8;">
+          <span style="font-size:9px;color:#5E5E6A;">Deposit Protection</span>
+          <span style="font-size:9px;color:#2563EB;">+ Add</span>
+        </div>
+      </div>
+      <div style="border-top:1px solid #e2e2e8;margin-top:10px;padding-top:8px;display:flex;justify-content:flex-end;">
+        <div style="height:28px;background:#1B4D3E;border-radius:6px;padding:0 14px;display:flex;align-items:center;color:#fff;font-size:10px;font-weight:600;">Go to Dashboard →</div>
+      </div>
+      <div style="margin-top:8px;background:#f1f1f5;border-radius:6px;padding:8px;font-size:9px;color:#5E5E6A;">
+        <strong>Steps:</strong> 1. Portfolio size + type · 2. Add first property (address, type, bedrooms, tenancy status, rent) · 3. Compliance checklist (upload or skip each)
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#1B4D3E;"><strong>Saves to:</strong> <code>landlord_profiles</code> + <code>properties</code> + <code>compliance_documents</code></div>
+    </div>
+  </div>
+
+  <!-- Estate Agent: 3 steps -->
+  <div class="mockup">
+    <div class="mockup-header">Estate Agent — 3 steps</div>
+    <div class="mockup-body" style="padding:16px;font-size:11px;">
+      <div style="display:flex;gap:4px;margin-bottom:12px;">
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+      </div>
+      <div style="font-size:9px;color:#9E9EAB;margin-bottom:8px;">Step 1 of 3</div>
+      <div style="font-weight:700;color:#0A0A0B;margin-bottom:8px;">Your agency</div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;margin-bottom:6px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:#9E9EAB;">Agency name</div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;margin-bottom:6px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:#9E9EAB;">Companies House / Agency reg. number</div>
+      <!-- Logo upload -->
+      <div style="border:1.5px dashed #C4C4CE;border-radius:8px;padding:10px;text-align:center;background:#f8f8fa;margin-bottom:6px;">
+        <div style="font-size:16px;">🏢</div>
+        <div style="font-size:9px;color:#7A7A88;">Upload agency logo</div>
+        <div style="font-size:8px;color:#9E9EAB;">PNG or SVG, max 2MB</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;flex:1;display:flex;align-items:center;padding:0 8px;font-size:9px;color:#9E9EAB;">Primary office postcode</div>
+      </div>
+      <div style="margin-top:8px;background:#f1f1f5;border-radius:6px;padding:8px;font-size:9px;color:#5E5E6A;">
+        <strong>Steps:</strong> 1. Agency name, reg. number, logo, address · 2. Invite team (email + role) + 2FA prompt · 3. Connect CRM or "add listings manually"
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#1B4D3E;"><strong>Saves to:</strong> <code>agencies</code> + <code>agent_profiles</code>. Team invites → <code>agency_invitations</code>.</div>
+    </div>
+  </div>
+
+  <!-- Tradesperson: 4 steps -->
+  <div class="mockup">
+    <div class="mockup-header">Tradesperson — 4 steps</div>
+    <div class="mockup-body" style="padding:16px;font-size:11px;">
+      <div style="display:flex;gap:4px;margin-bottom:12px;">
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+      </div>
+      <div style="font-size:9px;color:#9E9EAB;margin-bottom:8px;">Step 2 of 4</div>
+      <div style="font-weight:700;color:#0A0A0B;margin-bottom:8px;">Where do you work?</div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;margin-bottom:8px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:#9E9EAB;">📍 Your base postcode</div>
+      <div style="font-size:9px;color:#5E5E6A;margin-bottom:4px;">Service radius</div>
+      <div style="height:4px;background:#e2e2e8;border-radius:2px;position:relative;margin-bottom:12px;">
+        <div style="width:55%;height:4px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="position:absolute;left:55%;top:-4px;width:12px;height:12px;background:#1B4D3E;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:#9E9EAB;margin-bottom:8px;"><span>5 mi</span><span style="color:#1B4D3E;font-weight:600;">25 mi</span><span>50 mi</span></div>
+      <!-- Map preview placeholder -->
+      <div style="height:60px;background:linear-gradient(135deg,#E8F5EE,#DCFCE7);border-radius:8px;border:1px solid #86EFAC;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:9px;color:#166534;">🗺 Coverage map preview</span>
+      </div>
+      <div style="margin-top:8px;background:#f1f1f5;border-radius:6px;padding:8px;font-size:9px;color:#5E5E6A;">
+        <strong>Steps:</strong> 1. Trade categories + specialisms + years exp · 2. Base postcode + service radius (map preview) · 3. Upload credentials (Gas Safe, NICEIC, insurance) · 4. Bio + portfolio photos + hourly rate
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#1B4D3E;"><strong>Saves to:</strong> <code>service_provider_profiles</code> + <code>provider_service_areas</code> + <code>provider_documents</code></div>
+    </div>
+  </div>
+
+  <!-- Mortgage Broker: 3 steps -->
+  <div class="mockup">
+    <div class="mockup-header">Mortgage Broker — 3 steps</div>
+    <div class="mockup-body" style="padding:16px;font-size:11px;">
+      <div style="display:flex;gap:4px;margin-bottom:12px;">
+        <div style="flex:1;height:3px;background:#1B4D3E;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+        <div style="flex:1;height:3px;background:#e2e2e8;border-radius:2px;"></div>
+      </div>
+      <div style="font-size:9px;color:#9E9EAB;margin-bottom:8px;">Step 1 of 3</div>
+      <div style="font-weight:700;color:#0A0A0B;margin-bottom:8px;">FCA registration details</div>
+      <div style="background:#DBEAFE;border:1px solid #93C5FD;border-radius:7px;padding:8px;margin-bottom:8px;font-size:9px;color:#1E40AF;">
+        🔵 Mortgage brokers must be FCA authorised. We verify this during onboarding.
+      </div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;margin-bottom:6px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:#9E9EAB;">FCA reference number (e.g. 123456)</div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;margin-bottom:6px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:#9E9EAB;">Firm / company name</div>
+      <!-- Verify button -->
+      <div style="height:30px;border:1px solid #1B4D3E;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#1B4D3E;font-weight:600;margin-bottom:6px;">Verify with FCA Register →</div>
+      <div style="height:32px;background:#f1f1f5;border-radius:7px;border:1px solid #e2e2e8;display:flex;align-items:center;padding:0 10px;font-size:9px;color:#9E9EAB;">Professional indemnity insurance (upload)</div>
+      <div style="margin-top:8px;background:#f1f1f5;border-radius:6px;padding:8px;font-size:9px;color:#5E5E6A;">
+        <strong>Steps:</strong> 1. FCA number + firm name + PI insurance upload · 2. Specialisms (first-time buyer, remortgage, BTL, commercial, equity release) + service areas · 3. Bio + profile photo + fee structure (fee-free / fee-charging)
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#1B4D3E;"><strong>Saves to:</strong> <code>mortgage_broker_profiles</code> (fca_number, firm_name, specialisms[], service_areas[], fee_structure)</div>
+    </div>
+  </div>
+
+</div>
+
+<div style="padding:14px;background:#E8F5EE;border-radius:8px;border-left:3px solid #1B4D3E;font-size:12px;color:#1B4D3E;">
+  <strong>Common onboarding behaviour:</strong> Each wizard step validates before allowing Continue. "Skip for now" on optional steps (credentials, portfolio). Supabase MCP used to inspect existing table schemas before writing. If <code>onboarding_completed_at</code> is already set on <code>profiles</code>, middleware skips the wizard and goes straight to dashboard.
+</div>
