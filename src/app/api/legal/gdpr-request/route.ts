@@ -39,8 +39,6 @@ const ipRatelimit = new Ratelimit({
   prefix: "rl:gdpr:ip",
 });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 function generateReference(): string {
   const date = new Date();
   const yyyymmdd = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
@@ -48,6 +46,8 @@ function generateReference(): string {
 }
 
 export async function POST(request: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   // Parse JSON
   let body: unknown;
   try {
