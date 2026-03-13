@@ -10,6 +10,7 @@ Britestate v3.0 is built in 7 phases. Each phase delivers a complete, verifiable
 
 - ✅ **v3.0 Core Platform** - Phases 1-7 (in progress, 4 phases complete)
 - 🚧 **v3.1 Buyer/Renter Dashboard** - Phases 8-12 (roadmap ready)
+- 📋 **v3.2 Seller Dashboard** - Phase 13 (roadmap ready)
 
 ## Phases
 
@@ -293,11 +294,132 @@ Plans:
 - [ ] 12-01-PLAN.md -- Referral service: nanoid code generation, referral_codes insert/fetch, referral_conversions recording on signup, referral tracker API route
 - [ ] 12-02-PLAN.md -- Referral Tracker UI: link display with copy button, signup count, per-referral status list; Mortgage Comparison page with widget embed and FCA disclaimer banner
 
+---
+
+### 📋 v3.2 Seller Dashboard (Phase 13)
+
+**Milestone Goal:** Deliver all 18 Seller Dashboard pages at FAANG quality — full frontend + backend + browser-tested. Covers the complete seller journey from listing creation through sale completion, with real Supabase data, AI-assisted description generation, and a 7-step conveyancing tracker.
+
+- [ ] **Phase 13: Seller Dashboard** - Dashboard home, listing management wizard, analytics, viewings, offers, sale tracker, instant valuation, agent finder
+
+---
+
+### 📋 v3.3 Landlord Dashboard (Phase 14)
+
+**Milestone Goal:** Deliver all 29 Landlord Dashboard pages at FAANG quality — full frontend + backend + browser-tested. Covers the complete landlord journey from portfolio overview through compliance management, rent collection, maintenance, financial reporting, deposit management, legal notice generation, and yield analytics — all backed by real Supabase data with Stitch-designed UI.
+
+- [ ] **Phase 14: Landlord Dashboard** - Dashboard home, portfolio, tenancy management, compliance, rent collection, maintenance, financials, legal tools, analytics
+
+---
+
+### 📋 v3.4 Estate Agent Dashboard (Phase 15)
+
+**Milestone Goal:** Deliver all 32 Estate Agent Dashboard features at FAANG quality — full frontend + backend + browser-tested. Covers the complete agency operation from listings management, lead pipeline, viewings, offers, sales progression (Kanban), CRM, team/branch management, analytics, reviews, billing, and third-party property feed integrations (Reapit, Alto, Jupix) — all backed by real Supabase data with Stitch-designed UI.
+
+- [ ] **Phase 15: Estate Agent Dashboard** - Dashboard home, listings management, lead pipeline, viewings calendar, offers & negotiation, sale progression board, CRM, team & branch management, analytics & reporting, reviews, billing, integrations
+
+## Phase Details (continued)
+
+### Phase 13: Seller Dashboard
+**Goal**: Sellers can manage their entire property sale journey from listing creation (7-step wizard) through offer management, sale progression tracking, and finding an estate agent — all backed by real Supabase data
+**Depends on**: Phase 3 (dashboards infrastructure), Phase 5 (AI tools)
+**Requirements**: SELL-01, SELL-02, SELL-03, SELL-04, SELL-05, SELL-06, SELL-07, SELL-08, SELL-09, SELL-10, SELL-11, SELL-12, SELL-13, SELL-14, SELL-15, SELL-16, SELL-17, SELL-18
+**Success Criteria** (what must be TRUE):
+  1. Seller dashboard home shows real KPIs (active listings, total views, enquiries, upcoming viewings) from Supabase with a 30-day performance chart
+  2. My Listings page shows real listings with status tabs (Active/Under Offer/Sold/Drafts), views/saves/enquiries counts, and a weekly performance mini-chart per listing
+  3. Create Listing 7-step wizard completes end-to-end: postcode lookup → property type/tenure → details → photos → AI description (Claude API with 3 tones) → price → EPC → review/publish
+  4. Listing Analytics page shows views over time (line chart), saves, enquiries, and click-through from real data
+  5. Manage Viewings shows scheduled viewings with date/time/type, confirm/reschedule/cancel flows
+  6. Offers Received shows buyer offers with accept/counter/reject actions and offer comparison
+  7. Sale Progression Tracker shows 8-stage UK conveyancing pipeline with current stage, expected dates, and key documents
+  8. Instant Valuation returns AI estimate with comparable properties drawn from Land Registry data
+  9. Find an Estate Agent and Agent Comparison pages show real agents filterable by area, fees, ratings
+**Plans**: TBD
+
+Plans:
+- [ ] 13-01-PLAN.md -- DB schema: seller listings tables, offers, viewings, sale progression, agent enquiries; TypeScript types; RLS policies
+- [ ] 13-02-PLAN.md -- Service layer: listing-service (CRUD, publish, analytics), AI description service (Claude API, 3 tones, rate limit), image pipeline
+- [ ] 13-03-PLAN.md -- Seller Dashboard Home + My Listings page (real data, status tabs, mini-charts)
+- [ ] 13-04-PLAN.md -- Create Listing wizard: Steps 1-4 (address/type/tenure, details, photos, AI description)
+- [ ] 13-05-PLAN.md -- Create Listing wizard: Steps 5-7 (price/type, EPC, review/publish) + listing edit/archive
+- [ ] 13-06-PLAN.md -- Listing Analytics page (Recharts line/pie charts, views/saves/enquiries/CTR)
+- [ ] 13-07-PLAN.md -- Manage Viewings (calendar + list views, confirm/reschedule/cancel, post-viewing feedback)
+- [ ] 13-08-PLAN.md -- Offers Received + Accept/Reject/Counter flows + offer comparison table
+- [ ] 13-09-PLAN.md -- Sale Progression Tracker (8-stage pipeline, documents, key contacts, delay warnings)
+- [ ] 13-10-PLAN.md -- Instant Valuation (Land Registry data, AI estimate) + Find Agent + Agent Comparison + Agent Profile
+
+### Phase 14: Landlord Dashboard
+**Goal**: Landlords can manage their entire rental property portfolio — from portfolio overview and tenancy management through compliance tracking, rent collection, maintenance coordination, financial reporting, deposit management, and legal notice generation — all backed by real Supabase data with FAANG-quality UI based on Stitch reference designs
+**Depends on**: Phase 6 (Landlord Tools backend), Phase 3 (dashboards infrastructure)
+**Requirements**: LD-01, LD-02, LD-03, LD-04, LD-05, LD-06, LD-07, LD-08, LD-09, LD-10, LD-11, LD-12, LD-13, LD-14, LD-15, LD-16, LD-17, LD-18, LD-19, LD-20, LD-21, LD-22, LD-23, LD-24, LD-25, LD-26, LD-27, LD-28, LD-29
+**Stitch reference screens**: Landlord Dashboard - Home (1b07d7e292e84a9bb4d41aebfef61392), My Properties (9154491c0648433f9bfd718708f725f1), Tenant Screening (da652271ce7344d392bc0bab363873e5), Maintenance Requests (ed6ed66ae9874af18e5125755cdb185c)
+**Success Criteria** (what must be TRUE):
+  1. Dashboard home shows real portfolio KPIs (total value, yield, occupancy rate, income summary) and compliance alerts from Supabase
+  2. Portfolio view lists all properties with tenancy status, rent, yield, and occupancy — sortable and filterable
+  3. Individual property page shows tenancy details, income history, documents, and maintenance log from real data
+  4. Tenant screening workflow supports application review, credit check status, referencing, accept/reject with email notifications
+  5. Rent collection overview and per-property views show real payment history with paid/partial/overdue status
+  6. Compliance dashboard tracks all certificate types (Gas Safety, EPC, EICR, Deposit Protection) with expiry alerts
+  7. Maintenance inbox and individual request pages support status tracking, photo uploads, and tradesperson assignment
+  8. Expense tracker and income/expense reports use real financial data with export capability
+  9. Tax summary exports correctly calculated figures for self-assessment
+  10. Section 21 and Section 8 notice builder generates legally correct PDF documents
+  11. Yield calculator and portfolio analytics provide real return calculations from property data
+**Plans**: TBD
+
+Plans:
+- [ ] 14-01-PLAN.md -- DB schema extensions: landlord-dashboard tables (tenant_applications, rent_payments_extended, compliance_certs, deposit_schemes, notices), TypeScript types, RLS policies, Supabase migrations
+- [ ] 14-02-PLAN.md -- Service layer: landlord-dashboard-service (portfolio stats, occupancy, yield), tenant-screening-service, rent-collection-service
+- [ ] 14-03-PLAN.md -- Dashboard Home (9.1) + Portfolio View (9.2) + Individual Property (9.3) + Add Property (9.4) + Create Rental Listing (9.5)
+- [ ] 14-04-PLAN.md -- Tenant Screening (9.6) + Application Detail (9.7) + Accept/Reject (9.8) + Tenancy Agreement (9.9)
+- [ ] 14-05-PLAN.md -- Rent Collection Overview (9.10) + Individual Property Rent (9.11) + Deposit Management (9.25)
+- [ ] 14-06-PLAN.md -- Compliance Dashboard (9.12) + Upload Certificate (9.13) + Expiry Alerts (9.14)
+- [ ] 14-07-PLAN.md -- Maintenance Inbox (9.15) + Individual Request (9.16) + Assign Tradesperson (9.17)
+- [ ] 14-08-PLAN.md -- Expense Tracker (9.18) + Income & Expense Report (9.19) + Tax Summary/Export (9.20)
+- [ ] 14-09-PLAN.md -- Find Letting Agent (9.21) + Find Tradespeople (9.22) + Inventory Check-In (9.23) + Inventory Check-Out (9.24)
+- [ ] 14-10-PLAN.md -- Section 21/Section 8 Notice Builder (9.26) + Insurance (9.27) + Yield Calculator (9.28) + Portfolio Analytics (9.29)
+
+### Phase 15: Estate Agent Dashboard
+**Goal**: Estate agents can manage their entire agency operation — listings, leads, viewings, offers, sales pipeline, CRM, team/branch management, analytics, reviews, billing, and property feed integrations — from a FAANG-quality dashboard with real Supabase data and Stitch reference designs
+**Depends on**: Phase 3 (dashboards infrastructure), Phase 2 (property portal), Phase 4 (marketplace reviews)
+**Requirements**: AGT-01, AGT-02, AGT-03, AGT-04, AGT-05, AGT-06, AGT-07, AGT-08, AGT-09, AGT-10, AGT-11, AGT-12, AGT-13, AGT-14, AGT-15, AGT-16, AGT-17, AGT-18, AGT-19, AGT-20, AGT-21, AGT-22, AGT-23, AGT-24, AGT-25, AGT-26, AGT-27, AGT-28, AGT-29, AGT-30, AGT-31, AGT-32
+**Stitch reference screens**: Estate Agent Dashboard - Home (a8dae3b02b434d68b737fc9edbf5cd5a), Agent - My Listings (14db2503597243e49aa6e396e6dcbe2f), Agent - Lead Pipeline (58783c0bdf02424eb4229ae2dbb7e2f3), Agent - Viewing Management (0946d419dbce4f7e8a1d6efcf32a057d), Offers & Negotiation (0dc20477100b455cbaf4d9191e3f3103), Sale Progression Board (abb29577be3f4659abcd8c984f80d6ea), Client CRM (87ef750a34b0461187037e8dfe098346), Team & Branch (3bd435a47d814ae2ae3f4dcb08b14052), Analytics (0231272737054f9ba60d82bb5abf5f9f), Property Inventory (83f7fee3f8174e798e087f98130faf1f), Viewings Calendar (83fc4ef9a5b54547965410687a5b7518), Lead Management (fb117d1961884f1f8f63d37511f40527), Integrations (f47b0c69154c4fbca2d7ac8fc5d05cbf), Overview Dashboard (55326c15010842808ecc0ca57c57a3dc)
+**Success Criteria** (what must be TRUE):
+  1. Agent dashboard home shows real KPIs (active listings, new leads, viewings this week, offers pending) with trend indicators, activity chart, and performance score from Supabase
+  2. My Listings pages (Active/Sold-Let/Archived-Draft) show real data with views, saves, enquiries counts; Create Listing wizard supports valuation, floorplans, pro photos, AI descriptions
+  3. Lead pipeline shows real leads in Kanban stages (New Enquiry → Qualified → Viewing Booked → Offer Made → Closed) with drag-and-drop, detail view, and team assignment
+  4. Viewing calendar shows real scheduled viewings with day/week/month modes, availability publishing, and post-viewing feedback collection
+  5. Offers dashboard shows real offers grouped by property; negotiation threads support accept/reject/counter with vendor notifications
+  6. Sale progression Kanban tracks 8-stage UK conveyancing with server-enforced transitions and audit trail
+  7. CRM client list and profile pages show real client data with communication history, linked properties, and preferences
+  8. Team management supports member invite, roles/permissions (5 tiers), and multi-branch management with branch-level settings
+  9. Analytics pages show real performance data: agent-level, branch-level, and competitor analysis with Recharts visualizations
+  10. Reviews dashboard shows real ratings with response capability; Subscription & Billing integrates with Stripe
+  11. Property feed integration supports Reapit/Alto/Jupix with connection setup, sync status, and error logging
+**Plans**: TBD
+
+Plans:
+- [ ] 15-01-PLAN.md -- DB schema: agent_leads, agent_offers, agent_commissions, agent_team_members, agent_branches, agent_crm_clients, agent_api_keys, agent_feed_integrations, agent_viewing_slots, agent_vendor_reports; TypeScript types; RLS policies; Supabase migration
+- [ ] 15-02-PLAN.md -- Service layer: agent-dashboard-service (KPIs, activity), agent-listings-service (CRUD, analytics), agent-lead-service (pipeline, assignment)
+- [ ] 15-03-PLAN.md -- Service layer: agent-viewing-service (calendar, slots, feedback), agent-offer-service (negotiation, pipeline), agent-sale-service (Kanban progression)
+- [ ] 15-04-PLAN.md -- Service layer: agent-crm-service (clients, profiles), agent-team-service (members, roles, branches), agent-analytics-service (reports, competitor)
+- [ ] 15-05-PLAN.md -- Dashboard Home (15.1) + Agency Profile Edit (15.2) + Agency Branding (15.3)
+- [ ] 15-06-PLAN.md -- My Listings Active (15.4) + Sold/Let (15.5) + Archived/Draft (15.6) + Create Listing Wizard (15.7) + Listing Analytics (15.8)
+- [ ] 15-07-PLAN.md -- Lead Management All (15.9) + Lead Detail/Timeline (15.10) + Lead Assign/Reassign (15.11)
+- [ ] 15-08-PLAN.md -- Viewing Calendar (15.12) + Viewing Feedback (15.13) + Offers Dashboard (15.14) + Offer Negotiation (15.15)
+- [ ] 15-09-PLAN.md -- Sale Progression Kanban (15.16) + Vendor Reports (15.17) + Market Appraisal (15.18)
+- [ ] 15-10-PLAN.md -- CRM Client List (15.19) + Client Profile (15.20)
+- [ ] 15-11-PLAN.md -- Team Members (15.21) + Roles & Permissions (15.22) + Branch Management (15.23)
+- [ ] 15-12-PLAN.md -- Reviews Dashboard (15.24) + Review Respond (15.25) + Subscription & Billing (15.26)
+- [ ] 15-13-PLAN.md -- Performance Reports Agent (15.27) + Branch (15.28) + Competitor Analysis (15.29) + Featured Listing/Boost (15.30)
+- [ ] 15-14-PLAN.md -- API Key Management (15.31) + Property Feed Integration (15.32)
+
 ## Progress
 
 **Execution Order:**
 v3.0 phases: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 (Phase 5 can run parallel to 3-4)
 v3.1 phases: 8 -> 9 -> 10 -> 11 -> 12 (Phase 11 and 12 can run parallel after Phase 9)
+v3.4 phases: 15 (depends on Phase 3 + Phase 2 + Phase 4)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -313,6 +435,9 @@ v3.1 phases: 8 -> 9 -> 10 -> 11 -> 12 (Phase 11 and 12 can run parallel after Ph
 | 10. Viewings Booking, Offers & Docs | v3.1 | 0/6 | Not started | - |
 | 11. AI Match | v3.1 | 0/2 | Not started | - |
 | 12. Financial & Referral | v3.1 | 0/2 | Not started | - |
+| 13. Seller Dashboard | v3.2 | 0/10 | Not started | - |
+| 14. Landlord Dashboard | v3.3 | 0/0 | Not started | - |
+| 15. Estate Agent Dashboard | v3.4 | 0/14 | Not started | - |
 
 ---
 *Roadmap created: 2026-03-06*
