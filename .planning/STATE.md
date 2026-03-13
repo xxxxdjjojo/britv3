@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 14-landlord-dashboard 14-05-PLAN.md
-last_updated: "2026-03-13T23:11:09.417Z"
+stopped_at: Completed 14-landlord-dashboard 14-09-PLAN.md
+last_updated: "2026-03-13T23:12:31.059Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 110
-  completed_plans: 58
+  completed_plans: 59
   percent: 49
 ---
 
@@ -58,6 +58,7 @@ Progress: [█████░░░░░] 49%
 | Phase 08-db-foundation-security P02 | 12 | 2 tasks | 6 files |
 | Phase 14-landlord-dashboard P03 | 23 | 2 tasks | 10 files |
 | Phase 14-landlord-dashboard P05 | 20 | 2 tasks | 13 files |
+| Phase 14-landlord-dashboard P09 | 21 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,8 @@ Recent decisions affecting current work:
 - [Phase 14-landlord-dashboard]: Create Listing wizard tries rental_listings table first, falls back to listings table with listing_type=rental
 - [Phase 14-landlord-dashboard]: serverTimestamp prop pattern: server component passes new Date().getTime() to client components for date-based computations to avoid react-hooks/purity ESLint violations
 - [Phase 14-landlord-dashboard]: PropertyRentClient as sibling client file: mutation callbacks cannot be passed from Server to Client Components as non-serializable props; dedicated client wrappers resolve this
+- [Phase 14-landlord-dashboard]: service_provider_details uses services array (ServiceCategory[]) — query with .contains()/.overlaps(), not .eq('category')
+- [Phase 14-landlord-dashboard]: landlord_id passed as '' placeholder to createInventoryReport — service overwrites with auth user.id server-side to satisfy TS Omit type
 
 ### Pending Todos
 
@@ -104,6 +107,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:11:09.403Z
-Stopped at: Completed 14-landlord-dashboard 14-05-PLAN.md
+Last session: 2026-03-13T23:12:31.049Z
+Stopped at: Completed 14-landlord-dashboard 14-09-PLAN.md
 Resume file: None
