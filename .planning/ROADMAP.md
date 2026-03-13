@@ -510,7 +510,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 14. Landlord Dashboard | v3.3 | 0/0 | Not started | - |
 | 15. Estate Agent Dashboard | v3.4 | 0/14 | Not started | - |
 | 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
-| 17. Service Provider Public Profiles | v3.6 | 0/8 | Not started | - |
+| 17. Service Provider Public Profiles | 1/8 | In Progress|  | - |
 
 ---
 *Roadmap created: 2026-03-06*

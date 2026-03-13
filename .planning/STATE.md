@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: Roadmap ready — awaiting plan-phase
-stopped_at: Phase 8 context gathered
-last_updated: "2026-03-13T21:07:37.578Z"
+stopped_at: Completed 17-01-PLAN.md
+last_updated: "2026-03-13T22:03:24.179Z"
 last_activity: 2026-03-13 — v3.1 roadmap created (5 phases, 39 requirements, 16 plans)
 progress:
   total_phases: 17
   completed_phases: 4
-  total_plans: 104
-  completed_plans: 50
+  total_plans: 110
+  completed_plans: 51
   percent: 0
 ---
 
@@ -50,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: Stable
 
 *Updated after each plan completion*
+| Phase 17 P01 | 992 | 2 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - 2026-03-13: TOOLS-06 (affordability calc, pure client-side) assigned to Phase 9 as early win
 - [Phase 07]: Server-component-plus-client-wrapper pattern for admin pages
 - [Phase 07]: BottomTabBarWrapper / PullToRefreshWrapper use dynamic(ssr:false) for Next.js 16 Turbopack compatibility
+- [Phase 17]: ProviderPricing is a discriminated union (hourly/fixed/quote) rather than a flat object to enable exhaustive pattern matching
+- [Phase 17]: public-profile-service uses createClient() from server lib following Server Component pattern
 
 ### Pending Todos
 
@@ -80,6 +83,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T21:07:37.558Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-db-foundation-security/08-CONTEXT.md
+Last session: 2026-03-13T22:03:24.029Z
+Stopped at: Completed 17-01-PLAN.md
+Resume file: None
