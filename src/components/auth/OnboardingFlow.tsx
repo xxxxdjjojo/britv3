@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { BuyerOnboarding } from "./onboarding/BuyerOnboarding";
+import { SellerOnboarding } from "./onboarding/SellerOnboarding";
 
 // Placeholder components for roles not yet implemented — will be replaced in Tasks 17-20
 function PlaceholderOnboarding(props: Readonly<{ roleName: string; onComplete: () => void; onSkip: () => void }>) {
@@ -17,10 +18,6 @@ function PlaceholderOnboarding(props: Readonly<{ roleName: string; onComplete: (
 }
 
 type WizardProps = Readonly<{ onComplete: () => void; onSkip: () => void }>;
-
-function SellerPlaceholder(p: WizardProps) {
-  return <PlaceholderOnboarding roleName="Seller" {...p} />;
-}
 
 function LandlordPlaceholder(p: WizardProps) {
   return <PlaceholderOnboarding roleName="Landlord" {...p} />;
@@ -41,7 +38,7 @@ function MortgageBrokerPlaceholder(p: WizardProps) {
 const WIZARD_MAP: Record<string, React.ComponentType<WizardProps>> = {
   homebuyer: BuyerOnboarding,
   renter: BuyerOnboarding,
-  seller: SellerPlaceholder,
+  seller: SellerOnboarding,
   landlord: LandlordPlaceholder,
   agent: AgentPlaceholder,
   service_provider: ServiceProviderPlaceholder,
