@@ -107,9 +107,9 @@
 | DISC-08 | Phase 9 | Pending |
 | VIEW-01 | Phase 9 | Pending |
 | VIEW-02 | Phase 9 | Pending |
-| VIEW-03 | Phase 9 | Pending |
-| VIEW-04 | Phase 9 | Pending |
-| VIEW-05 | Phase 9 | Pending |
+| VIEW-03 | Phase 10 | Pending |
+| VIEW-04 | Phase 10 | Pending |
+| VIEW-05 | Phase 10 | Pending |
 | OFFR-01 | Phase 10 | Pending |
 | OFFR-02 | Phase 10 | Pending |
 | OFFR-03 | Phase 10 | Pending |
@@ -127,13 +127,13 @@
 | TOOLS-04 | Phase 11 | Pending |
 | TOOLS-05 | Phase 11 | Pending |
 | TOOLS-06 | Phase 9 | Pending |
-| FIN-01 | Phase 11 | Pending |
+| FIN-01 | Phase 12 | Pending |
 | FIN-02 | Phase 9 | Pending |
 | FIN-03 | Phase 9 | Pending |
 | FIN-04 | Phase 9 | Pending |
-| REF-01 | Phase 11 | Pending |
-| REF-02 | Phase 11 | Pending |
-| REF-03 | Phase 11 | Pending |
+| REF-01 | Phase 12 | Pending |
+| REF-02 | Phase 12 | Pending |
+| REF-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v3.1 requirements: 39 total
@@ -142,4 +142,4 @@
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after initial definition*
+*Last updated: 2026-03-13 — phase assignments updated after roadmap creation (FIN-01 and REF-01/02/03 moved to Phase 12)*

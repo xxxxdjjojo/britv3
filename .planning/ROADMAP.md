@@ -6,7 +6,15 @@ Britestate v3.0 is built in 7 phases. Each phase delivers a complete, verifiable
 
 **Amended specs:** Epics 4-11 use cost-optimized `epicNfinal.md` specs. Epics 1-3 use originals. Total monthly infrastructure target: ~$50/mo at launch, scaling to ~$800/mo at 100K MAU.
 
+## Milestones
+
+- ✅ **v3.0 Core Platform** - Phases 1-7 (in progress, 4 phases complete)
+- 🚧 **v3.1 Buyer/Renter Dashboard** - Phases 8-12 (roadmap ready)
+
 ## Phases
+
+<details>
+<summary>✅ v3.0 Core Platform (Phases 1-7) - IN PROGRESS</summary>
 
 **Phase Numbering:**
 - Integer phases (1, 2, 3): Planned milestone work
@@ -21,8 +29,6 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: AI & Financial Tools** - AI descriptions, SQL recommendations, calculators, affordability (Epic 6 + Epic 8)
 - [x] **Phase 6: Landlord Tools** - Portfolio, tenants, maintenance, compliance, rent tracking (Epic 7) (completed 2026-03-07)
 - [ ] **Phase 7: Production Readiness** - PWA, admin panel, monitoring, security, launch (Epic 9 + Epic 10 + Epic 11)
-
-## Phase Details
 
 ### Phase 1: Foundation
 **Goal**: Users can create accounts, authenticate securely, select and switch between roles, and have their GDPR preferences respected from day one
@@ -186,21 +192,127 @@ Plans:
 - [ ] 07-09-PLAN.md -- Launch prep: Artillery load test, UAT seed data and scenarios, cross-browser checklist, launch and support runbooks
 - [ ] 07-10-PLAN.md -- Admin management UI: user search/suspend, moderation queue, verification queue, review moderation pages
 
+</details>
+
+---
+
+### 🚧 v3.1 Buyer/Renter Dashboard (Phases 8-12)
+
+**Milestone Goal:** Deliver all 22 Buyer/Renter Dashboard pages at FAANG quality — full frontend + backend + browser-tested, speed-first. Replace every mock data array with real Supabase queries, build service layers for five new feature domains, and ship six net-new pages.
+
+- [ ] **Phase 8: DB Foundation & Security** - Migration (10 new tables), RLS, role auth fix, npm packages
+- [ ] **Phase 9: Wire Existing Pages** - Dashboard home, saved properties/searches, alerts, viewings display, messages inbox, pro browse, affordability calc
+- [ ] **Phase 10: Viewings Booking, Offers & Documents** - Booking/reschedule/cancel flows, offer submit + status tracking, document vault, moving checklist
+- [ ] **Phase 11: AI Match** - Preferences editor, cached results, SQL-based scoring, match reason display
+- [ ] **Phase 12: Financial & Referral** - Mortgage comparison widget, referral code generation and tracker
+
+## Phase Details
+
+### Phase 8: DB Foundation & Security
+**Goal**: All 10 new database tables exist with RLS policies and the role authorization bypass is eliminated, unblocking every subsequent phase from being built on real data
+**Depends on**: Phase 7 (v3.0 core platform)
+**Requirements**: FOUND-01, FOUND-02, FOUND-03, FOUND-04
+**Success Criteria** (what must be TRUE):
+  1. All 10 new tables (viewings, viewing_slots, offers, offer_status_history, user_documents, ai_match_preferences, ai_match_results, moving_checklist_items, referral_codes, referral_conversions) exist in Supabase with RLS policies enforcing row ownership
+  2. A homebuyer navigating to /dashboard/landlord/rent-collection is redirected to their own dashboard, not served landlord data
+  3. Every buyer dashboard Server Component calls supabase.auth.getUser() server-side and returns 401 if not authenticated, independent of middleware
+  4. The buyer-documents Supabase Storage bucket is private; no path returns a public URL; all access uses server-generated signed URLs
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01-PLAN.md -- DB migration: 10 tables, RLS policies, indexes, offer state machine constraints, viewing slot-booking RPC; supabase gen types
+- [ ] 08-02-PLAN.md -- Security hardening: role route authorization fix in [role] layout, server-side auth guards on all buyer API routes, private documents bucket, npm package installation
+
+### Phase 9: Wire Existing Pages
+**Goal**: The buyer/renter dashboard home, saved content, viewing schedule, messages, and professional browse pages all show real data from Supabase — zero hardcoded arrays remain
+**Depends on**: Phase 8
+**Requirements**: DISC-01, DISC-02, DISC-03, DISC-04, DISC-05, DISC-06, DISC-07, DISC-08, VIEW-01, VIEW-02, COMMS-01, COMMS-02, FIN-02, FIN-03, FIN-04, TOOLS-06
+**Success Criteria** (what must be TRUE):
+  1. Dashboard home stat cards (saved count, upcoming viewings, active offers, unread messages) display real counts from the database that update when underlying data changes
+  2. Activity feed shows real events (price changes, new matches, viewing confirmations) drawn from the platform_events table, not a hardcoded array
+  3. Saved Properties page shows the authenticated user's actual saved properties with working sort-by-date/price, remove, and 3-property side-by-side comparison
+  4. Saved Searches page shows real saved searches with editable criteria, deletable entries, and per-search alert frequency toggle (instant/daily/weekly/off)
+  5. Messages Inbox lists real conversations using the existing Epic 5 messaging infrastructure with unread count badges; Message Thread shows real message history
+  6. Browse Mortgage Brokers, Conveyancers, and Surveyors pages return real provider results filtered from the Epic 4 marketplace by category parameter
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01-PLAN.md -- Service layer: dashboard-service extensions (real stat counts), recommendations-service (SQL-based), saved-properties-service wiring
+- [ ] 09-02-PLAN.md -- Wire saved properties, saved searches, alerts, notification centre pages to real Supabase queries
+- [ ] 09-03-PLAN.md -- Wire viewings list/calendar display (VIEW-01, VIEW-02), messages inbox and thread wrappers (COMMS-01, COMMS-02)
+- [ ] 09-04-PLAN.md -- Pro browse pages (FIN-02/03/04), affordability calculator client-side page (TOOLS-06), dashboard home wiring (DISC-01 to DISC-03)
+
+### Phase 10: Viewings Booking, Offers & Documents
+**Goal**: Buyers can book, reschedule, and cancel viewings; submit offers with AIP document attached; track their offer through the UK conveyancing pipeline; and manage a private document vault
+**Depends on**: Phase 9
+**Requirements**: VIEW-03, VIEW-04, VIEW-05, OFFR-01, OFFR-02, OFFR-03, OFFR-04, OFFR-05, COMMS-03, COMMS-04, COMMS-05, COMMS-06, TOOLS-01
+**Success Criteria** (what must be TRUE):
+  1. User can select an available viewing slot from agent-published availability, choose in-person or virtual, submit the booking via the atomic slot RPC, and receive a confirmation email
+  2. User can reschedule or cancel a viewing (with reason) and receive email confirmation for each state change
+  3. User can submit an offer with amount, conditions, solicitor details, and an optional AIP document attachment; the offer appears immediately in the Offers Sent page with Submitted status
+  4. Offer status progresses through the 7-stage UK conveyancing pipeline (Offer Submitted through Completion) with server-side enforced transitions and an audit trail in offer_status_history; user can withdraw a pending offer
+  5. User can upload documents (ID, proof of funds, AIP letter) using TUS resumable upload with a visible progress indicator; documents are stored in the private bucket with ownership-enforced RLS
+  6. Document previews load via 1-hour signed URLs; document status (uploaded/verified/pending review) is visible; moving checklist items are pre-populated and update their checked state as offer stage advances
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01-PLAN.md -- Service layer: viewings-service (slot RPC, reschedule, cancel), email confirmations for viewing state changes
+- [ ] 10-02-PLAN.md -- Viewing booking UI: slot picker calendar (react-day-picker), in-person/virtual toggle, confirm/reschedule/cancel flows
+- [ ] 10-03-PLAN.md -- Service layer: offers-service (submit, state transitions, withdrawal, audit trail), offer status API routes
+- [ ] 10-04-PLAN.md -- Offers UI: offers list with status badges, submit offer form with AIP attachment, 7-stage conveyancing pipeline tracker, withdraw action
+- [ ] 10-05-PLAN.md -- Service layer: buyer-documents-service (TUS upload, signed URL generation, status), moving checklist service
+- [ ] 10-06-PLAN.md -- Documents UI: upload interface with TUS progress bar, document list with status badges, signed URL previews; Moving Checklist page with stage-linked checkboxes
+
+### Phase 11: AI Match
+**Goal**: Buyers can set property match preferences and see AI-scored results with match reason explanations, without Claude API being called on every page load
+**Depends on**: Phase 9
+**Requirements**: TOOLS-02, TOOLS-03, TOOLS-04, TOOLS-05
+**Success Criteria** (what must be TRUE):
+  1. User can edit AI Property Match preferences (location, budget, bedrooms, must-haves, lifestyle factors including commute destination, school priority, garden importance) and save them to the ai_match_preferences table
+  2. AI Match results page shows properties ranked by match score with match reason tooltip chips explaining why each property scored as it did
+  3. Results are served from the ai_match_results cache (24-hour TTL) on page load — the Claude API is never called on a plain page visit, only on explicit user-triggered refresh (rate-limited to 3 per day)
+  4. When pgvector embeddings are unavailable, the page falls back to SQL-based heuristic scoring (preference field count matches) and still shows ranked results with reasons
+**Plans**: TBD
+
+Plans:
+- [ ] 11-01-PLAN.md -- AI match service: SQL-based scoring query, result caching in ai_match_results (24h TTL), Upstash rate limiter for refresh endpoint, pgvector fallback detection
+- [ ] 11-02-PLAN.md -- AI Match UI: preferences editor form, results page with RadialBarChart score gauge, match reason tooltip chips, refresh button with rate-limit feedback
+
+### Phase 12: Financial & Referral
+**Goal**: Buyers can access a mortgage comparison tool pre-filled from their affordability calc inputs, and can generate and share a referral link whose conversions are tracked in the database
+**Depends on**: Phase 9
+**Requirements**: FIN-01, REF-01, REF-02, REF-03
+**Success Criteria** (what must be TRUE):
+  1. Mortgage Comparison page embeds the Mojo/Habito widget (or displays an illustrative product table) with a non-dismissable "Illustrative rates only — not a financial offer" banner; affordability calculator values are pre-filled as URL parameters when navigating from the calculator page
+  2. User can generate a unique referral link backed by a nanoid code stored in the referral_codes table; the link is copyable from the Referral Tracker page
+  3. Referral Tracker page shows total signups, and per-referral status (pending/converted), all drawn from real referral_conversions rows
+  4. New user signups via a referral link record the referring user ID in referral_conversions with correct attribution
+**Plans**: TBD
+
+Plans:
+- [ ] 12-01-PLAN.md -- Referral service: nanoid code generation, referral_codes insert/fetch, referral_conversions recording on signup, referral tracker API route
+- [ ] 12-02-PLAN.md -- Referral Tracker UI: link display with copy button, signup count, per-referral status list; Mortgage Comparison page with widget embed and FCA disclaimer banner
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
-(Phase 5 depends only on Phase 2, so it can optionally run in parallel with Phases 3-4)
+v3.0 phases: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 (Phase 5 can run parallel to 3-4)
+v3.1 phases: 8 -> 9 -> 10 -> 11 -> 12 (Phase 11 and 12 can run parallel after Phase 9)
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation | 9/9 | Complete   | 2026-03-07 |
-| 2. Property Portal | 2/7 | In Progress|  |
-| 3. Dashboards & Communication | 8/10 | In Progress|  |
-| 4. Marketplace | 6/8 | In Progress|  |
-| 5. AI & Financial Tools | 3/4 | In Progress|  |
-| 6. Landlord Tools | 5/5 | Complete   | 2026-03-07 |
-| 7. Production Readiness | 9/10 | In Progress|  |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation | v3.0 | 9/9 | Complete | 2026-03-07 |
+| 2. Property Portal | v3.0 | 2/7 | In Progress | - |
+| 3. Dashboards & Communication | v3.0 | 8/10 | In Progress | - |
+| 4. Marketplace | v3.0 | 6/8 | In Progress | - |
+| 5. AI & Financial Tools | v3.0 | 3/4 | In Progress | - |
+| 6. Landlord Tools | v3.0 | 5/5 | Complete | 2026-03-07 |
+| 7. Production Readiness | v3.0 | 9/10 | In Progress | - |
+| 8. DB Foundation & Security | v3.1 | 0/2 | Not started | - |
+| 9. Wire Existing Pages | v3.1 | 0/4 | Not started | - |
+| 10. Viewings Booking, Offers & Docs | v3.1 | 0/6 | Not started | - |
+| 11. AI Match | v3.1 | 0/2 | Not started | - |
+| 12. Financial & Referral | v3.1 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-03-06*
@@ -214,3 +326,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 *Phase 6 planned: 2026-03-07 (5 plans, 3 waves)*
 *Phase 7 planned: 2026-03-07 (9 plans, 4 waves)*
 *Phase 7 revised: 2026-03-07 (10 plans, 4 waves) -- split Plan 05 into 05+10 per scope checker*
+*v3.1 milestone phases 8-12 added: 2026-03-13*
