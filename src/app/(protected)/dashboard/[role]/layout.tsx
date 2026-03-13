@@ -19,37 +19,38 @@ export default async function RoleDashboardLayout(
 ) {
   const { role } = await props.params;
 
+  // Reject invalid role slugs before any DB call
   if (!VALID_ROLES.includes(role as UserRole)) {
     redirect("/dashboard");
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-  if (!user) {
+  // Defense-in-depth: Server Component calls getUser() independently of middleware
+  if (authError || !user) {
     redirect("/login");
   }
 
-  // Verify user has this role; if missing (e.g. just registered), grant it
-  const { data: userRole } = await supabase
-    .from("user_roles")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("role", role)
-    .maybeSingle();
+  // Read active_role from profiles — this is the authoritative source
+  // Never trust the URL parameter as the user's actual role
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("active_role")
+    .eq("id", user.id)
+    .single();
 
-  if (!userRole) {
-    // Auto-grant the role to prevent redirect loops after registration
-    const { error } = await supabase
-      .from("user_roles")
-      .upsert(
-        { user_id: user.id, role },
-        { onConflict: "user_id,role" },
-      );
+  if (profileError || !profile) {
+    redirect("/login");
+  }
 
-    if (error) {
-      redirect("/dashboard");
-    }
+  // Enforce: URL role must match active_role
+  // Example: homebuyer at /dashboard/landlord → redirect to /dashboard/homebuyer
+  if (profile.active_role !== role) {
+    redirect(`/dashboard/${profile.active_role}`);
   }
 
   return <>{props.children}</>;
