@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { History, MapPin, Share2, Heart, ExternalLink, TrendingUp } from "lucide-react";
@@ -52,12 +53,17 @@ const MOCK_PROPERTIES: Record<string, {
   },
 };
 
-async function fetchPropertyBySlug(slug: string) {
+const fetchPropertyBySlug = cache(async (slug: string) => {
   return MOCK_PROPERTIES[slug] ?? null;
-}
+});
+
+const SLUG_PATTERN = /^[a-z0-9-]{1,120}$/;
 
 export async function generateMetadata({ params }: SoldPriceSlugProps): Promise<Metadata> {
   const { area, slug } = await params;
+  if (!SLUG_PATTERN.test(area) || !SLUG_PATTERN.test(slug)) {
+    notFound();
+  }
   const property = await fetchPropertyBySlug(slug);
   if (!property) return { title: "Property Not Found | Britestate" };
   return {
@@ -69,6 +75,9 @@ export async function generateMetadata({ params }: SoldPriceSlugProps): Promise<
 
 export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps) {
   const { area, slug } = await params;
+  if (!SLUG_PATTERN.test(area) || !SLUG_PATTERN.test(slug)) {
+    notFound();
+  }
   const property = await fetchPropertyBySlug(slug);
 
   if (!property) {
