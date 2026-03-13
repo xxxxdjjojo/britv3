@@ -1,373 +1,145 @@
-# Requirements: Britestate
+# Requirements: Britestate v3.1 — Buyer/Renter Dashboard
 
-**Defined:** 2026-03-06
-**Rebuilt:** 2026-03-07 (aligned to amended epic specs ending in `final.md`)
-**Core Value:** Users can find, compare, and transact on properties with full transparency -- AI-powered matching, integrated services, and real-time transaction tracking in one place.
+**Defined:** 2026-03-13
+**Milestone:** v3.1
+**Core Value:** Buyer and renter users can manage their entire property journey — viewings, offers, documents, and professional discovery — from a single FAANG-quality dashboard with real data, not mocks.
 
-## Source Document Map
+## v3.1 Requirements
 
-| Epic | Source File | Status |
-|------|-----------|--------|
-| 1 | `docs/claude epic 1 review.txt` | Original |
-| 2 | `docs/claude epic 2.txt` | Original |
-| 3 | `docs/epic3mkd claude.txt` | Original |
-| 4 | `docs/epic4final.md` | Amended (cost-optimized) |
-| 5 | `docs/epic5final.md` | Amended (cost-optimized) |
-| 6 | `docs/epic6final.md` | Amended (cost-optimized) |
-| 7 | `docs/epic7final.md` | Amended (cost-optimized) |
-| 8 | `docs/epic8final.md` | Amended (cost-optimized) |
-| 9 | `docs/epic9final.md` | Amended (cost-optimized) |
-| 10 | `docs/epic10final.md` | Amended (cost-optimized) |
-| 11 | `docs/epic11final.md` | Amended (cost-optimized) |
+### Foundation & Security (FOUND)
 
-## v1 Requirements
+- [ ] **FOUND-01**: DB migration creates 10 new tables (viewings, viewing_slots, offers, offer_status_history, user_documents, ai_match_preferences, ai_match_results, moving_checklist_items, referral_codes, referral_conversions) with RLS policies
+- [ ] **FOUND-02**: Role route authorization enforces active_role — buyers cannot navigate to /dashboard/landlord or /dashboard/agent routes
+- [ ] **FOUND-03**: All buyer dashboard API routes and Server Components call supabase.auth.getUser() server-side (defense-in-depth, not middleware-only auth)
+- [ ] **FOUND-04**: npm packages installed: react-day-picker@9, date-fns@4, tus-js-client@4, nanoid@5
 
-Requirements for initial release. Each maps to roadmap phases.
+### Dashboard Home & Discovery (DISC)
 
-### Authentication & Foundation (Epic 1)
+- [ ] **DISC-01**: User can see real stat cards on Dashboard Home: saved properties count, upcoming viewings, active offers, unread messages
+- [ ] **DISC-02**: User can see an activity feed on Dashboard Home showing real events (price changes on saved properties, new matches, viewing confirmations)
+- [ ] **DISC-03**: User can see recommended property listings based on their saved searches and preferences
+- [ ] **DISC-04**: User can view Saved Properties in grid or list view, sort by date saved / price, and remove properties
+- [ ] **DISC-05**: User can compare up to 3 saved properties side-by-side in a modal comparison table
+- [ ] **DISC-06**: User can view Saved Searches, edit criteria, delete searches, and toggle alert frequency (instant/daily/weekly/off)
+- [ ] **DISC-07**: User can configure Property Alert notification preferences (email + push) per saved search
+- [ ] **DISC-08**: User can view in-app notification centre with read/unread status and mark-all-as-read
 
-- [x] **AUTH-01**: User can create account with email and password
-- [x] **AUTH-02**: User receives email verification after signup
-- [x] **AUTH-03**: User can log in with Google OAuth (PKCE flow)
-- [x] **AUTH-04**: User can log in with Apple OAuth
-- [x] **AUTH-05**: User can reset password via email link
-- [x] **AUTH-06**: User session persists across browser refresh (JWT with refresh tokens)
-- [x] **AUTH-07**: User can select role(s) after registration (homebuyer, renter, seller, landlord, agent, provider)
-- [x] **AUTH-08**: User can hold multiple roles and switch between them
-- [x] **AUTH-09**: Role-specific dashboard shell loads based on active role
-- [x] **AUTH-10**: User verification levels enforced (basic, standard, enhanced, professional)
-- [x] **AUTH-11**: Provider verification pipeline (email, phone, ID, insurance, qualifications, admin review)
-- [x] **AUTH-12**: GDPR consent captured at signup with granular options (marketing, analytics, third-party)
-- [x] **AUTH-13**: User can export their data in JSON format
-- [x] **AUTH-14**: User can request account deletion with automated data purge
-- [x] **AUTH-15**: Complete audit trail for consent changes
-- [x] **AUTH-16**: CSP Level 3 headers and security hardening
-- [x] **AUTH-17**: RBAC middleware for route protection
-- [x] **AUTH-18**: Public pages (home, about, terms, privacy policy)
-- [x] **AUTH-19**: Responsive layout shell with navigation
+### Viewings (VIEW)
 
-### Property Search (Epic 2)
+- [ ] **VIEW-01**: User can view all upcoming and past viewings in a calendar and list view
+- [ ] **VIEW-02**: User can add a viewing to Google Calendar or Apple Calendar via .ics link
+- [ ] **VIEW-03**: User can book a viewing by selecting a date/time slot from agent-published availability, choosing in-person or virtual, and receiving confirmation email
+- [ ] **VIEW-04**: User can confirm, reschedule (select new slot), or cancel a viewing with reason
+- [ ] **VIEW-05**: User receives email confirmation for booked, rescheduled, and cancelled viewings
 
-- [x] **SRCH-01**: User can search properties by location (postcode, area, region)
-- [x] **SRCH-02**: User can filter by property type, price range, bedrooms, bathrooms
-- [x] **SRCH-03**: User can filter by amenities, EPC rating, new build status
-- [x] **SRCH-04**: User can search via interactive map with property pins (MapLibre + MapTiler)
-- [x] **SRCH-05**: Map displays property clusters at zoom levels for performance
-- [x] **SRCH-06**: User can draw custom search area on map (polygon tool)
-- [x] **SRCH-07**: User can save properties to shortlist
-- [x] **SRCH-08**: User can save search criteria with notification preferences
-- [x] **SRCH-09**: User receives alerts for new matching properties (email + in-app)
-- [x] **SRCH-10**: User can sort results by price, date, relevance
-- [x] **SRCH-11**: Search uses optimized queries (materialized views, full-text search, cursor-based pagination)
-- [x] **SRCH-12**: Geocoding via postcodes.io (free UK postcode API)
+### Offers (OFFR)
 
-### Listing Management (Epic 2)
+- [ ] **OFFR-01**: User can view all submitted offers with status badges, amounts, property thumbnails, and submission dates
+- [ ] **OFFR-02**: User can submit an offer with amount, conditions, solicitor details, and optional AIP document attachment
+- [ ] **OFFR-03**: User can track offer status through a 7-stage UK conveyancing pipeline: Offer Submitted → Solicitors Instructed → Searches → Survey → Mortgage Approved → Exchange → Completion
+- [ ] **OFFR-04**: Offer status transitions are server-side enforced with audit trail in offer_status_history
+- [ ] **OFFR-05**: User can withdraw a pending offer
 
-- [x] **LIST-01**: Agent/seller can create property listing with full details (address, type, beds, baths, area, tenure, EPC, features)
-- [x] **LIST-02**: Agent/seller can upload up to 30 photos per listing with client-side compression
-- [x] **LIST-03**: Agent/seller can upload floor plans and documents
-- [x] **LIST-04**: Agent/seller can set pricing with qualifiers (offers over, guide price, POA)
-- [x] **LIST-05**: Agent/seller can edit and update live listings
-- [x] **LIST-06**: Agent/seller can view listing analytics (views, saves, enquiries)
-- [x] **LIST-07**: Price history tracked for each listing
-- [x] **LIST-08**: PostGIS geospatial support for location-based queries
+### Communication & Documents (COMMS)
 
-### Dashboards (Epic 3)
+- [ ] **COMMS-01**: User can view Messages Inbox with conversation list, unread counts, and latest message previews
+- [ ] **COMMS-02**: User can view and reply in a Message Conversation Thread with file attachments
+- [ ] **COMMS-03**: User can upload documents (ID, proof of funds, AIP letter) to a private Supabase Storage bucket
+- [ ] **COMMS-04**: Document uploads use TUS resumable protocol with progress indicator
+- [ ] **COMMS-05**: Document previews use signed URLs (never public getPublicUrl) with 1-hour expiry
+- [ ] **COMMS-06**: User can see document status (uploaded / verified / pending review)
 
-- [x] **DASH-01**: Homebuyer dashboard with saved properties, active searches, upcoming viewings
-- [x] **DASH-02**: Renter dashboard with saved rentals, application status, tenancy details
-- [x] **DASH-03**: Seller dashboard with listing performance, viewing requests, offers
-- [x] **DASH-04**: Landlord dashboard with portfolio overview, occupancy, income
-- [x] **DASH-05**: Agent dashboard with active listings, leads pipeline, viewings, revenue
-- [x] **DASH-06**: Provider dashboard with verification status, active jobs, rating, earnings
-- [x] **DASH-07**: Aggregated dashboard API (1-2 calls instead of 8-12)
-- [x] **DASH-08**: Dashboard caching via Upstash Redis
-- [x] **DASH-09**: Profile CRUD with Zod validation for all roles
-- [x] **DASH-10**: Profile picture upload with client-side compression
-- [x] **DASH-11**: Service provider extended profile (services, coverage area, pricing)
-- [x] **DASH-12**: Activity log with cursor-based pagination
-- [x] **DASH-13**: Notification preferences per user
-- [x] **DASH-14**: Real-time dashboard updates via Supabase Realtime
+### Tools & AI (TOOLS)
 
-### Service Marketplace (Epic 4 -- amended)
+- [ ] **TOOLS-01**: User can view and check off items on a pre-populated UK moving checklist (20+ tasks) linked to their active offer stage
+- [ ] **TOOLS-02**: User can edit AI Property Match preferences: location, budget range, bedrooms, must-haves, and lifestyle factors (commute destination, school priority, garden importance)
+- [ ] **TOOLS-03**: User can view AI Property Match results ranked by match score with match reason tooltips
+- [ ] **TOOLS-04**: AI Match results are cached in ai_match_results table for 24 hours (never calls Claude on every page load)
+- [ ] **TOOLS-05**: AI Match falls back to heuristic scoring (preference field count matches) if pgvector embeddings are not available
+- [ ] **TOOLS-06**: User can use Affordability Calculator (pure client-side): income × 4.5 stress-test, deposit %, LTV, estimated monthly payment
 
-- [x] **MKT-01**: Provider can set up extended profile (business info, services, area, pricing, qualifications)
-- [x] **MKT-02**: Provider can upload verification documents with file-type validation
-- [x] **MKT-03**: User can create RFQ with service category, location (postcodes.io), budget, urgency
-- [x] **MKT-04**: System matches RFQ to max 10 providers by category, postcode overlap, proximity
-- [x] **MKT-05**: Provider can respond with itemized quote with versioning
-- [x] **MKT-06**: User can compare quotes side-by-side
-- [x] **MKT-07**: User can create and manage bookings with conflict detection
-- [x] **MKT-08**: Booking state machine (pending -> confirmed -> in_progress -> completed -> disputed)
-- [x] **MKT-09**: Provider can manage availability calendar
-- [x] **MKT-10**: User can submit multi-dimensional review with ratings
-- [x] **MKT-11**: Rule-based review spam/sentiment detection (no AI)
-- [x] **MKT-12**: Provider can respond to reviews; helpfulness voting
-- [x] **MKT-13**: User can search and browse providers by category and location
-- [x] **MKT-14**: Async job processing via Inngest (replaces BullMQ)
+### Financial & Professional Browse (FIN)
 
-**Deferred from Epic 4:**
-- Stripe Connect payments (separate epic)
-- Escrow / milestone payments
-- Invoice generation
-- Dispute resolution flow
-- AI quote suggestions (Epic 6)
-- SMS/WhatsApp notifications
-- Calendar sync (Google/Outlook)
+- [ ] **FIN-01**: User can access Mortgage Comparison Tool via embedded Mojo/Habito widget with affordability calc values pre-filled as URL parameters
+- [ ] **FIN-02**: User can browse Mortgage Brokers filtered from existing Epic 4 provider marketplace (category=mortgage_broker)
+- [ ] **FIN-03**: User can browse Conveyancers / Solicitors filtered from existing Epic 4 provider marketplace (category=conveyancer)
+- [ ] **FIN-04**: User can browse Surveyors filtered from existing Epic 4 provider marketplace (category=surveyor)
 
-### Communication & Collaboration (Epic 5 -- amended)
+### Referral (REF)
 
-- [x] **COM-01**: User can send direct messages from listings, bookings, RFQs (contextual initiation)
-- [x] **COM-02**: Polling-based inbox with 30s refresh (no WebSockets at MVP)
-- [x] **COM-03**: Message thread with cursor-based pagination
-- [x] **COM-04**: File attachments in messages (compressed, 2MB limit)
-- [x] **COM-05**: Per-conversation "last read" timestamp (not per-message)
-- [x] **COM-06**: AI quote drafting for tradespeople via Claude Haiku (~$0.001/draft)
-- [x] **COM-07**: AI quote drafting for estate agents via Claude Haiku
-- [x] **COM-08**: Trader rate card management
-- [x] **COM-09**: Market pricing intelligence data
-- [x] **COM-10**: Event-based in-app notification feed (O(1) writes, no fan-out)
-- [x] **COM-11**: Email notifications -- immediate for critical events, daily digest for non-critical
-- [x] **COM-12**: Notification preferences (per-type, quiet hours, digest frequency)
-- [x] **COM-13**: Files tab on bookings/transactions for document sharing
-- [x] **COM-14**: Transaction milestones (8-step UK property pipeline)
-- [x] **COM-15**: Service job milestones (5-step pipeline)
+- [ ] **REF-01**: User can generate a unique referral link with a nanoid-based code stored in referral_codes table
+- [ ] **REF-02**: User can see their Referral Tracker showing: link, total signups, pending/converted status per referral
+- [ ] **REF-03**: New user signups via referral link are recorded in referral_conversions table with referring user ID
 
-**Deferred from Epic 5:**
-- Real-time WebSocket chat (post-MVP)
-- Online/offline presence indicators
-- Per-message read receipts
-- Group chat
-- Video/voice calls
-- End-to-end encryption
-- Twilio SMS/WhatsApp
-- Smart reply suggestions (static lookup instead)
-- Document versioning / e-signatures
+## v3.2 Requirements (Deferred)
 
-### AI Features (Epic 6 -- amended, drastically reduced)
+### Deferred features
 
-- [x] **AI-01**: Centralized AI service layer wrapping Claude API with token tracking, rate limiting, daily spend kill switch
-- [x] **AI-02**: AI property description generation (3 tones: professional, friendly, premium; max 3 regenerations)
-- [x] **AI-03**: SQL-based property recommendations from saved searches and saved properties (zero AI cost)
-- [x] **AI-04**: Land Registry Price Paid Data display on property detail pages (free public data)
-- [x] **AI-05**: Static smart reply suggestions based on conversation type and keyword matching (no AI)
-- [x] **AI-06**: AI feedback collection (thumbs up/down for prompt engineering)
-
-**Deferred from Epic 6:**
-- AI context management / RAG system
-- AI assistant via SMS/WhatsApp (Twilio costs)
-- AI quote drafting (template builder instead -- moved to Epic 5)
-- NLP natural language search
-- Self-hosted LLM infrastructure
-- Fine-tuning / retraining pipelines
-- AVM model (partner with Hometrack post-revenue)
-- Predictive analytics, voice AI, AR
-
-### Landlord Tools (Epic 7 -- amended)
-
-- [x] **LL-01**: Portfolio view of managed rental properties (reuses listings data)
-- [x] **LL-02**: Tenant record storage (contact, lease terms, deposit info)
-- [x] **LL-03**: Maintenance request logging with status tracking and photo uploads
-- [x] **LL-04**: Simple contractor assignment via marketplace link (no auto-RFQ)
-- [x] **LL-05**: Manual rent payment tracking (paid/partial/overdue derived in UI)
-- [x] **LL-06**: Manual expense logging with optional receipt upload
-- [x] **LL-07**: Per-property financial summary (income minus expenses via RPC function)
-- [x] **LL-08**: Document upload with expiry dates for compliance tracking
-- [x] **LL-09**: Automated compliance reminders (30-day, 7-day before expiry)
-- [x] **LL-10**: Client-side lease agreement (AST) PDF generation via jspdf/html2pdf.js
-
-**Deferred from Epic 7 (future premium features):**
-- Automated rent collection via payment gateway
-- Bank statement import / reconciliation
-- Automated tenant screening
-- Application pipeline with status tracking
-- Integration with accounting software
-- E-signature integration
-- Multiple lease templates
-- Tenant portal
-
-### Financial Calculators (Epic 8 -- amended, reduced)
-
-- [x] **FIN-01**: Mortgage payment calculator (client-side amortization formula, real-time results)
-- [x] **FIN-02**: SDLT calculator for England & NI (first-time buyer, home mover, additional property)
-- [x] **FIN-03**: Save mortgage parameters to localStorage + optional DB sync for cross-device
-- [x] **FIN-04**: Personalized "Est. X/mo" display on property listing cards and detail pages
-- [x] **FIN-05**: SDLT rate bands in maintainable TypeScript config
-- [x] **FIN-06**: Offer letter PDF generation (client-side via @react-pdf/renderer)
-
-**Deferred from Epic 8:**
-- Offer management system (Phase 6 scope)
-- Transaction timeline / chain visualization (Phase 6 scope)
-- Stripe Connect integration (marketplace scope)
-- E-signature API ($200-600/mo -- premium post-revenue)
-- Online rent collection
-- Rent vs Buy, Renovation, Moving calculators
-- LBTT (Scotland) / LTT (Wales) calculators
-
-### PWA & Mobile (Epic 9 -- amended, PWA only)
-
-- [x] **MOB-01**: Web App Manifest with installable standalone mode
-- [x] **MOB-02**: Deferred install prompt after 2nd visit
-- [x] **MOB-03**: Push notifications via Web Push API + VAPID keys ($0/mo)
-- [x] **MOB-04**: Notification deep linking to relevant pages
-- [x] **MOB-05**: Push notification preferences
-- [x] **MOB-06**: Offline access to saved properties (50), recent views (20), appointments
-- [x] **MOB-07**: Static page caching (stale-while-revalidate via @serwist/next)
-- [x] **MOB-08**: Responsive verification across 320px-1280px breakpoints
-- [x] **MOB-09**: Touch optimization (44px targets, swipe gestures, pull-to-refresh)
-- [x] **MOB-10**: Role-specific bottom tab bar on mobile (<768px)
-- [x] **MOB-11**: Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1)
-
-**Deferred from Epic 9:**
-- Native iOS/Android apps (post-revenue, 50K+ MAU)
-- Capacitor native shell wrapper
-- Offline data creation
-- App Store / Play Store distribution
-
-### Admin Panel (Epic 10 -- amended, simplified)
-
-- [x] **ADM-01**: Admin route group `(admin)/` with sidebar layout, protected by middleware
-- [x] **ADM-02**: is_admin boolean on profiles (no granular RBAC at MVP)
-- [x] **ADM-03**: Admin dashboard with 5 count cards linking to management sections
-- [x] **ADM-04**: User management (search, view details, suspend/activate)
-- [x] **ADM-05**: Post-moderation of listings (auto-flag profanity, price anomaly, duplicate detection)
-- [x] **ADM-06**: Provider verification queue with document review via signed URLs
-- [x] **ADM-07**: Review moderation queue (flagged/reported reviews)
-- [x] **ADM-08**: Static help page with FAQ from MDX files
-- [x] **ADM-09**: Contact form with rate limiting (email to support inbox via Resend)
-- [x] **ADM-10**: External dashboard links (Stripe, Sentry, PostHog, Supabase)
-
-**Deferred from Epic 10:**
-- Custom CMS / WYSIWYG editor (use MDX or Notion)
-- Custom support ticket system (use Freshdesk Free at Month 3)
-- Financial dashboard (use Stripe Dashboard)
-- Separate Next.js admin app
-- Granular RBAC with 3+ roles (add at 5+ admins)
-- Pre-moderation workflow
-
-### Launch Readiness (Epic 11 -- amended, free tiers only)
-
-- [x] **LCH-01**: Sentry Free integration for client + server error tracking
-- [x] **LCH-02**: PostHog Free integration for product analytics (10+ tracked events)
-- [x] **LCH-03**: Structured JSON logger outputting to Vercel logs
-- [x] **LCH-04**: GitHub Action for automated Supabase migration on push to main
-- [x] **LCH-05**: Feature flags via environment variables (upgrade path: PostHog free flags)
-- [x] **LCH-06**: Full RLS policy audit across all tables with test cases
-- [x] **LCH-07**: Dependabot vulnerability scanning enabled
-- [x] **LCH-08**: OWASP ZAP automated security scan against staging
-- [ ] **LCH-09**: Artillery load test (100 VUs, 5 key endpoints, <2s avg, <1% error)
-- [ ] **LCH-10**: Manual UAT with seeded staging data across all user roles
-- [ ] **LCH-11**: Cross-browser testing (Chrome, Firefox, Safari, Edge, iOS Safari, Android Chrome)
-- [ ] **LCH-12**: Supabase PITR backup verification with test restore
-- [ ] **LCH-13**: Final legal/compliance review (GDPR, terms, privacy, disclaimers)
-- [ ] **LCH-14**: Launch runbook with deployment steps and rollback procedures
-- [ ] **LCH-15**: Internal support runbook (1-page)
-
-**Deferred from Epic 11:**
-- React Native CI/CD (no native apps)
-- AWS infrastructure (Claude API, no self-hosted AI)
-- Paid monitoring (Datadog, New Relic, Logtail)
-- PagerDuty on-call
-- Third-party penetration testing (Month 6)
-- LaunchDarkly / paid feature flags
-- Terraform / IaC
-- Formal DR drills
-
-## v2 Requirements
-
-Deferred to future release. Tracked but not in current roadmap.
-
-### Authentication
-- **AUTH-V2-01**: Magic link passwordless authentication
-- **AUTH-V2-02**: MFA/2FA with TOTP and SMS
-- **AUTH-V2-03**: Apple Sign-In enhancement (biometric prompt)
-
-### Search
-- **SRCH-V2-01**: NLP/semantic natural language search (Claude AI)
-- **SRCH-V2-02**: Match score (0-100) with breakdown by criteria
-- **SRCH-V2-03**: AI-powered personalized recommendations (behavior tracking)
-- **SRCH-V2-04**: Travel time / commute search
-- **SRCH-V2-05**: School catchment area overlay
-- **SRCH-V2-06**: Crime statistics overlay
-- **SRCH-V2-07**: Flood risk zone overlay
-
-### Media
-- **LIST-V2-01**: Video tour upload (up to 5 minutes)
-- **LIST-V2-02**: 360 virtual tour embedding
-- **LIST-V2-03**: Satellite/street view toggle on map
-
-### Communication
-- **COM-V2-01**: Real-time WebSocket messaging
-- **COM-V2-02**: Online/offline presence indicators
-- **COM-V2-03**: Per-message read receipts
-- **COM-V2-04**: Group chat
-- **COM-V2-05**: SMS notifications via Twilio
-
-### AI
-- **AI-V2-01**: AI provider assistant via in-app chat
-- **AI-V2-02**: AI context management / RAG system
-- **AI-V2-03**: Automated Valuation Model (partner with Hometrack)
-- **AI-V2-04**: AI-generated SEO meta descriptions
-
-### Marketplace
-- **MKT-V2-01**: Stripe Connect payments (2.5% commission)
-- **MKT-V2-02**: Escrow for large jobs
-- **MKT-V2-03**: Milestone payments for multi-stage projects
-- **MKT-V2-04**: Invoice generation
-- **MKT-V2-05**: Payment dispute handling
-
-### Platform
-- **PLT-V2-01**: Native mobile apps (iOS/Android) via Capacitor or React Native
-- **PLT-V2-02**: Multi-language support
-- **PLT-V2-03**: Integrated live chat support
+- Real-time mortgage rate scraping — maintenance liability; v3.2 if needed
+- Offer counter-proposal flow — agent dashboard feature, deferred
+- Video viewing (WebRTC) — infrastructure scope, deferred
+- Advanced AI match with full pgvector pipeline — deferred pending Epic 6 completion
 
 ## Out of Scope
 
-Explicitly excluded. Documented to prevent scope creep.
-
 | Feature | Reason |
 |---------|--------|
-| Self-hosted LLM on AWS | Claude API is 280x cheaper at startup scale |
-| Real-time video chat | External tools (Zoom, Teams) solve this |
-| Social feed / timeline | Property portal, not social network |
-| Blockchain property records | No market demand, regulatory complexity |
-| AR/VR property tours | Future tech, high cost |
-| Automated mortgage applications | FCA-regulated activity |
-| Full accounting suite | Xero/QuickBooks exist |
-| Voice search | Low adoption |
-| White-label for agents | Massive theming complexity |
-| Commercial property vertical | Different market |
-| International expansion | UK-only for this build |
-| Native mobile apps at launch | PWA covers mobile; native post-revenue |
-| Twilio SMS/WhatsApp at launch | $3K-5K/mo; use in-app messaging |
-| Custom CMS for help center | Use MDX files or Notion |
-| Custom support ticket system | Use Freshdesk Free |
-| Datadog / New Relic at launch | Free tiers (Sentry, PostHog) sufficient |
+| Native iOS/Android app | Web-first, PWA covers mobile |
+| Real mortgage rate API | Maintenance liability; white-label embed preferred |
+| Solicitor/conveyancer actual booking | Complex legal workflow, v3.2+ |
+| Offer negotiation back-and-forth thread | Agent dashboard feature, not buyer scope |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 to AUTH-19 | Phase 1 | Pending |
-| SRCH-01 to SRCH-12 | Phase 2 | Pending |
-| LIST-01 to LIST-08 | Phase 2 | Pending |
-| DASH-01 to DASH-14 | Phase 3 | Pending |
-| COM-01 to COM-15 | Phase 3 | Pending |
-| MKT-01 to MKT-14 | Phase 4 | Pending |
-| AI-01 to AI-06 | Phase 5 | Pending |
-| FIN-01 to FIN-06 | Phase 5 | Pending |
-| LL-01 to LL-10 | Phase 6 | Pending |
-| MOB-01 to MOB-11 | Phase 7 | Pending |
-| ADM-01 to ADM-10 | Phase 7 | Pending |
-| LCH-01 to LCH-15 | Phase 7 | Pending |
+| FOUND-01 | Phase 8 | Pending |
+| FOUND-02 | Phase 8 | Pending |
+| FOUND-03 | Phase 8 | Pending |
+| FOUND-04 | Phase 8 | Pending |
+| DISC-01 | Phase 9 | Pending |
+| DISC-02 | Phase 9 | Pending |
+| DISC-03 | Phase 9 | Pending |
+| DISC-04 | Phase 9 | Pending |
+| DISC-05 | Phase 9 | Pending |
+| DISC-06 | Phase 9 | Pending |
+| DISC-07 | Phase 9 | Pending |
+| DISC-08 | Phase 9 | Pending |
+| VIEW-01 | Phase 9 | Pending |
+| VIEW-02 | Phase 9 | Pending |
+| VIEW-03 | Phase 9 | Pending |
+| VIEW-04 | Phase 9 | Pending |
+| VIEW-05 | Phase 9 | Pending |
+| OFFR-01 | Phase 10 | Pending |
+| OFFR-02 | Phase 10 | Pending |
+| OFFR-03 | Phase 10 | Pending |
+| OFFR-04 | Phase 10 | Pending |
+| OFFR-05 | Phase 10 | Pending |
+| COMMS-01 | Phase 9 | Pending |
+| COMMS-02 | Phase 9 | Pending |
+| COMMS-03 | Phase 10 | Pending |
+| COMMS-04 | Phase 10 | Pending |
+| COMMS-05 | Phase 10 | Pending |
+| COMMS-06 | Phase 10 | Pending |
+| TOOLS-01 | Phase 10 | Pending |
+| TOOLS-02 | Phase 11 | Pending |
+| TOOLS-03 | Phase 11 | Pending |
+| TOOLS-04 | Phase 11 | Pending |
+| TOOLS-05 | Phase 11 | Pending |
+| TOOLS-06 | Phase 9 | Pending |
+| FIN-01 | Phase 11 | Pending |
+| FIN-02 | Phase 9 | Pending |
+| FIN-03 | Phase 9 | Pending |
+| FIN-04 | Phase 9 | Pending |
+| REF-01 | Phase 11 | Pending |
+| REF-02 | Phase 11 | Pending |
+| REF-03 | Phase 11 | Pending |
 
 **Coverage:**
-- v1 requirements: 139 total
-- Mapped to phases: 139
-- Unmapped: 0
+- v3.1 requirements: 39 total
+- Mapped to phases: 39
+- Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-03-06*
-*Rebuilt: 2026-03-07 (aligned to amended epic specs)*
+*Requirements defined: 2026-03-13*
+*Last updated: 2026-03-13 after initial definition*
