@@ -16,6 +16,7 @@ import Link from "next/link";
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  rememberMe: z.boolean().optional(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -31,6 +32,7 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { rememberMe: false },
   });
 
   async function onSubmit(data: LoginFormValues) {
@@ -96,12 +98,17 @@ export function LoginForm() {
         )}
       </div>
 
-      {/* Forgot Password Link */}
-      <div className="flex justify-end">
-        <Link
-          href="/forgot-password"
-          className="text-sm text-brand-accent hover:underline"
-        >
+      {/* Remember Me & Forgot Password */}
+      <div className="flex items-center justify-between">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            {...register("rememberMe")}
+            className="size-4 rounded border-neutral-300 accent-brand-primary"
+          />
+          <span className="font-body text-sm text-neutral-600">Remember me</span>
+        </label>
+        <Link href="/forgot-password" className="font-body text-sm font-medium text-brand-accent hover:underline">
           Forgot password?
         </Link>
       </div>
