@@ -25,12 +25,14 @@ function AccountSuspendedContent() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <Button asChild size="lg">
-          <a href="mailto:support@britestate.co.uk">Contact Support</a>
-        </Button>
-        <Button variant="outline" size="lg" asChild>
-          <a href="mailto:appeals@britestate.co.uk">Appeal This Decision</a>
-        </Button>
+        <a href="mailto:support@britestate.co.uk">
+          <Button size="lg">Contact Support</Button>
+        </a>
+        <a href="mailto:appeals@britestate.co.uk">
+          <Button variant="outline" size="lg">
+            Appeal This Decision
+          </Button>
+        </a>
       </div>
     </div>
   );
