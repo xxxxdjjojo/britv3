@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 17-service-provider-public-profiles 17-03-PLAN.md
-last_updated: "2026-03-13T23:21:32.046Z"
+stopped_at: Completed 17-service-provider-public-profiles 17-04-PLAN.md
+last_updated: "2026-03-13T23:36:09.730Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 110
-  completed_plans: 62
+  completed_plans: 63
   percent: 49
 ---
 
@@ -62,6 +62,7 @@ Progress: [█████░░░░░] 49%
 | Phase 14-landlord-dashboard P04 | 28 | 2 tasks | 10 files |
 | Phase 14-landlord-dashboard P08 | 32 | 2 tasks | 11 files |
 | Phase 17-service-provider-public-profiles P03 | 46 | 2 tasks | 11 files |
+| Phase 17-service-provider-public-profiles P04 | 18 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,8 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: ServicesTabWithModal uses event delegation on data-quote-service attribute to open QuoteModal — avoids passing client state setter as prop to Server Component
 - [Phase 17-service-provider-public-profiles]: QuoteModal uses render-prop pattern for modal factory so ServicesTabWithModal stays decoupled from specific modal implementation
 - [Phase 17-service-provider-public-profiles]: PortfolioLightbox is self-contained (individual Dialog per item) — no shared lightbox state, cleaner component boundary
+- [Phase 17-service-provider-public-profiles]: AgentPublicProfile.agency nested object used for agency name/logo/address — plan interface had flat fields but actual 17-01 type has discriminated agency sub-object
+- [Phase 17-service-provider-public-profiles]: buildAgentJsonLd uses RealEstateAgent @type in jsonld.ts — additive export alongside buildProviderJsonLd (LocalBusiness @type)
 
 ### Pending Todos
 
@@ -117,6 +120,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:21:32.035Z
-Stopped at: Completed 17-service-provider-public-profiles 17-03-PLAN.md
+Last session: 2026-03-13T23:36:09.700Z
+Stopped at: Completed 17-service-provider-public-profiles 17-04-PLAN.md
 Resume file: None
