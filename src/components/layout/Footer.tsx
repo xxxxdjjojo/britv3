@@ -36,6 +36,18 @@ const LEGAL_LINKS = [
   { href: "/complaints", label: "Complaints" },
 ] as const;
 
+const AREA_GUIDE_LINKS = [
+  { href: "/areas/london", label: "London" },
+  { href: "/areas/manchester", label: "Manchester" },
+  { href: "/areas/birmingham", label: "Birmingham" },
+  { href: "/areas/bristol", label: "Bristol" },
+  { href: "/areas/leeds", label: "Leeds" },
+  { href: "/areas/edinburgh", label: "Edinburgh" },
+  { href: "/areas/oxford", label: "Oxford" },
+  { href: "/areas/cambridge", label: "Cambridge" },
+  { href: "/areas", label: "Browse all areas →" },
+] as const;
+
 const SOCIAL_LINKS = [
   { href: "https://twitter.com/britestate", label: "X (Twitter)", Icon: Twitter },
   { href: "https://linkedin.com/company/britestate", label: "LinkedIn", Icon: Linkedin },
@@ -74,8 +86,8 @@ export function Footer() {
   return (
     <footer className="bg-neutral-900 pt-16 pb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Main grid — 5 columns desktop */}
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8 mb-12">
+        {/* Main grid — 6 columns desktop */}
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-6 lg:gap-8 mb-12">
           {/* Col 1: Brand */}
           <div className="lg:col-span-1 flex flex-col gap-5">
             <Logo size="md" />
@@ -109,6 +121,9 @@ export function Footer() {
 
           {/* Col 5: Legal */}
           <FooterLinkColumn title="Legal" links={LEGAL_LINKS} />
+
+          {/* Col 6: Area Guides */}
+          <FooterLinkColumn title="Area Guides" links={AREA_GUIDE_LINKS} />
         </div>
 
         {/* Divider */}
