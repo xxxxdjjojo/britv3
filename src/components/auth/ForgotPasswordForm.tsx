@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Loader2, CheckCircle } from "lucide-react";
+import { Mail, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -19,7 +19,9 @@ type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 export function ForgotPasswordForm() {
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  const [cooldown, setCooldown] = useState(0);
 
   const {
     register,
@@ -29,6 +31,12 @@ export function ForgotPasswordForm() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   async function onSubmit(data: ForgotPasswordFormValues) {
     setError(null);
     const { error: authError } = await resetPassword(data.email);
@@ -36,26 +44,40 @@ export function ForgotPasswordForm() {
       setError(authError.message);
       return;
     }
-    setSuccess(true);
+    setSubmittedEmail(data.email);
+    setSubmitted(true);
+    setCooldown(60);
   }
 
-  if (success) {
+  if (submitted) {
     return (
       <div className="space-y-4 text-center">
-        <div className="flex justify-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-brand-primary-lighter">
-            <Mail className="size-8 text-brand-primary" />
-          </div>
+        <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-green-50">
+          <Mail className="size-6 text-brand-primary" />
         </div>
         <div>
-          <h2 className="font-heading text-lg font-semibold text-neutral-900">
-            Check your email
-          </h2>
+          <h3 className="font-heading text-lg font-semibold text-neutral-900">Check your inbox</h3>
           <p className="mt-1 font-body text-sm text-neutral-500">
-            We sent a password reset link to your email address. Click the link
-            to set a new password.
+            We sent a reset link to{" "}
+            <strong className="text-neutral-900">{submittedEmail}</strong>
           </p>
         </div>
+        <p className="font-body text-xs text-neutral-400">
+          {cooldown > 0 ? (
+            `Resend available in ${cooldown}s`
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setSubmitted(false);
+                setCooldown(0);
+              }}
+              className="text-brand-accent hover:underline"
+            >
+              Didn&apos;t receive it? Try again
+            </button>
+          )}
+        </p>
       </div>
     );
   }

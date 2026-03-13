@@ -81,6 +81,31 @@ export function ResetPasswordForm() {
           <p className="text-xs text-error">{errors.password.message}</p>
         )}
         <PasswordStrengthMeter password={password} />
+        {/* Requirements checklist */}
+        {password && (
+          <ul className="space-y-1">
+            {[
+              { label: "At least 8 characters", met: password.length >= 8 },
+              { label: "One uppercase letter", met: /[A-Z]/.test(password) },
+              { label: "One number", met: /[0-9]/.test(password) },
+            ].map((req) => (
+              <li key={req.label} className="flex items-center gap-2 text-xs">
+                <span
+                  className={`inline-block size-3.5 rounded-full text-center leading-3.5 ${
+                    req.met
+                      ? "bg-brand-primary text-white"
+                      : "border border-neutral-300"
+                  }`}
+                >
+                  {req.met && "✓"}
+                </span>
+                <span className={req.met ? "text-neutral-700" : "text-neutral-400"}>
+                  {req.label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Confirm Password */}
