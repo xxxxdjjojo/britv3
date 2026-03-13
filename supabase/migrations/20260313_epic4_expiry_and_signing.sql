@@ -1,6 +1,10 @@
 -- =============================================================================
 -- Epic 4 Hardening: pg_cron expiry jobs + quote signing column
 -- =============================================================================
+-- PREREQUISITE: pg_cron must be enabled in Supabase Dashboard before running
+-- this migration: Dashboard → Database → Extensions → pg_cron → Enable.
+-- If pg_cron is not enabled, the cron.schedule() calls below will fail and
+-- the migration will be rolled back (including the quote_signature column).
 
 -- ---------------------------------------------------------------------------
 -- Extensions
@@ -57,17 +61,12 @@ $$;
 -- ---------------------------------------------------------------------------
 -- Schedule expiry jobs via pg_cron
 -- ---------------------------------------------------------------------------
-SELECT cron.schedule(
-  'expire-stale-rfqs',
-  '0 1 * * *',
-  'SELECT expire_stale_rfqs()'
-);
+-- Idempotent scheduling: unschedule existing job (if any) before creating
+SELECT cron.unschedule('expire-stale-rfqs') FROM cron.job WHERE jobname = 'expire-stale-rfqs';
+SELECT cron.schedule('expire-stale-rfqs', '0 1 * * *', 'SELECT expire_stale_rfqs()');
 
-SELECT cron.schedule(
-  'expire-stale-quotes',
-  '30 * * * *',
-  'SELECT expire_stale_quotes()'
-);
+SELECT cron.unschedule('expire-stale-quotes') FROM cron.job WHERE jobname = 'expire-stale-quotes';
+SELECT cron.schedule('expire-stale-quotes', '30 * * * *', 'SELECT expire_stale_quotes()');
 
 -- ---------------------------------------------------------------------------
 -- Quote signature column
