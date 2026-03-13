@@ -5,7 +5,7 @@
  * All functions are pure — no Supabase calls, no "use client".
  */
 
-import type { ServiceProviderPublicProfile } from "@/types/providers";
+import type { ServiceProviderPublicProfile, AgentPublicProfile, AgentPublicStats } from "@/types/providers";
 
 /**
  * Builds a schema.org LocalBusiness JSON-LD object for a service provider.
@@ -47,6 +47,60 @@ export function buildProviderJsonLd(
       reviewCount: provider.provider_rating_stats.total_reviews,
       bestRating: "5",
       worstRating: "1",
+    };
+  }
+
+  return jsonLd;
+}
+
+/**
+ * Builds a schema.org RealEstateAgent JSON-LD object for an estate agent profile.
+ *
+ * @param agency - The fetched agent profile (with embedded agency data)
+ * @param stats - Aggregated public stats from get_agent_public_stats RPC
+ * @returns A JSON-LD object ready to be stringified into a <script> tag
+ */
+export function buildAgentJsonLd(
+  agency: AgentPublicProfile,
+  stats: AgentPublicStats,
+): Record<string, unknown> {
+  const agencyName = agency.agency?.name ?? agency.display_name;
+  const url = `https://britestate.co.uk/agents/${agency.slug}`;
+
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    name: agencyName,
+    url,
+  };
+
+  if (agency.bio) {
+    jsonLd.description = agency.bio;
+  }
+
+  if (agency.phone) {
+    jsonLd.telephone = agency.phone;
+  }
+
+  const agencyAddress = agency.agency?.address ?? null;
+  if (agencyAddress) {
+    jsonLd.address = {
+      "@type": "PostalAddress",
+      streetAddress: agencyAddress,
+      addressCountry: "GB",
+    };
+  }
+
+  if (agency.agency?.logo_url) {
+    jsonLd.image = agency.agency.logo_url;
+  }
+
+  if (stats.avg_rating != null && stats.total_reviews > 0) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: stats.avg_rating,
+      reviewCount: stats.total_reviews,
+      bestRating: "5",
     };
   }
 
