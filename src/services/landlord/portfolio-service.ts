@@ -4,6 +4,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PortfolioKPIs } from "@/types/landlord";
 
 /** Summary row returned by getPortfolio */
 export type PortfolioProperty = Readonly<{
@@ -164,6 +165,54 @@ export async function getPortfolio(
       expiring_documents_count: expiringDocsCount,
     };
   });
+}
+
+/**
+ * Fetch KPI aggregates for the landlord's entire portfolio.
+ * Calls the get_landlord_portfolio_kpis RPC (SECURITY DEFINER, aggregates across tables).
+ */
+export async function getPortfolioKPIs(
+  supabase: SupabaseClient,
+): Promise<PortfolioKPIs> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Authentication required");
+  }
+
+  const { data, error } = await supabase.rpc("get_landlord_portfolio_kpis", {
+    p_landlord_id: user.id,
+  });
+
+  if (error) {
+    throw new Error(`Failed to fetch portfolio KPIs: ${error.message}`);
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+
+  return {
+    total_properties: result?.total_properties ?? 0,
+    occupied: result?.occupied ?? 0,
+    vacant: result?.vacant ?? 0,
+    occupancy_rate: result?.occupancy_rate ?? 0,
+    total_monthly_rent: result?.total_monthly_rent ?? 0,
+    compliance_alerts: result?.compliance_alerts ?? 0,
+    open_maintenance: result?.open_maintenance ?? 0,
+    expired_compliance: result?.expired_compliance ?? 0,
+  };
+}
+
+/**
+ * Fetch all rental properties for the authenticated landlord with active tenancy info.
+ * Alias of getPortfolio for semantic clarity in KPI/dashboard contexts.
+ */
+export async function getPortfolioProperties(
+  supabase: SupabaseClient,
+): Promise<PortfolioProperty[]> {
+  return getPortfolio(supabase);
 }
 
 /**

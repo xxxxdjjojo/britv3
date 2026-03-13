@@ -4,7 +4,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { FinancialEntry, PropertyFinancialSummary } from "@/types/landlord";
+import type { FinancialEntry, PropertyFinancialSummary, RentCollectionGroup, TaxSummary } from "@/types/landlord";
 import { financialEntrySchema } from "@/types/landlord";
 import { validateFileType } from "@/lib/file-validation";
 import { compressReceipt } from "@/lib/image-compression";
@@ -230,6 +230,116 @@ export async function getRentPaymentsForTenancy(
   }
 
   return (data ?? []) as FinancialEntry[];
+}
+
+// -- Phase 14 additions -------------------------------------------------------
+
+/**
+ * Fetch rent collection grouped by payment_status for the authenticated landlord.
+ * Queries financial_entries WHERE category = 'rent' (not the tenancies table).
+ * Groups entries as paid / partial / overdue.
+ */
+export async function getRentCollection(
+  supabase: SupabaseClient,
+  propertyId?: string,
+): Promise<RentCollectionGroup> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Authentication required");
+  }
+
+  let query = supabase
+    .from("financial_entries")
+    .select("*")
+    .eq("category", "rent")
+    .order("entry_date", { ascending: false });
+
+  if (propertyId) {
+    query = query.eq("property_id", propertyId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Failed to fetch rent collection: ${error.message}`);
+  }
+
+  const entries = (data ?? []) as FinancialEntry[];
+
+  const result: RentCollectionGroup = { paid: [], partial: [], overdue: [] };
+
+  for (const entry of entries) {
+    const item = {
+      entry,
+      tenant_name: "",
+      property_address: "",
+    };
+
+    const status = entry.payment_status;
+    if (status === "paid") {
+      result.paid.push(item);
+    } else if (status === "partial") {
+      result.partial.push(item);
+    } else if (status === "overdue") {
+      result.overdue.push(item);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Fetch tax summary for a UK tax year (Apr 6 – Apr 5).
+ * taxYear: the year the tax year starts in (e.g., 2025 means Apr 6 2025 – Apr 5 2026).
+ */
+export async function getTaxSummary(
+  supabase: SupabaseClient,
+  taxYear: number,
+): Promise<TaxSummary> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Authentication required");
+  }
+
+  const startDate = `${taxYear}-04-06`;
+  const endDate = `${taxYear + 1}-04-06`; // exclusive upper bound
+
+  const { data, error } = await supabase
+    .from("financial_entries")
+    .select("*")
+    .gte("entry_date", startDate)
+    .lt("entry_date", endDate)
+    .order("entry_date", { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to fetch tax summary: ${error.message}`);
+  }
+
+  const entries = (data ?? []) as FinancialEntry[];
+
+  let income = 0;
+  let expenses = 0;
+
+  for (const entry of entries) {
+    if (entry.type === "income") {
+      income += entry.amount;
+    } else if (entry.type === "expense") {
+      expenses += entry.amount;
+    }
+  }
+
+  return {
+    income,
+    expenses,
+    net: income - expenses,
+    tax_year: `${taxYear}/${String(taxYear + 1).slice(2)}`,
+  };
 }
 
 // -- Period preset helpers ----------------------------------------------------

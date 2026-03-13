@@ -4,7 +4,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { PropertyDocument, DocumentCategory } from "@/types/landlord";
+import type { PropertyDocument, DocumentCategory, ComplianceDocument } from "@/types/landlord";
 import { documentUploadSchema } from "@/types/landlord";
 import { validateFileType, MAX_FILE_SIZES } from "@/lib/file-validation";
 
@@ -188,6 +188,77 @@ export async function getExpiringDocuments(
   }
 
   return (data ?? []) as PropertyDocument[];
+}
+
+// -- Phase 14 additions -------------------------------------------------------
+
+const COMPLIANCE_CATEGORIES = ["gas_safety", "electrical_eicr", "epc"] as const;
+
+/**
+ * Fetch all compliance documents for the landlord's portfolio, computing status.
+ * Queries property_documents for gas_safety, electrical_eicr, epc categories.
+ * Status: expired (expiry_date < today), expiring_soon (< today+30d), valid.
+ */
+export async function getComplianceSummary(
+  supabase: SupabaseClient,
+): Promise<ComplianceDocument[]> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Authentication required");
+  }
+
+  const { data, error } = await supabase
+    .from("property_documents")
+    .select(`
+      id,
+      category,
+      expiry_date,
+      property:listings!inner(address_line_1, city, postcode)
+    `)
+    .in("category", COMPLIANCE_CATEGORIES)
+    .not("expiry_date", "is", null)
+    .order("expiry_date", { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch compliance summary: ${error.message}`);
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const thirtyDaysLater = new Date(today);
+  thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
+
+  return (data ?? []).map((doc) => {
+    const expiryDate = new Date(doc.expiry_date as string);
+    expiryDate.setHours(0, 0, 0, 0);
+
+    let status: ComplianceDocument["status"];
+    if (expiryDate < today) {
+      status = "expired";
+    } else if (expiryDate <= thirtyDaysLater) {
+      status = "expiring_soon";
+    } else {
+      status = "valid";
+    }
+
+    const property = (doc.property ?? {}) as { address_line_1: string; city: string; postcode: string };
+
+    return {
+      id: doc.id as string,
+      category: doc.category as string,
+      expiry_date: doc.expiry_date as string,
+      status,
+      property: {
+        address_line_1: property.address_line_1 ?? "",
+        city: property.city ?? "",
+        postcode: property.postcode ?? "",
+      },
+    };
+  });
 }
 
 /**

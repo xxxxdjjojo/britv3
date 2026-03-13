@@ -219,3 +219,126 @@ export type TenancyFormData = z.infer<typeof tenancySchema>;
 export type MaintenanceRequestFormData = z.input<typeof maintenanceRequestSchema>;
 export type FinancialEntryFormData = z.infer<typeof financialEntrySchema>;
 export type DocumentUploadFormData = z.infer<typeof documentUploadSchema>;
+
+// -- Phase 14 new types (tenant applications, deposits, inventory, notices) ---
+
+export type TenantApplicationStatus =
+  | "received"
+  | "shortlisted"
+  | "referencing"
+  | "approved"
+  | "rejected"
+  | "withdrawn";
+
+export type CreditCheckStatus = "pending" | "passed" | "failed" | "not_run";
+export type ReferencesStatus = "pending" | "received" | "verified";
+export type DepositScheme = "TDS" | "DPS" | "mydeposits" | "other";
+export type DepositStatus = "pending" | "registered" | "returned" | "disputed";
+export type InventoryType = "check_in" | "check_out";
+export type NoticeType = "section_21" | "section_8";
+export type NoticeStatus = "draft" | "generated" | "served";
+
+export type TenantApplication = {
+  id: string;
+  property_id: string;
+  landlord_id: string;
+  applicant_user_id: string | null;
+  applicant_name: string;
+  applicant_email: string;
+  status: TenantApplicationStatus;
+  monthly_income: number | null;
+  employment_status: string | null;
+  credit_check_status: CreditCheckStatus | null;
+  references_status: ReferencesStatus | null;
+  notes: string | null;
+  rejection_reason: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DepositRegistration = {
+  id: string;
+  tenancy_id: string;
+  landlord_id: string;
+  amount: number;
+  scheme: DepositScheme;
+  scheme_reference: string | null;
+  registration_date: string | null;
+  prescribed_info_sent_date: string | null;
+  status: DepositStatus;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type InventoryReport = {
+  id: string;
+  property_id: string;
+  tenancy_id: string | null;
+  landlord_id: string;
+  type: InventoryType;
+  status: "draft" | "complete" | "signed";
+  rooms: Array<{ name: string; condition: string; notes: string }>;
+  notes: string | null;
+  photo_urls: string[];
+  completed_at: string | null;
+  created_at: string;
+};
+
+export type LegalNotice = {
+  id: string;
+  property_id: string;
+  tenancy_id: string | null;
+  landlord_id: string;
+  notice_type: NoticeType;
+  possession_date: string | null;
+  deposit_scheme_reference: string | null;
+  epc_provided: boolean | null;
+  gas_safety_provided: boolean | null;
+  grounds: string[] | null;
+  arrears_amount: number | null;
+  served_date: string | null;
+  pdf_storage_path: string | null;
+  status: NoticeStatus;
+  created_at: string;
+};
+
+export type PortfolioKPIs = {
+  total_properties: number;
+  occupied: number;
+  vacant: number;
+  occupancy_rate: number;
+  total_monthly_rent: number;
+  compliance_alerts: number;
+  open_maintenance: number;
+  expired_compliance: number;
+};
+
+export type RentCollectionEntry = {
+  entry: FinancialEntry;
+  tenant_name: string;
+  property_address: string;
+};
+
+export type RentCollectionGroup = {
+  paid: RentCollectionEntry[];
+  partial: RentCollectionEntry[];
+  overdue: RentCollectionEntry[];
+};
+
+export type TaxSummary = {
+  income: number;
+  expenses: number;
+  net: number;
+  tax_year: string; // e.g. "2025/26"
+};
+
+export type ComplianceStatus = "expired" | "expiring_soon" | "valid";
+
+export type ComplianceDocument = {
+  id: string;
+  category: string;
+  expiry_date: string;
+  status: ComplianceStatus;
+  property: { address_line_1: string; city: string; postcode: string };
+};
