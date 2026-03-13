@@ -218,7 +218,7 @@ Plans:
   2. A homebuyer navigating to /dashboard/landlord/rent-collection is redirected to their own dashboard, not served landlord data
   3. Every buyer dashboard Server Component calls supabase.auth.getUser() server-side and returns 401 if not authenticated, independent of middleware
   4. The buyer-documents Supabase Storage bucket is private; no path returns a public URL; all access uses server-generated signed URLs
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 08-01-PLAN.md -- DB migration: 10 tables, RLS policies, indexes, offer state machine constraints, viewing slot-booking RPC; supabase gen types
@@ -235,7 +235,7 @@ Plans:
   4. Saved Searches page shows real saved searches with editable criteria, deletable entries, and per-search alert frequency toggle (instant/daily/weekly/off)
   5. Messages Inbox lists real conversations using the existing Epic 5 messaging infrastructure with unread count badges; Message Thread shows real message history
   6. Browse Mortgage Brokers, Conveyancers, and Surveyors pages return real provider results filtered from the Epic 4 marketplace by category parameter
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 09-01-PLAN.md -- Service layer: dashboard-service extensions (real stat counts), recommendations-service (SQL-based), saved-properties-service wiring
@@ -254,7 +254,7 @@ Plans:
   4. Offer status progresses through the 7-stage UK conveyancing pipeline (Offer Submitted through Completion) with server-side enforced transitions and an audit trail in offer_status_history; user can withdraw a pending offer
   5. User can upload documents (ID, proof of funds, AIP letter) using TUS resumable upload with a visible progress indicator; documents are stored in the private bucket with ownership-enforced RLS
   6. Document previews load via 1-hour signed URLs; document status (uploaded/verified/pending review) is visible; moving checklist items are pre-populated and update their checked state as offer stage advances
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 10-01-PLAN.md -- Service layer: viewings-service (slot RPC, reschedule, cancel), email confirmations for viewing state changes
@@ -273,7 +273,7 @@ Plans:
   2. AI Match results page shows properties ranked by match score with match reason tooltip chips explaining why each property scored as it did
   3. Results are served from the ai_match_results cache (24-hour TTL) on page load — the Claude API is never called on a plain page visit, only on explicit user-triggered refresh (rate-limited to 3 per day)
   4. When pgvector embeddings are unavailable, the page falls back to SQL-based heuristic scoring (preference field count matches) and still shows ranked results with reasons
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 11-01-PLAN.md -- AI match service: SQL-based scoring query, result caching in ai_match_results (24h TTL), Upstash rate limiter for refresh endpoint, pgvector fallback detection
@@ -288,7 +288,7 @@ Plans:
   2. User can generate a unique referral link backed by a nanoid code stored in the referral_codes table; the link is copyable from the Referral Tracker page
   3. Referral Tracker page shows total signups, and per-referral status (pending/converted), all drawn from real referral_conversions rows
   4. New user signups via a referral link record the referring user ID in referral_conversions with correct attribution
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 12-01-PLAN.md -- Referral service: nanoid code generation, referral_codes insert/fetch, referral_conversions recording on signup, referral tracker API route
@@ -435,7 +435,7 @@ Plans:
   13. Analytics page shows profile views, enquiry rate, conversion funnel, earnings trend via Recharts
   14. Subscription & Billing integrates with Stripe for plan management and invoice history
   15. Boost/Promote lets providers purchase featured placement; Referral Programme tracks referred providers
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 16-01-PLAN.md -- DB schema: provider_services, provider_references, provider_badges, provider_portfolio_items, provider_invoices, stripe_connect_accounts, provider_boosts, provider_referrals, provider_service_areas; TypeScript types; RLS policies; Supabase migration
@@ -470,7 +470,7 @@ Plans:
   11. Compare Providers modal (up to 3 side-by-side) renders a comparison table from real provider data
   12. All routes are public (no auth required); pages use SSR (generateMetadata + page Server Components) for search engine indexing
   13. Localized SEO category pages (/services/plumbers/london) are statically generated with ISR and show real provider listings
-**Plans**: TBD
+**Plans**: 12 plans
 
 Plans:
 - [ ] 17-01-PLAN.md -- DB: provider_public_profiles materialized view + public read RLS policies; public-profile-service (fetch by slug, reviews pagination, portfolio, services, listings); SEO metadata generators
