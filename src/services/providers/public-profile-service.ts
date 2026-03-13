@@ -336,7 +336,7 @@ export async function fetchAgentTeam(
   }
 
   return data.map((member) => {
-    const profile = member.profiles as { full_name: string | null; avatar_url: string | null } | null;
+    const profile = (Array.isArray(member.profiles) ? member.profiles[0] : member.profiles) as { full_name: string | null; avatar_url: string | null } | null;
     return {
       id: member.id as string,
       user_id: member.user_id as string,

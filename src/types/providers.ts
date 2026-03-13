@@ -134,6 +134,8 @@ export type PublicReview = {
   value_rating: number | null;
   title: string | null;
   body: string | null;
+  provider_response: string | null;
+  provider_response_at: string | null;
   moderation_status: "approved" | "pending" | "rejected";
   deleted_at: string | null;
   created_at: string;

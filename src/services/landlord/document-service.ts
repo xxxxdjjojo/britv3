@@ -245,7 +245,7 @@ export async function getComplianceSummary(
       status = "valid";
     }
 
-    const property = (doc.property ?? {}) as { address_line_1: string; city: string; postcode: string };
+    const property = (doc.property as { address_line_1: string; city: string; postcode: string } | null) ?? { address_line_1: "", city: "", postcode: "" };
 
     return {
       id: doc.id as string,
