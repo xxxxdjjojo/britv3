@@ -65,7 +65,7 @@ export default function LegalRightToc({ sections }: LegalRightTocProps) {
                     ? "block border-l-2 border-primary pl-3 text-sm font-medium text-primary"
                     : "block border-l-2 border-transparent pl-3 text-sm text-neutral-500 hover:text-primary transition-colors"
                 }
-                aria-current={isActive ? "true" : undefined}
+                aria-current={isActive ? "location" : undefined}
               >
                 {label}
               </a>
