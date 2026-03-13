@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
+import { GdprRequestForm } from "@/components/legal/GdprRequestForm";
 
 const LAST_UPDATED = "13 March 2026";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
@@ -101,10 +102,7 @@ export default function GdprRightsPage() {
           <p className="mb-6 text-neutral-600">
             Complete the form below to exercise any of your data subject rights. We will respond within 30 calendar days.
           </p>
-          {/* GdprRequestForm — added in Task 11 */}
-          <div className="mt-4 p-6 bg-neutral-50 rounded-xl border border-neutral-200">
-            <p className="text-sm text-neutral-500">Request form loading&hellip;</p>
-          </div>
+          <GdprRequestForm />
         </section>
 
         <section id="response-timelines">
