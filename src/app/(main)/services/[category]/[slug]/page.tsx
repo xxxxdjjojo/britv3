@@ -2,10 +2,10 @@
  * Tradesperson Public Profile Page
  *
  * SSR page at /services/[category]/[slug] that renders the full provider
- * profile shell: hero, tab navigation island, sidebar CTA, and JSON-LD.
+ * profile: hero, tab navigation island, sidebar CTA, and JSON-LD.
  *
- * Tab content panels (services, portfolio, reviews) are placeholders until
- * Plan 17-03 fills them in.
+ * Tab content is provided by real Server Component tab panels (17-03):
+ * ReviewsTab, PortfolioTab, ServicesTabWithModal + ServicesTab, QuoteModal.
  */
 
 import type { Metadata } from "next";
@@ -21,6 +21,11 @@ import { SLUG_TO_CATEGORY } from "@/lib/providers/category-slugs";
 import ProviderHero from "@/components/providers/ProviderHero";
 import ProviderSidebar from "@/components/providers/ProviderSidebar";
 import StarRatingBreakdown from "@/components/providers/StarRatingBreakdown";
+import { ReviewsTab } from "@/components/providers/ReviewsTab";
+import { PortfolioTab } from "@/components/providers/PortfolioTab";
+import { ServicesTab } from "@/components/providers/ServicesTab";
+import { ServicesTabWithModal } from "@/components/providers/ServicesTabWithModal";
+import { QuoteModal } from "@/components/providers/QuoteModal";
 import { ProfileTabs } from "./ProfileTabs";
 
 type Params = { params: Promise<{ category: string; slug: string }> };
@@ -58,12 +63,15 @@ export default async function TradespersonProfilePage({ params }: Params) {
 
   const jsonLd = buildProviderJsonLd(provider, category);
 
-  // Fetch initial data for the default tab (about) — uses provider.id (service_provider_details PK)
+  // Fetch initial data for all tabs in parallel
   const [reviews, portfolio, services] = await Promise.all([
     fetchProviderReviews(provider.id, 1),
     fetchPortfolioItems(provider.id),
     fetchProviderServices(provider.id),
   ]);
+
+  // Service names for the QuoteModal dropdown
+  const serviceNames = services.map((s) => s.name);
 
   return (
     <>
@@ -97,7 +105,6 @@ export default async function TradespersonProfilePage({ params }: Params) {
                     {/* Recent reviews preview */}
                     <section>
                       <h3 className="text-xl font-bold mb-4">Recent Reviews</h3>
-                      {/* Placeholder — ReviewsTab renders full list in 17-03 */}
                       <p className="text-slate-500 text-sm">
                         See Reviews tab for all {reviews.total} reviews.
                       </p>
@@ -105,28 +112,37 @@ export default async function TradespersonProfilePage({ params }: Params) {
                   </div>
                 }
                 services={
-                  <div className="text-slate-500 text-sm">
-                    Services &amp; Pricing — coming in Plan 17-03
-                    {services.length > 0 && (
-                      <p className="mt-2">({services.length} services available)</p>
+                  <ServicesTabWithModal
+                    modal={({ open, initialService, onOpenChange }) => (
+                      <QuoteModal
+                        providerId={provider.id}
+                        providerName={provider.business_name}
+                        services={serviceNames}
+                        open={open}
+                        initialService={initialService}
+                        onOpenChange={onOpenChange}
+                      />
                     )}
-                  </div>
+                  >
+                    <ServicesTab
+                      services={services}
+                      providerId={provider.id}
+                    />
+                  </ServicesTabWithModal>
                 }
                 portfolio={
-                  <div className="text-slate-500 text-sm">
-                    Portfolio — coming in Plan 17-03
-                    {portfolio.length > 0 && (
-                      <p className="mt-2">({portfolio.length} portfolio items)</p>
-                    )}
-                  </div>
+                  <PortfolioTab
+                    items={portfolio}
+                    providerName={provider.business_name}
+                  />
                 }
                 reviews={
-                  <div className="text-slate-500 text-sm">
-                    Reviews — coming in Plan 17-03
-                    {reviews.total > 0 && (
-                      <p className="mt-2">({reviews.total} reviews)</p>
-                    )}
-                  </div>
+                  <ReviewsTab
+                    reviews={reviews.reviews}
+                    total={reviews.total}
+                    providerName={provider.business_name}
+                    providerId={provider.id}
+                  />
                 }
               />
             </div>
