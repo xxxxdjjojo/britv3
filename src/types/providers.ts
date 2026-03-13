@@ -144,6 +144,15 @@ export type PublicReview = {
 };
 
 // ---------------------------------------------------------------------------
+// AgentPublicReview — PublicReview extended with optional property context
+// ---------------------------------------------------------------------------
+
+export type AgentPublicReview = PublicReview & {
+  listing_address?: string | null;
+  listing_type?: "sale" | "let" | null;
+};
+
+// ---------------------------------------------------------------------------
 // AgentPublicStats — matches get_agent_public_stats() RPC return shape
 // ---------------------------------------------------------------------------
 

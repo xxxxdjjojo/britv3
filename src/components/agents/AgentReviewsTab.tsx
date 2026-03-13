@@ -1,14 +1,28 @@
 /**
- * ReviewsTab — Server Component
+ * AgentReviewsTab — Server Component
  *
- * Renders a paginated list of approved reviews for a tradesperson's public
- * profile. Displays star ratings, reviewer initials/avatar, relative date,
- * and optional provider response block.
+ * Renders paginated approved reviews for an estate agent public profile.
+ * Identical layout to the tradesperson ReviewsTab with one addition:
+ * if a review includes listing context (address + type), a property pill
+ * is rendered above the review body.
  */
 
-import { Star } from "lucide-react";
+import { Star, Home } from "lucide-react";
 import type { PublicReview } from "@/types/providers";
 import { formatRelativeDate } from "@/lib/utils/date";
+
+// AgentPublicReview extends PublicReview with optional property context fields.
+// We inline the type here to avoid a circular import — also exported for consumers.
+export type AgentPublicReview = PublicReview & {
+  listing_address?: string | null;
+  listing_type?: "sale" | "let" | null;
+};
+
+type AgentReviewsTabProps = Readonly<{
+  reviews: AgentPublicReview[];
+  total: number;
+  agencyName: string;
+}>;
 
 function StarRow({ rating }: Readonly<{ rating: number }>) {
   return (
@@ -56,12 +70,35 @@ function ReviewerAvatar({
   );
 }
 
-export function ReviewsTab({
+function PropertyContextPill({
+  address,
+  listingType,
+}: Readonly<{ address: string; listingType?: "sale" | "let" | null }>) {
+  return (
+    <div className="flex items-center gap-2 mb-2">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
+        <Home className="w-3 h-3" />
+        {address}
+      </span>
+      {listingType === "sale" && (
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+          Sale
+        </span>
+      )}
+      {listingType === "let" && (
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+          Let
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function AgentReviewsTab({
   reviews,
   total,
-  providerName,
-  providerId,
-}: ReviewsTabProps) {
+  agencyName,
+}: AgentReviewsTabProps) {
   return (
     <div className="space-y-6">
       {/* Section header */}
@@ -78,7 +115,7 @@ export function ReviewsTab({
       {reviews.length === 0 ? (
         <div className="p-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            No reviews yet. Be the first to review {providerName}!
+            No reviews yet for {agencyName}
           </p>
         </div>
       ) : (
@@ -108,6 +145,14 @@ export function ReviewsTab({
                 <StarRow rating={review.overall_rating} />
               </div>
 
+              {/* Property context pill (agent-specific) */}
+              {review.listing_address && (
+                <PropertyContextPill
+                  address={review.listing_address}
+                  listingType={review.listing_type}
+                />
+              )}
+
               {/* Title */}
               {review.title && (
                 <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm mb-1">
@@ -122,11 +167,11 @@ export function ReviewsTab({
                 </p>
               )}
 
-              {/* Provider response */}
+              {/* Agency response */}
               {review.provider_response && (
                 <div className="ml-8 mt-4 p-4 bg-[#1B4D3E]/5 dark:bg-[#1B4D3E]/10 rounded-lg border-l-4 border-[#1B4D3E]">
                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Response from {providerName}:
+                    Response from {agencyName}:
                   </p>
                   <p className="text-sm text-slate-600 dark:text-slate-400 italic leading-relaxed">
                     {review.provider_response}
@@ -137,16 +182,6 @@ export function ReviewsTab({
           ))}
         </div>
       )}
-
-      {/* Write a Review CTA */}
-      <div className="pt-2">
-        <a
-          href={`/reviews/new?provider=${providerId}`}
-          className="text-[#2563EB] font-semibold text-sm hover:underline"
-        >
-          Write a Review &rarr;
-        </a>
-      </div>
     </div>
   );
 }
