@@ -334,7 +334,7 @@ Plans:
   7. Sale Progression Tracker shows 8-stage UK conveyancing pipeline with current stage, expected dates, and key documents
   8. Instant Valuation returns AI estimate with comparable properties drawn from Land Registry data
   9. Find an Estate Agent and Agent Comparison pages show real agents filterable by area, fees, ratings
-**Plans**: TBD
+**Plans**: 10 plans
 
 Plans:
 - [ ] 13-01-PLAN.md -- DB schema: seller listings tables, offers, viewings, sale progression, agent enquiries; TypeScript types; RLS policies
@@ -452,3 +452,4 @@ v3.4 phases: 15 (depends on Phase 3 + Phase 2 + Phase 4)
 *Phase 7 planned: 2026-03-07 (9 plans, 4 waves)*
 *Phase 7 revised: 2026-03-07 (10 plans, 4 waves) -- split Plan 05 into 05+10 per scope checker*
 *v3.1 milestone phases 8-12 added: 2026-03-13*
+*Phase 13 planned: 2026-03-13 (10 plans, 6 waves)*
