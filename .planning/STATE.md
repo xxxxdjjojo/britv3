@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
-status: Roadmap ready — awaiting plan-phase
-stopped_at: Completed 17-service-provider-public-profiles 17-02-PLAN.md
-last_updated: "2026-03-13T22:44:33.628Z"
-last_activity: 2026-03-13 — v3.1 roadmap created (5 phases, 39 requirements, 16 plans)
+status: executing
+stopped_at: Completed 14-landlord-dashboard 14-02-PLAN.md
+last_updated: "2026-03-13T22:46:39.020Z"
+last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 4
   total_plans: 110
-  completed_plans: 54
-  percent: 0
+  completed_plans: 55
+  percent: 49
 ---
 
 # Project State
@@ -54,6 +54,7 @@ Progress: [█████░░░░░] 49%
 | Phase 17 P01 | 992 | 2 tasks | 16 files |
 | Phase 14-landlord-dashboard P01 | 58 | 2 tasks | 10 files |
 | Phase 17-service-provider-public-profiles P02 | 1211 | 2 tasks | 8 files |
+| Phase 14-landlord-dashboard P02 | 37 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: ProfileTabs receives typed ReactNode props (about/services/portfolio/reviews) rather than children + data-tab attributes to avoid cross-boundary Server/Client children iteration complexity
 - [Phase 08]: Migration applied via Supabase Management API (POST /v1/projects/{ref}/database/query) due to migration history tracking mismatch; CLI supabase db push not usable without DB password
 - [Phase 08]: offers table includes solicitor_id UUID FK (not in original RESEARCH.md schema) — required by user_documents RLS policy that grants read access to instructed solicitor
+- [Phase 14-landlord-dashboard]: getRentCollection queries financial_entries WHERE category='rent' (not tenancies) — matches must_haves truth
+- [Phase 14-landlord-dashboard]: validateSection21Requirements is a pure function (no Supabase) so it can run client-side before PDF generation
+- [Phase 14-landlord-dashboard]: VALID_TRANSITIONS state machine prevents skipping pipeline stages (received->approved fails with error)
 
 ### Pending Todos
 
@@ -91,6 +95,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:44:00Z
-Stopped at: Completed 08-db-foundation-security 08-01-PLAN.md
-Resume file: .planning/phases/08-db-foundation-security/08-01-SUMMARY.md
+Last session: 2026-03-13T22:46:39.006Z
+Stopped at: Completed 14-landlord-dashboard 14-02-PLAN.md
+Resume file: None
