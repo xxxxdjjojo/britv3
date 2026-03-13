@@ -78,6 +78,114 @@ export async function getMaintenanceRequests(
 }
 
 /**
+ * Extended row type that includes property address and active tenant name,
+ * fetched via join for the portfolio-wide inbox.
+ */
+export type MaintenanceRequestWithProperty = MaintenanceRequest &
+  Readonly<{
+    property_address: string;
+    property_postcode: string;
+    tenant_name: string | null;
+  }>;
+
+/**
+ * Portfolio-wide maintenance inbox — returns all requests across all properties
+ * owned by the current authenticated user (via RLS), sorted by priority then
+ * created_at (emergency first).
+ *
+ * The join to properties gives us the address; the join to tenancies gives us
+ * the active tenant name.
+ */
+export async function getPortfolioMaintenanceRequests(
+  supabase: SupabaseClient,
+  filters?: MaintenanceFilters,
+): Promise<MaintenanceRequestWithProperty[]> {
+  let query = supabase
+    .from("maintenance_requests")
+    .select(
+      `
+      *,
+      properties!inner(address_line_1, postcode),
+      tenancies(tenant_name, status)
+    `,
+    )
+    .order("priority", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (filters?.status) {
+    query = query.eq("status", filters.status);
+  }
+  if (filters?.priority) {
+    query = query.eq("priority", filters.priority);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(
+      `Failed to fetch portfolio maintenance requests: ${error.message}`,
+    );
+  }
+
+  return ((data ?? []) as unknown[]).map((row: unknown) => {
+    const r = row as Record<string, unknown>;
+    const prop = r.properties as Record<string, unknown> | null;
+    const tenancies = r.tenancies as Array<Record<string, unknown>> | null;
+    const activeTenancy = tenancies?.find((t) => t.status === "active");
+
+    return {
+      ...(r as MaintenanceRequest),
+      property_address: prop
+        ? String(prop.address_line_1)
+        : "Unknown address",
+      property_postcode: prop ? String(prop.postcode) : "",
+      tenant_name: activeTenancy
+        ? String(activeTenancy.tenant_name)
+        : null,
+    } as MaintenanceRequestWithProperty;
+  });
+}
+
+/**
+ * Get a single maintenance request by ID, including the property address
+ * and active tenant name.
+ */
+export async function getMaintenanceRequestById(
+  supabase: SupabaseClient,
+  requestId: string,
+): Promise<MaintenanceRequestWithProperty> {
+  const { data, error } = await supabase
+    .from("maintenance_requests")
+    .select(
+      `
+      *,
+      properties!inner(address_line_1, postcode),
+      tenancies(tenant_name, tenant_email, tenant_phone, status)
+    `,
+    )
+    .eq("id", requestId)
+    .single();
+
+  if (error || !data) {
+    throw new Error(
+      `Maintenance request not found: ${error?.message ?? "no data"}`,
+    );
+  }
+
+  const r = data as unknown as Record<string, unknown>;
+  const prop = r.properties as Record<string, unknown> | null;
+  const tenancies = r.tenancies as Array<Record<string, unknown>> | null;
+  const activeTenancy = tenancies?.find((t) => t.status === "active");
+
+  return {
+    ...(r as unknown as MaintenanceRequest),
+    property_address: prop ? String(prop.address_line_1) : "Unknown address",
+    property_postcode: prop ? String(prop.postcode) : "",
+    tenant_name: activeTenancy ? String(activeTenancy.tenant_name) : null,
+  } as MaintenanceRequestWithProperty;
+}
+
+/**
  * Get a single maintenance request by ID.
  */
 export async function getMaintenanceRequest(

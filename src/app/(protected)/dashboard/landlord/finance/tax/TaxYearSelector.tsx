@@ -22,7 +22,8 @@ export function TaxYearSelector({ currentYear, options }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
-  function handleChange(yearStr: string) {
+  function handleChange(yearStr: string | null) {
+    if (!yearStr) return;
     router.push(`${pathname}?year=${yearStr}`);
   }
 

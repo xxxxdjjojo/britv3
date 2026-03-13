@@ -51,7 +51,7 @@ export default async function DepositsPage() {
         { tenant_name: string; property_address: string }
       >();
 
-      for (const row of (tenancyRows ?? []) as TenancyRow[]) {
+      for (const row of (tenancyRows ?? []) as unknown as TenancyRow[]) {
         const address = row.properties
           ? `${row.properties.address_line_1}, ${row.properties.city}`
           : "";

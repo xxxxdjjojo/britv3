@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -42,19 +43,45 @@ const buttonVariants = cva(
   }
 )
 
+type ButtonProps = ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    /** Render as the immediate child element (Radix Slot pattern). */
+    asChild?: boolean;
+  };
+
 function Button({
   className,
   variant = "default",
   size = "default",
+  asChild = false,
+  children,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonProps) {
+  const resolvedClassName = cn(buttonVariants({ variant, size, className }));
+
+  if (asChild && React.isValidElement(children)) {
+    // Merge button styles into child element (e.g. Link).
+    // This replicates the Radix `asChild` / Slot pattern without
+    // requiring @radix-ui/react-slot as a direct dependency.
+    return React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
+      "data-slot": "button",
+      className: cn(
+        resolvedClassName,
+        (children as React.ReactElement<{ className?: string }>).props?.className,
+      ),
+    });
+  }
+
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={resolvedClassName}
       {...props}
-    />
+    >
+      {children}
+    </ButtonPrimitive>
   )
 }
 
+export type { ButtonProps }
 export { Button, buttonVariants }

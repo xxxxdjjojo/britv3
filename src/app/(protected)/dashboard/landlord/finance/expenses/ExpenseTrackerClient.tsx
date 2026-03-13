@@ -244,7 +244,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filterCategory} onValueChange={setFilterCategory}>
+        <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v ?? "all")}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
@@ -258,7 +258,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filterProperty} onValueChange={setFilterProperty}>
+        <Select value={filterProperty} onValueChange={(v) => setFilterProperty(v ?? "all")}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Property" />
           </SelectTrigger>
@@ -272,7 +272,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filterMonth} onValueChange={setFilterMonth}>
+        <Select value={filterMonth} onValueChange={(v) => setFilterMonth(v ?? "all")}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Month" />
           </SelectTrigger>

@@ -101,7 +101,8 @@ export default function CreateListingPage(
     handleSubmit,
     formState: { errors },
   } = useForm<Step1Data>({
-    resolver: zodResolver(step1Schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(step1Schema) as any,
     defaultValues: {
       title: "",
       description: "",
