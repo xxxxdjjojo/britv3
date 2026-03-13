@@ -365,7 +365,7 @@ Plans:
   9. Tax summary exports correctly calculated figures for self-assessment
   10. Section 21 and Section 8 notice builder generates legally correct PDF documents
   11. Yield calculator and portfolio analytics provide real return calculations from property data
-**Plans**: TBD
+**Plans**: 10 plans
 
 Plans:
 - [ ] 14-01-PLAN.md -- DB schema extensions: landlord-dashboard tables (tenant_applications, rent_payments_extended, compliance_certs, deposit_schemes, notices), TypeScript types, RLS policies, Supabase migrations
