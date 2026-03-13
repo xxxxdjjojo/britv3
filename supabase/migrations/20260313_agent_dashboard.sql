@@ -41,6 +41,7 @@ $$ LANGUAGE plpgsql;
 
 -- ============================================================================
 -- TABLE 1: agent_agency_profiles
+
 -- ============================================================================
 
 CREATE TABLE public.agent_agency_profiles (
@@ -109,7 +110,15 @@ ALTER TABLE public.agent_leads ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Agents can manage their own leads"
   ON public.agent_leads
   FOR ALL
-  USING (agent_id = auth.uid() OR assigned_to = auth.uid())
+  USING (
+    agent_id = auth.uid()
+    OR assigned_to = auth.uid()
+    OR auth.uid() IN (
+      SELECT user_id FROM public.agent_team_members
+      WHERE agent_team_members.agent_id = agent_leads.agent_id
+      AND status = 'active'
+    )
+  )
   WITH CHECK (agent_id = auth.uid() OR assigned_to = auth.uid());
 
 CREATE TRIGGER trg_agent_leads_updated_at
@@ -183,7 +192,14 @@ ALTER TABLE public.agent_offers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Agents can manage their own offers"
   ON public.agent_offers
   FOR ALL
-  USING (agent_id = auth.uid())
+  USING (
+    agent_id = auth.uid()
+    OR auth.uid() IN (
+      SELECT user_id FROM public.agent_team_members
+      WHERE agent_team_members.agent_id = agent_offers.agent_id
+      AND status = 'active'
+    )
+  )
   WITH CHECK (agent_id = auth.uid());
 
 CREATE TRIGGER trg_agent_offers_updated_at
@@ -413,7 +429,7 @@ CREATE POLICY "Agents can manage their own viewing slots"
 CREATE POLICY "Buyers can view booked slots"
   ON public.agent_viewing_slots
   FOR SELECT
-  USING (is_booked = true);
+  USING (is_booked = true AND booked_by = auth.uid());
 
 -- ============================================================================
 -- TABLE 12: agent_viewing_feedback
@@ -538,6 +554,10 @@ RETURNS TABLE (
   performance_score NUMERIC
 ) AS $$
 BEGIN
+  IF auth.uid() IS NULL OR auth.uid() != p_agent_id THEN
+    RETURN;
+  END IF;
+
   RETURN QUERY
   SELECT
     -- Active listings count

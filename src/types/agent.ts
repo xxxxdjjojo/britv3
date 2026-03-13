@@ -109,6 +109,9 @@ export const LIKELIHOOD_TO_OFFER = [
 ] as const;
 export type LikelihoodToOffer = (typeof LIKELIHOOD_TO_OFFER)[number];
 
+export const INTEREST_LEVELS = [1, 2, 3, 4, 5] as const;
+export type InterestLevel = (typeof INTEREST_LEVELS)[number];
+
 export const REPORT_TYPES = [
   "listing_performance",
   "viewing_summary",
@@ -304,7 +307,7 @@ export type AgentViewingFeedback = Readonly<{
   agent_id: string;
   viewing_slot_id: string;
   buyer_name: string;
-  interest_level: number;
+  interest_level: InterestLevel;
   price_opinion: PriceOpinion | null;
   likelihood_to_offer: LikelihoodToOffer | null;
   comments: string | null;
