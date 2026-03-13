@@ -471,7 +471,7 @@ Plans:
   11. Compare Providers modal (up to 3 side-by-side) renders a comparison table from real provider data
   12. All routes are public (no auth required); pages use SSR (generateMetadata + page Server Components) for search engine indexing
   13. Localized SEO category pages (/services/plumbers/london) are statically generated with ISR and show real provider listings
-**Plans**: 12 plans
+**Plans**: 8 plans
 
 Plans:
 - [ ] 17-01-PLAN.md -- DB: provider_public_profiles materialized view + public read RLS policies; public-profile-service (fetch by slug, reviews pagination, portfolio, services, listings); SEO metadata generators
