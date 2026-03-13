@@ -7,6 +7,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { QuoteCreateInput } from "@/lib/validators/marketplace-schemas";
 import { quoteCreateSchema } from "@/lib/validators/marketplace-schemas";
 import type { Quote } from "@/types/marketplace";
+import { signQuote } from "@/lib/marketplace/quote-signer";
 
 const UNIQUE_CONSTRAINT_CODE = "23505";
 
@@ -64,6 +65,19 @@ export async function createQuote(
     0,
   );
 
+  // Compute HMAC signature for quote integrity
+  const signingSecret = process.env.QUOTE_SIGNING_SECRET ?? "";
+  const signature = signQuote(
+    {
+      service_request_id,
+      provider_id: providerId,
+      total_amount: totalAmount.toString(),
+      scope_of_work: parsed.scope_of_work,
+      line_items: JSON.stringify(parsed.line_items),
+    },
+    signingSecret,
+  );
+
   const { data: quote, error } = await supabase
     .from("quotes")
     .insert({
@@ -79,6 +93,7 @@ export async function createQuote(
       validity_date: parsed.validity_date.toISOString(),
       status: "sent" as const,
       version: 1,
+      quote_signature: signature,
     })
     .select()
     .single();

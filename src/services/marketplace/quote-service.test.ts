@@ -77,7 +77,7 @@ describe("quote-service", () => {
         }
         if (table === "quotes") {
           // First call: check existing, second call: insert
-          let callCount = 0;
+          const callCount = 0;
           return {
             select: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
@@ -161,6 +161,94 @@ describe("quote-service", () => {
       await expect(
         createQuote(supabase as never, "prov-1", validQuoteInput),
       ).rejects.toThrow("Provider profile not found");
+    });
+
+    it("includes a quote_signature (64-char hex) in the insert payload", async () => {
+      let capturedInsertData: Record<string, unknown> | null = null;
+
+      const fromMock = vi.fn().mockImplementation((table: string) => {
+        if (table === "service_provider_details") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({
+                  data: { user_id: "prov-1" },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === "provider_documents") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  limit: vi.fn().mockResolvedValue({
+                    data: [{ verification_status: "approved" }],
+                    error: null,
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+        if (table === "quotes") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  not: vi.fn().mockReturnValue({
+                    limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+                  }),
+                }),
+              }),
+            }),
+            insert: vi.fn().mockImplementation((data: Record<string, unknown>) => {
+              capturedInsertData = data;
+              return {
+                select: vi.fn().mockReturnValue({
+                  single: vi.fn().mockResolvedValue({
+                    data: {
+                      id: "quote-new",
+                      service_request_id: "rfq-1",
+                      provider_id: "prov-1",
+                      total_amount: 200,
+                      status: "sent",
+                      quote_signature: "placeholder",
+                    },
+                    error: null,
+                  }),
+                }),
+              };
+            }),
+          };
+        }
+        if (table === "service_requests") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({
+                  data: { quote_count: 0, status: "open" },
+                  error: null,
+                }),
+              }),
+            }),
+            update: vi.fn().mockReturnValue({
+              eq: vi.fn().mockResolvedValue({ error: null }),
+            }),
+          };
+        }
+        return { select: vi.fn() };
+      });
+
+      const mockSupabase = { from: fromMock } as unknown as import("@supabase/supabase-js").SupabaseClient;
+
+      await createQuote(mockSupabase, "prov-1", validQuoteInput);
+
+      expect(capturedInsertData).not.toBeNull();
+      expect(typeof capturedInsertData!.quote_signature).toBe("string");
+      expect(capturedInsertData!.quote_signature as string).toMatch(/^[0-9a-f]{64}$/);
     });
 
     it("should throw when duplicate active quote exists", async () => {
