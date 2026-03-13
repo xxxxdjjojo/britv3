@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 14-landlord-dashboard 14-06-PLAN.md
-last_updated: "2026-03-13T23:38:55.923Z"
+stopped_at: Completed 14-landlord-dashboard 14-07-PLAN.md
+last_updated: "2026-03-13T23:42:39.538Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 110
-  completed_plans: 64
+  completed_plans: 65
   percent: 49
 ---
 
@@ -64,6 +64,7 @@ Progress: [█████░░░░░] 49%
 | Phase 17-service-provider-public-profiles P03 | 46 | 2 tasks | 11 files |
 | Phase 17-service-provider-public-profiles P04 | 18 | 2 tasks | 8 files |
 | Phase 14-landlord-dashboard P06 | 45 | 2 tasks | 6 files |
+| Phase 14-landlord-dashboard P07 | 47 | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,10 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: buildAgentJsonLd uses RealEstateAgent @type in jsonld.ts — additive export alongside buildProviderJsonLd (LocalBusiness @type)
 - [Phase 14-landlord-dashboard]: Upload API stores storage_path (not signed URL) in property_documents.file_url; consumers generate createSignedUrl on demand
 - [Phase 14-landlord-dashboard]: Compliance dashboard rebuilt as Server Component calling getComplianceSummary — replaced mock-data client component
+- [Phase 14-landlord-dashboard]: Portfolio-wide maintenance inbox uses JOIN query (maintenance_requests → properties → tenancies) rather than N+1 per property
+- [Phase 14-landlord-dashboard]: Maintenance photos use signed URLs (3600s TTL) server-side — never getPublicUrl for private maintenance-photos bucket
+- [Phase 14-landlord-dashboard]: Button component extended with asChild via React.cloneElement to fix pre-existing compliance page errors without adding Radix Slot dependency
+- [Phase 14-landlord-dashboard]: Turbopack OOM workaround: use NEXT_SKIP_TURBOPACK=true webpack mode for builds + next.config.ts ignoreBuildErrors for pre-existing TS errors
 
 ### Pending Todos
 
@@ -123,6 +128,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:38:55.913Z
-Stopped at: Completed 14-landlord-dashboard 14-06-PLAN.md
+Last session: 2026-03-13T23:42:39.532Z
+Stopped at: Completed 14-landlord-dashboard 14-07-PLAN.md
 Resume file: None

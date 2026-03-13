@@ -507,7 +507,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 11. AI Match | v3.1 | 0/2 | Not started | - |
 | 12. Financial & Referral | v3.1 | 0/2 | Not started | - |
 | 13. Seller Dashboard | v3.2 | 0/10 | Not started | - |
-| 14. Landlord Dashboard | 8/10 | In Progress|  | - |
+| 14. Landlord Dashboard | 9/10 | In Progress|  | - |
 | 15. Estate Agent Dashboard | v3.4 | 0/14 | Not started | - |
 | 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
 | 17. Service Provider Public Profiles | 4/8 | In Progress|  | - |
