@@ -451,6 +451,37 @@ Plans:
 - [ ] 16-11-PLAN.md -- Portfolio/Gallery Manage (11.19) + Reviews Dashboard (11.20) + Reviews Respond (11.21)
 - [ ] 16-12-PLAN.md -- Analytics (11.22) + Subscription & Billing (11.23) + Promote/Boost Profile (11.24) + Referral Programme (11.25)
 
+### Phase 17: Service Provider Public Profiles
+**Goal**: Anyone (logged in or not) can browse and compare detailed public profiles for all service provider types — tradespeople, estate agents, mortgage brokers, conveyancers, and surveyors — with FAANG-quality UI based on Stitch reference designs, fully SSR for SEO indexing
+**Depends on**: Phase 4 (Marketplace — providers exist in DB), Phase 16 (provider profile data)
+**Requirements**: PROF-01, PROF-02, PROF-03, PROF-04, PROF-05, PROF-06, PROF-07, PROF-08, PROF-09, PROF-10, PROF-11, PROF-12, PROF-13, PROF-14
+**Stitch reference screens**: Tradesperson Public Profile (4d255ce443084b379775dbc72e4e3152), Agency Public Profile (c1e2ee7115be496e939f06c7e59992cb), Compare Service Providers (0ddd81b9f86a4a8da58435d272bcaff7), Tradesperson Search Results (20984c3b777b4d80a4f52ba734bc0cc0), Marketplace Search Home (852a2fc157d24144bc3f317a3c105fe9), Localized Category Page SEO (a539f744d5a04cf5bc53d8ece9e77842), Post a Job Wizard (ace1a12aa7fa44658cb47f342557aa0e), Tradesperson Job Board (7c7383aae75645d2bf7391e3a11e1f9a)
+**Success Criteria** (what must be TRUE):
+  1. Tradesperson public profile (13.1) renders hero with verified badges, trust score, star rating, and cover photo from real Supabase data — zero mock data
+  2. Reviews tab (13.2) shows paginated real reviews with star breakdown, verified badge, provider responses, and helpful count
+  3. Portfolio/Gallery tab (13.3) displays before/after project photos in masonry grid with category filters from real Supabase Storage
+  4. Services & Pricing tab (13.4) shows real service list with pricing, duration, and Request Quote CTA
+  5. Request Quote modal (13.5) submits an RFQ to the Supabase marketplace pipeline with job description, budget, and contact info
+  6. Estate Agent public profile (13.6) shows agency branding, team photo, active listings count, sold properties, avg days to sell, ratings from real data
+  7. Agent Active Listings (13.7), Sold/Let (13.8), Reviews (13.9), and Team Members (13.10) tabs load real paginated data
+  8. Request Valuation form (13.11) submits a valuation enquiry to the agent's lead pipeline in Supabase
+  9. Mortgage Broker (13.12), Conveyancer/Solicitor (13.13), and Surveyor (13.14) profiles display role-specific credentials, FCA/professional registration, and specialisms from real data
+  10. All profiles are SEO-optimised via Next.js metadata API: dynamic title, description, OG image, JSON-LD structured data
+  11. Compare Providers modal (up to 3 side-by-side) renders a comparison table from real provider data
+  12. All routes are public (no auth required); pages use SSR (generateMetadata + page Server Components) for search engine indexing
+  13. Localized SEO category pages (/services/plumbers/london) are statically generated with ISR and show real provider listings
+**Plans**: TBD
+
+Plans:
+- [ ] 17-01-PLAN.md -- DB: provider_public_profiles materialized view + public read RLS policies; public-profile-service (fetch by slug, reviews pagination, portfolio, services, listings); SEO metadata generators
+- [ ] 17-02-PLAN.md -- Tradesperson Public Profile page shell (13.1): hero section (avatar, verified badges, trust score, rating, cover photo), Overview tab, tab navigation; SSR + metadata
+- [ ] 17-03-PLAN.md -- Tradesperson profile tabs: Reviews (13.2) + Portfolio/Gallery masonry (13.3) + Services & Pricing (13.4) + Request Quote Modal (13.5)
+- [ ] 17-04-PLAN.md -- Estate Agent Public Profile (13.6): agency hero with branding, stats bar (listings, sold, avg days, rating), tab shell + Active Listings (13.7) + Sold/Let (13.8)
+- [ ] 17-05-PLAN.md -- Estate Agent profile tabs: Reviews (13.9) + Team Members (13.10) + Request Valuation modal (13.11)
+- [ ] 17-06-PLAN.md -- Mortgage Broker (13.12) + Conveyancer/Solicitor (13.13) + Surveyor (13.14) profiles — shared specialist profile template with role-specific credential sections
+- [ ] 17-07-PLAN.md -- Compare Service Providers modal (up to 3, side-by-side table) + Marketplace Search Home category landing
+- [ ] 17-08-PLAN.md -- Localized Category SEO pages (/services/[category]/[location]) with ISR + JSON-LD structured data + Tradesperson Job Board public view
+
 ## Progress
 
 **Execution Order:**
@@ -458,6 +489,7 @@ v3.0 phases: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 (Phase 5 can run parallel to 3-4)
 v3.1 phases: 8 -> 9 -> 10 -> 11 -> 12 (Phase 11 and 12 can run parallel after Phase 9)
 v3.4 phases: 15 (depends on Phase 3 + Phase 2 + Phase 4)
 v3.5 phases: 16 (depends on Phase 3 + Phase 4)
+v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -477,6 +509,7 @@ v3.5 phases: 16 (depends on Phase 3 + Phase 4)
 | 14. Landlord Dashboard | v3.3 | 0/0 | Not started | - |
 | 15. Estate Agent Dashboard | v3.4 | 0/14 | Not started | - |
 | 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
+| 17. Service Provider Public Profiles | v3.6 | 0/8 | Not started | - |
 
 ---
 *Roadmap created: 2026-03-06*
@@ -492,3 +525,4 @@ v3.5 phases: 16 (depends on Phase 3 + Phase 4)
 *Phase 7 revised: 2026-03-07 (10 plans, 4 waves) -- split Plan 05 into 05+10 per scope checker*
 *v3.1 milestone phases 8-12 added: 2026-03-13*
 *Phase 13 planned: 2026-03-13 (10 plans, 6 waves)*
+*Phase 17 added: 2026-03-13 (Service Provider Public Profiles, 8 plans)*
