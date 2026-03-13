@@ -52,7 +52,7 @@ export default async function SavedSearchesPage() {
     redirect("/login");
   }
 
-  const { data: savedSearches, error } = await supabase
+  const { data: savedSearches } = await supabase
     .from("saved_searches")
     .select("*")
     .eq("user_id", user.id)

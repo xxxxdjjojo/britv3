@@ -55,9 +55,9 @@ function createMockTenancy(overrides?: Partial<Tenancy>): Tenancy {
 describe("LeasePreview PDF generation", () => {
   it("jsPDF is dynamically imported (not statically bundled)", async () => {
     // Verify dynamic import works
-    const module = await import("jspdf");
-    expect(module.jsPDF).toBeDefined();
-    expect(typeof module.jsPDF).toBe("function");
+    const jspdfModule = await import("jspdf");
+    expect(jspdfModule.jsPDF).toBeDefined();
+    expect(typeof jspdfModule.jsPDF).toBe("function");
   });
 
   it("generates a jsPDF instance with correct content calls", async () => {

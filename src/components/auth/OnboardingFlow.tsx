@@ -42,15 +42,14 @@ export function OnboardingFlow(
 ) {
   const router = useRouter();
   const config = ONBOARDING_CONFIG[props.role];
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
   // If no config for this role, redirect to dashboard
   if (!config) {
     router.push("/dashboard");
     return null;
   }
-
-  const [formData, setFormData] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState(false);
 
   function handleChange(name: string, value: string) {
     setFormData((prev) => ({ ...prev, [name]: value }));

@@ -77,7 +77,6 @@ describe("quote-service", () => {
         }
         if (table === "quotes") {
           // First call: check existing, second call: insert
-          const callCount = 0;
           return {
             select: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({

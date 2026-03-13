@@ -8,7 +8,7 @@
  * Uses service role client to bypass RLS (system-level operation).
  */
 
-// @ts-nocheck -- Deno runtime types
+// @ts-expect-error -- Deno runtime types not available in Node TS config
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Import shared logic -- at build/deploy time, this path is resolved.

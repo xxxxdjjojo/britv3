@@ -10,7 +10,6 @@ export function useRole() {
   const [loading, setLoading] = useState(true);
 
   const fetchRoles = useCallback(async () => {
-    setLoading(true);
     const supabase = createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -36,7 +35,13 @@ export function useRole() {
   }, []);
 
   useEffect(() => {
-    fetchRoles();
+    let active = true;
+    async function load() {
+      await fetchRoles();
+      if (!active) return;
+    }
+    load();
+    return () => { active = false; };
   }, [fetchRoles]);
 
   const switchRole = useCallback(async (role: UserRole) => {

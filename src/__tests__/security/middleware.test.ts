@@ -14,6 +14,16 @@ vi.mock("@supabase/ssr", () => ({
     auth: {
       getUser: mockGetUser,
     },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn().mockResolvedValue({ data: { active_role: "homebuyer" }, error: null }),
+        })),
+      })),
+      update: vi.fn(() => ({
+        eq: vi.fn().mockResolvedValue({ error: null }),
+      })),
+    })),
   })),
 }));
 

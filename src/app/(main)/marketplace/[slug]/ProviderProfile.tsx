@@ -92,7 +92,13 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
   );
 
   useEffect(() => {
-    fetchReviews(reviewPage, reviewSort);
+    let active = true;
+    async function load() {
+      await fetchReviews(reviewPage, reviewSort);
+      if (!active) return;
+    }
+    load();
+    return () => { active = false; };
   }, [reviewPage, reviewSort, fetchReviews]);
 
   const handlePageChange = (page: number) => {

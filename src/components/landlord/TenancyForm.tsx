@@ -44,8 +44,8 @@ export function TenancyForm({
     setValue,
     watch,
     formState: { errors },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<TenancyFormData>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(tenancySchema) as any,
     defaultValues: {
       tenant_name: "",
