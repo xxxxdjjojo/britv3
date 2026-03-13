@@ -226,6 +226,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                   longitude={-0.3368}
                   zoom={16}
                   className="w-full h-full"
+                  grayscale
                 />
                 <div className="absolute top-3 left-3 bg-primary text-white rounded px-3 py-1 text-[10px] font-bold shadow">
                   {postcode}

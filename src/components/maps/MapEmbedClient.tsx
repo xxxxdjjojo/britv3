@@ -12,8 +12,9 @@ type MapEmbedClientProps = Readonly<{
   longitude?: number;
   zoom?: number;
   className?: string;
+  grayscale?: boolean;
 }>;
 
-export function MapEmbedClient({ latitude, longitude, zoom, className }: MapEmbedClientProps) {
-  return <MapEmbed latitude={latitude} longitude={longitude} zoom={zoom} className={className} />;
+export function MapEmbedClient({ latitude, longitude, zoom, className, grayscale }: MapEmbedClientProps) {
+  return <MapEmbed latitude={latitude} longitude={longitude} zoom={zoom} className={className} grayscale={grayscale} />;
 }
