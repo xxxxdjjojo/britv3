@@ -201,7 +201,7 @@ Plans:
 
 **Milestone Goal:** Deliver all 22 Buyer/Renter Dashboard pages at FAANG quality — full frontend + backend + browser-tested, speed-first. Replace every mock data array with real Supabase queries, build service layers for five new feature domains, and ship six net-new pages.
 
-- [ ] **Phase 8: DB Foundation & Security** - Migration (10 new tables), RLS, role auth fix, npm packages
+- [x] **Phase 8: DB Foundation & Security** - Migration (10 new tables), RLS, role auth fix, npm packages (completed 2026-03-13)
 - [ ] **Phase 9: Wire Existing Pages** - Dashboard home, saved properties/searches, alerts, viewings display, messages inbox, pro browse, affordability calc
 - [ ] **Phase 10: Viewings Booking, Offers & Documents** - Booking/reschedule/cancel flows, offer submit + status tracking, document vault, moving checklist
 - [ ] **Phase 11: AI Match** - Preferences editor, cached results, SQL-based scoring, match reason display
@@ -501,7 +501,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 5. AI & Financial Tools | v3.0 | 3/4 | In Progress | - |
 | 6. Landlord Tools | v3.0 | 5/5 | Complete | 2026-03-07 |
 | 7. Production Readiness | v3.0 | 9/10 | In Progress | - |
-| 8. DB Foundation & Security | 1/2 | In Progress|  | - |
+| 8. DB Foundation & Security | 2/2 | Complete   | 2026-03-13 | - |
 | 9. Wire Existing Pages | v3.1 | 0/4 | Not started | - |
 | 10. Viewings Booking, Offers & Docs | v3.1 | 0/6 | Not started | - |
 | 11. AI Match | v3.1 | 0/2 | Not started | - |
