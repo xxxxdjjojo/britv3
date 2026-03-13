@@ -218,7 +218,7 @@ Plans:
   2. A homebuyer navigating to /dashboard/landlord/rent-collection is redirected to their own dashboard, not served landlord data
   3. Every buyer dashboard Server Component calls supabase.auth.getUser() server-side and returns 401 if not authenticated, independent of middleware
   4. The buyer-documents Supabase Storage bucket is private; no path returns a public URL; all access uses server-generated signed URLs
-**Plans**: 12 plans
+**Plans**: 2 plans
 
 Plans:
 - [ ] 08-01-PLAN.md -- DB migration: 10 tables, RLS policies, indexes, offer state machine constraints, viewing slot-booking RPC; supabase gen types
