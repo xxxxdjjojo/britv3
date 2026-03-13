@@ -334,9 +334,10 @@ Plans:
   7. Sale Progression Tracker shows 8-stage UK conveyancing pipeline with current stage, expected dates, and key documents
   8. Instant Valuation returns AI estimate with comparable properties drawn from Land Registry data
   9. Find an Estate Agent and Agent Comparison pages show real agents filterable by area, fees, ratings
-**Plans**: 10 plans
+**Plans**: 11 plans
 
 Plans:
+- [ ] 13-00-PLAN.md -- Wave 0: install date-fns dependency, create all 13 Nyquist test stub files
 - [ ] 13-01-PLAN.md -- DB schema: seller listings tables, offers, viewings, sale progression, agent enquiries; TypeScript types; RLS policies
 - [ ] 13-02-PLAN.md -- Service layer: listing-service (CRUD, publish, analytics), AI description service (Claude API, 3 tones, rate limit), image pipeline
 - [ ] 13-03-PLAN.md -- Seller Dashboard Home + My Listings page (real data, status tabs, mini-charts)
@@ -525,4 +526,5 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 *Phase 7 revised: 2026-03-07 (10 plans, 4 waves) -- split Plan 05 into 05+10 per scope checker*
 *v3.1 milestone phases 8-12 added: 2026-03-13*
 *Phase 13 planned: 2026-03-13 (10 plans, 6 waves)*
+*Phase 13 revised: 2026-03-13 (11 plans, 7 waves) -- added Wave 0 plan for Nyquist test stubs and date-fns install*
 *Phase 17 added: 2026-03-13 (Service Provider Public Profiles, 8 plans)*
