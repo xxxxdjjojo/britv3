@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 17-service-provider-public-profiles 17-04-PLAN.md
-last_updated: "2026-03-13T23:36:09.730Z"
+stopped_at: Completed 14-landlord-dashboard 14-06-PLAN.md
+last_updated: "2026-03-13T23:38:55.923Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 110
-  completed_plans: 63
+  completed_plans: 64
   percent: 49
 ---
 
@@ -63,6 +63,7 @@ Progress: [█████░░░░░] 49%
 | Phase 14-landlord-dashboard P08 | 32 | 2 tasks | 11 files |
 | Phase 17-service-provider-public-profiles P03 | 46 | 2 tasks | 11 files |
 | Phase 17-service-provider-public-profiles P04 | 18 | 2 tasks | 8 files |
+| Phase 14-landlord-dashboard P06 | 45 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,8 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: PortfolioLightbox is self-contained (individual Dialog per item) — no shared lightbox state, cleaner component boundary
 - [Phase 17-service-provider-public-profiles]: AgentPublicProfile.agency nested object used for agency name/logo/address — plan interface had flat fields but actual 17-01 type has discriminated agency sub-object
 - [Phase 17-service-provider-public-profiles]: buildAgentJsonLd uses RealEstateAgent @type in jsonld.ts — additive export alongside buildProviderJsonLd (LocalBusiness @type)
+- [Phase 14-landlord-dashboard]: Upload API stores storage_path (not signed URL) in property_documents.file_url; consumers generate createSignedUrl on demand
+- [Phase 14-landlord-dashboard]: Compliance dashboard rebuilt as Server Component calling getComplianceSummary — replaced mock-data client component
 
 ### Pending Todos
 
@@ -120,6 +123,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:36:09.700Z
-Stopped at: Completed 17-service-provider-public-profiles 17-04-PLAN.md
+Last session: 2026-03-13T23:38:55.913Z
+Stopped at: Completed 14-landlord-dashboard 14-06-PLAN.md
 Resume file: None
