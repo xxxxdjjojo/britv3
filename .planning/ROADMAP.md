@@ -396,7 +396,7 @@ Plans:
   9. Analytics pages show real performance data: agent-level, branch-level, and competitor analysis with Recharts visualizations
   10. Reviews dashboard shows real ratings with response capability; Subscription & Billing integrates with Stripe
   11. Property feed integration supports Reapit/Alto/Jupix with connection setup, sync status, and error logging
-**Plans**: TBD
+**Plans**: 14 plans
 
 Plans:
 - [ ] 15-01-PLAN.md -- DB schema: agent_leads, agent_offers, agent_commissions, agent_team_members, agent_branches, agent_crm_clients, agent_api_keys, agent_feed_integrations, agent_viewing_slots, agent_vendor_reports; TypeScript types; RLS policies; Supabase migration
@@ -414,12 +414,50 @@ Plans:
 - [ ] 15-13-PLAN.md -- Performance Reports Agent (15.27) + Branch (15.28) + Competitor Analysis (15.29) + Featured Listing/Boost (15.30)
 - [ ] 15-14-PLAN.md -- API Key Management (15.31) + Property Feed Integration (15.32)
 
+### Phase 16: Tradesperson / Service Provider Dashboard
+**Goal**: Tradespeople and service providers can manage their complete business operation on Britestate — verification, profiles, services, jobs, quotes, invoices, payments, portfolio, reviews, and growth tools — from a FAANG-quality dashboard with real Supabase data and Stitch reference designs
+**Depends on**: Phase 3 (dashboards infrastructure), Phase 4 (marketplace), Phase 1 (auth/verification)
+**Requirements**: TPD-01, TPD-02, TPD-03, TPD-04, TPD-05, TPD-06, TPD-07, TPD-08, TPD-09, TPD-10, TPD-11, TPD-12, TPD-13, TPD-14, TPD-15, TPD-16, TPD-17, TPD-18, TPD-19, TPD-20, TPD-21, TPD-22, TPD-23, TPD-24, TPD-25
+**Stitch reference screens**: Tradesperson Dashboard Overview (4b449e2a02ae419dafcebede08dca1ee), Professional Profile Settings (2389a8d176d94405b28822fad6725daa), Verification & Trust Center (8340c1a2d6fb4527a51cb5523428bbb1), Availability & Service Area (5b1d4bfaad28455792605a61f5ecf5cd), New Job Leads & Enquiries (11e53dcf42bc4c9f839fac8ac4906d70), Tradesperson Job Board (7c7383aae75645d2bf7391e3a11e1f9a), Professional Quote Builder (a2424dabe105445b836cc8cf295114a2), Portfolio & Reviews Hub (2caad1db0d6542f394a7ceb40347b32d), Business Analytics & Payouts (c43273aa8a1e4dc9879114864ad05af7), Tradesperson Public Profile (4d255ce443084b379775dbc72e4e3152), Compare Service Providers (0ddd81b9f86a4a8da58435d272bcaff7), Post a Job Wizard (ace1a12aa7fa44658cb47f342557aa0e)
+**Success Criteria** (what must be TRUE):
+  1. Dashboard home shows real KPIs (new leads, active jobs, pending reviews, verification status, monthly earnings) with recent activity feed from Supabase
+  2. Profile edit page persists bio, photos, qualifications, and service areas to Supabase with real-time preview
+  3. Verification Centre shows step-by-step progress (identity → insurance → qualifications → client refs → peer refs) with document upload, reference tracking, and badge status
+  4. Services management allows add/edit/delete/price services with category selection backed by real data
+  5. Service areas map editor lets providers draw or select coverage zones (radius or polygon) saved to Supabase
+  6. Availability calendar shows/manages bookable slots synced with jobs; blocked dates respected in booking flow
+  7. Job management pages (New Leads, Active, Completed, Detail) show real job data with status transitions, messages thread, payment info, and review prompt
+  8. Quote Builder generates itemised quotes with materials/labour/tax, saveable as draft, sendable to client via email
+  9. Invoice Generator creates PDF invoices from completed jobs, tracked in payment history
+  10. Payments Overview shows real Stripe Connect balance, payout history, and individual transaction details
+  11. Portfolio/Gallery lets providers upload before/after photos with project descriptions and category tags
+  12. Reviews Dashboard shows all received reviews with star breakdown; providers can respond to reviews publicly
+  13. Analytics page shows profile views, enquiry rate, conversion funnel, earnings trend via Recharts
+  14. Subscription & Billing integrates with Stripe for plan management and invoice history
+  15. Boost/Promote lets providers purchase featured placement; Referral Programme tracks referred providers
+**Plans**: TBD
+
+Plans:
+- [ ] 16-01-PLAN.md -- DB schema: provider_services, provider_references, provider_badges, provider_portfolio_items, provider_invoices, stripe_connect_accounts, provider_boosts, provider_referrals, provider_service_areas; TypeScript types; RLS policies; Supabase migration
+- [ ] 16-02-PLAN.md -- Service layer: provider-dashboard-service (KPIs, activity), provider-verification-service (steps, documents, references), provider-profile-service (bio, photos, qualifications)
+- [ ] 16-03-PLAN.md -- Service layer: provider-job-service (leads, status transitions, messages), provider-quote-service (builder, PDF via @react-pdf/renderer), provider-invoice-service (generator, PDF)
+- [ ] 16-04-PLAN.md -- Service layer: provider-payment-service (Stripe Connect Express, payouts), provider-portfolio-service, provider-analytics-service, provider-boost-service, provider-referral-service
+- [ ] 16-05-PLAN.md -- Provider dashboard layout + Dashboard Home (11.1) + My Profile Edit (11.2)
+- [ ] 16-06-PLAN.md -- Verification Centre Overview (11.3) + Upload Credentials (11.4) + Client References Tracker (11.5) + Peer References Tracker (11.6) + Badge Status (11.7)
+- [ ] 16-07-PLAN.md -- Services Manage (11.8) + Service Areas Map Editor (11.9, MapLibre terra-draw) + Availability Calendar (11.10)
+- [ ] 16-08-PLAN.md -- Jobs New Enquiries/Leads (11.11) + Jobs Active (11.12) + Jobs Completed (11.13) + Job Detail (11.14)
+- [ ] 16-09-PLAN.md -- Quote Builder/Send Quote (11.15) + Invoice Generator (11.16)
+- [ ] 16-10-PLAN.md -- Payments Overview (11.17) + Individual Transaction (11.18)
+- [ ] 16-11-PLAN.md -- Portfolio/Gallery Manage (11.19) + Reviews Dashboard (11.20) + Reviews Respond (11.21)
+- [ ] 16-12-PLAN.md -- Analytics (11.22) + Subscription & Billing (11.23) + Promote/Boost Profile (11.24) + Referral Programme (11.25)
+
 ## Progress
 
 **Execution Order:**
 v3.0 phases: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 (Phase 5 can run parallel to 3-4)
 v3.1 phases: 8 -> 9 -> 10 -> 11 -> 12 (Phase 11 and 12 can run parallel after Phase 9)
 v3.4 phases: 15 (depends on Phase 3 + Phase 2 + Phase 4)
+v3.5 phases: 16 (depends on Phase 3 + Phase 4)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -438,6 +476,7 @@ v3.4 phases: 15 (depends on Phase 3 + Phase 2 + Phase 4)
 | 13. Seller Dashboard | v3.2 | 0/10 | Not started | - |
 | 14. Landlord Dashboard | v3.3 | 0/0 | Not started | - |
 | 15. Estate Agent Dashboard | v3.4 | 0/14 | Not started | - |
+| 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
 
 ---
 *Roadmap created: 2026-03-06*
