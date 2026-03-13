@@ -4,8 +4,6 @@
  * SSR page at /agents/[slug] that renders the full agency profile:
  * hero with stat bar, tab navigation island (Active Listings, Sold/Let,
  * Reviews, Our Team), and sidebar CTA + office info.
- *
- * Reviews and Team tabs are wired with real content in Plan 17-05.
  */
 
 import type { Metadata } from "next";
@@ -14,12 +12,16 @@ import {
   fetchAgentBySlug,
   fetchAgentStats,
   fetchAgentListings,
+  fetchAgentTeam,
+  fetchProviderReviews,
 } from "@/services/providers/public-profile-service";
 import { buildAgentJsonLd } from "@/lib/providers/jsonld";
 import AgencyHero from "@/components/agents/AgencyHero";
 import AgentSidebar from "@/components/agents/AgentSidebar";
 import ListingsTab from "@/components/agents/ListingsTab";
 import SoldLetTab from "@/components/agents/SoldLetTab";
+import { AgentReviewsTab } from "@/components/agents/AgentReviewsTab";
+import { TeamMembersTab } from "@/components/agents/TeamMembersTab";
 import AgentProfileTabs from "./AgentProfileTabs";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -52,11 +54,16 @@ export default async function AgentProfilePage({ params }: Params) {
     notFound();
   }
 
-  const [stats, activeListings, soldLetListings] = await Promise.all([
-    fetchAgentStats(slug),
-    fetchAgentListings(agency.user_id, "active", 1),
-    fetchAgentListings(agency.user_id, "sold_let", 1),
-  ]);
+  const agencyId = agency.agency?.id ?? agency.id;
+
+  const [stats, activeListings, soldLetListings, agentReviews, team] =
+    await Promise.all([
+      fetchAgentStats(slug),
+      fetchAgentListings(agency.user_id, "active", 1),
+      fetchAgentListings(agency.user_id, "sold_let", 1),
+      fetchProviderReviews(agency.user_id, 1),
+      fetchAgentTeam(agencyId),
+    ]);
 
   const jsonLd = buildAgentJsonLd(agency, stats);
 
@@ -87,19 +94,17 @@ export default async function AgentProfilePage({ params }: Params) {
                   />
                 }
                 reviews={
-                  <div className="text-slate-500 text-sm py-4">
-                    Reviews — Plan 17-05
-                  </div>
+                  <AgentReviewsTab
+                    reviews={agentReviews.reviews}
+                    total={agentReviews.total}
+                    agencyName={agency.agency?.name ?? agency.display_name}
+                  />
                 }
-                team={
-                  <div className="text-slate-500 text-sm py-4">
-                    Team — Plan 17-05
-                  </div>
-                }
+                team={<TeamMembersTab members={team} />}
               />
             </div>
             <div className="lg:col-span-4">
-              <AgentSidebar agency={agency} />
+              <AgentSidebar agency={agency} previewMembers={team.slice(0, 2)} />
             </div>
           </div>
         </main>

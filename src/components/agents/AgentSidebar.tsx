@@ -9,6 +9,7 @@
 import { MapPin, Phone, Clock } from "lucide-react";
 import Image from "next/image";
 import type { AgentPublicProfile, AgentTeamMember } from "@/types/providers";
+import { ValuationSheet } from "@/components/agents/ValuationSheet";
 
 type AgentSidebarProps = Readonly<{
   agency: AgentPublicProfile;
@@ -30,19 +31,10 @@ export default function AgentSidebar({
         <p className="text-blue-100 text-sm mb-4">
           Get a free property valuation from our local experts.
         </p>
-        <div className="space-y-3">
-          <input
-            type="text"
-            placeholder="Enter your postcode"
-            className="w-full px-3 py-2 rounded-lg bg-white/20 placeholder-blue-200 text-white text-sm border border-white/30 focus:outline-none focus:border-white"
-          />
-          <button
-            type="button"
-            className="w-full px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors"
-          >
-            Request a Free Valuation
-          </button>
-        </div>
+        <ValuationSheet
+          agencyId={agency.agency?.id ?? agency.id}
+          agencyName={agency.agency?.name ?? agency.display_name}
+        />
       </div>
 
       {/* Office Information */}
