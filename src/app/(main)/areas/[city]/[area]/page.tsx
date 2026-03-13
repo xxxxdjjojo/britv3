@@ -23,7 +23,7 @@ import { AreaPriceTrendClient } from "@/components/charts/AreaPriceTrendClient";
 import { PropertyDonutClient } from "@/components/charts/PropertyDonutClient";
 import { ListingVolumeClient } from "@/components/charts/ListingVolumeClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 86400;
 
 type AreaPageProps = Readonly<{ params: Promise<{ city: string; area: string }> }>;
 
@@ -164,7 +164,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
               <TabsTrigger
                 key={tab}
                 value={tab}
-                className="capitalize text-sm font-semibold pb-4 px-6 data-active:text-primary data-active:border-b-2 data-active:border-primary rounded-none"
+                className="capitalize text-sm font-semibold pb-4 px-6 rounded-none"
               >
                 {tab === "market" ? "Market Data" : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </TabsTrigger>
