@@ -28,10 +28,10 @@ function getRedis(): Redis | null {
 
 function buildCacheKey(params: ProviderSearchInput): string {
   // Stable serialisation: sort keys so param order doesn't matter
-  const sorted = Object.keys(params as Record<string, unknown>)
+  const sorted = (Object.keys(params) as Array<keyof ProviderSearchInput>)
     .sort()
     .reduce<Record<string, unknown>>((acc, k) => {
-      acc[k] = (params as Record<string, unknown>)[k];
+      acc[k as string] = params[k];
       return acc;
     }, {});
   return `provider-search:v1:${JSON.stringify(sorted)}`;
