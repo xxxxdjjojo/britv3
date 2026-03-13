@@ -197,7 +197,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/marketplace",
   "/help",
   "/verify-email",
-  "/welcome",
+  "/verify-email/confirmed",
   "/register/role-select",
   "/register/onboarding",
 ] as const;
