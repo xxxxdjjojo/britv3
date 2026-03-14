@@ -241,3 +241,28 @@ export type PaginatedListings = {
   page: number;
   pageSize: number;
 };
+
+// ---------------------------------------------------------------------------
+// CompareProvider — lightweight shape fetched client-side for compare page
+// ---------------------------------------------------------------------------
+
+export type CompareProvider = {
+  id: string;
+  slug: string;
+  business_name: string;
+  services: string[];
+  city: string | null;
+  service_postcodes: string[];
+  accreditations: { type: string; number?: string }[];
+  response_time_hours: number | null;
+  pricing: Record<string, unknown>;
+  profiles: {
+    avatar_url: string | null;
+    full_name: string;
+    provider_verification_status: string;
+  };
+  provider_rating_stats: {
+    average_rating: number;
+    total_reviews: number;
+  } | null;
+};
