@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-estate-agent-dashboard 15-06-PLAN.md
-last_updated: "2026-03-14T18:38:05.132Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-08-PLAN.md
+last_updated: "2026-03-14T18:56:49.623Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 7
   total_plans: 112
-  completed_plans: 79
+  completed_plans: 80
   percent: 49
 ---
 
@@ -75,6 +75,7 @@ Progress: [█████░░░░░] 49%
 | Phase 15-estate-agent-dashboard P03 | 4 | 2 tasks | 5 files |
 | Phase 15-estate-agent-dashboard P05 | 18 | 2 tasks | 10 files |
 | Phase 15-estate-agent-dashboard P06 | 22 | 2 tasks | 14 files |
+| Phase 15-estate-agent-dashboard P08 | 16 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -149,6 +150,8 @@ Recent decisions affecting current work:
 - [Phase 15-estate-agent-dashboard]: AlertDialogTrigger styled inline (not via Button asChild) — base-ui DialogTrigger.Props lacks asChild support
 - [Phase 15-estate-agent-dashboard]: agent-listings-service.ts copied from feature worktree to main branch — missing from main working directory
 - [Phase 15-estate-agent-dashboard]: Claude Haiku (claude-haiku-4-5) used for AI listing descriptions — fast and cost-efficient for short copy generation
+- [Phase 15-estate-agent-dashboard]: ViewingCalendar uses DayPicker Day render-prop to overlay dot indicators — no style patching; DELETE /api/agent/viewings reads slot_id from query params matching existing API contract
+- [Phase 15-estate-agent-dashboard]: OffersDashboard groups offers client-side from flat initialOffers array rather than grouped server response — simpler Realtime refresh pattern
 
 ### Pending Todos
 
@@ -163,6 +166,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-14T18:38:05.121Z
-Stopped at: Completed 15-estate-agent-dashboard 15-06-PLAN.md
+Last session: 2026-03-14T18:56:49.617Z
+Stopped at: Completed 15-estate-agent-dashboard 15-08-PLAN.md
 Resume file: None
