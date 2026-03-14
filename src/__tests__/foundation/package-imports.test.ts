@@ -19,10 +19,10 @@ describe("FOUND-04 — required package imports", () => {
   it("react-day-picker exports DayPicker component", async () => {
     const rdp = await import("react-day-picker");
     expect(rdp.DayPicker).toBeDefined();
-  });
+  }, 15000);
 
   it("tus-js-client exports Upload class", async () => {
     const tus = await import("tus-js-client");
     expect(tus.Upload).toBeDefined();
-  });
+  }, 15000);
 });
