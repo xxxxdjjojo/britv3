@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 17-service-provider-public-profiles 17-05-PLAN.md
-last_updated: "2026-03-13T23:54:49.593Z"
+stopped_at: Completed 17-service-provider-public-profiles 17-06-PLAN.md
+last_updated: "2026-03-14T00:11:19.196Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 110
-  completed_plans: 66
+  completed_plans: 67
   percent: 49
 ---
 
@@ -66,6 +66,7 @@ Progress: [█████░░░░░] 49%
 | Phase 14-landlord-dashboard P06 | 45 | 2 tasks | 6 files |
 | Phase 14-landlord-dashboard P07 | 47 | 2 tasks | 19 files |
 | Phase 17-service-provider-public-profiles P05 | 16 | 2 tasks | 8 files |
+| Phase 17-service-provider-public-profiles P06 | 748 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,8 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: formatRelativeDate extracted to lib/utils/date.ts — shared by ReviewsTab and AgentReviewsTab; ReviewsTab updated to import from shared location
 - [Phase 17-service-provider-public-profiles]: AgentTeamMember flat fields (full_name/avatar_url) used in TeamMembersTab — service layer in 17-01 maps JOIN results to flat shape, no nested profiles access needed
 - [Phase 17-service-provider-public-profiles]: ValuationSheet self-contained (trigger + Sheet panel co-located) — AgentSidebar imports directly, no separate ValuationTrigger export needed
+- [Phase 17-service-provider-public-profiles]: parseAccreditations uses qualifications[] with PREFIX:VALUE convention — no dedicated accreditations field on ServiceProviderPublicProfile type
+- [Phase 17-service-provider-public-profiles]: pricingValue() cast helper reads JSONB pricing fields without modifying ServiceProviderPublicProfile — avoids schema-wide type change for specialist-only fields
 
 ### Pending Todos
 
@@ -132,6 +135,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:54:49.576Z
-Stopped at: Completed 17-service-provider-public-profiles 17-05-PLAN.md
+Last session: 2026-03-14T00:11:19.182Z
+Stopped at: Completed 17-service-provider-public-profiles 17-06-PLAN.md
 Resume file: None
