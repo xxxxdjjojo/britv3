@@ -9,7 +9,7 @@ import { getFinancialEntries } from "@/services/landlord/financial-service";
 import { getDocuments } from "@/services/landlord/document-service";
 import { getMaintenanceRequests } from "@/services/landlord/maintenance-service";
 import { MaintenanceList } from "@/components/landlord/MaintenanceList";
-import { DocumentList } from "@/components/landlord/DocumentList";
+import DocumentList from "@/components/landlord/DocumentList";
 import { FinancialSummary } from "@/components/landlord/FinancialSummary";
 import type { TenancyStatus } from "@/types/landlord";
 import { TenancyStatusBadge } from "@/components/landlord/TenancyStatusBadge";

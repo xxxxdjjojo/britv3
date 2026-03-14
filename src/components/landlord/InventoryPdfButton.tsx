@@ -290,6 +290,7 @@ function CheckOutDocument({
 // -- Download button ---------------------------------------------------------
 
 export default function InventoryPdfButton({
+  reportId,
   reportType,
   propertyAddress,
   rooms,

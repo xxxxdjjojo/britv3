@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
@@ -141,7 +141,7 @@ export default function NoticesPage() {
     watch: watchS21,
     formState: { errors: errorsS21 },
   } = useForm<Section21FormData>({
-    resolver: zodResolver(section21Schema),
+    resolver: zodResolver(section21Schema) as Resolver<Section21FormData>,
     defaultValues: {
       epc_provided: false,
       gas_safety_provided: false,
@@ -154,7 +154,7 @@ export default function NoticesPage() {
     watch: watchS8,
     formState: { errors: errorsS8 },
   } = useForm<Section8FormData>({
-    resolver: zodResolver(section8Schema),
+    resolver: zodResolver(section8Schema) as Resolver<Section8FormData>,
     defaultValues: { grounds: [] },
   });
 
@@ -593,7 +593,6 @@ export default function NoticesPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Section8PDFDownload
-                  notice={createdNotice}
                   noticeId={createdNotice.id}
                   tenantName={selectedS8Tenancy?.tenant_name ?? "Tenant"}
                   propertyAddress={
