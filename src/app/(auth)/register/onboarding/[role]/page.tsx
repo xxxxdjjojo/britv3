@@ -9,6 +9,7 @@ const VALID_ROLES: UserRole[] = [
   "landlord",
   "agent",
   "service_provider",
+  "mortgage_broker",
 ];
 
 export default async function OnboardingPage(
