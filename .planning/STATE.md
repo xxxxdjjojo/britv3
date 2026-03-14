@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-estate-agent-dashboard 15-05-PLAN.md
-last_updated: "2026-03-14T18:22:43.051Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-06-PLAN.md
+last_updated: "2026-03-14T18:38:05.132Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 7
   total_plans: 112
-  completed_plans: 78
+  completed_plans: 79
   percent: 49
 ---
 
@@ -74,6 +74,7 @@ Progress: [█████░░░░░] 49%
 | Phase 15-estate-agent-dashboard P01 | 4 | 2 tasks | 2 files |
 | Phase 15-estate-agent-dashboard P03 | 4 | 2 tasks | 5 files |
 | Phase 15-estate-agent-dashboard P05 | 18 | 2 tasks | 10 files |
+| Phase 15-estate-agent-dashboard P06 | 22 | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -145,6 +146,9 @@ Recent decisions affecting current work:
 - [Phase 15-estate-agent-dashboard]: Graceful fallback to zero KPIs when RPC throws — page renders with zeros rather than 500
 - [Phase 15-estate-agent-dashboard]: Resolver cast (zodResolver(schema) as Resolver<FormData>) bridges type inference gap when arrays managed as local state — established project pattern
 - [Phase 15-estate-agent-dashboard]: AgencyBrandingForm uses local React state for logoUrl separate from form register — file inputs are uncontrolled in react-hook-form
+- [Phase 15-estate-agent-dashboard]: AlertDialogTrigger styled inline (not via Button asChild) — base-ui DialogTrigger.Props lacks asChild support
+- [Phase 15-estate-agent-dashboard]: agent-listings-service.ts copied from feature worktree to main branch — missing from main working directory
+- [Phase 15-estate-agent-dashboard]: Claude Haiku (claude-haiku-4-5) used for AI listing descriptions — fast and cost-efficient for short copy generation
 
 ### Pending Todos
 
@@ -159,6 +163,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-14T18:22:43.045Z
-Stopped at: Completed 15-estate-agent-dashboard 15-05-PLAN.md
+Last session: 2026-03-14T18:38:05.121Z
+Stopped at: Completed 15-estate-agent-dashboard 15-06-PLAN.md
 Resume file: None
