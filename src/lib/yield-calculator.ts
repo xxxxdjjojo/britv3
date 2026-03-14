@@ -18,6 +18,9 @@ export type YieldInputs = {
 export type YieldResult = {
   grossYield: number;
   netYield: number;
+  annualRent: number;
+  annualCosts: number;
+  annualNet: number;
 };
 
 /**
@@ -36,7 +39,7 @@ export function calculateYield(inputs: YieldInputs): YieldResult {
   } = inputs;
 
   if (propertyValue === 0) {
-    return { grossYield: 0, netYield: 0 };
+    return { grossYield: 0, netYield: 0, annualRent: 0, annualCosts: 0, annualNet: 0 };
   }
 
   const annualRent = monthlyRent * 12;
@@ -45,6 +48,7 @@ export function calculateYield(inputs: YieldInputs): YieldResult {
 
   const grossYield = parseFloat(((annualRent / propertyValue) * 100).toFixed(2));
   const netYield = parseFloat((((annualRent - annualCosts) / propertyValue) * 100).toFixed(2));
+  const annualNet = annualRent - annualCosts;
 
-  return { grossYield, netYield };
+  return { grossYield, netYield, annualRent, annualCosts, annualNet };
 }
