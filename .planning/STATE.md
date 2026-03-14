@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-estate-agent-dashboard 15-01-PLAN.md
-last_updated: "2026-03-14T17:59:32.807Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-03-PLAN.md
+last_updated: "2026-03-14T18:06:31.885Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 7
   total_plans: 112
-  completed_plans: 76
+  completed_plans: 77
   percent: 49
 ---
 
@@ -72,6 +72,7 @@ Progress: [█████░░░░░] 49%
 | Phase 17-service-provider-public-profiles P08 | 694 | 2 tasks | 5 files |
 | Phase 14-landlord-dashboard P11 | 5 | 3 tasks | 11 files |
 | Phase 15-estate-agent-dashboard P01 | 4 | 2 tasks | 2 files |
+| Phase 15-estate-agent-dashboard P03 | 4 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,9 @@ Recent decisions affecting current work:
 - [Phase 15-estate-agent-dashboard]: agent_branches created before agent_team_members in DDL to satisfy FK reference ordering
 - [Phase 15-estate-agent-dashboard]: get_agent_dashboard_kpis uses SECURITY DEFINER for cross-table KPI aggregation without RLS blocking — same pattern as landlord KPI RPC
 - [Phase 15-estate-agent-dashboard]: Zod v4 z.record() requires two arguments: z.record(z.string(), z.unknown()) for JSONB fields
+- [Phase 15-estate-agent-dashboard]: ALLOWED_TRANSITIONS map defines forward-one and back-one transitions per conveyancing stage — skipping throws descriptive error
+- [Phase 15-estate-agent-dashboard]: createSaleProgression called inside updateOfferStatus (service layer) — acceptance logic stays in service not HTTP layer; failure is logged non-fatal
+- [Phase 15-estate-agent-dashboard]: PATCH /api/agent/offers uses action discriminator (update_status | counter) to multiplex two operations into one endpoint
 
 ### Pending Todos
 
@@ -151,6 +155,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:59:25.062Z
-Stopped at: Completed 15-estate-agent-dashboard 15-01-PLAN.md
+Last session: 2026-03-14T18:06:31.878Z
+Stopped at: Completed 15-estate-agent-dashboard 15-03-PLAN.md
 Resume file: None
