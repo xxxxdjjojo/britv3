@@ -6,6 +6,7 @@
  */
 
 import type { ServiceProviderPublicProfile, AgentPublicProfile, AgentPublicStats } from "@/types/providers";
+import type { SpecialistType } from "@/components/providers/SpecialistHero";
 
 /**
  * Builds a schema.org LocalBusiness JSON-LD object for a service provider.
@@ -101,6 +102,65 @@ export function buildAgentJsonLd(
       ratingValue: stats.avg_rating,
       reviewCount: stats.total_reviews,
       bestRating: "5",
+    };
+  }
+
+  return jsonLd;
+}
+
+/**
+ * Builds a schema.org structured data object for specialist professional profiles
+ * (mortgage brokers, conveyancers, surveyors).
+ *
+ * @param provider - The fetched provider profile
+ * @param specialistType - One of "mortgage_broker" | "conveyancer" | "surveyor"
+ * @param routePrefix - URL path prefix (e.g. "mortgage-brokers")
+ * @returns A JSON-LD object ready to be stringified into a <script> tag
+ */
+export function buildSpecialistJsonLd(
+  provider: ServiceProviderPublicProfile,
+  specialistType: SpecialistType,
+  routePrefix: string,
+): Record<string, unknown> {
+  const url = `https://britestate.co.uk/${routePrefix}/${provider.slug}`;
+
+  const TYPE_MAP: Record<SpecialistType, string> = {
+    mortgage_broker: "FinancialService",
+    conveyancer: "LegalService",
+    surveyor: "ProfessionalService",
+  };
+
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": TYPE_MAP[specialistType],
+    name: provider.business_name,
+    description: provider.description ?? undefined,
+    url,
+  };
+
+  if (provider.phone) {
+    jsonLd.telephone = provider.phone;
+  }
+
+  if (provider.city) {
+    jsonLd.address = {
+      "@type": "PostalAddress",
+      addressLocality: provider.city,
+      addressCountry: "GB",
+    };
+  }
+
+  if (provider.profiles.avatar_url) {
+    jsonLd.image = provider.profiles.avatar_url;
+  }
+
+  if (provider.provider_rating_stats && provider.provider_rating_stats.total_reviews > 0) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: provider.provider_rating_stats.avg_rating ?? 0,
+      reviewCount: provider.provider_rating_stats.total_reviews,
+      bestRating: "5",
+      worstRating: "1",
     };
   }
 
