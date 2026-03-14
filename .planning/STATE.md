@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 17-service-provider-public-profiles 17-08-PLAN.md
-last_updated: "2026-03-14T00:49:18.796Z"
+stopped_at: Completed 14-landlord-dashboard 14-11-PLAN.md
+last_updated: "2026-03-14T16:13:33.042Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
-  completed_phases: 6
-  total_plans: 111
-  completed_plans: 70
+  completed_phases: 7
+  total_plans: 112
+  completed_plans: 72
   percent: 49
 ---
 
@@ -70,6 +70,7 @@ Progress: [█████░░░░░] 49%
 | Phase 14-landlord-dashboard P10 | 45 | 2 tasks | 9 files |
 | Phase 17-service-provider-public-profiles P07 | 20 | 2 tasks | 7 files |
 | Phase 17-service-provider-public-profiles P08 | 694 | 2 tasks | 5 files |
+| Phase 14-landlord-dashboard P11 | 5 | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -130,6 +131,8 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: CompareTable always renders exactly 3 columns, padding with null/EmptySlot entries for consistent layout regardless of how many providers are selected
 - [Phase 17-service-provider-public-profiles]: createAdminClient() used in generateStaticParams (not createClient) — build-time call has no Next.js request scope, so cookies() throws; admin client bypasses cookie handling
 - [Phase 17-service-provider-public-profiles]: Dual-purpose route pattern: /services/[category]/[slug] serves provider profiles and SEO location pages via runtime isLocationSlug() disambiguation — no new directories
+- [Phase 14-landlord-dashboard]: Resolver cast pattern (zodResolver(schema) as Resolver<FormData>) for z.coerce.number() — bridges react-hook-form type inference gap without schema changes
+- [Phase 14-landlord-dashboard]: SheetTrigger asChild typed wrapper (SheetTriggerBase as ComponentType<{asChild?:boolean}>) — local Shadcn wrapper doesn't re-export Radix asChild, typed alias avoids modifying the UI component
 
 ### Pending Todos
 
@@ -144,6 +147,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:49:18.789Z
-Stopped at: Completed 17-service-provider-public-profiles 17-08-PLAN.md
+Last session: 2026-03-14T16:13:33.035Z
+Stopped at: Completed 14-landlord-dashboard 14-11-PLAN.md
 Resume file: None
