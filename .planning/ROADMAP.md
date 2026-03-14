@@ -308,7 +308,7 @@ Plans:
 
 **Milestone Goal:** Deliver all 29 Landlord Dashboard pages at FAANG quality — full frontend + backend + browser-tested. Covers the complete landlord journey from portfolio overview through compliance management, rent collection, maintenance, financial reporting, deposit management, legal notice generation, and yield analytics — all backed by real Supabase data with Stitch-designed UI.
 
-- [ ] **Phase 14: Landlord Dashboard** - Dashboard home, portfolio, tenancy management, compliance, rent collection, maintenance, financials, legal tools, analytics
+- [x] **Phase 14: Landlord Dashboard** - Dashboard home, portfolio, tenancy management, compliance, rent collection, maintenance, financials, legal tools, analytics (completed 2026-03-14)
 
 ---
 
@@ -507,7 +507,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 11. AI Match | v3.1 | 0/2 | Not started | - |
 | 12. Financial & Referral | v3.1 | 0/2 | Not started | - |
 | 13. Seller Dashboard | v3.2 | 0/10 | Not started | - |
-| 14. Landlord Dashboard | 9/10 | In Progress|  | - |
+| 14. Landlord Dashboard | 10/10 | Complete   | 2026-03-14 | - |
 | 15. Estate Agent Dashboard | v3.4 | 0/14 | Not started | - |
 | 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
 | 17. Service Provider Public Profiles | 6/8 | In Progress|  | - |
