@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 14-landlord-dashboard 14-10-PLAN.md
-last_updated: "2026-03-14T00:20:53.923Z"
+stopped_at: Completed 17-service-provider-public-profiles 17-07-PLAN.md
+last_updated: "2026-03-14T00:34:22.265Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
-  completed_phases: 6
-  total_plans: 110
-  completed_plans: 68
+  completed_phases: 5
+  total_plans: 111
+  completed_plans: 69
   percent: 49
 ---
 
@@ -68,6 +68,7 @@ Progress: [█████░░░░░] 49%
 | Phase 17-service-provider-public-profiles P05 | 16 | 2 tasks | 8 files |
 | Phase 17-service-provider-public-profiles P06 | 748 | 2 tasks | 7 files |
 | Phase 14-landlord-dashboard P10 | 45 | 2 tasks | 9 files |
+| Phase 17-service-provider-public-profiles P07 | 20 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,8 @@ Recent decisions affecting current work:
 - [Phase 17-service-provider-public-profiles]: pricingValue() cast helper reads JSONB pricing fields without modifying ServiceProviderPublicProfile — avoids schema-wide type change for specialist-only fields
 - [Phase 14-landlord-dashboard]: Section 21 notice page runs validateSection21Requirements client-side before createNotice — pure function runs synchronously without network roundtrip
 - [Phase 14-landlord-dashboard]: PortfolioAnalyticsCharts derives occupancy from current tenancy_status snapshot (no historical occupancy_history table) — static occupancy rate applied across 12-month bar chart
+- [Phase 17-service-provider-public-profiles]: useCompare reads localStorage on each add()/remove() call (not React state closure) — prevents stale-state bugs when multiple add() calls fire sequentially
+- [Phase 17-service-provider-public-profiles]: CompareTable always renders exactly 3 columns, padding with null/EmptySlot entries for consistent layout regardless of how many providers are selected
 
 ### Pending Todos
 
@@ -138,6 +141,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:20:53.844Z
-Stopped at: Completed 14-landlord-dashboard 14-10-PLAN.md
+Last session: 2026-03-14T00:34:22.260Z
+Stopped at: Completed 17-service-provider-public-profiles 17-07-PLAN.md
 Resume file: None
