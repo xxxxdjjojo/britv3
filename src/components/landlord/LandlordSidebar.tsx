@@ -17,12 +17,15 @@ import {
   Handshake,
   Menu,
 } from "lucide-react";
+import React from "react";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
+  SheetTrigger as SheetTriggerBase,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+
+const SheetTrigger = SheetTriggerBase as React.ComponentType<{ asChild?: boolean; children: React.ReactNode }>;
 
 type NavItem = {
   label: string;

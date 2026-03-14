@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Users } from "lucide-react";
@@ -13,8 +14,10 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
+  SheetTrigger as SheetTriggerBase,
 } from "@/components/ui/sheet";
+
+const SheetTrigger = SheetTriggerBase as React.ComponentType<{ asChild?: boolean; children: React.ReactNode }>;
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -196,7 +199,7 @@ function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>)
             <Label htmlFor="employment_status">Employment Status</Label>
             <Select
               value={form.employment_status}
-              onValueChange={(val) => setForm((f) => ({ ...f, employment_status: val }))}
+              onValueChange={(val) => setForm((f) => ({ ...f, employment_status: val ?? "" }))}
             >
               <SelectTrigger id="employment_status">
                 <SelectValue placeholder="Select status" />

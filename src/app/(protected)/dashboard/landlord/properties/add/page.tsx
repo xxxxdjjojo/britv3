@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
@@ -53,7 +53,7 @@ export default function AddPropertyPage() {
     setValue,
     formState: { errors },
   } = useForm<AddPropertyFormData>({
-    resolver: zodResolver(addPropertySchema),
+    resolver: zodResolver(addPropertySchema) as Resolver<AddPropertyFormData>,
     defaultValues: {
       bedrooms: 1,
       bathrooms: 1,

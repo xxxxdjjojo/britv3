@@ -202,7 +202,7 @@ export function InventoryRoomForm({
       {/* Condition */}
       <div className="flex flex-col gap-1.5">
         <Label className="text-xs text-muted-foreground">Condition</Label>
-        <Select value={condition} onValueChange={handleConditionChange}>
+        <Select value={condition} onValueChange={handleConditionChange as unknown as (value: "excellent" | "good" | "fair" | "poor" | "damaged" | null, eventDetails: unknown) => void}>
           <SelectTrigger className="w-40">
             <SelectValue />
           </SelectTrigger>

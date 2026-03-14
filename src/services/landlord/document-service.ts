@@ -245,7 +245,13 @@ export async function getComplianceSummary(
       status = "valid";
     }
 
-    const property = (doc.property as { address_line_1: string; city: string; postcode: string } | null) ?? { address_line_1: "", city: "", postcode: "" };
+    const rawProperty = doc.property as unknown;
+    const property =
+      rawProperty !== null &&
+      typeof rawProperty === "object" &&
+      "address_line_1" in rawProperty
+        ? (rawProperty as { address_line_1: string; city: string; postcode: string })
+        : { address_line_1: "", city: "", postcode: "" };
 
     return {
       id: doc.id as string,

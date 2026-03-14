@@ -5,7 +5,7 @@
  * Pure client-side calculation using calculateYield (no Supabase query for core logic).
  */
 
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { calculateYield } from "@/lib/yield-calculator";
@@ -66,7 +66,7 @@ export default function YieldCalculatorPage() {
     watch,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
       propertyValue: 0,
       monthlyRent: 0,
