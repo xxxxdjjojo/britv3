@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 17-service-provider-public-profiles 17-07-PLAN.md
-last_updated: "2026-03-14T00:34:22.265Z"
+stopped_at: Completed 17-service-provider-public-profiles 17-08-PLAN.md
+last_updated: "2026-03-14T00:49:18.796Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 111
-  completed_plans: 69
+  completed_plans: 70
   percent: 49
 ---
 
@@ -69,6 +69,7 @@ Progress: [█████░░░░░] 49%
 | Phase 17-service-provider-public-profiles P06 | 748 | 2 tasks | 7 files |
 | Phase 14-landlord-dashboard P10 | 45 | 2 tasks | 9 files |
 | Phase 17-service-provider-public-profiles P07 | 20 | 2 tasks | 7 files |
+| Phase 17-service-provider-public-profiles P08 | 694 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -127,6 +128,8 @@ Recent decisions affecting current work:
 - [Phase 14-landlord-dashboard]: PortfolioAnalyticsCharts derives occupancy from current tenancy_status snapshot (no historical occupancy_history table) — static occupancy rate applied across 12-month bar chart
 - [Phase 17-service-provider-public-profiles]: useCompare reads localStorage on each add()/remove() call (not React state closure) — prevents stale-state bugs when multiple add() calls fire sequentially
 - [Phase 17-service-provider-public-profiles]: CompareTable always renders exactly 3 columns, padding with null/EmptySlot entries for consistent layout regardless of how many providers are selected
+- [Phase 17-service-provider-public-profiles]: createAdminClient() used in generateStaticParams (not createClient) — build-time call has no Next.js request scope, so cookies() throws; admin client bypasses cookie handling
+- [Phase 17-service-provider-public-profiles]: Dual-purpose route pattern: /services/[category]/[slug] serves provider profiles and SEO location pages via runtime isLocationSlug() disambiguation — no new directories
 
 ### Pending Todos
 
@@ -141,6 +144,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-14T00:34:22.260Z
-Stopped at: Completed 17-service-provider-public-profiles 17-07-PLAN.md
+Last session: 2026-03-14T00:49:18.789Z
+Stopped at: Completed 17-service-provider-public-profiles 17-08-PLAN.md
 Resume file: None
