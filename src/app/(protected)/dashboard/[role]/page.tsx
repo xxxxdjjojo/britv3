@@ -7,6 +7,7 @@
  */
 
 import { use } from "react";
+import { redirect } from "next/navigation";
 import { DashboardShell, StatCardGrid } from "@/components/dashboard/DashboardShell";
 import { StatCard, StatCardSkeleton } from "@/components/dashboard/StatCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
@@ -110,6 +111,21 @@ export default function RoleDashboardPage(
   }>,
 ) {
   const { role } = use(props.params);
+
+  const VALID_ROLES: ReadonlyArray<UserRole> = [
+    "homebuyer",
+    "renter",
+    "seller",
+    "landlord",
+    "agent",
+    "service_provider",
+    "mortgage_broker",
+  ];
+
+  if (!VALID_ROLES.includes(role as UserRole)) {
+    redirect("/dashboard/homebuyer");
+  }
+
   const typedRole = role as UserRole;
   const { data: result, isLoading, isError, refetch } = useDashboard();
   const refreshDashboard = useRefreshDashboard();

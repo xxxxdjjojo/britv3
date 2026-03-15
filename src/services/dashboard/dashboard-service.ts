@@ -105,13 +105,7 @@ async function buildHomebuyerDashboard(
   const [savedCount, searchCount, viewings, activity] = await Promise.all([
     safeCount(supabase, "saved_properties", "user_id", userId),
     safeCount(supabase, "saved_searches", "user_id", userId),
-    safeQuery<{ id: string; property_address: string; scheduled_at: string; status: string }>(
-      supabase,
-      "viewings",
-      "id, property_address, scheduled_at, status",
-      { user_id: userId, status: "confirmed" },
-      5,
-    ),
+    safeViewingsQuery(supabase, { user_id: userId, status: "confirmed" }, 5),
     getRecentActivity(supabase, userId, 5),
   ]);
 
@@ -195,13 +189,7 @@ async function buildSellerDashboard(
       { seller_id: userId },
       20,
     ),
-    safeQuery<{ id: string; property_address: string; scheduled_at: string; status: string }>(
-      supabase,
-      "viewings",
-      "id, property_address, scheduled_at, status",
-      { seller_id: userId },
-      10,
-    ),
+    safeViewingsQuery(supabase, { seller_id: userId }, 10),
     safeQuery<{
       id: string;
       property_address: string;
@@ -303,13 +291,7 @@ async function buildAgentDashboard(
       { agent_id: userId },
       500,
     ),
-    safeQuery<{ id: string; property_address: string; scheduled_at: string; status: string }>(
-      supabase,
-      "viewings",
-      "id, property_address, scheduled_at, status",
-      { agent_id: userId },
-      10,
-    ),
+    safeViewingsQuery(supabase, { agent_id: userId }, 10),
     safeQuerySingle<{ current_month: number; previous_month: number; year_to_date: number }>(
       supabase,
       "agent_revenue_summary",
@@ -485,6 +467,63 @@ export async function logActivity(
 // Safe query helpers (handle missing tables gracefully)
 // ---------------------------------------------------------------------------
 
+/**
+ * Specialised query for viewings that JOINs viewing_slots → listings to
+ * resolve the property address. The `viewings` table does not have a
+ * `property_address` column; it is derived from the associated listing.
+ *
+ * Supabase foreign-key expand syntax:
+ *   viewing_slots!inner( listings!inner(address) )
+ */
+async function safeViewingsQuery(
+  supabase: SupabaseClient,
+  filters: Record<string, string>,
+  limit: number,
+): Promise<Array<{ id: string; property_address: string; scheduled_at: string; status: string }>> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query: any = supabase
+      .from("viewings")
+      .select(
+        "id, scheduled_at, status, viewing_slots!inner(listings!inner(address))",
+      );
+
+    for (const [key, val] of Object.entries(filters)) {
+      query = query.eq(key, val);
+    }
+
+    const { data, error } = await query.limit(limit);
+
+    if (error || !data) {
+      console.error("[dashboard-service] safeViewingsQuery failed", {
+        error,
+        filters,
+      });
+      return [];
+    }
+
+    return (
+      data as Array<{
+        id: string;
+        scheduled_at: string;
+        status: string;
+        viewing_slots: { listings: { address: string } };
+      }>
+    ).map((row) => ({
+      id: row.id,
+      scheduled_at: row.scheduled_at,
+      status: row.status,
+      property_address: row.viewing_slots.listings.address,
+    }));
+  } catch (err) {
+    console.error("[dashboard-service] safeViewingsQuery threw", {
+      error: err,
+      filters,
+    });
+    return [];
+  }
+}
+
 async function safeCount(
   supabase: SupabaseClient,
   table: string,
@@ -497,9 +536,23 @@ async function safeCount(
       .select("*", { count: "exact", head: true })
       .eq(column, value);
 
-    if (error) return 0;
+    if (error) {
+      console.error("[dashboard-service] safeCount failed", {
+        error,
+        table,
+        column,
+        value,
+      });
+      return 0;
+    }
     return count ?? 0;
-  } catch {
+  } catch (err) {
+    console.error("[dashboard-service] safeCount threw", {
+      error: err,
+      table,
+      column,
+      value,
+    });
     return 0;
   }
 }
@@ -521,9 +574,21 @@ async function safeQuery<T>(
 
     const { data, error } = await query.limit(limit);
 
-    if (error || !data) return [];
+    if (error || !data) {
+      console.error("[dashboard-service] safeQuery failed", {
+        error,
+        table,
+        filters,
+      });
+      return [];
+    }
     return data as T[];
-  } catch {
+  } catch (err) {
+    console.error("[dashboard-service] safeQuery threw", {
+      error: err,
+      table,
+      filters,
+    });
     return [];
   }
 }
@@ -544,9 +609,21 @@ async function safeQuerySingle<T>(
 
     const { data, error } = await query.limit(1).maybeSingle();
 
-    if (error || !data) return null;
+    if (error || !data) {
+      console.error("[dashboard-service] safeQuerySingle failed", {
+        error,
+        table,
+        filters,
+      });
+      return null;
+    }
     return data as T;
-  } catch {
+  } catch (err) {
+    console.error("[dashboard-service] safeQuerySingle threw", {
+      error: err,
+      table,
+      filters,
+    });
     return null;
   }
 }
