@@ -2,14 +2,23 @@ import { auditedAdminAction } from "@/lib/audited-admin-action";
 import { resolveReport } from "@/services/admin-service";
 
 export async function POST(req: Request) {
-  const body = (await req.json()) as {
+  let body: {
     reportId: string;
     resolution: "resolved" | "dismissed";
     note?: string;
   };
+  try {
+    body = (await req.json()) as typeof body;
+  } catch {
+    return Response.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   if (!body.reportId || !body.resolution) {
     return Response.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  if (!["resolved", "dismissed"].includes(body.resolution)) {
+    return Response.json({ error: "Invalid resolution value" }, { status: 400 });
   }
 
   return auditedAdminAction(

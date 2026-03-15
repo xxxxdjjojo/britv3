@@ -89,15 +89,17 @@ describe("auditedAdminAction", () => {
     );
     const fn = vi.fn().mockRejectedValue(new Error("DB exploded"));
 
-    await expect(
-      auditedAdminAction(
-        new Request("http://localhost/api/test"),
-        "listing.approve",
-        "listing",
-        "listing-001",
-        fn,
-      ),
-    ).rejects.toThrow("DB exploded");
+    const response = await auditedAdminAction(
+      new Request("http://localhost/api/test"),
+      "listing.approve",
+      "listing",
+      "listing-001",
+      fn,
+    );
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body).toEqual({ error: "DB exploded" });
 
     expect(logAdminAction).toHaveBeenCalledOnce();
     expect(logAdminAction).toHaveBeenCalledWith(

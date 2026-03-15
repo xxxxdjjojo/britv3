@@ -2,14 +2,23 @@ import { auditedAdminAction } from "@/lib/audited-admin-action";
 import { reviewVerification } from "@/services/admin-service";
 
 export async function POST(req: Request) {
-  const body = (await req.json()) as {
+  let body: {
     userId: string;
     decision: "approved" | "rejected";
     notes?: string;
   };
+  try {
+    body = (await req.json()) as typeof body;
+  } catch {
+    return Response.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   if (!body.userId || !body.decision) {
     return Response.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  if (!["approved", "rejected"].includes(body.decision)) {
+    return Response.json({ error: "Invalid decision value" }, { status: 400 });
   }
 
   return auditedAdminAction(

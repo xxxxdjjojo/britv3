@@ -11,11 +11,14 @@ export async function auditedAdminAction(
   const ctx = await adminOnly(request);
   if (ctx instanceof Response) return ctx;
 
+  let result: unknown;
+  let thrownError: unknown;
+
   try {
-    const result = await fn(ctx);
-    return Response.json(result);
+    result = await fn(ctx);
+  } catch (e) {
+    thrownError = e;
   } finally {
-    // Always logs, even if fn throws
     await logAdminAction(ctx.supabase, {
       adminId: ctx.user.id,
       action,
@@ -23,4 +26,12 @@ export async function auditedAdminAction(
       targetId,
     });
   }
+
+  if (thrownError !== undefined) {
+    const message =
+      thrownError instanceof Error ? thrownError.message : "Action failed";
+    return Response.json({ error: message }, { status: 500 });
+  }
+
+  return Response.json(result);
 }
