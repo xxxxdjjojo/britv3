@@ -75,6 +75,14 @@ export async function POST(request: Request) {
     );
   }
 
+  // Prevent path traversal: storage_path must be scoped to this property
+  if (storage_path.includes("..") || !storage_path.startsWith(`${property_id}/`)) {
+    return NextResponse.json(
+      { error: "Invalid storage path" },
+      { status: 400 },
+    );
+  }
+
   // Create signed URL for internal reference (never expose public URL)
   // The storage_path is stored as the document_url reference
   // Consumers fetch a signed URL on demand via createSignedUrl
