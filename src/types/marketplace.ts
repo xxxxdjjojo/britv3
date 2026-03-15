@@ -21,6 +21,10 @@ export type ServiceCategory =
   | "property_management"
   | "pest_control"
   | "locksmith"
+  | "builder"
+  | "plasterer"
+  | "painter"
+  | "carpenter"
   | "other";
 
 export type VerificationDocumentType =
