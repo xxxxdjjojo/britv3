@@ -508,7 +508,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 12. Financial & Referral | v3.1 | 0/2 | Not started | - |
 | 13. Seller Dashboard | v3.2 | 0/10 | Not started | - |
 | 14. Landlord Dashboard | 11/11 | Complete   | 2026-03-14 | - |
-| 15. Estate Agent Dashboard | 8/14 | In Progress|  | - |
+| 15. Estate Agent Dashboard | 9/14 | In Progress|  | - |
 | 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
 | 17. Service Provider Public Profiles | 8/8 | Complete   | 2026-03-14 | - |
 
