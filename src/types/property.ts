@@ -26,6 +26,7 @@ export type ListingStatus =
   | "draft"
   | "active"
   | "under_offer"
+  | "sold_stc"
   | "sold"
   | "let"
   | "withdrawn"

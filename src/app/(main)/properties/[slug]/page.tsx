@@ -23,6 +23,7 @@ import {
 import { Gallery } from "@/components/properties/Gallery";
 import { FloorPlan } from "@/components/properties/FloorPlan";
 import { PriceHistory } from "@/components/properties/PriceHistory";
+import type { PriceHistory as PriceHistoryRow, EpcRating } from "@/types/property";
 import { ViewingBooking } from "@/components/properties/ViewingBooking";
 import { createClient } from "@/lib/supabase/server";
 import { getListingBySlug } from "@/services/properties/property-detail-service";
@@ -61,10 +62,10 @@ export async function generateMetadata({
 
   return {
     title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
-    description: property.description.slice(0, 160),
+    description: (property.description ?? "").slice(0, 160),
     openGraph: {
       title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
-      description: property.description.slice(0, 160),
+      description: (property.description ?? "").slice(0, 160),
       images: detail.media
         .filter((m) => m.media_type === "image")
         .slice(0, 1)
@@ -102,7 +103,7 @@ function extractFeatureItems(features: Record<string, unknown>): string[] {
 }
 
 function formatPriceHistory(
-  rows: { id: string; listing_id: string; old_price: number; new_price: number; changed_at: Date; changed_by: string | null }[],
+  rows: PriceHistoryRow[],
 ): { date: string; price: number; event?: string }[] {
   return rows.map((row, i) => ({
     date:
@@ -158,7 +159,7 @@ export default async function PropertyPage({
   const sqft = property.square_footage ?? 0;
   const propertyTypeLabel = formatPropertyType(property.property_type);
   const tenureLabel = formatTenure(property.tenure ?? null);
-  const epc = property.epc_rating ?? "N/A";
+  const epc: EpcRating | "N/A" = property.epc_rating ?? "N/A";
   const councilTax = property.council_tax_band
     ? `Band ${property.council_tax_band}`
     : "Unknown";
@@ -414,7 +415,8 @@ export default async function PropertyPage({
                 <div className="size-12 rounded-full bg-neutral-200 flex items-center justify-center text-lg font-bold text-neutral-500 shrink-0">
                   {agent.name
                     .split(" ")
-                    .map((n) => n[0])
+                    .map((n) => n.charAt(0))
+                    .filter(Boolean)
                     .join("")}
                 </div>
                 <div>
