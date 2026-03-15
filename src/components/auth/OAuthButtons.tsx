@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { signInWithOAuth } from "@/services/auth/auth-service";
+import { createClient } from "@/lib/supabase/client";
 
 function GoogleIcon() {
   return (
@@ -27,13 +28,31 @@ function GoogleIcon() {
   );
 }
 
-export function OAuthButtons() {
+function OAuthButtonsInner() {
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
 
   async function handleGoogle() {
     setLoading(true);
     try {
-      const { error } = await signInWithOAuth("google");
+      const supabase = createClient();
+      const professionalRole = searchParams.get("professional");
+      const origin = window.location.origin;
+
+      sessionStorage.setItem("brite_return_url", window.location.pathname);
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+            state: professionalRole ? `role:${professionalRole}` : "",
+          },
+          redirectTo: `${origin}/auth/callback?next=/dashboard`,
+        },
+      });
+
       if (error) {
         console.error("Google OAuth error:", error.message);
       }
@@ -53,5 +72,20 @@ export function OAuthButtons() {
       <GoogleIcon />
       Continue with Google
     </Button>
+  );
+}
+
+export function OAuthButtons() {
+  return (
+    <Suspense
+      fallback={
+        <Button variant="outline" size="lg" className="w-full gap-2" disabled>
+          <GoogleIcon />
+          Continue with Google
+        </Button>
+      }
+    >
+      <OAuthButtonsInner />
+    </Suspense>
   );
 }
