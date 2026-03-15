@@ -125,15 +125,7 @@ function StatusBadge({ status }: Readonly<{ status: string }>) {
 
 // -- Main page ----------------------------------------------------------------
 
-export default function NoticesPage() {
-  if (process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED !== "true") {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-sm text-gray-500">This feature is not available.</p>
-      </div>
-    );
-  }
-
+function NoticesPageInner() {
   const supabase = createClient();
   const [activeTab, setActiveTab] = useState<"section21" | "section8">(
     "section21",
@@ -672,4 +664,16 @@ export default function NoticesPage() {
       </div>
     </div>
   );
+}
+
+export default function NoticesPage() {
+  if (process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED !== "true") {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-sm text-gray-500">This feature is not available.</p>
+      </div>
+    );
+  }
+
+  return <NoticesPageInner />;
 }
