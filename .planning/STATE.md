@@ -4,7 +4,7 @@ milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
 stopped_at: Completed 15-estate-agent-dashboard 15-14-PLAN.md
-last_updated: "2026-03-15T12:53:19.739Z"
+last_updated: "2026-03-15T13:43:56.347Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
@@ -178,6 +178,7 @@ Recent decisions affecting current work:
 - [Phase 15]: Adjacent-only Kanban validation layered: client opacity-40 muting + server 422 via ALLOWED_TRANSITIONS
 - [Phase 15-estate-agent-dashboard]: next.config.ts already uses serverExternalPackages (Next.js 15+ name) for @react-pdf/renderer — no config change needed
 - [Phase 15-estate-agent-dashboard]: ApiKeyManager one-time reveal uses GenerateState discriminated union in component state — raw key never re-fetchable after dialog close
+- [Phase 15]: API call patterns must use query params for action routing in billing/feeds routes, not request body
 
 ### Pending Todos
 
@@ -192,6 +193,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T12:53:19.728Z
+Last session: 2026-03-15T13:43:52.135Z
 Stopped at: Completed 15-estate-agent-dashboard 15-14-PLAN.md
 Resume file: None

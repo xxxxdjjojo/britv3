@@ -95,11 +95,32 @@ Each task was committed atomically:
 
 ## Deviations from Plan
 
-None - plan executed exactly as written.
+### Auto-fixed Issues (2026-03-15 re-execution)
+
+**1. [Rule 1 - Bug] Fixed billing API query param vs body confusion in ApiKeyManager**
+- **Found during:** Task 1 review
+- **Issue:** `handleGenerate` sent `action: "generate_key"` in the JSON body but `POST /api/agent/billing` reads `action` from `searchParams`. Key list refresh used `?action=list_keys` which doesn't exist — correct endpoint is `?type=keys` returning a direct array.
+- **Fix:** Changed POST to `?action=generate_key`, removed action from body; changed refresh fetch to `?type=keys` handling direct array response.
+- **Files modified:** `src/components/dashboard/agent/integrations/ApiKeyManager.tsx`
+- **Commit:** 3a06f2f
+
+**2. [Rule 1 - Bug] Fixed billing DELETE to use query param in ApiKeyManager**
+- **Found during:** Task 1 review
+- **Issue:** `handleRevoke` sent DELETE with JSON body `{ action: "revoke_key", key_id }` but the DELETE handler reads `keyId` from `searchParams` and does no body parsing.
+- **Fix:** Changed to `DELETE /api/agent/billing?keyId=<id>` with no body.
+- **Files modified:** `src/components/dashboard/agent/integrations/ApiKeyManager.tsx`
+- **Commit:** 3a06f2f
+
+**3. [Rule 1 - Bug] Fixed feeds API call patterns in FeedIntegrationConfig**
+- **Found during:** Task 2 review
+- **Issue:** `handleSave` used a single POST with `action: "update_feed"/"create_feed"` wrapper, but the feeds route uses REST semantics — PATCH for updates (with `?id=` query param), POST for creates. `handleSyncNow` incorrectly used POST with action body. `handleDelete` sent body that route ignores.
+- **Fix:** Separated create (POST to `/api/agent/feeds`) from update (PATCH to `?id=<id>`); fixed syncNow to PATCH `?id=` with `{ sync_status: 'syncing' }`; fixed delete to `DELETE ?id=<id>` with no body.
+- **Files modified:** `src/components/dashboard/agent/integrations/FeedIntegrationConfig.tsx`
+- **Commit:** 7a3a207
 
 ## Issues Encountered
 
-None.
+API call patterns in both client components didn't match the route handler contracts. All three discrepancies were auto-fixed (Rule 1).
 
 ## User Setup Required
 
