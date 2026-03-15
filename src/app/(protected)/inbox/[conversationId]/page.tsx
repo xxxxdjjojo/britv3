@@ -2,9 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import MessageThread from "@/components/messaging/MessageThread";
-import MessageComposer from "@/components/messaging/MessageComposer";
+import ConversationQuickActions from "@/components/messaging/ConversationQuickActions";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 type PageProps = Readonly<{
   params: Promise<{ conversationId: string }>;
@@ -49,9 +48,12 @@ export default async function ConversationPage({ params }: PageProps) {
     <div className="container max-w-3xl mx-auto py-6 flex flex-col h-[calc(100vh-8rem)]">
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b mb-0">
-        <Button variant="ghost" size="sm" render={<Link href="/inbox" />}>
+        <Link
+          href="/inbox"
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium h-8 px-3 hover:bg-accent hover:text-accent-foreground transition-colors"
+        >
           Back
-        </Button>
+        </Link>
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold">{participantName}</h1>
           <Badge variant="secondary" className="capitalize">
@@ -60,16 +62,19 @@ export default async function ConversationPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Message thread */}
+      {/* Message thread (includes MessageComposer internally) */}
       <div className="flex-1 overflow-hidden border-x bg-card">
-        <MessageThread />
-      </div>
-
-      {/* Composer (sticky at bottom) */}
-      <div className="border rounded-b-lg bg-card">
-        <MessageComposer
+        <MessageThread
           conversationId={conversationId}
           recipientId={otherUserId}
+          participantName={participantName}
+        />
+      </div>
+
+      {/* Quick actions */}
+      <div className="border-x bg-card">
+        <ConversationQuickActions
+          participantName={participantName}
           contextType={conversation.context_type}
         />
       </div>
