@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import type { AgentTeamMember, AgentBranch, TeamRole } from "@/types/agent";
 import { TEAM_ROLES } from "@/types/agent";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -280,8 +279,8 @@ export function TeamMemberList({ initialMembers, branches }: Props) {
 
         {/* Invite button */}
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-          <DialogTrigger>
-            <Button size="sm" onClick={() => setInviteOpen(true)}>
+          <DialogTrigger asChild>
+            <Button size="sm">
               <UserPlus className="mr-2 size-4" />
               Invite Team Member
             </Button>
@@ -478,7 +477,7 @@ function MemberCard({
       {/* Actions dropdown */}
       <div className="absolute right-3 top-3">
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="size-7">
               <MoreVertical className="size-4" />
               <span className="sr-only">Actions</span>

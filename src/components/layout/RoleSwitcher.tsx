@@ -63,20 +63,18 @@ export function RoleSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" className="w-full justify-start gap-2 px-3" />
-        }
-      >
-        {switching ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : ActiveIcon ? (
-          <ActiveIcon className="size-4 text-brand-primary" />
-        ) : null}
-        <span className="flex-1 truncate text-left text-sm font-medium">
-          {activeRoleDef?.label ?? "Select role"}
-        </span>
-        <ChevronDown className="size-4 text-neutral-400" />
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="w-full justify-start gap-2 px-3">
+          {switching ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : ActiveIcon ? (
+            <ActiveIcon className="size-4 text-brand-primary" />
+          ) : null}
+          <span className="flex-1 truncate text-left text-sm font-medium">
+            {activeRoleDef?.label ?? "Select role"}
+          </span>
+          <ChevronDown className="size-4 text-neutral-400" />
+        </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" sideOffset={4}>
