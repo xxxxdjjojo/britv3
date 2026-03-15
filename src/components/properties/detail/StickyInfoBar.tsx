@@ -14,7 +14,8 @@ type VelocityBadgeProps = {
 };
 
 function PriceVelocityBadge({ pct }: VelocityBadgeProps) {
-  if (pct === null || pct === undefined || pct === 0) return null;
+  if (pct == null || !Number.isFinite(pct)) return null;
+  if (pct === 0) return null;
 
   if (pct > 5) {
     return (

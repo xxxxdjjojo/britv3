@@ -7,6 +7,18 @@ type VideoTourPlayerProps = Readonly<{
 }>;
 
 // ---------------------------------------------------------------------------
+// URL validation
+// ---------------------------------------------------------------------------
+
+function isValidVideoUrl(url: string): boolean {
+  try {
+    return new URL(url).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // YouTube URL helpers
 // ---------------------------------------------------------------------------
 
@@ -32,7 +44,8 @@ function toYouTubeEmbedUrl(url: string): string {
 
     // youtu.be short link
     if (parsed.hostname === "youtu.be") {
-      const id = parsed.pathname.slice(1);
+      const id = parsed.pathname.slice(1).split("/")[0];
+      if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) return url;
       return `https://www.youtube.com/embed/${id}`;
     }
 
@@ -53,7 +66,7 @@ function toYouTubeEmbedUrl(url: string): string {
 
 export function VideoTourPlayer({ videoUrl }: VideoTourPlayerProps) {
   // Empty state
-  if (!videoUrl) {
+  if (!videoUrl || !isValidVideoUrl(videoUrl)) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 rounded-xl border bg-neutral-50 p-10 text-center">
         <Video className="size-10 text-neutral-300" />
@@ -71,8 +84,7 @@ export function VideoTourPlayer({ videoUrl }: VideoTourPlayerProps) {
 
   // 16:9 aspect-ratio container
   const containerClass =
-    "relative w-full overflow-hidden rounded-xl border" +
-    " [aspect-ratio:16/9]";
+    "relative w-full overflow-hidden rounded-xl border aspect-video";
 
   if (isYouTubeUrl(videoUrl)) {
     const embedUrl = toYouTubeEmbedUrl(videoUrl);

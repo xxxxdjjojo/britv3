@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { X, Expand, LayoutTemplate } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ export type FloorPlanAnnotation = {
   vs_average: "above" | "below" | "average";
 };
 
-type Floor = { label: string; imageUrl: string };
+export type Floor = { label: string; imageUrl: string };
 
 type FloorPlanViewerProps = Readonly<{
   floors: Array<Floor>;
@@ -77,6 +77,44 @@ export function FloorPlanViewer({
 }: FloorPlanViewerProps) {
   const [activeFloor, setActiveFloor] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // -------------------------------------------------------------------------
+  // Lightbox open / close with history shim (back button fix)
+  // -------------------------------------------------------------------------
+
+  const openLightbox = useCallback(() => {
+    setLightboxOpen(true);
+    history.pushState({ lightboxOpen: true }, "");
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    if (window.history.state?.lightboxOpen) {
+      window.history.back(); // popstate handler will call setLightboxOpen(false)
+    } else {
+      setLightboxOpen(false);
+    }
+  }, []);
+
+  const handlePopState = useCallback((e: PopStateEvent) => {
+    if (!(e.state as { lightboxOpen?: boolean } | null)?.lightboxOpen) {
+      setLightboxOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [handlePopState]);
+
+  // Escape key closes the lightbox
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [lightboxOpen, closeLightbox]);
 
   // Empty state
   if (floors.length === 0) {
@@ -142,7 +180,7 @@ export function FloorPlanViewer({
               variant="secondary"
               size="sm"
               className="absolute bottom-3 right-3 gap-1.5 shadow-sm"
-              onClick={() => setLightboxOpen(true)}
+              onClick={openLightbox}
             >
               <Expand className="size-4" />
               Expand
@@ -175,7 +213,7 @@ export function FloorPlanViewer({
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <button
             className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-            onClick={() => setLightboxOpen(false)}
+            onClick={closeLightbox}
             aria-label="Close floor plan"
           >
             <X className="size-5" />

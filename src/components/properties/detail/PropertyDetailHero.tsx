@@ -42,6 +42,12 @@ function getStatusBadge(status: ListingStatus): BadgeStyle {
         className:
           "bg-blue-100 text-blue-800 border border-blue-200",
       };
+    case "draft":
+      return {
+        label: "Draft",
+        className:
+          "bg-orange-100 text-orange-800 border border-orange-200",
+      };
     case "archived":
     case "withdrawn":
     default:

@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, X, Home, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type GalleryImage = { src: string; alt: string };
+export type GalleryImage = { src: string; alt: string };
 
 type HeroGalleryProps = Readonly<{
   images: Array<GalleryImage>;
@@ -29,18 +29,23 @@ export function HeroGallery({ images, highlightText, className }: HeroGalleryPro
   }, []);
 
   const closeLightbox = useCallback(() => {
-    setLightboxOpen(false);
+    if (window.history.state?.lightboxOpen) {
+      window.history.back(); // popstate handler will call setLightboxOpen(false)
+    } else {
+      setLightboxOpen(false);
+    }
+  }, []);
+
+  const handlePopState = useCallback((e: PopStateEvent) => {
+    if (!(e.state as { lightboxOpen?: boolean } | null)?.lightboxOpen) {
+      setLightboxOpen(false);
+    }
   }, []);
 
   useEffect(() => {
-    function handlePopState(e: PopStateEvent) {
-      if (lightboxOpen && !(e.state as { lightboxOpen?: boolean } | null)?.lightboxOpen) {
-        setLightboxOpen(false);
-      }
-    }
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [lightboxOpen]);
+  }, [handlePopState]);
 
   // -------------------------------------------------------------------------
   // Keyboard navigation in lightbox
