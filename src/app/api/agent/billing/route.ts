@@ -10,6 +10,19 @@ import {
   getApiKeys,
 } from "@/services/agent/agent-billing-service";
 
+function isValidReturnUrl(url: string): boolean {
+  if (url.startsWith("/")) return true;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!appUrl) return false;
+  try {
+    const parsed = new URL(url);
+    const allowed = new URL(appUrl);
+    return parsed.origin === allowed.origin;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * GET /api/agent/billing
  *
@@ -91,6 +104,9 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
+        if (!isValidReturnUrl(success_url) || !isValidReturnUrl(cancel_url)) {
+          return NextResponse.json({ error: "Invalid redirect URL" }, { status: 400 });
+        }
         const url = await createCheckoutSession(
           user.id,
           price_id,
@@ -107,6 +123,9 @@ export async function POST(request: Request) {
             { error: "return_url is required" },
             { status: 400 },
           );
+        }
+        if (!isValidReturnUrl(return_url)) {
+          return NextResponse.json({ error: "Invalid return URL" }, { status: 400 });
         }
         const url = await getCustomerPortalUrl(supabase, user.id, return_url);
         return NextResponse.json({ url });
