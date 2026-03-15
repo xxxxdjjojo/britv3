@@ -1,6 +1,10 @@
 export default function PropertyDetailLoading() {
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div
+      className="min-h-screen bg-neutral-50"
+      role="status"
+      aria-label="Loading property details"
+    >
       {/* ── Hero Gallery Skeleton ────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Main image skeleton (16:10 aspect ratio) */}
@@ -18,7 +22,7 @@ export default function PropertyDetailLoading() {
       </div>
 
       {/* ── Sticky Info Bar Skeleton ─────────────────────────────── */}
-      <div className="border-y border-neutral-200 bg-white py-4">
+      <div className="sticky top-16 z-20 border-y border-neutral-200 bg-white py-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:gap-8">
             {/* Price skeleton */}
@@ -49,9 +53,9 @@ export default function PropertyDetailLoading() {
 
       {/* ── Main Content Grid ──────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid gap-12 lg:grid-cols-3">
+        <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
           {/* Left Column (65%) */}
-          <div className="space-y-12 lg:col-span-2">
+          <div className="space-y-12">
             {/* Section 1: About skeleton */}
             <div className="space-y-4">
               <div className="h-8 w-32 animate-pulse rounded-lg bg-neutral-300" />

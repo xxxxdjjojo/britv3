@@ -1,11 +1,8 @@
-export default async function PropertyDetailLayout(
-  props: Readonly<{
-    children: React.ReactNode;
-    params: Promise<{ slug: string }>;
-  }>,
-) {
-  const { slug } = await props.params;
+import type { ReactNode } from "react";
 
+export default function PropertyDetailLayout(
+  props: Readonly<{ children: ReactNode }>
+) {
   // Layout is transparent pass-through for now.
   // The (main) layout handles header/footer/providers.
   // This layout exists so we can add property-specific metadata/providers later

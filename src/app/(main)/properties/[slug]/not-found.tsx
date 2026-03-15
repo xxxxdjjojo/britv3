@@ -2,11 +2,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, Search, MapPin } from "lucide-react";
 
-export const metadata = {
-  title: "Property Not Found | Britestate",
-  description: "The property you're looking for is not available.",
-};
-
 export default function PropertyNotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-50 px-4 py-12">
