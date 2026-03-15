@@ -108,6 +108,13 @@ export async function POST(request: NextRequest) {
     });
 
   if (uploadError) {
+    // Old file was already deleted; null out the dangling reference so the profile
+    // doesn't hold a broken avatar_url pointing to the now-deleted storage object.
+    await supabase
+      .from("profiles")
+      .update({ avatar_url: null })
+      .eq("id", user.id);
+
     return NextResponse.json({ error: "Failed to upload avatar" }, { status: 500 });
   }
 
