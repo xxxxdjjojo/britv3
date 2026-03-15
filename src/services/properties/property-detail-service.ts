@@ -103,7 +103,11 @@ export async function getListingBySlug(
   };
 
   // Populate cache — non-blocking
-  setCache(cacheKey, result, SLUG_CACHE_TTL).catch(() => undefined);
+  setCache(cacheKey, result, SLUG_CACHE_TTL).catch((err: unknown) => {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[property-detail-service] Redis cache write failed:", err instanceof Error ? err.message : err);
+    }
+  });
 
   return result;
 }
@@ -153,22 +157,13 @@ async function _fetchAgentProfile(
 // getPriceHistoryForListing
 // ---------------------------------------------------------------------------
 
-export type PriceHistoryEntry = {
-  id: string;
-  listing_id: string;
-  old_price: number;
-  new_price: number;
-  changed_at: string;
-  changed_by: string | null;
-};
-
 /**
  * Fetch price history rows for a listing, newest first.
  */
 export async function getPriceHistoryForListing(
   supabase: SupabaseClient,
   listingId: string,
-): Promise<PriceHistoryEntry[]> {
+): Promise<PriceHistory[]> {
   const { data, error } = await supabase
     .from("price_history")
     .select("*")
@@ -179,7 +174,7 @@ export async function getPriceHistoryForListing(
     throw new Error(`Failed to fetch price history: ${error.message}`);
   }
 
-  return (data ?? []) as PriceHistoryEntry[];
+  return (data ?? []) as unknown as PriceHistory[];
 }
 
 // ---------------------------------------------------------------------------
