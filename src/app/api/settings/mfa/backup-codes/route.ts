@@ -2,10 +2,33 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createRateLimiter } from "@/lib/cache/redis";
+import { Redis } from "@upstash/redis";
+import { Ratelimit } from "@upstash/ratelimit";
 
-// 3 regenerations per 24 hours per user
-const backupCodesRateLimiter = createRateLimiter(3, "24 h");
+// 3 regenerations per 24 hours per user (fixed window)
+function getBackupCodesRateLimiter() {
+  const url = process.env.UPSTASH_REDIS_URL;
+  const token = process.env.UPSTASH_REDIS_TOKEN;
+
+  if (!url || !token) {
+    // Degrade gracefully — always allow when Redis is not configured
+    return {
+      limit: async (_identifier: string) => ({
+        success: true,
+        limit: 3,
+        remaining: 2,
+        reset: Date.now() + 86_400_000,
+      }),
+    };
+  }
+
+  const redis = new Redis({ url, token });
+  return new Ratelimit({
+    redis,
+    limiter: Ratelimit.fixedWindow(3, "24 h"),
+    analytics: false,
+  });
+}
 
 function generateBackupCode(): string {
   return randomBytes(5).toString("hex").toUpperCase();
@@ -26,8 +49,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Rate limit: 3 regenerations per 24 hours per user
-  const { success: rateLimitOk } = await backupCodesRateLimiter.limit(
+  // Rate limit: 3 regenerations per 24 hours per user (fixed window)
+  const ratelimit = getBackupCodesRateLimiter();
+  const { success: rateLimitOk } = await ratelimit.limit(
     `mfa:backup-codes:${user.id}`,
   );
   if (!rateLimitOk) {

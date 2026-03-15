@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   console.log(
-    JSON.stringify({ user_id: user.id, event: "mfa_unenrolled" }),
+    JSON.stringify({ user_id: user.id, event: "unenrolled" }),
   );
 
   return NextResponse.json({ success: true });
