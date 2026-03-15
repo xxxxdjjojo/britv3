@@ -16,8 +16,8 @@ export function penceToGBP(pence: number): number {
 
 /**
  * Convert a GBP float to a pence integer for storage in the database.
- * e.g. GBPToPence(1250.50) → 125050
+ * e.g. gbpToPence(1250.50) → 125050
  */
-export function GBPToPence(gbp: number): number {
+export function gbpToPence(gbp: number): number {
   return Math.round(gbp * 100);
 }

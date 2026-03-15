@@ -609,15 +609,11 @@ async function safeQuerySingle<T>(
 
     const { data, error } = await query.limit(1).maybeSingle();
 
-    if (error || !data) {
-      console.error("[dashboard-service] safeQuerySingle failed", {
-        error,
-        table,
-        filters,
-      });
+    if (error) {
+      console.error("[dashboard-service] safeQuerySingle failed", { error, table, filters });
       return null;
     }
-    return data as T;
+    return data as T | null; // null when row not found — that is fine
   } catch (err) {
     console.error("[dashboard-service] safeQuerySingle threw", {
       error: err,
