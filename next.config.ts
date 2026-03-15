@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
       { source: "/cookies", destination: "/legal/cookies", permanent: true },
       { source: "/accessibility", destination: "/legal/accessibility", permanent: true },
       { source: "/complaints", destination: "/legal/complaints", permanent: true },
+      { source: "/signup", destination: "/register", permanent: false },
     ];
   },
 };
