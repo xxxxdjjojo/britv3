@@ -11,13 +11,19 @@ export async function PATCH(
 ) {
   const { id } = await params;
 
+  let body: SeoPayload;
+  try {
+    body = (await req.json()) as SeoPayload;
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
   return auditedAdminAction(
     req,
     "cms.seo_update",
     "cms_article",
     id,
     async ({ supabase }) => {
-      const body = (await req.json()) as SeoPayload;
 
       const { error } = await supabase
         .from("cms_articles")

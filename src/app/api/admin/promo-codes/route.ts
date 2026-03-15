@@ -11,13 +11,19 @@ type PromoCodePayload = {
 };
 
 export async function POST(req: Request) {
+  let body: PromoCodePayload;
+  try {
+    body = (await req.json()) as PromoCodePayload;
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
   return auditedAdminAction(
     req,
     "promo_code.create",
     "promo_code",
     "new",
     async ({ supabase }) => {
-      const body = (await req.json()) as PromoCodePayload;
 
       if (!body.code?.trim()) throw new Error("Code is required");
       if (!body.discount_value || body.discount_value <= 0) {

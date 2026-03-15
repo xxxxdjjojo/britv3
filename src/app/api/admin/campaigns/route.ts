@@ -9,13 +9,19 @@ type CampaignPayload = {
 };
 
 export async function POST(req: Request) {
+  let body: CampaignPayload;
+  try {
+    body = (await req.json()) as CampaignPayload;
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
   return auditedAdminAction(
     req,
     "campaign.create",
     "email_campaign",
     "new",
     async ({ supabase }) => {
-      const body = (await req.json()) as CampaignPayload;
 
       if (!body.name?.trim()) throw new Error("Campaign name is required");
       if (!body.subject?.trim()) throw new Error("Subject is required");

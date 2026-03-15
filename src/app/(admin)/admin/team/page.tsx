@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { TeamClient } from "@/components/admin/TeamClient";
-import { Users } from "lucide-react";
 
 export type TeamMember = {
   id: string;
@@ -36,15 +34,7 @@ export default async function TeamPage() {
         description="View and manage admin users. Invite new team members via email."
       />
 
-      {members.length === 0 ? (
-        <AdminEmptyState
-          icon={Users}
-          title="No admin team members"
-          description="Invite admins via the form below."
-        />
-      ) : (
-        <TeamClient members={members} />
-      )}
+      <TeamClient members={members} />
     </div>
   );
 }

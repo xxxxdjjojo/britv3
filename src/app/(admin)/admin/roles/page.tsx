@@ -20,15 +20,16 @@ type RoleCount = {
 export default async function RolesPage() {
   const supabase = await createClient();
 
-  // Count users per role in a single query
-  const counts: RoleCount[] = [];
-  for (const role of ALL_ROLES) {
-    const { count } = await supabase
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", role);
-    counts.push({ role, count: count ?? 0 });
-  }
+  // Count users per role in parallel
+  const counts: RoleCount[] = await Promise.all(
+    ALL_ROLES.map(async (role) => {
+      const { count } = await supabase
+        .from("profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("role", role);
+      return { role, count: count ?? 0 };
+    }),
+  );
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminAction, AdminActionError } from "@/lib/audited-admin-action";
 import { fulfilGdprRequest } from "@/services/admin/gdpr-service";
 
 export async function POST(
@@ -14,10 +14,7 @@ export async function POST(
     async ({ supabase, user }) => {
       const result = await fulfilGdprRequest(supabase, id, user.id);
       if (result.alreadyFulfilled) {
-        return Response.json(
-          { message: "Request already fulfilled or in progress" },
-          { status: 409 },
-        );
+        throw new AdminActionError("Request already fulfilled or in progress", 409);
       }
       if (!result.accepted) throw new Error("Failed to accept GDPR request");
       return { accepted: true, requestId: id };

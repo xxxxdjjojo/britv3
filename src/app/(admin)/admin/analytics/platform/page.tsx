@@ -24,8 +24,7 @@ type PlatformAnalytics = {
 async function fetchPlatformAnalytics(): Promise<PlatformAnalytics> {
   const supabase = await createClient();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const safeCount = async (query: PromiseLike<{ count: number | null; error: any }>): Promise<number> => {
+  const safeCount = async (query: PromiseLike<{ count: number | null; error: unknown }>): Promise<number> => {
     try {
       const { count, error } = await query;
       if (error) return 0;
@@ -149,13 +148,13 @@ async function PlatformMetricsContent() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <KpiCard
-          label="DAU (Today)"
+          label="Admin Actions Today"
           value={analytics.dau}
           icon={TrendingUp}
           color="#1B4D3E"
         />
         <KpiCard
-          label="MAU (30 days)"
+          label="Active Users (30d)"
           value={analytics.mau}
           icon={TrendingUp}
           color="#D4A853"

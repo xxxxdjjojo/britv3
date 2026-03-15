@@ -20,7 +20,7 @@ async function pingSupabase(): Promise<ServiceStatus> {
   const start = Date.now();
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    if (!url) return { name: "Supabase DB", status: "down", latencyMs: null, error: "NEXT_PUBLIC_SUPABASE_URL not set" };
+    if (!url) return { name: "Supabase DB", status: "down", latencyMs: null, error: "Service not configured" };
     const res = await fetch(`${url}/rest/v1/`, {
       headers: {
         apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",

@@ -32,8 +32,8 @@ const ALL_ROLES = [
   "renter",
   "seller",
   "landlord",
-  "agent",
-  "provider",
+  "estate_agent",
+  "service_provider",
   "admin",
 ];
 

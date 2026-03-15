@@ -292,14 +292,15 @@ export function CmsEditor({ article, articleType, backHref }: Props) {
                 <button
                   type="button"
                   onClick={() => {
-                    const url = window.prompt("Link URL:");
-                    if (url) {
-                      editor
-                        ?.chain()
-                        .focus()
-                        .setLink({ href: url })
-                        .run();
+                    const url = window.prompt(
+                      "Enter URL (must start with https:// or http://):",
+                    );
+                    if (!url) return;
+                    if (!/^https?:\/\//i.test(url)) {
+                      alert("URL must start with https:// or http://");
+                      return;
                     }
+                    editor?.chain().focus().setLink({ href: url }).run();
                   }}
                   className={`px-2 py-1 rounded text-xs transition-colors ${
                     editor?.isActive("link")
