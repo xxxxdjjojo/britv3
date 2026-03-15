@@ -12,8 +12,11 @@ type RoleServiceResult<T = null> = {
  * Throws on failure — callers are responsible for error handling.
  */
 export async function assignRole(userId: string, role: UserRole): Promise<void> {
+  if (!userId) throw new Error("assignRole: userId is required");
+
   const supabase = await createClient();
 
+  // TODO: wrap in RPC for atomicity
   const { error: upsertError } = await supabase
     .from("user_roles")
     .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
