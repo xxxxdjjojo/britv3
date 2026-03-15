@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-04-PLAN.md
-last_updated: "2026-03-15T11:34:53.707Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-12-PLAN.md
+last_updated: "2026-03-15T11:46:54.039Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 7
   total_plans: 112
-  completed_plans: 82
+  completed_plans: 83
   percent: 49
 ---
 
@@ -79,6 +79,7 @@ Progress: [█████░░░░░] 49%
 | Phase 15-estate-agent-dashboard P10 | 35 | 2 tasks | 6 files |
 | Phase 15-estate-agent-dashboard P11 | 19 | 2 tasks | 9 files |
 | Phase 15 P04 | 35 | 2 tasks | 7 files |
+| Phase 15-estate-agent-dashboard P12 | 12 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -164,6 +165,9 @@ Recent decisions affecting current work:
 - [Phase 15-estate-agent-dashboard]: base-ui Select onValueChange returns string|null — always wrap with (v) => setState(v ?? fallback); DialogTrigger/DropdownMenuTrigger do not support asChild
 - [Phase 15]: Stripe package installed (stripe@20.4.1) and used with live SDK; getStripe() helper throws descriptively if STRIPE_SECRET_KEY missing
 - [Phase 15]: API keys stored with SHA-256 hash only; raw key returned once at generation, key_hash excluded from all list responses
+- [Phase 15-estate-agent-dashboard]: Reviews dashboard computes monthly trend server-side from raw review array — avoids extra SQL aggregation query
+- [Phase 15-estate-agent-dashboard]: Profanity filter uses hardcoded Set<string> with regex whole-word boundary — no external library per plan spec
+- [Phase 15-estate-agent-dashboard]: StripeSubscriptionSummary lightweight mapper in billing/page.tsx keeps Stripe SDK types out of client bundle
 
 ### Pending Todos
 
@@ -178,6 +182,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T11:34:53.696Z
-Stopped at: Completed 15-04-PLAN.md
+Last session: 2026-03-15T11:46:54.032Z
+Stopped at: Completed 15-estate-agent-dashboard 15-12-PLAN.md
 Resume file: None
