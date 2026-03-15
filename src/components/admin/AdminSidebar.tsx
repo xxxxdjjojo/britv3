@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -9,7 +9,7 @@ import {
   Shield,
   Settings,
   FileText,
-  TrendingUp,
+  LineChart,
   Users,
   BarChart2,
   DollarSign,
@@ -90,12 +90,12 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Blog", href: "/admin/cms/blog", icon: BookOpen },
       { label: "Help Articles", href: "/admin/cms/help", icon: HelpCircle },
       { label: "Landing Pages", href: "/admin/cms/landing", icon: Globe },
-      { label: "SEO", href: "/admin/seo", icon: TrendingUp },
+      { label: "SEO", href: "/admin/seo", icon: Search },
     ],
   },
   {
     label: "Growth",
-    icon: TrendingUp,
+    icon: LineChart,
     items: [
       { label: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
       { label: "Promo Codes", href: "/admin/promo-codes", icon: Tag },
@@ -159,6 +159,14 @@ function CollapsibleGroup({
 }>) {
   const [open, setOpen] = useState(() => isGroupActive(group, pathname));
   const GroupIcon = group.icon;
+
+  useEffect(() => {
+    const shouldBeOpen = isGroupActive(group, pathname);
+    if (shouldBeOpen) {
+      setOpen(true); // auto-expand when navigating into this group
+      // Don't auto-collapse — let user control closing
+    }
+  }, [pathname, group]);
 
   return (
     <div>
