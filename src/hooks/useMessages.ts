@@ -62,6 +62,10 @@ export function useSendMessage(conversationId: string) {
       content: string;
       recipient_id: string;
       context_type?: string;
+      message_id?: string;
+      attachment_url?: string;
+      attachment_type?: string;
+      attachment_size_bytes?: number;
     }) => {
       const res = await fetch(`/api/messages/${conversationId}`, {
         method: "POST",

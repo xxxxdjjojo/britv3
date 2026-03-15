@@ -23,6 +23,10 @@ export const sendMessageSchema = z.object({
   content: z.string().min(1, "Message cannot be empty").max(5000, "Message too long (max 5 000 chars)"),
   context_type: z.enum(["listing", "booking", "rfq", "general"]),
   context_id: z.string().uuid().optional(),
+  message_id: z.string().uuid().optional(),
+  attachment_url: z.string().url().optional(),
+  attachment_type: z.enum(["image", "pdf"]).optional(),
+  attachment_size_bytes: z.number().int().positive().optional(),
 });
 
 export type SendMessagePayload = z.infer<typeof sendMessageSchema>;
@@ -224,9 +228,17 @@ export async function sendMessage(
   const { data: message, error } = await supabase
     .from("messages")
     .insert({
+      ...(input.message_id ? { id: input.message_id } : {}),
       conversation_id: conversationId,
       sender_id: senderId,
       content: sanitizedContent,
+      ...(input.attachment_url
+        ? {
+            attachment_url: input.attachment_url,
+            attachment_type: input.attachment_type,
+            attachment_size_bytes: input.attachment_size_bytes,
+          }
+        : {}),
     })
     .select()
     .single();

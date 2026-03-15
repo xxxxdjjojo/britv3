@@ -5,7 +5,10 @@
  */
 
 import { useRef, useState, useCallback } from "react";
+import { toast } from "sonner";
 import { useSendMessage } from "@/hooks/useMessages";
+import { createClient } from "@/lib/supabase/client";
+import { uploadAttachment } from "@/services/messaging/attachment-service";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import AttachmentPreview from "@/components/messaging/AttachmentPreview";
@@ -22,6 +25,7 @@ export default function MessageComposer(
   const { conversationId, recipientId, contextType = "general" } = props;
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sendMutation = useSendMessage(conversationId);
@@ -29,12 +33,42 @@ export default function MessageComposer(
   const handleSend = useCallback(async () => {
     const trimmed = content.trim();
     if (!trimmed && !selectedFile) return;
+    if (sendMutation.isPending || isUploading) return;
+
+    let attachmentPayload: {
+      message_id?: string;
+      attachment_url?: string;
+      attachment_type?: string;
+      attachment_size_bytes?: number;
+    } = {};
+
+    if (selectedFile) {
+      setIsUploading(true);
+      try {
+        const supabase = createClient();
+        const messageId = crypto.randomUUID();
+        const result = await uploadAttachment(supabase, selectedFile, conversationId, messageId);
+        attachmentPayload = {
+          message_id: messageId,
+          attachment_url: result.url,
+          attachment_type: result.type,
+          attachment_size_bytes: result.sizeBytes,
+        };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Upload failed";
+        toast.error(msg);
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
 
     sendMutation.mutate(
       {
         content: trimmed || "(attachment)",
         recipient_id: recipientId,
         context_type: contextType,
+        ...attachmentPayload,
       },
       {
         onSuccess: () => {
@@ -43,7 +77,7 @@ export default function MessageComposer(
         },
       },
     );
-  }, [content, selectedFile, sendMutation, recipientId, contextType]);
+  }, [content, selectedFile, sendMutation, recipientId, contextType, conversationId, isUploading]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -133,11 +167,11 @@ export default function MessageComposer(
           size="sm"
           onClick={() => void handleSend()}
           disabled={
-            sendMutation.isPending || (!content.trim() && !selectedFile)
+            sendMutation.isPending || isUploading || (!content.trim() && !selectedFile)
           }
           className="shrink-0"
         >
-          {sendMutation.isPending ? "Sending..." : "Send"}
+          {isUploading ? "Uploading..." : sendMutation.isPending ? "Sending..." : "Send"}
         </Button>
       </div>
     </div>
