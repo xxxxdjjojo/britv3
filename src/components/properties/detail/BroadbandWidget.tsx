@@ -72,7 +72,7 @@ function SpeedBar({
       </div>
       <div className="h-2 rounded-full bg-muted overflow-hidden">
         <div
-          className="h-full rounded-full bg-[#1B4D3E] transition-all"
+          className="h-full rounded-full bg-brand-primary transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>

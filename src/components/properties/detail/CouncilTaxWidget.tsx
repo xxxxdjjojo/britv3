@@ -14,12 +14,12 @@ type Props = Readonly<{
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatCurrency(pence: number): string {
+function formatCurrency(pounds: number): string {
   return new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
     maximumFractionDigits: 0,
-  }).format(pence);
+  }).format(pounds);
 }
 
 // ---------------------------------------------------------------------------

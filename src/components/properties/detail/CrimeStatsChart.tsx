@@ -132,7 +132,7 @@ export function CrimeStatsChart({ stats, boroughAvg }: Props) {
             )}
             <Bar
               dataKey="count"
-              fill="#1B4D3E"
+              fill="var(--color-brand-primary)"
               radius={[3, 3, 0, 0]}
               maxBarSize={36}
             />
