@@ -75,8 +75,14 @@ export async function POST(request: Request) {
     );
   }
 
-  // Prevent path traversal: storage_path must be scoped to this property
-  if (storage_path.includes("..") || !storage_path.startsWith(`${property_id}/`)) {
+  // Prevent path traversal: decode first, then validate path is scoped to this property
+  let decodedPath: string;
+  try {
+    decodedPath = decodeURIComponent(storage_path);
+  } catch {
+    return NextResponse.json({ error: "Invalid storage path" }, { status: 400 });
+  }
+  if (decodedPath.includes("..") || !decodedPath.startsWith(`${property_id}/`)) {
     return NextResponse.json(
       { error: "Invalid storage path" },
       { status: 400 },
@@ -88,7 +94,7 @@ export async function POST(request: Request) {
   // Consumers fetch a signed URL on demand via createSignedUrl
   const { data: signedUrlData, error: signedUrlError } = await supabase.storage
     .from("landlord-documents")
-    .createSignedUrl(storage_path, 60 * 60); // 1 hour signed URL
+    .createSignedUrl(decodedPath, 60 * 60); // 1 hour signed URL
 
   if (signedUrlError) {
     return NextResponse.json(
@@ -106,7 +112,7 @@ export async function POST(request: Request) {
       uploaded_by: user.id,
       name: document_name,
       category,
-      file_url: storage_path, // store path, not public URL
+      file_url: decodedPath, // store path, not public URL
       expiry_date,
       next_reminder_date: next_reminder_date ?? null,
       reminder_sent: false,
@@ -125,7 +131,6 @@ export async function POST(request: Request) {
     {
       document_id: document.id,
       document_url: signedUrlData.signedUrl,
-      storage_path,
     },
     { status: 201 },
   );
