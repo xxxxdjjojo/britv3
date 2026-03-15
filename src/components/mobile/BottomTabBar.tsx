@@ -52,7 +52,7 @@ const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Profile", href: "/profile", icon: User },
   ],
   landlord: [
-    { label: "Portfolio", href: "/dashboard/landlord/portfolio", icon: Building2 },
+    { label: "Portfolio", href: "/dashboard/landlord/properties", icon: Building2 },
     { label: "Tenants", href: "/dashboard/landlord/tenants", icon: Users },
     { label: "Maintenance", href: "/dashboard/landlord/maintenance", icon: Wrench },
     { label: "Messages", href: "/messages", icon: MessageSquare },

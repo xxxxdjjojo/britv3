@@ -64,7 +64,7 @@ export default async function LeasePage({
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-sm text-muted-foreground">
         <Link
-          href="/dashboard/landlord/portfolio"
+          href="/dashboard/landlord/properties"
           className="hover:text-foreground"
         >
           Portfolio

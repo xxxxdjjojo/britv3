@@ -310,7 +310,7 @@ export function LandlordDashboard({ data }: Readonly<{ data: LandlordData }>) {
                 <Button
                   variant="link"
                   size="sm"
-                  render={<Link href="/dashboard/landlord/finances" />}
+                  render={<Link href="/dashboard/landlord/finance/expenses" />}
                 >
                   View All Finances
                   <ArrowRight className="ml-1 size-3" />
@@ -334,7 +334,7 @@ export function LandlordDashboard({ data }: Readonly<{ data: LandlordData }>) {
               <Button
                 size="lg"
                 className="w-full justify-start gap-2"
-                render={<Link href="/dashboard/landlord/portfolio" />}
+                render={<Link href="/dashboard/landlord/properties" />}
               >
                 <Building2 className="size-4" />
                 Add Property
