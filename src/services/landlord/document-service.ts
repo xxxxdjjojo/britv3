@@ -270,7 +270,7 @@ export async function getComplianceSummary(
 /**
  * Upload a document file to Supabase Storage.
  * Validates file type via magic bytes and checks size limit.
- * Returns the public URL of the uploaded file.
+ * Returns the storage path of the uploaded file.
  */
 export async function uploadDocumentFile(
   supabase: SupabaseClient,
@@ -302,10 +302,5 @@ export async function uploadDocumentFile(
     throw new Error(`Failed to upload file: ${uploadError.message}`);
   }
 
-  // Get public URL
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("property-documents").getPublicUrl(filePath);
-
-  return publicUrl;
+  return filePath;
 }
