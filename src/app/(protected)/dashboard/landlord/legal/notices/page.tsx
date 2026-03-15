@@ -19,6 +19,7 @@ import {
   updateNoticeStatus,
 } from "@/services/landlord/legal-notice-service";
 import type { LegalNotice } from "@/types/landlord";
+import { PDFErrorBoundary } from "@/components/landlord/PDFErrorBoundary";
 
 // Dynamic imports — ssr:false required for @react-pdf/renderer
 const Section21PDFDownload = dynamic(
@@ -125,6 +126,14 @@ function StatusBadge({ status }: Readonly<{ status: string }>) {
 // -- Main page ----------------------------------------------------------------
 
 export default function NoticesPage() {
+  if (process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED !== "true") {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-sm text-gray-500">This feature is not available.</p>
+      </div>
+    );
+  }
+
   const supabase = createClient();
   const [activeTab, setActiveTab] = useState<"section21" | "section8">(
     "section21",
@@ -480,16 +489,18 @@ export default function NoticesPage() {
                 Notice created — download the PDF to serve on your tenant.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Section21PDFDownload
-                  notice={createdNotice}
-                  noticeId={createdNotice.id}
-                  tenantName={selectedS21Tenancy?.tenant_name ?? "Tenant"}
-                  propertyAddress={
-                    selectedS21Tenancy?.property_address ?? "Property address"
-                  }
-                  landlordName="Landlord"
-                  landlordAddress=""
-                />
+                <PDFErrorBoundary>
+                  <Section21PDFDownload
+                    notice={createdNotice}
+                    noticeId={createdNotice.id}
+                    tenantName={selectedS21Tenancy?.tenant_name ?? "Tenant"}
+                    propertyAddress={
+                      selectedS21Tenancy?.property_address ?? "Property address"
+                    }
+                    landlordName="Landlord"
+                    landlordAddress=""
+                  />
+                </PDFErrorBoundary>
                 <button
                   onClick={() => void markServed(createdNotice.id)}
                   className="rounded-md border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
@@ -592,17 +603,19 @@ export default function NoticesPage() {
                 Section 8 notice created.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Section8PDFDownload
-                  noticeId={createdNotice.id}
-                  tenantName={selectedS8Tenancy?.tenant_name ?? "Tenant"}
-                  propertyAddress={
-                    selectedS8Tenancy?.property_address ?? "Property address"
-                  }
-                  landlordName="Landlord"
-                  grounds={createdNotice.grounds ?? []}
-                  arrearsAmount={createdNotice.arrears_amount ?? undefined}
-                  noticeDate={new Date().toISOString().slice(0, 10)}
-                />
+                <PDFErrorBoundary>
+                  <Section8PDFDownload
+                    noticeId={createdNotice.id}
+                    tenantName={selectedS8Tenancy?.tenant_name ?? "Tenant"}
+                    propertyAddress={
+                      selectedS8Tenancy?.property_address ?? "Property address"
+                    }
+                    landlordName="Landlord"
+                    grounds={createdNotice.grounds ?? []}
+                    arrearsAmount={createdNotice.arrears_amount ?? undefined}
+                    noticeDate={new Date().toISOString().slice(0, 10)}
+                  />
+                </PDFErrorBoundary>
                 <button
                   onClick={() => void markServed(createdNotice.id)}
                   className="rounded-md border border-amber-700 px-4 py-2 text-sm font-medium text-amber-700"
