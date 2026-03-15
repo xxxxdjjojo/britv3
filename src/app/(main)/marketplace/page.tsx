@@ -28,21 +28,22 @@ type CategoryCard = {
   slug: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
+  href: string;
 };
 
 const CATEGORIES: CategoryCard[] = [
-  { slug: "plumbers", label: "Plumbers", icon: Wrench },
-  { slug: "electricians", label: "Electricians", icon: Zap },
-  { slug: "builders", label: "Builders", icon: Building2 },
-  { slug: "plasterers", label: "Plasterers", icon: Paintbrush },
-  { slug: "painters", label: "Painters", icon: SprayCan },
-  { slug: "carpenters", label: "Carpenters", icon: Hammer },
-  { slug: "landscapers", label: "Landscapers", icon: Trees },
-  { slug: "cleaners", label: "Cleaners", icon: Home },
-  { slug: "estate-agents", label: "Estate Agents", icon: BriefcaseBusiness },
-  { slug: "mortgage-brokers", label: "Mortgage Brokers", icon: FileText },
-  { slug: "conveyancers", label: "Conveyancers", icon: Scale },
-  { slug: "surveyors", label: "Surveyors", icon: Ruler },
+  { slug: "plumbers", label: "Plumbers", icon: Wrench, href: "/services/tradespeople?category=plumber" },
+  { slug: "electricians", label: "Electricians", icon: Zap, href: "/services/tradespeople?category=electrician" },
+  { slug: "builders", label: "Builders", icon: Building2, href: "/services/tradespeople?category=handyman" },
+  { slug: "plasterers", label: "Plasterers", icon: Paintbrush, href: "/services/tradespeople?category=other" },
+  { slug: "painters", label: "Painters", icon: SprayCan, href: "/services/tradespeople?category=other" },
+  { slug: "carpenters", label: "Carpenters", icon: Hammer, href: "/services/tradespeople?category=other" },
+  { slug: "landscapers", label: "Landscapers", icon: Trees, href: "/services/tradespeople?category=landscaping" },
+  { slug: "cleaners", label: "Cleaners", icon: Home, href: "/services/tradespeople?category=cleaning" },
+  { slug: "estate-agents", label: "Estate Agents", icon: BriefcaseBusiness, href: "/agents" },
+  { slug: "mortgage-brokers", label: "Mortgage Brokers", icon: FileText, href: "/mortgage-brokers" },
+  { slug: "conveyancers", label: "Conveyancers", icon: Scale, href: "/conveyancers" },
+  { slug: "surveyors", label: "Surveyors", icon: Ruler, href: "/surveyors" },
 ];
 
 export default async function MarketplaceLandingPage() {
@@ -133,10 +134,10 @@ export default async function MarketplaceLandingPage() {
           Browse by Service
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {CATEGORIES.map(({ slug, label, icon: Icon }) => (
+          {CATEGORIES.map(({ slug, label, icon: Icon, href }) => (
             <a
               key={slug}
-              href={`/services/${slug}`}
+              href={href}
               className="group flex flex-col items-center p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#2563EB] hover:shadow-md transition-all"
             >
               <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
@@ -220,6 +221,26 @@ export default async function MarketplaceLandingPage() {
           </div>
         </section>
       )}
+
+      {/* Post a Job CTA */}
+      <section className="max-w-7xl mx-auto px-6 pb-0 pt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Need a tradesperson?</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Post your job for free and get quotes from up to 5 verified professionals.</p>
+            <a href="/post-a-job" className="inline-block px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors">
+              Post a Job — It&apos;s Free
+            </a>
+          </div>
+          <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Are you a tradesperson?</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Browse jobs posted by homeowners in your area and send quotes directly.</p>
+            <a href="/dashboard/service_provider/jobs" className="inline-block px-6 py-3 bg-[#1B4D3E] text-white font-semibold rounded-lg hover:bg-[#163D30] transition-colors">
+              Browse Available Jobs
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* For professionals CTA */}
       <section className="max-w-7xl mx-auto px-6 py-16">
