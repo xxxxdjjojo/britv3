@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   ChevronLeft,
@@ -27,16 +27,22 @@ type HeroGalleryProps = Readonly<{
 export function HeroGallery({ images, propertyTitle, className }: HeroGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const openLightbox = useCallback((index: number) => {
     setActiveIndex(index);
     setLightboxOpen(true);
-    window.history.pushState({}, "", "#gallery");
+    if (typeof window !== "undefined") {
+      window.history.pushState({ lightbox: true }, "", "#gallery");
+    }
   }, []);
 
   const closeLightbox = useCallback(() => {
-    setLightboxOpen(false);
-    window.history.replaceState({}, "", window.location.pathname);
+    if (typeof window !== "undefined" && window.location.hash === "#gallery") {
+      window.history.back(); // popstate handler will call setLightboxOpen(false)
+    } else {
+      setLightboxOpen(false); // fallback if history not available
+    }
   }, []);
 
   const prev = useCallback(() => {
@@ -50,13 +56,11 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
   // Close lightbox when browser back button is pressed
   useEffect(() => {
     const handlePopState = () => {
-      if (lightboxOpen) {
-        setLightboxOpen(false);
-      }
+      setLightboxOpen(false);
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [lightboxOpen]);
+  }, []); // No dependency on lightboxOpen needed
 
   // Keyboard navigation
   useEffect(() => {
@@ -69,6 +73,13 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxOpen, prev, next, closeLightbox]);
+
+  // Focus close button when lightbox opens
+  useEffect(() => {
+    if (lightboxOpen && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [lightboxOpen]);
 
   if (images.length === 0) {
     return (
@@ -109,8 +120,11 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="relative cursor-pointer overflow-hidden bg-neutral-200"
-              onClick={() => openLightbox(Math.min(i, images.length - 1))}
+              className={cn(
+                "relative overflow-hidden bg-neutral-200",
+                images[i] ? "cursor-pointer" : "",
+              )}
+              onClick={images[i] ? () => openLightbox(i) : undefined}
             >
               {images[i] ? (
                 <Image
@@ -205,6 +219,7 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
             {/* Top-right controls */}
             <div className="flex items-center gap-2">
               <button
+                ref={closeButtonRef}
                 className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
                 aria-label="Close gallery"
                 onClick={closeLightbox}
