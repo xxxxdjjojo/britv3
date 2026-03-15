@@ -214,9 +214,9 @@ export async function fetchLandRegistryComparables(
     const cached = await getCached<LandRegistryComparable[]>(cacheKey);
     if (cached) return cached;
 
-    // Gracefully handle missing API key — public LR API doesn't require one
-    // but the env var acts as a feature flag to disable the integration.
     const apiKey = process.env.LAND_REGISTRY_API_KEY;
+    // undefined/empty = use public endpoint (Land Registry data.gov.uk is public)
+    // "disabled" = integration explicitly disabled (return null)
     if (apiKey === "disabled") {
       console.warn(
         "[land-registry-service] LAND_REGISTRY_API_KEY set to 'disabled' — skipping fetch",

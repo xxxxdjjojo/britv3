@@ -169,7 +169,7 @@ function ComparablesTable({
     <div className="rounded-xl border divide-y text-sm overflow-hidden">
       {comparables.map((row, i) => (
         <div
-          key={i}
+          key={`${row.address}-${row.date}`}
           className="flex items-center justify-between px-4 py-3 gap-4"
         >
           <div className="min-w-0">
@@ -327,7 +327,7 @@ export function PriceHistory({ history, comparables, className }: PriceHistoryPr
                     {/* Event reference lines */}
                     {eventEntries.map((e, i) => (
                       <ReferenceLine
-                        key={i}
+                        key={e.date || `event-${i}`}
                         x={e.date}
                         stroke={dotColour(e.event)}
                         strokeDasharray="4 3"
