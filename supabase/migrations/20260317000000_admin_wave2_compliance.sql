@@ -1,4 +1,6 @@
--- 6. CMS articles (blog, help, landing pages)
+-- Wave 2: CMS, Email Campaigns, Promo Codes
+
+-- 1. CMS articles (blog, help, landing pages)
 CREATE TABLE IF NOT EXISTS cms_articles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   article_type text NOT NULL CHECK (article_type IN ('blog', 'help', 'landing')),
@@ -24,7 +26,7 @@ CREATE POLICY "cms_articles_admin" ON cms_articles
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
--- 7. Email campaigns
+-- 2. Email campaigns
 CREATE TABLE IF NOT EXISTS email_campaigns (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
@@ -44,7 +46,7 @@ CREATE POLICY "email_campaigns_admin" ON email_campaigns
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
--- 8. Promo codes
+-- 3. Promo codes
 CREATE TABLE IF NOT EXISTS promo_codes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   code text NOT NULL UNIQUE,

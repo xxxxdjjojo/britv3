@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { VerificationQueueItem } from "@/services/admin-service";
+import type { VerificationQueueItem } from "@/services/admin/verification-service";
 import { VerificationQueue } from "@/components/admin/VerificationQueue";
 
 type Props = Readonly<{

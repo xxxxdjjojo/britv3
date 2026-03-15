@@ -142,16 +142,24 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  // Admin route guard: require is_admin flag on profile
+  // Admin route guard: require authentication and role === 'admin' on profile
   const isAdminRoute = pathname.startsWith("/admin");
-  if (isAdminRoute && isAuthenticated) {
+  if (isAdminRoute) {
+    if (!isAuthenticated) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirectTo", pathname);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      setSecurityHeaders(redirectResponse, nonce);
+      return redirectResponse;
+    }
+
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_admin")
+      .select("role")
       .eq("id", user!.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (profile?.role !== "admin") {
       const forbiddenUrl = new URL("/forbidden", request.url);
       const redirectResponse = NextResponse.redirect(forbiddenUrl);
       setSecurityHeaders(redirectResponse, nonce);

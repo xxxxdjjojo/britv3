@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReportedReview } from "@/services/admin-service";
+import type { ReportedReview } from "@/services/admin/review-service";
 
 type Props = Readonly<{
   reports: ReportedReview[];

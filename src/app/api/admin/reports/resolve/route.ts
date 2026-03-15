@@ -1,30 +1,41 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { resolveReport } from "@/services/admin-service";
+import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { resolveReport } from "@/services/admin/review-service";
 
 export async function POST(req: Request) {
-  const body = (await req.json()) as {
+  let body: {
     reportId: string;
     resolution: "resolved" | "dismissed";
     note?: string;
-    adminId: string;
   };
+  try {
+    body = (await req.json()) as typeof body;
+  } catch {
+    return Response.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   if (!body.reportId || !body.resolution) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    return Response.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const result = await resolveReport(
-    supabase,
+  if (!["resolved", "dismissed"].includes(body.resolution)) {
+    return Response.json({ error: "Invalid resolution value" }, { status: 400 });
+  }
+
+  return auditedAdminAction(
+    req,
+    "report.resolve",
+    "report",
     body.reportId,
-    body.resolution,
-    body.note,
-    body.adminId,
+    async ({ supabase, user }) => {
+      const result = await resolveReport(
+        supabase,
+        body.reportId,
+        body.resolution,
+        body.note,
+        user.id,
+      );
+      if (!result.success) throw new Error("Failed to resolve report");
+      return { success: true };
+    },
   );
-
-  if (!result.success) {
-    return NextResponse.json({ error: "Failed to resolve report" }, { status: 500 });
-  }
-  return NextResponse.json({ success: true });
 }

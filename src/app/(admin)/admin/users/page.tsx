@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { searchUsers } from "@/services/admin-service";
+import { searchUsers } from "@/services/admin/user-service";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { UserManagementClient } from "@/components/admin/UserManagementClient";
 
 const PAGE_LIMIT = 20;
@@ -18,12 +19,10 @@ export default async function AdminUsersPage({
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900">User Management</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Search, view, suspend, and activate user accounts.
-        </p>
-      </div>
+      <AdminPageHeader
+        title="User Management"
+        description="Search, view, suspend, ban, and activate user accounts."
+      />
 
       <UserManagementClient
         initialUsers={users}
