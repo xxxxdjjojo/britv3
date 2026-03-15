@@ -453,8 +453,8 @@ export default function EnergyBillEstimatorPage() {
                 Get a certified EPC assessor to visit your property and provide
                 an official rating.
               </p>
-              <Button variant="secondary" className="w-full py-4 bg-white text-brand-primary font-bold rounded-lg hover:bg-neutral-100" render={<Link href="/services?category=energy" />}>
-                  Find an Assessor <ArrowRight className="size-4" />
+              <Button asChild variant="secondary" className="w-full py-4 bg-white text-brand-primary font-bold rounded-lg hover:bg-neutral-100">
+                <Link href="/services?category=energy">Find an Assessor <ArrowRight className="size-4 inline" /></Link>
               </Button>
             </div>
             <Zap className="absolute -bottom-10 -right-10 size-44 text-white/10 group-hover:scale-110 transition-transform duration-500" />
