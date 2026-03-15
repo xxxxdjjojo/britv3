@@ -28,7 +28,6 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     label: "Notifications",
     href: "/settings/notifications",
     icon: Bell,
-    disabled: true,
   },
   {
     label: "Account",
