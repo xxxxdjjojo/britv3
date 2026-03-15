@@ -23,9 +23,10 @@ export default function MessageComposer(
     recipientId: string;
     contextType?: string;
     lastMessageContent?: string;
+    currentUserId?: string;
   }>,
 ) {
-  const { conversationId, recipientId, contextType = "general", lastMessageContent = "" } = props;
+  const { conversationId, recipientId, contextType = "general", lastMessageContent = "", currentUserId } = props;
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -183,7 +184,7 @@ export default function MessageComposer(
               void supabase.channel(`typing:${conversationId}`).send({
                 type: "broadcast",
                 event: "typing",
-                payload: { user_id: "me", is_typing: true },
+                payload: { user_id: currentUserId ?? "", is_typing: true },
               });
             }}
             onKeyDown={handleKeyDown}

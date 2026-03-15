@@ -294,9 +294,9 @@ export default function MessageThread(
       .subscribe();
 
     return () => {
-      void channel.unsubscribe();
+      void supabase.removeChannel(channel);
+      void supabase.removeChannel(typingChannel);
       channelRef.current = null;
-      void typingChannel.unsubscribe();
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
   }, [conversationId, queryClient, user?.id]);
@@ -368,6 +368,7 @@ export default function MessageThread(
         conversationId={conversationId}
         recipientId={recipientId ?? ""}
         contextType={contextType}
+        currentUserId={user?.id ?? ""}
       />
     </div>
   );
