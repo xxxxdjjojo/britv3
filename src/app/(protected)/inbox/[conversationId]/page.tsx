@@ -22,7 +22,7 @@ export default async function ConversationPage({ params }: PageProps) {
   // Load conversation metadata
   const { data: conversation } = await supabase
     .from("conversations")
-    .select("id, participant_1_id, participant_2_id, context_type")
+    .select("id, participant_1_id, participant_2_id, context_type, context_id")
     .eq("id", conversationId)
     .single();
 
@@ -76,6 +76,7 @@ export default async function ConversationPage({ params }: PageProps) {
         <ConversationQuickActions
           participantName={participantName}
           contextType={conversation.context_type}
+          contextId={conversation.context_id ?? undefined}
         />
       </div>
     </div>
