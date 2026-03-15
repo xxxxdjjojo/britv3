@@ -151,6 +151,29 @@ export async function activateUser(
   return { success: true };
 }
 
+export async function promoteToAdmin(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<{ success: boolean }> {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ role: "admin" })
+    .eq("id", userId);
+  return { success: !error };
+}
+
+export async function demoteFromAdmin(
+  supabase: SupabaseClient,
+  userId: string,
+  newRole: string = "homebuyer",
+): Promise<{ success: boolean }> {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ role: newRole })
+    .eq("id", userId);
+  return { success: !error };
+}
+
 export async function getUserDetail(
   supabase: SupabaseClient,
   userId: string,
