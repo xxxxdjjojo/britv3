@@ -22,19 +22,16 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     label: "Security",
     href: "/settings/security",
     icon: Lock,
-    disabled: true,
   },
   {
     label: "Notifications",
     href: "/settings/notifications",
     icon: Bell,
-    disabled: true,
   },
   {
-    label: "Account",
+    label: "Profile",
     href: "/settings/account",
     icon: User,
-    disabled: true,
   },
 ];
 
