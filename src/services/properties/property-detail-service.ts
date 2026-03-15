@@ -422,7 +422,7 @@ export async function getSavedStatus(
 
   const { data } = await supabase
     .from("saved_properties")
-    .select("id, notes")
+    .select("id, note")
     .eq("user_id", user.id)
     .eq("listing_id", listingId)
     .maybeSingle();
@@ -433,7 +433,7 @@ export async function getSavedStatus(
 
   return {
     saved: true,
-    note: (data.notes as string | null) ?? null,
+    note: (data.note as string | null) ?? null,
   };
 }
 
