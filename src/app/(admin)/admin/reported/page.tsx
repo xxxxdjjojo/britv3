@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getOpenReports } from "@/services/admin/report-service";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { ReportedContentClient } from "@/components/admin/ReportedContentClient";
@@ -6,14 +7,7 @@ import { Flag } from "lucide-react";
 
 export default async function AdminReportedPage() {
   const supabase = await createClient();
-
-  const { data: reports } = await supabase
-    .from("content_reports")
-    .select("id, entity_type, entity_id, reason, status, created_at, reporter_id")
-    .eq("status", "open")
-    .order("created_at", { ascending: true });
-
-  const reportList = reports ?? [];
+  const reportList = await getOpenReports(supabase);
 
   return (
     <div>

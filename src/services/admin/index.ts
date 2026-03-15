@@ -7,3 +7,4 @@ export * from "./feature-flag-service";
 export * from "./audit-service";
 export * from "./subscription-service";
 export * from "./analytics-service";
+export * from "./report-service";

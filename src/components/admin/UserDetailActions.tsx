@@ -27,9 +27,10 @@ type ModalType = "suspend" | "ban" | null;
 type Props = Readonly<{
   userId: string;
   isSuspended: boolean;
+  isBanned: boolean;
 }>;
 
-export function UserDetailActions({ userId, isSuspended }: Props) {
+export function UserDetailActions({ userId, isSuspended, isBanned }: Props) {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const { execute, isPending } = useAdminAction();
 
@@ -69,7 +70,7 @@ export function UserDetailActions({ userId, isSuspended }: Props) {
   return (
     <>
       <div className="flex flex-col gap-3">
-        {isSuspended ? (
+        {isBanned || isSuspended ? (
           <Button
             variant="outline"
             className="w-full justify-start text-green-700 border-green-200 hover:bg-green-50"
@@ -79,24 +80,25 @@ export function UserDetailActions({ userId, isSuspended }: Props) {
             Activate Account
           </Button>
         ) : (
-          <Button
-            variant="outline"
-            className="w-full justify-start text-amber-700 border-amber-200 hover:bg-amber-50"
-            onClick={() => setActiveModal("suspend")}
-            disabled={isPending}
-          >
-            Suspend User
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              className="w-full justify-start text-amber-700 border-amber-200 hover:bg-amber-50"
+              onClick={() => setActiveModal("suspend")}
+              disabled={isPending}
+            >
+              Suspend User
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start text-red-700 border-red-200 hover:bg-red-50"
+              onClick={() => setActiveModal("ban")}
+              disabled={isPending}
+            >
+              Ban User
+            </Button>
+          </>
         )}
-
-        <Button
-          variant="outline"
-          className="w-full justify-start text-red-700 border-red-200 hover:bg-red-50"
-          onClick={() => setActiveModal("ban")}
-          disabled={isPending}
-        >
-          Ban User
-        </Button>
       </div>
 
       <AdminConfirmModal

@@ -120,7 +120,7 @@ export default async function AdminUserDetailPage({
             <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-4">
               Actions
             </h2>
-            <UserDetailActions userId={user.id} isSuspended={user.is_suspended ?? false} />
+            <UserDetailActions userId={user.id} isSuspended={user.is_suspended ?? false} isBanned={isBanned} />
           </div>
         </div>
       </div>
