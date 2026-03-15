@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createReview } from "@/services/marketplace/review-service";
+import { sendReviewReceived, BASE_URL } from "@/services/email/email-service";
 
 /**
  * POST /api/reviews/create
@@ -31,6 +32,40 @@ export async function POST(request: Request) {
     }
 
     const review = await createReview(supabase, user.id, body);
+
+    // Fire-and-forget: notify the provider that they received a new review
+    try {
+      const { data: providerProfile } = await supabase
+        .from("profiles")
+        .select("email, display_name")
+        .eq("id", review.provider_id)
+        .single();
+
+      const { data: reviewerProfile } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("id", user.id)
+        .single();
+
+      if (providerProfile?.email) {
+        const providerFirstName =
+          (providerProfile.display_name as string | undefined)?.split(" ")[0] ?? "";
+        const reviewerName =
+          (reviewerProfile?.display_name as string | undefined) ?? "A customer";
+
+        void sendReviewReceived({
+          userId: review.provider_id as string,
+          email: providerProfile.email as string,
+          recipientFirstName: providerFirstName,
+          reviewerName,
+          rating: review.overall_rating as number,
+          reviewUrl: `${BASE_URL}/dashboard/provider/reviews`,
+          comment: review.review_text as string | undefined,
+        });
+      }
+    } catch (emailError) {
+      console.error("POST /api/reviews/create sendReviewReceived error:", emailError);
+    }
 
     return NextResponse.json({ data: review }, { status: 201 });
   } catch (error) {

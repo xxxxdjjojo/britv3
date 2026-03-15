@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendWelcome } from "@/services/email/email-service";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
       .select("role")
       .eq("user_id", user.id);
 
-    // If no roles, assign default homebuyer
+    // If no roles, assign default homebuyer — this is a brand-new user
     if (!roles || roles.length === 0) {
       await supabase
         .from("user_roles")
@@ -34,6 +35,19 @@ export async function GET(request: NextRequest) {
         .from("profiles")
         .update({ active_role: "homebuyer" })
         .eq("id", user.id);
+
+      // Send welcome email to new users (fire-and-forget)
+      if (user.email) {
+        const firstName =
+          (user.user_metadata?.display_name as string | undefined)?.split(" ")[0] ??
+          (user.user_metadata?.full_name as string | undefined)?.split(" ")[0] ??
+          "";
+        void sendWelcome({
+          userId: user.id,
+          email: user.email,
+          firstName,
+        });
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import {
 } from "@/services/agent/agent-offer-service";
 import { createOfferSchema, OFFER_STATUSES } from "@/types/agent";
 import type { OfferStatus } from "@/types/agent";
+import { sendOfferReceived, sendOfferStatus, BASE_URL } from "@/services/email/email-service";
 
 /**
  * GET /api/agent/offers
@@ -79,6 +80,44 @@ export async function POST(request: NextRequest) {
     }
 
     const offer = await createOffer(supabase, user.id, parsed.data);
+
+    // Fire-and-forget: notify agent of the new offer they just logged
+    // (agents typically create offers on behalf of buyers; notify the agent for their records)
+    try {
+      const { data: agentProfile } = await supabase
+        .from("profiles")
+        .select("email, display_name")
+        .eq("id", user.id)
+        .single();
+
+      // Derive property address — best-effort from listings table
+      const { data: listing } = await supabase
+        .from("listings")
+        .select("address_line1, town_city")
+        .eq("id", offer.property_id)
+        .maybeSingle();
+
+      const propertyAddress = listing
+        ? `${listing.address_line1 ?? ""}${listing.town_city ? `, ${listing.town_city}` : ""}`.trim()
+        : offer.property_id;
+
+      if (agentProfile?.email) {
+        const agentFirstName =
+          (agentProfile.display_name as string | undefined)?.split(" ")[0] ?? "";
+        void sendOfferReceived({
+          userId: user.id,
+          email: agentProfile.email as string,
+          agentFirstName,
+          propertyAddress,
+          offerAmount: offer.amount,
+          buyerName: offer.buyer_name,
+          submittedAt: offer.created_at,
+          dashboardUrl: `${BASE_URL}/dashboard/agent/offers`,
+        });
+      }
+    } catch (emailError) {
+      console.error("POST /api/agent/offers sendOfferReceived error:", emailError);
+    }
 
     return NextResponse.json({ offer }, { status: 201 });
   } catch (error) {
@@ -159,6 +198,39 @@ export async function PATCH(request: NextRequest) {
         statusParam as OfferStatus,
         note,
       );
+
+      // Fire-and-forget: notify buyer of their offer status change (accepted / rejected)
+      if (
+        (statusParam === "accepted" || statusParam === "rejected") &&
+        offer.buyer_email
+      ) {
+        try {
+          // Derive property address — best-effort from listings table
+          const { data: listing } = await supabase
+            .from("listings")
+            .select("address_line1, town_city")
+            .eq("id", offer.property_id)
+            .maybeSingle();
+
+          const propertyAddress = listing
+            ? `${listing.address_line1 ?? ""}${listing.town_city ? `, ${listing.town_city}` : ""}`.trim()
+            : offer.property_id;
+
+          const buyerFirstName = offer.buyer_name.split(" ")[0] ?? offer.buyer_name;
+
+          void sendOfferStatus({
+            userId: offer.buyer_email, // userId used for pref lookup; use email as fallback key
+            email: offer.buyer_email,
+            firstName: buyerFirstName,
+            propertyAddress,
+            offerAmount: offer.amount,
+            status: statusParam,
+            message: note,
+          });
+        } catch (emailError) {
+          console.error("PATCH /api/agent/offers sendOfferStatus error:", emailError);
+        }
+      }
 
       return NextResponse.json({ offer });
     }
