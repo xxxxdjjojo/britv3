@@ -5,9 +5,17 @@ import { useSearchParams } from "next/navigation";
 import { ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const SUSPENSION_REASONS: Record<string, string> = {
+  fraud_violation: "Your account was suspended due to suspected fraudulent activity.",
+  terms_violation: "Your account was suspended for violating our Terms of Service.",
+  payment_dispute: "Your account was suspended due to an unresolved payment dispute.",
+  manual_review: "Your account is under manual review by our team.",
+};
+
 function AccountSuspendedContent() {
   const searchParams = useSearchParams();
-  const reason = searchParams.get("reason") ?? "Your account has been suspended by an administrator.";
+  const code = searchParams.get("code") ?? "manual_review";
+  const reason = SUSPENSION_REASONS[code] ?? SUSPENSION_REASONS.manual_review;
 
   return (
     <div className="space-y-6 text-center">
