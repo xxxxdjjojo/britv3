@@ -19,6 +19,7 @@ function computeRiskScore(
   createdAt: string | null,
   reportCount: number,
   isSuspended: boolean | null,
+  now: number,
 ): number {
   let score = 0;
 
@@ -28,7 +29,7 @@ function computeRiskScore(
   // New account signal: created in last 7 days adds 20
   if (createdAt) {
     const daysSinceCreation =
-      (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
+      (now - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);
     if (daysSinceCreation < 7) score += 20;
     else if (daysSinceCreation < 30) score += 10;
   }
@@ -40,6 +41,7 @@ function computeRiskScore(
 }
 
 export default async function FraudDetectionPage() {
+  const now = Date.now();
   const supabase = await createClient();
 
   // Fetch users with at least one report
@@ -59,7 +61,7 @@ export default async function FraudDetectionPage() {
 
   // Fetch new accounts (last 14 days) with high activity (to layer in)
   const twoWeeksAgo = new Date(
-    Date.now() - 14 * 24 * 60 * 60 * 1000,
+    now - 14 * 24 * 60 * 60 * 1000,
   ).toISOString();
   const { data: newUsers } = await supabase
     .from("profiles")
@@ -90,6 +92,7 @@ export default async function FraudDetectionPage() {
           p.created_at as string | null,
           reportCount,
           p.is_suspended as boolean | null,
+          now,
         );
         return {
           userId: p.id as string,
