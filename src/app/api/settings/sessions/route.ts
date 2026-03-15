@@ -33,26 +33,24 @@ export async function GET() {
         await admin.auth.admin.listUserSessions({ userId: user.id });
 
       if (!sessionError && sessionData?.sessions) {
-        // Identify the current session by comparing with the live session token
-        const {
-          data: { session: currentSession },
-        } = await supabase.auth.getSession();
+        const rawSessions = sessionData.sessions as Array<{
+          id: string;
+          user_agent?: string;
+          created_at?: string;
+          last_sign_in_at?: string;
+          ip?: string;
+        }>;
 
-        const sessions = (
-          sessionData.sessions as Array<{
-            id: string;
-            user_agent?: string;
-            created_at?: string;
-            last_sign_in_at?: string;
-            ip?: string;
-          }>
-        ).map((s) => ({
+        // Mark the first session (most recently active) as current.
+        // We cannot reliably compare admin session IDs to the JWT access token,
+        // so we use position as the best available heuristic.
+        const sessions = rawSessions.map((s, index) => ({
           id: s.id,
           user_agent: s.user_agent,
           created_at: s.created_at,
           last_sign_in_at: s.last_sign_in_at,
           ip: s.ip,
-          is_current: s.id === currentSession?.access_token,
+          is_current: index === 0,
         }));
 
         return NextResponse.json({ sessions });

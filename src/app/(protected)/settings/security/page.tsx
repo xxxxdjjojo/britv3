@@ -560,34 +560,36 @@ export default function SecuritySettingsPage() {
                 </>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="totp-code">Verification Code</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="totp-code"
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={totpCode}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      setTotpCode(val);
-                    }}
-                    placeholder="6-digit code"
-                    className="w-36 font-mono tracking-widest"
-                    disabled={verifying}
-                  />
-                  <Button
-                    onClick={handleVerify}
-                    disabled={totpCode.length !== 6 || verifying}
-                  >
-                    {verifying ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : null}
-                    Verify
-                  </Button>
+              {totpData && (
+                <div className="space-y-2">
+                  <Label htmlFor="totp-code">Verification Code</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="totp-code"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={totpCode}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        setTotpCode(val);
+                      }}
+                      placeholder="6-digit code"
+                      className="w-36 font-mono tracking-widest"
+                      disabled={verifying}
+                    />
+                    <Button
+                      onClick={handleVerify}
+                      disabled={totpCode.length !== 6 || verifying}
+                    >
+                      {verifying ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : null}
+                      Verify
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <Button
                 variant="outline"
