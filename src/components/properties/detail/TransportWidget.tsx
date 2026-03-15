@@ -12,7 +12,6 @@ export type TransportStop = {
 };
 
 type TransportWidgetProps = Readonly<{
-  postcode: string;
   nearbyStations?: TransportStop[] | null;
 }>;
 
