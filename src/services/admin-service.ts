@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type UserSearchResult = {
   id: string;
@@ -106,12 +107,16 @@ export async function searchUsers(
   const from = page * limit;
   const to = from + limit - 1;
 
+  // Sanitize query to prevent Supabase PostgREST filter injection
+  // Strip %, _, and \ which have special meaning in ILIKE patterns
+  const sanitized = query.replace(/[%_\\]/g, "").slice(0, 100);
+
   const { data, count, error } = await supabase
     .from("profiles")
     .select("id, full_name, email, role, is_suspended, created_at", {
       count: "exact",
     })
-    .or(`full_name.ilike.%${query}%,email.ilike.%${query}%`)
+    .or(`full_name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`)
     .range(from, to)
     .order("created_at", { ascending: false });
 
@@ -127,24 +132,62 @@ export async function suspendUser(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<{ success: boolean }> {
-  const { error } = await supabase
+  // 1. Update DB first
+  const { error: dbError } = await supabase
     .from("profiles")
     .update({ is_suspended: true })
     .eq("id", userId);
 
-  return { success: !error };
+  if (dbError) return { success: false };
+
+  // 2. Block Auth login using service role client — ~100 years = permanent
+  const adminClient = createAdminClient();
+  const { error: authError } = await adminClient.auth.admin.updateUserById(
+    userId,
+    { ban_duration: "876600h" },
+  );
+
+  if (authError) {
+    // Rollback DB change if Auth ban fails
+    await supabase
+      .from("profiles")
+      .update({ is_suspended: false })
+      .eq("id", userId);
+    return { success: false };
+  }
+
+  return { success: true };
 }
 
 export async function activateUser(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<{ success: boolean }> {
-  const { error } = await supabase
+  // 1. Update DB first
+  const { error: dbError } = await supabase
     .from("profiles")
     .update({ is_suspended: false })
     .eq("id", userId);
 
-  return { success: !error };
+  if (dbError) return { success: false };
+
+  // 2. Unban in Auth using service role client
+  const adminClient = createAdminClient();
+  const { error: authError } = await adminClient.auth.admin.updateUserById(
+    userId,
+    { ban_duration: "none" },
+  );
+
+  if (authError) {
+    // Rollback DB change if Auth unban fails
+    await supabase
+      .from("profiles")
+      .update({ is_suspended: true })
+      .eq("id", userId);
+    return { success: false };
+  }
+
+  return { success: true };
 }
 
 export async function getVerificationQueue(
@@ -202,9 +245,13 @@ export async function resolveReport(
   reportId: string,
   resolution: "resolved" | "dismissed",
   note: string | undefined,
-  _adminId: string,
+  adminId: string,
 ): Promise<{ success: boolean }> {
-  const update: Record<string, unknown> = { status: resolution };
+  const update: Record<string, unknown> = {
+    status: resolution,
+    resolved_by: adminId,
+    resolved_at: new Date().toISOString(),
+  };
   if (note !== undefined) {
     update.resolution_note = note;
   }

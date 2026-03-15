@@ -127,16 +127,16 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  // Admin route guard: require is_admin flag on profile
+  // Admin route guard: require role === 'admin' on profile
   const isAdminRoute = pathname.startsWith("/admin");
   if (isAdminRoute && isAuthenticated) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_admin")
+      .select("role")
       .eq("id", user!.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (profile?.role !== "admin") {
       const homeUrl = new URL("/", request.url);
       const redirectResponse = NextResponse.redirect(homeUrl);
       setSecurityHeaders(redirectResponse, nonce);
