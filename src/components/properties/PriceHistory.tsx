@@ -1,8 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceLine,
+  ResponsiveContainer,
+  type TooltipProps,
+} from "recharts";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, BarChart2, MapPin, Lightbulb } from "lucide-react";
+import type { LandRegistryComparable } from "@/services/properties/land-registry-service";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 type HistoryEntry = {
   date: string;
@@ -12,276 +28,364 @@ type HistoryEntry = {
 
 type PriceHistoryProps = Readonly<{
   history: HistoryEntry[];
+  comparables?: LandRegistryComparable[] | null;
   className?: string;
 }>;
 
-const CHART_W = 600;
-const CHART_H = 200;
-const PAD = { top: 20, right: 20, bottom: 30, left: 60 };
+type Tab = "history" | "comparables" | "insights";
 
-function formatPrice(n: number) {
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function formatPrice(n: number): string {
   return `£${n.toLocaleString("en-GB")}`;
 }
 
-function formatShortDate(dateStr: string) {
+function formatShortDate(dateStr: string): string {
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
 }
 
-export function PriceHistory({ history, className }: PriceHistoryProps) {
-  const [tooltip, setTooltip] = useState<{
-    x: number;
-    y: number;
-    entry: HistoryEntry;
-  } | null>(null);
+function formatPriceAxis(n: number): string {
+  if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(1)}m`;
+  return `£${(n / 1000).toFixed(0)}k`;
+}
 
-  if (history.length === 0) {
+// ---------------------------------------------------------------------------
+// Event colour map
+// ---------------------------------------------------------------------------
+
+const EVENT_COLOURS: Record<string, string> = {
+  Listed: "var(--color-brand-primary, #2563eb)",
+  Reduced: "var(--color-destructive, #dc2626)",
+  SSTC: "var(--color-brand-secondary, #d97706)",
+  Sold: "var(--color-success, #16a34a)",
+};
+
+function dotColour(event?: string): string {
+  return event ? (EVENT_COLOURS[event] ?? "var(--color-brand-primary, #2563eb)") : "var(--color-brand-primary, #2563eb)";
+}
+
+// ---------------------------------------------------------------------------
+// Custom tooltip for Recharts
+// ---------------------------------------------------------------------------
+
+function PriceTooltip({ active, payload }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload as HistoryEntry;
+  return (
+    <div className="rounded-lg border bg-popover px-3 py-2 shadow-md text-sm">
+      <p className="font-semibold text-foreground">{formatPrice(d.price)}</p>
+      <p className="text-muted-foreground">
+        {formatShortDate(d.date)}
+        {d.event ? ` · ${d.event}` : ""}
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Custom dot renderer to vary colour by event
+// ---------------------------------------------------------------------------
+
+type DotProps = {
+  cx?: number;
+  cy?: number;
+  payload?: HistoryEntry;
+};
+
+function EventDot({ cx = 0, cy = 0, payload }: DotProps) {
+  if (cx === undefined || cy === undefined) return null;
+  const r = payload?.event ? 6 : 4;
+  return (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={r}
+      fill={dotColour(payload?.event)}
+      stroke="white"
+      strokeWidth={2}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tab button
+// ---------------------------------------------------------------------------
+
+function TabButton({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ElementType;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+        active
+          ? "bg-brand-primary/10 text-brand-primary"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      )}
+    >
+      <Icon className="size-4 shrink-0" />
+      {label}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Comparables table
+// ---------------------------------------------------------------------------
+
+function ComparablesTable({
+  comparables,
+}: {
+  comparables: LandRegistryComparable[] | null | undefined;
+}) {
+  if (!comparables || comparables.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 text-center">
+        <MapPin className="size-8 text-muted-foreground mb-2 opacity-50" />
+        <p className="text-sm font-medium text-muted-foreground">
+          No nearby sold prices available
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Land Registry data may not yet be available for this postcode.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border divide-y text-sm overflow-hidden">
+      {comparables.map((row, i) => (
+        <div
+          key={i}
+          className="flex items-center justify-between px-4 py-3 gap-4"
+        >
+          <div className="min-w-0">
+            <p className="font-medium text-foreground truncate">{row.address}</p>
+            <p className="text-xs text-muted-foreground">
+              {row.property_type}
+              {row.new_build ? " · New Build" : ""}
+              {" · "}
+              {row.tenure}
+              {" · Sold "}
+              {new Date(row.date).toLocaleDateString("en-GB", {
+                month: "short",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+          <p className="font-semibold shrink-0">{formatPrice(row.price)}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Market insights placeholder
+// ---------------------------------------------------------------------------
+
+function MarketInsights() {
+  return (
+    <div className="rounded-xl border bg-muted/40 p-6 flex flex-col items-center text-center gap-3">
+      <Lightbulb className="size-8 text-muted-foreground opacity-60" />
+      <div>
+        <p className="font-semibold text-foreground">Market analysis coming soon</p>
+        <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+          Britestate Insights will show price trends, days on market, demand
+          indicators, and neighbourhood comparisons for this area.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
+
+export function PriceHistory({ history, comparables, className }: PriceHistoryProps) {
+  const [activeTab, setActiveTab] = useState<Tab>("history");
+
+  if (history.length === 0 && !comparables?.length) {
     return null;
   }
 
-  const prices = history.map((h) => h.price);
-  const minPrice = Math.min(...prices);
-  const maxPrice = Math.max(...prices);
-  const priceRange = maxPrice - minPrice || 1;
-
-  const innerW = CHART_W - PAD.left - PAD.right;
-  const innerH = CHART_H - PAD.top - PAD.bottom;
-
-  // Map data to SVG coords
-  const points = history.map((entry, i) => ({
-    x: PAD.left + (i / Math.max(history.length - 1, 1)) * innerW,
-    y: PAD.top + innerH - ((entry.price - minPrice) / priceRange) * innerH,
-    entry,
-  }));
-
-  const polylinePoints = points.map((p) => `${p.x},${p.y}`).join(" ");
-
-  // Price change
-  const first = history[0].price;
-  const last = history[history.length - 1].price;
+  // Price change summary
+  const first = history[0]?.price ?? 0;
+  const last = history[history.length - 1]?.price ?? 0;
   const change = last - first;
-  const changePct = ((change / first) * 100).toFixed(1);
-  const isUp = change >= 0;
+  const changePct = first > 0 ? ((change / first) * 100).toFixed(1) : "0.0";
+  const isUp = change > 0;
+  const isFlat = change === 0;
+
+  // Recharts needs plain objects
+  const chartData = history.map((h) => ({ ...h }));
+
+  // Identify event entries for ReferenceLine vertical markers
+  const eventEntries = history.filter((h) => h.event);
 
   return (
-    <div className={cn("space-y-6", className)}>
-      {/* Current price + change indicator */}
-      <div className="flex items-end gap-4">
-        <div>
-          <p className="text-sm text-muted-foreground">Current Price</p>
-          <p className="text-3xl font-bold text-foreground">{formatPrice(last)}</p>
-        </div>
-        <div
-          className={cn(
-            "flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium mb-1",
-            isUp
-              ? "bg-success-light text-success"
-              : change < 0
-                ? "bg-error-light text-error"
-                : "bg-muted text-muted-foreground",
-          )}
-        >
-          {isUp ? (
-            <TrendingUp className="size-4" />
-          ) : change < 0 ? (
-            <TrendingDown className="size-4" />
-          ) : (
-            <Minus className="size-4" />
-          )}
-          {isUp ? "+" : ""}
-          {changePct}% since listed
-        </div>
-      </div>
-
-      {/* SVG Line Chart */}
-      <div className="w-full overflow-x-auto rounded-xl border bg-card p-2">
-        <svg
-          viewBox={`0 0 ${CHART_W} ${CHART_H}`}
-          className="w-full"
-          style={{ minWidth: "280px", height: "auto" }}
-          aria-label="Price history chart"
-        >
-          {/* Grid lines */}
-          {[0, 0.25, 0.5, 0.75, 1].map((t) => {
-            const y = PAD.top + t * innerH;
-            const price = maxPrice - t * priceRange;
-            return (
-              <g key={t}>
-                <line
-                  x1={PAD.left}
-                  y1={y}
-                  x2={CHART_W - PAD.right}
-                  y2={y}
-                  stroke="currentColor"
-                  strokeOpacity="0.1"
-                  strokeWidth="1"
-                />
-                <text
-                  x={PAD.left - 6}
-                  y={y + 4}
-                  textAnchor="end"
-                  fontSize="10"
-                  fill="currentColor"
-                  opacity="0.5"
-                >
-                  £{(price / 1000).toFixed(0)}k
-                </text>
-              </g>
-            );
-          })}
-
-          {/* X axis labels */}
-          {points.map((p, i) => (
-            <text
-              key={i}
-              x={p.x}
-              y={CHART_H - 4}
-              textAnchor="middle"
-              fontSize="10"
-              fill="currentColor"
-              opacity="0.5"
-            >
-              {formatShortDate(p.entry.date)}
-            </text>
-          ))}
-
-          {/* Line */}
-          <polyline
-            points={polylinePoints}
-            fill="none"
-            stroke="var(--color-brand-primary, currentColor)"
-            strokeWidth="2.5"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-
-          {/* Area fill */}
-          <polygon
-            points={`${PAD.left},${PAD.top + innerH} ${polylinePoints} ${CHART_W - PAD.right},${PAD.top + innerH}`}
-            fill="var(--color-brand-primary, currentColor)"
-            fillOpacity="0.08"
-          />
-
-          {/* Data points */}
-          {points.map((p, i) => (
-            <circle
-              key={i}
-              cx={p.x}
-              cy={p.y}
-              r={p.entry.event ? 6 : 4}
-              fill={
-                p.entry.event === "Reduced"
-                  ? "var(--color-destructive, red)"
-                  : p.entry.event === "SSTC"
-                    ? "var(--color-brand-secondary, orange)"
-                    : "var(--color-brand-primary, green)"
-              }
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer"
-              onMouseEnter={() => setTooltip({ x: p.x, y: p.y, entry: p.entry })}
-              onMouseLeave={() => setTooltip(null)}
-            />
-          ))}
-
-          {/* Tooltip */}
-          {tooltip && (
-            <g>
-              <rect
-                x={Math.min(tooltip.x - 55, CHART_W - 120)}
-                y={tooltip.y - 52}
-                width="110"
-                height="46"
-                rx="6"
-                fill="white"
-                stroke="currentColor"
-                strokeOpacity="0.15"
-                strokeWidth="1"
-                filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))"
-              />
-              <text
-                x={Math.min(tooltip.x - 55, CHART_W - 120) + 55}
-                y={tooltip.y - 33}
-                textAnchor="middle"
-                fontSize="11"
-                fontWeight="600"
-                fill="var(--color-neutral-900)"
-              >
-                {formatPrice(tooltip.entry.price)}
-              </text>
-              <text
-                x={Math.min(tooltip.x - 55, CHART_W - 120) + 55}
-                y={tooltip.y - 18}
-                textAnchor="middle"
-                fontSize="10"
-                fill="var(--color-neutral-500)"
-              >
-                {formatShortDate(tooltip.entry.date)}
-                {tooltip.entry.event ? ` · ${tooltip.entry.event}` : ""}
-              </text>
-            </g>
-          )}
-        </svg>
-      </div>
-
-      {/* Event legend */}
-      <div className="flex flex-wrap gap-3 text-xs">
-        {(["Listed", "Reduced", "SSTC"] as const).map((ev) => (
-          <div key={ev} className="flex items-center gap-1.5">
-            <div
-              className={cn(
-                "size-3 rounded-full",
-                ev === "Listed"
-                  ? "bg-brand-primary"
-                  : ev === "Reduced"
-                    ? "bg-destructive"
-                    : "bg-brand-secondary",
-              )}
-            />
-            <span className="text-muted-foreground">{ev}</span>
+    <div className={cn("space-y-5", className)}>
+      {/* Header: current price + change badge */}
+      {history.length > 0 && (
+        <div className="flex items-end gap-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Current Price</p>
+            <p className="text-3xl font-bold text-foreground">{formatPrice(last)}</p>
           </div>
-        ))}
+          <div
+            className={cn(
+              "flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium mb-1",
+              isUp
+                ? "bg-success-light text-success"
+                : !isFlat
+                  ? "bg-error-light text-error"
+                  : "bg-muted text-muted-foreground",
+            )}
+          >
+            {isUp ? (
+              <TrendingUp className="size-4" />
+            ) : !isFlat ? (
+              <TrendingDown className="size-4" />
+            ) : (
+              <Minus className="size-4" />
+            )}
+            {isUp ? "+" : ""}
+            {changePct}% since listed
+          </div>
+        </div>
+      )}
+
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 border-b pb-3">
+        <TabButton
+          active={activeTab === "history"}
+          onClick={() => setActiveTab("history")}
+          icon={BarChart2}
+          label="Price History"
+        />
+        <TabButton
+          active={activeTab === "comparables"}
+          onClick={() => setActiveTab("comparables")}
+          icon={MapPin}
+          label="Nearby Sales"
+        />
+        <TabButton
+          active={activeTab === "insights"}
+          onClick={() => setActiveTab("insights")}
+          icon={Lightbulb}
+          label="Insights"
+        />
       </div>
 
-      {/* Nearby Sold Prices */}
-      <div>
-        <h3 className="text-sm font-semibold mb-3">Nearby Sold Prices</h3>
-        <div className="rounded-xl border divide-y text-sm overflow-hidden">
-          {[
-            {
-              address: "12 Elm Road, Isleworth, TW7 4PQ",
-              price: 410000,
-              date: "Jan 2026",
-              type: "Terraced",
-            },
-            {
-              address: "8 Maple Avenue, Isleworth, TW7 5AR",
-              price: 450000,
-              date: "Nov 2025",
-              type: "Terraced",
-            },
-            {
-              address: "3 Oak Lane, Hounslow, TW3 1AB",
-              price: 395000,
-              date: "Oct 2025",
-              type: "Semi-detached",
-            },
-          ].map((row, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between px-4 py-3 gap-4"
-            >
-              <div>
-                <p className="font-medium text-foreground">{row.address}</p>
-                <p className="text-xs text-muted-foreground">
-                  {row.type} · Sold {row.date}
-                </p>
+      {/* Tab panels */}
+      {activeTab === "history" && (
+        <div className="space-y-5">
+          {history.length > 0 ? (
+            <>
+              {/* Recharts line chart */}
+              <div className="w-full rounded-xl border bg-card p-4">
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart
+                    data={chartData}
+                    margin={{ top: 10, right: 16, bottom: 4, left: 8 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="currentColor"
+                      strokeOpacity={0.08}
+                    />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={formatShortDate}
+                      tick={{ fontSize: 11, fill: "currentColor", opacity: 0.5 }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      tickFormatter={formatPriceAxis}
+                      tick={{ fontSize: 11, fill: "currentColor", opacity: 0.5 }}
+                      tickLine={false}
+                      axisLine={false}
+                      width={52}
+                    />
+                    <Tooltip content={<PriceTooltip />} />
+
+                    {/* Event reference lines */}
+                    {eventEntries.map((e, i) => (
+                      <ReferenceLine
+                        key={i}
+                        x={e.date}
+                        stroke={dotColour(e.event)}
+                        strokeDasharray="4 3"
+                        strokeOpacity={0.5}
+                        label={{
+                          value: e.event ?? "",
+                          position: "top",
+                          fontSize: 10,
+                          fill: dotColour(e.event),
+                          opacity: 0.8,
+                        }}
+                      />
+                    ))}
+
+                    <Line
+                      type="monotone"
+                      dataKey="price"
+                      stroke="var(--color-brand-primary, #2563eb)"
+                      strokeWidth={2.5}
+                      dot={<EventDot />}
+                      activeDot={{ r: 6, stroke: "white", strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-              <p className="font-semibold shrink-0">{formatPrice(row.price)}</p>
-            </div>
-          ))}
+
+              {/* Event legend */}
+              <div className="flex flex-wrap gap-3 text-xs">
+                {(["Listed", "Reduced", "SSTC", "Sold"] as const).map((ev) => (
+                  <div key={ev} className="flex items-center gap-1.5">
+                    <div
+                      className="size-3 rounded-full"
+                      style={{ background: EVENT_COLOURS[ev] }}
+                    />
+                    <span className="text-muted-foreground">{ev}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No price history available for this property.
+            </p>
+          )}
         </div>
-      </div>
+      )}
+
+      {activeTab === "comparables" && (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Sold prices from HM Land Registry — may take 2–3 months to appear
+            after completion.
+          </p>
+          <ComparablesTable comparables={comparables} />
+        </div>
+      )}
+
+      {activeTab === "insights" && <MarketInsights />}
     </div>
   );
 }
