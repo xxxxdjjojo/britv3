@@ -20,6 +20,17 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
+  fallbacks: {
+    // Serve the offline page for any navigation request that fails
+    entries: [
+      {
+        url: "/offline",
+        matcher({ request }: { request: Request }) {
+          return request.destination === "document";
+        },
+      },
+    ],
+  },
   runtimeCaching: [
     {
       matcher: /^https?:\/\/[^/]+\/api\/properties\//,

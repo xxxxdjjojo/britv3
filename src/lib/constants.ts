@@ -208,6 +208,12 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/verify-email/confirmed",
   "/register/role-select",
   "/register/onboarding",
+  // System/error state pages — always publicly accessible
+  "/forbidden",
+  "/maintenance",
+  "/offline",
+  "/session-expired",
+  "/rate-limited",
 ] as const;
 
 /** Routes for unauthenticated users only (login, register, etc.) */
