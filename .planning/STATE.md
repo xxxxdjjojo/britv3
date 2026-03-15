@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-07-PLAN.md
-last_updated: "2026-03-15T12:04:27.753Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-13-PLAN.md
+last_updated: "2026-03-15T12:31:07.563Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 7
   total_plans: 112
-  completed_plans: 83
+  completed_plans: 84
   percent: 49
 ---
 
@@ -80,6 +80,7 @@ Progress: [█████░░░░░] 49%
 | Phase 15-estate-agent-dashboard P11 | 19 | 2 tasks | 9 files |
 | Phase 15 P04 | 35 | 2 tasks | 7 files |
 | Phase 15-estate-agent-dashboard P12 | 12 | 2 tasks | 7 files |
+| Phase 15-estate-agent-dashboard P13 | 2299 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -168,6 +169,9 @@ Recent decisions affecting current work:
 - [Phase 15-estate-agent-dashboard]: Reviews dashboard computes monthly trend server-side from raw review array — avoids extra SQL aggregation query
 - [Phase 15-estate-agent-dashboard]: Profanity filter uses hardcoded Set<string> with regex whole-word boundary — no external library per plan spec
 - [Phase 15-estate-agent-dashboard]: StripeSubscriptionSummary lightweight mapper in billing/page.tsx keeps Stripe SDK types out of client bundle
+- [Phase Phase 15-estate-agent-dashboard]: Conversion funnel uses horizontal div bars (not Recharts FunnelChart) — avoids additional dependency; pure CSS width-percentage approach is simpler
+- [Phase Phase 15-estate-agent-dashboard]: FeaturedListingBoost 3-step wizard uses local component state (step 1/2/3) — no external state manager needed for a linear flow
+- [Phase Phase 15-estate-agent-dashboard]: VendorReportDownloader thin wrapper added — pre-existing Turbopack code generation error required additional indirection layer to fully isolate @react-pdf/renderer from SSR compilation
 
 ### Pending Todos
 
@@ -182,6 +186,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T12:04:27.736Z
-Stopped at: Completed 15-07-PLAN.md
+Last session: 2026-03-15T12:31:07.544Z
+Stopped at: Completed 15-estate-agent-dashboard 15-13-PLAN.md
 Resume file: None
