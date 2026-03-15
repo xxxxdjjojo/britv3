@@ -13,11 +13,11 @@ import { TenancyAgreementPDFWrapper } from "@/components/landlord/TenancyAgreeme
 // -- Page ---------------------------------------------------------------------
 
 type Props = {
-  params: Promise<{ tenancyId: string }>;
+  params: Promise<{ applicationId: string }>;
 };
 
 export default async function TenancyAgreementPage({ params }: Props) {
-  const { tenancyId } = await params;
+  const { applicationId: tenancyId } = await params;
   const supabase = await createClient();
 
   // Fetch tenancy

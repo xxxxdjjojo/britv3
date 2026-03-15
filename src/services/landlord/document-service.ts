@@ -217,7 +217,7 @@ export async function getComplianceSummary(
       id,
       category,
       expiry_date,
-      property:listings!inner(address_line_1, city, postcode)
+      property:properties!inner(address_line1, city, postcode)
     `)
     .in("category", COMPLIANCE_CATEGORIES)
     .not("expiry_date", "is", null)
@@ -249,9 +249,9 @@ export async function getComplianceSummary(
     const property =
       rawProperty !== null &&
       typeof rawProperty === "object" &&
-      "address_line_1" in rawProperty
-        ? (rawProperty as { address_line_1: string; city: string; postcode: string })
-        : { address_line_1: "", city: "", postcode: "" };
+      "address_line1" in rawProperty
+        ? (rawProperty as { address_line1: string; city: string; postcode: string })
+        : { address_line1: "", city: "", postcode: "" };
 
     return {
       id: doc.id as string,
@@ -259,7 +259,7 @@ export async function getComplianceSummary(
       expiry_date: doc.expiry_date as string,
       status,
       property: {
-        address_line_1: property.address_line_1 ?? "",
+        address_line_1: property.address_line1 ?? "",
         city: property.city ?? "",
         postcode: property.postcode ?? "",
       },

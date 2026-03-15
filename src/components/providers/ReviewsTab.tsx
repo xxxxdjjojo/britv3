@@ -56,6 +56,13 @@ function ReviewerAvatar({
   );
 }
 
+type ReviewsTabProps = Readonly<{
+  reviews: PublicReview[];
+  total: number;
+  providerName: string;
+  providerId: string;
+}>;
+
 export function ReviewsTab({
   reviews,
   total,

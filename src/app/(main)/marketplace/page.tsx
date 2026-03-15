@@ -58,7 +58,7 @@ export default async function MarketplaceLandingPage() {
     .gt("total_reviews", 5)
     .limit(6);
 
-  const featured = (featuredRaw ?? []) as Array<{
+  const featured = (featuredRaw ?? []) as unknown as Array<{
     provider_id: string;
     average_rating: number;
     total_reviews: number;
