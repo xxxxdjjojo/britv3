@@ -4,7 +4,7 @@
  * MessageThread -- Real-time chat thread backed by useMessages() + Supabase Realtime.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -37,8 +37,15 @@ const QUICK_ACTIONS = [
 
 /* ---------- Sub-components ---------- */
 
-function ThreadHeader(props: Readonly<{ participantName?: string }>) {
-  const { participantName } = props;
+type PropertyInfo = { address: string; price?: string } | null;
+
+function ThreadHeader(
+  props: Readonly<{
+    participantName?: string;
+    propertyInfo?: PropertyInfo;
+  }>,
+) {
+  const { participantName, propertyInfo } = props;
   const displayName = participantName ?? "Conversation";
   const initials = displayName
     .split(" ")
@@ -59,6 +66,14 @@ function ThreadHeader(props: Readonly<{ participantName?: string }>) {
         </div>
         <div>
           <p className="text-sm font-semibold text-foreground">{displayName}</p>
+          {propertyInfo && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground border rounded-lg px-2 py-1 bg-muted/30 mt-1">
+              <span className="font-medium truncate max-w-48">{propertyInfo.address}</span>
+              {propertyInfo.price && (
+                <span className="text-primary font-semibold">{propertyInfo.price}</span>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="flex items-center gap-1">
@@ -187,9 +202,11 @@ export default function MessageThread(
     conversationId: string;
     recipientId?: string;
     participantName?: string;
+    contextType?: string;
+    propertyInfo?: PropertyInfo;
   }>,
 ) {
-  const { conversationId, recipientId, participantName } = props;
+  const { conversationId, recipientId, participantName, contextType, propertyInfo = null } = props;
 
   const { data, isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useMessages(conversationId);
@@ -198,6 +215,10 @@ export default function MessageThread(
 
   // Mark conversation as read on mount
   useMarkAsRead(conversationId);
+
+  // Typing indicator state
+  const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Flatten pages into a sorted array — pages are newest-first, so reverse for display
   const messages = data?.pages.flatMap((p) => p.messages).reverse() ?? [];
@@ -255,11 +276,30 @@ export default function MessageThread(
       .subscribe();
     channelRef.current = channel;
 
+    // Typing indicator broadcast channel
+    const typingChannel = supabase
+      .channel(`typing:${conversationId}`)
+      .on(
+        "broadcast",
+        { event: "typing" },
+        (payload: { payload: { user_id: string; is_typing: boolean } }) => {
+          if (payload.payload.user_id === user?.id) return;
+          setIsOtherTyping(payload.payload.is_typing);
+          if (payload.payload.is_typing) {
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = setTimeout(() => setIsOtherTyping(false), 3000);
+          }
+        },
+      )
+      .subscribe();
+
     return () => {
       void channel.unsubscribe();
       channelRef.current = null;
+      void typingChannel.unsubscribe();
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [conversationId, queryClient]);
+  }, [conversationId, queryClient, user?.id]);
 
   if (isLoading) {
     return (
@@ -279,7 +319,7 @@ export default function MessageThread(
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <ThreadHeader participantName={participantName} />
+      <ThreadHeader participantName={participantName} propertyInfo={propertyInfo} />
 
       {/* Message feed */}
       <ScrollArea className="flex-1">
@@ -314,9 +354,20 @@ export default function MessageThread(
       </ScrollArea>
 
       <QuickActionsBar />
+      {isOtherTyping && (
+        <div className="px-4 py-1 text-xs text-muted-foreground italic flex items-center gap-1">
+          <span className="inline-flex gap-0.5">
+            <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
+            <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>
+            <span className="animate-bounce" style={{ animationDelay: "300ms" }}>•</span>
+          </span>
+          {participantName ?? "Someone"} is typing...
+        </div>
+      )}
       <MessageComposer
         conversationId={conversationId}
         recipientId={recipientId ?? ""}
+        contextType={contextType}
       />
     </div>
   );

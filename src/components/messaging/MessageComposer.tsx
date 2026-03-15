@@ -4,29 +4,37 @@
  * MessageComposer -- textarea with file attach support and Ctrl+Enter send.
  */
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { useSendMessage } from "@/hooks/useMessages";
 import { createClient } from "@/lib/supabase/client";
 import { uploadAttachment } from "@/services/messaging/attachment-service";
+import { getSuggestedReplies } from "@/services/smart-replies/smart-replies";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import AttachmentPreview from "@/components/messaging/AttachmentPreview";
 
 const MAX_CHARS = 5000;
+const supabase = createClient();
 
 export default function MessageComposer(
   props: Readonly<{
     conversationId: string;
     recipientId: string;
     contextType?: string;
+    lastMessageContent?: string;
   }>,
 ) {
-  const { conversationId, recipientId, contextType = "general" } = props;
+  const { conversationId, recipientId, contextType = "general", lastMessageContent = "" } = props;
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const suggestions = useMemo(
+    () => (content === "" ? getSuggestedReplies(contextType, lastMessageContent) : []),
+    [content, contextType, lastMessageContent],
+  );
 
   const sendMutation = useSendMessage(conversationId);
 
@@ -113,6 +121,24 @@ export default function MessageComposer(
         />
       )}
 
+      {/* Smart reply chips */}
+      {suggestions.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {suggestions.map((suggestion) => (
+            <Button
+              key={suggestion}
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="rounded-full text-xs border"
+              onClick={() => setContent(suggestion)}
+            >
+              {suggestion}
+            </Button>
+          ))}
+        </div>
+      )}
+
       {/* Composer row */}
       <div className="flex items-end gap-2">
         {/* Attach button */}
@@ -152,7 +178,14 @@ export default function MessageComposer(
           <Textarea
             placeholder="Type a message... (Ctrl+Enter to send)"
             value={content}
-            onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
+            onChange={(e) => {
+              setContent(e.target.value.slice(0, MAX_CHARS));
+              void supabase.channel(`typing:${conversationId}`).send({
+                type: "broadcast",
+                event: "typing",
+                payload: { user_id: "me", is_typing: true },
+              });
+            }}
             onKeyDown={handleKeyDown}
             rows={1}
             className="pr-16 min-h-10 max-h-32 resize-none"
