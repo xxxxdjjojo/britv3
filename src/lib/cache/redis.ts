@@ -154,7 +154,7 @@ export const propertyDetailCacheKey = {
   roi: (postcode: string, propType: string, priceBand: string) =>
     `roi:${postcode}:${propType}:${priceBand}`,
   ofsted: (lat: number, lng: number, radius: number) =>
-    `ofsted:lat:${lat}:lng:${lng}:r:${radius}`,
+    `ofsted:lat:${lat.toFixed(4)}:lng:${lng.toFixed(4)}:r:${radius}`,
   crime: (postcode: string) => `crime:postcode:${postcode}`,
   demographics: (postcodeDistrict: string) =>
     `demo:postcode_district:${postcodeDistrict}`,
