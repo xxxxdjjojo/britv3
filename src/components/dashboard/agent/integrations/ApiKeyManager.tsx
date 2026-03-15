@@ -28,23 +28,26 @@ export function ApiKeyManager({ initialKeys }: Props) {
     if (!newKeyName.trim()) return;
     setGenerateState({ status: "generating" });
     try {
-      const res = await fetch("/api/agent/billing", {
+      // action is a query param; name goes in the request body
+      const res = await fetch("/api/agent/billing?action=generate_key", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "generate_key", name: newKeyName.trim() }),
+        body: JSON.stringify({ name: newKeyName.trim() }),
       });
       if (!res.ok) {
         const json = (await res.json()) as { error?: string };
         setGenerateState({ status: "error", message: json.error ?? "Failed to generate key" });
         return;
       }
-      const json = (await res.json()) as { key: string; keyData?: ApiKeyRow };
+      const json = (await res.json()) as { key: string };
       setGenerateState({ status: "revealed", key: json.key, name: newKeyName.trim() });
-      // Refresh key list
-      const listRes = await fetch("/api/agent/billing?action=list_keys");
+      // Refresh key list — GET ?type=keys returns a direct array of ApiKeyRow
+      const listRes = await fetch("/api/agent/billing?type=keys");
       if (listRes.ok) {
-        const listJson = (await listRes.json()) as { keys: ApiKeyRow[] };
-        setKeys(listJson.keys ?? keys);
+        const listJson = (await listRes.json()) as ApiKeyRow[];
+        if (Array.isArray(listJson)) {
+          setKeys(listJson);
+        }
       }
     } catch {
       setGenerateState({ status: "error", message: "Network error. Please try again." });
@@ -54,10 +57,9 @@ export function ApiKeyManager({ initialKeys }: Props) {
   async function handleRevoke(keyId: string) {
     setRevoking(keyId);
     try {
-      const res = await fetch("/api/agent/billing", {
+      // keyId is a query param; DELETE has no body
+      const res = await fetch(`/api/agent/billing?keyId=${encodeURIComponent(keyId)}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "revoke_key", key_id: keyId }),
       });
       if (res.ok) {
         setKeys((prev) =>
