@@ -47,13 +47,24 @@ CREATE TABLE IF NOT EXISTS feature_flags (
   updated_by uuid REFERENCES profiles(id)
 );
 
+-- Auto-update updated_at on feature_flags changes
+-- Note: set_updated_at() function is defined in 20260313_agent_dashboard migration
+CREATE TRIGGER feature_flags_updated_at
+  BEFORE UPDATE ON feature_flags
+  FOR EACH ROW
+  EXECUTE FUNCTION set_updated_at();
+
 ALTER TABLE feature_flags ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "feature_flags_select" ON feature_flags
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
 CREATE POLICY "feature_flags_write" ON feature_flags
-  FOR ALL USING (
+  FOR ALL
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  )
+  WITH CHECK (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
@@ -85,7 +96,11 @@ CREATE POLICY "gdpr_requests_own" ON gdpr_requests
   FOR SELECT USING (user_id = auth.uid());
 
 CREATE POLICY "gdpr_requests_admin" ON gdpr_requests
-  FOR ALL USING (
+  FOR ALL
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+  )
+  WITH CHECK (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
   );
 
