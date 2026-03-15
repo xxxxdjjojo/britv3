@@ -362,6 +362,8 @@ export async function getSimilarProperties(
   for (const row of data as Record<string, unknown>[]) {
     const prop = row.properties as Record<string, unknown> | null;
     if (!prop) continue;
+    // TODO: Push city + property_type filters to Supabase query level to
+    // eliminate JS-side filtering and avoid under-delivering results at scale.
     if (
       (prop.city as string)?.toLowerCase() !==
         (refProperty.city as string)?.toLowerCase() ||
@@ -397,16 +399,16 @@ export async function getSimilarProperties(
 }
 
 /**
- * Check whether the current authenticated user has saved a property,
+ * Check whether the current authenticated user has saved a listing,
  * and retrieve their note if any.
  *
  * Returns { saved: false, note: null } when the user is not authenticated
- * or has not saved the property — never throws.
+ * or has not saved the listing — never throws.
  *
- * Note: saved_properties.property_id references properties.id.
+ * Note: saved_properties.listing_id references listings.id.
  */
 export async function getSavedStatus(
-  propertyId: string,
+  listingId: string,
 ): Promise<{ saved: boolean; note: string | null }> {
   const supabase = await createClient();
 
@@ -420,9 +422,9 @@ export async function getSavedStatus(
 
   const { data } = await supabase
     .from("saved_properties")
-    .select("id, note")
+    .select("id, notes")
     .eq("user_id", user.id)
-    .eq("property_id", propertyId)
+    .eq("listing_id", listingId)
     .maybeSingle();
 
   if (!data) {
@@ -431,49 +433,45 @@ export async function getSavedStatus(
 
   return {
     saved: true,
-    note: (data.note as string | null) ?? null,
+    note: (data.notes as string | null) ?? null,
   };
 }
 
 /**
  * Record a property view.
- * Fire-and-forget: wrapped in try/catch, never throws, never awaited by callers.
+ * Fire-and-forget: wrapped in a void IIFE, never throws, never awaited by callers.
  *
- * Increments view_count on the listing and inserts into property_views using
- * the listing's property_id.
+ * Inserts into property_views using the listing's property_id.
+ * view_count on the listings table is intentionally NOT incremented here —
+ * it can be recomputed from the property_views table by a scheduled function.
+ * (The increment_listing_view_count RPC does not exist in migrations.)
  */
 export async function recordPropertyView(
   listingId: string,
   sessionId: string,
 ): Promise<void> {
-  try {
-    const supabase = await createClient();
+  void (async () => {
+    try {
+      const supabase = await createClient();
 
-    // Increment view_count on the listing (best-effort)
-    void supabase
-      .rpc("increment_listing_view_count", { p_listing_id: listingId })
-      .then(() => undefined, () => undefined);
+      // Get the property_id for this listing
+      const { data: listing } = await supabase
+        .from("listings")
+        .select("property_id")
+        .eq("id", listingId)
+        .single();
 
-    // Fetch the property_id from the listing to record in property_views
-    const { data: listingRow } = await supabase
-      .from("listings")
-      .select("property_id")
-      .eq("id", listingId)
-      .maybeSingle();
+      if (!listing) return;
 
-    if (!listingRow) return;
-
-    const propertyId = listingRow.property_id as string;
-
-    // Insert into property_views (ignore unique-constraint duplicates)
-    await supabase.from("property_views").insert({
-      property_id: propertyId,
-      session_id: sessionId,
-      viewed_at: new Date().toISOString(),
-    });
-  } catch {
-    // Fire-and-forget — swallow all errors
-  }
+      // Insert into property_views; created_at defaults to now()
+      await supabase.from("property_views").insert({
+        property_id: listing.property_id,
+        session_id: sessionId,
+      });
+    } catch {
+      // Fire-and-forget — never throw
+    }
+  })();
 }
 
 /**
