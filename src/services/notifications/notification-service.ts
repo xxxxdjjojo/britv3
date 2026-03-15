@@ -193,12 +193,12 @@ export async function getUserEntityIds(
 
   // Conversations the user participates in
   const { data: conversations } = await supabase
-    .from("conversation_participants")
-    .select("conversation_id")
-    .eq("user_id", userId);
+    .from("conversations")
+    .select("id")
+    .or(`participant_1_id.eq.${userId},participant_2_id.eq.${userId}`);
 
   if (conversations) {
-    entityIds.push(...conversations.map((c) => c.conversation_id));
+    entityIds.push(...conversations.map((c) => c.id));
   }
 
   // Bookings where user is client or provider
@@ -247,11 +247,21 @@ async function dispatchCriticalEmail(
 ): Promise<void> {
   try {
     // Find users associated with this entity (excluding the actor)
-    const entityIds = [event.entity_id];
-    const { data: participants } = await supabase
-      .from("conversation_participants")
-      .select("user_id")
-      .in("conversation_id", entityIds);
+    const { data: conversation } = await supabase
+      .from("conversations")
+      .select("participant_1_id, participant_2_id")
+      .eq("id", event.entity_id)
+      .single();
+
+    const participantIds: string[] = [];
+    if (conversation?.participant_1_id) {
+      participantIds.push(conversation.participant_1_id);
+    }
+    if (conversation?.participant_2_id) {
+      participantIds.push(conversation.participant_2_id);
+    }
+
+    const participants = participantIds.map((id) => ({ user_id: id }));
 
     // For non-conversation entities, look up the owner
     const recipientIds: string[] = [];
