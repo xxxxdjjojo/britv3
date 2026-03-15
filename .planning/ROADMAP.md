@@ -316,7 +316,7 @@ Plans:
 
 **Milestone Goal:** Deliver all 32 Estate Agent Dashboard features at FAANG quality — full frontend + backend + browser-tested. Covers the complete agency operation from listings management, lead pipeline, viewings, offers, sales progression (Kanban), CRM, team/branch management, analytics, reviews, billing, and third-party property feed integrations (Reapit, Alto, Jupix) — all backed by real Supabase data with Stitch-designed UI.
 
-- [ ] **Phase 15: Estate Agent Dashboard** - Dashboard home, listings management, lead pipeline, viewings calendar, offers & negotiation, sale progression board, CRM, team & branch management, analytics & reporting, reviews, billing, integrations
+- [x] **Phase 15: Estate Agent Dashboard** - Dashboard home, listings management, lead pipeline, viewings calendar, offers & negotiation, sale progression board, CRM, team & branch management, analytics & reporting, reviews, billing, integrations (completed 2026-03-15)
 
 ## Phase Details (continued)
 
@@ -508,7 +508,7 @@ v3.6 phases: 17 (depends on Phase 4 + Phase 16)
 | 12. Financial & Referral | v3.1 | 0/2 | Not started | - |
 | 13. Seller Dashboard | v3.2 | 0/10 | Not started | - |
 | 14. Landlord Dashboard | 11/11 | Complete   | 2026-03-14 | - |
-| 15. Estate Agent Dashboard | 13/14 | In Progress|  | - |
+| 15. Estate Agent Dashboard | 14/14 | Complete   | 2026-03-15 | - |
 | 16. Tradesperson Dashboard | v3.5 | 0/12 | Not started | - |
 | 17. Service Provider Public Profiles | 8/8 | Complete   | 2026-03-14 | - |
 

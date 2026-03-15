@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-09-PLAN.md
-last_updated: "2026-03-15T12:37:25.265Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-14-PLAN.md
+last_updated: "2026-03-15T12:53:19.739Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 112
-  completed_plans: 85
+  completed_plans: 86
   percent: 49
 ---
 
@@ -82,6 +82,7 @@ Progress: [█████░░░░░] 49%
 | Phase 15-estate-agent-dashboard P12 | 12 | 2 tasks | 7 files |
 | Phase 15-estate-agent-dashboard P13 | 2299 | 2 tasks | 9 files |
 | Phase 15 P09 | 45 | 2 tasks | 10 files |
+| Phase 15-estate-agent-dashboard P14 | 17 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -175,6 +176,8 @@ Recent decisions affecting current work:
 - [Phase Phase 15-estate-agent-dashboard]: VendorReportDownloader thin wrapper added — pre-existing Turbopack code generation error required additional indirection layer to fully isolate @react-pdf/renderer from SSR compilation
 - [Phase 15]: Isolated PDFDownloadButton.tsx as sole @react-pdf/renderer importer to satisfy Turbopack SSR bundling
 - [Phase 15]: Adjacent-only Kanban validation layered: client opacity-40 muting + server 422 via ALLOWED_TRANSITIONS
+- [Phase 15-estate-agent-dashboard]: next.config.ts already uses serverExternalPackages (Next.js 15+ name) for @react-pdf/renderer — no config change needed
+- [Phase 15-estate-agent-dashboard]: ApiKeyManager one-time reveal uses GenerateState discriminated union in component state — raw key never re-fetchable after dialog close
 
 ### Pending Todos
 
@@ -189,6 +192,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T12:37:25.253Z
-Stopped at: Completed 15-09-PLAN.md
+Last session: 2026-03-15T12:53:19.728Z
+Stopped at: Completed 15-estate-agent-dashboard 15-14-PLAN.md
 Resume file: None
