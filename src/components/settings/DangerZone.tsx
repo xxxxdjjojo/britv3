@@ -46,6 +46,8 @@ export function DangerZone() {
       const supabase = createClient();
       await supabase.auth.signOut();
       toast.success("Account scheduled for deletion");
+      setDialogOpen(false);
+      setDeleteConfirmation("");
       router.push("/");
     } catch (error) {
       toast.error(
@@ -55,8 +57,6 @@ export function DangerZone() {
       );
     } finally {
       setDeleting(false);
-      setDialogOpen(false);
-      setDeleteConfirmation("");
     }
   }
 
@@ -64,12 +64,12 @@ export function DangerZone() {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger
         render={
-          <Button variant="destructive" size="sm" className="mt-2" />
+          <Button variant="destructive" size="sm" className="mt-2">
+            <Trash2 className="size-4" />
+            Deactivate Account
+          </Button>
         }
-      >
-        <Trash2 className="size-4" />
-        Deactivate Account
-      </DialogTrigger>
+      />
 
       <DialogContent>
         <DialogHeader>
