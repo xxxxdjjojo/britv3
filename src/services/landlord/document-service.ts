@@ -270,7 +270,12 @@ export async function getComplianceSummary(
 /**
  * Upload a document file to Supabase Storage.
  * Validates file type via magic bytes and checks size limit.
- * Returns the storage path of the uploaded file.
+ * Returns the storage path of the uploaded file (e.g. `propertyId/documentId/filename`).
+ *
+ * IMPORTANT: Callers that persist the returned path to the `file_url` DB column must
+ * store it as-is. Do NOT call `getPublicUrl()` — the bucket is private.
+ * Use `supabase.storage.from("property-documents").createSignedUrl(path, ttl)` to
+ * generate access URLs on demand.
  */
 export async function uploadDocumentFile(
   supabase: SupabaseClient,
