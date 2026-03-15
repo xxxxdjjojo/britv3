@@ -34,7 +34,6 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     label: "Account",
     href: "/settings/account",
     icon: User,
-    disabled: true,
   },
 ];
 
