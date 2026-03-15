@@ -36,7 +36,7 @@ type PrivacySettings = {
 };
 
 const DEFAULT_SETTINGS: PrivacySettings = {
-  visibility: "registered_only",
+  visibility: "public",
   search_indexing: true,
   anonymous_analytics: true,
   third_party_marketing: false,
