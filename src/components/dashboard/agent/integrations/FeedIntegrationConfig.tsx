@@ -156,38 +156,47 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
     setFormError(null);
     try {
       const isEdit = dialogState.open && dialogState.mode === "edit";
-      const method = isEdit ? "PATCH" : "POST";
-      const body: Record<string, unknown> = {
-        action: isEdit ? "update_feed" : "create_feed",
-        provider: formProvider,
-        field_mapping: formFieldMapping,
-      };
+
       if (isEdit) {
-        body.integration_id = dialogState.integration.id;
-      }
-      if (formApiKey.trim()) {
-        body.api_key = formApiKey.trim();
-      }
-
-      const res = await fetch("/api/agent/feeds", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const json = (await res.json()) as { error?: string };
-        setFormError(json.error ?? "Failed to save integration.");
-        return;
-      }
-
-      const json = (await res.json()) as { integration: AgentFeedIntegration };
-      if (isEdit) {
-        setIntegrations((prev) =>
-          prev.map((i) => (i.id === json.integration.id ? json.integration : i)),
+        // PATCH /api/agent/feeds?id=<id> — update existing integration
+        const body: Record<string, unknown> = { field_mapping: formFieldMapping };
+        if (formApiKey.trim()) {
+          body.api_key = formApiKey.trim();
+        }
+        const res = await fetch(
+          `/api/agent/feeds?id=${encodeURIComponent(dialogState.integration.id)}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          },
         );
+        if (!res.ok) {
+          const json = (await res.json()) as { error?: string };
+          setFormError(json.error ?? "Failed to update integration.");
+          return;
+        }
+        const updated = (await res.json()) as AgentFeedIntegration;
+        setIntegrations((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
       } else {
-        setIntegrations((prev) => [json.integration, ...prev]);
+        // POST /api/agent/feeds — create new integration
+        const body: Record<string, unknown> = {
+          provider: formProvider,
+          api_key: formApiKey.trim(),
+          field_mapping: formFieldMapping,
+        };
+        const res = await fetch("/api/agent/feeds", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const json = (await res.json()) as { error?: string };
+          setFormError(json.error ?? "Failed to create integration.");
+          return;
+        }
+        const created = (await res.json()) as AgentFeedIntegration;
+        setIntegrations((prev) => [created, ...prev]);
       }
       closeDialog();
     } catch {
@@ -200,18 +209,20 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
   async function handleSyncNow(integrationId: string) {
     setSyncingId(integrationId);
     try {
-      const res = await fetch("/api/agent/feeds", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "sync_now", integration_id: integrationId }),
-      });
+      // PATCH with sync_status='syncing' to trigger sync
+      const res = await fetch(
+        `/api/agent/feeds?id=${encodeURIComponent(integrationId)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sync_status: "syncing" }),
+        },
+      );
       if (res.ok) {
-        const json = (await res.json()) as { integration?: AgentFeedIntegration };
-        if (json.integration) {
-          setIntegrations((prev) =>
-            prev.map((i) => (i.id === integrationId ? json.integration! : i)),
-          );
-        }
+        const updated = (await res.json()) as AgentFeedIntegration;
+        setIntegrations((prev) =>
+          prev.map((i) => (i.id === integrationId ? updated : i)),
+        );
       }
     } finally {
       setSyncingId(null);
@@ -221,11 +232,11 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
   async function handleDelete(integrationId: string) {
     setDeletingId(integrationId);
     try {
-      const res = await fetch("/api/agent/feeds", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ integration_id: integrationId }),
-      });
+      // DELETE /api/agent/feeds?id=<id>
+      const res = await fetch(
+        `/api/agent/feeds?id=${encodeURIComponent(integrationId)}`,
+        { method: "DELETE" },
+      );
       if (res.ok) {
         setIntegrations((prev) => prev.filter((i) => i.id !== integrationId));
       }
