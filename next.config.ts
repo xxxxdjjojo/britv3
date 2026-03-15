@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // @react-pdf/renderer uses Node.js APIs and cannot be bundled for SSR
+  serverExternalPackages: ["@react-pdf/renderer"],
   typescript: {
     // Pre-existing TS errors in compliance/expense/listing pages don't affect
     // runtime correctness. Ignored during build to unblock the build pipeline.
