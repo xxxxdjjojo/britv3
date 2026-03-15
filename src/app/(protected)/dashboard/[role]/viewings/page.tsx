@@ -1,135 +1,318 @@
 "use client";
 
+import Link from "next/link";
+import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, MapPin, User, Video, Plus } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Video,
+  Plus,
+  RotateCcw,
+  X,
+} from "lucide-react";
+import { useViewings, useCancelViewing } from "@/hooks/useViewings";
+import type { Viewing } from "@/services/viewings/viewings-service";
 
-const upcomingViewings = [
-    { id: 1, property: "4 Bed Detached, Kensington", date: "12 Mar 2026", time: "10:00 AM", agent: "Sarah Mitchell", type: "In Person", status: "Confirmed", address: "42 Holland Park Ave, W11" },
-    { id: 2, property: "2 Bed Flat, Canary Wharf", date: "14 Mar 2026", time: "2:30 PM", agent: "James Harper", type: "Virtual", status: "Pending", address: "15 Westferry Circus, E14" },
-    { id: 3, property: "3 Bed Semi, Guildford", date: "16 Mar 2026", time: "11:00 AM", agent: "Emma Richards", type: "In Person", status: "Confirmed", address: "8 Epsom Road, GU1" },
-];
+function formatDate(isoString: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(isoString));
+}
 
-const pastViewings = [
-    { id: 4, property: "5 Bed Victorian, Richmond", date: "5 Mar 2026", time: "3:00 PM", agent: "Oliver Grant", type: "In Person", status: "Completed", feedback: "Loved the garden, concerned about roof" },
-    { id: 5, property: "1 Bed Studio, Shoreditch", date: "2 Mar 2026", time: "1:00 PM", agent: "David Chen", type: "Virtual", status: "Completed", feedback: "Too small for our needs" },
-    { id: 6, property: "3 Bed Terraced, Wimbledon", date: "28 Feb 2026", time: "10:30 AM", agent: "Sophie Turner", type: "In Person", status: "Cancelled", feedback: "N/A" },
-];
+function formatTime(isoString: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(isoString));
+}
 
-export default function ViewingsPage() {
-    return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Viewings</h1>
-                    <p className="text-muted-foreground">Manage your property viewings and appointments</p>
-                </div>
-                <Button><Plus className="mr-2 size-4" />Book Viewing</Button>
-            </div>
+function statusVariant(
+  status: Viewing["status"],
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case "confirmed":
+      return "default";
+    case "rescheduled":
+      return "secondary";
+    case "cancelled":
+      return "destructive";
+    case "completed":
+      return "outline";
+    default:
+      return "secondary";
+  }
+}
 
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardDescription>Upcoming</CardDescription>
-                        <CardTitle className="text-3xl">3</CardTitle>
-                    </CardHeader>
-                    <CardContent><p className="text-xs text-muted-foreground">Next: 12 Mar 2026</p></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardDescription>Completed</CardDescription>
-                        <CardTitle className="text-3xl">8</CardTitle>
-                    </CardHeader>
-                    <CardContent><p className="text-xs text-muted-foreground">This month: 2</p></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardDescription>Avg. Feedback Score</CardDescription>
-                        <CardTitle className="text-3xl">4.2/5</CardTitle>
-                    </CardHeader>
-                    <CardContent><p className="text-xs text-muted-foreground">Based on agent ratings</p></CardContent>
-                </Card>
-            </div>
+function statusLabel(status: Viewing["status"]): string {
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
 
-            <Tabs defaultValue="upcoming">
-                <TabsList>
-                    <TabsTrigger value="upcoming">Upcoming ({upcomingViewings.length})</TabsTrigger>
-                    <TabsTrigger value="past">Past ({pastViewings.length})</TabsTrigger>
-                </TabsList>
-                <TabsContent value="upcoming">
-                    <Card>
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Property</TableHead>
-                                        <TableHead>Date & Time</TableHead>
-                                        <TableHead>Agent</TableHead>
-                                        <TableHead>Type</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {upcomingViewings.map((v) => (
-                                        <TableRow key={v.id}>
-                                            <TableCell>
-                                                <div className="font-medium">{v.property}</div>
-                                                <div className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="size-3" />{v.address}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-1"><Calendar className="size-3" />{v.date}</div>
-                                                <div className="flex items-center gap-1 text-xs text-muted-foreground"><Clock className="size-3" />{v.time}</div>
-                                            </TableCell>
-                                            <TableCell><div className="flex items-center gap-1"><User className="size-3" />{v.agent}</div></TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline">{v.type === "Virtual" ? <><Video className="mr-1 size-3" />Virtual</> : "In Person"}</Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={v.status === "Confirmed" ? "default" : "secondary"}>{v.status}</Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="outline" size="sm">Reschedule</Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="past">
-                    <Card>
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Property</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Agent</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Feedback</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {pastViewings.map((v) => (
-                                        <TableRow key={v.id}>
-                                            <TableCell className="font-medium">{v.property}</TableCell>
-                                            <TableCell>{v.date}</TableCell>
-                                            <TableCell>{v.agent}</TableCell>
-                                            <TableCell><Badge variant={v.status === "Completed" ? "default" : "destructive"}>{v.status}</Badge></TableCell>
-                                            <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">{v.feedback}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+const ACTIVE_STATUSES = new Set<Viewing["status"]>(["confirmed", "rescheduled"]);
+const PAST_STATUSES = new Set<Viewing["status"]>(["completed", "cancelled"]);
+
+export default function ViewingsPage({
+  params,
+}: Readonly<{ params: { role: string } }>) {
+  const { role } = params;
+  const { data: viewings, isLoading, error } = useViewings();
+  const cancelViewing = useCancelViewing();
+
+  const upcoming = viewings?.filter((v) => ACTIVE_STATUSES.has(v.status)) ?? [];
+  const past = viewings?.filter((v) => PAST_STATUSES.has(v.status)) ?? [];
+
+  const nextViewing = upcoming.sort(
+    (a, b) => new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime(),
+  )[0];
+
+  const handleCancel = async (viewingId: string) => {
+    try {
+      await cancelViewing.mutateAsync({ viewingId });
+      toast.success("Viewing cancelled");
+    } catch {
+      toast.error("Failed to cancel viewing");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Viewings</h1>
+          <p className="text-muted-foreground">
+            Manage your property viewings and appointments
+          </p>
         </div>
-    );
+        <Link href={`/dashboard/${role}/viewings/book`}>
+          <Button>
+            <Plus className="mr-2 size-4" />
+            Book Viewing
+          </Button>
+        </Link>
+      </div>
+
+      {/* Stats */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Upcoming</CardDescription>
+            {isLoading ? (
+              <Skeleton className="h-9 w-12" />
+            ) : (
+              <CardTitle className="text-3xl">{upcoming.length}</CardTitle>
+            )}
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              {nextViewing
+                ? `Next: ${formatDate(nextViewing.scheduled_at)}`
+                : "No upcoming viewings"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Completed</CardDescription>
+            {isLoading ? (
+              <Skeleton className="h-9 w-12" />
+            ) : (
+              <CardTitle className="text-3xl">
+                {past.filter((v) => v.status === "completed").length}
+              </CardTitle>
+            )}
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">Total past viewings</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>All Time</CardDescription>
+            {isLoading ? (
+              <Skeleton className="h-9 w-12" />
+            ) : (
+              <CardTitle className="text-3xl">{viewings?.length ?? 0}</CardTitle>
+            )}
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">Total viewings arranged</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {error && (
+        <Card>
+          <CardContent className="py-8 text-center text-sm text-destructive">
+            Failed to load viewings. Please refresh the page.
+          </CardContent>
+        </Card>
+      )}
+
+      <Tabs defaultValue="upcoming">
+        <TabsList>
+          <TabsTrigger value="upcoming">Upcoming ({upcoming.length})</TabsTrigger>
+          <TabsTrigger value="past">Past ({past.length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="upcoming">
+          <Card>
+            <CardContent className="p-0">
+              {isLoading ? (
+                <div className="space-y-4 p-6">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : upcoming.length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground">
+                  <Calendar className="mx-auto mb-4 size-12 opacity-40" />
+                  <p className="text-base font-medium">No upcoming viewings</p>
+                  <p className="mt-1 text-sm">
+                    Book a viewing to get started.
+                  </p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Property</TableHead>
+                      <TableHead>Date &amp; Time</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {upcoming.map((v) => (
+                      <TableRow key={v.id}>
+                        <TableCell>
+                          <div className="font-medium">{v.property_address}</div>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <MapPin className="size-3" />
+                            {v.property_address}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="size-3" />
+                            {formatDate(v.scheduled_at)}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="size-3" />
+                            {formatTime(v.scheduled_at)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {v.type === "virtual" ? (
+                              <>
+                                <Video className="mr-1 size-3" />
+                                Virtual
+                              </>
+                            ) : (
+                              "In Person"
+                            )}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={statusVariant(v.status)}>
+                            {statusLabel(v.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Link
+                              href={`/dashboard/${role}/viewings/${v.id}/reschedule`}
+                            >
+                              <Button variant="outline" size="sm">
+                                <RotateCcw className="mr-1 size-3" />
+                                Reschedule
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCancel(v.id)}
+                              disabled={cancelViewing.isPending}
+                            >
+                              <X className="mr-1 size-3" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="past">
+          <Card>
+            <CardContent className="p-0">
+              {isLoading ? (
+                <div className="space-y-4 p-6">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : past.length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground">
+                  <Clock className="mx-auto mb-4 size-12 opacity-40" />
+                  <p className="text-base font-medium">No past viewings</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Property</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {past.map((v) => (
+                      <TableRow key={v.id}>
+                        <TableCell className="font-medium">
+                          {v.property_address}
+                        </TableCell>
+                        <TableCell>{formatDate(v.scheduled_at)}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {v.type === "virtual" ? "Virtual" : "In Person"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={statusVariant(v.status)}>
+                            {statusLabel(v.status)}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }
