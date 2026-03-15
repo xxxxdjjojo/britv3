@@ -23,6 +23,10 @@ export const sendMessageSchema = z.object({
   content: z.string().min(1, "Message cannot be empty").max(5000, "Message too long (max 5 000 chars)"),
   context_type: z.enum(["listing", "booking", "rfq", "general"]),
   context_id: z.string().uuid().optional(),
+  message_id: z.string().uuid().optional(),
+  attachment_url: z.string().url().optional(),
+  attachment_type: z.enum(["image", "pdf"]).optional(),
+  attachment_size_bytes: z.number().int().positive().optional(),
 });
 
 export type SendMessagePayload = z.infer<typeof sendMessageSchema>;
@@ -33,106 +37,66 @@ export type SendMessagePayload = z.infer<typeof sendMessageSchema>;
 
 /**
  * List conversations for a user, with other participant name, last message
- * preview, and unread count.
+ * preview, and unread count. Uses get_inbox_for_user RPC (1 query vs 4N+1).
  */
 export async function getConversations(
   supabase: SupabaseClient,
   userId: string,
   filters?: InboxFilters,
 ): Promise<Conversation[]> {
-  // Use an RPC that joins conversations, profiles, messages, and read status.
-  // Fallback: query conversations table directly with manual joins.
-  let query = supabase
-    .from("conversations")
-    .select(`
-      id,
-      participant_1_id,
-      participant_2_id,
-      context_type,
-      context_id,
-      last_message_at,
-      created_at
-    `)
-    .or(`participant_1_id.eq.${userId},participant_2_id.eq.${userId}`)
-    .order("last_message_at", { ascending: false });
+  try {
+    const { data, error } = await supabase.rpc("get_inbox_for_user", {
+      p_user_id: userId,
+    });
 
-  if (filters?.context_type) {
-    query = query.eq("context_type", filters.context_type);
+    if (error) throw new Error(`Failed to load conversations: ${error.message}`);
+    if (!data || data.length === 0) return [];
+
+    let conversations = (data as Array<{
+      id: string;
+      participant_1_id: string;
+      participant_2_id: string;
+      context_type: string;
+      context_id: string | null;
+      last_message_at: string;
+      created_at: string;
+      participant_name: string | null;
+      last_message_preview: string | null;
+      unread_count: number;
+    }>).map((row) => ({
+      id: row.id,
+      participant_1_id: row.participant_1_id,
+      participant_2_id: row.participant_2_id,
+      context_type: row.context_type as ContextType,
+      context_id: row.context_id,
+      last_message_at: new Date(row.last_message_at),
+      created_at: new Date(row.created_at),
+      participant_name: row.participant_name,
+      last_message_preview: row.last_message_preview,
+      unread_count: Number(row.unread_count),
+    } as Conversation));
+
+    // Apply client-side filters that RPC doesn't handle
+    if (filters?.context_type) {
+      conversations = conversations.filter(
+        (c) => c.context_type === filters.context_type,
+      );
+    }
+
+    if (filters?.search) {
+      const term = filters.search.toLowerCase();
+      conversations = conversations.filter(
+        (c) =>
+          c.participant_name?.toLowerCase().includes(term) ||
+          c.last_message_preview?.toLowerCase().includes(term),
+      );
+    }
+
+    return conversations;
+  } catch (err) {
+    console.error("getConversations error:", err);
+    return [];
   }
-
-  const { data: conversations, error } = await query;
-
-  if (error) throw new Error(`Failed to load conversations: ${error.message}`);
-  if (!conversations || conversations.length === 0) return [];
-
-  // Enrich each conversation with participant name, preview, unread count
-  const enriched = await Promise.all(
-    conversations.map(async (conv) => {
-      const otherUserId =
-        conv.participant_1_id === userId
-          ? conv.participant_2_id
-          : conv.participant_1_id;
-
-      // Participant name
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("id", otherUserId)
-        .single();
-
-      // Last message preview
-      const { data: lastMsg } = await supabase
-        .from("messages")
-        .select("content")
-        .eq("conversation_id", conv.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      // Unread count
-      const { data: readStatus } = await supabase
-        .from("conversation_read_status")
-        .select("last_read_at")
-        .eq("conversation_id", conv.id)
-        .eq("user_id", userId)
-        .single();
-
-      const lastReadAt = readStatus?.last_read_at ?? "1970-01-01T00:00:00Z";
-
-      const { count: unreadCount } = await supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", conv.id)
-        .neq("sender_id", userId)
-        .gt("created_at", lastReadAt);
-
-      const participantName = profile?.display_name ?? "Unknown User";
-      const preview = lastMsg?.content
-        ? lastMsg.content.length > 100
-          ? lastMsg.content.slice(0, 100) + "..."
-          : lastMsg.content
-        : null;
-
-      return {
-        ...conv,
-        last_message_at: new Date(conv.last_message_at),
-        created_at: new Date(conv.created_at),
-        participant_name: participantName,
-        last_message_preview: preview,
-        unread_count: unreadCount ?? 0,
-      } as Conversation;
-    }),
-  );
-
-  // Optional search filter (client-side on participant name)
-  if (filters?.search) {
-    const term = filters.search.toLowerCase();
-    return enriched.filter(
-      (c) => c.participant_name?.toLowerCase().includes(term),
-    );
-  }
-
-  return enriched;
 }
 
 // ---------------------------------------------------------------------------
@@ -224,9 +188,17 @@ export async function sendMessage(
   const { data: message, error } = await supabase
     .from("messages")
     .insert({
+      ...(input.message_id ? { id: input.message_id } : {}),
       conversation_id: conversationId,
       sender_id: senderId,
       content: sanitizedContent,
+      ...(input.attachment_url
+        ? {
+            attachment_url: input.attachment_url,
+            attachment_type: input.attachment_type,
+            attachment_size_bytes: input.attachment_size_bytes,
+          }
+        : {}),
     })
     .select()
     .single();
@@ -324,40 +296,21 @@ export async function updateReadStatus(
 
 /**
  * Get total unread conversation count for a user.
+ * Uses get_unread_count RPC (1 query vs N×2 sequential queries).
  */
 export async function getUnreadCount(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<number> {
-  // Get all conversations for user
-  const { data: conversations } = await supabase
-    .from("conversations")
-    .select("id, last_message_at")
-    .or(`participant_1_id.eq.${userId},participant_2_id.eq.${userId}`);
+  try {
+    const { data, error } = await supabase.rpc("get_unread_count", {
+      p_user_id: userId,
+    });
 
-  if (!conversations || conversations.length === 0) return 0;
-
-  let unread = 0;
-
-  for (const conv of conversations) {
-    const { data: readStatus } = await supabase
-      .from("conversation_read_status")
-      .select("last_read_at")
-      .eq("conversation_id", conv.id)
-      .eq("user_id", userId)
-      .single();
-
-    const lastReadAt = readStatus?.last_read_at ?? "1970-01-01T00:00:00Z";
-
-    const { count } = await supabase
-      .from("messages")
-      .select("id", { count: "exact", head: true })
-      .eq("conversation_id", conv.id)
-      .neq("sender_id", userId)
-      .gt("created_at", lastReadAt);
-
-    if (count && count > 0) unread++;
+    if (error) throw new Error(`Failed to get unread count: ${error.message}`);
+    return Number(data ?? 0);
+  } catch (err) {
+    console.error("getUnreadCount error:", err);
+    return 0;
   }
-
-  return unread;
 }

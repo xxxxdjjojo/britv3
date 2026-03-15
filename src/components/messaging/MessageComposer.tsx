@@ -4,37 +4,80 @@
  * MessageComposer -- textarea with file attach support and Ctrl+Enter send.
  */
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useMemo } from "react";
+import { toast } from "sonner";
 import { useSendMessage } from "@/hooks/useMessages";
+import { createClient } from "@/lib/supabase/client";
+import { uploadAttachment } from "@/services/messaging/attachment-service";
+import { getSuggestedReplies } from "@/services/smart-replies/smart-replies";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import AttachmentPreview from "@/components/messaging/AttachmentPreview";
 
 const MAX_CHARS = 5000;
+const supabase = createClient();
 
 export default function MessageComposer(
   props: Readonly<{
     conversationId: string;
     recipientId: string;
     contextType?: string;
+    lastMessageContent?: string;
+    currentUserId?: string;
   }>,
 ) {
-  const { conversationId, recipientId, contextType = "general" } = props;
+  const { conversationId, recipientId, contextType = "general", lastMessageContent = "", currentUserId } = props;
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const suggestions = useMemo(
+    () => (content === "" ? getSuggestedReplies(contextType, lastMessageContent) : []),
+    [content, contextType, lastMessageContent],
+  );
 
   const sendMutation = useSendMessage(conversationId);
 
   const handleSend = useCallback(async () => {
     const trimmed = content.trim();
     if (!trimmed && !selectedFile) return;
+    if (sendMutation.isPending || isUploading) return;
+
+    let attachmentPayload: {
+      message_id?: string;
+      attachment_url?: string;
+      attachment_type?: string;
+      attachment_size_bytes?: number;
+    } = {};
+
+    if (selectedFile) {
+      setIsUploading(true);
+      try {
+        const supabase = createClient();
+        const messageId = crypto.randomUUID();
+        const result = await uploadAttachment(supabase, selectedFile, conversationId, messageId);
+        attachmentPayload = {
+          message_id: messageId,
+          attachment_url: result.url,
+          attachment_type: result.type,
+          attachment_size_bytes: result.sizeBytes,
+        };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Upload failed";
+        toast.error(msg);
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
 
     sendMutation.mutate(
       {
         content: trimmed || "(attachment)",
         recipient_id: recipientId,
         context_type: contextType,
+        ...attachmentPayload,
       },
       {
         onSuccess: () => {
@@ -43,7 +86,7 @@ export default function MessageComposer(
         },
       },
     );
-  }, [content, selectedFile, sendMutation, recipientId, contextType]);
+  }, [content, selectedFile, sendMutation, recipientId, contextType, conversationId, isUploading]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -77,6 +120,24 @@ export default function MessageComposer(
           file={selectedFile}
           onRemove={() => setSelectedFile(null)}
         />
+      )}
+
+      {/* Smart reply chips */}
+      {suggestions.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {suggestions.map((suggestion) => (
+            <Button
+              key={suggestion}
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="rounded-full text-xs border"
+              onClick={() => setContent(suggestion)}
+            >
+              {suggestion}
+            </Button>
+          ))}
+        </div>
       )}
 
       {/* Composer row */}
@@ -118,7 +179,14 @@ export default function MessageComposer(
           <Textarea
             placeholder="Type a message... (Ctrl+Enter to send)"
             value={content}
-            onChange={(e) => setContent(e.target.value.slice(0, MAX_CHARS))}
+            onChange={(e) => {
+              setContent(e.target.value.slice(0, MAX_CHARS));
+              void supabase.channel(`typing:${conversationId}`).send({
+                type: "broadcast",
+                event: "typing",
+                payload: { user_id: currentUserId ?? "", is_typing: true },
+              });
+            }}
             onKeyDown={handleKeyDown}
             rows={1}
             className="pr-16 min-h-10 max-h-32 resize-none"
@@ -133,11 +201,11 @@ export default function MessageComposer(
           size="sm"
           onClick={() => void handleSend()}
           disabled={
-            sendMutation.isPending || (!content.trim() && !selectedFile)
+            sendMutation.isPending || isUploading || (!content.trim() && !selectedFile)
           }
           className="shrink-0"
         >
-          {sendMutation.isPending ? "Sending..." : "Send"}
+          {isUploading ? "Uploading..." : sendMutation.isPending ? "Sending..." : "Send"}
         </Button>
       </div>
     </div>
