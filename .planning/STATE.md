@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v3.1
 milestone_name: Buyer/Renter Dashboard
 status: executing
-stopped_at: Completed 15-estate-agent-dashboard 15-10-PLAN.md
-last_updated: "2026-03-15T10:55:24.866Z"
+stopped_at: Completed 15-estate-agent-dashboard 15-11-PLAN.md
+last_updated: "2026-03-15T11:23:33.990Z"
 last_activity: "2026-03-13 — Phase 8 Plan 1 complete: DB migration + TypeScript types"
 progress:
   total_phases: 17
   completed_phases: 7
   total_plans: 112
-  completed_plans: 81
+  completed_plans: 82
   percent: 49
 ---
 
@@ -77,6 +77,7 @@ Progress: [█████░░░░░] 49%
 | Phase 15-estate-agent-dashboard P06 | 22 | 2 tasks | 14 files |
 | Phase 15-estate-agent-dashboard P08 | 16 | 2 tasks | 10 files |
 | Phase 15-estate-agent-dashboard P10 | 35 | 2 tasks | 6 files |
+| Phase 15-estate-agent-dashboard P11 | 19 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -156,6 +157,10 @@ Recent decisions affecting current work:
 - [Phase 15-estate-agent-dashboard]: agent-crm-service.ts recreated from scratch (absent from main branch like agent-listings-service — same recovery pattern)
 - [Phase 15-estate-agent-dashboard]: Supabase profiles join returns array in message queries — accessed as m.profiles?.[0]?.full_name
 - [Phase 15-estate-agent-dashboard]: ClientList uses @tanstack/react-table with manual server-side pagination and debounced search; bulk actions via row selection checkboxes
+- [Phase 15-estate-agent-dashboard]: agent-team-service.ts recreated from worktree (absent from main branch — same recovery pattern as agent-listings-service and agent-crm-service)
+- [Phase 15-estate-agent-dashboard]: Permissions matrix is informational in Phase 15 — enforced via role check in service layer; custom_permissions JSONB available for future dynamic enforcement
+- [Phase 15-estate-agent-dashboard]: PATCH /api/agent/team uses action discriminator (update_role | assign_branch) to multiplex operations — consistent with offers API pattern
+- [Phase 15-estate-agent-dashboard]: base-ui Select onValueChange returns string|null — always wrap with (v) => setState(v ?? fallback); DialogTrigger/DropdownMenuTrigger do not support asChild
 
 ### Pending Todos
 
@@ -170,6 +175,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T10:55:24.857Z
-Stopped at: Completed 15-estate-agent-dashboard 15-10-PLAN.md
+Last session: 2026-03-15T11:23:33.972Z
+Stopped at: Completed 15-estate-agent-dashboard 15-11-PLAN.md
 Resume file: None
