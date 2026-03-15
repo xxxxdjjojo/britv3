@@ -6,7 +6,7 @@ import MessageThread from "@/components/messaging/MessageThread";
 import { cn } from "@/lib/utils";
 
 export default function InboxPageClient() {
-  const [activeConversation, setActiveConversation] = useState<string | null>("1");
+  const [activeConversation, setActiveConversation] = useState<string | null>(null);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden border-t">
@@ -31,7 +31,7 @@ export default function InboxPageClient() {
         )}
       >
         {activeConversation ? (
-          <MessageThread />
+          <MessageThread conversationId={activeConversation} recipientId="" />
         ) : (
           <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
             Select a conversation to start messaging
