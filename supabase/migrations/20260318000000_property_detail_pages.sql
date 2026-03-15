@@ -70,9 +70,10 @@ CREATE INDEX idx_property_renovation_scenarios_user_property ON property_renovat
 
 ALTER TABLE property_renovation_scenarios ENABLE ROW LEVEL SECURITY;
 
--- Users can only see their own scenarios
+-- Users can only see and create their own scenarios
 CREATE POLICY "users_own_scenarios" ON property_renovation_scenarios
-  FOR ALL USING (auth.uid() = user_id);
+  FOR ALL USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- ============================================================================
 -- TABLE 4: renovation_type_benchmarks
@@ -89,7 +90,8 @@ CREATE TABLE renovation_type_benchmarks (
   value_uplift_pct_low NUMERIC(5,2),
   value_uplift_pct_high NUMERIC(5,2),
   data_source TEXT,
-  last_updated DATE NOT NULL DEFAULT CURRENT_DATE
+  last_updated DATE NOT NULL DEFAULT CURRENT_DATE,
+  UNIQUE(renovation_type, region)
 );
 
 ALTER TABLE renovation_type_benchmarks ENABLE ROW LEVEL SECURITY;
@@ -99,19 +101,17 @@ CREATE POLICY "public_read_benchmarks" ON renovation_type_benchmarks
   FOR SELECT USING (true);
 
 -- ============================================================================
--- TABLE 5: saved_properties - ADD NOTE COLUMN
+-- TABLE 5: saved_properties - RENAME NOTES COLUMN
 -- Delight feature allowing users to add personal notes to saved properties
 -- ============================================================================
 
-ALTER TABLE saved_properties ADD COLUMN IF NOT EXISTS note TEXT;
+ALTER TABLE saved_properties RENAME COLUMN notes TO note;
 
 -- ============================================================================
 -- INDEXES FOR PROPERTY DETAIL QUERIES
 -- ============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_properties_slug ON properties(slug);
-CREATE INDEX IF NOT EXISTS idx_properties_postcode_district ON properties(postcode_district, status);
-CREATE INDEX IF NOT EXISTS idx_property_price_history_property_id ON property_price_history(property_id, date);
 
 -- ============================================================================
 -- SEED DATA: renovation_type_benchmarks
@@ -152,4 +152,4 @@ VALUES
 ('full_refurb', 'midlands', 900, 2200, 10.00, 22.00, 'Savills 2024'),
 ('full_refurb', 'north', 700, 1900, 8.00, 20.00, 'Savills 2024'),
 ('full_refurb', 'scotland', 800, 2000, 8.00, 19.00, 'Savills 2024')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (renovation_type, region) DO NOTHING;
