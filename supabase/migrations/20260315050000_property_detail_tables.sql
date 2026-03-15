@@ -1,4 +1,4 @@
--- 20260315_property_detail_tables.sql
+-- 20260315050000_property_detail_tables.sql
 -- Property Detail Pages: insights cache, view tracking, renovation scenarios + benchmarks
 -- Refs: properties, listings (003_property_portal.sql); price_history (003_property_portal.sql)
 
@@ -32,7 +32,7 @@ CREATE POLICY property_insights_public_read ON property_insights
 
 -- Service role (background jobs, API workers) can write
 CREATE POLICY property_insights_service_write ON property_insights
-  FOR ALL USING (auth.role() = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 
 -- ===========================================================================
 -- 2. property_views — Real-time anonymous view tracking
@@ -75,7 +75,7 @@ ALTER TABLE property_renovation_scenarios ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see and manage their own scenarios
 CREATE POLICY renovation_scenarios_own ON property_renovation_scenarios
-  FOR ALL USING (auth.uid() = user_id);
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
 -- ===========================================================================
 -- 4. renovation_type_benchmarks — Seeded lookup: cost + value uplift by region
@@ -102,7 +102,7 @@ CREATE POLICY renovation_benchmarks_public_read ON renovation_type_benchmarks
 
 -- Service role manages seed data and updates
 CREATE POLICY renovation_benchmarks_admin_write ON renovation_type_benchmarks
-  FOR ALL USING (auth.role() = 'service_role');
+  FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 
 -- ===========================================================================
 -- 5. Indexes
