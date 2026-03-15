@@ -77,6 +77,8 @@ export default function RescheduleViewingPage({
 
     setSubmitting(true);
 
+    const failedSlotId = selectedSlotId; // capture before any async state changes
+
     try {
       await rescheduleViewing.mutateAsync({ viewingId, newSlotId: selectedSlotId });
 
@@ -87,6 +89,7 @@ export default function RescheduleViewingPage({
           : "Your viewing has been rescheduled.",
       });
 
+      setSubmitting(false);
       router.push(`/dashboard/${roleParam}/viewings`);
     } catch (err) {
       const code = (err as Error & { code?: string }).code;
@@ -96,7 +99,7 @@ export default function RescheduleViewingPage({
           description: "This slot was just taken. Please choose another time.",
         });
         setSelectedSlotId(null);
-        setSlots((prev) => prev?.filter((s) => s.id !== selectedSlotId) ?? prev);
+        setSlots((prev) => prev?.filter((s) => s.id !== failedSlotId) ?? prev);
       } else {
         toast.error("Reschedule failed", {
           description: (err as Error).message,

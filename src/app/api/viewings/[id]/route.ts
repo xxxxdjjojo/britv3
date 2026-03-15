@@ -35,7 +35,7 @@ export async function PATCH(
       return NextResponse.json({ error: "newSlotId is required" }, { status: 400 });
     }
 
-    const result = await rescheduleViewing(supabase, user.id, viewingId, newSlotId);
+    const result = await rescheduleViewing(supabase, viewingId, newSlotId);
 
     if (isServiceError(result)) {
       if (result.error === "SLOT_UNAVAILABLE") {
@@ -70,7 +70,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await cancelViewing(supabase, user.id, viewingId);
+    const result = await cancelViewing(supabase, viewingId);
 
     if (isServiceError(result)) {
       if (result.error === "NOT_FOUND") {

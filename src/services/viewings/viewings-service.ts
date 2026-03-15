@@ -4,6 +4,9 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { ServiceError } from "@/types/service-error";
+
+export type { ServiceError };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -31,8 +34,6 @@ export type ViewingSlot = Readonly<{
   type: "in_person" | "virtual";
   status: "available" | "booked" | "cancelled";
 }>;
-
-export type ServiceError = Readonly<{ error: string }>;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -198,15 +199,13 @@ export async function bookViewing(
 
 /**
  * Cancel a viewing and free the slot atomically.
+ * Ownership is enforced by the RPC's SECURITY DEFINER context + RLS — the
+ * caller does not need to pass userId.
  */
 export async function cancelViewing(
   supabase: SupabaseClient,
-  userId: string,
   viewingId: string,
 ): Promise<null | ServiceError> {
-  // userId is checked server-side in the RPC
-  void userId;
-
   try {
     const { data, error } = await supabase.rpc("cancel_viewing", {
       p_viewing_id: viewingId,
@@ -231,15 +230,14 @@ export async function cancelViewing(
 
 /**
  * Reschedule a viewing to a new slot atomically.
+ * Ownership is enforced by the RPC's SECURITY DEFINER context + RLS — the
+ * caller does not need to pass userId.
  */
 export async function rescheduleViewing(
   supabase: SupabaseClient,
-  userId: string,
   viewingId: string,
   newSlotId: string,
 ): Promise<null | ServiceError> {
-  void userId;
-
   try {
     const { data, error } = await supabase.rpc("reschedule_viewing", {
       p_viewing_id: viewingId,

@@ -18,7 +18,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar,
   Clock,
-  MapPin,
   Video,
   Plus,
   RotateCcw,
@@ -202,10 +201,6 @@ export default function ViewingsPage({
                       <TableRow key={v.id}>
                         <TableCell>
                           <div className="font-medium">{v.property_address}</div>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <MapPin className="size-3" />
-                            {v.property_address}
-                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">

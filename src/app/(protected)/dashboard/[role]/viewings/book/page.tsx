@@ -78,6 +78,8 @@ export default function BookViewingPage({
 
     setSubmitting(true);
 
+    const failedSlotId = selectedSlotId; // capture before any async state changes
+
     try {
       await bookViewing.mutateAsync({
         viewingSlotId: selectedSlotId,
@@ -89,6 +91,7 @@ export default function BookViewingPage({
         description: `Your viewing on ${formatSlotTime(slot.start_time)} is confirmed.`,
       });
 
+      setSubmitting(false);
       router.push(`/dashboard/${roleParam}/viewings`);
     } catch (err) {
       const code = (err as Error & { code?: string }).code;
@@ -99,7 +102,7 @@ export default function BookViewingPage({
         });
         // Refresh slots
         setSelectedSlotId(null);
-        setSlots((prev) => prev?.filter((s) => s.id !== selectedSlotId) ?? prev);
+        setSlots((prev) => prev?.filter((s) => s.id !== failedSlotId) ?? prev);
       } else {
         toast.error("Booking failed", {
           description: (err as Error).message,

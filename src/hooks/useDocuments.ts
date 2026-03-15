@@ -67,9 +67,6 @@ export function useUploadDocument() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-    onError: () => {
-      // TODO: posthog.capture("document.upload_failed")
-    },
   });
 }
 

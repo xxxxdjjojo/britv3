@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getOffers,
   submitOffer,
-  withdrawOffer,
   isServiceError,
 } from "@/services/offers/offers-service";
 
@@ -106,42 +104,3 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    let body: Record<string, unknown>;
-    try {
-      body = await request.json();
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-    }
-
-    const { offerId } = body as { offerId?: unknown };
-
-    if (!offerId || typeof offerId !== "string") {
-      return NextResponse.json({ error: "offerId is required" }, { status: 400 });
-    }
-
-    // Use admin client to bypass the offers_update_blocked RLS policy
-    const adminSupabase = createAdminClient();
-    const result = await withdrawOffer(adminSupabase, user.id, offerId);
-
-    if (isServiceError(result)) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
-}

@@ -5,6 +5,9 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { gbpToPence } from "@/lib/currency";
+import type { ServiceError } from "@/types/service-error";
+
+export type { ServiceError };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -41,8 +44,6 @@ export type BuyerOffer = Readonly<{
   updated_at: string;
   status_history: ReadonlyArray<OfferStatusHistoryEntry>;
 }>;
-
-export type ServiceError = Readonly<{ error: string }>;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -163,7 +164,7 @@ export async function submitOffer(
       .select("id, status")
       .eq("user_id", userId)
       .eq("listing_id", listingId)
-      .not("status", "in", '("withdrawn")')
+      .not("status", "in", "(withdrawn)")
       .limit(1)
       .maybeSingle();
 

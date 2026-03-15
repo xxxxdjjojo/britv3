@@ -5,6 +5,9 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { ServiceError } from "@/types/service-error";
+
+export type { ServiceError };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,8 +30,6 @@ export type UserDocument = Readonly<{
   created_at: string;
   updated_at: string;
 }>;
-
-export type ServiceError = Readonly<{ error: string }>;
 
 export type UploadDocumentResult = Readonly<{ document: UserDocument }> | ServiceError;
 
@@ -162,7 +163,10 @@ export async function uploadDocument(
     if (insertError) {
       console.error("[documents-service] uploadDocument insert failed", { insertError });
       // Attempt to clean up the orphaned storage file
-      await supabase.storage.from(BUCKET).remove([storagePath]);
+      const { error: cleanupError } = await supabase.storage.from(BUCKET).remove([storagePath]);
+      if (cleanupError) {
+        console.error("[documents-service] Failed to clean up orphaned storage file", { storagePath, cleanupError });
+      }
       return { error: insertError.message };
     }
 

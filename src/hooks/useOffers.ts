@@ -77,10 +77,8 @@ export function useWithdrawOffer() {
 
   return useMutation<void, Error, { offerId: string }>({
     mutationFn: async ({ offerId }) => {
-      const response = await fetch("/api/offers", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ offerId }),
+      const response = await fetch(`/api/offers/${offerId}`, {
+        method: "PATCH",
       });
 
       const data = await response.json();
