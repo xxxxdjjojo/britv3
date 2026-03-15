@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { VerificationQueueItem } from "@/services/admin-service";
+import type { VerificationQueueItem } from "@/services/admin/verification-service";
 
 type Props = Readonly<{
   verifications: VerificationQueueItem[];

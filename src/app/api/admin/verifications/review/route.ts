@@ -1,5 +1,5 @@
 import { auditedAdminAction } from "@/lib/audited-admin-action";
-import { reviewVerification } from "@/services/admin-service";
+import { reviewVerification } from "@/services/admin/verification-service";
 
 export async function POST(req: Request) {
   let body: {

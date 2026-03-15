@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { ReportedReview } from "@/services/admin-service";
+import type { ReportedReview } from "@/services/admin/review-service";
 import { ReviewModerationQueue } from "@/components/admin/ReviewModerationQueue";
 
 type Props = Readonly<{

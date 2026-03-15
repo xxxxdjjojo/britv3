@@ -1,5 +1,5 @@
 import { auditedAdminAction } from "@/lib/audited-admin-action";
-import { rejectListing } from "@/services/admin/listing-service";
+import { flagListing } from "@/services/admin/listing-service";
 
 export async function POST(
   req: Request,
@@ -17,12 +17,12 @@ export async function POST(
 
   return auditedAdminAction(
     req,
-    "listing.reject",
+    "listing.flag",
     "listing",
     listingId,
     async ({ supabase }) => {
-      const result = await rejectListing(supabase, listingId, reason);
-      if (!result.success) throw new Error("Failed to reject listing");
+      const result = await flagListing(supabase, listingId, reason);
+      if (!result.success) throw new Error("Failed to flag listing");
       return { success: true };
     },
   );

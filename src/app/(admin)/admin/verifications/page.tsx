@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { getVerificationQueue } from "@/services/admin-service";
+import { getVerificationQueue } from "@/services/admin/verification-service";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { VerificationQueueClient } from "@/components/admin/VerificationQueueClient";
+import { BadgeCheck } from "lucide-react";
 
 export default async function AdminVerificationsPage() {
   const supabase = await createClient();
@@ -8,16 +11,20 @@ export default async function AdminVerificationsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900">Provider Verifications</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Review pending provider verification applications.{" "}
-          {verifications.length} item{verifications.length !== 1 ? "s" : ""} awaiting
-          review.
-        </p>
-      </div>
+      <AdminPageHeader
+        title="Provider Verifications"
+        description={`${verifications.length} item${verifications.length !== 1 ? "s" : ""} awaiting review.`}
+      />
 
-      <VerificationQueueClient verifications={verifications} />
+      {verifications.length === 0 ? (
+        <AdminEmptyState
+          icon={BadgeCheck}
+          title="No pending verifications"
+          description="All provider verification applications have been reviewed."
+        />
+      ) : (
+        <VerificationQueueClient verifications={verifications} />
+      )}
     </div>
   );
 }

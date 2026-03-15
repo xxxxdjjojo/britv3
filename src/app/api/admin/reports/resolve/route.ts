@@ -1,5 +1,5 @@
 import { auditedAdminAction } from "@/lib/audited-admin-action";
-import { resolveReport } from "@/services/admin-service";
+import { resolveReport } from "@/services/admin/review-service";
 
 export async function POST(req: Request) {
   let body: {

@@ -1,5 +1,5 @@
 import { auditedAdminAction } from "@/lib/audited-admin-action";
-import { suspendUser } from "@/services/admin-service";
+import { suspendUser } from "@/services/admin/user-service";
 
 export async function POST(
   req: Request,

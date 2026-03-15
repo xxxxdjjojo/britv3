@@ -1,5 +1,5 @@
 import { auditedAdminAction } from "@/lib/audited-admin-action";
-import { activateUser } from "@/services/admin-service";
+import { activateUser } from "@/services/admin/user-service";
 
 export async function POST(
   req: Request,

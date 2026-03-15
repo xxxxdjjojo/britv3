@@ -1,6 +1,6 @@
 "use client";
 
-import type { UserSearchResult } from "@/services/admin-service";
+import type { UserSearchResult } from "@/services/admin/user-service";
 
 type Props = Readonly<{
   users: UserSearchResult[];
