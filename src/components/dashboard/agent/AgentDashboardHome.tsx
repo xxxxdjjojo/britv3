@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AgentDashboardKpis } from "@/types/agent";
-import type { ActivityFeedItem } from "@/services/agent/agent-dashboard-service";
+import type { ActivityFeedItem, ActivityChartPoint, LeadSourcePoint } from "@/services/agent/agent-dashboard-service";
 import {
   AreaChart,
   Area,
@@ -24,19 +24,29 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
-// -- Placeholder chart data ---------------------------------------------------
+// -- Lead source palette (cycles if more than 8 distinct sources) -------------
 
-const CHART_DATA = [
-  { date: "Mon", listings: 4, leads: 6, viewings: 3 },
-  { date: "Tue", listings: 3, leads: 8, viewings: 5 },
-  { date: "Wed", listings: 5, leads: 4, viewings: 7 },
-  { date: "Thu", listings: 6, leads: 9, viewings: 4 },
-  { date: "Fri", listings: 4, leads: 7, viewings: 6 },
-  { date: "Sat", listings: 7, leads: 5, viewings: 8 },
-  { date: "Sun", listings: 3, leads: 3, viewings: 2 },
+const LEAD_SOURCE_COLORS = [
+  "#3b82f6", // blue
+  "#10b981", // emerald
+  "#f59e0b", // amber
+  "#8b5cf6", // violet
+  "#ec4899", // pink
+  "#14b8a6", // teal
+  "#f97316", // orange
+  "#6366f1", // indigo
 ];
+
+function formatSourceLabel(source: string): string {
+  return source
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 // -- Helpers ------------------------------------------------------------------
 
@@ -133,9 +143,15 @@ export function AgentDashboardHome(
   props: Readonly<{
     kpis: AgentDashboardKpis;
     activityFeed: ActivityFeedItem[];
+    chartData: ActivityChartPoint[];
+    leadSources: LeadSourcePoint[];
   }>,
 ) {
-  const { kpis, activityFeed } = props;
+  const { kpis, activityFeed, chartData, leadSources } = props;
+  const totalLeads = leadSources.reduce((sum, s) => sum + s.count, 0);
+  const hasChartData = chartData.some(
+    (p) => p.listings > 0 || p.leads > 0 || p.viewings > 0,
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -184,85 +200,184 @@ export function AgentDashboardHome(
       {/* Activity chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Activity Overview</CardTitle>
+          <CardTitle className="text-base">Activity Overview — Last 30 Days</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2.5 rounded-full bg-emerald-500" />
-              Listings
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2.5 rounded-full bg-blue-500" />
-              Leads
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block size-2.5 rounded-full bg-amber-500" />
-              Viewings
-            </span>
-          </div>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={CHART_DATA}>
-              <defs>
-                <linearGradient id="colorListings" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorViewings" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis
-                dataKey="date"
-                className="text-xs fill-muted-foreground"
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                className="text-xs fill-muted-foreground"
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="listings"
-                stroke="#10b981"
-                fillOpacity={1}
-                fill="url(#colorListings)"
-                strokeWidth={2}
-              />
-              <Area
-                type="monotone"
-                dataKey="leads"
-                stroke="#3b82f6"
-                fillOpacity={1}
-                fill="url(#colorLeads)"
-                strokeWidth={2}
-              />
-              <Area
-                type="monotone"
-                dataKey="viewings"
-                stroke="#f59e0b"
-                fillOpacity={1}
-                fill="url(#colorViewings)"
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {hasChartData ? (
+            <>
+              <div className="mb-4 flex gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block size-2.5 rounded-full bg-emerald-500" />
+                  Listings
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block size-2.5 rounded-full bg-blue-500" />
+                  Leads
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block size-2.5 rounded-full bg-amber-500" />
+                  Viewings
+                </span>
+              </div>
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorListings" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorLeads" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorViewings" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis
+                    dataKey="date"
+                    className="text-xs fill-muted-foreground"
+                    tickLine={false}
+                    axisLine={false}
+                    interval={4}
+                  />
+                  <YAxis
+                    className="text-xs fill-muted-foreground"
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="listings"
+                    stroke="#10b981"
+                    fillOpacity={1}
+                    fill="url(#colorListings)"
+                    strokeWidth={2}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="leads"
+                    stroke="#3b82f6"
+                    fillOpacity={1}
+                    fill="url(#colorLeads)"
+                    strokeWidth={2}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="viewings"
+                    stroke="#f59e0b"
+                    fillOpacity={1}
+                    fill="url(#colorViewings)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </>
+          ) : (
+            <div className="flex h-[250px] flex-col items-center justify-center gap-2 text-center">
+              <TrendingUp className="size-8 text-muted-foreground/40" />
+              <p className="text-sm font-medium text-muted-foreground">
+                No activity recorded yet
+              </p>
+              <p className="text-xs text-muted-foreground/70">
+                Your listings, leads, and viewings will appear here once you start using the dashboard.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Lead source doughnut chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Lead Sources</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {leadSources.length === 0 ? (
+            <div className="flex h-[220px] flex-col items-center justify-center gap-2 text-center">
+              <Users className="size-8 text-muted-foreground/40" />
+              <p className="text-sm font-medium text-muted-foreground">
+                No lead data yet
+              </p>
+              <p className="text-xs text-muted-foreground/70">
+                Lead source breakdown will appear once you have leads.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+              {/* Doughnut */}
+              <ResponsiveContainer width={220} height={220}>
+                <PieChart>
+                  <Pie
+                    data={leadSources}
+                    dataKey="count"
+                    nameKey="source"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={95}
+                    paddingAngle={2}
+                    strokeWidth={0}
+                  >
+                    {leadSources.map((entry, index) => (
+                      <Cell
+                        key={entry.source}
+                        fill={LEAD_SOURCE_COLORS[index % LEAD_SOURCE_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${value} (${Math.round((value / totalLeads) * 100)}%)`,
+                      formatSourceLabel(name),
+                    ]}
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+
+              {/* Legend */}
+              <div className="flex flex-1 flex-col gap-2">
+                {leadSources.map((entry, index) => {
+                  const color = LEAD_SOURCE_COLORS[index % LEAD_SOURCE_COLORS.length];
+                  const pct = Math.round((entry.count / totalLeads) * 100);
+                  return (
+                    <div key={entry.source} className="flex items-center gap-2.5">
+                      <span
+                        className="inline-block size-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span className="flex-1 text-sm text-foreground">
+                        {formatSourceLabel(entry.source)}
+                      </span>
+                      <span className="text-sm font-medium tabular-nums text-foreground">
+                        {entry.count}
+                      </span>
+                      <span className="w-8 text-right text-xs text-muted-foreground tabular-nums">
+                        {pct}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

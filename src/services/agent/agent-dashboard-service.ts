@@ -15,6 +15,16 @@ export type ActivityFeedItem = Readonly<{
   created_at: string;
 }>;
 
+// -- Activity chart point shape -----------------------------------------------
+
+export type ActivityChartPoint = Readonly<{
+  /** Short date label, e.g. "12 Mar" */
+  date: string;
+  listings: number;
+  leads: number;
+  viewings: number;
+}>;
+
 // -- Performance score shape --------------------------------------------------
 
 export type PerformanceScore = Readonly<{
@@ -107,6 +117,116 @@ export async function getAgentActivityFeed(
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
     .slice(0, limit);
+}
+
+/**
+ * Return 30-day bucketed activity counts for the dashboard chart.
+ *
+ * Queries agent_lead_activities and platform_events for the last 30 days,
+ * groups by calendar day (UTC), and classifies each row into one of three
+ * buckets: listings, leads, or viewings. Days with no activity are included
+ * with zero counts so the chart x-axis stays consistent.
+ */
+export async function getAgentActivityChartData(
+  supabase: SupabaseClient,
+  agentId: string,
+): Promise<ActivityChartPoint[]> {
+  const since = new Date();
+  since.setUTCDate(since.getUTCDate() - 29); // last 30 days inclusive
+  since.setUTCHours(0, 0, 0, 0);
+
+  // Build a full 30-day scaffold keyed by ISO date string (YYYY-MM-DD).
+  const scaffold = new Map<string, { listings: number; leads: number; viewings: number }>();
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(since);
+    d.setUTCDate(d.getUTCDate() + i);
+    scaffold.set(d.toISOString().slice(0, 10), { listings: 0, leads: 0, viewings: 0 });
+  }
+
+  // Fetch lead activities (leads + viewings bucket).
+  const { data: leadActivities } = await supabase
+    .from("agent_lead_activities")
+    .select("activity_type, created_at")
+    .eq("actor_id", agentId)
+    .gte("created_at", since.toISOString())
+    .order("created_at", { ascending: true });
+
+  for (const row of leadActivities ?? []) {
+    const day = (row.created_at as string).slice(0, 10);
+    const bucket = scaffold.get(day);
+    if (!bucket) continue;
+    const type = row.activity_type as string;
+    if (type.startsWith("viewing")) {
+      bucket.viewings += 1;
+    } else {
+      bucket.leads += 1;
+    }
+  }
+
+  // Fetch platform events (listings bucket).
+  const { data: platformEvents } = await supabase
+    .from("platform_events")
+    .select("event_type, created_at")
+    .eq("actor_id", agentId)
+    .ilike("event_type", "listing%")
+    .gte("created_at", since.toISOString())
+    .order("created_at", { ascending: true });
+
+  for (const row of platformEvents ?? []) {
+    const day = (row.created_at as string).slice(0, 10);
+    const bucket = scaffold.get(day);
+    if (!bucket) continue;
+    bucket.listings += 1;
+  }
+
+  // Convert scaffold to sorted array with display label.
+  return Array.from(scaffold.entries()).map(([isoDate, counts]) => {
+    const d = new Date(isoDate + "T00:00:00Z");
+    const label = d.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      timeZone: "UTC",
+    });
+    return { date: label, ...counts };
+  });
+}
+
+// -- Lead source shape --------------------------------------------------------
+
+export type LeadSourcePoint = Readonly<{
+  /** Lead acquisition channel, e.g. "portal", "referral", "walk_in" */
+  source: string;
+  count: number;
+}>;
+
+// -- Lead source query --------------------------------------------------------
+
+/**
+ * Return a count breakdown of `agent_leads` grouped by their `source` column
+ * for the given agent. Results are sorted descending by count.
+ */
+export async function getAgentLeadSources(
+  supabase: SupabaseClient,
+  agentId: string,
+): Promise<LeadSourcePoint[]> {
+  const { data, error } = await supabase
+    .from("agent_leads")
+    .select("source")
+    .eq("agent_id", agentId);
+
+  if (error) {
+    throw new Error(`Failed to fetch lead sources: ${error.message}`);
+  }
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    const src = (row.source as string) ?? "unknown";
+    counts.set(src, (counts.get(src) ?? 0) + 1);
+  }
+
+  return Array.from(counts.entries())
+    .map(([source, count]) => ({ source, count }))
+    .sort((a, b) => b.count - a.count);
 }
 
 /**

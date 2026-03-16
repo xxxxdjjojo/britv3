@@ -1,8 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { AgentVendorReport, ReportType } from "@/types/agent";
 import { REPORT_TYPES } from "@/types/agent";
+
+// ---------------------------------------------------------------------------
+// Toast (inline — no external dependency required)
+// ---------------------------------------------------------------------------
+
+type ToastState = Readonly<{
+  message: string;
+  variant: "success" | "error";
+}> | null;
+
+function Toast(props: Readonly<{ toast: ToastState; onDismiss: () => void }>) {
+  if (!props.toast) return null;
+
+  const bg =
+    props.toast.variant === "success"
+      ? "bg-green-50 border-green-300 text-green-800 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300"
+      : "bg-red-50 border-red-300 text-red-800 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300";
+
+  return (
+    <div
+      role="alert"
+      className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-lg border px-4 py-3 text-sm shadow-lg ${bg}`}
+    >
+      <span>{props.toast.message}</span>
+      <button
+        onClick={props.onDismiss}
+        aria-label="Dismiss"
+        className="ml-2 opacity-60 hover:opacity-100 transition-opacity"
+      >
+        &#x2715;
+      </button>
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -140,6 +174,47 @@ export function VendorReportPDF(
   const [reportType, setReportType] = useState<ReportType>("listing_performance");
   const [error, setError] = useState<string | null>(null);
 
+  // Send-to-vendor state
+  // TODO: When the property→seller relationship is modelled in the DB,
+  // resolve vendorEmail automatically from the selected report's property_id
+  // instead of requiring the agent to enter it manually.
+  const [vendorEmail, setVendorEmail] = useState("vendor@example.com");
+  const [isSending, setIsSending] = useState(false);
+  const [toast, setToast] = useState<ToastState>(null);
+
+  const dismissToast = useCallback(() => setToast(null), []);
+
+  const handleSendToVendor = useCallback(async () => {
+    if (!selectedReport) return;
+
+    setIsSending(true);
+    setToast(null);
+
+    try {
+      const res = await fetch("/api/agent/reports/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          report_id: selectedReport.id,
+          vendor_email: vendorEmail,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error ?? "Failed to send report");
+      }
+
+      setToast({ message: "Report sent to vendor", variant: "success" });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to send report";
+      setToast({ message, variant: "error" });
+    } finally {
+      setIsSending(false);
+    }
+  }, [selectedReport, vendorEmail]);
+
   const handleGenerate = async () => {
     if (!propertyId.trim()) {
       setError("Property ID is required");
@@ -182,6 +257,8 @@ export function VendorReportPDF(
 
   return (
     <div className="space-y-6">
+      <Toast toast={toast} onDismiss={dismissToast} />
+
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           Vendor Reports
@@ -231,7 +308,25 @@ export function VendorReportPDF(
       {/* Selected report view */}
       {selectedReport && (
         <div className="space-y-3">
-          <div className="flex justify-end print:hidden">
+          <div className="flex flex-wrap items-center gap-3 justify-end print:hidden">
+            {/* Vendor email input + send button */}
+            {/* TODO: auto-resolve vendor email from property_id once the
+                property→seller relationship is modelled in the DB */}
+            <input
+              type="email"
+              value={vendorEmail}
+              onChange={(e) => setVendorEmail(e.target.value)}
+              placeholder="Vendor email address"
+              aria-label="Vendor email address"
+              className="rounded-md border px-3 py-2 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 w-56"
+            />
+            <button
+              onClick={handleSendToVendor}
+              disabled={isSending || !vendorEmail.trim()}
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isSending ? "Sending..." : "Send to vendor now"}
+            </button>
             <button
               onClick={handlePrint}
               className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"

@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getAgentDashboardKpis, getAgentActivityFeed } from "@/services/agent/agent-dashboard-service";
+import {
+  getAgentDashboardKpis,
+  getAgentActivityFeed,
+  getAgentActivityChartData,
+  getAgentLeadSources,
+} from "@/services/agent/agent-dashboard-service";
 import { AgentDashboardHome } from "@/components/dashboard/agent/AgentDashboardHome";
 
 export default async function AgentDashboardPage() {
@@ -31,7 +36,26 @@ export default async function AgentDashboardPage() {
     activityFeed = [];
   }
 
+  let chartData;
+  try {
+    chartData = await getAgentActivityChartData(supabase, user.id);
+  } catch {
+    chartData = [];
+  }
+
+  let leadSources;
+  try {
+    leadSources = await getAgentLeadSources(supabase, user.id);
+  } catch {
+    leadSources = [];
+  }
+
   return (
-    <AgentDashboardHome kpis={kpis} activityFeed={activityFeed} />
+    <AgentDashboardHome
+      kpis={kpis}
+      activityFeed={activityFeed}
+      chartData={chartData}
+      leadSources={leadSources}
+    />
   );
 }
