@@ -229,6 +229,21 @@ export async function estimateROI(
       benchmarks = await getRenovationBenchmarks(supabase, "national");
     }
 
+    // G2 guard: if both regional and national queries returned 0 rows,
+    // return null so the UI can show "ROI temporarily unavailable" rather
+    // than displaying misleading hardcoded UK-average values.
+    if (benchmarks.length === 0) {
+      console.log("[roi-estimation-service]", {
+        property_id: property.id,
+        cache_hit,
+        duration_ms: Date.now() - startEpoch,
+        success: false,
+        fallback_used: true,
+        error_type: "EmptyBenchmarks",
+      });
+      return null;
+    }
+
     // 4. Build Claude prompt
     //    CRITICAL: property.description is intentionally excluded — it is
     //    agent-supplied free text and may contain prompt-injection payloads.
