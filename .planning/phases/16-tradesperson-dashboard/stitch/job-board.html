@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Verified Tradespeople Job Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2d3e38; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display">
+<!-- Top Navigation Bar -->
+<nav class="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl">account_balance</span>
+</div>
+<span class="text-xl font-bold tracking-tight">BRITESTATE</span>
+</div>
+<div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+<a class="text-primary border-b-2 border-primary py-5" href="#">Job Board</a>
+<a class="hover:text-primary transition-colors py-5" href="#">My Responses</a>
+<a class="hover:text-primary transition-colors py-5" href="#">Earnings</a>
+<a class="hover:text-primary transition-colors py-5" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full relative">
+<span class="material-icons text-slate-600 dark:text-slate-300">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-semibold">James Harrison</p>
+<p class="text-[10px] text-primary flex items-center justify-end gap-1">
+<span class="material-icons text-[12px]">verified</span> VERIFIED PRO
+                        </p>
+</div>
+<img alt="User profile" class="w-10 h-10 rounded-full object-cover border-2 border-primary/20" data-alt="Professional tradesperson profile portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtpD13IQu7Rm2xEWMFbfmcrlXx0twn9fpIbTBiC_MYdXr4w8DeAMdTpkgWGwpBrlfVhSFgrufLBlgp8n3-8WMuJYIuWVHuSmvwsUYcsCJEEqyIjjBxd4hseo97_R_sh2lHpnnuBdQLmooadJyrP0jeLRvB5JIKoLZPfbBhc19nlmqpeYulQUYSRUaliFaym1GcfROxm8G8QwgdvEDmchr7R0FmjeVHAAAGP4twiSbYci1zl3WukIiJoKnngiUJGrI7bnoANdLjJKM"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="max-w-[1440px] mx-auto w-full px-6 py-8 flex gap-8">
+<!-- Left Sidebar: Filters -->
+<aside class="w-72 flex-shrink-0 sticky top-24 self-start space-y-6">
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+<h2 class="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+<span class="material-icons text-lg text-primary">filter_list</span>
+                    Refine Search
+                </h2>
+<!-- Keyword Search -->
+<div class="mb-6">
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 block uppercase">Keyword</label>
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/50 transition-all" placeholder="e.g. Rewire, Leaks..." type="text"/>
+</div>
+</div>
+<!-- Category Filters -->
+<div class="mb-6">
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-3 block uppercase">Trade Category</label>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm group-hover:text-primary transition-colors">Electrical</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm group-hover:text-primary transition-colors">Plumbing</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm group-hover:text-primary transition-colors">Carpentry</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm group-hover:text-primary transition-colors">Painting &amp; Decor</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-sm group-hover:text-primary transition-colors">Roofing</span>
+</label>
+</div>
+</div>
+<!-- Location Radius -->
+<div class="mb-6">
+<div class="flex justify-between items-center mb-2">
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Distance</label>
+<span class="text-xs font-bold text-primary">25 miles</span>
+</div>
+<input class="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between mt-1">
+<span class="text-[10px] text-slate-500">5mi</span>
+<span class="text-[10px] text-slate-500">50mi+</span>
+</div>
+</div>
+<!-- Urgency -->
+<div>
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-3 block uppercase">Urgency</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-full">Emergency</button>
+<button class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold rounded-full transition-colors">48 Hours</button>
+<button class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold rounded-full transition-colors">This Week</button>
+</div>
+</div>
+</div>
+<div class="p-4 bg-primary/10 border border-primary/20 rounded-xl">
+<p class="text-xs font-bold text-primary mb-1">PRO TIP</p>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">Verified pros respond to jobs within 2 hours on average to win more work.</p>
+</div>
+</aside>
+<!-- Right Side: Job Feed -->
+<section class="flex-1 space-y-4">
+<!-- Feed Header -->
+<div class="flex items-center justify-between mb-2">
+<div>
+<h1 class="text-2xl font-bold">Active Job Board</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Showing 128 available projects in your area</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-slate-500 uppercase">Sort by:</span>
+<select class="bg-transparent border-none text-sm font-bold text-primary focus:ring-0 p-0 pr-8 cursor-pointer">
+<option>Newest First</option>
+<option>Highest Budget</option>
+<option>Closest Distance</option>
+</select>
+</div>
+</div>
+<!-- Job Cards -->
+<div class="space-y-4">
+<!-- Urgent Job Card -->
+<div class="bg-white dark:bg-slate-900/50 border-l-4 border-l-orange-500 border border-slate-200 dark:border-slate-800 rounded-xl p-6 hover:shadow-lg hover:shadow-primary/5 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-orange-500/10 text-orange-500 text-[10px] font-bold rounded-full uppercase">Emergency</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Electrical</span>
+</div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors leading-tight">Emergency Consumer Unit Replacement</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Complete power outage in residential property. Unit tripped and won't reset. Burning smell reported near the fuse box. Needs immediate inspection and potential replacement.</p>
+</div>
+<div class="text-right">
+<span class="text-xs text-slate-400 flex items-center justify-end gap-1">
+<span class="material-icons text-sm">history</span> 12 mins ago
+                            </span>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-slate-100 dark:border-slate-800 mb-4">
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">payments</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Budget</p>
+<p class="text-sm font-bold">£450 - £600</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">near_me</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Distance</p>
+<p class="text-sm font-bold">1.2 miles</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">forum</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Responses</p>
+<p class="text-sm font-bold">2 Applications</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">location_on</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Location</p>
+<p class="text-sm font-bold">Birmingham, B1</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<img alt="User" class="w-7 h-7 rounded-full border-2 border-white dark:border-slate-900" data-alt="Client profile thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIH336ia-NbM2v5XqWx4aSYPGYaS5exGwnpLdVDr0UMnu2s3lrUXVAwLieiCt7CuvV80rQuHpAoGGcgGnzOxPh4UDiKBNc_u7HO1RcTIsUGEZtCEGHkalsV4Ji3DCk8gjLY_AiDLVTWR3IxhlYT42filD1Q-Y9Tdma9p-PeIbwB_wHiR7PZnNjnu02sD4p7zGNNRsWY9Ucpl8aGqUzFxJHCbEFQljRURw4tWQPL0tRxzwcTicO-GkNn2AkqPeVN2lmkqxlWMEUPkk"/>
+<img alt="User" class="w-7 h-7 rounded-full border-2 border-white dark:border-slate-900" data-alt="Client profile thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxvV7I9etYplB2p_uyL8VQPxN_LJH0bVKKVHtdWsi04dHcs1Zw6et_vxb92xP0SuhKvfSyQ_2y_IM1N2lnC88QIM8yAAi6s3v7ly3Cf43YilrH1pR90qjFQIDgaxmU8rOhzNwoRj8IPeZakJXtt7MuIghThfqSrbHRwGVqz1mT6UQ-1oXtmJh7lpyEfX6Om8DDAR4rot1NfzzD-wcwZBGs8JlWo1CM4OId0lKl7u3Gj3FwDzcDhRg2zOdvHxkIT4pWHwBfdVHk1S8"/>
+<div class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-900 flex items-center justify-center">
+<span class="text-[8px] font-bold">+2</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">Details</button>
+<button class="px-5 py-2 text-sm font-bold bg-primary text-white rounded-lg hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all">Express Interest</button>
+</div>
+</div>
+</div>
+<!-- Standard Job Card -->
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 hover:shadow-lg hover:shadow-primary/5 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded-full uppercase">Flexible</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Carpentry</span>
+</div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors leading-tight">Built-in Wardrobe Installation</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Looking for a skilled carpenter to design and install custom floor-to-ceiling wardrobes in two bedrooms. Modern minimalist style preferred.</p>
+</div>
+<div class="text-right">
+<span class="text-xs text-slate-400 flex items-center justify-end gap-1">
+<span class="material-icons text-sm">history</span> 2 hours ago
+                            </span>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-slate-100 dark:border-slate-800 mb-4">
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">payments</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Budget</p>
+<p class="text-sm font-bold">£1,200 - £1,800</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">near_me</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Distance</p>
+<p class="text-sm font-bold">4.8 miles</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">forum</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Responses</p>
+<p class="text-sm font-bold">8 Applications</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">location_on</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Location</p>
+<p class="text-sm font-bold">Solihull, B91</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-sm">verified_user</span>
+<span class="text-xs text-slate-500 font-medium italic">Verified Client: 12 Projects Completed</span>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">Details</button>
+<button class="px-5 py-2 text-sm font-bold bg-primary text-white rounded-lg hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all">Express Interest</button>
+</div>
+</div>
+</div>
+<!-- Another Job Card -->
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 hover:shadow-lg hover:shadow-primary/5 transition-all group opacity-80 grayscale-[0.5] hover:opacity-100 hover:grayscale-0">
+<div class="flex justify-between items-start mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded-full uppercase">Within 48h</span>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase">Plumbing</span>
+</div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors leading-tight">Shower Valve Replacement &amp; Tiling Repair</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">Mixer valve has failed and leaking behind the wall. Requires removal of 2-4 tiles, replacement of valve, and re-tiling of the affected area.</p>
+</div>
+<div class="text-right">
+<span class="text-xs text-slate-400 flex items-center justify-end gap-1">
+<span class="material-icons text-sm">history</span> 5 hours ago
+                            </span>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-slate-100 dark:border-slate-800 mb-4">
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">payments</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Budget</p>
+<p class="text-sm font-bold">£250 - £400</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">near_me</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Distance</p>
+<p class="text-sm font-bold">7.3 miles</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">forum</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Responses</p>
+<p class="text-sm font-bold">0 Applications</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-slate-400 text-lg">location_on</span>
+<div>
+<p class="text-[10px] uppercase text-slate-400 font-medium">Location</p>
+<p class="text-sm font-bold">Coventry, CV1</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-xs text-primary font-bold uppercase tracking-tight">Be the first to respond!</span>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">Details</button>
+<button class="px-5 py-2 text-sm font-bold bg-primary text-white rounded-lg hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all">Express Interest</button>
+</div>
+</div>
+</div>
+<!-- Load More / Pagination -->
+<div class="flex justify-center pt-6">
+<button class="flex items-center gap-2 px-8 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold rounded-lg transition-all">
+<span>Load more jobs</span>
+<span class="material-icons text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Right Side: Mini Stats/Map -->
+<aside class="w-64 hidden xl:block flex-shrink-0 space-y-6">
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+<div class="h-40 bg-slate-200 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent z-10"></div>
+<img alt="Map" class="w-full h-full object-cover" data-alt="Stylized city map with markers" data-location="Birmingham, UK" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWOJ7hphJSnF6JsbKGMuX2VlblR6lU0Y5HcSs8S4DUXCeVThJ38mp0sI_ohbdGQ0wJaAbCFXtsVX8LdXN__rj-YFvxzK8TQRtHyiFKwAL7wYtEGclB17DW8g0HP3wXnJ5SZf-3navqhMGJvZjUOa9QhVc3e21PGMrdoVdj0FUtYzQ3R4962E0eiXvXy8xSuFLp1ISMoCsVrhyFFqdiE3PSYzKxsK9DBDGt6TZK6ffk5xpL9jv0KCVVWy9WJM-bkhbEh7h7AYatbOI"/>
+<div class="absolute bottom-3 left-3 z-20 flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#17cf97]"></div>
+<span class="text-xs font-bold text-white drop-shadow-md">Active Jobs Map</span>
+</div>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-500">Live Projects</span>
+<span class="text-sm font-bold">1,248</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-500">Avg. Response</span>
+<span class="text-sm font-bold text-primary">22 mins</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-500">Top Trade</span>
+<span class="text-sm font-bold">Electrician</span>
+</div>
+</div>
+</div>
+<div class="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-5">
+<span class="material-icons text-primary text-3xl mb-2">star</span>
+<h4 class="font-bold text-sm mb-1">Britestate Premium</h4>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4">Get 30-minute early access to high-value projects and emergency leads.</p>
+<button class="w-full py-2 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-opacity">Upgrade Profile</button>
+</div>
+</aside>
+</main>
+<!-- Global Footer Bar -->
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 bg-white dark:bg-background-dark/50">
+<div class="max-w-[1440px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-slate-500">© 2024 Britestate Ltd. All rights reserved. Verified Tradespeople Platform.</p>
+<div class="flex gap-6">
+<a class="text-xs text-slate-500 hover:text-primary transition-colors" href="#">Safety Center</a>
+<a class="text-xs text-slate-500 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs text-slate-500 hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-xs text-slate-500 hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+</body></html>

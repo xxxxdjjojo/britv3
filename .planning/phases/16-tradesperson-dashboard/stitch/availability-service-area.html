@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Availability &amp; Service Area</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #17cf97;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Header / Navigation -->
+<header class="border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons text-white text-xl">home_repair_service</span>
+</div>
+<span class="text-xl font-bold tracking-tight">BRITESTATE</span>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity" href="#">Dashboard</a>
+<a class="text-sm font-medium text-primary" href="#">Logistics</a>
+<a class="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity" href="#">Jobs</a>
+<a class="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity" href="#">Payments</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs px-2 py-1 rounded bg-primary/10 text-primary border border-primary/20 font-medium">LIVE UPDATES ACTIVE</span>
+<button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-primary/20">
+                    Save Changes
+                </button>
+</div>
+</div>
+</header>
+<main class="flex h-[calc(100vh-73px)] overflow-hidden">
+<!-- Left Panel: Availability -->
+<section class="w-1/2 lg:w-[45%] xl:w-[40%] border-r border-slate-200 dark:border-slate-800 overflow-y-auto custom-scrollbar bg-white dark:bg-[#0d1a16]">
+<div class="p-8">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h1 class="text-2xl font-bold">Availability</h1>
+<p class="text-sm opacity-60 mt-1">Manage your weekly working hours and time slots.</p>
+</div>
+<div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<button class="px-4 py-1.5 text-xs font-medium bg-white dark:bg-slate-700 rounded-md shadow-sm">Week</button>
+<button class="px-4 py-1.5 text-xs font-medium opacity-60 hover:opacity-100">Month</button>
+</div>
+</div>
+<!-- Calendar Grid -->
+<div class="space-y-4">
+<div class="grid grid-cols-8 gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 text-[10px] uppercase tracking-widest font-bold opacity-40">
+<div>Time</div>
+<div>Mon</div>
+<div>Tue</div>
+<div>Wed</div>
+<div>Thu</div>
+<div>Fri</div>
+<div>Sat</div>
+<div>Sun</div>
+</div>
+<!-- Time Slots -->
+<div class="grid grid-cols-8 gap-2 h-[500px] overflow-y-auto custom-scrollbar pr-2">
+<!-- Hours Column -->
+<div class="space-y-12 pt-2 text-[10px] font-medium opacity-50">
+<div>08:00 AM</div>
+<div>10:00 AM</div>
+<div>12:00 PM</div>
+<div>02:00 PM</div>
+<div>04:00 PM</div>
+<div>06:00 PM</div>
+</div>
+<!-- Calendar Columns (Days) -->
+<div class="relative group bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full">
+<div class="absolute inset-x-1 top-[10%] h-[60%] bg-primary/20 border-l-2 border-primary rounded"></div>
+</div>
+<div class="relative bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full">
+<div class="absolute inset-x-1 top-[10%] h-[30%] bg-primary border-l-2 border-primary rounded shadow-lg shadow-primary/20"></div>
+<div class="absolute inset-x-1 top-[45%] h-[25%] bg-primary border-l-2 border-primary rounded shadow-lg shadow-primary/20"></div>
+</div>
+<div class="relative bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full">
+<div class="absolute inset-x-1 top-[10%] h-[60%] bg-primary border-l-2 border-primary rounded shadow-lg shadow-primary/20"></div>
+</div>
+<div class="relative bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full">
+<div class="absolute inset-x-1 top-[10%] h-[60%] bg-primary/20 border-l-2 border-primary rounded"></div>
+</div>
+<div class="relative bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full">
+<div class="absolute inset-x-1 top-[10%] h-[60%] bg-primary border-l-2 border-primary rounded shadow-lg shadow-primary/20"></div>
+</div>
+<div class="relative bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full opacity-40">
+</div>
+<div class="relative bg-slate-50 dark:bg-white/5 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 h-full opacity-40">
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
+<h3 class="text-sm font-semibold mb-3">Quick Settings</h3>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-[10px] uppercase font-bold opacity-50 block mb-1">Standard Start</label>
+<input class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm px-3 py-2" type="text" value="08:00 AM"/>
+</div>
+<div>
+<label class="text-[10px] uppercase font-bold opacity-50 block mb-1">Standard End</label>
+<input class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg text-sm px-3 py-2" type="text" value="06:00 PM"/>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded text-primary focus:ring-primary bg-transparent" type="checkbox"/>
+<span class="text-xs">Accept emergency call-outs</span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Panel: Service Area -->
+<section class="flex-1 relative bg-slate-200 dark:bg-[#0a1411]">
+<!-- Map Simulation Overlay -->
+<div class="absolute inset-0 z-0">
+<img alt="Service Area Map" class="w-full h-full object-cover filter grayscale contrast-125 dark:brightness-50" data-alt="Dark stylized map with highlighted green zone" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl2Vp4yew9TnwIY86jtQj3HizBB4yEI46b2_vUXxcfgTlhoi0p1eh3zWuBdv_16MalmRUro_lqwCdQKVtsDvPHuLJznmvd22bEh8J4S_8WnAe4A2kXk02Bo2f1_fEe-YAn5LVpnYUhDPsyEiegcIrQmtjUZR4_tN_k_kZt6INJDmQelXg51sM_x8Hqwal85d9HleX-Yo0kNB7aXfREtwEElCM6ylz-piHUy_C81YJYCnsEJmn7qJ7xp6ZYNSahpMe1SPcUL45GnYA"/>
+<!-- SVG Overlay for the "Polygon" -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewbox="0 0 1000 1000">
+<path class="fill-primary/20 stroke-primary stroke-2" d="M400 300 L600 350 L650 550 L450 600 L350 450 Z"></path>
+<circle class="fill-primary/10 stroke-primary stroke-2 stroke-dasharray-4" cx="500" cy="450" r="120"></circle>
+</svg>
+</div>
+<!-- Map UI Controls -->
+<div class="absolute top-6 left-6 right-6 flex items-start justify-between pointer-events-none">
+<div class="w-80 bg-white dark:bg-background-dark p-4 rounded-xl shadow-2xl pointer-events-auto border border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-icons text-primary">location_on</span>
+<h2 class="font-bold text-sm">Service Area Area</h2>
+</div>
+<div class="relative mb-4">
+<span class="material-icons absolute left-3 top-2.5 text-xs opacity-40">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/50" placeholder="Search address or zip..." type="text"/>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[10px] font-bold uppercase mb-2">
+<span class="opacity-50">Radius (miles)</span>
+<span class="text-primary">25 mi</span>
+</div>
+<input class="w-full accent-primary h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full appearance-none cursor-pointer" type="range"/>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-2">
+<button class="flex items-center justify-center gap-2 py-2 px-3 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90">
+<span class="material-icons text-sm">pentagon</span>
+                                Draw Zone
+                            </button>
+<button class="flex items-center justify-center gap-2 py-2 px-3 bg-slate-100 dark:bg-slate-800 text-xs font-semibold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-icons text-sm">delete</span>
+                                Clear
+                            </button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 pointer-events-auto">
+<button class="w-10 h-10 bg-white dark:bg-background-dark rounded-lg shadow-lg flex items-center justify-center hover:text-primary border border-slate-200 dark:border-slate-800">
+<span class="material-icons">add</span>
+</button>
+<button class="w-10 h-10 bg-white dark:bg-background-dark rounded-lg shadow-lg flex items-center justify-center hover:text-primary border border-slate-200 dark:border-slate-800">
+<span class="material-icons">remove</span>
+</button>
+<button class="w-10 h-10 bg-white dark:bg-background-dark rounded-lg shadow-lg flex items-center justify-center hover:text-primary border border-slate-200 dark:border-slate-800 mt-4">
+<span class="material-icons text-xl">layers</span>
+</button>
+</div>
+</div>
+<!-- Stats Bar (Bottom Map) -->
+<div class="absolute bottom-6 left-6 right-6 pointer-events-none flex justify-center">
+<div class="bg-white/80 dark:bg-background-dark/80 backdrop-blur px-6 py-3 rounded-full shadow-2xl flex gap-8 pointer-events-auto border border-slate-200 dark:border-slate-800">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold opacity-50 uppercase tracking-tighter">Coverage</span>
+<span class="text-sm font-bold">142 sq. miles</span>
+</div>
+<div class="w-px h-8 bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold opacity-50 uppercase tracking-tighter">Est. Clients</span>
+<span class="text-sm font-bold">12,400+</span>
+</div>
+<div class="w-px h-8 bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold opacity-50 uppercase tracking-tighter">Base Location</span>
+<span class="text-sm font-bold">Bristol, UK</span>
+</div>
+</div>
+</div>
+<!-- Map Location Marker -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="relative">
+<div class="absolute -inset-4 bg-primary/20 rounded-full animate-ping"></div>
+<div class="w-6 h-6 bg-primary border-4 border-white dark:border-background-dark rounded-full shadow-xl"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Map Data Info -->
+<div class="hidden" data-location="Bristol" style=""></div>
+</body></html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate Tradesperson Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#11d432",
+                        "accent-gold": "#D4AF37",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102213",
+                        "card-dark": "#1a2e1d",
+                        "border-dark": "#2a3f2d"
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-gradient {
+            background: linear-gradient(to bottom, rgba(17, 212, 50, 0.1), transparent);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+<!-- Navigation Header -->
+<nav class="border-b border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between h-16 items-center">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white">home_repair_service</span>
+</div>
+<span class="text-xl font-bold tracking-tight">BRITESTATE</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-icons">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<div class="flex items-center gap-3 border-l border-slate-200 dark:border-border-dark pl-6">
+<div class="text-right">
+<p class="text-sm font-semibold">James Miller</p>
+<p class="text-xs text-slate-500">Premium Member</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary object-cover" data-alt="Professional tradesperson headshot profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJuMa6r2Sdow89bYTqaVgL1HjaniwuoN4j3S370mv6e5az_Z7ZXw5p_xQEqDlPJTZ_yoyOwl2qbVYBqihw8Ax9kJX1nGcLbKlKTIBI8TJzeyy4ZX5yszB4cNBUSNfTbbjvBa6DGb0ajHfUw7DuH39ANWFTvDLposLFuiWiFHhMNtATae8YEgv_zXZFwu2UWA7Fqt6JMJuUdZFSAzjJ94P_rJjXxktIc6f4SsXqc4t2xhzCYsBCc4mZU1UWfTL-HqlrBPAbCN2H1rM"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Verification Banner (Hero) -->
+<section class="mb-8 relative overflow-hidden bg-card-dark rounded-xl p-8 border border-border-dark shadow-2xl">
+<div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="max-w-xl">
+<h2 class="text-2xl font-bold mb-2">Complete Your Profile</h2>
+<p class="text-slate-400 mb-6">Your profile is 65% complete. Verify your trade credentials to unlock high-value premium leads in your area.</p>
+<div class="flex items-center gap-4">
+<div class="flex-1 bg-slate-800 rounded-full h-3">
+<div class="bg-primary h-3 rounded-full" style="width: 65%"></div>
+</div>
+<span class="text-primary font-bold">65%</span>
+</div>
+</div>
+<button class="bg-primary hover:bg-green-500 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg flex items-center gap-2 group whitespace-nowrap">
+                    Continue Verification
+                    <span class="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<!-- Background Decorative Shape -->
+<div class="absolute -right-16 -top-16 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+</section>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 text-sm font-medium">New Leads</span>
+<span class="material-icons text-primary bg-primary/10 p-2 rounded-lg">inbox</span>
+</div>
+<p class="text-3xl font-bold">12</p>
+<p class="text-xs text-primary mt-2 flex items-center gap-1">
+<span class="material-icons text-xs">trending_up</span>
+                    +4 since yesterday
+                </p>
+</div>
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 text-sm font-medium">Active Jobs</span>
+<span class="material-icons text-blue-500 bg-blue-500/10 p-2 rounded-lg">engineering</span>
+</div>
+<p class="text-3xl font-bold">8</p>
+<p class="text-xs text-slate-500 mt-2">3 due this week</p>
+</div>
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 text-sm font-medium">Completed</span>
+<span class="material-icons text-purple-500 bg-purple-500/10 p-2 rounded-lg">task_alt</span>
+</div>
+<p class="text-3xl font-bold">142</p>
+<p class="text-xs text-slate-500 mt-2">Lifetime total</p>
+</div>
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 text-sm font-medium">Rating</span>
+<span class="material-icons text-accent-gold bg-accent-gold/10 p-2 rounded-lg">star</span>
+</div>
+<p class="text-3xl font-bold">4.9</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-icons text-[12px] text-accent-gold">star</span>
+<span class="material-icons text-[12px] text-accent-gold">star</span>
+<span class="material-icons text-[12px] text-accent-gold">star</span>
+<span class="material-icons text-[12px] text-accent-gold">star</span>
+<span class="material-icons text-[12px] text-accent-gold">star</span>
+<span class="text-xs text-slate-500 ml-1">(86 reviews)</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Chart & Quick Actions -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Earnings Summary -->
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-lg font-bold">Earnings Summary</h3>
+<p class="text-sm text-slate-500">Weekly revenue overview</p>
+</div>
+<select class="bg-slate-100 dark:bg-slate-800 border-none rounded text-sm px-4 py-2 focus:ring-primary">
+<option>Last 7 Days</option>
+<option>Last 30 Days</option>
+</select>
+</div>
+<div class="relative h-64 w-full flex items-end gap-2 px-2">
+<!-- Simplified Visual Representation of a Line Chart with Bars for context -->
+<div class="absolute inset-0 flex flex-col justify-between py-2 pointer-events-none">
+<div class="border-t border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-t border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-t border-slate-200 dark:border-slate-800 w-full h-0"></div>
+<div class="border-t border-slate-200 dark:border-slate-800 w-full h-0"></div>
+</div>
+<div class="flex-1 h-[40%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£450</div>
+</div>
+<div class="flex-1 h-[65%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£820</div>
+</div>
+<div class="flex-1 h-[55%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£680</div>
+</div>
+<div class="flex-1 h-[90%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£1,240</div>
+</div>
+<div class="flex-1 h-[75%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£950</div>
+</div>
+<div class="flex-1 h-[60%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£720</div>
+</div>
+<div class="flex-1 h-[85%] bg-primary/20 rounded-t relative group">
+<div class="absolute bottom-0 w-full h-1 bg-primary"></div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded hidden group-hover:block">£1,100</div>
+</div>
+</div>
+<div class="flex justify-between mt-4 px-2">
+<span class="text-[10px] text-slate-500">MON</span>
+<span class="text-[10px] text-slate-500">TUE</span>
+<span class="text-[10px] text-slate-500">WED</span>
+<span class="text-[10px] text-slate-500">THU</span>
+<span class="text-[10px] text-slate-500">FRI</span>
+<span class="text-[10px] text-slate-500">SAT</span>
+<span class="text-[10px] text-slate-500">SUN</span>
+</div>
+</div>
+<!-- New Leads -->
+<div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold">New Lead Opportunities</h3>
+<a class="text-primary text-sm font-medium hover:underline" href="#">View All Leads</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Lead Card 1 -->
+<div class="bg-white dark:bg-card-dark p-5 rounded-xl border border-slate-200 dark:border-border-dark group hover:border-primary transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase">New Request</span>
+<span class="text-slate-500 text-xs flex items-center gap-1">
+<span class="material-icons text-xs">location_on</span> 2.4 miles
+                                </span>
+</div>
+<h4 class="font-bold text-lg mb-1">Kitchen Plumbing Repair</h4>
+<p class="text-sm text-slate-400 mb-4 line-clamp-2">Leaking sink tap and low pressure in the kitchen island faucet. Requires immediate attention.</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold">SJ</div>
+<span class="text-xs font-medium">Sarah Jenkins</span>
+</div>
+<button class="text-xs font-bold text-primary group-hover:bg-primary group-hover:text-white px-3 py-1.5 rounded-lg border border-primary transition-all">Send Quote</button>
+</div>
+</div>
+<!-- Lead Card 2 -->
+<div class="bg-white dark:bg-card-dark p-5 rounded-xl border border-slate-200 dark:border-border-dark group hover:border-primary transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase">New Request</span>
+<span class="text-slate-500 text-xs flex items-center gap-1">
+<span class="material-icons text-xs">location_on</span> 0.8 miles
+                                </span>
+</div>
+<h4 class="font-bold text-lg mb-1">Boiler Annual Service</h4>
+<p class="text-sm text-slate-400 mb-4 line-clamp-2">Regular maintenance check for a Worcester Bosch combi boiler. Homeowner present.</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold">MT</div>
+<span class="text-xs font-medium">Mark Thompson</span>
+</div>
+<button class="text-xs font-bold text-primary group-hover:bg-primary group-hover:text-white px-3 py-1.5 rounded-lg border border-primary transition-all">Send Quote</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Schedule & Quick Actions -->
+<div class="space-y-8">
+<!-- Quick Actions -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex flex-col items-center justify-center gap-2 p-6 bg-primary text-white rounded-xl shadow-lg hover:bg-green-500 transition-all">
+<span class="material-icons text-2xl">event_available</span>
+<span class="text-xs font-bold text-center">Update Availability</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-6 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-xl hover:border-primary transition-all">
+<span class="material-icons text-2xl text-primary">request_quote</span>
+<span class="text-xs font-bold text-center">New Quote</span>
+</button>
+</div>
+<!-- Upcoming Jobs -->
+<div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-border-dark overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-border-dark flex items-center justify-between">
+<h3 class="font-bold">Today's Schedule</h3>
+<span class="bg-primary/10 text-primary text-[10px] px-2 py-1 rounded font-bold uppercase">Oct 24</span>
+</div>
+<div class="divide-y divide-slate-200 dark:divide-border-dark">
+<!-- Job Item 1 -->
+<div class="p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="text-center min-w-[60px]">
+<p class="text-sm font-bold">09:00</p>
+<p class="text-[10px] text-slate-500">AM</p>
+</div>
+<div class="border-l-2 border-primary pl-4">
+<h5 class="text-sm font-bold">Pipe Inspection</h5>
+<p class="text-xs text-slate-500 mb-2">42 Oak Avenue, Birmingham</p>
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] px-2 py-0.5 rounded text-slate-400">In Progress</span>
+</div>
+</div>
+<!-- Job Item 2 -->
+<div class="p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="text-center min-w-[60px]">
+<p class="text-sm font-bold">14:00</p>
+<p class="text-[10px] text-slate-500">PM</p>
+</div>
+<div class="border-l-2 border-blue-500 pl-4">
+<h5 class="text-sm font-bold">Radiator Install</h5>
+<p class="text-xs text-slate-500 mb-2">12 Queen Street, Solihull</p>
+<span class="bg-blue-500/10 text-blue-500 text-[10px] px-2 py-0.5 rounded font-medium">Confirmed</span>
+</div>
+</div>
+<!-- Job Item 3 -->
+<div class="p-4 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="text-center min-w-[60px]">
+<p class="text-sm font-bold">16:30</p>
+<p class="text-[10px] text-slate-500">PM</p>
+</div>
+<div class="border-l-2 border-slate-300 dark:border-slate-700 pl-4">
+<h5 class="text-sm font-bold">Quote Consultation</h5>
+<p class="text-xs text-slate-500 mb-2">88 High Street, Digbeth</p>
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] px-2 py-0.5 rounded text-slate-400">Scheduled</span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-800/30">
+<a class="text-xs text-center block font-bold text-slate-500 hover:text-primary uppercase tracking-wider" href="#">Open Full Calendar</a>
+</div>
+</div>
+<!-- Premium Insight -->
+<div class="bg-gradient-to-br from-card-dark to-slate-900 p-6 rounded-xl border border-accent-gold/30 shadow-xl relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-icons text-accent-gold text-lg">workspace_premium</span>
+<h4 class="text-sm font-bold text-accent-gold uppercase tracking-widest">Premium Insight</h4>
+</div>
+<p class="text-sm leading-relaxed mb-4">Tradespeople in your area are charging <span class="text-white font-bold">15% more</span> for boiler services this month. Adjust your rates to maximize profit.</p>
+<button class="text-xs text-white underline font-medium decoration-accent-gold/50 underline-offset-4 hover:text-accent-gold transition-colors">View Market Data</button>
+</div>
+<div class="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+<span class="material-icons text-6xl text-accent-gold">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Map View Preview (Floating Utility) -->
+<div class="fixed bottom-8 right-8 z-40 hidden xl:block">
+<div class="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-border-dark shadow-2xl overflow-hidden w-64">
+<div class="h-32 bg-slate-300 relative">
+<img class="w-full h-full object-cover grayscale brightness-50" data-alt="Abstract minimalist street map pattern" data-location="Birmingham" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZOyWjX2uBxO_CQZHc5frBG91W8AoZmCc3fR3foZRIpq7FKL_dUeqibl-Q7Ms7duVeP69I1yl8UtDudJX9VnrFHESVhxXwqJLyjVDUO-cf6f6FDDdceIHp5GaW97jyt4LhqGuy-2K7dKqqS6R3BY5Gwbgm2rQ_BOaajTPdaxvAISmAEqNdXTpRAlP7HC5myFOfVhJm-Tw7C5ZRL3YqHaXBoyWVWoI3loJsvzH6qgeez5toaD4DIPpdGtDFlFqvRviz__3PhYlwoDk"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(17,212,50,0.8)]"></div>
+</div>
+</div>
+<div class="p-3">
+<div class="flex items-center justify-between">
+<p class="text-xs font-bold">Active Radius</p>
+<span class="text-[10px] bg-primary text-white px-1.5 py-0.5 rounded">15 mi</span>
+</div>
+</div>
+</div>
+</div>
+</body></html>

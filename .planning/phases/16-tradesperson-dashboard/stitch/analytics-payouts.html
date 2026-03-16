@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Business Analytics &amp; Payouts | Britestate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex min-h-screen">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 hidden lg:block">
+<div class="p-6">
+<div class="flex items-center gap-2 mb-10">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons text-white text-xl">account_balance_wallet</span>
+</div>
+<span class="text-xl font-bold tracking-tight">Britestate</span>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-xl">grid_view</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-icons text-xl">analytics</span>
+<span class="font-medium text-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-xl">payments</span>
+<span class="font-medium text-sm">Payouts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-xl">person</span>
+<span class="font-medium text-sm">Profile</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<!-- Top Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/30 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
+<div>
+<h1 class="text-lg font-semibold">Business Analytics &amp; Payouts</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Last updated: Oct 24, 2023, 09:42 AM</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<select class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-1.5 text-sm focus:ring-primary focus:border-primary outline-none appearance-none pr-10">
+<option>Last 30 Days</option>
+<option>Last 3 Months</option>
+<option>Year to Date</option>
+</select>
+<span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+</div>
+<button class="flex items-center gap-2 px-4 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-icons text-sm text-slate-500">file_download</span>
+                        Export CSV
+                    </button>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Profile Views</p>
+<h3 class="text-2xl font-bold mt-1 leading-none">2,842</h3>
+<div class="flex items-center gap-1 mt-2 text-primary">
+<span class="material-icons text-xs">trending_up</span>
+<span class="text-xs font-semibold">12.5% vs last month</span>
+</div>
+</div>
+<div class="w-16 h-12 flex items-end gap-1">
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[45%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-[85%] rounded-t-sm"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Enquiry Rate</p>
+<h3 class="text-2xl font-bold mt-1 leading-none">8.4%</h3>
+<div class="flex items-center gap-1 mt-2 text-primary">
+<span class="material-icons text-xs">trending_up</span>
+<span class="text-xs font-semibold">2.1% vs last month</span>
+</div>
+</div>
+<div class="w-16 h-12 flex items-end gap-1">
+<div class="flex-1 bg-primary/20 h-[30%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-[90%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[65%] rounded-t-sm"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div>
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Quote Conversion</p>
+<h3 class="text-2xl font-bold mt-1 leading-none">64%</h3>
+<div class="flex items-center gap-1 mt-2 text-rose-500">
+<span class="material-icons text-xs">trending_down</span>
+<span class="text-xs font-semibold">4.3% vs last month</span>
+</div>
+</div>
+<div class="w-16 h-12 flex items-end gap-1">
+<div class="flex-1 bg-primary/20 h-[80%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[70%] rounded-t-sm"></div>
+<div class="flex-1 bg-rose-500/50 h-[40%] rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Main Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Revenue Chart Column -->
+<div class="xl:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-lg font-bold">Revenue by Month</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Comparative performance against area average</p>
+</div>
+<div class="flex items-center gap-4 text-xs font-medium uppercase tracking-wider">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span>Your Revenue</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></span>
+<span>Area Average</span>
+</div>
+</div>
+</div>
+<!-- Bar Chart Simulation -->
+<div class="h-64 flex items-end justify-between gap-4 mt-12 relative border-b border-slate-100 dark:border-slate-800 pb-1">
+<!-- Helper Lines -->
+<div class="absolute inset-0 flex flex-col justify-between -z-10 text-[10px] text-slate-400/50 pointer-events-none">
+<div class="border-t border-dashed border-slate-200 dark:border-slate-800 w-full pt-1">£10k</div>
+<div class="border-t border-dashed border-slate-200 dark:border-slate-800 w-full pt-1">£7.5k</div>
+<div class="border-t border-dashed border-slate-200 dark:border-slate-800 w-full pt-1">£5k</div>
+<div class="border-t border-dashed border-slate-200 dark:border-slate-800 w-full pt-1">£2.5k</div>
+<div></div>
+</div>
+<!-- May -->
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center gap-0.5 h-full items-end px-1">
+<div class="w-1/2 bg-slate-300 dark:bg-slate-700 h-[40%] rounded-t"></div>
+<div class="w-1/2 bg-primary h-[55%] rounded-t"></div>
+</div>
+<span class="text-[10px] text-slate-500 mt-2 uppercase">May</span>
+</div>
+<!-- Jun -->
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full flex justify-center gap-0.5 h-full items-end px-1">
+<div class="w-1/2 bg-slate-300 dark:bg-slate-700 h-[45%] rounded-t"></div>
+<div class="w-1/2 bg-primary h-[60%] rounded-t"></div>
+</div>
+<span class="text-[10px] text-slate-500 mt-2 uppercase">Jun</span>
+</div>
+<!-- Jul -->
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full flex justify-center gap-0.5 h-full items-end px-1">
+<div class="w-1/2 bg-slate-300 dark:bg-slate-700 h-[50%] rounded-t"></div>
+<div class="w-1/2 bg-primary h-[75%] rounded-t"></div>
+</div>
+<span class="text-[10px] text-slate-500 mt-2 uppercase">Jul</span>
+</div>
+<!-- Aug -->
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full flex justify-center gap-0.5 h-full items-end px-1">
+<div class="w-1/2 bg-slate-300 dark:bg-slate-700 h-[48%] rounded-t"></div>
+<div class="w-1/2 bg-primary h-[85%] rounded-t"></div>
+</div>
+<span class="text-[10px] text-slate-500 mt-2 uppercase">Aug</span>
+</div>
+<!-- Sep -->
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full flex justify-center gap-0.5 h-full items-end px-1">
+<div class="w-1/2 bg-slate-300 dark:bg-slate-700 h-[52%] rounded-t"></div>
+<div class="w-1/2 bg-primary h-[70%] rounded-t"></div>
+</div>
+<span class="text-[10px] text-slate-500 mt-2 uppercase">Sep</span>
+</div>
+<!-- Oct -->
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full flex justify-center gap-0.5 h-full items-end px-1">
+<div class="w-1/2 bg-slate-300 dark:bg-slate-700 h-[45%] rounded-t"></div>
+<div class="w-1/2 bg-primary h-[92%] rounded-t"></div>
+</div>
+<span class="text-[10px] text-slate-500 mt-2 uppercase">Oct</span>
+</div>
+</div>
+</div>
+<!-- Payouts Overview Card -->
+<div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col">
+<h3 class="text-lg font-bold mb-6">Payout Overview</h3>
+<div class="space-y-6 flex-1">
+<div class="p-4 bg-background-light dark:bg-background-dark rounded-lg">
+<p class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider mb-1">Available for Payout</p>
+<div class="flex items-baseline gap-2">
+<h4 class="text-3xl font-bold">£4,250.00</h4>
+<span class="text-xs text-primary font-medium">Instant</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Pending</p>
+<p class="text-lg font-bold">£1,120.45</p>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Earned</p>
+<p class="text-lg font-bold">£38,940</p>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">Next scheduled transfer: <span class="text-slate-900 dark:text-slate-100 font-medium">Friday, Oct 27</span></p>
+<button class="w-full bg-primary text-white py-3 rounded-lg font-bold hover:brightness-105 transition-all flex items-center justify-center gap-2">
+<span class="material-icons">send</span>
+                                    Request Payout
+                                </button>
+</div>
+</div>
+<div class="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+<div class="flex items-start gap-3">
+<span class="material-icons text-primary text-xl">verified_user</span>
+<p class="text-xs text-slate-600 dark:text-slate-400 italic leading-relaxed">All payments are secured via Britestate Escrow and processed within 24-48 hours of request.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Payments Table -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="px-8 py-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h3 class="text-lg font-bold">Recent Payments</h3>
+<div class="flex items-center gap-2">
+<div class="flex rounded-md border border-slate-200 dark:border-slate-800 p-0.5">
+<button class="px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 rounded">All</button>
+<button class="px-3 py-1 text-xs font-medium text-slate-500">Paid</button>
+<button class="px-3 py-1 text-xs font-medium text-slate-500">Processing</button>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
+<tr>
+<th class="px-8 py-4">Transaction Date</th>
+<th class="px-8 py-4">Job Reference</th>
+<th class="px-8 py-4">Client</th>
+<th class="px-8 py-4">Amount</th>
+<th class="px-8 py-4">Status</th>
+<th class="px-8 py-4 text-right">Invoice</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-8 py-4">Oct 22, 2023</td>
+<td class="px-8 py-4 font-mono text-xs">#BR-94021</td>
+<td class="px-8 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-slate-100">
+<img alt="Sarah Miller" class="w-full h-full object-cover" data-alt="Client profile photo portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUHBrB-okrQBNGDkFWFzlAhGVz3_l7XaNqFvWZYYOGz5S4VEaHQAuRPz1BkUDZ9M38QdLqQapF9qpj_Ib5Ng4Za1IPcEsVq56xt-oFw6sve-7dW_7Bzec-TnrhlVOSwBgGLnXcc1o7RjVCqJC7TX9MmxDJHptJa8q0THLkVMXgMw3RiOd8WBkOe3efv8NKBsmTz-3RRiMFGJDo0Yr7-HVJU-C6yPtnSFDjj4gTmOjwhrIjO00jMJFMChfZAREd2k1KQ8YIfHnWC4Q"/>
+</div>
+<span>Sarah Miller</span>
+</div>
+</td>
+<td class="px-8 py-4 font-semibold text-slate-900 dark:text-slate-100">£1,250.00</td>
+<td class="px-8 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Paid
+                                        </span>
+</td>
+<td class="px-8 py-4 text-right">
+<button class="text-primary hover:underline font-medium">Download</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-8 py-4">Oct 20, 2023</td>
+<td class="px-8 py-4 font-mono text-xs">#BR-94018</td>
+<td class="px-8 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-slate-100">
+<img alt="David Chen" class="w-full h-full object-cover" data-alt="Client profile photo headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyOt1CtKZULFdhu7vmdlmkTD_WAZ3Us7O_CLMVz9Qw48uhU2nCfWyzRESFwKfP9LtFWMbJds275eUFSNOpm4I15Hag1r1-9ErXGrwFH8R5CCn31HrJntcw-KnioApsAL26fExvn8m2giGfBCjfkQbUU6nwOto-Zh79UeifiZ1jzOt1o4zPIjJBgCwRC5XzRdjGA5qgpz5vA0KVqTdWYUGZmPvbB4fjm8tBCoR1bF33-zAEuNMbPBmq5ajEIoZjgpVS4dS4AlvrUPk"/>
+</div>
+<span>David Chen</span>
+</div>
+</td>
+<td class="px-8 py-4 font-semibold text-slate-900 dark:text-slate-100">£840.00</td>
+<td class="px-8 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-500 text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                            Processing
+                                        </span>
+</td>
+<td class="px-8 py-4 text-right">
+<button class="text-primary hover:underline font-medium">Download</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-8 py-4">Oct 19, 2023</td>
+<td class="px-8 py-4 font-mono text-xs">#BR-93992</td>
+<td class="px-8 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-slate-100">
+<img alt="Emma Watson" class="w-full h-full object-cover" data-alt="Female client profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsKRoy2LYyJMWkgSWxiueXtkOPvS1x6PDOC0DW236YGgmrV5YY7kaAYPI_oJ_FbM7GkfFoJvT1O_76tNrJ1K58yaMQKKIXB8SYnU3_gdT9jcpQC3fSDnCcEcQd2CTdu3rbYPm7XIPKNJeAO-RVnBxAyznLTtoXPC3CQTDb0ODI9liKaj4XJ-iICRQAuCtKHuiqec7eu4IAjcN0llNK-6PmTYfEAyrWJcCLEjRD98KO_uQKcily3o0K9Dr0-1O9ZYKnWqZNux-jsZQ"/>
+</div>
+<span>Emma Watson</span>
+</div>
+</td>
+<td class="px-8 py-4 font-semibold text-slate-900 dark:text-slate-100">£2,100.00</td>
+<td class="px-8 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Paid
+                                        </span>
+</td>
+<td class="px-8 py-4 text-right">
+<button class="text-primary hover:underline font-medium">Download</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-8 py-4">Oct 18, 2023</td>
+<td class="px-8 py-4 font-mono text-xs">#BR-93988</td>
+<td class="px-8 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-slate-100">
+<img alt="Marcus Thompson" class="w-full h-full object-cover" data-alt="Male client headshot photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYlT-gOzZj-WQH2MR6VS8Lp1xucL66oMSIxNsDnCi318WElq9aB4hI3142NN1VM79EFaMgGRCGgFwJDEaljUhSnowLeEUj_zZmHXUflC46WbxxFYHWQY9EMgIrhHJD1sNy0xl4gxD06R9ULWmrepDuiU-wsri03XCaPkYzRoHRDzgwzEz_uOXxps97BVlc5q4YU7Gr7iH7oqxzC1BVpP6jdq8AjQJZs0ZscycEHCiM52oRfX8zKxdCCbYbLj6cmn4KukQ8kHx-bVQ"/>
+</div>
+<span>Marcus Thompson</span>
+</div>
+</td>
+<td class="px-8 py-4 font-semibold text-slate-900 dark:text-slate-100">£150.00</td>
+<td class="px-8 py-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Paid
+                                        </span>
+</td>
+<td class="px-8 py-4 text-right">
+<button class="text-primary hover:underline font-medium">Download</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 bg-slate-50/50 dark:bg-slate-800/20 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<p class="text-xs text-slate-500">Showing 1 to 4 of 48 transactions</p>
+<div class="flex gap-2">
+<button class="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800 disabled:opacity-50">
+<span class="material-icons text-sm">chevron_left</span>
+</button>
+<button class="p-1 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-800">
+<span class="material-icons text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

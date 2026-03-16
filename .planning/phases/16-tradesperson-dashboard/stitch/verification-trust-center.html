@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Verification &amp; Trust Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                        "surface-dark": "#1a2e28",
+                        "card-dark": "#233a32",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #233a32; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Header Navigation -->
+<nav class="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark/50 sticky top-0 z-50 backdrop-blur-md">
+<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white">shield</span>
+</div>
+<span class="font-bold text-xl tracking-tight">Britestate</span>
+</div>
+<div class="hidden md:flex gap-6 text-sm font-medium opacity-70">
+<a class="hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary" href="#">Verification</a>
+<a class="hover:text-primary transition-colors" href="#">Jobs</a>
+<a class="hover:text-primary transition-colors" href="#">Financials</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-slate-100 dark:bg-surface-dark px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/5">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-semibold">Gold Status</span>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/50">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Portrait of a professional tradesperson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkCrXMAvLxSBs2KVKr1pzOwz1MxdV1MLVM3FO-4JqQFQWzt9wP2eIF7CK-N6zXcDErgbpl6XTSgpaL2JRpRUMvD5W0saEMFVZynai1dxXWSQNfQYzt81uekL0IPSA9rsQM0wI8b5Zyc64VV_gLzk8lRTBEBPVhH3fupQV5uT4a9AJUUlTkpR1p9FyJUalFSiOXeqZjwmsNE4rPRXFrdVWHxG9_au274mDL3OX_gxLM6fQKH8lkN-qkYVkJFJLBieAK9OKqWltN4Y4"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-4 py-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Sidebar: Verification Progress -->
+<aside class="lg:col-span-3 space-y-6">
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<h3 class="text-sm font-bold uppercase tracking-wider opacity-60 mb-6">Verification Level</h3>
+<div class="relative space-y-8 before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
+<!-- Level 1: Bronze (Completed) -->
+<div class="relative flex items-start gap-4">
+<div class="z-10 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-icons text-sm leading-none">check</span>
+</div>
+<div>
+<h4 class="font-bold text-primary">Bronze</h4>
+<p class="text-xs opacity-60">Identity Verified</p>
+</div>
+</div>
+<!-- Level 2: Silver (Completed) -->
+<div class="relative flex items-start gap-4">
+<div class="z-10 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-icons text-sm leading-none">check</span>
+</div>
+<div>
+<h4 class="font-bold text-primary">Silver</h4>
+<p class="text-xs opacity-60">Insurance &amp; References</p>
+</div>
+</div>
+<!-- Level 3: Gold (Current) -->
+<div class="relative flex items-start gap-4">
+<div class="z-10 w-8 h-8 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary ring-4 ring-background-light dark:ring-background-dark">
+<span class="w-2.5 h-2.5 bg-primary rounded-full"></span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Gold</h4>
+<p class="text-xs opacity-60">85% Complete</p>
+<div class="mt-2 w-32 h-1 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="w-4/5 h-full bg-primary"></div>
+</div>
+</div>
+</div>
+<!-- Level 4: Platinum (Locked) -->
+<div class="relative flex items-start gap-4 opacity-40">
+<div class="z-10 w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-icons text-sm leading-none">lock</span>
+</div>
+<div>
+<h4 class="font-bold">Platinum</h4>
+<p class="text-xs">Advanced Vetting</p>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary/10 rounded-lg border border-primary/20">
+<p class="text-xs font-medium text-primary">TIP</p>
+<p class="text-xs mt-1 leading-relaxed">Complete your peer endorsements to reach <span class="font-bold">Gold Tier</span> and unlock 15% lower service fees.</p>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<h3 class="text-sm font-bold uppercase tracking-wider opacity-60 mb-4">Trust Score</h3>
+<div class="text-center py-4">
+<div class="inline-flex items-center justify-center w-24 h-24 rounded-full border-[6px] border-primary border-r-slate-200 dark:border-r-white/10 -rotate-45">
+<span class="rotate-45 text-2xl font-black">740</span>
+</div>
+<p class="mt-4 text-sm font-medium">Excellent</p>
+<p class="text-xs opacity-50 px-4">Top 5% of tradespeople in your region</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="lg:col-span-9 space-y-8">
+<!-- Page Header & Summary -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold tracking-tight">Verification Center</h1>
+<p class="opacity-60 mt-1">Manage your credentials and build trust with clients.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 text-sm font-semibold rounded bg-slate-200 dark:bg-white/10 hover:opacity-80 transition-opacity">View Public Profile</button>
+<button class="px-4 py-2 text-sm font-semibold rounded bg-primary text-white shadow-lg shadow-primary/20 hover:brightness-110 transition-all">Submit for Review</button>
+</div>
+</div>
+<!-- Identity Section -->
+<section>
+<h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-icons text-primary">face</span> Identity Verification
+                    </h2>
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm grid md:grid-cols-3 gap-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons">fingerprint</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase opacity-50">Biometric ID</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-sm font-bold">Verified</span>
+<span class="material-icons text-primary text-xs">verified</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 border-l border-slate-100 dark:border-white/5 md:pl-6">
+<div class="w-12 h-12 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons">gavel</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase opacity-50">DBS Check</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-sm font-bold">Clear</span>
+<span class="material-icons text-primary text-xs">verified</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 border-l border-slate-100 dark:border-white/5 md:pl-6">
+<div class="w-12 h-12 rounded bg-blue-500/20 flex items-center justify-center text-blue-500">
+<span class="material-icons">home</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase opacity-50">Address</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-sm font-bold">Under Review</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Insurance & Qualifications Section -->
+<section>
+<h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-icons text-primary">assignment</span> Insurance &amp; Qualifications
+                    </h2>
+<div class="grid md:grid-cols-2 gap-4">
+<!-- Gas Safe Register -->
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded flex items-center justify-center text-primary">
+<span class="material-icons">local_fire_department</span>
+</div>
+<span class="px-2 py-1 bg-primary/20 text-primary text-[10px] font-bold uppercase rounded leading-none">Verified</span>
+</div>
+<h4 class="font-bold">Gas Safe Register</h4>
+<p class="text-sm opacity-60 mt-1">ID: 559021 • Expires Oct 2024</p>
+<div class="mt-6 flex gap-2">
+<button class="flex-1 py-2 text-xs font-bold bg-slate-100 dark:bg-white/5 rounded hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">View Document</button>
+<button class="p-2 text-xs font-bold bg-slate-100 dark:bg-white/5 rounded hover:text-primary transition-colors">
+<span class="material-icons text-sm">refresh</span>
+</button>
+</div>
+</div>
+<!-- Public Liability -->
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-amber-500/30 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded flex items-center justify-center text-amber-500">
+<span class="material-icons">policy</span>
+</div>
+<span class="px-2 py-1 bg-amber-500/20 text-amber-500 text-[10px] font-bold uppercase rounded leading-none">Expiring Soon</span>
+</div>
+<h4 class="font-bold">Public Liability Insurance</h4>
+<p class="text-sm opacity-60 mt-1">Expires in 14 days (Sept 15)</p>
+<div class="mt-6">
+<button class="w-full py-2 text-xs font-bold bg-amber-500 text-white rounded hover:brightness-110 transition-all">Upload Renewal Document</button>
+</div>
+</div>
+<!-- NVQ Level 3 -->
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded flex items-center justify-center text-primary">
+<span class="material-icons">school</span>
+</div>
+<span class="px-2 py-1 bg-primary/20 text-primary text-[10px] font-bold uppercase rounded leading-none">Verified</span>
+</div>
+<h4 class="font-bold">NVQ Level 3: Plumbing</h4>
+<p class="text-sm opacity-60 mt-1">Issued by City &amp; Guilds • Lifetime</p>
+<div class="mt-6">
+<button class="w-full py-2 text-xs font-bold bg-slate-100 dark:bg-white/5 rounded hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">View Certificate</button>
+</div>
+</div>
+<!-- Add New Document Card -->
+<div class="border-2 border-dashed border-slate-200 dark:border-white/10 p-6 rounded-xl flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-colors cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:text-primary transition-all">
+<span class="material-icons">add</span>
+</div>
+<h4 class="font-bold">Add Qualification</h4>
+<p class="text-xs opacity-50 mt-1 max-w-[180px]">Upload new certifications or trade memberships</p>
+</div>
+</div>
+</section>
+<!-- References & Tracking -->
+<section>
+<h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-icons text-primary">star</span> Reference Tracking
+                    </h2>
+<div class="grid md:grid-cols-2 gap-8">
+<!-- Client References -->
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold">Client References</h4>
+<span class="text-sm font-black text-primary">3 / 3</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Sarah Jenkins</p>
+<p class="text-[10px] opacity-50">Bathroom Renovation • July 2023</p>
+</div>
+<div class="flex gap-0.5">
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Mark Thompson</p>
+<p class="text-[10px] opacity-50">Boiler Maintenance • May 2023</p>
+</div>
+<div class="flex gap-0.5">
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+<span class="material-icons text-amber-500 text-[10px]">star</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-icons text-primary text-sm">check_circle</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">High Street Co.</p>
+<p class="text-[10px] opacity-50">Commercial Fit-out • Jan 2023</p>
+</div>
+<span class="text-[10px] bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded opacity-60">Corporate</span>
+</div>
+</div>
+<button class="w-full mt-6 py-2 text-xs font-bold border border-slate-200 dark:border-white/10 rounded hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">Request Another Reference</button>
+</div>
+<!-- Peer Endorsements -->
+<div class="bg-white dark:bg-surface-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold">Peer Endorsements</h4>
+<span class="text-sm font-black text-amber-500">2 / 3</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-icons text-primary text-sm">verified_user</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">David Rossi</p>
+<p class="text-[10px] opacity-50">Master Electrician • Silver Tier</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-icons text-primary text-sm">verified_user</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Liam O'Connor</p>
+<p class="text-[10px] opacity-50">Plumbing Specialist • Platinum Tier</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+<span class="material-icons text-slate-400 text-sm">hourglass_empty</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold opacity-50">Jane Doe</p>
+<p class="text-[10px] opacity-30">Gas Engineer • Invitation Pending</p>
+</div>
+<button class="text-[10px] text-primary hover:underline">Resend</button>
+</div>
+</div>
+<button class="w-full mt-6 py-2 text-xs font-bold bg-primary text-white rounded shadow-lg shadow-primary/20 hover:brightness-110 transition-all">Invite a Colleague</button>
+</div>
+</div>
+</section>
+<!-- Activity Log -->
+<section>
+<div class="bg-slate-200/30 dark:bg-white/5 p-6 rounded-xl">
+<h4 class="text-sm font-bold opacity-60 mb-4">Verification Activity</h4>
+<div class="space-y-3">
+<div class="flex items-start gap-3 text-xs">
+<span class="material-icons text-primary text-sm mt-0.5">check_circle</span>
+<p><span class="font-bold text-slate-900 dark:text-white">DBS Check</span> was successfully verified by our trust team. <span class="opacity-50">2 days ago</span></p>
+</div>
+<div class="flex items-start gap-3 text-xs">
+<span class="material-icons text-blue-500 text-sm mt-0.5">info</span>
+<p><span class="font-bold text-slate-900 dark:text-white">Proof of Address</span> uploaded and is now in the review queue. <span class="opacity-50">3 days ago</span></p>
+</div>
+<div class="flex items-start gap-3 text-xs">
+<span class="material-icons text-amber-500 text-sm mt-0.5">warning</span>
+<p><span class="font-bold text-slate-900 dark:text-white">Insurance Alert:</span> Your Public Liability policy is expiring soon. <span class="opacity-50">5 days ago</span></p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<footer class="mt-12 border-t border-slate-200 dark:border-white/5 py-8">
+<div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm opacity-50">
+<p>© 2023 Britestate. All verification documents are stored with bank-grade encryption.</p>
+<div class="flex gap-6">
+<a class="hover:underline" href="#">Privacy Policy</a>
+<a class="hover:underline" href="#">Terms of Service</a>
+<a class="hover:underline" href="#">Trust Center Help</a>
+</div>
+</div>
+</footer>
+</body></html>

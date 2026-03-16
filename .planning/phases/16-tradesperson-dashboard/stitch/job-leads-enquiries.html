@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Job Leads &amp; Enquiries</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2d3748;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased h-screen overflow-hidden">
+<div class="flex h-full">
+<!-- Sidebar / Navigation -->
+<aside class="w-20 lg:w-64 border-r border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col items-center lg:items-start py-6 px-4 shrink-0 transition-all">
+<div class="mb-10 px-2 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-icons text-xl font-bold">home_work</span>
+</div>
+<h1 class="hidden lg:block text-xl font-bold tracking-tight text-slate-800 dark:text-white">Britestate</h1>
+</div>
+<nav class="flex-1 w-full space-y-2">
+<a class="flex items-center gap-3 p-3 rounded-xl bg-primary/10 text-primary font-medium" href="#">
+<span class="material-icons">grid_view</span>
+<span class="hidden lg:block">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons">assignment</span>
+<span class="hidden lg:block">Leads</span>
+<span class="ml-auto hidden lg:flex bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">12</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons">chat_bubble_outline</span>
+<span class="hidden lg:block">Messages</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons">person_outline</span>
+<span class="hidden lg:block">Account</span>
+</a>
+</nav>
+<div class="mt-auto w-full pt-6 border-t border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Profile photo of a professional tradesperson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKjCpj_YezGuZWjEYXr1umWaldlGexN8tQopB4I0XOVwVmGhvJCraxHo5hq8_AIiPcfC7WInPLdjjo5ZFjs-Ki8uSZcDpH5UiAAXm82A5dGCjBCLqViSiR8W2bYetYrTl70KtDzSl04pHa2mayPI4uM-EwsZkWLQNcRLxbxwdAL97qjWRUnFdTl641KisHLwF4ecMR53wkI4puRjiGonc_BMUyO1DjwoU2R1R2hp4KiNUlLXmjXNdLaoKNIvNjtt6csDppYnHz7Sw"/>
+</div>
+<div class="hidden lg:block overflow-hidden">
+<p class="text-sm font-semibold truncate">Alex Construction</p>
+<p class="text-xs text-slate-400 truncate">Premium Member</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- Header Bar -->
+<header class="h-16 border-b border-slate-200/60 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10">
+<div class="flex items-center gap-4">
+<h2 class="text-lg font-semibold">Available Job Leads</h2>
+<div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-sm">
+<button class="px-3 py-1 bg-white dark:bg-slate-700 rounded-md shadow-sm font-medium">Newest</button>
+<button class="px-3 py-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Urgent</button>
+<button class="px-3 py-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Top Budget</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-icons">search</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors relative">
+<span class="material-icons">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+</div>
+</header>
+<!-- Master-Detail Content -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Lead List (Master) -->
+<section class="w-full lg:w-96 border-r border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+<div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20">
+<span class="text-xs font-bold uppercase tracking-wider text-slate-400">12 Live Enquiries</span>
+<button class="text-xs text-primary font-semibold flex items-center gap-1">
+<span class="material-icons text-sm">tune</span> Filter
+                        </button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+<!-- Card: Active -->
+<div class="group relative p-4 rounded-xl border border-primary/30 bg-primary/5 dark:bg-primary/10 shadow-sm cursor-pointer ring-1 ring-primary/20">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-primary text-white">Brand New</span>
+<span class="text-xs text-slate-400">2m ago</span>
+</div>
+<h3 class="font-bold text-slate-800 dark:text-white mb-1">Kitchen Backsplash Installation</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">Looking for a professional tiler to replace old kitchen tiles with modern subway tiles...</p>
+<div class="flex flex-wrap gap-2 mb-3">
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Tiling</span>
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">London, SE1</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-slate-800 dark:text-white">Est. £400 - £600</span>
+<span class="material-icons text-primary">chevron_right</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group p-4 rounded-xl border border-transparent bg-white dark:bg-slate-900 hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 shadow-sm cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500 text-white">Urgent</span>
+<span class="text-xs text-slate-400">45m ago</span>
+</div>
+<h3 class="font-bold text-slate-800 dark:text-white mb-1">Burst Pipe Emergency Repair</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">Small leak under the kitchen sink has turned into a major spray. Need someone ASAP.</p>
+<div class="flex flex-wrap gap-2 mb-3">
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Plumbing</span>
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Greenwich</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-slate-800 dark:text-white">Est. £150 - £250</span>
+<span class="material-icons text-slate-300 group-hover:text-slate-500">chevron_right</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group p-4 rounded-xl border border-transparent bg-white dark:bg-slate-900 hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 shadow-sm cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-2">
+<div class="w-2 h-2 rounded-full bg-slate-300"></div>
+<span class="text-xs text-slate-400">2h ago</span>
+</div>
+<h3 class="font-bold text-slate-800 dark:text-white mb-1">Full Garden Landscaping</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">Complete redesign of backyard including patio, lawn, and fencing. High budget.</p>
+<div class="flex flex-wrap gap-2 mb-3">
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Landscaping</span>
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Hampstead</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-slate-800 dark:text-white">Est. £5,000+</span>
+<span class="material-icons text-slate-300 group-hover:text-slate-500">chevron_right</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group p-4 rounded-xl border border-transparent bg-white dark:bg-slate-900 hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 shadow-sm cursor-pointer transition-all">
+<div class="flex justify-between items-start mb-2">
+<div class="w-2 h-2 rounded-full bg-slate-300"></div>
+<span class="text-xs text-slate-400">4h ago</span>
+</div>
+<h3 class="font-bold text-slate-800 dark:text-white mb-1">Loft Painting &amp; Decorating</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">Fresh coat of paint for two rooms in a newly converted loft. Walls and ceiling.</p>
+<div class="flex flex-wrap gap-2 mb-3">
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Painting</span>
+<span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-[10px] font-medium text-slate-600 dark:text-slate-300">Brixton</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-slate-800 dark:text-white">Est. £800 - £1,200</span>
+<span class="material-icons text-slate-300 group-hover:text-slate-500">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Detail View Panel -->
+<section class="hidden lg:flex flex-1 bg-background-light dark:bg-background-dark flex-col overflow-y-auto custom-scrollbar relative">
+<!-- Top Navigation for Detail -->
+<div class="sticky top-0 z-20 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md px-8 py-4 border-b border-slate-200/40 dark:border-slate-800 flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-icons text-3xl">grid_on</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold tracking-tight">Kitchen Backsplash Installation</h2>
+<p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+<span class="material-icons text-xs">location_on</span> Southwark, London • Posted 2 minutes ago
+                                </p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-all">Decline</button>
+<button class="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold hover:bg-opacity-90 shadow-lg shadow-primary/20 transition-all">Express Interest</button>
+</div>
+</div>
+<!-- Main Detail Content Body -->
+<div class="p-8 max-w-5xl mx-auto w-full grid grid-cols-3 gap-8">
+<!-- Left Column: Photos & Description -->
+<div class="col-span-2 space-y-8">
+<!-- Image Gallery -->
+<div>
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-icons text-slate-400">collections</span> Job Photos
+                                </h3>
+<div class="grid grid-cols-3 gap-3">
+<div class="col-span-2 aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-800">
+<img class="w-full h-full object-cover" data-alt="Photo of a modern kitchen area needing tiles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy6hWyZQPF9Ujgzo0azNpzQaXHi-iq9tzt_NsO-S97q8JrEG4VdRy6gKSE6n5Eaud-l4Mqv7UuTicaFgGcYcC7qpQRF_G7F6221zYxi3p8pzAbEcfYS_Xj7MIl77tLnlopyjsVQDf1smJv3kMFQvWQYDnzy-Z3j6DOQl7bgvWPGWNcQsYzmOnp_emdWtkFBVNud-LgrdeN14rzR0n8NuTfMXHaS8ivoZ3p8W5D3EOVx91dwTUP-UDJKtyEJYeaoe0LM_G2M59RQvg"/>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex-1 rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-800">
+<img class="w-full h-full object-cover" data-alt="Close up of kitchen backsplash area" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3vC-06LpotuKrfi6hTceg7FsZP3i-pDrqShxDlw_C4qjY32IakgoyKtivG8WhnqYCn2HiM3o1gpfhvzO20JVqsyZ2E57gWbWYJrPqXGKAVR3asbpwGkzkPoxvlOr_F7zEyFRskpwdoP66MyMCiI791GbeYp1bzuFS67DTeZY6q1nfZAK-GoEMOjLmI6yRsEUIdg4ca4Q_LNzX5ByhtphinCznsGrVs-4q6LQFNe9ZFjm0zxGKtF3tthoFDTnLTgIHleVgpWvEC94"/>
+</div>
+<div class="flex-1 rounded-2xl overflow-hidden relative bg-slate-200 dark:bg-slate-800">
+<img class="w-full h-full object-cover opacity-60" data-alt="Another view of the kitchen tiling space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcbQB-ggXm3Sxzkvu-sFiYH8Wmo5JxPDmLgmxvrgshxhtzpgAh4pGhvr92TFEmVrYCSBU-FbZPBbwRP6hqlF8s8CrpxpUo8TSgvtasQQ_drAMe3eSo-eSIpuU_Pvb8FOU6JwZO0oKXQLOR06EzaXtSctjTe1fE-jluP4_VyHAWb1tH9bVicWQ3lOJO9e8txF9vHVualXMpMs8-Q5V5APhuynNTytuwBvwtC0LfN9SmfYrdnYLg83-Rpo1_nKPdEnZkEn0RwxKZKPE"/>
+<div class="absolute inset-0 flex items-center justify-center font-bold text-white text-lg">
+                                                +2
+                                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Job Description -->
+<div>
+<h3 class="text-lg font-bold mb-4">Job Description</h3>
+<div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                                        Hello, I'm looking to refresh my kitchen. I need the existing old tiles removed and replaced with new white subway tiles. The area is approximately 4.5 square meters.
+                                    </p>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        I have already purchased the tiles and the grout. I just need a professional to handle the installation, including making sure the wall is properly prepared after the old tile removal. Hoping to get this done sometime next week.
+                                    </p>
+<div class="mt-6 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-xl">event_available</span>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 leading-none">Preferred Start</p>
+<p class="text-sm font-semibold">Next 7 Days</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary text-xl">payments</span>
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 leading-none">Budget Mode</p>
+<p class="text-sm font-semibold">Negotiable</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Send Quote CTA (Alternate) -->
+<div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-8 flex flex-col items-center text-center border-2 border-dashed border-primary/20">
+<h4 class="text-xl font-bold mb-2">Ready to take this job?</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md">Send a tailored quote to Sarah and stand out from other tradespeople. No lead fee if she doesn't respond.</p>
+<button class="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2">
+<span class="material-icons">send</span> Send a Quote
+                                </button>
+</div>
+</div>
+<!-- Right Column: Map & Client -->
+<div class="space-y-6">
+<!-- Client Card -->
+<div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800">
+<h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">The Client</h3>
+<div class="flex items-center gap-4 mb-4">
+<div class="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 font-bold text-xl">
+                                        S
+                                    </div>
+<div>
+<p class="font-bold text-lg leading-tight">Sarah Jenkins</p>
+<div class="flex items-center text-amber-500">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star_half</span>
+<span class="text-xs font-medium text-slate-400 ml-1">(14 reviews)</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Member since</span>
+<span class="font-medium">2021</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Identity</span>
+<span class="text-primary font-medium flex items-center gap-1">
+<span class="material-icons text-[14px]">verified</span> Verified
+                                        </span>
+</div>
+</div>
+</div>
+<!-- Location Map -->
+<div class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="p-4 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center">
+<h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Job Location</h3>
+<span class="text-xs font-semibold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded">London SE1</span>
+</div>
+<div class="h-48 bg-slate-200 dark:bg-slate-800 relative">
+<img class="w-full h-full object-cover" data-location="London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAISFG8a3xNdLJawqCGH51exz53vt9Yd5nb8tc9x-V1tNNuVNBuV7J-9y1ekOls-oTpQiP_7TW9vobJvBp6rEIT-Gihxr72LkT7_CnOoJb-OJnVwneFNohERuj_Mk-sjJJALtyHhwtkYTkl270ki2yTtpiJirkglJ_BsNMqO2_cEIHaU8KYch3s7OL982S6dQDbKxdkvOdMm2wCSk9-JqKprvqDj3-mWiu17I5gCYm_pPmuLTjc2tqs2zrGt1MfGIHlIpvh4hJk_iI"/>
+<div class="absolute inset-0 bg-primary/10 flex items-center justify-center">
+<div class="w-12 h-12 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-xl ring-8 ring-primary/20">
+<span class="material-icons text-primary text-3xl">location_on</span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-800/50">
+<p class="text-[10px] text-slate-400 text-center italic">Approximate location shown for privacy until quote is accepted.</p>
+</div>
+</div>
+<!-- Budget Card -->
+<div class="bg-slate-900 dark:bg-black rounded-2xl p-6 text-white shadow-xl shadow-slate-200 dark:shadow-none">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Estimated Budget</h3>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-3xl font-bold">£400 - £600</span>
+</div>
+<div class="w-full bg-slate-800 rounded-full h-1.5 mb-4">
+<div class="bg-primary h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed">Based on similar jobs in the London area and the task description provided by Sarah.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Bar (Visible on Small Screens) -->
+<div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around py-3 px-2 z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-icons">assignment</span>
+<span class="text-[10px] font-bold">Leads</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-icons">chat_bubble</span>
+<span class="text-[10px] font-bold">Chat</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-icons">work</span>
+<span class="text-[10px] font-bold">Jobs</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-icons">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</div>
+</body></html>

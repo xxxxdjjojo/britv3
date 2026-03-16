@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolio &amp; Reviews Hub | Britestate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#17cf97",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#11211c",
+                        "card-dark": "#1a2e28",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 1.5rem;
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1024px) {
+            .masonry-grid { column-count: 2; }
+        }
+        @media (max-width: 640px) {
+            .masonry-grid { column-count: 1; }
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Navigation Bar -->
+<nav class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10">
+<div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-xl">foundation</span>
+</div>
+<span class="font-bold text-xl tracking-tight">BRITESTATE</span>
+</div>
+<div class="flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Portfolio</a>
+<a class="text-sm font-medium hover:text-primary transition-colors text-primary" href="#">Reviews</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<button class="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity">
+                    Hire Professional
+                </button>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-6 py-10">
+<!-- Header Section -->
+<header class="mb-12">
+<h1 class="text-4xl font-bold mb-4">Professional Portfolio &amp; Reviews</h1>
+<p class="text-slate-500 dark:text-slate-400 max-w-2xl text-lg">
+                High-quality craftsmanship from our top-rated tradespeople. Explore recent transformations and authentic client feedback.
+            </p>
+</header>
+<!-- Portfolio Section -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<h2 class="text-2xl font-bold">Recent Transformations</h2>
+<span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Live Gallery</span>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium">All Work</button>
+<button class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors">Kitchens</button>
+<button class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors">Extensions</button>
+<button class="px-4 py-2 rounded-lg bg-slate-200 dark:bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors">Outdoor</button>
+</div>
+</div>
+<div class="masonry-grid">
+<!-- Project Card 1 -->
+<div class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark cursor-pointer">
+<img alt="Modern Kitchen Transformation" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern high-end kitchen with green cabinets" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfH_pBol37LDnt2pouu-YQGKhl3zv52gzuMgLbPUBXCyZWB9CF3VOhUYcPkMkkRJsGgr3pZfFSnJGMfLjoQ1MTuA0STkmfD-zcujiGb5WQWcw-w1DygIfgkzNiIEGV4kyhIog0uAWyL4_e8vDD8CSkD9Vt59IclJJZB3ZKh7ppxqI1nj_f39S2W4zpCN-O3ATaBOj50o7CxAk2LYGPbdKRWHAsGnu43ZAbUztfQ8FukYdTJGRADfiLcEy7z63Q7cguOqsqvcOVk6U"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<div class="flex gap-2 mb-3">
+<span class="bg-primary px-2 py-1 rounded text-[10px] font-bold text-white">AFTER</span>
+<span class="bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-widest">Kitchen Redesign</span>
+</div>
+<h3 class="text-white font-bold text-lg leading-tight">Emerald Modern Kitchen Installation</h3>
+<p class="text-white/70 text-sm mt-1">Full strip-out and bespoke cabinetry install.</p>
+</div>
+</div>
+<!-- Project Card 2 -->
+<div class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark cursor-pointer">
+<img alt="Contemporary Living Room" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Contemporary open plan living room extension" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWMSivgWsW9b5LAAC2T7SmwaUypk73IrXmnmhU2apxVT8XVAk506a6AzQAnaE9npsNGnfea9CCwHru4IQEm2g0AdD0Ngrx6_JBXDQqhWXSF6_Y645xj0Jw-Z0rsJ3e2tBMfamSKoX9LXtjTtxUlWOkQUU_vN56Sekgtp3LNcIBaejmVcK-Pkxm-_adQvzLm8tDO2KTdRwqnvSzftd-qY-5AOrPYjjuK_8XPzJ17UUU-3FmCk0tNQIEUcJJ4opQjWshxDFVhBwCW9Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 flex flex-col justify-end">
+<div class="flex gap-2 mb-3">
+<span class="bg-primary px-2 py-1 rounded text-[10px] font-bold text-white">AFTER</span>
+<span class="bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-widest">Extension</span>
+</div>
+<h3 class="text-white font-bold text-lg leading-tight">Open Plan Living Extension</h3>
+</div>
+</div>
+<!-- Project Card 3 (Before) -->
+<div class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark cursor-pointer">
+<img alt="Bathroom Renovation" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Tiled bathroom with modern fixtures renovation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMwoeSWIdV7rjKWKS0JfiH72JAaNet4i9BFvREVVh7NMbDu74xnSYJC7_pVRgtfbMxIv5eeh8qF6j-SUu8D0LmgVe21aW8s3DMCk9CYxv3fPQBypWE1QiVrPoVU9vhMD1cafvutCwsKu60b4ytU6uU6DfeBlub6XjC-H36yTU5XHzp5Xsm01ckGfh65wOgDCkCDKuIMRHIc3sE_ElxmjLNGvHEDY96gw9XloSh0q1Pflb2biFrOYizQ-PtVM_JO82VCo75935O6Bs"/>
+<div class="absolute top-4 right-4">
+<span class="bg-slate-900/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/20">BEFORE</span>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-6 flex flex-col justify-end">
+<span class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Tiling &amp; Plumbing</span>
+<h3 class="text-white font-bold text-lg leading-tight">Luxury Spa Bathroom Refit</h3>
+</div>
+</div>
+<!-- Project Card 4 -->
+<div class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark cursor-pointer">
+<img alt="Smart Home Wiring" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Exterior of a modern house with smart lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKLu50FGS84RMQ7spTPwfLmldq2YjUirLoHQIJxtOlO4-uQ3_RMW2T_dQclkCFClfmX7JH4MHnHbD6imvm10oBlEGTSnnxpFGGDP16EdUi3UvleqWnYEzKWf9LyfoYLeBcH0okSuEHH35v13IiMDnFzGQwsSddBmDNHjU6ifLst22TCuk-3K6zBw8HWQ19ktRWGOQCgJZzmRL2xkVseS6c1CnJndGvEZvyDODUj-RTHfu6QdBn76gN8mCXstvGE-zLZ-VxNFlGvnE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-6 flex flex-col justify-end">
+<div class="flex gap-2 mb-2">
+<span class="bg-primary px-2 py-1 rounded text-[10px] font-bold text-white">AFTER</span>
+</div>
+<h3 class="text-white font-bold text-lg leading-tight">Modern Smart Home Lighting</h3>
+</div>
+</div>
+<!-- Project Card 5 -->
+<div class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark cursor-pointer">
+<img alt="Loft Conversion" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern attic loft conversion with skylights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCx3905iA6RO9jKrQD8okHA-JgVwHuJ7mXNqEbZjEbC6uJDJiuPF-dE4auCb3c-mA_mmnRIebb1WOn2SrpSfIEkqJu93LJP69EgQjiYMczN5x6bxCfHdMZvET3eFAvYD-n92--m1TOWYZAnpBs3-LI41emou9IlSza0c0lf-10JCs6TbXlo9j96LfS2EbLXVr_KJ7ZoPlaLBnOOEOaWVqbHoBpj7TPljNWx9D6urTRPNKgZlioOg3JgA0tQP3h4ODfOz1Q4rjMCWrU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-6 flex flex-col justify-end">
+<h3 class="text-white font-bold text-lg leading-tight">Victorian Loft Conversion</h3>
+</div>
+</div>
+<!-- Project Card 6 -->
+<div class="masonry-item group relative overflow-hidden rounded-xl bg-card-dark cursor-pointer">
+<img alt="Exterior Work" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern stone patio and garden landscaping" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClChHDrx12heCoxlMjp6n8Zwg0574OfHjaBbtvEDOZCWaS_rmv0wVKOmMOmt2MH0fdJ_6dWvyq0sK8r5aCnv4tgZRifTSDaVfv6rkjz19_9zb-Cm3YRmv1A4Ey08F5_NwJtZ2_aKr-_QJrSxrw8NGUEX5vWw-tUz4X7YrPLKGbgZI4ez3BiAPai5wgIrjvAESx6nV8qlgVrltvgY2SCQSJVUcx8YpqHxHsbwVTdQTwjb5ShSFCkU05un1TsDbnvsvc6epXbGC-pTE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-6 flex flex-col justify-end">
+<h3 class="text-white font-bold text-lg leading-tight">Contemporary Patio &amp; Landscaping</h3>
+</div>
+</div>
+</div>
+</section>
+<!-- Reviews Dashboard Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-10 border-t border-slate-200 dark:border-white/10 pt-16">
+<!-- Sidebar Stats & Highlights -->
+<div class="lg:col-span-4 space-y-10">
+<div>
+<h2 class="text-2xl font-bold mb-6">Reviews Dashboard</h2>
+<div class="bg-white dark:bg-card-dark p-8 rounded-xl border border-slate-200 dark:border-white/5 shadow-xl">
+<div class="flex items-end gap-4 mb-8">
+<span class="text-6xl font-bold leading-none">4.9</span>
+<div class="pb-1">
+<div class="flex text-primary mb-1">
+<span class="material-icons text-xl">star</span>
+<span class="material-icons text-xl">star</span>
+<span class="material-icons text-xl">star</span>
+<span class="material-icons text-xl">star</span>
+<span class="material-icons text-xl">star</span>
+</div>
+<span class="text-sm text-slate-500 font-medium">128 Verified Reviews</span>
+</div>
+</div>
+<!-- Star Distribution -->
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold w-4">5</span>
+<div class="flex-1 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[92%]"></div>
+</div>
+<span class="text-xs text-slate-500 w-8">92%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold w-4">4</span>
+<div class="flex-1 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[6%]"></div>
+</div>
+<span class="text-xs text-slate-500 w-8">6%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold w-4">3</span>
+<div class="flex-1 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[2%]"></div>
+</div>
+<span class="text-xs text-slate-500 w-8">2%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold w-4">2</span>
+<div class="flex-1 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[0%]"></div>
+</div>
+<span class="text-xs text-slate-500 w-8">0%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold w-4">1</span>
+<div class="flex-1 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[0%]"></div>
+</div>
+<span class="text-xs text-slate-500 w-8">0%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Review Highlights -->
+<div>
+<h3 class="text-lg font-bold mb-4">Review Highlights</h3>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-full border border-primary text-primary bg-primary/10 text-xs font-bold hover:bg-primary/20 transition-colors">
+                            Expert Craftsmanship
+                        </button>
+<button class="px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 bg-transparent text-xs font-bold hover:border-primary/50 transition-colors">
+                            Clean &amp; Tidy
+                        </button>
+<button class="px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 bg-transparent text-xs font-bold hover:border-primary/50 transition-colors">
+                            Punctual
+                        </button>
+<button class="px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 bg-transparent text-xs font-bold hover:border-primary/50 transition-colors">
+                            Fair Pricing
+                        </button>
+<button class="px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 bg-transparent text-xs font-bold hover:border-primary/50 transition-colors">
+                            Great Communication
+                        </button>
+<button class="px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 bg-transparent text-xs font-bold hover:border-primary/50 transition-colors">
+                            Efficient
+                        </button>
+</div>
+</div>
+</div>
+<!-- Review Feed -->
+<div class="lg:col-span-8 space-y-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold">Latest Reviews</h3>
+<div class="flex items-center gap-2 text-sm text-slate-500">
+<span>Sort by:</span>
+<select class="bg-transparent border-none text-primary font-bold focus:ring-0 cursor-pointer">
+<option>Most Recent</option>
+<option>Highest Rated</option>
+</select>
+</div>
+</div>
+<!-- Review Card 1 -->
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center font-bold text-lg">
+                                JD
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-bold">John Dobson</h4>
+<span class="material-icons text-primary text-sm">verified</span>
+</div>
+<span class="text-xs text-slate-500 uppercase tracking-wide font-medium">Manchester • 2 days ago</span>
+</div>
+</div>
+<div class="flex text-primary">
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                        Incredible job on our kitchen extension. The team was professional from day one, always kept the site clean, and the final finish surpassed our expectations. The attention to detail on the tiling was particularly impressive. Highly recommend!
+                    </p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4 text-slate-400">
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-icons text-sm">thumb_up</span>
+<span class="text-xs font-bold">Helpful (12)</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-icons text-sm">share</span>
+<span class="text-xs font-bold">Share</span>
+</button>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">
+                            Respond to Review
+                        </button>
+</div>
+</div>
+<!-- Review Card 2 -->
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center font-bold text-lg">
+                                SM
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-bold">Sarah Miller</h4>
+<span class="material-icons text-primary text-sm">verified</span>
+</div>
+<span class="text-xs text-slate-500 uppercase tracking-wide font-medium">London • 1 week ago</span>
+</div>
+</div>
+<div class="flex text-primary">
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg text-slate-300 dark:text-white/10">star</span>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                        Very happy with the electrical work done in our living room. They arrived on time and were very polite. Only 4 stars because there was a slight delay in getting the final certificate, but otherwise perfect service.
+                    </p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4 text-slate-400">
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-icons text-sm">thumb_up</span>
+<span class="text-xs font-bold">Helpful (4)</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-icons text-sm">share</span>
+<span class="text-xs font-bold">Share</span>
+</button>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition-all">
+                            Respond to Review
+                        </button>
+</div>
+</div>
+<!-- Review Card 3 -->
+<div class="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center font-bold text-lg">
+                                RB
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<h4 class="font-bold">Robert Black</h4>
+<span class="material-icons text-primary text-sm">verified</span>
+</div>
+<span class="text-xs text-slate-500 uppercase tracking-wide font-medium">Bristol • 2 weeks ago</span>
+</div>
+</div>
+<div class="flex text-primary">
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+<span class="material-icons text-lg">star</span>
+</div>
+</div>
+<p class="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                        The loft conversion was a massive project but the team handled it with ease. They kept us updated every step of the way. Truly experts in their field.
+                    </p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4 text-slate-400">
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-icons text-sm">thumb_up</span>
+<span class="text-xs font-bold">Helpful (18)</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-icons text-sm">share</span>
+<span class="text-xs font-bold">Share</span>
+</button>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold hover:opacity-90 transition-all">
+                            View Thread
+                        </button>
+</div>
+</div>
+<div class="flex justify-center pt-6">
+<button class="flex items-center gap-2 text-slate-500 hover:text-primary font-bold transition-colors">
+<span>Load More Reviews</span>
+<span class="material-icons">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark/50 border-t border-slate-200 dark:border-white/10 py-12 mt-20">
+<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-2 opacity-50">
+<div class="w-6 h-6 bg-slate-500 rounded flex items-center justify-center">
+<span class="material-icons text-white text-[14px]">foundation</span>
+</div>
+<span class="font-bold text-lg tracking-tight">BRITESTATE</span>
+</div>
+<div class="flex gap-8 text-sm text-slate-500">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Contact Support</a>
+</div>
+<p class="text-xs text-slate-500">© 2024 Britestate Tradesperson Hub. All rights reserved.</p>
+</div>
+</footer>
+</body></html>
