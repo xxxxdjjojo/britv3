@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
 import type { AgentLead } from "@/types/agent";
 
 const STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isLeadStale(updatedAt: string): boolean {
+  return Date.now() - new Date(updatedAt).getTime() > STALE_THRESHOLD_MS;
+}
 
 function formatRelativeTime(dateStr: string): string {
   const now = Date.now();
@@ -53,10 +56,6 @@ export function LeadCard(
     opacity: isDragging ? 0.4 : 1,
   };
 
-  const isStale = useMemo(
-    () => Date.now() - new Date(lead.updated_at).getTime() > STALE_THRESHOLD_MS,
-    [lead.updated_at],
-  );
 
   const handleClick = () => {
     if (!isDragOverlay) {
@@ -82,7 +81,7 @@ export function LeadCard(
         <p className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
           {lead.contact_name}
         </p>
-        {isStale && (
+        {isLeadStale(lead.updated_at) && (
           <span className="shrink-0 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
             No contact 7d+
           </span>
