@@ -15,6 +15,8 @@ const TONES: Array<{ key: DescriptionTone; label: string; desc: string }> = [
 
 const MAX_CHARS = 2000;
 
+type KeyPoint = { id: string; value: string };
+
 type Props = Readonly<{
   listing: Partial<SellerListing> | null;
   listingId: string;
@@ -24,8 +26,10 @@ export function Step4Description({ listing, listingId }: Props) {
   const router = useRouter();
   const [tone, setTone] = useState<DescriptionTone>(listing?.description_tone ?? "professional");
   const [description, setDescription] = useState(listing?.description ?? "");
-  const [keyPoints, setKeyPoints] = useState<string[]>(
-    listing?.key_selling_points?.length ? listing.key_selling_points : [""],
+  const [keyPoints, setKeyPoints] = useState<KeyPoint[]>(
+    listing?.key_selling_points?.length
+      ? listing.key_selling_points.map((v) => ({ id: crypto.randomUUID(), value: v }))
+      : [{ id: crypto.randomUUID(), value: "" }],
   );
   const [attemptsUsed, setAttemptsUsed] = useState(0);
   const [generating, setGenerating] = useState(false);
@@ -33,10 +37,12 @@ export function Step4Description({ listing, listingId }: Props) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`/api/seller/describe?listing_id=${listingId}`)
+    const controller = new AbortController();
+    fetch(`/api/seller/describe?listing_id=${listingId}`, { signal: controller.signal })
       .then((r) => r.json())
       .then((d: { attempts_used?: number }) => setAttemptsUsed(d.attempts_used ?? 0))
       .catch(() => {});
+    return () => controller.abort();
   }, [listingId]);
 
   const generateDescription = async () => {
@@ -60,11 +66,11 @@ export function Step4Description({ listing, listingId }: Props) {
     }
   };
 
-  const addKeyPoint = () => setKeyPoints((prev) => [...prev, ""]);
-  const updateKeyPoint = (i: number, v: string) =>
-    setKeyPoints((prev) => prev.map((p, idx) => (idx === i ? v : p)));
-  const removeKeyPoint = (i: number) =>
-    setKeyPoints((prev) => prev.filter((_, idx) => idx !== i));
+  const addKeyPoint = () => setKeyPoints((prev) => [...prev, { id: crypto.randomUUID(), value: "" }]);
+  const updateKeyPoint = (id: string, v: string) =>
+    setKeyPoints((prev) => prev.map((p) => (p.id === id ? { ...p, value: v } : p)));
+  const removeKeyPoint = (id: string) =>
+    setKeyPoints((prev) => prev.filter((p) => p.id !== id));
 
   const handleContinue = async () => {
     setSaving(true);
@@ -75,7 +81,7 @@ export function Step4Description({ listing, listingId }: Props) {
         body: JSON.stringify({
           description,
           description_tone: tone,
-          key_selling_points: keyPoints.filter((k) => k.trim()),
+          key_selling_points: keyPoints.map((p) => p.value).filter((k) => k.trim()),
         }),
       });
       if (!res.ok) throw new Error("Failed to save");
@@ -170,18 +176,18 @@ export function Step4Description({ listing, listingId }: Props) {
             <label className="text-sm font-semibold text-slate-700">Key Selling Points</label>
             <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
               {keyPoints.map((point, i) => (
-                <div key={i} className="flex gap-2">
+                <div key={point.id} className="flex gap-2">
                   <input
                     type="text"
-                    value={point}
-                    onChange={(e) => updateKeyPoint(i, e.target.value)}
+                    value={point.value}
+                    onChange={(e) => updateKeyPoint(point.id, e.target.value)}
                     placeholder={`e.g. ${["South-facing garden", "Walking distance to tube", "Recently refurbished kitchen"][i % 3]}`}
                     className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
                   />
                   {keyPoints.length > 1 && (
                     <button
                       type="button"
-                      onClick={() => removeKeyPoint(i)}
+                      onClick={() => removeKeyPoint(point.id)}
                       className="p-2 text-slate-400 hover:text-red-500"
                     >
                       ×

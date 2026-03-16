@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useRouter } from "next/navigation";
 import {
@@ -75,7 +75,7 @@ type Props = Readonly<{
 
 export function Step3Photos({ listing, listingId }: Props) {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [photos, setPhotos] = useState<LocalPhoto[]>(
     (listing?.photos ?? []).map((p, i) => ({ ...p, localId: `existing-${i}` })),
   );

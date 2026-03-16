@@ -35,6 +35,7 @@ export default async function CreateListingPage({ searchParams }: Props) {
 
   // Redirect to step 1 if no listing id and step > 1
   if (!listingId && step > 1) redirect("/dashboard/seller/listings/create?step=1");
+  if (step > 1 && !listingId) redirect("/dashboard/seller/listings/create?step=1");
 
   const stepComponents: Record<ListingStep, React.ReactElement> = {
     1: <Step1AddressType listing={listing} />,
