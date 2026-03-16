@@ -19,6 +19,45 @@ import {
 // -- Team member functions ----------------------------------------------------
 
 /**
+ * Resolve the role of a user within an agent's team.
+ *
+ * Return values:
+ * - `'owner'`  — userId matches agentId; the agent themselves, always allowed.
+ * - `TeamRole` — the user's active role in the team.
+ * - `null`     — user has no active record in this team (treat as unauthorised).
+ *
+ * Route guard pattern:
+ * ```ts
+ * const role = await getTeamMemberRole(supabase, agentId, userId);
+ * if (role === null || role === 'viewer') return 403;
+ * ```
+ */
+export async function getTeamMemberRole(
+  supabase: SupabaseClient,
+  agentId: string,
+  userId: string,
+): Promise<TeamRole | "owner" | null> {
+  // Agent is always their own owner — no DB lookup needed.
+  if (userId === agentId) return "owner";
+
+  const { data, error } = await supabase
+    .from("agent_team_members")
+    .select("role")
+    .eq("agent_id", agentId)
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .single();
+
+  if (error) {
+    // PGRST116 = "no rows returned" — user is simply not a member.
+    if (error.code === "PGRST116") return null;
+    throw new Error(`Failed to fetch team member role: ${error.message}`);
+  }
+
+  return (data as { role: TeamRole }).role;
+}
+
+/**
  * List team members for an agent, optionally filtered by branch.
  */
 export async function getTeamMembers(
