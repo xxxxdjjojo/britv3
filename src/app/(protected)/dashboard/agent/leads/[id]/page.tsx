@@ -14,10 +14,13 @@ export default async function LeadDetailPage(
     redirect("/login");
   }
 
+  let data;
   try {
-    const { lead, activities } = await getLeadById(supabase, id, user.id);
-    return <LeadDetailTimeline lead={lead} activities={activities} />;
+    data = await getLeadById(supabase, id, user.id);
   } catch {
     notFound();
   }
+
+  const { lead, activities } = data!;
+  return <LeadDetailTimeline lead={lead} activities={activities} />;
 }

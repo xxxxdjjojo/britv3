@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
@@ -52,8 +53,10 @@ export function LeadCard(
     opacity: isDragging ? 0.4 : 1,
   };
 
-  const isStale =
-    Date.now() - new Date(lead.updated_at).getTime() > STALE_THRESHOLD_MS;
+  const isStale = useMemo(
+    () => Date.now() - new Date(lead.updated_at).getTime() > STALE_THRESHOLD_MS,
+    [lead.updated_at],
+  );
 
   const handleClick = () => {
     if (!isDragOverlay) {

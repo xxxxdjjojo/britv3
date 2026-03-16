@@ -14,10 +14,13 @@ export default async function OfferNegotiationPage(
     redirect("/login");
   }
 
+  let data;
   try {
-    const { offer, history } = await getOfferById(supabase, id, user.id);
-    return <NegotiationThread offer={offer} history={history} />;
+    data = await getOfferById(supabase, id, user.id);
   } catch {
     notFound();
   }
+
+  const { offer, history } = data!;
+  return <NegotiationThread offer={offer} history={history} />;
 }

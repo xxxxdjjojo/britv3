@@ -15,10 +15,12 @@ export default async function CrmClientPage(
 
   const { id } = await props.params;
 
+  let client;
   try {
-    const client = await getCrmClientById(supabase, id, user.id);
-    return <ClientProfile initialClient={client} />;
+    client = await getCrmClientById(supabase, id, user.id);
   } catch {
     notFound();
   }
+
+  return <ClientProfile initialClient={client!} />;
 }
