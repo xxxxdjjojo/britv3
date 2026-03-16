@@ -8,30 +8,28 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
-const MAPTILER_STYLE = `https://api.maptiler.com/maps/streets/style.json?key=${MAPTILER_KEY}`;
+const MAPTILER_STYLE = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
 
-type AmenityLayer = "schools" | "stations" | "shops" | "restaurants" | "parks";
+type AmenityLayer = "schools" | "transport" | "shops";
 
 const AMENITY_LABELS: Record<AmenityLayer, string> = {
   schools: "Schools",
-  stations: "Stations",
+  transport: "Transport",
   shops: "Shops",
-  restaurants: "Restaurants",
-  parks: "Parks",
 };
 
 const ALL_AMENITIES = Object.keys(AMENITY_LABELS) as AmenityLayer[];
 
 type PropertyMapInnerProps = Readonly<{
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
   address: string;
   className?: string;
 }>;
 
 export default function PropertyMapInner({
-  lat,
-  lng,
+  latitude,
+  longitude,
   address,
   className,
 }: PropertyMapInnerProps) {
@@ -56,12 +54,12 @@ export default function PropertyMapInner({
       {/* Map container */}
       <div className="relative h-64 rounded-xl overflow-hidden border">
         <Map
-          initialViewState={{ latitude: lat, longitude: lng, zoom: 14 }}
+          initialViewState={{ latitude, longitude, zoom: 14 }}
           mapStyle={MAPTILER_STYLE}
           style={{ width: "100%", height: "100%" }}
         >
           {/* Property pin marker */}
-          <Marker latitude={lat} longitude={lng}>
+          <Marker latitude={latitude} longitude={longitude}>
             <div
               className="flex items-center justify-center size-7 rounded-full bg-[#1B4D3E] border-2 border-white shadow-md"
               aria-label={address}
@@ -86,8 +84,8 @@ export default function PropertyMapInner({
               className={cn(
                 "text-xs h-7 px-3 rounded-full",
                 isActive
-                  ? "bg-[#1B4D3E] text-white hover:bg-[#163d30]"
-                  : "border-muted-foreground/30 text-muted-foreground hover:border-[#1B4D3E] hover:text-[#1B4D3E]",
+                  ? "bg-[#1B4D3E]/10 text-[#1B4D3E] border border-[#1B4D3E]/30"
+                  : "border text-muted-foreground hover:bg-muted",
               )}
             >
               {AMENITY_LABELS[layer]}
