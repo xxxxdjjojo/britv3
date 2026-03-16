@@ -5,6 +5,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
 import type { AgentLead } from "@/types/agent";
 
+const STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000;
+
 function formatRelativeTime(dateStr: string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
@@ -51,8 +53,7 @@ export function LeadCard(
   };
 
   const isStale =
-    Date.now() - new Date(lead.updated_at).getTime() >
-    7 * 24 * 60 * 60 * 1000;
+    Date.now() - new Date(lead.updated_at).getTime() > STALE_THRESHOLD_MS;
 
   const handleClick = () => {
     if (!isDragOverlay) {
