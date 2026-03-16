@@ -51,6 +51,7 @@ export async function PATCH(request: NextRequest) {
       id?: string;
       stage?: SaleStage;
       notes?: string;
+      known_at?: string;
     };
 
     if (!body.id) {
@@ -73,12 +74,16 @@ export async function PATCH(request: NextRequest) {
       user.id,
       body.stage,
       body.notes,
+      body.known_at,
     );
 
     return NextResponse.json({ progression });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to update sale stage";
+    if (message.includes("updated by another user")) {
+      return NextResponse.json({ error: message }, { status: 409 });
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

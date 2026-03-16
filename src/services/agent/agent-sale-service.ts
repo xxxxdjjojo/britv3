@@ -76,6 +76,11 @@ export async function createSaleProgression(
 /**
  * Move a sale progression to a new stage. Validates that the transition is
  * allowed (forward one step or rollback one step).
+ *
+ * Pass `knownAt` (the `updated_at` value the client loaded) to enable
+ * optimistic-concurrency / TOCTOU protection. If another user has updated
+ * the record since `knownAt`, the update will affect 0 rows and a 409-worthy
+ * error is thrown.
  */
 export async function updateSaleStage(
   supabase: SupabaseClient,
@@ -83,6 +88,7 @@ export async function updateSaleStage(
   agentId: string,
   newStage: SaleStage,
   notes?: string,
+  knownAt?: string,
 ): Promise<AgentSaleProgression> {
   // Fetch current stage
   const { data: current, error: fetchErr } = await supabase
@@ -114,15 +120,23 @@ export async function updateSaleStage(
     updatePayload.notes = notes;
   }
 
-  const { data, error } = await supabase
+  let updateQuery = supabase
     .from("agent_sale_progressions")
     .update(updatePayload)
     .eq("id", progressionId)
-    .eq("agent_id", agentId)
-    .select()
-    .single();
+    .eq("agent_id", agentId);
+
+  if (knownAt !== undefined) {
+    updateQuery = updateQuery.eq("updated_at", knownAt);
+  }
+
+  const { data, error } = await updateQuery.select().single();
 
   if (error) {
+    // PGRST116 = "The result contains 0 rows" — means updated_at didn't match.
+    if (error.code === "PGRST116" && knownAt !== undefined) {
+      throw new Error("Sale updated by another user — please reload and retry");
+    }
     throw new Error(`Failed to update sale stage: ${error.message}`);
   }
 

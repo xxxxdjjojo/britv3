@@ -97,6 +97,7 @@ export async function PATCH(request: NextRequest) {
       id?: string;
       stage?: LeadStage;
       assignee_id?: string;
+      known_at?: string;
     };
 
     if (!body.id) {
@@ -113,6 +114,8 @@ export async function PATCH(request: NextRequest) {
         body.id,
         user.id,
         body.stage,
+        undefined,
+        body.known_at,
       );
       return NextResponse.json({ lead });
     }
@@ -134,6 +137,9 @@ export async function PATCH(request: NextRequest) {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to update lead";
+    if (message.includes("updated by another user")) {
+      return NextResponse.json({ error: message }, { status: 409 });
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

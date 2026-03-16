@@ -26,7 +26,8 @@ export async function getAgentLeads(
     .from("agent_leads")
     .select("*")
     .eq("agent_id", agentId)
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .limit(200);
 
   if (stage) {
     query = query.eq("stage", stage);
@@ -125,6 +126,11 @@ export async function createLead(
 
 /**
  * Move a lead to a new pipeline stage and record the transition.
+ *
+ * Pass `knownAt` (the `updated_at` value the client loaded) to enable
+ * optimistic-concurrency / TOCTOU protection. If another user has updated
+ * the record since `knownAt`, the update will affect 0 rows and a 409-worthy
+ * error is thrown.
  */
 export async function updateLeadStage(
   supabase: SupabaseClient,
@@ -132,6 +138,7 @@ export async function updateLeadStage(
   agentId: string,
   newStage: LeadStage,
   note?: string,
+  knownAt?: string,
 ): Promise<AgentLead> {
   // Fetch current lead to capture previous stage
   const { data: current, error: fetchErr } = await supabase
@@ -147,15 +154,23 @@ export async function updateLeadStage(
 
   const previousStage = (current as Record<string, unknown>).stage as string;
 
-  const { data, error } = await supabase
+  let updateQuery = supabase
     .from("agent_leads")
     .update({ stage: newStage, updated_at: new Date().toISOString() })
     .eq("id", leadId)
-    .eq("agent_id", agentId)
-    .select()
-    .single();
+    .eq("agent_id", agentId);
+
+  if (knownAt !== undefined) {
+    updateQuery = updateQuery.eq("updated_at", knownAt);
+  }
+
+  const { data, error } = await updateQuery.select().single();
 
   if (error) {
+    // PGRST116 = "The result contains 0 rows" — means updated_at didn't match.
+    if (error.code === "PGRST116" && knownAt !== undefined) {
+      throw new Error("Lead updated by another user — please reload and retry");
+    }
     throw new Error(`Failed to update lead stage: ${error.message}`);
   }
 
