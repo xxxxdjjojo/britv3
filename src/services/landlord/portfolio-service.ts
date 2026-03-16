@@ -138,6 +138,60 @@ export async function getPortfolioKPIs(
   };
 }
 
+/** Health score breakdown returned by getHealthScore */
+export type HealthScore = Readonly<{
+  total_score: number;
+  compliance_score: number;
+  compliance_max: number;
+  rent_score: number;
+  rent_max: number;
+  maintenance_score: number;
+  maintenance_max: number;
+  deposit_score: number;
+  deposit_max: number;
+  weakest_area: "compliance" | "rent" | "maintenance" | "deposits";
+}>;
+
+/**
+ * Fetch the 0-100 health score for the authenticated landlord.
+ * Calls the get_landlord_health_score RPC (SECURITY DEFINER).
+ */
+export async function getHealthScore(
+  supabase: SupabaseClient,
+): Promise<HealthScore> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Authentication required");
+  }
+
+  const { data, error } = await supabase.rpc("get_landlord_health_score", {
+    p_landlord_id: user.id,
+  });
+
+  if (error) {
+    throw new Error(`Failed to fetch health score: ${error.message}`);
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+
+  return {
+    total_score: Number(result?.total_score ?? 0),
+    compliance_score: Number(result?.compliance_score ?? 0),
+    compliance_max: 40,
+    rent_score: Number(result?.rent_score ?? 0),
+    rent_max: 30,
+    maintenance_score: Number(result?.maintenance_score ?? 0),
+    maintenance_max: 20,
+    deposit_score: Number(result?.deposit_score ?? 0),
+    deposit_max: 10,
+    weakest_area: result?.weakest_area ?? "compliance",
+  };
+}
+
 /**
  * Fetch all rental properties for the authenticated landlord with active tenancy info.
  * Alias of getPortfolio for semantic clarity in KPI/dashboard contexts.
