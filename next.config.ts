@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
       { source: "/cookies", destination: "/legal/cookies", permanent: true },
       { source: "/accessibility", destination: "/legal/accessibility", permanent: true },
       { source: "/complaints", destination: "/legal/complaints", permanent: true },
+      {
+        source: "/dashboard/service_provider/:path*",
+        destination: "/dashboard/provider/:path*",
+        permanent: true,
+      },
     ];
   },
 };
