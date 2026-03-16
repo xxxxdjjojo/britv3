@@ -53,6 +53,7 @@ export async function getDocuments(
     .from("property_documents")
     .select("*")
     .eq("property_id", propertyId)
+    .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (filters?.category) {
@@ -179,6 +180,7 @@ export async function getExpiringDocuments(
     .from("property_documents")
     .select("*")
     .eq("property_id", propertyId)
+    .eq("is_active", true)
     .not("expiry_date", "is", null)
     .lte("expiry_date", thirtyDaysFromNow.toISOString().split("T")[0])
     .order("expiry_date", { ascending: true });
@@ -220,6 +222,7 @@ export async function getComplianceSummary(
       property:properties!inner(address_line1, city, postcode)
     `)
     .in("category", COMPLIANCE_CATEGORIES)
+    .eq("is_active", true)
     .not("expiry_date", "is", null)
     .order("expiry_date", { ascending: true });
 

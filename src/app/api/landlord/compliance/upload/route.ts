@@ -103,6 +103,14 @@ export async function POST(request: Request) {
     );
   }
 
+  // Soft-archive previous certs for same (property_id, category)
+  await supabase
+    .from("property_documents")
+    .update({ is_active: false })
+    .eq("property_id", property_id)
+    .eq("category", category)
+    .eq("is_active", true);
+
   // Insert document record
   // document_url stores the storage path (not the signed URL which is ephemeral)
   const { data: document, error: insertError } = await supabase
@@ -116,6 +124,7 @@ export async function POST(request: Request) {
       expiry_date,
       next_reminder_date: next_reminder_date ?? null,
       reminder_sent: false,
+      is_active: true,
     })
     .select()
     .single();
