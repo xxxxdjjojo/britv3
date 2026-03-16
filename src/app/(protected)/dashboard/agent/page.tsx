@@ -5,6 +5,9 @@ import {
   getAgentActivityFeed,
   getAgentActivityChartData,
   getAgentLeadSources,
+  type ActivityFeedItem,
+  type ActivityChartPoint,
+  type LeadSourcePoint,
 } from "@/services/agent/agent-dashboard-service";
 import { AgentDashboardHome } from "@/components/dashboard/agent/AgentDashboardHome";
 
@@ -29,21 +32,21 @@ export default async function AgentDashboardPage() {
     };
   }
 
-  let activityFeed;
+  let activityFeed: ActivityFeedItem[] = [];
   try {
     activityFeed = await getAgentActivityFeed(supabase, user.id);
   } catch {
     activityFeed = [];
   }
 
-  let chartData;
+  let chartData: ActivityChartPoint[] = [];
   try {
     chartData = await getAgentActivityChartData(supabase, user.id);
   } catch {
     chartData = [];
   }
 
-  let leadSources;
+  let leadSources: LeadSourcePoint[] = [];
   try {
     leadSources = await getAgentLeadSources(supabase, user.id);
   } catch {
