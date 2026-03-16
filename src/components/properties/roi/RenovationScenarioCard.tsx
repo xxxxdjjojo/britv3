@@ -1,0 +1,97 @@
+/**
+ * RenovationScenarioCard
+ *
+ * Displays a single renovation scenario with cost range, estimated value
+ * uplift, and a confidence badge.
+ *
+ * Server component — no client interactivity required.
+ */
+
+import type { ROIRenovation } from "@/services/properties/roi-estimation-service";
+
+type Props = Readonly<{
+  renovation: ROIRenovation;
+}>;
+
+/** Converts snake_case renovation type to Title Case human label. */
+function humaniseType(raw: string): string {
+  return raw
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+/** Formats a GBP integer with toLocaleString — never returns NaN. */
+function formatGBP(value: number | undefined): string {
+  const safe = Number.isFinite(value) ? (value as number) : 0;
+  return `£${safe.toLocaleString("en-GB")}`;
+}
+
+type ConfidenceLevel = ROIRenovation["confidence"];
+
+const confidenceBadge: Record<
+  ConfidenceLevel,
+  { label: string; className: string }
+> = {
+  high: {
+    label: "High confidence",
+    className:
+      "bg-green-100 text-green-800 border border-green-200",
+  },
+  medium: {
+    label: "Medium confidence",
+    className:
+      "bg-amber-100 text-amber-800 border border-amber-200",
+  },
+  low: {
+    label: "Low confidence",
+    className:
+      "bg-gray-100 text-gray-600 border border-gray-200",
+  },
+};
+
+export function RenovationScenarioCard({ renovation }: Props) {
+  const { label, className } = confidenceBadge[renovation.confidence] ?? confidenceBadge.low;
+
+  const costLow = formatGBP(renovation.cost_low);
+  const costHigh = formatGBP(renovation.cost_high);
+
+  const upliftValue = Number.isFinite(renovation.value_uplift_pct)
+    ? renovation.value_uplift_pct.toLocaleString("en-GB", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      })
+    : "0";
+
+  return (
+    <article className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+      {/* Header row: title + confidence badge */}
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="font-semibold text-[#1B4D3E] text-base leading-tight">
+          {humaniseType(renovation.type)}
+        </h3>
+        <span
+          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`}
+        >
+          {label}
+        </span>
+      </div>
+
+      {/* Cost range */}
+      <div className="flex items-center gap-1.5 text-sm text-gray-700">
+        <span className="text-gray-400">Cost range:</span>
+        <span className="font-medium">
+          {costLow} &ndash; {costHigh}
+        </span>
+      </div>
+
+      {/* Value uplift */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm text-gray-400">Est. value uplift:</span>
+        <span className="font-semibold text-[#D4A853] text-sm">
+          +{upliftValue}%
+        </span>
+      </div>
+    </article>
+  );
+}
