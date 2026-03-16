@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { RentCollectionGroup, RentCollectionEntry } from "@/types/landlord";
@@ -68,6 +69,7 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["rent-collection"] });
       toast.success("Payment marked as paid");
+      posthog.capture("landlord_rent_marked_paid");
     },
     onError: () => {
       toast.error("Failed to mark payment as paid");

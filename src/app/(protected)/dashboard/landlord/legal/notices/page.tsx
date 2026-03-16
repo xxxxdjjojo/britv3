@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from "react";
+import posthog from "posthog-js";
 import dynamic from "next/dynamic";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -261,6 +262,7 @@ function NoticesPageInner() {
       });
       setCreatedNotice({ ...notice, tenancy_id: data.tenancy_id });
       setNotices((prev) => [notice, ...prev]);
+      posthog.capture("landlord_notice_generated", { type: "s21" });
     } finally {
       setSubmitting(false);
     }
@@ -288,6 +290,7 @@ function NoticesPageInner() {
       });
       setCreatedNotice(notice);
       setNotices((prev) => [notice, ...prev]);
+      posthog.capture("landlord_notice_generated", { type: "s8" });
     } finally {
       setSubmitting(false);
     }
