@@ -20,6 +20,7 @@ import {
 } from "@/services/landlord/legal-notice-service";
 import type { LegalNotice } from "@/types/landlord";
 import { PDFErrorBoundary } from "@/components/landlord/PDFErrorBoundary";
+import { Section21PreflightChecklist } from "@/components/landlord/Section21PreflightChecklist";
 
 // Dynamic imports — ssr:false required for @react-pdf/renderer
 const Section21PDFDownload = dynamic(
@@ -136,6 +137,7 @@ function NoticesPageInner() {
   const [loading, setLoading] = useState(true);
   const [createdNotice, setCreatedNotice] = useState<LegalNotice | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [preflightPassed, setPreflightPassed] = useState(false);
 
   const {
     register: registerS21,
@@ -338,178 +340,195 @@ function NoticesPageInner() {
 
       {/* Section 21 form */}
       {activeTab === "section21" && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Section 21 — No-fault Notice
-          </h2>
-          <form onSubmit={handleSubmitS21(onSubmitS21)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Select Tenancy
-              </label>
-              <select
-                {...registerS21("tenancy_id")}
-                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-              >
-                <option value="">-- Select a tenancy --</option>
-                {tenancies.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.tenant_name} — {t.property_address}
-                  </option>
-                ))}
-              </select>
-              {errorsS21.tenancy_id && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errorsS21.tenancy_id.message}
-                </p>
-              )}
-            </div>
+        <>
+          {/* Pre-flight checklist gate — must be completed before form is shown */}
+          <Section21PreflightChecklist onAllChecked={setPreflightPassed} />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Possession Date
-              </label>
-              <input
-                type="date"
-                {...registerS21("possession_date")}
-                min={twoMonthsFromNow()}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-              />
-              {errorsS21.possession_date && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errorsS21.possession_date.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Deposit Scheme Reference
-              </label>
-              <input
-                type="text"
-                {...registerS21("deposit_scheme_reference")}
-                defaultValue={selectedS21Tenancy?.deposit_scheme_reference ?? ""}
-                placeholder="e.g. TDS123456"
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-              />
-              {errorsS21.deposit_scheme_reference && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errorsS21.deposit_scheme_reference.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...registerS21("epc_provided")}
-                  className="rounded border-gray-300 text-green-700"
-                />
-                <span className="text-sm text-gray-700">
-                  EPC (Energy Performance Certificate) was provided to the
-                  tenant
-                </span>
-              </label>
-              {errorsS21.epc_provided && (
-                <p className="text-xs text-red-600">
-                  {errorsS21.epc_provided.message}
-                </p>
-              )}
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...registerS21("gas_safety_provided")}
-                  className="rounded border-gray-300 text-green-700"
-                />
-                <span className="text-sm text-gray-700">
-                  Gas Safety Certificate was provided within 28 days of tenancy
-                  commencement
-                </span>
-              </label>
-              {errorsS21.gas_safety_provided && (
-                <p className="text-xs text-red-600">
-                  {errorsS21.gas_safety_provided.message}
-                </p>
-              )}
-            </div>
-
-            {/* Pre-flight validation display */}
-            {(s21Values.epc_provided !== undefined ||
-              s21Values.gas_safety_provided !== undefined ||
-              s21Values.deposit_scheme_reference) && (
-              <div
-                className={`rounded-md p-4 ${
-                  s21Validation.valid
-                    ? "bg-green-50 border border-green-200"
-                    : "bg-amber-50 border border-amber-200"
-                }`}
-              >
-                {s21Validation.valid ? (
-                  <div className="flex items-center gap-2 text-green-800">
-                    <span className="text-lg">✓</span>
-                    <span className="text-sm font-medium">
-                      All prerequisites met — you may generate the notice.
-                    </span>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="mb-2 text-sm font-medium text-amber-800">
-                      Prerequisites not met — resolve the following before
-                      generating:
+          <div
+            className={`rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-opacity ${
+              preflightPassed ? "opacity-100" : "pointer-events-none opacity-40"
+            }`}
+            aria-disabled={!preflightPassed}
+          >
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+              Section 21 — No-fault Notice
+            </h2>
+            {!preflightPassed && (
+              <p className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                Complete the checklist above to unlock this form.
+              </p>
+            )}
+            <form onSubmit={handleSubmitS21(onSubmitS21)}>
+              <fieldset disabled={!preflightPassed} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Select Tenancy
+                  </label>
+                  <select
+                    {...registerS21("tenancy_id")}
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  >
+                    <option value="">-- Select a tenancy --</option>
+                    {tenancies.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.tenant_name} — {t.property_address}
+                      </option>
+                    ))}
+                  </select>
+                  {errorsS21.tenancy_id && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {errorsS21.tenancy_id.message}
                     </p>
-                    <ul className="list-disc pl-4 text-sm text-amber-700">
-                      {s21Validation.errors.map((err) => (
-                        <li key={err}>{err}</li>
-                      ))}
-                    </ul>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Possession Date
+                  </label>
+                  <input
+                    type="date"
+                    {...registerS21("possession_date")}
+                    min={twoMonthsFromNow()}
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  />
+                  {errorsS21.possession_date && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {errorsS21.possession_date.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Deposit Scheme Reference
+                  </label>
+                  <input
+                    type="text"
+                    {...registerS21("deposit_scheme_reference")}
+                    defaultValue={selectedS21Tenancy?.deposit_scheme_reference ?? ""}
+                    placeholder="e.g. TDS123456"
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  />
+                  {errorsS21.deposit_scheme_reference && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {errorsS21.deposit_scheme_reference.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      {...registerS21("epc_provided")}
+                      className="rounded border-gray-300 text-green-700"
+                    />
+                    <span className="text-sm text-gray-700">
+                      EPC (Energy Performance Certificate) was provided to the
+                      tenant
+                    </span>
+                  </label>
+                  {errorsS21.epc_provided && (
+                    <p className="text-xs text-red-600">
+                      {errorsS21.epc_provided.message}
+                    </p>
+                  )}
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      {...registerS21("gas_safety_provided")}
+                      className="rounded border-gray-300 text-green-700"
+                    />
+                    <span className="text-sm text-gray-700">
+                      Gas Safety Certificate was provided within 28 days of tenancy
+                      commencement
+                    </span>
+                  </label>
+                  {errorsS21.gas_safety_provided && (
+                    <p className="text-xs text-red-600">
+                      {errorsS21.gas_safety_provided.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Pre-flight validation display */}
+                {(s21Values.epc_provided !== undefined ||
+                  s21Values.gas_safety_provided !== undefined ||
+                  s21Values.deposit_scheme_reference) && (
+                  <div
+                    className={`rounded-md p-4 ${
+                      s21Validation.valid
+                        ? "bg-green-50 border border-green-200"
+                        : "bg-amber-50 border border-amber-200"
+                    }`}
+                  >
+                    {s21Validation.valid ? (
+                      <div className="flex items-center gap-2 text-green-800">
+                        <span className="text-lg">✓</span>
+                        <span className="text-sm font-medium">
+                          All prerequisites met — you may generate the notice.
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="mb-2 text-sm font-medium text-amber-800">
+                          Prerequisites not met — resolve the following before
+                          generating:
+                        </p>
+                        <ul className="list-disc pl-4 text-sm text-amber-700">
+                          {s21Validation.errors.map((err) => (
+                            <li key={err}>{err}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
+
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={submitting || !s21Validation.valid}
+                    className="rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {submitting ? "Creating..." : "Create Notice"}
+                  </button>
+                </div>
+              </fieldset>
+            </form>
+
+            {/* PDF download after notice created */}
+            {createdNotice?.notice_type === "section_21" && (
+              <div className="mt-6 rounded-md border border-green-200 bg-green-50 p-4">
+                <p className="mb-3 text-sm font-medium text-green-800">
+                  Notice created — download the PDF to serve on your tenant.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <PDFErrorBoundary>
+                    <Section21PDFDownload
+                      notice={createdNotice}
+                      noticeId={createdNotice.id}
+                      tenantName={selectedS21Tenancy?.tenant_name ?? "Tenant"}
+                      propertyAddress={
+                        selectedS21Tenancy?.property_address ?? "Property address"
+                      }
+                      landlordName="Landlord"
+                      landlordAddress=""
+                    />
+                  </PDFErrorBoundary>
+                  <button
+                    onClick={() => void markServed(createdNotice.id)}
+                    className="rounded-md border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+                  >
+                    Mark as Served
+                  </button>
+                </div>
               </div>
             )}
-
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={submitting || !s21Validation.valid}
-                className="rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {submitting ? "Creating..." : "Create Notice"}
-              </button>
-            </div>
-          </form>
-
-          {/* PDF download after notice created */}
-          {createdNotice?.notice_type === "section_21" && (
-            <div className="mt-6 rounded-md border border-green-200 bg-green-50 p-4">
-              <p className="mb-3 text-sm font-medium text-green-800">
-                Notice created — download the PDF to serve on your tenant.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <PDFErrorBoundary>
-                  <Section21PDFDownload
-                    notice={createdNotice}
-                    noticeId={createdNotice.id}
-                    tenantName={selectedS21Tenancy?.tenant_name ?? "Tenant"}
-                    propertyAddress={
-                      selectedS21Tenancy?.property_address ?? "Property address"
-                    }
-                    landlordName="Landlord"
-                    landlordAddress=""
-                  />
-                </PDFErrorBoundary>
-                <button
-                  onClick={() => void markServed(createdNotice.id)}
-                  className="rounded-md border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
-                >
-                  Mark as Served
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        </>
       )}
 
       {/* Section 8 form */}
