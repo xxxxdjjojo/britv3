@@ -18,9 +18,11 @@ import Stripe from "stripe";
 // Stripe client
 // ---------------------------------------------------------------------------
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-02-25.clover",
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2026-02-25.clover",
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Service-role Supabase client (no cookie auth — server-side only)
@@ -51,7 +53,7 @@ export async function POST(request: Request): Promise<Response> {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!,
