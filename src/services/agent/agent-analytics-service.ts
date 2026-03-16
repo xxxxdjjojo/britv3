@@ -5,6 +5,8 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AgentVendorReport, ReportType } from "@/types/agent";
+import { getPricePaidData } from "@/services/land-registry/land-registry";
+import type { PricePaidRecord } from "@/services/land-registry/types";
 
 // -- Types --------------------------------------------------------------------
 
@@ -23,6 +25,13 @@ export type CompetitorEntry = Readonly<{
   market_share: number;
 }>;
 
+export type ActiveListingEntry = Readonly<{
+  id: string;
+  price: number;
+  address: string | null;
+  status: string;
+}>;
+
 export type MarketAppraisalData = Readonly<{
   comparables: Array<{
     id: string;
@@ -31,6 +40,9 @@ export type MarketAppraisalData = Readonly<{
     address: string | null;
   }>;
   suggested_range: { low: number; mid: number; high: number };
+  sold_comparables: PricePaidRecord[];
+  active_supply: ActiveListingEntry[];
+  lr_unavailable?: boolean;
 }>;
 
 // -- Service functions --------------------------------------------------------
@@ -363,47 +375,84 @@ export async function generateVendorReport(
 }
 
 /**
- * Market appraisal: fetch comparables in the same postcode area
- * and compute a suggested price range.
+ * Market appraisal: fetch Land Registry sold-price comparables and active
+ * listing supply for a postcode area, then compute a suggested price range.
+ *
+ * Land Registry data is authoritative (real sold prices). Active listings
+ * from agent_listings are included for supply-context only.
+ *
+ * If the Land Registry service fails (network error, timeout, parse error,
+ * etc.) the function gracefully falls back to active listings only and sets
+ * `lr_unavailable: true` in the response.
  */
 export async function getMarketAppraisalData(
   supabase: SupabaseClient,
   postcode: string,
 ): Promise<MarketAppraisalData> {
-  // Fetch sold listings in same postcode district for comparables
   const district = postcode.split(" ")[0]; // e.g. "SW1A" from "SW1A 1AA"
 
-  const { data: listings, error } = await supabase
+  // ── 1. Land Registry sold-price comparables (authoritative source) ────────
+  let soldComparables: PricePaidRecord[] = [];
+  let lrUnavailable = false;
+
+  try {
+    soldComparables = await getPricePaidData(postcode, 20);
+  } catch {
+    // LR call failed (503, timeout, network error, JSON parse error, etc.)
+    lrUnavailable = true;
+  }
+
+  // ── 2. Active listings for supply context ─────────────────────────────────
+  const { data: activeListings, error: activeError } = await supabase
     .from("agent_listings")
-    .select("id, price, updated_at, address_line_1")
+    .select("id, price, address_line_1, status")
     .ilike("postcode", `${district}%`)
-    .eq("status", "sold")
-    .order("updated_at", { ascending: false })
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
     .limit(20);
 
-  if (error) {
+  if (activeError) {
     throw new Error(
-      `Failed to fetch comparable listings: ${error.message}`,
+      `Failed to fetch active listings: ${activeError.message}`,
     );
   }
 
-  const comparables = (listings ?? []).map((l) => {
+  const activeSupply: ActiveListingEntry[] = (activeListings ?? []).map((l) => {
     const row = l as Record<string, unknown>;
     return {
       id: row.id as string,
       price: (row.price as number) ?? 0,
-      sold_at: (row.updated_at as string) ?? null,
       address: (row.address_line_1 as string) ?? null,
+      status: (row.status as string) ?? "active",
     };
   });
 
-  // Compute suggested range from comparable prices
-  const prices = comparables.map((c) => c.price).filter((p) => p > 0);
+  // ── 3. Legacy comparables shape (kept for backwards compatibility) ────────
+  // Prefer LR sold prices; fall back to active supply when LR is unavailable.
+  const legacyComparables = soldComparables.length > 0
+    ? soldComparables.map((r) => ({
+        id: r.transaction_id,
+        price: r.price,
+        sold_at: r.date_of_transfer,
+        address: [r.paon, r.street].filter(Boolean).join(" ") || null,
+      }))
+    : activeSupply.map((a) => ({
+        id: a.id,
+        price: a.price,
+        sold_at: null,
+        address: a.address,
+      }));
+
+  // ── 4. Suggested price range (median ± 10%) ───────────────────────────────
+  const prices = legacyComparables.map((c) => c.price).filter((p) => p > 0);
 
   if (prices.length === 0) {
     return {
-      comparables,
+      comparables: legacyComparables,
       suggested_range: { low: 0, mid: 0, high: 0 },
+      sold_comparables: soldComparables,
+      active_supply: activeSupply,
+      ...(lrUnavailable ? { lr_unavailable: true } : {}),
     };
   }
 
@@ -417,7 +466,10 @@ export async function getMarketAppraisalData(
   const high = Math.round(mid * 1.1);
 
   return {
-    comparables,
+    comparables: legacyComparables,
     suggested_range: { low, mid, high },
+    sold_comparables: soldComparables,
+    active_supply: activeSupply,
+    ...(lrUnavailable ? { lr_unavailable: true } : {}),
   };
 }
