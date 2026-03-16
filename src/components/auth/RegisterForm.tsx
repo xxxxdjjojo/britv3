@@ -14,7 +14,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { signUp } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
-import { assignRole } from "@/services/auth/role-service";
 import type { UserRole } from "@/types/auth";
 
 const registerSchema = z.object({
@@ -101,7 +100,7 @@ export function RegisterForm() {
         return;
       }
 
-      // Bug 5: Replace inline role assignment with assignRole from role-service
+      // Assign role inline (avoids importing server-only role-service)
       try {
         const supabase = createClient();
         const {
@@ -113,8 +112,13 @@ export function RegisterForm() {
             : data.intent === "rent"
               ? "renter"
               : "homebuyer";
-          // Pass browser client so role-service doesn't reach for next/headers
-          await assignRole(user.id, role, supabase);
+          await supabase
+            .from("user_roles")
+            .upsert({ user_id: user.id, role }, { onConflict: "user_id,role" });
+          await supabase
+            .from("profiles")
+            .update({ active_role: role })
+            .eq("id", user.id);
         }
       } catch {
         // Non-blocking: role can be set later

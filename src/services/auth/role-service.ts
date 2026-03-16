@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole, VerificationLevel, VerificationStage } from "@/types/auth";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 type RoleServiceResult<T = null> = {
   data: T;
@@ -8,23 +7,17 @@ type RoleServiceResult<T = null> = {
 };
 
 /**
- * Single source of truth for assigning a single role to a user.
+ * Single source of truth for assigning a single role to a user (server-only).
  * Upserts into user_roles (prevents duplicate rows) and sets active_role on profile.
  * Throws on failure — callers are responsible for error handling.
- *
- * @param client - Optional Supabase client. When omitted the server client is used
- *                 (server context only). Pass a browser client when calling from a
- *                 client component.
  */
 export async function assignRole(
   userId: string,
   role: UserRole,
-  client?: SupabaseClient,
 ): Promise<void> {
   if (!userId) throw new Error("assignRole: userId is required");
 
-  // Use provided client (browser context) or fall back to server client
-  const supabase: SupabaseClient = client ?? (await createClient());
+  const supabase = await createClient();
 
   // TODO: wrap in RPC for atomicity
   const { error: upsertError } = await supabase
