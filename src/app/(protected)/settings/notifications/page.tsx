@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
 import { Bell, Mail, Smartphone } from "lucide-react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
@@ -222,9 +223,12 @@ export default function NotificationsSettingsPage() {
 
       {/* SMS section — visually separated */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          SMS
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+            SMS
+          </h3>
+          <Badge variant="outline">Coming soon</Badge>
+        </div>
 
         <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900">
           {loading ? (
@@ -244,7 +248,7 @@ export default function NotificationsSettingsPage() {
                 <Smartphone className="size-3.5 text-neutral-400" />
                 <Label
                   htmlFor="sms-alerts-toggle"
-                  className="cursor-pointer font-body text-sm text-neutral-600"
+                  className="cursor-not-allowed font-body text-sm text-neutral-600"
                 >
                   SMS
                 </Label>
@@ -254,6 +258,7 @@ export default function NotificationsSettingsPage() {
                   onCheckedChange={(checked) =>
                     handleToggle("sms_alerts", checked)
                   }
+                  disabled
                 />
               </div>
             </div>
