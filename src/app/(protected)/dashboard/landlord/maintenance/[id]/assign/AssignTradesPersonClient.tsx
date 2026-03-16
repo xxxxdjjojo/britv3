@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import posthog from "posthog-js";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -50,6 +51,7 @@ export function AssignTradesPersonClient({
       }
 
       toast.success("Tradesperson assigned successfully");
+      posthog.capture("landlord_maintenance_assigned");
       router.push(`/dashboard/landlord/maintenance/${requestId}`);
       router.refresh();
     } catch (error) {

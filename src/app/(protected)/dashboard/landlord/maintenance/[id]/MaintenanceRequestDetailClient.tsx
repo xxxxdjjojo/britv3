@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   ChevronRight,
   Save,
+  MessageCircle,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { MaintenanceRequestWithProperty } from "@/services/landlord/maintenance-service";
@@ -76,6 +78,7 @@ export function MaintenanceRequestDetailClient({
     request.status,
   );
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [showWhatsAppNotify, setShowWhatsAppNotify] = useState(false);
   const [notes, setNotes] = useState(
     (request as unknown as Record<string, unknown>).notes as string | undefined ?? "",
   );
@@ -102,6 +105,9 @@ export function MaintenanceRequestDetailClient({
       }
       setCurrentStatus(newStatus);
       toast.success(`Status updated to ${newStatus.replace("_", " ")}`);
+      if (newStatus === "assigned" || newStatus === "in_progress") {
+        setShowWhatsAppNotify(true);
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to update status",
@@ -368,6 +374,47 @@ export function MaintenanceRequestDetailClient({
             </div>
           )}
         </div>
+
+        {/* WhatsApp tenant notification */}
+        {showWhatsAppNotify && (currentStatus === "assigned" || currentStatus === "in_progress") && (
+          <div className="rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-950">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 items-center justify-center rounded-full bg-green-500">
+                  <MessageCircle className="size-4 text-white" />
+                </div>
+                <h2 className="text-sm font-semibold text-green-900 dark:text-green-100">
+                  Notify Tenant
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowWhatsAppNotify(false)}
+                aria-label="Dismiss"
+                className="text-green-500 hover:text-green-700 dark:hover:text-green-300 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-green-800 dark:text-green-200">
+              Let your tenant know their request has been{" "}
+              {currentStatus === "assigned"
+                ? "assigned to a tradesperson"
+                : "marked as in progress"}.
+            </p>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(
+                `Hi ${request.tenant_name ?? "there"}, your maintenance request "${request.title}" has been ${currentStatus === "assigned" ? "assigned to a tradesperson" : "marked as in progress"} and we'll keep you updated on the resolution. — Your Landlord`,
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
+            >
+              <MessageCircle className="size-4" />
+              Send WhatsApp Update
+            </a>
+          </div>
+        )}
 
         {/* Contact info */}
         <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">

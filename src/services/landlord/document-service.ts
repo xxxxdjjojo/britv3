@@ -53,6 +53,7 @@ export async function getDocuments(
     .from("property_documents")
     .select("*")
     .eq("property_id", propertyId)
+    .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (filters?.category) {
@@ -179,6 +180,7 @@ export async function getExpiringDocuments(
     .from("property_documents")
     .select("*")
     .eq("property_id", propertyId)
+    .eq("is_active", true)
     .not("expiry_date", "is", null)
     .lte("expiry_date", thirtyDaysFromNow.toISOString().split("T")[0])
     .order("expiry_date", { ascending: true });
@@ -220,6 +222,7 @@ export async function getComplianceSummary(
       property:properties!inner(address_line1, city, postcode)
     `)
     .in("category", COMPLIANCE_CATEGORIES)
+    .eq("is_active", true)
     .not("expiry_date", "is", null)
     .order("expiry_date", { ascending: true });
 
@@ -270,7 +273,12 @@ export async function getComplianceSummary(
 /**
  * Upload a document file to Supabase Storage.
  * Validates file type via magic bytes and checks size limit.
- * Returns the public URL of the uploaded file.
+ * Returns the storage path of the uploaded file (e.g. `propertyId/documentId/filename`).
+ *
+ * IMPORTANT: Callers that persist the returned path to the `file_url` DB column must
+ * store it as-is. Do NOT call `getPublicUrl()` — the bucket is private.
+ * Use `supabase.storage.from("property-documents").createSignedUrl(path, ttl)` to
+ * generate access URLs on demand.
  */
 export async function uploadDocumentFile(
   supabase: SupabaseClient,
@@ -302,10 +310,5 @@ export async function uploadDocumentFile(
     throw new Error(`Failed to upload file: ${uploadError.message}`);
   }
 
-  // Get public URL
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("property-documents").getPublicUrl(filePath);
-
-  return publicUrl;
+  return filePath;
 }
