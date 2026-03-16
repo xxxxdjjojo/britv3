@@ -1,112 +1,89 @@
-"use client";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { AvailabilityCalendar } from "@/components/dashboard/provider/AvailabilityCalendar";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { AvailabilityCalendar } from "@/components/provider/AvailabilityCalendar";
-import type { ProviderAvailability, Booking } from "@/types/marketplace";
+export const dynamic = "force-dynamic";
 
-type ConfirmedBookingSlim = Pick<
-  Booking,
-  "id" | "booking_reference" | "scheduled_start_date" | "scheduled_end_date"
->;
+export default async function ProviderAvailabilityPage() {
+  const supabase = await createClient();
 
-export default function ProviderAvailabilityPage() {
-  const [periods, setPeriods] = useState<ProviderAvailability[]>([]);
-  const [bookings, setBookings] = useState<ConfirmedBookingSlim[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const fetchData = useCallback(async () => {
-    try {
-      const [periodsRes, bookingsRes] = await Promise.all([
-        fetch("/api/providers/availability"),
-        fetch("/api/bookings/list?status=confirmed"),
-      ]);
-
-      if (periodsRes.ok) {
-        const data = await periodsRes.json();
-        setPeriods(data.periods ?? data ?? []);
-      }
-      if (bookingsRes.ok) {
-        const data = await bookingsRes.json();
-        setBookings(data.bookings ?? data.data ?? []);
-      }
-    } catch {
-      // silently fail
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  async function handleAddPeriod(data: {
-    start_date: unknown;
-    end_date: unknown;
-    reason?: string;
-  }) {
-    const res = await fetch("/api/providers/availability", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        start_date: data.start_date,
-        end_date: data.end_date,
-        reason: data.reason,
-      }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => null);
-      throw new Error(err?.error ?? "Failed to add period");
-    }
-    await fetchData();
+  if (!user) {
+    redirect("/login");
   }
 
-  async function handleRemovePeriod(id: string) {
-    const res = await fetch(`/api/providers/availability/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
-      throw new Error("Failed to remove period");
-    }
-    await fetchData();
-  }
+  // Resolve provider id
+  const { data: providerProfile } = await supabase
+    .from("service_provider_details")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
-  if (loading) {
-    return (
-      <div className="py-12 text-center text-sm text-muted-foreground">
-        Loading...
-      </div>
-    );
-  }
+  const providerId = providerProfile?.user_id ?? user.id;
+
+  // Window: current month + next 2 months
+  const now = new Date();
+  const windowStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    .toISOString()
+    .slice(0, 10);
+  // End = last day of (current month + 2)
+  const windowEnd = new Date(now.getFullYear(), now.getMonth() + 3, 0)
+    .toISOString()
+    .slice(0, 10);
+
+  const [availabilityResult, bookingsResult] = await Promise.all([
+    supabase
+      .from("provider_availability")
+      .select("id, provider_id, start_date, end_date, reason")
+      .eq("provider_id", providerId)
+      .lte("start_date", windowEnd)
+      .gte("end_date", windowStart)
+      .order("start_date", { ascending: true }),
+
+    supabase
+      .from("bookings")
+      .select("id, booking_reference, scheduled_start_date, scheduled_end_date")
+      .eq("provider_id", providerId)
+      .in("status", ["confirmed", "in_progress"])
+      .gte("scheduled_start_date", windowStart)
+      .lte("scheduled_end_date", windowEnd)
+      .order("scheduled_start_date", { ascending: true }),
+  ]);
+
+  // Normalise dates to ISO strings for client component serialisation
+  const blockedRanges = (availabilityResult.data ?? []).map((r) => ({
+    id: r.id as string,
+    start_date: r.start_date as string,
+    end_date: r.end_date as string,
+    reason: (r.reason as string | null) ?? null,
+  }));
+
+  const bookings = (bookingsResult.data ?? []).map((b) => ({
+    id: b.id as string,
+    booking_reference: b.booking_reference as string,
+    scheduled_start_date: b.scheduled_start_date as string,
+    scheduled_end_date: b.scheduled_end_date as string,
+  }));
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Availability</h1>
+    <div className="p-6 max-w-4xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-neutral-900">Availability</h1>
+        <p className="mt-1 text-sm text-neutral-500">
+          Click any available date to mark it as unavailable. Click a blocked
+          date to unblock it. Booked dates cannot be changed.
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Manage Your Availability</CardTitle>
-          <CardDescription>
-            Mark dates when you are unavailable for bookings. Confirmed bookings
-            are shown for reference.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AvailabilityCalendar
-            unavailablePeriods={periods}
-            confirmedBookings={bookings}
-            onAddPeriod={handleAddPeriod}
-            onRemovePeriod={handleRemovePeriod}
-          />
-        </CardContent>
-      </Card>
+      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <AvailabilityCalendar
+          initialBlockedRanges={blockedRanges}
+          initialBookings={bookings}
+        />
+      </div>
     </div>
   );
 }
