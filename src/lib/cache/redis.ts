@@ -127,3 +127,35 @@ export function createRateLimiter(
     analytics: false,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Property detail cache — TTL constants and key builders
+// ---------------------------------------------------------------------------
+
+export const PROPERTY_DETAIL_TTL = {
+  /** Property row — 5 minutes */
+  PROPERTY: 5 * 60,
+  /** Land Registry comparables — 24 hours */
+  LAND_REGISTRY: 24 * 60 * 60,
+  /** ROI estimate — 24 hours */
+  ROI: 24 * 60 * 60,
+  /** Ofsted schools data — 7 days */
+  OFSTED: 7 * 24 * 60 * 60,
+  /** Crime stats — 24 hours */
+  CRIME: 24 * 60 * 60,
+  /** Area demographics — 7 days */
+  DEMOGRAPHICS: 7 * 24 * 60 * 60,
+} as const;
+
+/** Key builders for property detail cache entries. */
+export const propertyDetailCacheKey = {
+  property: (slug: string) => `prop:slug:${slug}`,
+  landRegistry: (postcode: string) => `lr:postcode:${postcode}`,
+  roi: (postcode: string, propType: string, priceBand: string) =>
+    `roi:${postcode}:${propType}:${priceBand}`,
+  ofsted: (lat: number, lng: number, radius: number) =>
+    `ofsted:lat:${lat.toFixed(4)}:lng:${lng.toFixed(4)}:r:${radius}`,
+  crime: (postcode: string) => `crime:postcode:${postcode}`,
+  demographics: (postcodeDistrict: string) =>
+    `demo:postcode_district:${postcodeDistrict}`,
+};
