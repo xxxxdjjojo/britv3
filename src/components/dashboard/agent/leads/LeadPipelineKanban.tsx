@@ -18,7 +18,7 @@ import {
 import { useDroppable } from "@dnd-kit/core";
 import { LeadCard } from "./LeadCard";
 import type { AgentLead, LeadStage, LeadSource } from "@/types/agent";
-import { LEAD_STAGES, LEAD_SOURCES } from "@/types/agent";
+import { LEAD_STAGES, LEAD_SOURCES, LEAD_STAGE_LABELS } from "@/types/agent";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -54,7 +54,7 @@ function KanbanColumn(
     >
       <div className="flex items-center justify-between px-3 py-2 border-b dark:border-gray-700">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-          {formatLabel(stage)}
+          {LEAD_STAGE_LABELS[stage]}
         </h3>
         <span className="inline-flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
           {leads.length}

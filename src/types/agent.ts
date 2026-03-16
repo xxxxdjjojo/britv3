@@ -17,6 +17,14 @@ export const LEAD_STAGES = [
 ] as const;
 export type LeadStage = (typeof LEAD_STAGES)[number];
 
+export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
+  new_enquiry: "New Enquiry",
+  qualified: "Qualified",
+  viewing_booked: "Viewing Booked",
+  offer_made: "Offer Made",
+  closed: "Closed",
+};
+
 export const SALE_STAGES = [
   "offer_accepted",
   "memorandum_of_sale",
