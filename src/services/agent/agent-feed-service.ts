@@ -43,7 +43,8 @@ export async function createFeedIntegration(
   const insertData = {
     agent_id: agentId,
     provider: input.provider,
-    api_key_encrypted: input.api_key, // stored as-is for now; encryption is future
+    // TODO: implement AES-GCM encryption before storing API keys — currently stored as plaintext
+    api_key_encrypted: input.api_key,
     sync_status: "disconnected" as const,
     field_mapping: input.field_mapping ?? {},
     error_log: [],
@@ -82,6 +83,7 @@ export async function updateFeedIntegration(
 
   if (input.provider !== undefined) updateData.provider = input.provider;
   if (input.api_key !== undefined)
+    // TODO: implement AES-GCM encryption before storing API keys — currently stored as plaintext
     updateData.api_key_encrypted = input.api_key;
   if (input.field_mapping !== undefined)
     updateData.field_mapping = input.field_mapping;

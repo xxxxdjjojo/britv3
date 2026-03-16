@@ -47,6 +47,13 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to submit viewing feedback";
+    // Unique constraint violation (PostgreSQL error code 23505) — feedback already submitted
+    if (message.includes("23505") || message.toLowerCase().includes("unique")) {
+      return NextResponse.json(
+        { error: "Feedback for this viewing has already been submitted" },
+        { status: 409 },
+      );
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
