@@ -66,6 +66,14 @@ Deno.serve(async (_req: Request) => {
     }
 
     if (!documents || documents.length === 0) {
+      // Audit log: nothing to process this run
+      await supabase.from("compliance_cron_runs").insert({
+        properties_checked: 0,
+        emails_queued: 0,
+        emails_skipped_already_sent: 0,
+        error_count: 0,
+        error_details: null,
+      });
       return new Response(
         JSON.stringify({ processed: 0, errors: [] }),
         { headers: { "Content-Type": "application/json" } },
@@ -170,6 +178,16 @@ Deno.serve(async (_req: Request) => {
       }
     }
 
+    // Audit log: record this cron run
+    const skippedCount = (documents as DocumentDueForReminder[]).length - processed - errors.length;
+    await supabase.from("compliance_cron_runs").insert({
+      properties_checked: (documents as DocumentDueForReminder[]).length,
+      emails_queued: processed,
+      emails_skipped_already_sent: skippedCount,
+      error_count: errors.length,
+      error_details: errors.length > 0 ? errors : null,
+    });
+
     return new Response(
       JSON.stringify({ processed, errors }),
       { headers: { "Content-Type": "application/json" } },
@@ -177,6 +195,25 @@ Deno.serve(async (_req: Request) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Edge Function error:", message);
+
+    // Audit log: record failed run — best-effort, ignore insert errors
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, serviceRoleKey, {
+        auth: { persistSession: false },
+      });
+      await supabase.from("compliance_cron_runs").insert({
+        properties_checked: 0,
+        emails_queued: 0,
+        emails_skipped_already_sent: 0,
+        error_count: 1,
+        error_details: [message],
+      });
+    } catch {
+      // Intentionally swallowed — do not mask the original error
+    }
+
     return new Response(
       JSON.stringify({ processed: 0, errors: [message] }),
       { status: 500, headers: { "Content-Type": "application/json" } },
