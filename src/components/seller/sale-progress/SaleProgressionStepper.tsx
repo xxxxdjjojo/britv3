@@ -17,7 +17,6 @@ const STAGE_LABELS: Record<SaleStageNumber, string> = {
 
 type Props = Readonly<{
   progression: SaleProgressionStage;
-  onAdvance?: () => void;
 }>;
 
 function daysUntil(dateStr: string): number {

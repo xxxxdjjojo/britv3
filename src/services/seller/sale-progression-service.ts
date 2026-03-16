@@ -37,12 +37,13 @@ export async function advanceStage(
   const nextStage = (currentStage + 1) as SaleStageNumber;
   const today = new Date().toISOString().split("T")[0];
 
-  const { data } = await supabase
+  const { data, error: fetchError } = await supabase
     .from("sale_progression_stages")
     .select("stage_dates")
     .eq("id", progressionId)
     .single<{ stage_dates: Record<string, string> }>();
 
+  if (fetchError) throw fetchError;
   const stageDates = { ...(data?.stage_dates ?? {}), [String(currentStage)]: today };
 
   const { error } = await supabase

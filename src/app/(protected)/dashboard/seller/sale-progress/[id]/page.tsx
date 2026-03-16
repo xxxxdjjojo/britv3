@@ -33,7 +33,7 @@ export default async function SaleProgressionPage({ params }: Props) {
     .from("seller_offers")
     .select(`
       id, buyer_name, amount,
-      listing:listing_id ( address_line_1, city, postcode )
+      listing:listing_id ( address_line_1, city )
     `)
     .eq("id", progression.offer_id)
     .maybeSingle();

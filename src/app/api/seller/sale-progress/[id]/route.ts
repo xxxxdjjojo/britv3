@@ -19,6 +19,11 @@ export async function GET(
 
   const progression = await getSaleProgressionById(supabase, id);
   if (!progression) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  if (progression.seller_id !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   return NextResponse.json(progression);
 }
 
@@ -48,18 +53,35 @@ export async function PATCH(
   };
 
   try {
+    // Verify ownership before any mutation
+    const progression = await getSaleProgressionById(supabase, id);
+    if (!progression) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (progression.seller_id !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     if (body.action === "advance_stage" && body.current_stage) {
       await advanceStage(supabase, id, body.current_stage);
     } else if (body.action === "update_contacts" && body.contacts) {
-      await supabase
+      const allowedContactFields = ["solicitor_name", "solicitor_email", "solicitor_phone", "buyer_solicitor_name", "buyer_solicitor_email", "mortgage_broker_name"] as const;
+      const safeContacts = Object.fromEntries(
+        allowedContactFields
+          .filter((key) => key in body.contacts!)
+          .map((key) => [key, (body.contacts as Record<string, unknown>)[key]]),
+      );
+      const { error: contactsError } = await supabase
         .from("sale_progression_stages")
-        .update(body.contacts)
-        .eq("id", id);
+        .update(safeContacts)
+        .eq("id", id)
+        .eq("seller_id", user.id);
+      if (contactsError) throw contactsError;
     } else if (body.action === "update_documents" && body.documents) {
-      await supabase
+      const { error: docsError } = await supabase
         .from("sale_progression_stages")
         .update({ documents: body.documents })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("seller_id", user.id);
+      if (docsError) throw docsError;
     }
     return NextResponse.json({ success: true });
   } catch (err) {

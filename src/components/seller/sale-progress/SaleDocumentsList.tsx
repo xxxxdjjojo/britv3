@@ -49,7 +49,7 @@ export function SaleDocumentsList({ progression }: Props) {
           const Icon = config.icon;
           return (
             <li
-              key={doc.name}
+              key={`${doc.name}-${doc.stage}`}
               className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors"
             >
               <span
