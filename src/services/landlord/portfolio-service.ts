@@ -67,104 +67,37 @@ export async function getPortfolio(
     throw new Error("Authentication required");
   }
 
-  // Use a single RPC call that performs LEFT JOINs server-side
-  // Fallback: use Supabase query builder with embedded selects
-  const { data: listings, error } = await supabase
-    .from("listings")
-    .select(`
-      id,
-      address_line_1,
-      address_line_2,
-      city,
-      postcode,
-      property_type,
-      bedrooms,
-      tenancies!tenancies_property_id_fkey (
-        id,
-        tenant_name,
-        status,
-        rent_amount,
-        rent_frequency,
-        lease_end_date
-      ),
-      maintenance_requests!maintenance_requests_property_id_fkey (
-        id,
-        status
-      ),
-      property_documents!property_documents_property_id_fkey (
-        id,
-        expiry_date
-      )
-    `)
-    .eq("user_id", user.id)
-    .eq("listing_type", "rental");
+  // Single SQL RPC with LEFT JOINs — no client-side aggregation
+  const { data, error } = await supabase.rpc(
+    "get_landlord_portfolio_properties",
+    { p_landlord_id: user.id },
+  );
 
   if (error) {
     throw new Error(`Failed to fetch portfolio: ${error.message}`);
   }
 
-  if (!listings) {
+  if (!data) {
     return [];
   }
 
-  const now = new Date();
-  const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-  return listings.map((listing) => {
-    const tenancies = (listing.tenancies ?? []) as Array<{
-      id: string;
-      tenant_name: string;
-      status: string;
-      rent_amount: number;
-      rent_frequency: string;
-      lease_end_date: string | null;
-    }>;
-    const maintenanceRequests = (listing.maintenance_requests ?? []) as Array<{
-      id: string;
-      status: string;
-    }>;
-    const documents = (listing.property_documents ?? []) as Array<{
-      id: string;
-      expiry_date: string | null;
-    }>;
-
-    // Find active tenancy (prefer 'active', then 'ending_soon')
-    const activeTenancy =
-      tenancies.find((t) => t.status === "active") ??
-      tenancies.find((t) => t.status === "ending_soon") ??
-      null;
-
-    // Count open maintenance requests
-    const openStatuses = ["new", "acknowledged", "assigned", "in_progress"];
-    const openMaintenanceCount = maintenanceRequests.filter((m) =>
-      openStatuses.includes(m.status),
-    ).length;
-
-    // Count documents expiring within 30 days
-    const expiringDocsCount = documents.filter((d) => {
-      if (!d.expiry_date) return false;
-      const expiry = new Date(d.expiry_date);
-      return expiry >= now && expiry <= thirtyDaysFromNow;
-    }).length;
-
-    return {
-      id: listing.id as string,
-      address_line_1: listing.address_line_1 as string,
-      address_line_2: listing.address_line_2 as string | null,
-      city: listing.city as string,
-      postcode: listing.postcode as string,
-      property_type: listing.property_type as string | null,
-      bedrooms: listing.bedrooms as number | null,
-      listing_id: listing.id as string,
-      tenant_name: activeTenancy?.tenant_name ?? null,
-      tenancy_status: activeTenancy?.status ?? null,
-      rent_amount: activeTenancy?.rent_amount ?? null,
-      rent_frequency: activeTenancy?.rent_frequency ?? null,
-      lease_end_date: activeTenancy?.lease_end_date ?? null,
-      open_maintenance_count: openMaintenanceCount,
-      expiring_documents_count: expiringDocsCount,
-    };
-  });
+  return (data as PortfolioProperty[]).map((row) => ({
+    id: row.id,
+    address_line_1: row.address_line_1,
+    address_line_2: row.address_line_2,
+    city: row.city,
+    postcode: row.postcode,
+    property_type: row.property_type,
+    bedrooms: row.bedrooms,
+    listing_id: row.listing_id,
+    tenant_name: row.tenant_name,
+    tenancy_status: row.tenancy_status,
+    rent_amount: row.rent_amount ? Number(row.rent_amount) : null,
+    rent_frequency: row.rent_frequency,
+    lease_end_date: row.lease_end_date,
+    open_maintenance_count: Number(row.open_maintenance_count),
+    expiring_documents_count: Number(row.expiring_documents_count),
+  }));
 }
 
 /**
