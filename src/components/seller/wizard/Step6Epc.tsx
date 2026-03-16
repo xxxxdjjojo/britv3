@@ -54,11 +54,12 @@ export function Step6Epc({ listing, listingId }: Props) {
   const handleContinue = async () => {
     setSaving(true);
     try {
-      await fetch(`/api/seller/listings/${listingId}`, {
+      const res = await fetch(`/api/seller/listings/${listingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ epc_url: epcUrl }),
       });
+      if (!res.ok) throw new Error("Failed to save");
       router.push(`/dashboard/seller/listings/create?step=7&id=${listingId}`);
     } catch {
       setError("Failed to save. Please try again.");

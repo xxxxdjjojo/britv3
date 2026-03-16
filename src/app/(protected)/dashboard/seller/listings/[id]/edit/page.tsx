@@ -7,6 +7,7 @@ import { Step4Description } from "@/components/seller/wizard/Step4Description";
 import { Step5Price } from "@/components/seller/wizard/Step5Price";
 import { Step6Epc } from "@/components/seller/wizard/Step6Epc";
 import { Step7Review } from "@/components/seller/wizard/Step7Review";
+import type { ReactElement } from "react";
 import type { ListingStep } from "@/types/seller";
 
 type Props = Readonly<{
@@ -33,7 +34,7 @@ export default async function EditListingPage({ params, searchParams }: Props) {
 
   const step = Math.min(Math.max(parseInt(stepStr ?? "1", 10), 1), 7) as ListingStep;
 
-  const stepComponents: Record<ListingStep, React.ReactElement> = {
+  const stepComponents: Record<ListingStep, ReactElement> = {
     1: <Step1AddressType listing={listing} />,
     2: <Step2Details listing={listing} listingId={id} />,
     3: <Step3Photos listing={listing} listingId={id} />,
