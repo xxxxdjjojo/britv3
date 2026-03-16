@@ -1,9 +1,5 @@
 /**
- * Contract stubs for provider-dashboard-service.
- *
- * These tests document the expected API surface and return shapes that
- * Wave 2 must implement. They are intentionally NOT passing — the service
- * file does not exist yet. Do not make these pass until Wave 2.
+ * Tests for provider-dashboard-service.
  *
  * Functions under contract:
  *  - getProviderDashboardStats(providerId: string, client: SupabaseClient)
@@ -15,7 +11,6 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 
-// @ts-expect-error — service not yet implemented (Wave 2)
 import {
   getProviderDashboardStats,
   getRecentActivity,
