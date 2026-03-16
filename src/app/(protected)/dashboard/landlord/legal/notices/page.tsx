@@ -91,6 +91,7 @@ type TenancyOption = {
   id: string;
   tenant_name: string;
   property_address: string;
+  property_id: string;
   deposit_scheme_reference?: string | null;
 };
 
@@ -187,6 +188,7 @@ function NoticesPageInner() {
           .select(
             `
             id,
+            property_id,
             tenant_name,
             listings!tenancies_property_id_fkey (
               address_line_1,
@@ -213,6 +215,7 @@ function NoticesPageInner() {
               return {
                 id: t.id as string,
                 tenant_name: t.tenant_name as string,
+                property_id: t.property_id as string,
                 property_address: listing
                   ? `${listing.address_line_1}, ${listing.city} ${listing.postcode}`
                   : "Unknown address",
@@ -235,11 +238,13 @@ function NoticesPageInner() {
 
   async function onSubmitS21(data: Section21FormData) {
     if (!s21Validation.valid) return;
+    const selectedTenancy = tenancies.find((t) => t.id === data.tenancy_id);
+    if (!selectedTenancy) return;
     setSubmitting(true);
     try {
       const notice = await createNotice(supabase, {
         notice_type: "section_21",
-        property_id: "",
+        property_id: selectedTenancy.property_id,
         tenancy_id: data.tenancy_id,
         landlord_id: "",
         possession_date: data.possession_date,
@@ -260,11 +265,13 @@ function NoticesPageInner() {
   }
 
   async function onSubmitS8(data: Section8FormData) {
+    const selectedTenancy = tenancies.find((t) => t.id === data.tenancy_id);
+    if (!selectedTenancy) return;
     setSubmitting(true);
     try {
       const notice = await createNotice(supabase, {
         notice_type: "section_8",
-        property_id: "",
+        property_id: selectedTenancy.property_id,
         tenancy_id: data.tenancy_id,
         landlord_id: "",
         possession_date: null,

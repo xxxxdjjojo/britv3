@@ -49,6 +49,8 @@ const BASE_NAV_ITEMS: NavItem[] = [
 
 const LEGAL_NAV_ITEM: NavItem = { label: "Legal", href: "/dashboard/landlord/legal/notices", icon: Scale };
 
+// Note: NEXT_PUBLIC_* vars are inlined by the bundler at build time.
+// Toggling this flag requires a full redeploy to take effect.
 const NAV_ITEMS: NavItem[] = process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED === "true"
   ? [...BASE_NAV_ITEMS.slice(0, 8), LEGAL_NAV_ITEM, ...BASE_NAV_ITEMS.slice(8)]
   : BASE_NAV_ITEMS;
