@@ -50,6 +50,10 @@ export function LeadCard(
     opacity: isDragging ? 0.4 : 1,
   };
 
+  const isStale =
+    Date.now() - new Date(lead.updated_at).getTime() >
+    7 * 24 * 60 * 60 * 1000;
+
   const handleClick = () => {
     if (!isDragOverlay) {
       router.push(`/dashboard/agent/leads/${lead.id}`);
@@ -70,9 +74,16 @@ export function LeadCard(
         "dark:bg-gray-900 dark:border-gray-700",
       ].join(" ")}
     >
-      <p className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
-        {lead.contact_name}
-      </p>
+      <div className="flex items-start justify-between gap-1">
+        <p className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
+          {lead.contact_name}
+        </p>
+        {isStale && (
+          <span className="shrink-0 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+            No contact 7d+
+          </span>
+        )}
+      </div>
       {lead.contact_email && (
         <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
           {lead.contact_email}
