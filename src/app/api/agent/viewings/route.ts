@@ -13,6 +13,7 @@ import {
   createViewingSlot,
   deleteViewingSlot,
 } from "@/services/agent/agent-viewing-service";
+import { getTeamMemberRole } from "@/services/agent/agent-team-service";
 
 export async function GET(request: NextRequest) {
   try {
@@ -54,6 +55,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const agentId = request.nextUrl.searchParams.get("agent_id") ?? user.id;
+    const role = await getTeamMemberRole(supabase, agentId, user.id);
+    if (role === null || role === "viewer") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const body = (await request.json()) as {
       property_id?: string;
       start_time?: string;
@@ -89,6 +96,12 @@ export async function DELETE(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const agentId = request.nextUrl.searchParams.get("agent_id") ?? user.id;
+    const role = await getTeamMemberRole(supabase, agentId, user.id);
+    if (role === null || role === "viewer") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const slotId = request.nextUrl.searchParams.get("slot_id");
