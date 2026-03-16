@@ -102,29 +102,44 @@ async function buildHomebuyerDashboard(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<HomebuyerDashboard> {
-  const [savedCount, searchCount, viewings, activity] = await Promise.all([
+  const [savedCount, searchCount, activity] = await Promise.all([
     safeCount(supabase, "saved_properties", "user_id", userId),
     safeCount(supabase, "saved_searches", "user_id", userId),
-    safeQuery<{ id: string; property_address: string; scheduled_at: string; status: string }>(
-      supabase,
-      "viewings",
-      "id, property_address, scheduled_at, status",
-      { user_id: userId, status: "confirmed" },
-      5,
-    ),
     getRecentActivity(supabase, userId, 5),
   ]);
+
+  // Join through viewing_slots → listings to get address and start_time.
+  // The viewings table has no property_address or scheduled_at columns.
+  const { data: viewingsData, error: viewingsError } = await supabase
+    .from("viewings")
+    .select("id, status, viewing_slots(start_time, listings(address))")
+    .eq("user_id", userId)
+    .eq("status", "confirmed")
+    .order("created_at", { ascending: true })
+    .limit(5);
+
+  if (viewingsError) {
+    console.error("[dashboard-service] query failed", { table: "viewings", error: viewingsError });
+  }
+
+  type ViewingRow = {
+    id: string;
+    status: string;
+    viewing_slots: { start_time: string; listings: { address: string } | null } | null;
+  };
+
+  const upcomingViewings = ((viewingsData as ViewingRow[] | null) ?? []).map((v) => ({
+    id: v.id,
+    property_address: v.viewing_slots?.listings?.address ?? "",
+    scheduled_at: new Date(v.viewing_slots?.start_time ?? 0),
+    status: v.status as "confirmed" | "pending" | "cancelled",
+  }));
 
   return {
     role: "homebuyer",
     saved_properties_count: savedCount,
     active_searches_count: searchCount,
-    upcoming_viewings: viewings.map((v) => ({
-      id: v.id,
-      property_address: v.property_address,
-      scheduled_at: new Date(v.scheduled_at),
-      status: v.status as "confirmed" | "pending" | "cancelled",
-    })),
+    upcoming_viewings: upcomingViewings,
     recent_activity: activity,
   };
 }
@@ -179,7 +194,7 @@ async function buildSellerDashboard(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<SellerDashboard> {
-  const [listings, viewingRequests, offers, activity] = await Promise.all([
+  const [listings, offers, activity] = await Promise.all([
     safeQuery<{
       id: string;
       address: string;
@@ -194,13 +209,6 @@ async function buildSellerDashboard(
       "id, address, price, views_count, saves_count, enquiries_count, status",
       { seller_id: userId },
       20,
-    ),
-    safeQuery<{ id: string; property_address: string; scheduled_at: string; status: string }>(
-      supabase,
-      "viewings",
-      "id, property_address, scheduled_at, status",
-      { seller_id: userId },
-      10,
     ),
     safeQuery<{
       id: string;
@@ -218,6 +226,43 @@ async function buildSellerDashboard(
     getRecentActivity(supabase, userId, 5),
   ]);
 
+  // viewings table has no seller_id column. Get viewings for seller's listings
+  // by first fetching listing IDs, then querying viewings with .in().
+  const listingIds = listings.map((l) => l.id);
+  let viewingRequests: Array<{
+    id: string;
+    property_address: string;
+    scheduled_at: Date;
+    status: "confirmed" | "pending" | "cancelled";
+  }> = [];
+
+  if (listingIds.length > 0) {
+    const { data: viewingsData, error: viewingsError } = await supabase
+      .from("viewings")
+      .select("id, status, listing_id, viewing_slots(start_time, listings(address))")
+      .in("listing_id", listingIds)
+      .eq("status", "confirmed")
+      .limit(10);
+
+    if (viewingsError) {
+      console.error("[dashboard-service] query failed", { table: "viewings", error: viewingsError });
+    }
+
+    type SellerViewingRow = {
+      id: string;
+      status: string;
+      listing_id: string;
+      viewing_slots: { start_time: string; listings: { address: string } | null } | null;
+    };
+
+    viewingRequests = ((viewingsData as SellerViewingRow[] | null) ?? []).map((v) => ({
+      id: v.id,
+      property_address: v.viewing_slots?.listings?.address ?? "",
+      scheduled_at: new Date(v.viewing_slots?.start_time ?? 0),
+      status: v.status as "confirmed" | "pending" | "cancelled",
+    }));
+  }
+
   return {
     role: "seller",
     listings: listings.map((l) => ({
@@ -229,12 +274,7 @@ async function buildSellerDashboard(
       enquiries_count: l.enquiries_count,
       status: l.status as "active" | "under_offer" | "sold" | "withdrawn",
     })),
-    viewing_requests: viewingRequests.map((v) => ({
-      id: v.id,
-      property_address: v.property_address,
-      scheduled_at: new Date(v.scheduled_at),
-      status: v.status as "confirmed" | "pending" | "cancelled",
-    })),
+    viewing_requests: viewingRequests,
     offers: offers.map((o) => ({
       id: o.id,
       property_address: o.property_address,
@@ -294,7 +334,10 @@ async function buildAgentDashboard(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<AgentDashboard> {
-  const [listingsCount, leads, viewings, revenue, activity] = await Promise.all([
+  // TODO: Replace leads safeQuery + JS reduce with a GROUP BY RPC call to avoid
+  // fetching up to 500 rows just to count by stage.
+  // e.g. rpc("count_leads_by_stage", { p_agent_id: userId })
+  const [listingsCount, leads, revenue, activity] = await Promise.all([
     safeCount(supabase, "listings", "agent_id", userId),
     safeQuery<{ stage: string }>(
       supabase,
@@ -302,13 +345,6 @@ async function buildAgentDashboard(
       "stage",
       { agent_id: userId },
       500,
-    ),
-    safeQuery<{ id: string; property_address: string; scheduled_at: string; status: string }>(
-      supabase,
-      "viewings",
-      "id, property_address, scheduled_at, status",
-      { agent_id: userId },
-      10,
     ),
     safeQuerySingle<{ current_month: number; previous_month: number; year_to_date: number }>(
       supabase,
@@ -333,16 +369,53 @@ async function buildAgentDashboard(
     }
   }
 
+  // viewings table has no agent_id column. Get viewings for listings owned by this agent.
+  const { data: agentListingsData } = await supabase
+    .from("listings")
+    .select("id")
+    .eq("agent_id", userId)
+    .limit(100);
+
+  const agentListingIds = (agentListingsData ?? []).map((l: { id: string }) => l.id);
+
+  let agentViewings: Array<{
+    id: string;
+    property_address: string;
+    scheduled_at: Date;
+    status: "confirmed" | "pending" | "cancelled";
+  }> = [];
+
+  if (agentListingIds.length > 0) {
+    const { data: viewingsData, error: viewingsError } = await supabase
+      .from("viewings")
+      .select("id, status, viewing_slots(start_time, listings(address))")
+      .in("listing_id", agentListingIds)
+      .eq("status", "confirmed")
+      .limit(10);
+
+    if (viewingsError) {
+      console.error("[dashboard-service] query failed", { table: "viewings", error: viewingsError });
+    }
+
+    type AgentViewingRow = {
+      id: string;
+      status: string;
+      viewing_slots: { start_time: string; listings: { address: string } | null } | null;
+    };
+
+    agentViewings = ((viewingsData as AgentViewingRow[] | null) ?? []).map((v) => ({
+      id: v.id,
+      property_address: v.viewing_slots?.listings?.address ?? "",
+      scheduled_at: new Date(v.viewing_slots?.start_time ?? 0),
+      status: v.status as "confirmed" | "pending" | "cancelled",
+    }));
+  }
+
   return {
     role: "agent",
     active_listings_count: listingsCount,
     leads_pipeline: pipeline,
-    viewings: viewings.map((v) => ({
-      id: v.id,
-      property_address: v.property_address,
-      scheduled_at: new Date(v.scheduled_at),
-      status: v.status as "confirmed" | "pending" | "cancelled",
-    })),
+    viewings: agentViewings,
     revenue: revenue ?? { current_month: 0, previous_month: 0, year_to_date: 0 },
     recent_activity: activity,
   };
@@ -497,9 +570,13 @@ async function safeCount(
       .select("*", { count: "exact", head: true })
       .eq(column, value);
 
-    if (error) return 0;
+    if (error) {
+      console.error("[dashboard-service] query failed", { table, error });
+      return 0;
+    }
     return count ?? 0;
-  } catch {
+  } catch (error) {
+    console.error("[dashboard-service] unexpected error", { table, error });
     return 0;
   }
 }
@@ -521,9 +598,15 @@ async function safeQuery<T>(
 
     const { data, error } = await query.limit(limit);
 
-    if (error || !data) return [];
+    if (error || !data) {
+      if (error) {
+        console.error("[dashboard-service] query failed", { table, error });
+      }
+      return [];
+    }
     return data as T[];
-  } catch {
+  } catch (error) {
+    console.error("[dashboard-service] unexpected error", { table, error });
     return [];
   }
 }
@@ -544,9 +627,15 @@ async function safeQuerySingle<T>(
 
     const { data, error } = await query.limit(1).maybeSingle();
 
-    if (error || !data) return null;
+    if (error || !data) {
+      if (error) {
+        console.error("[dashboard-service] query failed", { table, error });
+      }
+      return null;
+    }
     return data as T;
-  } catch {
+  } catch (error) {
+    console.error("[dashboard-service] unexpected error", { table, error });
     return null;
   }
 }

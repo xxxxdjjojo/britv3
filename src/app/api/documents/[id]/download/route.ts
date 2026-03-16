@@ -1,12 +1,12 @@
 /**
- * DELETE /api/documents/[id] — delete a buyer document
+ * GET /api/documents/[id]/download — return a short-lived signed download URL
  */
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { deleteDocument } from "@/services/documents/documents-service";
+import { getSignedDownloadUrl } from "@/services/documents/documents-service";
 
-export async function DELETE(
+export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -26,12 +26,12 @@ export async function DELETE(
       );
     }
 
-    await deleteDocument(supabase, user.id, documentId);
+    const url = await getSignedDownloadUrl(supabase, user.id, documentId);
 
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json({ url });
   } catch (err) {
     const message =
-      err instanceof Error ? err.message : "Failed to delete document";
+      err instanceof Error ? err.message : "Failed to generate download URL";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }

@@ -6,7 +6,8 @@
  * the appropriate role-specific dashboard component inside DashboardShell.
  */
 
-import { use } from "react";
+import { use, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { DashboardShell, StatCardGrid } from "@/components/dashboard/DashboardShell";
 import { StatCard, StatCardSkeleton } from "@/components/dashboard/StatCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
@@ -23,6 +24,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import type { UserRole } from "@/types/auth";
 import type { DashboardData, StatCardData } from "@/types/dashboard";
+
+// Client-side guard (defence-in-depth — server layout.tsx is the primary guard).
+const VALID_ROLES: ReadonlySet<string> = new Set<UserRole>([
+  "homebuyer",
+  "renter",
+  "seller",
+  "landlord",
+  "agent",
+  "service_provider",
+  "mortgage_broker",
+]);
 
 // ---------------------------------------------------------------------------
 // Stat card configurations per role
@@ -110,6 +122,14 @@ export default function RoleDashboardPage(
   }>,
 ) {
   const { role } = use(props.params);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!VALID_ROLES.has(role)) {
+      router.replace("/dashboard/homebuyer");
+    }
+  }, [role, router]);
+
   const typedRole = role as UserRole;
   const { data: result, isLoading, isError, refetch } = useDashboard();
   const refreshDashboard = useRefreshDashboard();
