@@ -145,12 +145,18 @@ export async function callClaude(
 
     // 4. Call Claude API
     const client = new Anthropic();
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: options.maxTokens ?? 1024,
-      system: options.systemPrompt,
-      messages: [{ role: "user", content: options.userMessage }],
-    });
+    const requestOptions = options.timeoutMs !== undefined
+      ? { signal: AbortSignal.timeout(options.timeoutMs) }
+      : undefined;
+    const response = await client.messages.create(
+      {
+        model: options.model ?? MODEL,
+        max_tokens: options.maxTokens ?? 1024,
+        system: options.systemPrompt,
+        messages: [{ role: "user", content: options.userMessage }],
+      },
+      requestOptions,
+    );
 
     // 5. Extract text from response
     const textBlock = response.content.find((block) => block.type === "text");
