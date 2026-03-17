@@ -40,14 +40,13 @@ export function sanitizeText(dirty: string): string {
 }
 
 /**
- * Strip PostgREST filter-syntax characters from user input before
- * interpolating into `.or()` / `.filter()` strings.
+ * Strip PostgREST filter-syntax and ILIKE wildcard characters from user input
+ * before interpolating into `.or()` / `.filter()` strings.
  *
- * Removes: , . ( ) \ which are used to separate conditions, construct
- * field.operator.value expressions, group filters, and escape characters.
+ * Removes: , . ( ) \ (PostgREST filter syntax) and % _ (ILIKE wildcards).
  */
 export function sanitizePostgrestInput(dirty: string): string {
   if (dirty == null) return "";
   if (typeof dirty !== "string") return "";
-  return dirty.replace(/[,().\\]/g, "");
+  return dirty.replace(/[,().\\%_]/g, "");
 }
