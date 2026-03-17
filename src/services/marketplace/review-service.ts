@@ -291,8 +291,8 @@ export async function respondToReview(
 }
 
 /**
- * Flag a review for moderation. Users cannot flag their own reviews.
- * After 3 flags, moderation queue priority is boosted.
+ * Flag a review for moderation using an atomic RPC.
+ * Prevents self-flagging, duplicate flags, and handles priority boosting server-side.
  */
 export async function flagReview(
   supabase: SupabaseClient,
@@ -300,63 +300,27 @@ export async function flagReview(
   reviewId: string,
   data: ReviewFlagInput,
 ) {
-  // Validate input
   const parsed = reviewFlagSchema.parse(data);
 
-  // Verify review exists and user is not the reviewer
-  const { data: review, error: reviewError } = await supabase
-    .from("reviews")
-    .select("id, reviewer_id, flag_count")
-    .eq("id", reviewId)
-    .single();
+  const { data: result, error } = await supabase.rpc("atomic_flag_review", {
+    p_review_id: reviewId,
+    p_user_id: userId,
+    p_reason: parsed.reason,
+    p_description: parsed.description ?? null,
+  });
 
-  if (reviewError || !review) {
-    throw new Error("Review not found");
-  }
-
-  if (review.reviewer_id === userId) {
-    throw new Error("Cannot flag your own review");
-  }
-
-  // Insert the flag
-  const { data: flag, error: flagError } = await supabase
-    .from("review_flags")
-    .insert({
-      review_id: reviewId,
-      user_id: userId,
-      reason: parsed.reason,
-      description: parsed.description ?? null,
-      admin_status: "pending",
-    })
-    .select()
-    .single();
-
-  if (flagError) {
-    throw new Error(`Failed to flag review: ${flagError.message}`);
-  }
-
-  // Increment flag_count on the review
-  const newFlagCount = (review.flag_count ?? 0) + 1;
-  await supabase
-    .from("reviews")
-    .update({ flag_count: newFlagCount })
-    .eq("id", reviewId);
-
-  // If flag_count >= 3, boost moderation queue priority
-  if (newFlagCount >= 3) {
-    const { data: queueEntry } = await supabase
-      .from("moderation_queue")
-      .select("id, priority_score")
-      .eq("review_id", reviewId)
-      .maybeSingle();
-
-    if (queueEntry) {
-      await supabase
-        .from("moderation_queue")
-        .update({ priority_score: queueEntry.priority_score + 5 })
-        .eq("id", queueEntry.id);
+  if (error) {
+    if (error.message.includes("Cannot flag your own review")) {
+      throw new Error("Cannot flag your own review");
     }
+    if (error.message.includes("Review not found")) {
+      throw new Error("Review not found");
+    }
+    if (error.code === "23505") {
+      throw new Error("You have already flagged this review");
+    }
+    throw new Error(`Failed to flag review: ${error.message}`);
   }
 
-  return flag;
+  return result;
 }
