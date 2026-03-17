@@ -7,6 +7,10 @@ import { toast } from "sonner";
 import { PasswordChangeCard } from "@/components/settings/PasswordChangeCard";
 import { TotpEnrollmentCard } from "@/components/settings/TotpEnrollmentCard";
 import { ActiveSessionsList } from "@/components/settings/ActiveSessionsList";
+import { ConnectedAccountsCard } from "@/components/settings/ConnectedAccountsCard";
+import { LoginHistoryTable } from "@/components/settings/LoginHistoryTable";
+import type { UserIdentity } from "@supabase/supabase-js";
+import type { LoginHistoryEntry } from "@/components/settings/LoginHistoryTable";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -61,6 +65,16 @@ export default function SecuritySettingsPage() {
     null,
   );
 
+  // ---- Connected Accounts state ----
+  const [identities, setIdentities] = useState<UserIdentity[]>([]);
+  const [identitiesLoading, setIdentitiesLoading] = useState(true);
+  const [unlinkingId, setUnlinkingId] = useState<string | null>(null);
+
+  // ---- Login History state ----
+  const [loginHistory, setLoginHistory] = useState<LoginHistoryEntry[]>([]);
+  const [loginHistoryLoading, setLoginHistoryLoading] = useState(true);
+  const [loginHistoryFallback, setLoginHistoryFallback] = useState(false);
+
   // ---------------------------------------------------------------------------
   // On mount: check MFA status
   // ---------------------------------------------------------------------------
@@ -114,10 +128,55 @@ export default function SecuritySettingsPage() {
     }
   }, []);
 
+  // ---------------------------------------------------------------------------
+  // On mount: load connected accounts
+  // ---------------------------------------------------------------------------
+
+  const loadIdentities = useCallback(async () => {
+    setIdentitiesLoading(true);
+    try {
+      const res = await fetch("/api/settings/connected");
+      if (!res.ok) throw new Error("Failed to load connected accounts");
+      const { identities: data } = (await res.json()) as {
+        identities: UserIdentity[];
+      };
+      setIdentities(data ?? []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIdentitiesLoading(false);
+    }
+  }, []);
+
+  // ---------------------------------------------------------------------------
+  // On mount: load login history
+  // ---------------------------------------------------------------------------
+
+  const loadLoginHistory = useCallback(async () => {
+    setLoginHistoryLoading(true);
+    try {
+      const res = await fetch("/api/settings/login-history?page=1&limit=10");
+      if (!res.ok) throw new Error("Failed to load login history");
+      const body = (await res.json()) as {
+        entries: LoginHistoryEntry[];
+        fallback: boolean;
+      };
+      setLoginHistory(body.entries ?? []);
+      setLoginHistoryFallback(body.fallback ?? false);
+    } catch (err) {
+      console.error(err);
+      setLoginHistoryFallback(true);
+    } finally {
+      setLoginHistoryLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     void checkMfaStatus();
     void loadSessions();
-  }, [checkMfaStatus, loadSessions]);
+    void loadIdentities();
+    void loadLoginHistory();
+  }, [checkMfaStatus, loadSessions, loadIdentities, loadLoginHistory]);
 
   // ---------------------------------------------------------------------------
   // Section 1: Change Password handlers
@@ -336,6 +395,50 @@ export default function SecuritySettingsPage() {
   }
 
   // ---------------------------------------------------------------------------
+  // Section 4: Connected Accounts handlers
+  // ---------------------------------------------------------------------------
+
+  async function handleUnlinkIdentity(identityId: string) {
+    setUnlinkingId(identityId);
+    try {
+      const res = await fetch(
+        `/api/settings/connected?identity_id=${identityId}`,
+        { method: "DELETE" },
+      );
+      const body = (await res.json()) as { success?: boolean; error?: string };
+
+      if (!res.ok) {
+        toast.error(body.error ?? "Failed to disconnect account");
+        return;
+      }
+
+      setIdentities((prev) =>
+        prev.filter((i) => i.identity_id !== identityId),
+      );
+      toast.success("Account disconnected");
+    } catch {
+      toast.error("Failed to disconnect account");
+    } finally {
+      setUnlinkingId(null);
+    }
+  }
+
+  async function handleLinkProvider(provider: string) {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.linkIdentity({
+        provider: provider as "google" | "github",
+        options: { redirectTo: `${window.location.origin}/settings/security` },
+      });
+      if (error) {
+        toast.error(error.message ?? "Failed to link account");
+      }
+    } catch {
+      toast.error("Failed to link account");
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
@@ -344,7 +447,8 @@ export default function SecuritySettingsPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Security</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your password, two-factor authentication, and active sessions.
+          Manage your password, two-factor authentication, connected accounts,
+          and active sessions.
         </p>
       </div>
 
@@ -380,6 +484,14 @@ export default function SecuritySettingsPage() {
         onDismissBackupCodes={() => setBackupCodes(null)}
       />
 
+      <ConnectedAccountsCard
+        identities={identities}
+        loading={identitiesLoading}
+        unlinkingId={unlinkingId}
+        onUnlink={handleUnlinkIdentity}
+        onLink={handleLinkProvider}
+      />
+
       <ActiveSessionsList
         sessions={sessions}
         sessionsLoading={sessionsLoading}
@@ -387,6 +499,12 @@ export default function SecuritySettingsPage() {
         signingOutSession={signingOutSession}
         onSignOutAll={handleSignOutAll}
         onSignOutSession={handleSignOutSession}
+      />
+
+      <LoginHistoryTable
+        entries={loginHistory}
+        loading={loginHistoryLoading}
+        fallback={loginHistoryFallback}
       />
     </div>
   );
