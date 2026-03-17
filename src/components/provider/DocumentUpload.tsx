@@ -36,6 +36,14 @@ const DOCUMENT_TYPE_LABELS: Record<VerificationDocumentType, string> = {
   business_registration: "Business Registration",
   dbs_check: "DBS Check",
   reference_letter: "Reference Letter",
+  // UK trade credentials (Phase 16)
+  gas_safe_certificate: "Gas Safe Certificate",
+  niceic_registration: "NICEIC Registration",
+  napit_registration: "NAPIT Registration",
+  cscs_card: "CSCS Card",
+  part_p_certificate: "Part P Certificate",
+  acs_qualification: "ACS Qualification",
+  public_liability_insurance: "Public Liability Insurance",
 };
 
 const STATUS_CONFIG: Record<

@@ -33,7 +33,15 @@ export type VerificationDocumentType =
   | "insurance_certificate"
   | "business_registration"
   | "dbs_check"
-  | "reference_letter";
+  | "reference_letter"
+  // UK trade credentials — added for Phase 16 provider dashboard
+  | "gas_safe_certificate"
+  | "niceic_registration"
+  | "napit_registration"
+  | "cscs_card"
+  | "part_p_certificate"
+  | "acs_qualification"
+  | "public_liability_insurance";
 
 export type DocumentVerificationStatus =
   | "pending"

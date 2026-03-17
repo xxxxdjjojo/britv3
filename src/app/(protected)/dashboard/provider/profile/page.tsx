@@ -1,107 +1,40 @@
-"use client";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { getProviderProfile } from "@/services/provider/provider-profile-service";
+import { ProfileEditForm } from "@/components/dashboard/provider/ProfileEditForm";
 
-import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ProviderProfileForm } from "@/components/provider/ProviderProfileForm";
-import type { ProviderVerificationStatus } from "@/types/marketplace";
+export default async function ProviderProfilePage() {
+  const supabase = await createClient();
 
-const VERIFICATION_LABELS: Record<
-  ProviderVerificationStatus,
-  { label: string; className: string }
-> = {
-  unverified: {
-    label: "Unverified",
-    className: "bg-neutral-100 text-neutral-600",
-  },
-  pending_review: {
-    label: "Pending Review",
-    className: "bg-yellow-100 text-yellow-800",
-  },
-  verified: {
-    label: "Verified",
-    className: "bg-green-100 text-green-800",
-  },
-  suspended: {
-    label: "Suspended",
-    className: "bg-red-100 text-red-800",
-  },
-  rejected: {
-    label: "Rejected",
-    className: "bg-red-100 text-red-800",
-  },
-};
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function ProviderProfilePage() {
-  const [verificationStatus, setVerificationStatus] =
-    useState<ProviderVerificationStatus>("unverified");
-  const [existingProfile, setExistingProfile] = useState<Record<string, unknown> | null>(null);
-  const [loading, setLoading] = useState(true);
+  if (!user) {
+    redirect("/login");
+  }
 
-  useEffect(() => {
-    async function loadProfile() {
-      try {
-        const res = await fetch("/api/providers/profile");
-        if (res.ok) {
-          const data = await res.json();
-          setExistingProfile(data);
-          setVerificationStatus(
-            (data.verification_status as ProviderVerificationStatus) ??
-              "unverified",
-          );
-        }
-      } catch {
-        // no existing profile
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadProfile();
-  }, []);
+  const profile = await getProviderProfile(supabase, user.id).catch(() => null);
 
-  const statusConfig = VERIFICATION_LABELS[verificationStatus];
-
-  if (loading) {
-    return (
-      <div className="py-12 text-center text-sm text-muted-foreground">
-        Loading...
-      </div>
-    );
+  if (!profile) {
+    // Provider hasn't set up their profile yet — redirect to setup
+    redirect("/dashboard/provider/profile/setup");
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">
-          Provider Profile
-        </h1>
-        <Badge
-          variant="outline"
-          className={`border-transparent ${statusConfig.className}`}
-        >
-          {statusConfig.label}
-        </Badge>
+    <div className="p-6 max-w-5xl">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-neutral-900">Edit Profile</h1>
+        <p className="mt-1 text-sm text-neutral-500">
+          Keep your profile up to date to attract more clients.
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {existingProfile ? "Edit Profile" : "Create Profile"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ProviderProfileForm
-            defaultValues={existingProfile as Record<string, unknown> | undefined}
-            isEdit={!!existingProfile}
-            onSuccess={() => window.location.reload()}
-          />
-        </CardContent>
-      </Card>
+      {/* Form + Live Preview */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <ProfileEditForm profile={profile} userId={user.id} />
+      </div>
     </div>
   );
 }

@@ -32,6 +32,11 @@ const nextConfig: NextConfig = {
       { source: "/accessibility", destination: "/legal/accessibility", permanent: true },
       { source: "/complaints", destination: "/legal/complaints", permanent: true },
       { source: "/signup", destination: "/register", permanent: false },
+      {
+        source: "/dashboard/service_provider/:path*",
+        destination: "/dashboard/provider/:path*",
+        permanent: true,
+      },
     ];
   },
 };
