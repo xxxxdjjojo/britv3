@@ -179,6 +179,19 @@ export const reviewCreateSchema = z.object({
 
 export type ReviewCreateInput = z.infer<typeof reviewCreateSchema>;
 
+/** Review edit form (within 48h window) */
+export const reviewEditSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters").max(100, "Title must be under 100 characters"),
+  review_text: z.string().min(20, "Review must be at least 20 characters").max(2000, "Review must be under 2000 characters"),
+  overall_rating: z.number().int().min(1).max(5),
+  punctuality_rating: z.number().int().min(1).max(5).optional(),
+  quality_rating: z.number().int().min(1).max(5).optional(),
+  value_rating: z.number().int().min(1).max(5).optional(),
+  professionalism_rating: z.number().int().min(1).max(5).optional(),
+});
+
+export type ReviewEditInput = z.infer<typeof reviewEditSchema>;
+
 /** Provider search form */
 export const providerSearchSchema = z.object({
   service_category: z.enum(SERVICE_CATEGORIES).optional(),

@@ -271,6 +271,10 @@ export type Review = Readonly<{
   provider_response_at: Date | null;
   helpful_count: number;
   not_helpful_count: number;
+  edited_at: Date | null;
+  original_text: string | null;
+  edit_count: number;
+  edit_history: Array<{ text: string; title: string; edited_at: string }>;
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
