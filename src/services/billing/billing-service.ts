@@ -101,24 +101,23 @@ export async function getSubscription(
 }
 
 /**
- * Creates a Stripe Checkout session for a subscription plan.
- * Returns the redirect URL. Caller must validate priceId against allowlist
- * before calling this function.
+ * Creates a Stripe Embedded Checkout session for a subscription plan.
+ * Returns { clientSecret } for use with `<EmbeddedCheckout>`.
+ * Caller must validate priceId against allowlist before calling.
  */
 export async function createSubscriptionCheckout(
   userId: string,
   priceId: string,
-  successUrl: string,
-  cancelUrl: string,
+  returnUrl: string,
   role: BillingRole,
-): Promise<string> {
+): Promise<{ clientSecret: string }> {
   const stripe = getStripe();
 
-  let sessionParams: Stripe.Checkout.SessionCreateParams = {
+  const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode: "subscription",
+    ui_mode: "embedded",
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
+    return_url: returnUrl,
     client_reference_id: userId,
     metadata: { user_id: userId, role },
     billing_address_collection: "auto",
@@ -130,33 +129,33 @@ export async function createSubscriptionCheckout(
   // The webhook will create/link the customer on checkout.session.completed
 
   const session = await stripe.checkout.sessions.create(sessionParams);
-  if (!session.url) throw new Error("Stripe did not return a checkout URL");
-  return session.url;
+  if (!session.client_secret) throw new Error("Stripe did not return a client secret");
+  return { clientSecret: session.client_secret };
 }
 
 /**
- * Creates a Stripe Checkout session for a one-time payment (e.g., featured boost).
+ * Creates a Stripe Embedded Checkout session for a one-time payment (e.g., featured boost).
+ * Returns { clientSecret } for use with `<EmbeddedCheckout>`.
  */
 export async function createOneTimeCheckout(
   userId: string,
   priceId: string,
-  successUrl: string,
-  cancelUrl: string,
+  returnUrl: string,
   metadata?: Record<string, string>,
-): Promise<string> {
+): Promise<{ clientSecret: string }> {
   const stripe = getStripe();
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
+    ui_mode: "embedded",
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
+    return_url: returnUrl,
     client_reference_id: userId,
     metadata: { user_id: userId, ...metadata },
   });
 
-  if (!session.url) throw new Error("Stripe did not return a checkout URL");
-  return session.url;
+  if (!session.client_secret) throw new Error("Stripe did not return a client secret");
+  return { clientSecret: session.client_secret };
 }
 
 /**

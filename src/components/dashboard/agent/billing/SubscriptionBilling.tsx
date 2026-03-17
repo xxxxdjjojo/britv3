@@ -192,8 +192,8 @@ function NoPlanCard() {
                 )}
               </CardTitle>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {formatGBP(plan.price)}
-                <span className="text-sm font-normal text-gray-500">/{plan.interval}</span>
+                {formatGBP(plan.priceMonthly)}
+                <span className="text-sm font-normal text-gray-500">/month</span>
               </p>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -208,10 +208,10 @@ function NoPlanCard() {
               <Button
                 className="w-full"
                 variant={plan.highlighted ? "default" : "outline"}
-                onClick={() => void handleSubscribe(plan.priceId)}
+                onClick={() => void handleSubscribe(plan.priceIdMonthly)}
                 disabled={loadingPriceId !== null}
               >
-                {loadingPriceId === plan.priceId ? "Redirecting..." : `Subscribe — ${formatGBP(plan.price)}/mo`}
+                {loadingPriceId === plan.priceIdMonthly ? "Redirecting..." : `Subscribe — ${formatGBP(plan.priceMonthly)}/mo`}
               </Button>
             </CardContent>
           </Card>

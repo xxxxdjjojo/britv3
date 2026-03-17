@@ -1,13 +1,14 @@
 /**
  * POST /api/billing/checkout
  *
- * Creates a Stripe Checkout session.
+ * Creates a Stripe Embedded Checkout session.
  * Supports both subscription and one-time payment modes.
+ * Returns { clientSecret } for use with <EmbeddedCheckout>.
  *
  * Security:
  * - Requires authentication.
  * - Validates price_id against server-side allowlist.
- * - Validates success_url / cancel_url are same-origin.
+ * - Validates return_url is same-origin.
  * - Checks user doesn't already have an active subscription (mode=subscription).
  */
 
@@ -38,43 +39,35 @@ export async function POST(request: Request) {
 
   const {
     price_id,
-    success_url,
-    cancel_url,
+    return_url,
     mode = "subscription",
     role,
     metadata,
   } = body as {
     price_id?: string;
-    success_url?: string;
-    cancel_url?: string;
+    return_url?: string;
     mode?: "subscription" | "payment";
     role?: BillingRole;
     metadata?: Record<string, string>;
   };
 
-  // ─── Validation ─────────────────────────────────────────────────────────────
+  // --- Validation ---------------------------------------------------------------
   if (!price_id) {
     return NextResponse.json({ error: "price_id is required" }, { status: 400 });
   }
-  if (!success_url) {
-    return NextResponse.json({ error: "success_url is required" }, { status: 400 });
-  }
-  if (!cancel_url) {
-    return NextResponse.json({ error: "cancel_url is required" }, { status: 400 });
+  if (!return_url) {
+    return NextResponse.json({ error: "return_url is required" }, { status: 400 });
   }
 
   if (!isPriceIdAllowed(price_id)) {
     return NextResponse.json({ error: "Invalid price_id" }, { status: 400 });
   }
 
-  if (!isValidReturnUrl(success_url)) {
-    return NextResponse.json({ error: "Invalid success_url" }, { status: 400 });
-  }
-  if (!isValidReturnUrl(cancel_url)) {
-    return NextResponse.json({ error: "Invalid cancel_url" }, { status: 400 });
+  if (!isValidReturnUrl(return_url)) {
+    return NextResponse.json({ error: "Invalid return_url" }, { status: 400 });
   }
 
-  // ─── Duplicate subscription guard ───────────────────────────────────────────
+  // --- Duplicate subscription guard ---------------------------------------------
   if (mode === "subscription") {
     const existing = await getSubscription(supabase, user.id);
     if (existing && (existing.status === "active" || existing.status === "trialing")) {
@@ -85,23 +78,22 @@ export async function POST(request: Request) {
     }
   }
 
-  // ─── Create session ──────────────────────────────────────────────────────────
+  // --- Create session -----------------------------------------------------------
   try {
-    let url: string;
+    let result: { clientSecret: string };
 
     if (mode === "payment") {
-      url = await createOneTimeCheckout(user.id, price_id, success_url, cancel_url, metadata);
+      result = await createOneTimeCheckout(user.id, price_id, return_url, metadata);
     } else {
-      url = await createSubscriptionCheckout(
+      result = await createSubscriptionCheckout(
         user.id,
         price_id,
-        success_url,
-        cancel_url,
+        return_url,
         role ?? "agent",
       );
     }
 
-    return NextResponse.json({ url });
+    return NextResponse.json({ clientSecret: result.clientSecret });
   } catch (err) {
     console.error("[billing/checkout] Failed to create checkout session:", err);
     return NextResponse.json(

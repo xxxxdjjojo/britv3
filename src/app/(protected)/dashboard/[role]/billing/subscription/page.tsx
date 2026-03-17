@@ -149,7 +149,7 @@ export default async function SubscriptionPage({
                     <CardContent className="pt-6 pb-4">
                       <p className="font-semibold text-gray-900 dark:text-gray-100">{plan.name}</p>
                       <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        {formatGBP(plan.price)}
+                        {formatGBP(plan.priceMonthly)}
                         <span className="text-sm font-normal text-gray-500">/mo</span>
                       </p>
                       <ul className="mt-3 space-y-1.5">
