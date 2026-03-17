@@ -42,5 +42,8 @@ yarn-error.log*
 next-env.d.ts
 .claude/
 
+# playwright auth state
+e2e/.auth/
+
 # git worktrees
 .worktrees/
