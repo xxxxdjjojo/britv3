@@ -1,34 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { updatePassword } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
-import {
-  Lock,
-  Shield,
-  Monitor,
-  Smartphone,
-  Laptop,
-  LogOut,
-  Loader2,
-  Copy,
-  Download,
-  CheckCircle,
-  AlertTriangle,
-} from "lucide-react";
 import { toast } from "sonner";
+import { PasswordChangeCard } from "@/components/settings/security/PasswordChangeCard";
+import { TotpEnrollmentCard } from "@/components/settings/security/TotpEnrollmentCard";
+import { ActiveSessionsList } from "@/components/settings/security/ActiveSessionsList";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,30 +32,6 @@ type SessionInfo = {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function deviceIcon(userAgent?: string) {
-  if (!userAgent) return <Monitor className="size-5 text-muted-foreground" />;
-  const ua = userAgent.toLowerCase();
-  if (/mobile|android|iphone|ipad/.test(ua)) {
-    return <Smartphone className="size-5 text-muted-foreground" />;
-  }
-  if (/macintosh|windows|linux/.test(ua)) {
-    return <Laptop className="size-5 text-muted-foreground" />;
-  }
-  return <Monitor className="size-5 text-muted-foreground" />;
-}
-
-function friendlyUserAgent(userAgent?: string): string {
-  if (!userAgent) return "Unknown device";
-  const ua = userAgent;
-  if (/iPhone/.test(ua)) return "iPhone";
-  if (/iPad/.test(ua)) return "iPad";
-  if (/Android/.test(ua)) return "Android device";
-  if (/Macintosh/.test(ua)) return "Mac";
-  if (/Windows/.test(ua)) return "Windows PC";
-  if (/Linux/.test(ua)) return "Linux";
-  return "Unknown device";
-}
 
 function formatDate(dateStr?: string): string {
   if (!dateStr) return "Unknown";
@@ -414,374 +368,48 @@ export default function SecuritySettingsPage() {
         </p>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Section 1: Change Password                                          */}
-      {/* ------------------------------------------------------------------ */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lock className="size-5 text-brand-primary" />
-            Change Password
-          </CardTitle>
-          <CardDescription>
-            Update your password to keep your account secure.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handlePasswordChange} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="current-password">Current Password</Label>
-              <Input
-                id="current-password"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="At least 12 characters"
-                required
-              />
-              <PasswordStrengthMeter password={newPassword} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-                required
-              />
-              {confirmPassword && newPassword !== confirmPassword && (
-                <p className="text-xs text-destructive">
-                  Passwords do not match
-                </p>
-              )}
-            </div>
-            <Button type="submit" disabled={changingPassword}>
-              {changingPassword && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              Update Password
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <PasswordChangeCard
+        currentPassword={currentPassword}
+        newPassword={newPassword}
+        confirmPassword={confirmPassword}
+        changingPassword={changingPassword}
+        onCurrentPasswordChange={setCurrentPassword}
+        onNewPasswordChange={setNewPassword}
+        onConfirmPasswordChange={setConfirmPassword}
+        onSubmit={handlePasswordChange}
+      />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Section 2: Two-Factor Authentication                                */}
-      {/* ------------------------------------------------------------------ */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="size-5 text-brand-primary" />
-            Two-Factor Authentication
-            {!mfaLoading && (
-              <Badge
-                variant={mfaState === "ENABLED" ? "default" : "secondary"}
-                className={
-                  mfaState === "ENABLED"
-                    ? "bg-success/20 text-success"
-                    : undefined
-                }
-              >
-                {mfaState === "ENABLED"
-                  ? "Active"
-                  : mfaState === "PENDING"
-                    ? "Setup in progress"
-                    : "Not set up"}
-              </Badge>
-            )}
-          </CardTitle>
-          <CardDescription>
-            Add an extra layer of security by requiring a verification code in
-            addition to your password.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {mfaLoading ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              Loading 2FA status…
-            </div>
-          ) : mfaState === "DISABLED" ? (
-            <Button onClick={handleStartEnroll} disabled={enrolling}>
-              {enrolling ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Shield className="size-4" />
-              )}
-              Set up Authenticator App
-            </Button>
-          ) : mfaState === "PENDING" ? (
-            <div className="space-y-4">
-              {/* Resume banner when page loads with an unverified factor */}
-              {!totpData && (
-                <div className="flex items-center gap-2 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
-                  <AlertTriangle className="size-4 shrink-0 text-warning" />
-                  <span>
-                    2FA setup is incomplete. Restart setup to get a fresh QR
-                    code.
-                  </span>
-                </div>
-              )}
+      <TotpEnrollmentCard
+        mfaState={mfaState}
+        mfaLoading={mfaLoading}
+        totpData={totpData}
+        totpCode={totpCode}
+        verifying={verifying}
+        enrolling={enrolling}
+        disabling={disabling}
+        backupCodes={backupCodes}
+        regenerating={regenerating}
+        copiedAll={copiedAll}
+        onStartEnroll={handleStartEnroll}
+        onVerify={handleVerify}
+        onDisable={handleDisable}
+        onRegenerateBackupCodes={handleRegenerateBackupCodes}
+        onCopyAll={handleCopyAll}
+        onDownload={handleDownload}
+        onDismissBackupCodes={() => setBackupCodes(null)}
+        onTotpCodeChange={setTotpCode}
+        onRestartSetup={handleStartEnroll}
+      />
 
-              {totpData && (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    Scan this QR code with your authenticator app (e.g. Google
-                    Authenticator, Authy).
-                  </p>
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                    <img
-                      src={totpData.qr_code}
-                      alt="QR code for authenticator app"
-                      className="h-40 w-40 rounded-md border"
-                    />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-xs text-muted-foreground">
-                        Or enter this key manually:
-                      </p>
-                      <code className="block break-all rounded-md bg-muted px-3 py-2 font-mono text-sm">
-                        {totpData.secret}
-                      </code>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {totpData && (
-                <div className="space-y-2">
-                  <Label htmlFor="totp-code">Verification Code</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="totp-code"
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={totpCode}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, "");
-                        setTotpCode(val);
-                      }}
-                      placeholder="6-digit code"
-                      className="w-36 font-mono tracking-widest"
-                      disabled={verifying}
-                    />
-                    <Button
-                      onClick={handleVerify}
-                      disabled={totpCode.length !== 6 || verifying}
-                    >
-                      {verifying ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : null}
-                      Verify
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleStartEnroll}
-                disabled={enrolling}
-              >
-                {enrolling ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : null}
-                Restart setup
-              </Button>
-            </div>
-          ) : (
-            /* ENABLED */
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm">
-                <CheckCircle className="size-4 text-success" />
-                <span className="font-medium">Authenticator App — Active</span>
-              </div>
-
-              {/* Backup codes — shown once after verify or regenerate */}
-              {backupCodes && (
-                <div className="rounded-md border border-warning/40 bg-warning/10 p-4 space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-medium text-warning-foreground">
-                    <AlertTriangle className="size-4 shrink-0 text-warning" />
-                    Download before closing — codes will not be shown again
-                  </div>
-                  <div className="grid grid-cols-2 gap-1">
-                    {backupCodes.map((code) => (
-                      <code
-                        key={code}
-                        className="font-mono text-sm rounded bg-background px-2 py-1"
-                      >
-                        {code}
-                      </code>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCopyAll}
-                    >
-                      {copiedAll ? (
-                        <CheckCircle className="size-4 text-success" />
-                      ) : (
-                        <Copy className="size-4" />
-                      )}
-                      {copiedAll ? "Copied" : "Copy All"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleDownload}
-                    >
-                      <Download className="size-4" />
-                      Download
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setBackupCodes(null)}
-                      className="ml-auto"
-                    >
-                      Dismiss
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRegenerateBackupCodes}
-                  disabled={regenerating}
-                >
-                  {regenerating ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : null}
-                  Regenerate Backup Codes
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleDisable}
-                  disabled={disabling}
-                >
-                  {disabling ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : null}
-                  Disable 2FA
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Section 3: Active Sessions                                          */}
-      {/* ------------------------------------------------------------------ */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Monitor className="size-5 text-brand-primary" />
-            Active Sessions
-          </CardTitle>
-          <CardDescription>
-            Manage your active sessions across all devices.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {sessionsLoading ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" />
-              Loading sessions…
-            </div>
-          ) : sessions.length === 0 ? (
-            <div className="flex items-center gap-3 rounded-lg border p-3">
-              <Monitor className="size-5 text-success" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">Current Device</p>
-                <p className="text-xs text-muted-foreground">
-                  You are currently signed in on this device
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {sessions.map((session) => (
-                <div
-                  key={session.id}
-                  className="flex items-center gap-3 rounded-lg border p-3"
-                >
-                  {deviceIcon(session.user_agent)}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium truncate">
-                        {friendlyUserAgent(session.user_agent)}
-                      </p>
-                      {session.is_current && (
-                        <Badge
-                          variant="secondary"
-                          className="bg-success/20 text-success text-xs"
-                        >
-                          Current session
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {session.last_sign_in_at
-                        ? `Last active ${formatDate(session.last_sign_in_at)}`
-                        : `Started ${formatDate(session.created_at)}`}
-                    </p>
-                  </div>
-                  {!session.is_current && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSignOutSession(session.id)}
-                      disabled={signingOutSession === session.id}
-                    >
-                      {signingOutSession === session.id ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <LogOut className="size-4" />
-                      )}
-                      <span className="sr-only">Sign out this session</span>
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleSignOutAll}
-            disabled={signingOut}
-          >
-            {signingOut ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <LogOut className="size-4" />
-            )}
-            Sign Out of All Devices
-          </Button>
-        </CardContent>
-      </Card>
+      <ActiveSessionsList
+        sessions={sessions}
+        sessionsLoading={sessionsLoading}
+        signingOut={signingOut}
+        signingOutSession={signingOutSession}
+        formatDate={formatDate}
+        onSignOutSession={handleSignOutSession}
+        onSignOutAll={handleSignOutAll}
+      />
     </div>
   );
 }
