@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils";
 
 type ViewMode = "grid" | "list" | "map";
 type SortOption = "most_recent" | "price_asc" | "price_desc" | "most_popular";
+type ListingType = "all" | "sale" | "rent" | "new_build" | "commercial" | "land" | "auction";
 
 type MockProperty = {
   id: string;
@@ -44,6 +45,7 @@ type MockProperty = {
   baths: number;
   sqft: number;
   type: string;
+  listing_type: ListingType;
 };
 
 // ---------------------------------------------------------------------------
@@ -51,14 +53,14 @@ type MockProperty = {
 // ---------------------------------------------------------------------------
 
 const MOCK_PROPERTIES: MockProperty[] = [
-  { id: "1", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced" },
-  { id: "2", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached" },
-  { id: "3", price: 320000, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat" },
-  { id: "4", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached" },
-  { id: "5", price: 540000, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat" },
-  { id: "6", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced" },
-  { id: "7", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached" },
-  { id: "8", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat" },
+  { id: "1", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale" },
+  { id: "2", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale" },
+  { id: "3", price: 320000, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent" },
+  { id: "4", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale" },
+  { id: "5", price: 540000, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent" },
+  { id: "6", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale" },
+  { id: "7", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "commercial" },
+  { id: "8", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale" },
 ];
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
@@ -66,6 +68,16 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "price_asc", label: "Price Low–High" },
   { value: "price_desc", label: "Price High–Low" },
   { value: "most_popular", label: "Most Popular" },
+];
+
+const LISTING_TYPES: { value: ListingType; label: string }[] = [
+  { value: "all", label: "All Properties" },
+  { value: "sale", label: "For Sale" },
+  { value: "rent", label: "To Rent" },
+  { value: "new_build", label: "New Builds" },
+  { value: "commercial", label: "Commercial" },
+  { value: "land", label: "Land" },
+  { value: "auction", label: "Auctions" },
 ];
 
 const PROPERTY_TYPES = ["Detached", "Semi-detached", "Terraced", "Flat", "Bungalow"];
@@ -215,11 +227,15 @@ export default function SearchPage() {
     "Chain Free": false,
   });
 
+  // Listing type filter
+  const [listingType, setListingType] = useState<ListingType>("all");
+
   // Mobile filters panel
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Derive active filter count for badges
   const activeFilterCount =
+    (listingType !== "all" ? 1 : 0) +
     (minPrice ? 1 : 0) +
     (maxPrice ? 1 : 0) +
     selectedTypes.length +
@@ -240,6 +256,7 @@ export default function SearchPage() {
 
   // Reset all filters
   function resetFilters() {
+    setListingType("all");
     setMinPrice("");
     setMaxPrice("");
     setSelectedTypes([]);
@@ -247,7 +264,12 @@ export default function SearchPage() {
     setMustHaves({ Garden: false, Parking: false, Garage: false, "Chain Free": false });
   }
 
-  const showEmpty = MOCK_PROPERTIES.length === 0;
+  const filteredProperties =
+    listingType === "all"
+      ? MOCK_PROPERTIES
+      : MOCK_PROPERTIES.filter((p) => p.listing_type === listingType);
+
+  const showEmpty = filteredProperties.length === 0;
 
   // ---------------------------------------------------------------------------
   // Sidebar filters — shared between desktop sidebar and mobile sheet
@@ -375,6 +397,27 @@ export default function SearchPage() {
       {/* Top sticky bar                                                       */}
       {/* ------------------------------------------------------------------ */}
       <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white shadow-sm">
+        {/* Listing type filter tabs */}
+        <div className="overflow-x-auto border-b border-neutral-100">
+          <div className="flex items-center gap-2 px-4 py-2.5">
+            {LISTING_TYPES.map((lt) => (
+              <button
+                key={lt.value}
+                type="button"
+                onClick={() => setListingType(lt.value)}
+                className={cn(
+                  "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                  listingType === lt.value
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary",
+                )}
+              >
+                {lt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="flex items-center gap-3 px-4 py-3">
           {/* Compact search input */}
           <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
@@ -469,13 +512,13 @@ export default function SearchPage() {
             <EmptyState />
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {MOCK_PROPERTIES.map((property) => (
+              {filteredProperties.map((property) => (
                 <MockPropertyCardGrid key={property.id} property={property} />
               ))}
             </div>
           ) : viewMode === "list" ? (
             <div className="flex flex-col gap-4">
-              {MOCK_PROPERTIES.map((property) => (
+              {filteredProperties.map((property) => (
                 <MockPropertyCardList key={property.id} property={property} />
               ))}
             </div>
