@@ -2,6 +2,27 @@
 
 All notable changes to Britestate are documented here.
 
+## [0.3.0] - 2026-03-17
+
+### Added
+- **Marketplace Discovery (Phase 14)**
+  - Area reviews page at `/reviews/[area]` with category breakdown and weighted average rating
+  - `PATCH /api/reviews/[id]/edit` — edit a review within the 48-hour window (max 2 edits, audit trail, moderation re-queue)
+  - `GET /api/reviews/aggregate` — public endpoint for aggregated rating stats by area and/or category
+  - `EditReviewForm` and `ReportReviewModal` UI components
+  - `ReviewAggregateHero` and `ReviewCardEnhanced` components
+  - Supabase migration: `area_rating_stats` view, `review_flags` unique constraint, edit history columns, review text search vector
+- Rate limiting on review creation (max 3 per user per 24h) and flagging (max 10 per user per 24h)
+- Shared `CATEGORY_LABELS` constant extracted to `@/lib/marketplace/category-labels` (DRY — was duplicated in 3 files)
+- `localStorage.setItem` error handling in `useCompare` hook (storage-full safety)
+
+### Fixed
+- `searchProviders()` RPC param `p_category` → `p_service_category` so category filtering works on all search pages
+- `GBPToPence` → `gbpToPence` import in AI Match page to match actual export in `@/lib/currency`
+- `budget_max >= budget_min` and `preferred_start_date` cannot be in the past — added `.refine()` to `rfqCreateSchema`
+- Added `builder`, `plasterer`, `painter`, `carpenter` to `SERVICE_CATEGORIES` in marketplace-schemas to match `ServiceCategory` type
+- `409` response for duplicate review flags (previously returned 500)
+
 ## [0.2.0] - 2026-03-16
 
 ### Added
