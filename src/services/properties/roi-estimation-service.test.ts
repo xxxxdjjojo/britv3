@@ -6,7 +6,7 @@
  *  2. AI success path — valid JSON from Claude is Zod-validated and cached
  *  3. AI returns null (callClaude wrapper failure) — deterministic fallback (confidence = 'low')
  *  4. AI returns invalid JSON — parse failure → deterministic fallback
- *  5. Empty renovation_type_benchmarks (G2 guard) — returns null-safe hardcoded fallback
+ *  5. Empty renovation_type_benchmarks (G2 guard) — returns null immediately (no Claude call)
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -216,17 +216,13 @@ describe("estimateROI", () => {
   // -------------------------------------------------------------------------
   // Test 5: G2 guard — empty renovation_type_benchmarks
   // -------------------------------------------------------------------------
-  it("returns hardcoded UK-average fallback (not null/NaN) when benchmarks are empty", async () => {
+  it("returns null when both regional and national benchmarks are empty (G2 guard)", async () => {
     mockGetBenchmarks.mockResolvedValue([]);
-    mockCallClaude.mockResolvedValue(null); // Force fallback path so we test the empty-benchmarks branch
 
     const result = await estimateROI(mockProperty, mockSupabase);
 
-    expect(result).not.toBeNull();
-    expect(result!.source).toBe("fallback");
-    // Hardcoded fallback always has at least 1 renovation with valid numeric costs
-    expect(result!.renovations.length).toBeGreaterThan(0);
-    expect(Number.isFinite(result!.renovations[0].cost_low)).toBe(true);
-    expect(Number.isFinite(result!.renovations[0].cost_high)).toBe(true);
+    expect(result).toBeNull();
+    // Claude must never be called — the guard fires before any AI call
+    expect(mockCallClaude).not.toHaveBeenCalled();
   });
 });
