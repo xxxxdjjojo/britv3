@@ -17,8 +17,8 @@ All notable changes to this project will be documented in this file.
 - `localStorage` safety guards for SSR environments in marketplace utilities
 - DRY label deduplication in marketplace filter components
 - Budget cross-field validation (max >= min) and past-date guard in `rfqCreateSchema`
-- `setState`-in-effect lint error in `ConversationQuickActions` — initialise `addressLoading` from props instead of synchronous `useEffect` call
-- Messaging: `recipientId` no longer hardcoded empty string — derived from conversation participant
+- Extract shared `sanitizePostgrestInput()` for consistent PostgREST filter sanitization across agents, admin, CRM, and category pages
+- `GBPToPence` → `gbpToPence` to match currency.ts export
 
 ### Changed
 - Added service categories: `builder`, `plasterer`, `painter`, `carpenter` to marketplace schemas
