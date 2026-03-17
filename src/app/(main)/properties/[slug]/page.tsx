@@ -20,11 +20,8 @@ import { FloorPlan } from "@/components/properties/FloorPlan";
 import { PriceHistory } from "@/components/properties/PriceHistory";
 import type { PriceHistory as PriceHistoryRow, EpcRating, ListingType } from "@/types/property";
 import { createClient } from "@/lib/supabase/server";
-<<<<<<< HEAD
-import { getPropertyBySlug } from "@/services/properties/property-detail-service";
-=======
 import {
-  getListingBySlug,
+  getPropertyBySlug,
   getPropertyViewCount,
   getSaveState,
 } from "@/services/properties/property-detail-service";
@@ -42,7 +39,6 @@ import { RecommendedTradespeople } from "@/components/properties/detail/Recommen
 import { SavePropertyButton } from "@/components/properties/detail/SavePropertyButton";
 import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
 import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
->>>>>>> 8a969da (feat(property-detail): Wave 5-T12 — wire all Wave 4-5 components into page.tsx)
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
