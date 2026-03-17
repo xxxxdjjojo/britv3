@@ -8,6 +8,7 @@ import { PasswordChangeCard } from "@/components/settings/security/PasswordChang
 import { TotpEnrollmentCard } from "@/components/settings/security/TotpEnrollmentCard";
 import { ConnectedAccountsCard } from "@/components/settings/security/ConnectedAccountsCard";
 import { ActiveSessionsList } from "@/components/settings/security/ActiveSessionsList";
+import { LoginHistoryTable } from "@/components/settings/security/LoginHistoryTable";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -28,6 +29,13 @@ type SessionInfo = {
   last_sign_in_at?: string;
   ip?: string;
   is_current: boolean;
+};
+
+type LoginHistoryEntry = {
+  id: string;
+  ip_address: string | null;
+  created_at: string;
+  payload: Record<string, unknown> | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -90,6 +98,13 @@ export default function SecuritySettingsPage() {
   const [signingOutSession, setSigningOutSession] = useState<string | null>(
     null,
   );
+
+  // ---- Login history state ----
+  const [loginHistory, setLoginHistory] = useState<LoginHistoryEntry[]>([]);
+  const [loginTotal, setLoginTotal] = useState(0);
+  const [loginPage, setLoginPage] = useState(1);
+  const [loginLoading, setLoginLoading] = useState(true);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   // ---------------------------------------------------------------------------
   // On mount: check MFA status
@@ -176,11 +191,47 @@ export default function SecuritySettingsPage() {
     }
   }, []);
 
+  // ---------------------------------------------------------------------------
+  // On mount: load login history
+  // ---------------------------------------------------------------------------
+
+  const loadLoginHistory = useCallback(async (page: number) => {
+    setLoginLoading(true);
+    setLoginError(null);
+    try {
+      const res = await fetch(
+        `/api/settings/login-history?page=${page}&per_page=10`,
+      );
+      if (!res.ok) {
+        throw new Error("Failed to load login history");
+      }
+      const body = (await res.json()) as {
+        entries: LoginHistoryEntry[];
+        total: number;
+        page: number;
+        per_page: number;
+        error?: string;
+      };
+      if (body.error) {
+        setLoginError(body.error);
+      }
+      setLoginHistory(body.entries ?? []);
+      setLoginTotal(body.total ?? 0);
+      setLoginPage(body.page ?? page);
+    } catch (err) {
+      console.error(err);
+      setLoginError("unavailable");
+    } finally {
+      setLoginLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     void checkMfaStatus();
     void loadIdentities();
     void loadSessions();
-  }, [checkMfaStatus, loadIdentities, loadSessions]);
+    void loadLoginHistory(1);
+  }, [checkMfaStatus, loadIdentities, loadSessions, loadLoginHistory]);
 
   // ---------------------------------------------------------------------------
   // Section 1: Change Password
@@ -487,6 +538,16 @@ export default function SecuritySettingsPage() {
         formatDate={formatDate}
         onSignOutSession={handleSignOutSession}
         onSignOutAll={handleSignOutAll}
+      />
+
+      <LoginHistoryTable
+        entries={loginHistory}
+        total={loginTotal}
+        page={loginPage}
+        perPage={10}
+        loading={loginLoading}
+        error={loginError}
+        onPageChange={(p) => void loadLoginHistory(p)}
       />
     </div>
   );
