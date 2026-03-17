@@ -8,7 +8,7 @@
  * - Uses raw body (not parsed JSON) for signature verification.
  *
  * Idempotency:
- * - Checks billing_events.stripe_event_id before processing.
+ * - INSERT with ON CONFLICT on billing_events.stripe_event_id.
  * - Duplicate events return 200 immediately (no-op).
  *
  * Reliability:
@@ -21,18 +21,14 @@
  */
 
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { getStripe } from "@/lib/stripe";
 
 // This route needs the raw body for signature verification.
 // We read it via request.text() before any JSON parsing.
 export const dynamic = "force-dynamic";
-
-function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
-  return new Stripe(key);
-}
 
 /**
  * Service-role Supabase client for webhook writes.
@@ -43,6 +39,36 @@ function getServiceSupabase() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Supabase service role credentials not configured");
   return createClient(url, key, { auth: { persistSession: false } });
+}
+
+/**
+ * Look up user profile (email + first_name) by stripe_customer_id.
+ * Returns null if not found.
+ */
+async function lookupUserByCustomerId(
+  supabase: ReturnType<typeof getServiceSupabase>,
+  customerId: string,
+): Promise<{ userId: string; email: string; firstName: string } | null> {
+  const { data: sub } = await supabase
+    .from("subscriptions")
+    .select("user_id")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
+
+  const userId = (sub as { user_id: string } | null)?.user_id ?? null;
+  if (!userId) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email, first_name")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const email = (profile as { email?: string } | null)?.email ?? null;
+  const firstName = (profile as { first_name?: string } | null)?.first_name ?? "";
+
+  if (!email) return null;
+  return { userId, email, firstName };
 }
 
 export async function POST(request: Request) {
@@ -73,20 +99,35 @@ export async function POST(request: Request) {
 
   const supabase = getServiceSupabase();
 
-  // ─── Idempotency check ──────────────────────────────────────────────────────
-  // If we've already processed this event, return 200 immediately.
-  const { data: existing } = await supabase
+  // ─── Idempotency check (atomic INSERT with ON CONFLICT) ─────────────────
+  // Attempt to upsert into billing_events keyed on stripe_event_id.
+  // If the row already has a non-null user_id, it was already processed.
+  // ignoreDuplicates ensures we don't overwrite an existing processed row.
+  const { data: idempotencyRow, error: idempotencyError } = await supabase
     .from("billing_events")
-    .select("id")
-    .eq("stripe_event_id", event.id)
+    .upsert(
+      {
+        stripe_event_id: event.id,
+        event_type: event.type,
+        user_id: null, // populated after event dispatch
+        payload: {} as unknown as Record<string, unknown>,
+      },
+      { onConflict: "stripe_event_id", ignoreDuplicates: true },
+    )
+    .select("id, user_id")
     .maybeSingle();
 
-  if (existing) {
+  if (idempotencyError) {
+    console.error("[webhook] Idempotency upsert error:", idempotencyError);
+  }
+
+  // If the row already existed with a user_id set, this event was already processed
+  if (idempotencyRow && idempotencyRow.user_id !== null) {
     console.log(`[webhook] Duplicate event ${event.id} (${event.type}) — skipping`);
     return NextResponse.json({ received: true, duplicate: true });
   }
 
-  // ─── Event dispatch ──────────────────────────────────────────────────────────
+  // ─── Event dispatch ──────────────────────────────────────────────────────
   let userId: string | null = null;
 
   try {
@@ -143,6 +184,7 @@ export async function POST(request: Request) {
               .eq("id", userId);
           }
 
+          revalidateTag("billing", "max");
           console.log(`[webhook] Subscription activated for user ${userId}`);
         }
         break;
@@ -190,6 +232,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Database write failed" }, { status: 500 });
           }
         }
+
+        revalidateTag("billing", "max");
         break;
       }
 
@@ -208,6 +252,8 @@ export async function POST(request: Request) {
           console.error("[webhook] Failed to cancel subscription:", error);
           return NextResponse.json({ error: "Database write failed" }, { status: 500 });
         }
+
+        revalidateTag("billing", "max");
         break;
       }
 
@@ -224,16 +270,32 @@ export async function POST(request: Request) {
             .eq("stripe_customer_id", customerId);
         }
 
-        // Find user for billing event log
+        // Find user for billing event log + email
         if (customerId) {
-          const { data: sub } = await supabase
-            .from("subscriptions")
-            .select("user_id")
-            .eq("stripe_customer_id", customerId)
-            .maybeSingle();
-          userId = (sub as { user_id: string } | null)?.user_id ?? null;
+          const user = await lookupUserByCustomerId(supabase, customerId);
+          userId = user?.userId ?? null;
+
+          // Best-effort email notification
+          if (user) {
+            try {
+              const { sendPaymentFailed } = await import("@/services/email/email-service");
+              const amountDue = invoice.amount_due ?? 0;
+              await sendPaymentFailed({
+                userId: user.userId,
+                email: user.email,
+                firstName: user.firstName || "there",
+                amount: amountDue / 100,
+                description: invoice.description ?? "Subscription payment",
+                failedAt: new Date().toISOString(),
+                retryUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/dashboard/billing`,
+              });
+            } catch (emailErr) {
+              console.error("[webhook] Failed to send payment-failed email:", emailErr);
+            }
+          }
         }
 
+        revalidateTag("billing", "max");
         console.log(`[webhook] Payment failed for customer ${customerId}`);
         break;
       }
@@ -251,7 +313,104 @@ export async function POST(request: Request) {
             .update({ status: "active", updated_at: new Date().toISOString() })
             .eq("stripe_customer_id", customerId)
             .eq("status", "past_due");
+
+          // Find user for email
+          const user = await lookupUserByCustomerId(supabase, customerId);
+          userId = user?.userId ?? null;
+
+          // Best-effort email notification
+          if (user) {
+            try {
+              const { sendPaymentConfirmation } = await import("@/services/email/email-service");
+              const amountPaid = invoice.amount_paid ?? 0;
+              await sendPaymentConfirmation({
+                userId: user.userId,
+                email: user.email,
+                firstName: user.firstName || "there",
+                amount: amountPaid / 100,
+                description: invoice.description ?? "Subscription payment",
+                transactionId: invoice.id ?? "N/A",
+                paidAt: new Date().toISOString(),
+              });
+            } catch (emailErr) {
+              console.error("[webhook] Failed to send payment-confirmation email:", emailErr);
+            }
+          }
         }
+
+        revalidateTag("billing", "max");
+        break;
+      }
+
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge;
+
+        // Find the refund_request by stripe_charge_id
+        const { data: refundRequest } = await supabase
+          .from("refund_requests")
+          .select("id, user_id")
+          .eq("stripe_charge_id", charge.id)
+          .maybeSingle();
+
+        if (refundRequest) {
+          const stripeRefundId = charge.refunds?.data?.[0]?.id ?? null;
+
+          const { error } = await supabase
+            .from("refund_requests")
+            .update({
+              status: "processed",
+              processed_at: new Date().toISOString(),
+              stripe_refund_id: stripeRefundId,
+            })
+            .eq("id", refundRequest.id);
+
+          if (error) {
+            console.error("[webhook] Failed to update refund_request:", error);
+            return NextResponse.json({ error: "Database write failed" }, { status: 500 });
+          }
+
+          userId = (refundRequest as { user_id: string | null }).user_id;
+
+          // Best-effort refund confirmation email
+          if (userId) {
+            try {
+              const { data: profile } = await supabase
+                .from("profiles")
+                .select("email, first_name")
+                .eq("id", userId)
+                .maybeSingle();
+
+              const email = (profile as { email?: string } | null)?.email;
+              const firstName = (profile as { first_name?: string } | null)?.first_name ?? "";
+
+              if (email) {
+                const { sendRefundConfirmation } = await import("@/services/email/email-service");
+                const refundAmountPence = charge.amount_refunded ?? 0;
+                await sendRefundConfirmation({
+                  userId,
+                  email,
+                  userName: firstName || "there",
+                  refundAmount: `\u00A3${(refundAmountPence / 100).toFixed(2)}`,
+                  chargeReference: charge.id,
+                  refundDate: new Date().toLocaleDateString("en-GB", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }),
+                });
+              }
+            } catch (emailErr) {
+              console.error("[webhook] Failed to send refund-confirmation email:", emailErr);
+            }
+          }
+
+          console.log(`[webhook] Refund processed for charge ${charge.id}`);
+        } else {
+          console.log(`[webhook] charge.refunded for ${charge.id} — no matching refund_request`);
+        }
+
+        revalidateTag("billing", "max");
         break;
       }
 
@@ -260,16 +419,17 @@ export async function POST(request: Request) {
         console.log(`[webhook] Unhandled event type: ${event.type}`);
     }
 
-    // ─── Append to billing_events audit log ──────────────────────────────────
-    const { error: logError } = await supabase.from("billing_events").insert({
-      stripe_event_id: event.id,
-      event_type: event.type,
-      user_id: userId,
-      payload: event.data.object as unknown as Record<string, unknown>,
-    });
+    // ─── Update billing_events audit log with user_id and payload ──────────
+    const { error: logError } = await supabase
+      .from("billing_events")
+      .update({
+        user_id: userId,
+        payload: event.data.object as unknown as Record<string, unknown>,
+      })
+      .eq("stripe_event_id", event.id);
 
     if (logError) {
-      console.error("[webhook] Failed to write billing_event log:", logError);
+      console.error("[webhook] Failed to update billing_event log:", logError);
       // Non-fatal — we already processed the event; don't 500 for log failure
     }
 

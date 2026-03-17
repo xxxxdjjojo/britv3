@@ -1246,5 +1246,111 @@ export async function sendReEngagement(params: {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 19. Refund Confirmed (always send — no pref check)
+// ---------------------------------------------------------------------------
+
+export async function sendRefundConfirmation(params: {
+  userId: string;
+  email: string;
+  userName: string;
+  refundAmount: string;
+  chargeReference: string;
+  refundDate: string;
+}): Promise<void> {
+  try {
+    const { RefundConfirmedEmail } = await import("@/emails/refund-confirmed");
+    const { render } = await import("@react-email/components");
+    const name = params.userName || "there";
+    const html = await render(
+      RefundConfirmedEmail({
+        userName: name,
+        refundAmount: params.refundAmount,
+        chargeReference: params.chargeReference,
+        refundDate: params.refundDate,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: "Your refund has been processed – Britestate",
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "refund-confirmed",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "refund-confirmed",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendRefundConfirmation failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 20. Refund Rejected (always send — no pref check)
+// ---------------------------------------------------------------------------
+
+export async function sendRefundRejected(params: {
+  userId: string;
+  email: string;
+  userName: string;
+  chargeAmount: string;
+  reason: string;
+  adminNotes?: string;
+}): Promise<void> {
+  try {
+    const { RefundRejectedEmail } = await import("@/emails/refund-rejected");
+    const { render } = await import("@react-email/components");
+    const name = params.userName || "there";
+    const html = await render(
+      RefundRejectedEmail({
+        userName: name,
+        chargeAmount: params.chargeAmount,
+        reason: params.reason,
+        adminNotes: params.adminNotes,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: "Refund request update – Britestate",
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "refund-rejected",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "refund-rejected",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendRefundRejected failed", message);
+  }
+}
+
 // Re-export BASE_URL for use in other modules that build email links
 export { BASE_URL };
