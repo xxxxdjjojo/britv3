@@ -570,3 +570,291 @@ Each item links to the relevant compliance page. The form only unlocks when all 
 **Effort:** S
 **Priority:** P1
 **Depends on:** Phase 16 complete (`provider_badges` populated), public provider profile page exists.
+
+---
+
+## Service Provider Marketplace & Discovery (Phase 14)
+
+### P1 — SQL Enum Migration: Add Missing Service Categories
+**What:** Add `builder`, `plasterer`, `painter`, `carpenter` to the `service_category` PostgreSQL enum via `ALTER TYPE ... ADD VALUE`. The TS type already includes these but the DB enum doesn't — any provider signup selecting these categories would fail at DB level.
+**Why:** Type/schema mismatch is a silent data-loss bug. The Stitch designs, britestatestyle.txt, and existing route code all treat these as first-class categories.
+**Pros:** Aligns DB with TS types, enables category-specific search and SEO for builders/painters/etc.
+**Cons:** None — additive migration, zero-downtime, no data change.
+**Context:** `002_marketplace.sql` defines the enum with 16 values. `types/marketplace.ts` defines 20 values. Gap: builder, plasterer, painter, carpenter.
+**Effort:** S
+**Priority:** P1 (merge-blocker for Phase 14)
+**Depends on:** Nothing.
+
+---
+
+### P1 — Extract Shared CATEGORY_LABELS Constant
+**What:** Move the duplicated `Record<ServiceCategory, string>` mapping to `src/lib/marketplace/category-labels.ts`. Update all 4+ consumer files to import from there.
+**Why:** Currently duplicated in SearchFilters.tsx, ProviderCard.tsx, RFQCreateForm.tsx, ProviderProfile.tsx. Phase 14 adds more consumers.
+**Pros:** Single source of truth, easier to maintain when adding categories.
+**Cons:** Small refactor touching 4 existing files.
+**Context:** Each file has its own copy of the same ~20-entry Record. Extract once, import everywhere.
+**Effort:** S
+**Priority:** P1 (do first in Phase 14)
+**Depends on:** Nothing.
+
+---
+
+### P1 — CompareBar Floating UI Component
+**What:** A fixed-bottom bar that appears when the user has 1+ providers in their compare list (localStorage), showing count ("2 of 3 selected") and a "Compare Now" CTA linking to /compare. Mounts in search layout pages.
+**Why:** CompareButton writes to localStorage but users have no visibility into their compare selection. Without CompareBar, the /compare feature is undiscoverable.
+**Pros:** Makes compare feature visible and actionable. Drives engagement.
+**Cons:** New component (~100 lines), needs to mount in search layouts.
+**Context:** CompareButton already exists and manages localStorage. CompareBar reads the same storage and renders a floating bar.
+**Effort:** M
+**Priority:** P1 (required for /compare page to be useful)
+**Depends on:** CompareButton localStorage pattern (already working).
+
+---
+
+### P2 — Redirect /marketplace/[slug] → /services/[category]/[slug]
+**What:** The old marketplace slug route (marketplace/[slug]/page.tsx + ProviderProfile.tsx) is superseded by the richer services/[category]/[slug] implementation. Add a redirect and update ProviderCard href.
+**Why:** Two competing profile routes splits SEO juice and causes confusion.
+**Pros:** Single canonical profile URL, better SEO, cleaner codebase.
+**Cons:** Need to update ProviderCard href and add redirect for bookmarked URLs.
+**Context:** ProviderCard.tsx:58 links to `/marketplace/${slug}`. Should link to `/services/${category}/${slug}` instead.
+**Effort:** S
+**Priority:** P2
+**Depends on:** Nothing.
+
+---
+
+### P2 — Map View Toggle for Provider Search
+**What:** Grid/Map toggle on ProviderSearchPage that switches to a MapTiler/MapLibre map with provider pins. Stitch designs show this as a first-class feature.
+**Why:** Map-based discovery is critical for location-sensitive services. Competitive parity with Checkatrade/MyBuilder.
+**Pros:** Uses existing MapTiler key, leverages PostGIS base_location data already in DB.
+**Cons:** MapLibre GL JS adds ~80KB (lazy-loadable). Requires providers to have base_location set (may be sparse).
+**Context:** `NEXT_PUBLIC_MAPTILER_API_KEY` already in env. `service_provider_details.base_location` is a PostGIS GEOGRAPHY column with GIST index.
+**Effort:** L
+**Priority:** P2
+**Depends on:** Providers having base_location populated.
+
+---
+
+### P2 — Rate Limiting on /api/providers/search
+**What:** Add Upstash rate limiting (60 req/min per IP anonymous, 120/min authenticated) to the search endpoint.
+**Why:** No rate limiter today. A competitor or bot can scrape the entire provider directory by iterating postcodes.
+**Pros:** Protects provider data, prevents abuse, low effort with existing Upstash Redis.
+**Cons:** Could affect legitimate power users.
+**Context:** Redis is already configured (`UPSTASH_REDIS_REST_URL`). The rate limiter middleware is a ~20-line addition.
+**Effort:** S
+**Priority:** P2
+**Depends on:** Upstash Redis configured (already is).
+
+---
+
+### P2 — Express "Get 3 Quotes in 60 Seconds" Flow
+**What:** Streamlined CTA on search results that pre-fills an RFQ with current search category/postcode, auto-selects top 3 providers, and submits with a 3-field mini-form: "Describe your job", "When?", "Submit".
+**Why:** Existing RFQ form has 8 fields — high friction. This express flow converts browsers into leads. The "I'm Feeling Lucky" of marketplace discovery.
+**Pros:** Dramatically reduces friction to first lead. High conversion potential.
+**Cons:** New mini-form component + API tweak to auto-assign providers.
+**Context:** RFQCreateForm exists for the full flow. Express flow is a thin wrapper that pre-fills most fields.
+**Effort:** M
+**Priority:** P2
+**Depends on:** Core /post-a-job page and /api/rfq/create endpoint (both exist).
+
+---
+
+### P3 — "Available Today" Live Badge on Provider Cards
+**What:** Green dot + "Available today" on ProviderSearchCard if the provider has no availability blocks for today (from provider_availability table). Header shows "Y pros available today in [area]".
+**Why:** Creates urgency and trust. Users know profiles aren't stale. "Oh nice, they thought of that."
+**Pros:** Low effort, high perceived value. Uses existing data.
+**Cons:** Requires additional join/query on provider_availability.
+**Effort:** S
+**Priority:** P3
+**Depends on:** provider_availability table (exists).
+
+---
+
+### P3 — "Popular in Your Area" Dynamic Category Chips
+**What:** On /services directory page, show personalized "Popular near you" section with category chips and provider counts based on user's postcode (from profile or geolocation).
+**Why:** Personalizes the directory, increases CTR to search, shows platform depth.
+**Pros:** Makes directory feel alive and location-aware.
+**Cons:** Requires postcode detection (profile or browser geolocation).
+**Effort:** S
+**Priority:** P3
+**Depends on:** User profile with postcode or browser geolocation API.
+
+---
+
+### P3 — "Average Cost in Your Area" Price Transparency Banner
+**What:** On category search pages, show "Average plumber rate in London: £45–£65/hr based on 142 bookings" using aggregated completed booking data.
+**Why:** Price transparency builds trust and differentiates vs competitors who hide pricing.
+**Pros:** Users love knowing if a quote is fair. Builds marketplace trust.
+**Cons:** Requires enough booking data to be statistically meaningful.
+**Effort:** S
+**Priority:** P3
+**Depends on:** Sufficient completed bookings data (may be sparse at launch).
+
+---
+
+### P3 — AI Project Advisor Teaser on Post-a-Job Page
+**What:** Static "AI Project Advisor" card on /post-a-job: "Not sure what you need? Describe your project and our AI will suggest the right trade category and typical budget." Links to AI match feature (Phase 5). Shows "Coming Soon" badge for now.
+**Why:** Seeds the AI feature, reduces friction for homeowners unsure of trade categories. Signals platform sophistication.
+**Pros:** 15-minute static card. Plants the seed for Phase 5 AI features.
+**Cons:** Shows an unbuilt feature (mitigated by "Coming Soon" badge).
+**Effort:** S
+**Priority:** P3
+**Depends on:** Nothing (static card).
+
+---
+
+## Payments & Billing (Phase 18)
+
+### P2 — Dunning Sequence (Automated Payment Failure Recovery)
+**What:** When `invoice.payment_failed` webhook fires, initiate a multi-step dunning sequence: Day 0 — send `payment-failed.tsx` email with retry CTA (already built). Day 3 — send reminder email "Your subscription will be paused soon." Day 7 — send final warning "Last chance to update your payment method — features will be restricted." Day 14 — auto-cancel subscription and send cancellation notice.
+**Why:** Industry data (Paddle, Chargebee) shows dunning sequences recover 20-40% of failed payments. Without it, a single failed charge = lost customer. This is what separates FAANG billing from "payment failed, figure it out yourself."
+**How to apply:** Add `dunning_state` column to `subscriptions` table (enum: none, day0, day3, day7, cancelled). Day 0 handled by webhook. Days 3/7/14 handled by a scheduled Supabase Edge Function or cron job that queries subscriptions with `dunning_state != 'none'` and `dunning_started_at` timestamp. Create 2 new email templates: `payment-retry-reminder.tsx`, `payment-final-warning.tsx`.
+**Effort:** M
+**Priority:** P2
+**Depends on:** Phase 18 Wave 1 (webhook handler + billing-service), email service.
+
+---
+
+### P2 — Branded Britestate Invoice PDF Generation
+**What:** Generate custom-branded PDF invoices with Britestate logo, forest green header, UK-formatted addresses, and transaction details. Currently invoices link to Stripe's generic PDF. Uses `@react-pdf/renderer` (already in codebase for `TenancyAgreementPDF` and `InventoryPdfButton`).
+**Why:** Premium feel. Users downloading invoices for accounting should see Britestate branding, not a generic Stripe receipt. For boost purchases, include the property details (address, listing ID). For subscriptions, include plan features.
+**How to apply:** Create `BritestateInvoicePDF.tsx` using `@react-pdf/renderer`. Add `GET /api/billing/invoices/[id]/pdf` route that generates and streams the PDF. On billing history page, replace Stripe PDF link with Britestate PDF download.
+**Effort:** M
+**Priority:** P2
+**Depends on:** Phase 18 Wave 3 (billing history page), `@react-pdf/renderer` already installed.
+
+---
+
+### P2 — Renewal Reminder Scheduled Job
+**What:** Daily scheduled job (Supabase Edge Function or cron) that queries subscriptions expiring within 7 days and sends the `renewal-reminder.tsx` email template (already built, currently unwired). Include: plan name, renewal date, amount, "Update payment method" CTA.
+**Why:** Proactive communication reduces failed payments at renewal. Stripe sends its own notification but it's generic and un-branded. A Britestate-branded reminder feels more personal and gives us control over the messaging + CTA destination.
+**How to apply:** Create `supabase/functions/renewal-reminders/index.ts`. Query `subscriptions WHERE current_period_end BETWEEN now() AND now() + interval '7 days' AND status = 'active'`. Call `email-service.sendRenewalReminder()`. Add a `last_renewal_reminder_sent_at` column to prevent duplicate sends.
+**Effort:** S
+**Priority:** P2
+**Depends on:** Phase 18 Wave 1 (subscriptions table populated via webhook), email service.
+
+---
+
+## Admin / Back Office (Phase 20 — CEO Review 2026-03-17)
+
+### P1 — GDPR Automated Export Pipeline
+**What:** Build a Supabase Edge Function that handles the full GDPR data export lifecycle: (1) aggregate all user data from relevant tables (profiles, properties, content_reports, viewings, offers, documents, messages), (2) generate JSON export, (3) upload to Supabase Storage with signed URL (48h expiry), (4) send download link email via Resend, (5) update `gdpr_requests` status to `fulfilled` with `export_url` and `export_expires_at`.
+**Why:** Currently `fulfilGdprRequest()` marks status as `in_progress` but there's no automation — admins must manually handle data export. Under GDPR Article 15, data access requests must be fulfilled within 30 days. Manual process doesn't scale and is error-prone.
+**Pros:** Legal compliance automation. Reduces admin burden. Auditable pipeline with status tracking.
+**Cons:** Complex data aggregation across many tables. Need to handle partial failures (some tables succeed, some fail). Signed URL security considerations.
+**Context:** `gdpr_requests` table already has `export_url`, `export_expires_at`, `fulfilled_by`, `fulfilled_at` fields. Edge Function triggered when admin clicks "Fulfil" → status moves to `in_progress` → Edge Function picks up and processes.
+**Effort:** L
+**Priority:** P1
+**Depends on:** Admin Wave 1 complete (done), Resend email service configured.
+
+---
+
+### P2 — RBAC-Filtered Sidebar Navigation
+**What:** When admin sub-roles are implemented (page 20.29), filter `AdminSidebar` `NAV_GROUPS` by role permissions. Pass `allowed_routes` from layout based on admin's permission set. Different admin sub-roles (content moderator, billing admin, super admin) see different nav items.
+**Why:** Currently all admins see all 30 nav items. As the admin team grows, not everyone should see everything (principle of least privilege). A billing admin shouldn't see GDPR queue; a content moderator shouldn't see subscription management.
+**Pros:** Security (least privilege), UX (less cognitive load), compliance (audit trail per permission scope).
+**Cons:** Requires defining admin sub-roles schema + permission mapping. Adds complexity to layout.
+**Context:** `AdminSidebar.tsx` NAV_GROUPS is currently hardcoded. Would need a `admin_permissions` table or similar mapping role → allowed routes.
+**Effort:** M
+**Priority:** P2
+**Depends on:** Admin roles & permissions page (20.29) fully functional with sub-role definitions.
+
+---
+
+### P2 — Email Campaign Resend Integration
+**What:** Wire the email campaign send flow to Resend API with: batch email delivery (chunked sends to prevent rate limits), bounce webhook handling (mark bounced emails in `email_campaigns`), unsubscribe link injection (PECR/UK email regulation compliance), send progress tracking (update `recipient_count` and `sent_at`).
+**Why:** The email-campaigns page has a "Send" button backed by an API route, but the actual Resend integration is not wired. Campaigns created in the admin have no delivery mechanism.
+**Pros:** Enables admin marketing workflows. Branded email campaigns vs generic Stripe/platform emails.
+**Cons:** Email deliverability is complex — need SPF/DKIM, bounce handling, rate limiting. PECR requires opt-in consent + unsubscribe in every email.
+**Context:** `email_campaigns` table has `target_roles`, `content` (JSONB), `status`, `scheduled_at`. API route at `/api/admin/campaigns/[id]/send`. Resend SDK already in dependencies.
+**Effort:** L
+**Priority:** P2
+**Depends on:** Resend domain verification, SPF/DKIM DNS records, user consent/subscription preferences table.
+
+---
+
+### P2 — CMS Public Rendering Routes
+**What:** Build public-facing routes to render CMS content created in the admin: `/blog/[slug]` for blog articles, `/help/[slug]` for help articles, `/help` index page. Render TipTap JSONB content to HTML using `@tiptap/html`. Apply SEO metadata from `cms_articles.seo_title`, `seo_description`, `og_image_url`. Add sitemap entries for published articles.
+**Why:** CMS articles are editable via TipTap in the admin, stored in `cms_articles` table, but no public routes exist to render them. The content management system is complete on the admin side but invisible to users.
+**Pros:** Enables content marketing, help center, SEO landing pages — all manageable from the admin.
+**Cons:** Need to install `@tiptap/html` for server-side rendering. Need to handle TipTap JSON → safe HTML (XSS prevention).
+**Context:** `cms_articles` table with `article_type` IN ('blog', 'help', 'landing'), `content` as JSONB (TipTap format), `status` IN ('draft', 'published', 'archived'). RLS policy already allows public SELECT where `status = 'published'`.
+**Effort:** M
+**Priority:** P2
+**Depends on:** Admin CMS pages (20.12–20.14) complete (done), `@tiptap/html` package.
+
+---
+
+### P3 — Cmd+K Command Palette for Admin Console
+**What:** Instant navigation across all 30 admin pages via keyboard shortcut. Admin types Cmd+K → search modal opens → type "fraud" → jumps to fraud detection page. Type "ban user" → jumps to user management. Uses Shadcn `CommandDialog` component with cmdk.
+**Why:** Admins managing 30 pages need fast navigation. Sidebar works but is slow for power users. GitHub/Linear/Notion all have Cmd+K. It's the mark of a well-built internal tool.
+**Pros:** High delight, power user productivity. Builds on existing Shadcn component library.
+**Cons:** Minimal — ~30 min implementation.
+**Context:** Map all `NAV_GROUPS` items from `AdminSidebar.tsx` as commands. Add common admin actions (search users, review queue, etc.) as quick actions.
+**Effort:** S
+**Priority:** P3 (vision/delight)
+**Depends on:** Nothing. Can be built anytime.
+
+---
+
+### P3 — Keyboard Shortcuts on Queue Pages
+**What:** Add keyboard shortcuts to moderation/verification/review queue pages: J (next item), K (previous item), A (approve), R (reject), S (skip), Enter (open detail). Show shortcut hints in a footer bar.
+**Why:** Moderation is a high-volume repetitive task. Keyboard shortcuts dramatically improve throughput — GitHub PR review uses this exact pattern. An admin processing 50 verifications per session saves ~10 minutes.
+**Pros:** Productivity multiplier for queue-heavy admin workflows.
+**Cons:** Need to handle edge cases (focus management, confirm on destructive actions).
+**Context:** Implement via `useEffect` keyboard event listeners in queue client components (`ModerationQueueClient`, `VerificationQueueClient`, `ReviewModerationQueueClient`).
+**Effort:** S
+**Priority:** P3 (vision/delight)
+**Depends on:** Queue pagination (Issue 10) to ensure keyboard focus stays within visible items.
+
+---
+
+### P3 — Realtime "New Items" Banner on Queue Pages
+**What:** Subscribe to Supabase Realtime on queue tables (content_reports, verification requests). When new items arrive after page load, show a "N new items — click to refresh" banner at the top of the queue. Prevents admins from staring at stale data.
+**Why:** Admin queues are currently static. An admin might check the verification queue, see it empty, and leave — not knowing 3 new requests arrived 30 seconds later. Realtime banners keep queues alive.
+**Pros:** Reduces response time to new moderation items. Professional "ops console" feel.
+**Cons:** Supabase Realtime connection cost. Need to handle reconnection gracefully.
+**Context:** Use `supabase.channel()` subscriptions in client components. Track count of new items since initial load. Show dismissible banner with refresh action.
+**Effort:** M
+**Priority:** P3 (vision/delight)
+**Depends on:** Supabase Realtime enabled on admin tables (already enabled via RLS policies).
+
+---
+
+### P3 — KPI Sparklines (7-Day Trend)
+**What:** Add tiny sparklines (7-day trend micro-charts) to each KPI card on the admin dashboard. Instead of just "128,492 users", show a mini line chart of daily counts for the past 7 days. Uses Recharts `ResponsiveContainer` + tiny `LineChart` (no axes, just the trend line).
+**Why:** A raw number tells you the state. A trend tells you the direction. Sparklines answer "are we growing?" at a glance without clicking into analytics.
+**Pros:** High information density in small space. Recharts already installed.
+**Cons:** Requires daily aggregation queries (or cache). 5 additional DB queries per dashboard load.
+**Context:** Query `profiles` grouped by `DATE(created_at)` for last 7 days. Same for properties, content_reports, etc. Cache with `unstable_cache` (5 min revalidation).
+**Effort:** S
+**Priority:** P3 (vision/delight)
+**Depends on:** Dashboard KPI upgrade (Issue 1) — build sparklines alongside the RichKpiCard component.
+
+---
+
+### P3 — Dark Mode Toggle for Admin Console
+**What:** Add a light/dark mode toggle to the admin header. Store preference in `localStorage`. Apply `dark:` Tailwind variants to all admin components. Match the Stitch designs that show dark mode variants.
+**Why:** Several Stitch design screens (Console Overview, Fraud Center, Feature Flags) use `dark` class. Admins working long sessions benefit from reduced eye strain. It's a mark of a polished internal tool.
+**Pros:** Matches Stitch designs. Reduces eye strain. Professional feel.
+**Cons:** Need to audit all 34 admin components for `dark:` variant coverage. Some colors may need adjustment.
+**Context:** Use a `ThemeToggle` button in the admin header. `document.documentElement.classList.toggle('dark')`. Persist to `localStorage('admin-theme')`.
+**Effort:** M
+**Priority:** P3 (vision/delight)
+**Depends on:** Nothing. Can be built anytime.
+
+---
+
+## Reviews & Ratings — Deferred (CEO Review 2026-03-16)
+
+### P3 | Real-Time Review Count on Provider Profiles
+Use Supabase Realtime subscription on `provider_rating_stats` to live-update review count and average rating on provider profile pages when a new review is approved. Effort: S.
+
+### P2 | Review Response Notification to Reviewer
+When a provider responds to a review, send in-app notification + email to the original reviewer using existing Resend + React Email infrastructure. Effort: S.
+
+### P3 | Guided Review Prompts
+Show contextual prompts in ReviewForm based on trade category (e.g., "How was their punctuality?"). Static prompt map by category, dismissible hint cards above textarea. Effort: S.
+
+### P3 | Review Sentiment Emoji Badge
+Show sentiment indicator badge (green/amber/red) next to each review. Visible to moderators initially, optionally public. Leverages existing sentiment analysis data. Effort: S.
