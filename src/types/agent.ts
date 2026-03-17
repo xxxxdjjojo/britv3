@@ -1,14 +1,7 @@
-/**
- * Agent domain types — mirrors the database schema in
- * supabase/migrations/20260313_agent_dashboard.sql.
- * All field names and constraints match the SQL exactly.
- * All monetary values are in pence (number = BIGINT in PostgreSQL).
- */
-
 import { z } from "zod";
 
 // ============================================================================
-// Enum constants (mirror SQL CHECK constraints)
+// Enum constant arrays
 // ============================================================================
 
 export const LEAD_STAGES = [
@@ -18,7 +11,6 @@ export const LEAD_STAGES = [
   "offer_made",
   "closed",
 ] as const;
-export type LeadStage = (typeof LEAD_STAGES)[number];
 
 export const SALE_STAGES = [
   "offer_accepted",
@@ -30,7 +22,6 @@ export const SALE_STAGES = [
   "exchange",
   "completion",
 ] as const;
-export type SaleStage = (typeof SALE_STAGES)[number];
 
 export const TEAM_ROLES = [
   "admin",
@@ -39,7 +30,6 @@ export const TEAM_ROLES = [
   "lettings_manager",
   "viewer",
 ] as const;
-export type TeamRole = (typeof TEAM_ROLES)[number];
 
 export const OFFER_STATUSES = [
   "pending",
@@ -48,21 +38,18 @@ export const OFFER_STATUSES = [
   "countered",
   "withdrawn",
 ] as const;
-export type OfferStatus = (typeof OFFER_STATUSES)[number];
 
 export const AIP_STATUSES = [
   "not_provided",
   "provided",
   "verified",
 ] as const;
-export type AipStatus = (typeof AIP_STATUSES)[number];
 
 export const COMMISSION_STATUSES = [
   "pending",
   "invoiced",
   "paid",
 ] as const;
-export type CommissionStatus = (typeof COMMISSION_STATUSES)[number];
 
 export const CLIENT_TYPES = [
   "buyer",
@@ -70,7 +57,6 @@ export const CLIENT_TYPES = [
   "landlord",
   "tenant",
 ] as const;
-export type ClientType = (typeof CLIENT_TYPES)[number];
 
 export const LEAD_SOURCES = [
   "website",
@@ -80,14 +66,12 @@ export const LEAD_SOURCES = [
   "referral",
   "other",
 ] as const;
-export type LeadSource = (typeof LEAD_SOURCES)[number];
 
 export const FEED_PROVIDERS = [
   "reapit",
   "alto",
   "jupix",
 ] as const;
-export type FeedProvider = (typeof FEED_PROVIDERS)[number];
 
 export const SYNC_STATUSES = [
   "disconnected",
@@ -95,39 +79,53 @@ export const SYNC_STATUSES = [
   "syncing",
   "error",
 ] as const;
-export type SyncStatus = (typeof SYNC_STATUSES)[number];
-
-export const TEAM_MEMBER_STATUSES = [
-  "active",
-  "inactive",
-  "pending",
-] as const;
-export type TeamMemberStatus = (typeof TEAM_MEMBER_STATUSES)[number];
 
 export const PRICE_OPINIONS = [
   "too_high",
   "about_right",
   "good_value",
 ] as const;
-export type PriceOpinion = (typeof PRICE_OPINIONS)[number];
 
-export const LIKELIHOOD_TO_OFFER_OPTIONS = [
+export const LIKELIHOOD_TO_OFFER = [
   "unlikely",
   "possible",
   "likely",
   "very_likely",
 ] as const;
-export type LikelihoodToOffer = (typeof LIKELIHOOD_TO_OFFER_OPTIONS)[number];
 
 export const REPORT_TYPES = [
   "listing_performance",
   "viewing_summary",
   "market_analysis",
 ] as const;
-export type ReportType = (typeof REPORT_TYPES)[number];
+
+export const TEAM_MEMBER_STATUSES = [
+  "active",
+  "inactive",
+  "pending",
+] as const;
 
 // ============================================================================
-// Row types (match table columns exactly)
+// Derived union types
+// ============================================================================
+
+export type LeadStage = (typeof LEAD_STAGES)[number];
+export type SaleStage = (typeof SALE_STAGES)[number];
+export type TeamRole = (typeof TEAM_ROLES)[number];
+export type OfferStatus = (typeof OFFER_STATUSES)[number];
+export type AipStatus = (typeof AIP_STATUSES)[number];
+export type CommissionStatus = (typeof COMMISSION_STATUSES)[number];
+export type ClientType = (typeof CLIENT_TYPES)[number];
+export type LeadSource = (typeof LEAD_SOURCES)[number];
+export type FeedProvider = (typeof FEED_PROVIDERS)[number];
+export type SyncStatus = (typeof SYNC_STATUSES)[number];
+export type PriceOpinion = (typeof PRICE_OPINIONS)[number];
+export type LikelihoodToOffer = (typeof LIKELIHOOD_TO_OFFER)[number];
+export type ReportType = (typeof REPORT_TYPES)[number];
+export type TeamMemberStatus = (typeof TEAM_MEMBER_STATUSES)[number];
+
+// ============================================================================
+// Table row types (matching SQL column names)
 // ============================================================================
 
 export type AgentAgencyProfile = Readonly<{
@@ -141,8 +139,8 @@ export type AgentAgencyProfile = Readonly<{
   city: string | null;
   postcode: string | null;
   description: string | null;
-  specializations: string[];
-  coverage_areas: string[];
+  specializations: string[] | null;
+  coverage_areas: string[] | null;
   logo_url: string | null;
   brand_primary_colour: string | null;
   brand_secondary_colour: string | null;
@@ -163,7 +161,7 @@ export type AgentLead = Readonly<{
   contact_email: string | null;
   contact_phone: string | null;
   stage: LeadStage;
-  source: LeadSource;
+  source: LeadSource | null;
   assigned_to: string | null;
   notes: string | null;
   created_at: string;
@@ -176,7 +174,7 @@ export type AgentLeadActivity = Readonly<{
   actor_id: string;
   activity_type: string;
   description: string | null;
-  metadata: Record<string, unknown>;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 }>;
 
@@ -190,7 +188,7 @@ export type AgentOffer = Readonly<{
   buyer_phone: string | null;
   amount: number;
   conditions: string | null;
-  solicitor_details: Record<string, unknown>;
+  solicitor_details: Record<string, unknown> | null;
   aip_status: AipStatus;
   status: OfferStatus;
   counter_amount: number | null;
@@ -216,8 +214,8 @@ export type AgentSaleProgression = Readonly<{
   property_id: string;
   stage: SaleStage;
   expected_completion_date: string | null;
-  solicitor_buyer: Record<string, unknown>;
-  solicitor_seller: Record<string, unknown>;
+  solicitor_buyer: Record<string, unknown> | null;
+  solicitor_seller: Record<string, unknown> | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -232,6 +230,20 @@ export type AgentCommission = Readonly<{
   commission_amount: number;
   status: CommissionStatus;
   paid_at: string | null;
+  created_at: string;
+}>;
+
+export type AgentTeamMember = Readonly<{
+  id: string;
+  agent_id: string;
+  user_id: string;
+  branch_id: string | null;
+  role: TeamRole;
+  status: TeamMemberStatus;
+  email: string;
+  name: string;
+  invited_at: string;
+  joined_at: string | null;
   created_at: string;
 }>;
 
@@ -250,20 +262,6 @@ export type AgentBranch = Readonly<{
   updated_at: string;
 }>;
 
-export type AgentTeamMember = Readonly<{
-  id: string;
-  agent_id: string;
-  user_id: string;
-  branch_id: string | null;
-  role: TeamRole;
-  status: TeamMemberStatus;
-  email: string | null;
-  name: string | null;
-  invited_at: string;
-  joined_at: string | null;
-  created_at: string;
-}>;
-
 export type AgentCrmClient = Readonly<{
   id: string;
   agent_id: string;
@@ -272,9 +270,9 @@ export type AgentCrmClient = Readonly<{
   email: string | null;
   phone: string | null;
   client_type: ClientType;
-  preferences: Record<string, unknown>;
+  preferences: Record<string, unknown> | null;
   notes: string | null;
-  tags: string[];
+  tags: string[] | null;
   last_contact_at: string | null;
   created_at: string;
   updated_at: string;
@@ -295,11 +293,11 @@ export type AgentViewingSlot = Readonly<{
 export type AgentViewingFeedback = Readonly<{
   id: string;
   agent_id: string;
-  viewing_slot_id: string;
-  buyer_name: string | null;
-  interest_level: number | null;
-  price_opinion: PriceOpinion | null;
-  likelihood_to_offer: LikelihoodToOffer | null;
+  viewing_slot_id: string | null;
+  buyer_name: string;
+  interest_level: number;
+  price_opinion: PriceOpinion;
+  likelihood_to_offer: LikelihoodToOffer;
   comments: string | null;
   created_at: string;
 }>;
@@ -326,8 +324,8 @@ export type AgentFeedIntegration = Readonly<{
   webhook_url: string | null;
   sync_status: SyncStatus;
   last_sync_at: string | null;
-  field_mapping: Record<string, unknown>;
-  error_log: Record<string, unknown>[];
+  field_mapping: Record<string, unknown> | null;
+  error_log: Record<string, unknown>[] | null;
   created_at: string;
   updated_at: string;
 }>;
@@ -337,14 +335,10 @@ export type AgentVendorReport = Readonly<{
   agent_id: string;
   property_id: string;
   report_type: ReportType;
-  data: Record<string, unknown>;
+  data: Record<string, unknown> | null;
   generated_at: string;
   pdf_url: string | null;
 }>;
-
-// ============================================================================
-// KPI response type (matches get_agent_dashboard_kpis RPC)
-// ============================================================================
 
 export type AgentDashboardKpis = Readonly<{
   active_listings_count: number;
@@ -355,240 +349,140 @@ export type AgentDashboardKpis = Readonly<{
 }>;
 
 // ============================================================================
-// Form / input types for create and update operations
+// Form input types
 // ============================================================================
 
-export type CreateLeadInput = Readonly<{
-  property_id?: string | null;
+export type CreateLeadInput = {
+  property_id?: string;
   contact_name: string;
-  contact_email?: string | null;
-  contact_phone?: string | null;
+  contact_email?: string;
+  contact_phone?: string;
   stage?: LeadStage;
   source?: LeadSource;
-  assigned_to?: string | null;
-  notes?: string | null;
-}>;
+  assigned_to?: string;
+  notes?: string;
+};
 
-export type UpdateLeadInput = Partial<Omit<CreateLeadInput, "property_id">> &
-  Readonly<{ stage?: LeadStage }>;
+export type UpdateLeadInput = Partial<CreateLeadInput>;
 
-export type CreateOfferInput = Readonly<{
+export type CreateOfferInput = {
   property_id: string;
-  lead_id?: string | null;
+  lead_id?: string;
   buyer_name: string;
-  buyer_email?: string | null;
-  buyer_phone?: string | null;
+  buyer_email?: string;
+  buyer_phone?: string;
   amount: number;
-  conditions?: string | null;
+  conditions?: string;
   solicitor_details?: Record<string, unknown>;
   aip_status?: AipStatus;
-}>;
+};
 
-export type UpdateOfferInput = Readonly<{
-  status?: OfferStatus;
-  counter_amount?: number | null;
-  vendor_notified?: boolean;
-  aip_status?: AipStatus;
-  conditions?: string | null;
-  solicitor_details?: Record<string, unknown>;
-}>;
-
-export type CreateTeamMemberInput = Readonly<{
+export type CreateTeamMemberInput = {
   user_id: string;
-  branch_id?: string | null;
+  email: string;
+  name: string;
   role: TeamRole;
-  email?: string | null;
-  name?: string | null;
-}>;
+  branch_id?: string;
+};
 
-export type UpdateTeamMemberInput = Readonly<{
-  role?: TeamRole;
-  status?: TeamMemberStatus;
-  branch_id?: string | null;
-}>;
-
-export type CreateBranchInput = Readonly<{
+export type CreateBranchInput = {
   name: string;
-  address_line_1?: string | null;
-  address_line_2?: string | null;
-  city?: string | null;
-  postcode?: string | null;
-  phone?: string | null;
-  email?: string | null;
+  address_line_1?: string;
+  address_line_2?: string;
+  city?: string;
+  postcode?: string;
+  phone?: string;
+  email?: string;
   is_head_office?: boolean;
-}>;
+};
 
-export type UpdateBranchInput = Partial<CreateBranchInput>;
-
-export type CreateCrmClientInput = Readonly<{
-  user_id?: string | null;
+export type CreateCrmClientInput = {
+  user_id?: string;
   name: string;
-  email?: string | null;
-  phone?: string | null;
+  email?: string;
+  phone?: string;
   client_type: ClientType;
   preferences?: Record<string, unknown>;
-  notes?: string | null;
+  notes?: string;
   tags?: string[];
-}>;
-
-export type UpdateCrmClientInput = Partial<CreateCrmClientInput> &
-  Readonly<{ last_contact_at?: string | null }>;
-
-export type AgencyProfileInput = Readonly<{
-  agency_name: string;
-  contact_email?: string | null;
-  contact_phone?: string | null;
-  address_line_1?: string | null;
-  address_line_2?: string | null;
-  city?: string | null;
-  postcode?: string | null;
-  description?: string | null;
-  specializations?: string[];
-  coverage_areas?: string[];
-  logo_url?: string | null;
-  brand_primary_colour?: string | null;
-  brand_secondary_colour?: string | null;
-  social_facebook?: string | null;
-  social_twitter?: string | null;
-  social_instagram?: string | null;
-  social_linkedin?: string | null;
-  website_url?: string | null;
-}>;
-
-export type CreateViewingSlotInput = Readonly<{
-  property_id: string;
-  start_time: string;
-  end_time: string;
-  notes?: string | null;
-}>;
-
-export type CreateViewingFeedbackInput = Readonly<{
-  viewing_slot_id: string;
-  buyer_name?: string | null;
-  interest_level?: number | null;
-  price_opinion?: PriceOpinion | null;
-  likelihood_to_offer?: LikelihoodToOffer | null;
-  comments?: string | null;
-}>;
-
-export type CreateSaleProgressionInput = Readonly<{
-  offer_id: string;
-  property_id: string;
-  stage?: SaleStage;
-  expected_completion_date?: string | null;
-  solicitor_buyer?: Record<string, unknown>;
-  solicitor_seller?: Record<string, unknown>;
-  notes?: string | null;
-}>;
-
-export type UpdateSaleProgressionInput = Readonly<{
-  stage?: SaleStage;
-  expected_completion_date?: string | null;
-  solicitor_buyer?: Record<string, unknown>;
-  solicitor_seller?: Record<string, unknown>;
-  notes?: string | null;
-}>;
+};
 
 // ============================================================================
-// Zod schemas for validation
+// Zod validation schemas
 // ============================================================================
 
 export const createLeadSchema = z.object({
-  property_id: z.string().uuid().nullable().optional(),
-  contact_name: z.string().min(1, "Contact name is required"),
-  contact_email: z.string().email("Invalid email").nullable().optional(),
-  contact_phone: z.string().nullable().optional(),
-  stage: z.enum(LEAD_STAGES).default("new_enquiry"),
-  source: z.enum(LEAD_SOURCES).default("other"),
-  assigned_to: z.string().uuid().nullable().optional(),
-  notes: z.string().nullable().optional(),
-});
-
-export const updateLeadSchema = z.object({
-  contact_name: z.string().min(1).optional(),
-  contact_email: z.string().email().nullable().optional(),
-  contact_phone: z.string().nullable().optional(),
+  property_id: z.string().uuid().optional(),
+  contact_name: z.string().min(1),
+  contact_email: z.string().email().optional(),
+  contact_phone: z.string().optional(),
   stage: z.enum(LEAD_STAGES).optional(),
   source: z.enum(LEAD_SOURCES).optional(),
-  assigned_to: z.string().uuid().nullable().optional(),
-  notes: z.string().nullable().optional(),
+  assigned_to: z.string().uuid().optional(),
+  notes: z.string().optional(),
 });
 
+export const updateLeadSchema = createLeadSchema.partial();
+
 export const createOfferSchema = z.object({
-  property_id: z.string().uuid("Property is required"),
-  lead_id: z.string().uuid().nullable().optional(),
-  buyer_name: z.string().min(1, "Buyer name is required"),
-  buyer_email: z.string().email("Invalid email").nullable().optional(),
-  buyer_phone: z.string().nullable().optional(),
-  amount: z.number().int().positive("Offer amount must be positive"),
-  conditions: z.string().nullable().optional(),
+  property_id: z.string().uuid(),
+  lead_id: z.string().uuid().optional(),
+  buyer_name: z.string().min(1),
+  buyer_email: z.string().email().optional(),
+  buyer_phone: z.string().optional(),
+  amount: z.number().int().positive(),
+  conditions: z.string().optional(),
   solicitor_details: z.record(z.string(), z.unknown()).optional(),
-  aip_status: z.enum(AIP_STATUSES).default("not_provided"),
+  aip_status: z.enum(AIP_STATUSES).optional(),
 });
 
 export const createTeamMemberSchema = z.object({
-  user_id: z.string().uuid("Valid user ID is required"),
-  branch_id: z.string().uuid().nullable().optional(),
+  user_id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(1),
   role: z.enum(TEAM_ROLES),
-  email: z.string().email("Invalid email").nullable().optional(),
-  name: z.string().nullable().optional(),
+  branch_id: z.string().uuid().optional(),
 });
 
 export const createBranchSchema = z.object({
-  name: z.string().min(1, "Branch name is required"),
-  address_line_1: z.string().nullable().optional(),
-  address_line_2: z.string().nullable().optional(),
-  city: z.string().nullable().optional(),
-  postcode: z
-    .string()
-    .regex(/^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i, "Invalid UK postcode")
-    .nullable()
-    .optional(),
-  phone: z.string().nullable().optional(),
-  email: z.string().email("Invalid email").nullable().optional(),
-  is_head_office: z.boolean().default(false),
+  name: z.string().min(1),
+  address_line_1: z.string().optional(),
+  address_line_2: z.string().optional(),
+  city: z.string().optional(),
+  postcode: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email().optional(),
+  is_head_office: z.boolean().optional(),
 });
 
 export const createCrmClientSchema = z.object({
-  user_id: z.string().uuid().nullable().optional(),
-  name: z.string().min(1, "Client name is required"),
-  email: z.string().email("Invalid email").nullable().optional(),
-  phone: z.string().nullable().optional(),
+  user_id: z.string().uuid().optional(),
+  name: z.string().min(1),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
   client_type: z.enum(CLIENT_TYPES),
   preferences: z.record(z.string(), z.unknown()).optional(),
-  notes: z.string().nullable().optional(),
-  tags: z.array(z.string()).default([]),
+  notes: z.string().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export const agencyProfileSchema = z.object({
-  agency_name: z.string().min(1, "Agency name is required"),
-  contact_email: z.string().email("Invalid email").nullable().optional(),
-  contact_phone: z.string().nullable().optional(),
-  address_line_1: z.string().nullable().optional(),
-  address_line_2: z.string().nullable().optional(),
-  city: z.string().nullable().optional(),
-  postcode: z
-    .string()
-    .regex(/^[A-Z]{1,2}[0-9][0-9A-Z]?\s*[0-9][A-Z]{2}$/i, "Invalid UK postcode")
-    .nullable()
-    .optional(),
-  description: z.string().nullable().optional(),
-  specializations: z.array(z.string()).default([]),
-  coverage_areas: z.array(z.string()).default([]),
-  logo_url: z.string().url("Invalid URL").nullable().optional(),
-  brand_primary_colour: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Must be a hex colour (#RRGGBB)")
-    .nullable()
-    .optional(),
-  brand_secondary_colour: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Must be a hex colour (#RRGGBB)")
-    .nullable()
-    .optional(),
-  social_facebook: z.string().url("Invalid URL").nullable().optional(),
-  social_twitter: z.string().url("Invalid URL").nullable().optional(),
-  social_instagram: z.string().url("Invalid URL").nullable().optional(),
-  social_linkedin: z.string().url("Invalid URL").nullable().optional(),
-  website_url: z.string().url("Invalid URL").nullable().optional(),
+  agency_name: z.string().min(1),
+  contact_email: z.string().email().optional(),
+  contact_phone: z.string().optional(),
+  address_line_1: z.string().optional(),
+  address_line_2: z.string().optional(),
+  city: z.string().optional(),
+  postcode: z.string().optional(),
+  description: z.string().optional(),
+  specializations: z.array(z.string()).optional(),
+  coverage_areas: z.array(z.string()).optional(),
+  logo_url: z.string().url().optional(),
+  brand_primary_colour: z.string().optional(),
+  brand_secondary_colour: z.string().optional(),
+  social_facebook: z.union([z.string().url(), z.literal("")]).optional(),
+  social_twitter: z.union([z.string().url(), z.literal("")]).optional(),
+  social_instagram: z.union([z.string().url(), z.literal("")]).optional(),
+  social_linkedin: z.union([z.string().url(), z.literal("")]).optional(),
+  website_url: z.union([z.string().url(), z.literal("")]).optional(),
 });

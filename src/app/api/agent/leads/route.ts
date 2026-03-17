@@ -59,7 +59,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as unknown;
+    const body = await request.json() as unknown;
     const parsed = createLeadSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -83,8 +83,8 @@ export async function POST(request: Request) {
 /**
  * PATCH /api/agent/leads
  * Routes to either stage update or lead assignment depending on the body:
- *   { id, stage }       -> updateLeadStage
- *   { id, assigned_to } -> assignLead
+ *   { id, stage }       → updateLeadStage
+ *   { id, assigned_to } → assignLead
  */
 export async function PATCH(request: Request) {
   const supabase = await createClient();
@@ -99,7 +99,7 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = await request.json() as Record<string, unknown>;
     const { id, stage, assigned_to, note } = body as {
       id?: string;
       stage?: LeadStage;

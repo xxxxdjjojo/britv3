@@ -47,7 +47,7 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = await request.json() as Record<string, unknown>;
     const { data, error } = await supabase
       .from("agent_agency_profiles")
       .upsert({ ...body, agent_id: user.id }, { onConflict: "agent_id" })
