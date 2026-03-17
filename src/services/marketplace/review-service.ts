@@ -7,8 +7,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   ReviewCreateInput,
   ReviewFlagInput,
+  ReviewEditInput,
 } from "@/lib/validators/marketplace-schemas";
-import { reviewCreateSchema, reviewFlagSchema } from "@/lib/validators/marketplace-schemas";
+import { reviewCreateSchema, reviewFlagSchema, reviewEditSchema } from "@/lib/validators/marketplace-schemas";
 import { analyzeReviewSentiment } from "@/lib/marketplace/sentiment-analyzer";
 import { detectSpam, redactPII } from "@/lib/marketplace/spam-detector";
 
@@ -139,6 +140,132 @@ export async function createReview(
   }
 
   return review;
+}
+
+const EDIT_WINDOW_HOURS = 48;
+const MAX_EDITS = 2;
+
+/**
+ * Edit a review within the 48-hour window.
+ * - Max 2 edits allowed
+ * - Saves original text + edit history for audit trail
+ * - Resets moderation_status to "pending" (prevents approve-then-edit attack)
+ * - Re-enters moderation queue
+ */
+export async function editReview(
+  supabase: SupabaseClient,
+  userId: string,
+  reviewId: string,
+  data: ReviewEditInput,
+) {
+  const parsed = reviewEditSchema.parse(data);
+
+  // Fetch the review
+  const { data: review, error: fetchError } = await supabase
+    .from("reviews")
+    .select("id, reviewer_id, review_text, title, created_at, edit_count, edit_history, original_text")
+    .eq("id", reviewId)
+    .single();
+
+  if (fetchError || !review) {
+    throw new Error("Review not found");
+  }
+
+  if (review.reviewer_id !== userId) {
+    throw new Error("You can only edit your own reviews");
+  }
+
+  // Check edit window (48 hours from creation)
+  const createdAt = new Date(review.created_at);
+  const windowExpiry = new Date(createdAt.getTime() + EDIT_WINDOW_HOURS * 60 * 60 * 1000);
+  if (new Date() > windowExpiry) {
+    throw new Error("Edit window has expired. Reviews can only be edited within 48 hours of submission.");
+  }
+
+  // Check max edits
+  if ((review.edit_count ?? 0) >= MAX_EDITS) {
+    throw new Error("Maximum number of edits (2) reached for this review.");
+  }
+
+  // PII redaction on new text
+  const sanitizedText = redactPII(parsed.review_text);
+  const sanitizedTitle = redactPII(parsed.title);
+
+  // Build edit history entry
+  const historyEntry = {
+    text: review.review_text,
+    title: review.title,
+    edited_at: new Date().toISOString(),
+  };
+  const updatedHistory = [...(review.edit_history ?? []), historyEntry];
+
+  // Save original text on first edit
+  const originalText = review.original_text ?? review.review_text;
+
+  // Update review
+  const { data: updated, error: updateError } = await supabase
+    .from("reviews")
+    .update({
+      title: sanitizedTitle,
+      review_text: sanitizedText,
+      overall_rating: parsed.overall_rating,
+      punctuality_rating: parsed.punctuality_rating ?? null,
+      quality_rating: parsed.quality_rating ?? null,
+      value_rating: parsed.value_rating ?? null,
+      professionalism_rating: parsed.professionalism_rating ?? null,
+      edited_at: new Date().toISOString(),
+      original_text: originalText,
+      edit_count: (review.edit_count ?? 0) + 1,
+      edit_history: updatedHistory,
+      moderation_status: "pending",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", reviewId)
+    .select()
+    .single();
+
+  if (updateError) {
+    throw new Error(`Failed to edit review: ${updateError.message}`);
+  }
+
+  // Re-enter moderation queue with fresh priority
+  let sentimentResult: { sentiment: string };
+  try {
+    sentimentResult = analyzeReviewSentiment(sanitizedText);
+  } catch {
+    sentimentResult = { sentiment: "neutral" };
+  }
+
+  let spamResult: { spam_score: number };
+  try {
+    spamResult = detectSpam(sanitizedText);
+  } catch {
+    spamResult = { spam_score: 0 };
+  }
+
+  const priorityScore = (spamResult.spam_score ?? 0) * 3 + 2;
+
+  const { error: queueError } = await supabase
+    .from("moderation_queue")
+    .upsert(
+      {
+        review_id: reviewId,
+        priority_score: priorityScore,
+        decision: null,
+        completed_at: null,
+        assigned_to: null,
+      },
+      { onConflict: "review_id" },
+    );
+
+  if (queueError) {
+    console.error("[review-service] Failed to re-queue edited review", {
+      reviewId,
+      error: queueError.message,
+    });
+  }
+
+  return updated;
 }
 
 /**
