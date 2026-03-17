@@ -214,7 +214,8 @@ export async function listProviderReviews(
 }
 
 /**
- * Vote on whether a review is helpful (upsert -- one vote per user per review).
+ * Vote on whether a review is helpful.
+ * Uses an atomic RPC to prevent race conditions on concurrent votes.
  */
 export async function voteHelpfulness(
   supabase: SupabaseClient,
@@ -222,87 +223,19 @@ export async function voteHelpfulness(
   reviewId: string,
   isHelpful: boolean,
 ) {
-  // Check if user already voted
-  const { data: existing } = await supabase
-    .from("review_helpfulness")
-    .select("id, is_helpful")
-    .eq("review_id", reviewId)
-    .eq("user_id", userId)
-    .maybeSingle();
+  const { data, error } = await supabase.rpc("atomic_vote_review", {
+    p_review_id: reviewId,
+    p_user_id: userId,
+    p_is_helpful: isHelpful,
+  });
 
-  if (existing) {
-    // Update existing vote
-    const { error: updateError } = await supabase
-      .from("review_helpfulness")
-      .update({ is_helpful: isHelpful })
-      .eq("id", existing.id);
-
-    if (updateError) {
-      throw new Error(`Failed to update vote: ${updateError.message}`);
-    }
-
-    // Adjust counts: remove old vote, add new vote
-    if (existing.is_helpful !== isHelpful) {
-      const incrementField = isHelpful ? "helpful_count" : "not_helpful_count";
-      const decrementField = isHelpful ? "not_helpful_count" : "helpful_count";
-
-      // Use RPC or manual update for atomic increment/decrement
-      const { data: review } = await supabase
-        .from("reviews")
-        .select("helpful_count, not_helpful_count")
-        .eq("id", reviewId)
-        .single();
-
-      if (review) {
-        await supabase
-          .from("reviews")
-          .update({
-            [incrementField]: review[incrementField] + 1,
-            [decrementField]: Math.max(0, review[decrementField] - 1),
-          })
-          .eq("id", reviewId);
-      }
-    }
-  } else {
-    // Insert new vote
-    const { error: insertError } = await supabase
-      .from("review_helpfulness")
-      .insert({
-        review_id: reviewId,
-        user_id: userId,
-        is_helpful: isHelpful,
-      });
-
-    if (insertError) {
-      throw new Error(`Failed to record vote: ${insertError.message}`);
-    }
-
-    // Increment count
-    const { data: review } = await supabase
-      .from("reviews")
-      .select("helpful_count, not_helpful_count")
-      .eq("id", reviewId)
-      .single();
-
-    if (review) {
-      const field = isHelpful ? "helpful_count" : "not_helpful_count";
-      await supabase
-        .from("reviews")
-        .update({ [field]: review[field] + 1 })
-        .eq("id", reviewId);
-    }
+  if (error) {
+    throw new Error(`Failed to record vote: ${error.message}`);
   }
 
-  // Return updated counts
-  const { data: updated } = await supabase
-    .from("reviews")
-    .select("helpful_count, not_helpful_count")
-    .eq("id", reviewId)
-    .single();
-
   return {
-    helpful_count: updated?.helpful_count ?? 0,
-    not_helpful_count: updated?.not_helpful_count ?? 0,
+    helpful_count: (data as { helpful_count: number; not_helpful_count: number }).helpful_count,
+    not_helpful_count: (data as { helpful_count: number; not_helpful_count: number }).not_helpful_count,
   };
 }
 
