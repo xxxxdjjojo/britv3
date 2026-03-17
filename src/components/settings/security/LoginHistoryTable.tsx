@@ -23,12 +23,13 @@ import {
   ChevronRight,
   AlertCircle,
 } from "lucide-react";
+import { formatDate } from "@/lib/format-date";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type LoginHistoryEntry = {
+export type LoginHistoryEntry = {
   id: string;
   ip_address: string | null;
   created_at: string;
@@ -48,17 +49,6 @@ type LoginHistoryTableProps = Readonly<{
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function formatDate(dateStr: string): string {
-  try {
-    return new Intl.DateTimeFormat("en-GB", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(dateStr));
-  } catch {
-    return "Unknown";
-  }
-}
 
 function extractEventType(payload: Record<string, unknown> | null): string {
   if (!payload) return "Unknown";

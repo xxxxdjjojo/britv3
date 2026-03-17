@@ -8,7 +8,11 @@ import { PasswordChangeCard } from "@/components/settings/security/PasswordChang
 import { TotpEnrollmentCard } from "@/components/settings/security/TotpEnrollmentCard";
 import { ConnectedAccountsCard } from "@/components/settings/security/ConnectedAccountsCard";
 import { ActiveSessionsList } from "@/components/settings/security/ActiveSessionsList";
-import { LoginHistoryTable } from "@/components/settings/security/LoginHistoryTable";
+import {
+  LoginHistoryTable,
+  type LoginHistoryEntry,
+} from "@/components/settings/security/LoginHistoryTable";
+import { formatDate } from "@/lib/format-date";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -30,29 +34,6 @@ type SessionInfo = {
   ip?: string;
   is_current: boolean;
 };
-
-type LoginHistoryEntry = {
-  id: string;
-  ip_address: string | null;
-  created_at: string;
-  payload: Record<string, unknown> | null;
-};
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function formatDate(dateStr?: string): string {
-  if (!dateStr) return "Unknown";
-  try {
-    return new Intl.DateTimeFormat("en-GB", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(dateStr));
-  } catch {
-    return "Unknown";
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Component
