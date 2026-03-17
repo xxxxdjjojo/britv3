@@ -4,7 +4,7 @@
  */
 
 /** Supported AI features -- extend this union as new features are added */
-export type AiFeature = "property_description" | "quote_draft" | "agent_proposal" | "quote_suggest";
+export type AiFeature = "property_description" | "quote_draft" | "agent_proposal" | "quote_suggest" | "roi_estimate";
 
 /** Result from a successful Claude API call */
 export type AiCallResult = Readonly<{
@@ -20,6 +20,8 @@ export type AiCallOptions = Readonly<{
   systemPrompt: string;
   userMessage: string;
   maxTokens?: number;
+  timeoutMs?: number;
+  model?: string;
 }>;
 
 /** Shape of the ai_usage_log table row */
