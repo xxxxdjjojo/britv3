@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,114 +16,109 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Home, RotateCcw, Trash2, FileEdit } from "lucide-react";
-import Link from "next/link";
 
-type Listing = {
-  id: string;
-  title?: string | null;
-  address_line_1?: string | null;
-  city?: string | null;
-  postcode?: string | null;
-  price?: number | null;
-  status?: string | null;
-  property_type?: string | null;
-  bedrooms?: number | null;
-  created_at: string;
-};
+type Props = Readonly<{
+  listings: Record<string, unknown>[];
+}>;
 
-function formatPrice(pence: number | null | undefined): string {
-  if (pence == null) return "POA";
-  const pounds = pence / 100;
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(pounds);
-}
-
-function getAddress(listing: Listing): string {
-  const parts = [listing.address_line_1, listing.city, listing.postcode].filter(Boolean);
-  return parts.join(", ") || "Address not provided";
-}
-
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso));
+function getStr(listing: Record<string, unknown>, key: string): string {
+  const v = listing[key];
+  return typeof v === "string" ? v : "";
 }
 
 type ListingCardProps = {
-  listing: Listing;
-  onRestore: (id: string) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
-  isRestoring: boolean;
-  isDeleting: boolean;
+  listing: Record<string, unknown>;
+  onRestored: (id: string) => void;
+  onDeleted: (id: string) => void;
 };
 
-function ListingCard({ listing, onRestore, onDelete, isRestoring, isDeleting }: ListingCardProps) {
+function ListingCard({ listing, onRestored, onDeleted }: ListingCardProps) {
+  const [restoring, setRestoring] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const id = getStr(listing, "id");
+  const title = getStr(listing, "title") || getStr(listing, "address_line_1") || "Untitled";
+  const imageUrl = getStr(listing, "primary_image_url");
+  const status = getStr(listing, "status");
+
+  async function handleRestore() {
+    setRestoring(true);
+    try {
+      const res = await fetch(`/api/agent/listings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "restore" }),
+      });
+      if (!res.ok) throw new Error("Restore failed");
+      toast.success("Listing restored to draft.");
+      onRestored(id);
+    } catch {
+      toast.error("Could not restore listing. Please try again.");
+    } finally {
+      setRestoring(false);
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/agent/listings/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Listing deleted.");
+      onDeleted(id);
+    } catch {
+      toast.error("Could not delete listing. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
-    <Card>
-      <CardContent className="py-4">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="space-y-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="font-semibold">{getAddress(listing)}</p>
-              <Badge variant="outline" className="capitalize text-xs shrink-0">
-                {listing.status ?? "archived"}
-              </Badge>
-            </div>
-            {listing.title && (
-              <p className="text-sm text-muted-foreground">{listing.title}</p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              {listing.property_type
-                ? `${listing.bedrooms ? `${listing.bedrooms} bed ` : ""}${listing.property_type}`
-                : "Property"}
-              {" · "}Added {formatDate(listing.created_at)}
-            </p>
+    <Card className="overflow-hidden">
+      <div className="relative h-40 bg-muted">
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+            No image
           </div>
-
-          <p className="font-bold text-lg shrink-0">{formatPrice(listing.price)}</p>
-        </div>
-
-        <div className="mt-3 flex items-center gap-2">
+        )}
+        {status && (
+          <span className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-xs font-medium px-2 py-1 rounded-full uppercase">
+            {status}
+          </span>
+        )}
+      </div>
+      <CardContent className="p-4 space-y-3">
+        <p className="font-medium text-sm line-clamp-2">{title}</p>
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onRestore(listing.id)}
-            disabled={isRestoring || isDeleting}
+            onClick={handleRestore}
+            disabled={restoring}
           >
-            <RotateCcw className="mr-1 size-3" />
-            Restore to Draft
+            {restoring ? "Restoring..." : "Restore"}
           </Button>
-
-          {listing.status === "draft" && (
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/dashboard/agent/listings/create?edit=${listing.id}`}>
-                <FileEdit className="mr-1 size-3" />
-                Edit
-              </Link>
-            </Button>
-          )}
-
           <AlertDialog>
-            <AlertDialogTrigger
-              disabled={isRestoring || isDeleting}
-              className="inline-flex h-7 items-center gap-1 rounded-[min(var(--radius-md),12px)] border border-destructive/30 bg-background px-2.5 text-[0.8rem] font-medium text-destructive transition-all hover:border-destructive hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
-            >
-              <Trash2 className="size-3" />
-              Delete
+            <AlertDialogTrigger>
+              <Button variant="destructive" size="sm" disabled={deleting} type="button">
+                {deleting ? "Deleting..." : "Delete"}
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete listing?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete &ldquo;{getAddress(listing)}&rdquo;. This action
-                  cannot be undone.
+                  This action cannot be undone. The listing will be permanently deleted.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => onDelete(listing.id)}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Delete permanently
+                <AlertDialogAction onClick={handleDelete}>
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -135,95 +129,63 @@ function ListingCard({ listing, onRestore, onDelete, isRestoring, isDeleting }: 
   );
 }
 
-type Props = Readonly<{
-  archivedListings: Record<string, unknown>[];
-  draftListings: Record<string, unknown>[];
-}>;
+export function ArchivedDraftListings({ listings }: Props) {
+  const [items, setItems] = useState(listings);
 
-export function ArchivedDraftListings({ archivedListings, draftListings }: Props) {
-  const router = useRouter();
-  const [restoringId, setRestoringId] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const archived = items.filter(
+    (l) => getStr(l, "status") === "archived",
+  );
+  const drafts = items.filter((l) => getStr(l, "status") === "draft");
 
-  const archived = archivedListings as unknown as Listing[];
-  const drafts = draftListings as unknown as Listing[];
-
-  async function handleRestore(id: string) {
-    setRestoringId(id);
-    try {
-      await fetch(`/api/agent/listings/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "draft" }),
-      });
-      router.refresh();
-    } finally {
-      setRestoringId(null);
-    }
+  function handleRestored(id: string) {
+    setItems((prev) => prev.filter((l) => getStr(l, "id") !== id));
   }
 
-  async function handleDelete(id: string) {
-    setDeletingId(id);
-    try {
-      await fetch(`/api/agent/listings/${id}`, {
-        method: "DELETE",
-      });
-      router.refresh();
-    } finally {
-      setDeletingId(null);
+  function handleDeleted(id: string) {
+    setItems((prev) => prev.filter((l) => getStr(l, "id") !== id));
+  }
+
+  function renderGrid(data: Record<string, unknown>[]) {
+    if (data.length === 0) {
+      return (
+        <p className="text-muted-foreground text-sm py-4">No listings found.</p>
+      );
     }
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {data.map((listing) => (
+          <ListingCard
+            key={getStr(listing, "id")}
+            listing={listing}
+            onRestored={handleRestored}
+            onDeleted={handleDeleted}
+          />
+        ))}
+      </div>
+    );
   }
 
   return (
-    <Tabs defaultValue="archived">
-      <TabsList>
-        <TabsTrigger value="archived">Archived ({archived.length})</TabsTrigger>
-        <TabsTrigger value="draft">Draft ({drafts.length})</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="archived" className="mt-4 space-y-3">
-        {archived.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Home className="size-10 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No archived listings.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          archived.map((listing) => (
-            <ListingCard
-              key={listing.id}
-              listing={listing}
-              onRestore={handleRestore}
-              onDelete={handleDelete}
-              isRestoring={restoringId === listing.id}
-              isDeleting={deletingId === listing.id}
-            />
-          ))
-        )}
-      </TabsContent>
-
-      <TabsContent value="draft" className="mt-4 space-y-3">
-        {drafts.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Home className="size-10 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No draft listings.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          drafts.map((listing) => (
-            <ListingCard
-              key={listing.id}
-              listing={listing}
-              onRestore={handleRestore}
-              onDelete={handleDelete}
-              isRestoring={restoringId === listing.id}
-              isDeleting={deletingId === listing.id}
-            />
-          ))
-        )}
-      </TabsContent>
-    </Tabs>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-semibold text-foreground">
+        Archived & Draft Listings
+      </h1>
+      <Tabs defaultValue="archived">
+        <TabsList>
+          <TabsTrigger value="archived">
+            Archived ({archived.length})
+          </TabsTrigger>
+          <TabsTrigger value="drafts">
+            Drafts ({drafts.length})
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="archived" className="mt-4">
+          {renderGrid(archived)}
+        </TabsContent>
+        <TabsContent value="drafts" className="mt-4">
+          {renderGrid(drafts)}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState, useMemo } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -12,171 +9,125 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, Heart, MessageSquare, Home, BarChart2 } from "lucide-react";
 
-type Listing = {
-  id: string;
-  title?: string | null;
-  address_line_1?: string | null;
-  city?: string | null;
-  postcode?: string | null;
-  price?: number | null;
-  status?: string | null;
-  property_type?: string | null;
-  bedrooms?: number | null;
-  bathrooms?: number | null;
-  views_count?: number | null;
-  saves_count?: number | null;
-  enquiries_count?: number | null;
-  created_at: string;
-  image_url?: string | null;
-};
-
-type SortKey = "newest" | "price_desc" | "price_asc" | "most_views";
-
-function sortListings(listings: Listing[], sort: SortKey): Listing[] {
-  return [...listings].sort((a, b) => {
-    if (sort === "newest") {
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    }
-    if (sort === "price_desc") {
-      return (b.price ?? 0) - (a.price ?? 0);
-    }
-    if (sort === "price_asc") {
-      return (a.price ?? 0) - (b.price ?? 0);
-    }
-    if (sort === "most_views") {
-      return (b.views_count ?? 0) - (a.views_count ?? 0);
-    }
-    return 0;
-  });
-}
-
-function formatPrice(pence: number | null | undefined): string {
-  if (pence == null) return "POA";
-  const pounds = pence / 100;
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(pounds);
-}
-
-function getAddress(listing: Listing): string {
-  const parts = [listing.address_line_1, listing.city, listing.postcode].filter(Boolean);
-  return parts.join(", ") || "Address not provided";
-}
+type SortOption = "newest" | "price_high" | "price_low" | "most_views";
 
 type Props = Readonly<{
   listings: Record<string, unknown>[];
 }>;
 
+function formatGbp(value: unknown): string {
+  const num = typeof value === "number" ? value : Number(value ?? 0);
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    maximumFractionDigits: 0,
+  }).format(num);
+}
+
+function getStr(listing: Record<string, unknown>, key: string): string {
+  const v = listing[key];
+  return typeof v === "string" ? v : "";
+}
+
+function getNum(listing: Record<string, unknown>, key: string): number {
+  const v = listing[key];
+  return typeof v === "number" ? v : 0;
+}
+
 export function ActiveListings({ listings }: Props) {
-  const [sort, setSort] = useState<SortKey>("newest");
+  const [sort, setSort] = useState<SortOption>("newest");
 
-  const typed = listings as unknown as Listing[];
-  const sorted = sortListings(typed, sort);
-
-  if (sorted.length === 0) {
-    return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <Home className="size-10 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">No active listings yet.</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Click &ldquo;Add Listing&rdquo; to publish your first property.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+  const sorted = useMemo(() => {
+    const copy = [...listings];
+    switch (sort) {
+      case "price_high":
+        return copy.sort((a, b) => getNum(b, "price") - getNum(a, "price"));
+      case "price_low":
+        return copy.sort((a, b) => getNum(a, "price") - getNum(b, "price"));
+      case "most_views":
+        return copy.sort((a, b) => getNum(b, "views") - getNum(a, "views"));
+      default:
+        return copy.sort(
+          (a, b) =>
+            new Date(getStr(b, "created_at")).getTime() -
+            new Date(getStr(a, "created_at")).getTime(),
+        );
+    }
+  }, [listings, sort]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end">
-        <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <h1 className="text-2xl font-semibold text-foreground">
+          Active Listings ({listings.length})
+        </h1>
+        <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="newest">Newest first</SelectItem>
-            <SelectItem value="price_desc">Price: High to Low</SelectItem>
-            <SelectItem value="price_asc">Price: Low to High</SelectItem>
-            <SelectItem value="most_views">Most views</SelectItem>
+            <SelectItem value="newest">Newest First</SelectItem>
+            <SelectItem value="price_high">Price High-Low</SelectItem>
+            <SelectItem value="price_low">Price Low-High</SelectItem>
+            <SelectItem value="most_views">Most Views</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {sorted.map((listing) => (
-          <Card key={listing.id} className="overflow-hidden">
-            {listing.image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={listing.image_url}
-                alt={listing.title ?? "Property image"}
-                className="h-40 w-full object-cover"
-              />
-            ) : (
-              <div className="h-40 w-full bg-muted flex items-center justify-center">
-                <Home className="size-10 text-muted-foreground" />
-              </div>
-            )}
+      {sorted.length === 0 && (
+        <p className="text-muted-foreground text-sm">No active listings found.</p>
+      )}
 
-            <CardContent className="pt-4 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div className="space-y-0.5 min-w-0">
-                  <p className="font-semibold text-sm truncate">{getAddress(listing)}</p>
-                  {listing.title && (
-                    <p className="text-xs text-muted-foreground truncate">{listing.title}</p>
-                  )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sorted.map((listing) => {
+          const id = getStr(listing, "id");
+          const title = getStr(listing, "title") || getStr(listing, "address_line_1") || "Untitled";
+          const price = getNum(listing, "price");
+          const status = getStr(listing, "status");
+          const imageUrl = getStr(listing, "primary_image_url");
+          const views = getNum(listing, "views");
+          const saves = getNum(listing, "saves");
+          const enquiries = getNum(listing, "enquiries");
+
+          return (
+            <Card key={id} className="overflow-hidden">
+              <div className="relative h-48 bg-muted">
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+                    No image
+                  </div>
+                )}
+                {status && (
+                  <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-medium px-2 py-1 rounded-full uppercase">
+                    {status}
+                  </span>
+                )}
+              </div>
+              <CardContent className="p-4 space-y-2">
+                <p className="font-medium text-sm line-clamp-2">{title}</p>
+                <p className="text-lg font-bold text-foreground">{formatGbp(price)}</p>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>&#128065; {views}</span>
+                  <span>&#128278; {saves}</span>
+                  <span>&#9993; {enquiries}</span>
                 </div>
-                <Badge variant="default" className="shrink-0 text-xs">
-                  {listing.status ?? "active"}
-                </Badge>
-              </div>
-
-              <p className="text-lg font-bold">{formatPrice(listing.price)}</p>
-
-              {(listing.bedrooms || listing.bathrooms || listing.property_type) && (
-                <p className="text-xs text-muted-foreground">
-                  {[
-                    listing.bedrooms ? `${listing.bedrooms} bed` : null,
-                    listing.bathrooms ? `${listing.bathrooms} bath` : null,
-                    listing.property_type,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
-              )}
-
-              <div className="flex items-center gap-4 pt-1 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Eye className="size-3" />
-                  {listing.views_count ?? 0}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Heart className="size-3" />
-                  {listing.saves_count ?? 0}
-                </span>
-                <span className="flex items-center gap-1">
-                  <MessageSquare className="size-3" />
-                  {listing.enquiries_count ?? 0}
-                </span>
-              </div>
-            </CardContent>
-
-            <CardFooter className="gap-2 pt-0">
-              <Button variant="outline" size="sm" asChild className="flex-1">
-                <Link href={`/dashboard/agent/listings/${listing.id}/analytics`}>
-                  <BarChart2 className="mr-1 size-3" />
-                  Analytics
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild className="flex-1">
-                <Link href={`/dashboard/agent/listings/${listing.id}`}>
-                  View
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+                <a
+                  href={"/dashboard/agent/listings/" + id + "/analytics"}
+                  className="block text-xs text-primary hover:underline mt-1"
+                >
+                  View analytics &rarr;
+                </a>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
