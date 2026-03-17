@@ -64,3 +64,15 @@ export function detectSpam(text: string): SpamIndicators {
     spam_score,
   };
 }
+
+/**
+ * Redact phone numbers and email addresses from text, replacing them
+ * with safe placeholder tokens before persisting to the database.
+ */
+export function redactPII(text: string): string {
+  const phoneGlobal = new RegExp(PHONE_REGEX.source, "g");
+  const emailGlobal = new RegExp(EMAIL_REGEX.source, "gi");
+  return text
+    .replace(phoneGlobal, "[phone redacted]")
+    .replace(emailGlobal, "[email redacted]");
+}

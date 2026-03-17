@@ -10,7 +10,7 @@ import type {
 } from "@/lib/validators/marketplace-schemas";
 import { reviewCreateSchema, reviewFlagSchema } from "@/lib/validators/marketplace-schemas";
 import { analyzeReviewSentiment } from "@/lib/marketplace/sentiment-analyzer";
-import { detectSpam } from "@/lib/marketplace/spam-detector";
+import { detectSpam, redactPII } from "@/lib/marketplace/spam-detector";
 
 // -- Types -------------------------------------------------------------------
 
@@ -59,11 +59,15 @@ export async function createReview(
     throw new Error("You can only review your own bookings");
   }
 
+  // PII redaction
+  const sanitizedText = redactPII(parsed.review_text);
+  const sanitizedTitle = redactPII(parsed.title);
+
   // Run sentiment analysis
-  const sentimentResult = analyzeReviewSentiment(parsed.review_text);
+  const sentimentResult = analyzeReviewSentiment(sanitizedText);
 
   // Run spam detection
-  const spamResult = detectSpam(parsed.review_text);
+  const spamResult = detectSpam(sanitizedText);
 
   // Insert review (UNIQUE constraint on booking_id prevents duplicates)
   const { data: review, error: reviewError } = await supabase
@@ -77,8 +81,8 @@ export async function createReview(
       quality_rating: parsed.quality_rating ?? null,
       value_rating: parsed.value_rating ?? null,
       professionalism_rating: parsed.professionalism_rating ?? null,
-      title: parsed.title,
-      review_text: parsed.review_text,
+      title: sanitizedTitle,
+      review_text: sanitizedText,
       sentiment: sentimentResult.sentiment,
       spam_indicators: spamResult,
       moderation_status: "pending",
