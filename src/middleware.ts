@@ -123,7 +123,12 @@ export async function middleware(request: NextRequest) {
 
   // Route protection logic
   if (!isAuthenticated && !isPublicRoute && !isAuthRoute) {
-    // Unauthenticated user trying to access protected route -> redirect to login
+    // API routes: pass through — route handlers enforce their own auth
+    if (pathname.startsWith("/api/")) {
+      setSecurityHeaders(response, nonce);
+      return response;
+    }
+    // Page routes: redirect to login
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirectTo", pathname);
     const redirectResponse = NextResponse.redirect(loginUrl);
