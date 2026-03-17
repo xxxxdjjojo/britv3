@@ -1,88 +1,361 @@
 /**
- * Stripe Webhook Handler
+ * POST /api/webhooks/stripe
  *
- * Receives Stripe webhook events, verifies the signature, and routes each
- * event to the appropriate update handler. Uses service-role Supabase client
- * (not the cookie-based user client) because this endpoint is called by Stripe,
- * not by an authenticated user.
+ * Receives and processes Stripe webhook events for both:
+ * - Platform billing (subscriptions, invoices, refunds)
+ * - Provider Connect (payouts, account updates, payment intents)
  *
- * Idempotency: every processed event_id is stored in stripe_events so that
- * replayed events are silently skipped.
+ * Security:
+ * - Validates Stripe-Signature header before touching payload.
+ * - Uses raw body (not parsed JSON) for signature verification.
+ *
+ * Idempotency:
+ * - INSERT with ON CONFLICT on billing_events.stripe_event_id.
+ * - Duplicate events return 200 immediately (no-op).
+ *
+ * Reliability:
+ * - Returns 500 on DB write failure so Stripe retries delivery.
+ * - Returns 200 for unknown event types (don't break Stripe retries).
  */
 
-import { createClient } from "@supabase/supabase-js";
-import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import Stripe from "stripe";
+import { createClient } from "@supabase/supabase-js";
+import { getStripe } from "@/lib/stripe";
 
-// ---------------------------------------------------------------------------
-// Stripe client
-// ---------------------------------------------------------------------------
+export const dynamic = "force-dynamic";
 
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2026-02-25.clover",
-  });
+/**
+ * Service-role Supabase client for webhook writes.
+ * Uses service role key — bypasses RLS so we can write to subscriptions table.
+ */
+function getServiceSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Supabase service role credentials not configured");
+  return createClient(url, key, { auth: { persistSession: false } });
 }
 
-// ---------------------------------------------------------------------------
-// Service-role Supabase client (no cookie auth — server-side only)
-// ---------------------------------------------------------------------------
+/**
+ * Look up user profile (email + first_name) by stripe_customer_id.
+ * Returns null if not found.
+ */
+async function lookupUserByCustomerId(
+  supabase: ReturnType<typeof getServiceSupabase>,
+  customerId: string,
+): Promise<{ userId: string; email: string; firstName: string } | null> {
+  const { data: sub } = await supabase
+    .from("subscriptions")
+    .select("user_id")
+    .eq("stripe_customer_id", customerId)
+    .maybeSingle();
 
-function getServiceRoleClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+  const userId = (sub as { user_id: string } | null)?.user_id ?? null;
+  if (!userId) return null;
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email, first_name")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const email = (profile as { email?: string } | null)?.email ?? null;
+  const firstName = (profile as { first_name?: string } | null)?.first_name ?? "";
+
+  if (!email) return null;
+  return { userId, email, firstName };
 }
 
-// ---------------------------------------------------------------------------
-// POST handler
-// ---------------------------------------------------------------------------
+export async function POST(request: Request) {
+  const stripe = getStripe();
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export async function POST(request: Request): Promise<Response> {
-  // 1. Read raw body for signature verification
-  const body = await request.text();
+  if (!webhookSecret) {
+    console.error("[webhook] STRIPE_WEBHOOK_SECRET is not set");
+    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
+  }
 
-  // 2. Verify Stripe signature
-  const headersList = await headers();
-  const sig = headersList.get("stripe-signature");
+  // Read raw body — must happen before any other body consumption
+  const rawBody = await request.text();
+  const sig = request.headers.get("stripe-signature");
 
   if (!sig) {
-    return new Response("Missing stripe-signature header", { status: 400 });
+    return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
   }
 
   let event: Stripe.Event;
   try {
-    event = getStripe().webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!,
-    );
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Signature verification failed";
-    return new Response(`Webhook signature error: ${message}`, { status: 400 });
+    console.error("[webhook] Signature verification failed:", message);
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  const supabase = getServiceRoleClient();
+  const supabase = getServiceSupabase();
 
-  // 3. Idempotency check — skip if already processed
-  const { data: existing } = await supabase
-    .from("stripe_events")
-    .select("id")
-    .eq("event_id", event.id)
+  // ─── Idempotency check (atomic INSERT with ON CONFLICT) ─────────────────
+  const { data: idempotencyRow, error: idempotencyError } = await supabase
+    .from("billing_events")
+    .upsert(
+      {
+        stripe_event_id: event.id,
+        event_type: event.type,
+        user_id: null,
+        payload: {} as unknown as Record<string, unknown>,
+      },
+      { onConflict: "stripe_event_id", ignoreDuplicates: true },
+    )
+    .select("id, user_id")
     .maybeSingle();
 
-  if (existing) {
-    // Already processed — return 200 so Stripe stops retrying
-    return new Response("Already processed", { status: 200 });
+  if (idempotencyError) {
+    console.error("[webhook] Idempotency upsert error:", idempotencyError);
   }
 
-  // 4. Route by event type
+  if (idempotencyRow && idempotencyRow.user_id !== null) {
+    console.log(`[webhook] Duplicate event ${event.id} (${event.type}) — skipping`);
+    return NextResponse.json({ received: true, duplicate: true });
+  }
+
+  // ─── Event dispatch ──────────────────────────────────────────────────────
+  let userId: string | null = null;
+
   try {
     switch (event.type) {
-      // -----------------------------------------------------------------------
-      // Payout events — update stripe_connect_accounts
-      // -----------------------------------------------------------------------
+      // ─── Platform billing events ─────────────────────────────────────────
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        userId = session.metadata?.user_id ?? session.client_reference_id ?? null;
+
+        if (userId && session.mode === "subscription" && session.subscription) {
+          const subId = typeof session.subscription === "string"
+            ? session.subscription
+            : session.subscription.id;
+
+          const subscription = await stripe.subscriptions.retrieve(subId);
+          const item = subscription.items.data[0];
+          const plan = item?.price;
+
+          const { error } = await supabase.from("subscriptions").upsert(
+            {
+              user_id: userId,
+              stripe_subscription_id: subscription.id,
+              stripe_customer_id: typeof subscription.customer === "string"
+                ? subscription.customer
+                : subscription.customer.id,
+              status: subscription.status,
+              plan_name: plan?.nickname ?? plan?.metadata?.name ?? null,
+              price_amount: item?.price.unit_amount ?? null,
+              currency: plan?.currency ?? "gbp",
+              current_period_end: item?.current_period_end
+                ? new Date(item.current_period_end * 1000).toISOString()
+                : null,
+              cancel_at_period_end: subscription.cancel_at_period_end,
+              role: session.metadata?.role ?? null,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
+
+          if (error) {
+            console.error("[webhook] Failed to upsert subscription:", error);
+            return NextResponse.json({ error: "Database write failed" }, { status: 500 });
+          }
+
+          if (session.customer) {
+            await supabase
+              .from("profiles")
+              .update({
+                stripe_customer_id: typeof session.customer === "string"
+                  ? session.customer
+                  : session.customer.id,
+              })
+              .eq("id", userId);
+          }
+
+          revalidateTag("billing");
+          console.log(`[webhook] Subscription activated for user ${userId}`);
+        }
+        break;
+      }
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const item = subscription.items.data[0];
+        const plan = item?.price;
+
+        const customerId = typeof subscription.customer === "string"
+          ? subscription.customer
+          : subscription.customer.id;
+
+        const { data: sub } = await supabase
+          .from("subscriptions")
+          .select("user_id")
+          .eq("stripe_customer_id", customerId)
+          .maybeSingle();
+
+        userId = (sub as { user_id: string } | null)?.user_id ?? null;
+
+        if (userId) {
+          const { error } = await supabase.from("subscriptions").upsert(
+            {
+              user_id: userId,
+              stripe_subscription_id: subscription.id,
+              stripe_customer_id: customerId,
+              status: subscription.status,
+              plan_name: plan?.nickname ?? plan?.metadata?.name ?? null,
+              price_amount: item?.price.unit_amount ?? null,
+              currency: plan?.currency ?? "gbp",
+              current_period_end: item?.current_period_end
+                ? new Date(item.current_period_end * 1000).toISOString()
+                : null,
+              cancel_at_period_end: subscription.cancel_at_period_end,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
+
+          if (error) {
+            console.error("[webhook] Failed to update subscription:", error);
+            return NextResponse.json({ error: "Database write failed" }, { status: 500 });
+          }
+        }
+
+        revalidateTag("billing");
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = typeof subscription.customer === "string"
+          ? subscription.customer
+          : subscription.customer.id;
+
+        const { error } = await supabase
+          .from("subscriptions")
+          .update({ status: "canceled", updated_at: new Date().toISOString() })
+          .eq("stripe_customer_id", customerId);
+
+        if (error) {
+          console.error("[webhook] Failed to cancel subscription:", error);
+          return NextResponse.json({ error: "Database write failed" }, { status: 500 });
+        }
+
+        revalidateTag("billing");
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = typeof invoice.customer === "string"
+          ? invoice.customer
+          : (invoice.customer as Stripe.Customer)?.id ?? null;
+
+        if (customerId) {
+          await supabase
+            .from("subscriptions")
+            .update({ status: "past_due", updated_at: new Date().toISOString() })
+            .eq("stripe_customer_id", customerId);
+
+          const user = await lookupUserByCustomerId(supabase, customerId);
+          userId = user?.userId ?? null;
+
+          if (user) {
+            try {
+              const { sendPaymentFailed } = await import("@/services/email/email-service");
+              await sendPaymentFailed({
+                userId: user.userId,
+                email: user.email,
+                firstName: user.firstName || "there",
+                amount: (invoice.amount_due ?? 0) / 100,
+                description: invoice.description ?? "Subscription payment",
+                failedAt: new Date().toISOString(),
+                retryUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/dashboard/billing`,
+              });
+            } catch (emailErr) {
+              console.error("[webhook] Failed to send payment-failed email:", emailErr);
+            }
+          }
+        }
+
+        revalidateTag("billing");
+        break;
+      }
+
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = typeof invoice.customer === "string"
+          ? invoice.customer
+          : (invoice.customer as Stripe.Customer)?.id ?? null;
+
+        if (customerId) {
+          await supabase
+            .from("subscriptions")
+            .update({ status: "active", updated_at: new Date().toISOString() })
+            .eq("stripe_customer_id", customerId)
+            .eq("status", "past_due");
+
+          const user = await lookupUserByCustomerId(supabase, customerId);
+          userId = user?.userId ?? null;
+
+          if (user) {
+            try {
+              const { sendPaymentConfirmation } = await import("@/services/email/email-service");
+              await sendPaymentConfirmation({
+                userId: user.userId,
+                email: user.email,
+                firstName: user.firstName || "there",
+                amount: (invoice.amount_paid ?? 0) / 100,
+                description: invoice.description ?? "Subscription payment",
+                transactionId: invoice.id ?? "N/A",
+                paidAt: new Date().toISOString(),
+              });
+            } catch (emailErr) {
+              console.error("[webhook] Failed to send payment-confirmation email:", emailErr);
+            }
+          }
+        }
+
+        revalidateTag("billing");
+        break;
+      }
+
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge;
+
+        const { data: refundRequest } = await supabase
+          .from("refund_requests")
+          .select("id, user_id")
+          .eq("stripe_charge_id", charge.id)
+          .maybeSingle();
+
+        if (refundRequest) {
+          const stripeRefundId = charge.refunds?.data?.[0]?.id ?? null;
+
+          const { error } = await supabase
+            .from("refund_requests")
+            .update({
+              status: "processed",
+              processed_at: new Date().toISOString(),
+              stripe_refund_id: stripeRefundId,
+            })
+            .eq("id", refundRequest.id);
+
+          if (error) {
+            console.error("[webhook] Failed to update refund_request:", error);
+            return NextResponse.json({ error: "Database write failed" }, { status: 500 });
+          }
+
+          userId = (refundRequest as { user_id: string | null }).user_id;
+        }
+
+        revalidateTag("billing");
+        break;
+      }
+
+      // ─── Provider Connect events ─────────────────────────────────────────
       case "payout.paid": {
         const payout = event.data.object as Stripe.Payout;
         const accountId = (event as Stripe.Event & { account?: string }).account ?? null;
@@ -119,9 +392,6 @@ export async function POST(request: Request): Promise<Response> {
         break;
       }
 
-      // -----------------------------------------------------------------------
-      // Account updated — sync onboarding / capability flags
-      // -----------------------------------------------------------------------
       case "account.updated": {
         const account = event.data.object as Stripe.Account;
 
@@ -141,9 +411,6 @@ export async function POST(request: Request): Promise<Response> {
         break;
       }
 
-      // -----------------------------------------------------------------------
-      // Payment intent succeeded — mark invoice as paid
-      // -----------------------------------------------------------------------
       case "payment_intent.succeeded": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
@@ -159,23 +426,25 @@ export async function POST(request: Request): Promise<Response> {
       }
 
       default:
-        // Unhandled event type — still record for idempotency
-        break;
+        console.log(`[webhook] Unhandled event type: ${event.type}`);
     }
+
+    // ─── Update billing_events audit log ────────────────────────────────────
+    const { error: logError } = await supabase
+      .from("billing_events")
+      .update({
+        user_id: userId,
+        payload: event.data.object as unknown as Record<string, unknown>,
+      })
+      .eq("stripe_event_id", event.id);
+
+    if (logError) {
+      console.error("[webhook] Failed to update billing_event log:", logError);
+    }
+
+    return NextResponse.json({ received: true });
   } catch (err) {
-    // Log but do not return 5xx — we still record the event to avoid retry
-    // storms. The error should be monitored via Sentry.
-    console.error("[stripe-webhook] Handler error", event.type, err);
+    console.error("[webhook] Unhandled error processing event:", event.id, err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  // 5. Insert idempotency record
-  const accountId = (event as Stripe.Event & { account?: string }).account ?? null;
-  await supabase.from("stripe_events").insert({
-    event_id: event.id,
-    event_type: event.type,
-    account_id: accountId,
-    processed_at: new Date().toISOString(),
-  });
-
-  return new Response("OK", { status: 200 });
 }

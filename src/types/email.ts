@@ -191,6 +191,20 @@ export type ReEngagementEmailProps = {
   unsubscribeUrl: string;
 };
 
+export type RefundConfirmedEmailProps = {
+  userName: string;
+  refundAmount: string; // formatted e.g. "£29.00"
+  chargeReference: string;
+  refundDate: string;
+};
+
+export type RefundRejectedEmailProps = {
+  userName: string;
+  chargeAmount: string;
+  reason: string;
+  adminNotes?: string;
+};
+
 // Union type for all template prop types (useful for preview route)
 export type AnyEmailProps =
   | WelcomeEmailProps
@@ -210,7 +224,9 @@ export type AnyEmailProps =
   | WeeklyDigestEmailProps
   | AccountDeletionEmailProps
   | ReferralInvitationEmailProps
-  | ReEngagementEmailProps;
+  | ReEngagementEmailProps
+  | RefundConfirmedEmailProps
+  | RefundRejectedEmailProps;
 
 // Template name → type mapping (for runtime lookups)
 export type TemplateName =
@@ -231,4 +247,6 @@ export type TemplateName =
   | "weekly-digest"
   | "account-deletion"
   | "referral-invitation"
-  | "re-engagement";
+  | "re-engagement"
+  | "refund-confirmed"
+  | "refund-rejected";

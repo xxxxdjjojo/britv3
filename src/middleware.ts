@@ -16,11 +16,11 @@ function generateNonce(): string {
 function buildCsp(nonce: string): string {
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com`,
+    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://api.maptiler.com",
-    "frame-src https://accounts.google.com https://appleid.apple.com",
+    "img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://api.maptiler.com https://api.stripe.com",
+    "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com",
     "worker-src 'self' blob:",
     "form-action 'self'",
     "base-uri 'self'",
@@ -186,6 +186,45 @@ export async function middleware(request: NextRequest) {
           { user_id: user!.id, role: "homebuyer" },
           { onConflict: "user_id,role" },
         );
+    }
+  }
+
+  // Feature gate: subscription check for billing-gated routes
+  // Routes under /dashboard/agent, /dashboard/landlord, /dashboard/provider
+  // require an active subscription. Billing pages themselves are exempt.
+  const SUBSCRIPTION_GATED_PREFIXES = [
+    "/dashboard/agent",
+    "/dashboard/landlord",
+    "/dashboard/provider",
+  ];
+  const BILLING_EXEMPT_SUFFIXES = ["/billing", "/billing/"];
+
+  if (isAuthenticated) {
+    const isGatedRoute = SUBSCRIPTION_GATED_PREFIXES.some((prefix) =>
+      pathname.startsWith(prefix),
+    );
+    const isBillingPage =
+      pathname.includes("/billing") || pathname === "/dashboard";
+
+    if (isGatedRoute && !isBillingPage) {
+      const { data: subscription } = await supabase
+        .from("subscriptions")
+        .select("status")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+
+      const status = (subscription as { status?: string } | null)?.status;
+      const isActive = status === "active" || status === "trialing";
+
+      if (!isActive) {
+        // Determine the role for the billing redirect
+        const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
+        const role = roleMatch?.[1] ?? "agent";
+        const billingUrl = new URL(`/dashboard/${role}/billing/checkout/subscription`, request.url);
+        const redirectResponse = NextResponse.redirect(billingUrl);
+        setSecurityHeaders(redirectResponse, nonce);
+        return redirectResponse;
+      }
     }
   }
 
