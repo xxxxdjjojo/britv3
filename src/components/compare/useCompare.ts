@@ -41,6 +41,15 @@ export function useCompare() {
     return ids.includes(id);
   }
 
+  function clearAll() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      setIds([]);
+    } catch {
+      // Storage unavailable
+    }
+  }
+
   return {
     ids,
     add,
@@ -48,5 +57,6 @@ export function useCompare() {
     count: ids.length,
     isFull: ids.length >= MAX_COMPARE,
     has,
+    clearAll,
   };
 }
