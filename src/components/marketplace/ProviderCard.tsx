@@ -37,7 +37,7 @@ export function ProviderCard({
   const extraCount = services.length - 3;
 
   return (
-    <Link href={`/marketplace/${slug}`} className="block">
+    <Link href={`/services/${services[0] ?? "other"}/${slug}`} className="block">
       <Card
         className={cn(
           "transition-shadow hover:shadow-md hover:ring-brand-primary/20",

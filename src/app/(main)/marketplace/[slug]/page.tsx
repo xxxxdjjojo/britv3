@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ProviderProfile } from "./ProviderProfile";
+import { notFound, redirect } from "next/navigation";
 
 type PageParams = {
   params: Promise<{ slug: string }>;
 };
 
 async function getProvider(slug: string) {
-  // Server-side fetch to internal API
-  // In production this would use createClient() directly
   try {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     const res = await fetch(`${baseUrl}/api/providers/${slug}`, {
@@ -35,7 +32,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProviderProfilePage({ params }: PageParams) {
+export default async function ProviderProfileRedirect({ params }: PageParams) {
   const { slug } = await params;
   const provider = await getProvider(slug);
 
@@ -43,9 +40,6 @@ export default async function ProviderProfilePage({ params }: PageParams) {
     notFound();
   }
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      <ProviderProfile provider={provider} />
-    </div>
-  );
+  const category = provider.services?.[0] ?? "other";
+  redirect(`/services/${category}/${slug}`);
 }
