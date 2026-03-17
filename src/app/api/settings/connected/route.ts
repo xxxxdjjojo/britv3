@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api/require-auth";
+import { lastProviderGuard } from "@/lib/settings/last-provider-guard";
 
 // ---------------------------------------------------------------------------
 // GET /api/settings/connected
@@ -52,19 +53,9 @@ export async function DELETE(request: NextRequest) {
   const { data: identities } = await supabase!.auth.getUserIdentities();
   const linkedProviders = identities?.identities ?? [];
 
-  if (linkedProviders.length <= 1) {
-    const hasEmailProvider = linkedProviders.some(
-      (i) => i.provider === "email",
-    );
-    if (!hasEmailProvider) {
-      return NextResponse.json(
-        {
-          error:
-            "Cannot disconnect your only login method. Set a password first.",
-        },
-        { status: 400 },
-      );
-    }
+  const guardError = lastProviderGuard(linkedProviders);
+  if (guardError) {
+    return NextResponse.json({ error: guardError }, { status: 400 });
   }
 
   // --- Unlink the identity ---

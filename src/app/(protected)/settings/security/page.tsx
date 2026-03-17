@@ -366,7 +366,7 @@ export default function SecuritySettingsPage() {
     setDisconnecting(identityId);
     try {
       const res = await fetch(
-        `/api/settings/connected?identity_id=${identityId}`,
+        `/api/settings/connected?identity_id=${encodeURIComponent(identityId)}`,
         { method: "DELETE" },
       );
       const body = (await res.json()) as { success?: boolean; error?: string };

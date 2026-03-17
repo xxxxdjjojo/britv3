@@ -1,25 +1,5 @@
 import { describe, it, expect } from "vitest";
-
-// ---------------------------------------------------------------------------
-// Extract the last-provider guard logic into a pure function for testing.
-// This mirrors the guard in /api/settings/connected DELETE handler.
-// ---------------------------------------------------------------------------
-
-type MinimalIdentity = { provider: string };
-
-/**
- * Returns an error message if the user should be blocked from disconnecting,
- * or null if the operation is allowed.
- */
-function lastProviderGuard(identities: MinimalIdentity[]): string | null {
-  if (identities.length <= 1) {
-    const hasEmailProvider = identities.some((i) => i.provider === "email");
-    if (!hasEmailProvider) {
-      return "Cannot disconnect your only login method. Set a password first.";
-    }
-  }
-  return null;
-}
+import { lastProviderGuard } from "@/lib/settings/last-provider-guard";
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -47,7 +27,7 @@ describe("lastProviderGuard", () => {
   });
 
   it("blocks when there are 0 identities (edge case)", () => {
-    const identities: MinimalIdentity[] = [];
+    const identities: { provider: string }[] = [];
     const result = lastProviderGuard(identities);
     expect(result).toBe(
       "Cannot disconnect your only login method. Set a password first.",
