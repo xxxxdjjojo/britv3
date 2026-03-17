@@ -26,7 +26,7 @@ import { PriceHistory } from "@/components/properties/PriceHistory";
 import type { PriceHistory as PriceHistoryRow, EpcRating } from "@/types/property";
 import { ViewingBooking } from "@/components/properties/ViewingBooking";
 import { createClient } from "@/lib/supabase/server";
-import { getListingBySlug } from "@/services/properties/property-detail-service";
+import { getPropertyBySlug } from "@/services/properties/property-detail-service";
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
@@ -47,7 +47,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
-  const detail = await getListingBySlug(supabase, slug);
+  const detail = await getPropertyBySlug(slug);
 
   if (!detail) {
     return {
@@ -137,7 +137,7 @@ export default async function PropertyPage({
 }) {
   const { slug } = await params;
   const supabase = await createClient();
-  const detail = await getListingBySlug(supabase, slug);
+  const detail = await getPropertyBySlug(slug);
 
   if (!detail) {
     notFound();
