@@ -8,3 +8,4 @@ export * from "./audit-service";
 export * from "./subscription-service";
 export * from "./analytics-service";
 export * from "./report-service";
+export * from "./health-service";

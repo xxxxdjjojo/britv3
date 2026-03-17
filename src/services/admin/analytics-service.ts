@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 
 export type PlatformMetrics = {
@@ -13,8 +13,7 @@ export async function getPlatformMetrics(
   supabase: SupabaseClient,
 ): Promise<PlatformMetrics> {
   // Use Promise.all for parallel fetching — max ~50ms
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const safeCount = async (query: PromiseLike<{ count: number | null; error: any }>): Promise<number> => {
+  const safeCount = async (query: PromiseLike<{ count: number | null; error: PostgrestError | null }>): Promise<number> => {
     try {
       const { count, error } = await query;
       if (error) return 0;

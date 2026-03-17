@@ -15,13 +15,22 @@ export type GdprRequest = {
 
 export async function getGdprQueue(
   supabase: SupabaseClient,
-): Promise<GdprRequest[]> {
-  const { data, error } = await supabase
+  page = 0,
+  limit = 50,
+): Promise<{ requests: GdprRequest[]; total: number }> {
+  const from = page * limit;
+  const to = from + limit - 1;
+
+  const { data, error, count } = await supabase
     .from("gdpr_requests")
-    .select("*")
-    .order("created_at", { ascending: true });
-  if (error) return [];
-  return (data as GdprRequest[]) ?? [];
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: true })
+    .range(from, to);
+  if (error) {
+    console.error("[admin:gdpr-service] getGdprQueue failed", { error: error.message });
+    return { requests: [], total: 0 };
+  }
+  return { requests: (data as GdprRequest[]) ?? [], total: count ?? 0 };
 }
 
 export async function fulfilGdprRequest(

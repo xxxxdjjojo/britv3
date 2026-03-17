@@ -34,6 +34,9 @@ export async function auditedAdminAction(
       action,
       targetType,
       targetId,
+      success: thrownError === undefined,
+      errorMessage:
+        thrownError instanceof Error ? thrownError.message : undefined,
     });
   }
 

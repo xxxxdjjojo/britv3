@@ -11,19 +11,28 @@ export type AdminListing = {
 export async function getListingQueue(
   supabase: SupabaseClient,
   statusFilter?: string,
-): Promise<AdminListing[]> {
+  page = 0,
+  limit = 50,
+): Promise<{ listings: AdminListing[]; total: number }> {
+  const from = page * limit;
+  const to = from + limit - 1;
+
   let query = supabase
     .from("properties")
-    .select("id, title, status, created_at, owner_id")
-    .order("created_at", { ascending: true });
+    .select("id, title, status, created_at, owner_id", { count: "exact" })
+    .order("created_at", { ascending: true })
+    .range(from, to);
 
   if (statusFilter) {
     query = query.eq("status", statusFilter);
   }
 
-  const { data, error } = await query;
-  if (error) return [];
-  return (data as AdminListing[]) ?? [];
+  const { data, error, count } = await query;
+  if (error) {
+    console.error("[admin:listing-service] getListingQueue failed", { error: error.message });
+    return { listings: [], total: 0 };
+  }
+  return { listings: (data as AdminListing[]) ?? [], total: count ?? 0 };
 }
 
 export async function approveListing(
@@ -42,11 +51,9 @@ export async function rejectListing(
   listingId: string,
   reason?: string,
 ): Promise<{ success: boolean }> {
-  const update: Record<string, unknown> = { status: "rejected" };
-  if (reason) update.rejection_reason = reason;
   const { error } = await supabase
     .from("properties")
-    .update(update)
+    .update({ status: "rejected" as const, ...(reason ? { rejection_reason: reason } : {}) })
     .eq("id", listingId);
   return { success: !error };
 }
@@ -56,11 +63,9 @@ export async function flagListing(
   listingId: string,
   reason?: string,
 ): Promise<{ success: boolean }> {
-  const update: Record<string, unknown> = { status: "flagged" };
-  if (reason) update.flag_reason = reason;
   const { error } = await supabase
     .from("properties")
-    .update(update)
+    .update({ status: "flagged" as const, ...(reason ? { flag_reason: reason } : {}) })
     .eq("id", listingId);
   return { success: !error };
 }

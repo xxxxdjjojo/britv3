@@ -43,7 +43,10 @@ export async function getAuditLog(
   }
 
   const { data, error } = await query;
-  if (error) return [];
+  if (error) {
+    console.error("[admin:audit-service] getAuditLog failed", { error: error.message });
+    return [];
+  }
   return (data as AuditLogEntry[]) ?? [];
 }
 

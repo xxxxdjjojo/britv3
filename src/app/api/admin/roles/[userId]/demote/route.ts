@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { AdminActionError, auditedAdminAction } from "@/lib/audited-admin-action";
 import { demoteFromAdmin } from "@/services/admin/user-service";
 
 const VALID_ROLES = [
@@ -20,7 +20,20 @@ export async function POST(
     "user.demote_from_admin",
     "user",
     userId,
-    async ({ supabase }) => {
+    async ({ supabase, user }) => {
+      if (userId === user.id) {
+        throw new AdminActionError("Cannot demote yourself", 403);
+      }
+
+      const { count } = await supabase
+        .from("profiles")
+        .select("id", { count: "exact", head: true })
+        .eq("role", "admin");
+
+      if ((count ?? 0) <= 1) {
+        throw new AdminActionError("Cannot remove the last admin", 409);
+      }
+
       const body = await req.json().catch(() => ({})) as { role?: string };
       const newRole = body.role ?? "homebuyer";
       if (!VALID_ROLES.includes(newRole)) {

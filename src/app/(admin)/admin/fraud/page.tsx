@@ -48,7 +48,8 @@ export default async function FraudDetectionPage() {
   const { data: reportData } = await supabase
     .from("content_reports")
     .select("reported_user_id")
-    .not("reported_user_id", "is", null);
+    .not("reported_user_id", "is", null)
+    .limit(500);
 
   // Count reports per user
   const reportCounts: Record<string, number> = {};

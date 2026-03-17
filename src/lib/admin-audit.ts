@@ -6,6 +6,8 @@ export type AdminActionLog = {
   targetType: string;
   targetId: string;
   metadata?: Record<string, unknown>;
+  success?: boolean;
+  errorMessage?: string;
 };
 
 export async function logAdminAction(
@@ -20,6 +22,8 @@ export async function logAdminAction(
       target_type: log.targetType,
       target_id: log.targetId,
       metadata: log.metadata ?? null,
+      success: log.success ?? null,
+      error_message: log.errorMessage ?? null,
     });
   } catch (e) {
     console.error("[audit] Failed to log admin action:", e);

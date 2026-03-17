@@ -19,7 +19,10 @@ export async function getReportedReviews(
     .eq("status", "open")
     .order("created_at", { ascending: true });
 
-  if (error) return [];
+  if (error) {
+    console.error("[admin:review-service] getReportedReviews failed", { error: error.message });
+    return [];
+  }
   return (data as ReportedReview[]) ?? [];
 }
 

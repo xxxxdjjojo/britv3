@@ -13,14 +13,15 @@ export default async function GdprQueuePage({
   const params = await searchParams;
   const statusFilter =
     typeof params.status === "string" ? params.status : "all";
+  const page =
+    typeof params.page === "string"
+      ? Math.max(0, parseInt(params.page, 10) || 0)
+      : 0;
+  const limit = 50;
 
   const supabase = await createClient();
-  const allRequests = await getGdprQueue(supabase);
 
-  const requests =
-    statusFilter === "all"
-      ? allRequests
-      : allRequests.filter((r) => r.status === statusFilter);
+  const { requests, total } = await getGdprQueue(supabase, page, limit);
 
   return (
     <div>
@@ -29,7 +30,7 @@ export default async function GdprQueuePage({
         description="Manage data export and deletion requests from users."
       />
 
-      {allRequests.length === 0 ? (
+      {total === 0 && page === 0 ? (
         <AdminEmptyState
           icon={ShieldCheck}
           title="No GDPR requests"
@@ -38,7 +39,7 @@ export default async function GdprQueuePage({
       ) : (
         <GdprQueueClient
           requests={requests}
-          allRequests={allRequests}
+          allRequests={requests}
           statusFilter={statusFilter}
         />
       )}

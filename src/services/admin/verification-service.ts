@@ -20,7 +20,10 @@ export async function getVerificationQueue(
     .eq("verification_status", "pending")
     .order("created_at", { ascending: true });
 
-  if (error) return [];
+  if (error) {
+    console.error("[admin:verification-service] getVerificationQueue failed", { error: error.message });
+    return [];
+  }
   return (data as VerificationQueueItem[]) ?? [];
 }
 

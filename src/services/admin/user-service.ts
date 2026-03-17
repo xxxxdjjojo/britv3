@@ -23,6 +23,54 @@ export type UserDetail = {
   created_at: string | null;
 };
 
+/**
+ * Consolidates the DB update → Auth update → rollback-on-failure pattern
+ * used by suspendUser, banUser, and activateUser.
+ */
+async function withAuthSync(
+  supabase: SupabaseClient,
+  userId: string,
+  profileUpdate: Record<string, unknown>,
+  rollbackUpdate: Record<string, unknown>,
+  banDuration: string,
+): Promise<{ success: boolean }> {
+  // 1. Update DB first
+  const { error: dbError } = await supabase
+    .from("profiles")
+    .update(profileUpdate)
+    .eq("id", userId);
+
+  if (dbError) return { success: false };
+
+  // 2. Sync Auth ban/unban using service role client
+  const adminClient = createAdminClient();
+  const { error: authError } = await adminClient.auth.admin.updateUserById(
+    userId,
+    { ban_duration: banDuration },
+  );
+
+  if (authError) {
+    // Rollback DB change if Auth update fails
+    const { error: rollbackError } = await supabase
+      .from("profiles")
+      .update(rollbackUpdate)
+      .eq("id", userId);
+
+    if (rollbackError) {
+      console.error("[admin:auth-sync] ALERT: rollback failed after auth error", {
+        userId,
+        profileUpdate,
+        rollbackError,
+        authError,
+      });
+    }
+
+    return { success: false };
+  }
+
+  return { success: true };
+}
+
 export async function searchUsers(
   supabase: SupabaseClient,
   query: string,
@@ -56,31 +104,13 @@ export async function suspendUser(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<{ success: boolean }> {
-  // 1. Update DB first
-  const { error: dbError } = await supabase
-    .from("profiles")
-    .update({ is_suspended: true })
-    .eq("id", userId);
-
-  if (dbError) return { success: false };
-
-  // 2. Block Auth login using service role client — ~100 years = permanent
-  const adminClient = createAdminClient();
-  const { error: authError } = await adminClient.auth.admin.updateUserById(
+  return withAuthSync(
+    supabase,
     userId,
-    { ban_duration: "876600h" },
+    { is_suspended: true },
+    { is_suspended: false },
+    "876600h",
   );
-
-  if (authError) {
-    // Rollback DB change if Auth ban fails
-    await supabase
-      .from("profiles")
-      .update({ is_suspended: false })
-      .eq("id", userId);
-    return { success: false };
-  }
-
-  return { success: true };
 }
 
 export async function banUser(
@@ -88,67 +118,26 @@ export async function banUser(
   userId: string,
   reason: string,
 ): Promise<{ success: boolean }> {
-  const { error: dbError } = await supabase
-    .from("profiles")
-    .update({
-      is_suspended: true,
-      ban_reason: reason,
-      banned_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
-
-  if (dbError) return { success: false };
-
-  const adminClient = createAdminClient();
-  const { error: authError } = await adminClient.auth.admin.updateUserById(
+  return withAuthSync(
+    supabase,
     userId,
-    { ban_duration: "876600h" },
+    { is_suspended: true, ban_reason: reason, banned_at: new Date().toISOString() },
+    { is_suspended: false, ban_reason: null, banned_at: null },
+    "876600h",
   );
-
-  if (authError) {
-    await supabase
-      .from("profiles")
-      .update({
-        is_suspended: false,
-        ban_reason: null,
-        banned_at: null,
-      })
-      .eq("id", userId);
-    return { success: false };
-  }
-
-  return { success: true };
 }
 
 export async function activateUser(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<{ success: boolean }> {
-  // 1. Update DB first
-  const { error: dbError } = await supabase
-    .from("profiles")
-    .update({ is_suspended: false })
-    .eq("id", userId);
-
-  if (dbError) return { success: false };
-
-  // 2. Unban in Auth using service role client
-  const adminClient = createAdminClient();
-  const { error: authError } = await adminClient.auth.admin.updateUserById(
+  return withAuthSync(
+    supabase,
     userId,
-    { ban_duration: "none" },
+    { is_suspended: false, ban_reason: null, banned_at: null },
+    { is_suspended: true },
+    "none",
   );
-
-  if (authError) {
-    // Rollback DB change if Auth unban fails
-    await supabase
-      .from("profiles")
-      .update({ is_suspended: true })
-      .eq("id", userId);
-    return { success: false };
-  }
-
-  return { success: true };
 }
 
 export async function promoteToAdmin(

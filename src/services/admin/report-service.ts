@@ -19,6 +19,9 @@ export async function getOpenReports(
     .eq("status", "open")
     .order("created_at", { ascending: true });
 
-  if (error) return [];
+  if (error) {
+    console.error("[admin:report-service] getOpenReports failed", { error: error.message });
+    return [];
+  }
   return (data as ContentReport[]) ?? [];
 }
