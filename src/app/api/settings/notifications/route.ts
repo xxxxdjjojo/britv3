@@ -1,28 +1,37 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { requireAuth } from "@/lib/api/require-auth";
+import { migrateNotificationPrefs } from "@/lib/notifications/migrate-notification-prefs";
 
 const ALLOWED_NOTIFICATION_KEYS = [
-  "email_messages",
-  "email_listings",
-  "email_viewings",
-  "email_marketing",
-  "push_messages",
-  "push_listings",
-  "sms_alerts",
+  "property_alerts_email",
+  "property_alerts_push",
+  "property_alerts_sms",
+  "property_alerts_inapp",
+  "viewings_email",
+  "viewings_push",
+  "viewings_sms",
+  "viewings_inapp",
+  "offers_email",
+  "offers_push",
+  "offers_sms",
+  "offers_inapp",
+  "messages_email",
+  "messages_push",
+  "messages_sms",
+  "messages_inapp",
+  "market_reports_email",
+  "market_reports_push",
+  "market_reports_sms",
+  "market_reports_inapp",
 ] as const;
 
 type AllowedNotificationKey = (typeof ALLOWED_NOTIFICATION_KEYS)[number];
 
 export async function GET() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
+  const { supabase, user } = auth;
 
   const { data, error } = await supabase
     .from("profiles")
@@ -37,19 +46,18 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json(data?.notification_preferences ?? {});
+  // Migration-on-read: convert old schema to new 20-key schema
+  const migrated = migrateNotificationPrefs(
+    data?.notification_preferences as Record<string, unknown> | null,
+  );
+
+  return NextResponse.json(migrated);
 }
 
 export async function PUT(request: NextRequest) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (auth.response) return auth.response;
+  const { supabase, user } = auth;
 
   let body: Record<string, unknown>;
   try {
@@ -74,10 +82,13 @@ export async function PUT(request: NextRequest) {
   }
 
   if (Object.keys(updates).length === 0) {
-    return NextResponse.json({ error: "No valid fields provided" }, { status: 400 });
+    return NextResponse.json(
+      { error: "No valid fields provided" },
+      { status: 400 },
+    );
   }
 
-  // Fetch existing preferences to merge
+  // Fetch existing preferences, migrate, then merge updates
   const { data: profile, error: fetchError } = await supabase
     .from("profiles")
     .select("notification_preferences")
@@ -91,8 +102,9 @@ export async function PUT(request: NextRequest) {
     );
   }
 
-  const existingPreferences =
-    (profile?.notification_preferences as Record<string, unknown>) ?? {};
+  const existingPreferences = migrateNotificationPrefs(
+    profile?.notification_preferences as Record<string, unknown> | null,
+  );
 
   // Merge — don't replace wholesale
   const mergedPreferences = { ...existingPreferences, ...updates };
@@ -111,5 +123,5 @@ export async function PUT(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(data?.notification_preferences ?? {});
+  return NextResponse.json(data?.notification_preferences ?? mergedPreferences);
 }
