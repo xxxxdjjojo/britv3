@@ -111,6 +111,17 @@ export default function PreferencesSettingsPage() {
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [loading, setLoading] = useState(true);
 
+  const applyDarkMode = useCallback((mode: string) => {
+    if (mode === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (mode === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.classList.toggle("dark", prefersDark);
+    }
+  }, []);
+
   useEffect(() => {
     async function loadPrefs() {
       try {
@@ -131,17 +142,6 @@ export default function PreferencesSettingsPage() {
     }
     void loadPrefs();
   }, [applyDarkMode]);
-
-  const applyDarkMode = useCallback((mode: string) => {
-    if (mode === "dark") {
-      document.documentElement.classList.add("dark");
-    } else if (mode === "light") {
-      document.documentElement.classList.remove("dark");
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.classList.toggle("dark", prefersDark);
-    }
-  }, []);
 
   async function saveLanguageField(key: keyof LanguagePrefs, value: string) {
     const prev = prefs.language[key];
