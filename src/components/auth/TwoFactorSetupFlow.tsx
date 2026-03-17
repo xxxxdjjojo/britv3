@@ -6,12 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { WizardStepper } from "@/components/auth/WizardStepper";
-import {
-  enrollMFA,
-  createMFAChallenge,
-  verifyMFAChallenge,
-  generateBackupCodes,
-} from "@/services/auth/mfa-service";
 import { createClient } from "@/lib/supabase/client";
 
 const STEPS = ["Download App", "Scan QR Code", "Save Backup Codes"];
@@ -34,7 +28,8 @@ export function TwoFactorSetupFlow(
 
   useEffect(() => {
     // Enroll on mount
-    enrollMFA().then(({ data, error: enrollError }) => {
+    const supabase = createClient();
+    supabase.auth.mfa.enroll({ factorType: "totp", issuer: "Britestate" }).then(({ data, error: enrollError }) => {
       if (enrollError || !data) return;
       setFactorId(data.id);
       if (data.totp) {
@@ -49,30 +44,28 @@ export function TwoFactorSetupFlow(
     setLoading(true);
     setError(null);
     try {
+      const supabase = createClient();
       // Create challenge
-      const { data: challengeData, error: cErr } = await createMFAChallenge(factorId);
+      const { data: challengeData, error: cErr } = await supabase.auth.mfa.challenge({ factorId });
       if (cErr || !challengeData) {
         setError(cErr?.message ?? "Failed to create challenge");
         return;
       }
       // Verify
-      const { error: vErr } = await verifyMFAChallenge(
+      const { error: vErr } = await supabase.auth.mfa.verify({
         factorId,
-        challengeData.id,
-        otpCode,
-      );
+        challengeId: challengeData.id,
+        code: otpCode,
+      });
       if (vErr) {
         setError("Invalid code. Please try again.");
         return;
       }
-      // Generate backup codes
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const codes = await generateBackupCodes(user.id);
-        setBackupCodes(codes);
+      // Generate backup codes via API route
+      const res = await fetch("/api/settings/mfa/backup-codes", { method: "POST" });
+      if (res.ok) {
+        const { codes } = await res.json();
+        setBackupCodes(codes ?? []);
       }
       setStep(2);
     } finally {
