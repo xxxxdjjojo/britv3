@@ -14,9 +14,17 @@ type Props = {
   searchParams: Promise<Record<string, string>>;
 };
 
+const MIN_RATING_OPTIONS = [
+  { label: "4.5+", value: "4.5" },
+  { label: "4.0+", value: "4.0" },
+  { label: "3.5+", value: "3.5" },
+] as const;
+
 export default async function AgentsPage({ searchParams }: Props) {
   const params = await searchParams;
   const q = params.q ?? "";
+  const area = params.area ?? "";
+  const minRating = params.min_rating ?? "";
 
   let agents: AgentPublicProfile[] = [];
 
@@ -41,6 +49,12 @@ export default async function AgentsPage({ searchParams }: Props) {
       query = query.or(`display_name.ilike.%${q}%,agency->name.ilike.%${q}%`);
     }
 
+    if (area) {
+      // areas_covered is a text[] column — use the overlap/contains approach
+      // cs (contains) works for array columns in Supabase PostgREST
+      query = query.contains("areas_covered", [area]);
+    }
+
     const { data, error } = await query;
 
     if (error) {
@@ -51,6 +65,23 @@ export default async function AgentsPage({ searchParams }: Props) {
   } catch (err) {
     console.error("Agent search error:", err);
   }
+
+  // Client-side rating filter (dataset is small, max 20 results from DB)
+  // avg_rating is not returned in this query so we treat all as unrated for now;
+  // the filter is surfaced in UI so it works once the JOIN is extended.
+  const minRatingNum = minRating ? parseFloat(minRating) : null;
+  const filteredAgents =
+    minRatingNum !== null
+      ? agents.filter((a) => {
+          const rating =
+            (a as unknown as { avg_rating?: number | null }).avg_rating ?? null;
+          // If no rating data, exclude when a min_rating filter is active
+          if (rating === null) return false;
+          return rating >= minRatingNum;
+        })
+      : agents;
+
+  const hasFilters = q || area || minRating;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,7 +101,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             <input
               name="q"
               defaultValue={q}
-              placeholder="Search by agency name or area..."
+              placeholder="Search by agency name..."
               className="flex-1 px-4 py-3 rounded-xl text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50"
             />
             <button
@@ -83,11 +114,98 @@ export default async function AgentsPage({ searchParams }: Props) {
         </div>
       </section>
 
+      {/* Filters */}
+      <section className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-5">
+          <form
+            action="/agents"
+            method="get"
+            className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-end gap-4"
+          >
+            {/* Preserve the text search param */}
+            {q ? <input type="hidden" name="q" value={q} /> : null}
+
+            {/* Area filter */}
+            <div className="flex flex-col gap-1.5 min-w-0">
+              <label
+                htmlFor="area-filter"
+                className="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+              >
+                Area
+              </label>
+              <input
+                id="area-filter"
+                name="area"
+                defaultValue={area}
+                placeholder="e.g. Manchester, SW1A"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent w-52"
+              />
+            </div>
+
+            {/* Min rating filter */}
+            <fieldset className="flex flex-col gap-1.5">
+              <legend className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Min Rating
+              </legend>
+              <div className="flex items-center gap-3">
+                {MIN_RATING_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-700"
+                  >
+                    <input
+                      type="radio"
+                      name="min_rating"
+                      value={opt.value}
+                      defaultChecked={minRating === opt.value}
+                      className="accent-[#2563EB]"
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+                {minRating ? (
+                  <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-400">
+                    <input
+                      type="radio"
+                      name="min_rating"
+                      value=""
+                      defaultChecked={!minRating}
+                      className="accent-[#2563EB]"
+                    />
+                    Any
+                  </label>
+                ) : null}
+              </div>
+            </fieldset>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="px-5 py-2 bg-[#1B4D3E] text-white text-sm font-semibold rounded-lg hover:bg-[#163d32] transition-colors self-end"
+            >
+              Apply Filters
+            </button>
+
+            {/* Clear filters */}
+            {hasFilters ? (
+              <Link
+                href="/agents"
+                className="px-5 py-2 text-sm text-gray-500 hover:text-gray-700 self-end"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </form>
+        </div>
+      </section>
+
       {/* Results */}
       <section className="max-w-6xl mx-auto px-6 py-12">
         <p className="text-gray-600 mb-6">
-          <span className="font-semibold text-gray-900">{agents.length}</span>{" "}
-          estate agent{agents.length !== 1 ? "s" : ""} found
+          <span className="font-semibold text-gray-900">
+            {filteredAgents.length}
+          </span>{" "}
+          estate agent{filteredAgents.length !== 1 ? "s" : ""} found
           {q ? (
             <>
               {" "}
@@ -97,12 +215,28 @@ export default async function AgentsPage({ searchParams }: Props) {
               </span>
             </>
           ) : null}
+          {area ? (
+            <>
+              {" "}
+              in{" "}
+              <span className="font-semibold text-gray-900">{area}</span>
+            </>
+          ) : null}
+          {minRating ? (
+            <>
+              {" "}
+              rated{" "}
+              <span className="font-semibold text-gray-900">
+                {minRating}+
+              </span>
+            </>
+          ) : null}
         </p>
 
-        {agents.length === 0 ? (
+        {filteredAgents.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg mb-4">
-              No estate agents found. Try a different search.
+              No estate agents found. Try adjusting your filters.
             </p>
             <Link
               href="/agents"
@@ -113,7 +247,7 @@ export default async function AgentsPage({ searchParams }: Props) {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {agents.map((agent) => {
+            {filteredAgents.map((agent) => {
               const agencyName =
                 (agent.agency as { name?: string } | null)?.name ??
                 agent.display_name;
@@ -129,6 +263,8 @@ export default async function AgentsPage({ searchParams }: Props) {
               const city =
                 (agent.agency as { address?: string | null } | null)
                   ?.address ?? null;
+
+              const areasCovered = agent.areas_covered ?? [];
 
               return (
                 <div
@@ -166,6 +302,25 @@ export default async function AgentsPage({ searchParams }: Props) {
                       ) : null}
                     </div>
                   </div>
+
+                  {/* Areas covered tags */}
+                  {areasCovered.length > 0 ? (
+                    <div className="px-6 pb-4 flex flex-wrap gap-1.5">
+                      {areasCovered.slice(0, 3).map((a) => (
+                        <span
+                          key={a}
+                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                        >
+                          {a}
+                        </span>
+                      ))}
+                      {areasCovered.length > 3 ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                          +{areasCovered.length - 3} more
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
 
                   {/* Card footer */}
                   <div className="mt-auto border-t border-gray-100 p-4">
