@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -9,11 +9,6 @@ import {
   Bath,
   Square,
   MapPin,
-  Heart,
-  Share2,
-  Star,
-  Phone,
-  Mail,
   Zap,
   Home,
   FileText,
@@ -23,10 +18,31 @@ import {
 import { Gallery } from "@/components/properties/Gallery";
 import { FloorPlan } from "@/components/properties/FloorPlan";
 import { PriceHistory } from "@/components/properties/PriceHistory";
-import type { PriceHistory as PriceHistoryRow, EpcRating } from "@/types/property";
-import { ViewingBooking } from "@/components/properties/ViewingBooking";
+import type { PriceHistory as PriceHistoryRow, EpcRating, ListingType } from "@/types/property";
 import { createClient } from "@/lib/supabase/server";
+<<<<<<< HEAD
 import { getPropertyBySlug } from "@/services/properties/property-detail-service";
+=======
+import {
+  getListingBySlug,
+  getPropertyViewCount,
+  getSaveState,
+} from "@/services/properties/property-detail-service";
+
+// Wave 4 — ROI components (left column)
+import { RenovationROIPanel } from "@/components/properties/roi/RenovationROIPanel";
+import { WhatIfFloorPlan } from "@/components/properties/roi/WhatIfFloorPlan";
+
+// Wave 5 — Conversion components
+import { AgentCardSidebar } from "@/components/properties/detail/AgentCardSidebar";
+import { BookViewingModal } from "@/components/properties/detail/BookViewingModal";
+import AskAgentForm from "@/components/properties/detail/AskAgentForm";
+import { SimilarProperties } from "@/components/properties/detail/SimilarProperties";
+import { RecommendedTradespeople } from "@/components/properties/detail/RecommendedTradespeople";
+import { SavePropertyButton } from "@/components/properties/detail/SavePropertyButton";
+import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
+import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
+>>>>>>> 8a969da (feat(property-detail): Wave 5-T12 — wire all Wave 4-5 components into page.tsx)
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
@@ -55,7 +71,7 @@ export async function generateMetadata({
     };
   }
 
-  const { property, listing } = detail;
+  const { property } = detail;
   const bedsLabel = `${property.bedrooms}-bed`;
   const typeLabel = formatPropertyType(property.property_type);
   const cityLabel = property.city;
@@ -115,6 +131,11 @@ function formatPriceHistory(
   }));
 }
 
+/** Extract the postcode district prefix, e.g. "TW7 9AB" → "TW7" */
+function postcodeDistrict(postcode: string): string {
+  return postcode.trim().split(" ")[0] ?? postcode.trim();
+}
+
 const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const EPC_COLORS: Record<string, string> = {
   A: "bg-green-600",
@@ -145,7 +166,15 @@ export default async function PropertyPage({
 
   const { listing, property, media, priceHistory, agentProfile } = detail;
 
+  // Status gate — DRAFT and ARCHIVED should never be visible
+  if (listing.status === "draft" || listing.status === "archived") {
+    notFound();
+  }
+
+  // ---------------------------------------------------------------------------
   // Derived display values
+  // ---------------------------------------------------------------------------
+
   const address = [
     property.address_line1,
     property.address_line2,
@@ -177,13 +206,63 @@ export default async function PropertyPage({
     [...priceHistory].reverse(),
   );
 
-  const agent = {
-    name: agentProfile?.display_name || "Agent",
-    agency: agentProfile?.agency_name || "Britestate",
-    phone: agentProfile?.phone || "",
-    rating: agentProfile?.rating ?? 0,
-    reviews: agentProfile?.review_count ?? 0,
-  };
+  // Floor plan URL for WhatIfFloorPlan (first floor plan media, if any)
+  const floorPlanUrl = floors.length > 0 ? (floors[0]?.imageUrl ?? null) : null;
+
+  // Postcode district for SimilarProperties
+  const district = postcodeDistrict(property.postcode);
+
+  // Canonical property URL for Share modal
+  const propertyUrl =
+    typeof process !== "undefined"
+      ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/properties/${listing.slug ?? listing.id}`
+      : `/properties/${listing.slug ?? listing.id}`;
+
+  // Property title for share / metadata
+  const propertyTitle = `${property.bedrooms}-bed ${propertyTypeLabel} in ${property.city}`;
+
+  // ---------------------------------------------------------------------------
+  // Parallel data fetches (non-critical — degrade gracefully)
+  // ---------------------------------------------------------------------------
+
+  const [viewerCount, saveState, { data: authData }] = await Promise.all([
+    getPropertyViewCount(supabase, property.id).catch(() => 0),
+    // Save state requires an authenticated user — fetch auth first
+    supabase.auth.getUser().then(({ data }) =>
+      data.user
+        ? getSaveState(supabase, data.user.id, listing.id).catch(() => ({ saved: false, notes: null }))
+        : Promise.resolve({ saved: false, notes: null }),
+    ),
+    supabase.auth.getUser(),
+  ]);
+
+  const currentUserId = authData?.user?.id ?? null;
+
+  // Existing viewing check (only meaningful for authenticated users)
+  let existingViewingId: string | null = null;
+  if (currentUserId) {
+    const { data: viewingRow } = await supabase
+      .from("property_viewings")
+      .select("id")
+      .eq("listing_id", listing.id)
+      .eq("buyer_id", currentUserId)
+      .in("status", ["pending", "confirmed"])
+      .maybeSingle();
+    existingViewingId = (viewingRow as { id: string } | null)?.id ?? null;
+  }
+
+  // Save count for social proof badge (use listing.favorite_count as seed)
+  const saveCount = listing.favorite_count ?? 0;
+
+  // Agent details
+  const agentId = listing.user_id;
+  const agentName = agentProfile?.display_name || "Agent";
+
+  // Whether booking a viewing makes sense for this listing status
+  const canBookViewing =
+    listing.status !== "sold" &&
+    listing.status !== "archived" &&
+    listing.status !== "draft";
 
   return (
     <div className="min-h-screen bg-background">
@@ -235,20 +314,40 @@ export default async function PropertyPage({
                   </span>
                 )}
               </div>
+
+              {/* Social proof badge — shows live viewer count + saves */}
+              <div className="mt-2">
+                <SocialProofBadge
+                  propertyId={property.id}
+                  initialViewerCount={viewerCount}
+                  initialSaveCount={saveCount}
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Heart className="size-4" />
-                <span className="hidden sm:inline">Save</span>
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Share2 className="size-4" />
-                <span className="hidden sm:inline">Share</span>
-              </Button>
-              <Button size="sm" className="gap-1.5 lg:hidden">
-                <CalendarIcon className="size-4" />
-                Book
-              </Button>
+
+            {/* Action buttons: Save, Share, Report */}
+            <div className="flex gap-2 items-center flex-wrap">
+              <SavePropertyButton
+                propertyId={property.id}
+                initialSaved={saveState.saved}
+                initialNotes={saveState.notes}
+              />
+              <PropertyDetailActions
+                propertyId={property.id}
+                propertyUrl={propertyUrl}
+                propertyTitle={propertyTitle}
+              />
+              {/* Mobile book button */}
+              {canBookViewing && (
+                <button
+                  className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 lg:hidden"
+                  aria-label="Book viewing (scroll to booking form)"
+                  onClick={undefined}
+                >
+                  <CalendarIcon className="size-4" />
+                  Book
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -348,17 +447,10 @@ export default async function PropertyPage({
               <Separator className="mb-4" />
               <div className="relative h-64 rounded-xl overflow-hidden border bg-neutral-100 flex items-center justify-center">
                 <MapPin className="size-10 text-muted-foreground opacity-40" />
-                <p className="absolute bottom-3 right-3">
-                  <Button variant="secondary" size="sm" className="gap-1.5">
-                    <MapPin className="size-4" />
-                    View on Map
-                  </Button>
+                <p className="absolute bottom-3 right-3 text-sm text-muted-foreground">
+                  {address}
                 </p>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground flex items-center gap-1.5">
-                <MapPin className="size-4 shrink-0" />
-                {address}
-              </p>
             </section>
 
             {/* Price History */}
@@ -404,63 +496,108 @@ export default async function PropertyPage({
                 </div>
               </section>
             )}
+
+            {/* ── ROI SECTION (Wave 4) ── */}
+            {listing.listing_type === "sale" && (
+              <section id="roi-section">
+                <h2 className="text-xl font-semibold mb-3">
+                  Renovation ROI
+                </h2>
+                <Separator className="mb-4" />
+                <div className="space-y-6">
+                  <Suspense
+                    fallback={
+                      <div className="rounded-xl border bg-card p-6 animate-pulse">
+                        <div className="h-5 w-48 bg-muted rounded mb-4" />
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {[1, 2, 3].map((n) => (
+                            <div key={n} className="h-28 bg-muted rounded-xl" />
+                          ))}
+                        </div>
+                      </div>
+                    }
+                  >
+                    <RenovationROIPanel property={property} supabase={supabase} />
+                  </Suspense>
+
+                  {/* WhatIf Floor Plan — shows overlay when a renovation type is selected */}
+                  {floorPlanUrl && (
+                    <WhatIfFloorPlan
+                      floorPlanUrl={floorPlanUrl}
+                      selectedRenovationType={null}
+                    />
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* ── ASK AGENT FORM (Wave 5) — anchored for AgentCardSidebar link ── */}
+            <section id={`ask-agent-${property.id}`}>
+              <h2 className="text-xl font-semibold mb-3">Contact Agent</h2>
+              <Separator className="mb-4" />
+              <AskAgentForm
+                propertyId={property.id}
+                agentId={agentId}
+                agentName={agentName}
+              />
+            </section>
+
+            {/* ── BOTTOM SECTIONS ── */}
+
+            {/* Similar Properties */}
+            <Suspense
+              fallback={
+                <div className="space-y-2">
+                  <div className="h-4 w-40 bg-muted rounded animate-pulse" />
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="h-20 bg-muted rounded-lg animate-pulse" />
+                  ))}
+                </div>
+              }
+            >
+              <SimilarProperties
+                propertyId={property.id}
+                postcodeDistrict={district}
+                listingType={listing.listing_type as ListingType}
+                price={listing.price}
+                propertyType={property.property_type}
+              />
+            </Suspense>
           </div>
 
           {/* ── SIDEBAR ── */}
           <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
-            {/* Agent card */}
-            <div className="rounded-xl border bg-card p-5 space-y-4">
-              <div className="flex items-center gap-3">
-                {/* Avatar */}
-                <div className="size-12 rounded-full bg-neutral-200 flex items-center justify-center text-lg font-bold text-neutral-500 shrink-0">
-                  {agent.name
-                    .split(" ")
-                    .map((n) => n.charAt(0))
-                    .filter(Boolean)
-                    .join("")}
-                </div>
-                <div>
-                  <p className="font-semibold text-sm">{agent.name}</p>
-                  <p className="text-xs text-muted-foreground">{agent.agency}</p>
-                  {agent.rating > 0 && (
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`size-3 ${i < Math.floor(agent.rating) ? "fill-brand-secondary text-brand-secondary" : "text-muted-foreground"}`}
-                        />
-                      ))}
-                      <span className="text-xs text-muted-foreground ml-1">
-                        {agent.rating} ({agent.reviews})
-                      </span>
+            {/* Agent card (Wave 5) */}
+            <Suspense
+              fallback={
+                <div className="rounded-xl border bg-card p-5 animate-pulse space-y-3">
+                  <div className="flex gap-3">
+                    <div className="size-12 rounded-full bg-muted shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-32 bg-muted rounded" />
+                      <div className="h-3 w-24 bg-muted rounded" />
                     </div>
-                  )}
+                  </div>
+                  <div className="h-10 bg-muted rounded-lg" />
                 </div>
-              </div>
+              }
+            >
+              <AgentCardSidebar agentId={agentId} propertyId={property.id} />
+            </Suspense>
 
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <Mail className="size-4" />
-                  Contact
-                </Button>
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <Phone className="size-4" />
-                  Call
-                </Button>
-              </div>
+            {/* Book Viewing (Wave 5) — gated on listing status */}
+            {canBookViewing && (
+              <BookViewingModal
+                propertyId={property.id}
+                propertyStatus={listing.status}
+                existingViewingId={existingViewingId}
+              />
+            )}
 
-              {agent.phone && (
-                <p className="text-xs text-center text-muted-foreground">
-                  {agent.phone}
-                </p>
-              )}
-            </div>
-
-            {/* Viewing Booking */}
-            <ViewingBooking
-              agentName={agent.name}
-              propertyAddress={address}
-            />
+            {/* Similar Properties in sidebar for desktop visibility */}
+            <Suspense fallback={null}>
+              <RecommendedTradespeople postcode={property.postcode} />
+            </Suspense>
           </aside>
         </div>
       </div>
@@ -473,10 +610,16 @@ export default async function PropertyPage({
             {property.bedrooms} bed · {propertyTypeLabel}
           </p>
         </div>
-        <Button className="shrink-0 gap-1.5">
-          <CalendarIcon className="size-4" />
-          Book Viewing
-        </Button>
+        {canBookViewing && (
+          <a
+            href="#roi-section"
+            className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 transition-colors hover:bg-primary/90"
+            onClick={undefined}
+          >
+            <CalendarIcon className="size-4" />
+            Book Viewing
+          </a>
+        )}
       </div>
     </div>
   );
