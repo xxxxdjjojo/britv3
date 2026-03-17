@@ -1,72 +1,49 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X, Home, Images } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ImageIcon,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export type GalleryImage = { src: string; alt: string };
+export type GalleryImage = {
+  src: string;
+  alt: string;
+  aiHighlight?: string;
+};
 
 type HeroGalleryProps = Readonly<{
-  images: Array<GalleryImage>;
-  highlightText?: string | null;
+  images: GalleryImage[];
+  propertyTitle: string;
   className?: string;
 }>;
 
-export function HeroGallery({ images, highlightText, className }: HeroGalleryProps) {
+export function HeroGallery({ images, propertyTitle, className }: HeroGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  // -------------------------------------------------------------------------
-  // Lightbox open / close with history shim (back button fix)
-  // -------------------------------------------------------------------------
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const openLightbox = useCallback((index: number) => {
     setActiveIndex(index);
     setLightboxOpen(true);
-    history.pushState({ lightboxOpen: true }, "");
+    if (typeof window !== "undefined") {
+      window.history.pushState({ lightbox: true }, "", "#gallery");
+    }
   }, []);
 
   const closeLightbox = useCallback(() => {
-    if (window.history.state?.lightboxOpen) {
+    if (typeof window !== "undefined" && window.location.hash === "#gallery") {
       window.history.back(); // popstate handler will call setLightboxOpen(false)
     } else {
-      setLightboxOpen(false);
+      setLightboxOpen(false); // fallback if history not available
     }
   }, []);
-
-  const handlePopState = useCallback((e: PopStateEvent) => {
-    if (!(e.state as { lightboxOpen?: boolean } | null)?.lightboxOpen) {
-      setLightboxOpen(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [handlePopState]);
-
-  // -------------------------------------------------------------------------
-  // Keyboard navigation in lightbox
-  // -------------------------------------------------------------------------
-
-  useEffect(() => {
-    if (!lightboxOpen) return;
-
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") {
-        setActiveIndex((i) => (i - 1 + images.length) % images.length);
-      } else if (e.key === "ArrowRight") {
-        setActiveIndex((i) => (i + 1) % images.length);
-      } else if (e.key === "Escape") {
-        closeLightbox();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, images.length, closeLightbox]);
 
   const prev = useCallback(() => {
     setActiveIndex((i) => (i - 1 + images.length) % images.length);
@@ -76,39 +53,57 @@ export function HeroGallery({ images, highlightText, className }: HeroGalleryPro
     setActiveIndex((i) => (i + 1) % images.length);
   }, [images.length]);
 
-  // -------------------------------------------------------------------------
-  // Empty state
-  // -------------------------------------------------------------------------
+  // Close lightbox when browser back button is pressed
+  useEffect(() => {
+    const handlePopState = () => {
+      setLightboxOpen(false);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []); // No dependency on lightboxOpen needed
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") prev();
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "Escape") closeLightbox();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, prev, next, closeLightbox]);
+
+  // Focus close button when lightbox opens
+  useEffect(() => {
+    if (lightboxOpen && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [lightboxOpen]);
 
   if (images.length === 0) {
     return (
       <div
         className={cn(
-          "flex h-80 flex-col items-center justify-center gap-3 rounded-xl bg-neutral-100 border",
+          "flex h-80 items-center justify-center rounded-xl bg-neutral-200",
           className,
         )}
       >
-        <Home className="size-12 text-neutral-300" />
-        <p className="text-sm text-muted-foreground">No photos available</p>
+        <ImageIcon className="size-12 text-neutral-400" />
       </div>
     );
   }
 
-  // -------------------------------------------------------------------------
-  // Desktop layout: main image (left) + 2 thumbnails (right column)
-  // -------------------------------------------------------------------------
-
-  const thumb1 = images[1] ?? null;
-  const thumb2 = images[2] ?? null;
+  const currentImage = images[activeIndex];
 
   return (
     <>
-      {/* Desktop: large left + 2-thumbnail right column */}
+      {/* Desktop: 2+2 grid */}
       <div className={cn("hidden md:block relative rounded-xl overflow-hidden", className)}>
-        <div className="grid grid-cols-[1fr_220px] gap-1 h-[440px]">
-          {/* Main image */}
+        <div className="grid grid-cols-2 grid-rows-2 gap-1 h-[480px]">
+          {/* Main large image — priority for LCP */}
           <div
-            className="relative cursor-pointer overflow-hidden group"
+            className="row-span-2 relative cursor-pointer overflow-hidden"
             onClick={() => openLightbox(0)}
           >
             <Image
@@ -116,77 +111,45 @@ export function HeroGallery({ images, highlightText, className }: HeroGalleryPro
               alt={images[0].alt}
               fill
               priority
-              loading="eager"
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="(min-width: 768px) 65vw, 100vw"
+              className="object-cover hover:scale-105 transition-transform duration-300"
+              sizes="(min-width: 768px) 50vw, 100vw"
             />
-
-            {/* AI Highlights chip */}
-            {highlightText && (
-              <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium shadow-sm border border-border/50 max-w-[260px]">
-                <span>✨</span>
-                <span className="truncate">{highlightText}</span>
-              </div>
-            )}
           </div>
 
-          {/* Right thumbnail column */}
-          <div className="flex flex-col gap-1">
-            {/* Thumb 1 */}
+          {/* Three thumbnails (or placeholders) */}
+          {[1, 2, 3].map((i) => (
             <div
+              key={i}
               className={cn(
-                "relative flex-1 overflow-hidden cursor-pointer bg-neutral-200",
-                !thumb1 && "pointer-events-none",
+                "relative overflow-hidden bg-neutral-200",
+                images[i] ? "cursor-pointer" : "",
               )}
-              onClick={() => thumb1 && openLightbox(1)}
+              onClick={images[i] ? () => openLightbox(i) : undefined}
             >
-              {thumb1 ? (
+              {images[i] ? (
                 <Image
-                  src={thumb1.src}
-                  alt={thumb1.alt}
+                  src={images[i].src}
+                  alt={images[i].alt}
                   fill
                   loading="lazy"
                   className="object-cover hover:scale-105 transition-transform duration-300"
-                  sizes="220px"
+                  sizes="(min-width: 768px) 25vw, 50vw"
                 />
               ) : (
                 <div className="w-full h-full bg-neutral-200" />
               )}
             </div>
-
-            {/* Thumb 2 */}
-            <div
-              className={cn(
-                "relative flex-1 overflow-hidden cursor-pointer bg-neutral-200",
-                !thumb2 && "pointer-events-none",
-              )}
-              onClick={() => thumb2 && openLightbox(2)}
-            >
-              {thumb2 ? (
-                <Image
-                  src={thumb2.src}
-                  alt={thumb2.alt}
-                  fill
-                  loading="lazy"
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  sizes="220px"
-                />
-              ) : (
-                <div className="w-full h-full bg-neutral-200" />
-              )}
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Show all photos button */}
+        {/* View all button */}
         <Button
           variant="secondary"
           size="sm"
           className="absolute bottom-3 right-3 gap-1.5 shadow-md"
           onClick={() => openLightbox(0)}
         >
-          <Images className="size-4" />
-          Show all {images.length} photos
+          View All {images.length} Photos
         </Button>
       </div>
 
@@ -198,99 +161,114 @@ export function HeroGallery({ images, highlightText, className }: HeroGalleryPro
             alt={images[activeIndex].alt}
             fill
             priority={activeIndex === 0}
-            loading={activeIndex === 0 ? "eager" : "lazy"}
+            loading={activeIndex === 0 ? undefined : "lazy"}
             className="object-cover"
             sizes="100vw"
           />
 
-          {/* AI Highlights chip on mobile */}
-          {highlightText && activeIndex === 0 && (
-            <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium shadow-sm border border-border/50 max-w-[220px]">
-              <span>✨</span>
-              <span className="truncate">{highlightText}</span>
-            </div>
-          )}
-
-          {/* Prev / Next arrows */}
-          {images.length > 1 && (
-            <>
-              <button
-                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow"
-                onClick={prev}
-                aria-label="Previous image"
-              >
-                <ChevronLeft className="size-5" />
-              </button>
-              <button
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow"
-                onClick={next}
-                aria-label="Next image"
-              >
-                <ChevronRight className="size-5" />
-              </button>
-            </>
-          )}
-
-          {/* Counter + open lightbox */}
+          {/* Arrow buttons */}
           <button
-            className="absolute bottom-2 right-3 rounded-full bg-background/80 px-2.5 py-0.5 text-xs font-medium"
-            onClick={() => openLightbox(activeIndex)}
-            aria-label="View all photos"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow"
+            onClick={prev}
+            aria-label="Previous image"
           >
-            {activeIndex + 1} / {images.length}
+            <ChevronLeft className="size-5" />
           </button>
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Lightbox                                                             */}
-      {/* ------------------------------------------------------------------ */}
-      {lightboxOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Photo gallery"
-          className="fixed inset-0 z-50 bg-black/92 flex flex-col"
-        >
-          {/* Close */}
           <button
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 z-10"
-            onClick={closeLightbox}
-            aria-label="Close gallery"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow"
+            onClick={next}
+            aria-label="Next image"
           >
-            <X className="size-5" />
+            <ChevronRight className="size-5" />
           </button>
 
           {/* Counter */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white/70 text-sm z-10">
-            {activeIndex + 1} / {images.length}
+          <div className="absolute bottom-2 right-3 rounded-full bg-background/80 px-2.5 py-0.5 text-xs font-medium">
+            {activeIndex + 1} of {images.length}
+          </div>
+        </div>
+
+        {/* Mobile: view all button */}
+        <div className="absolute bottom-2 left-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="gap-1.5 shadow-md text-xs h-7"
+            onClick={() => openLightbox(activeIndex)}
+          >
+            View All {images.length} Photos
+          </Button>
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-[#0a0c0b]"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Photo gallery for ${propertyTitle}`}
+        >
+          {/* Top bar */}
+          <div className="flex items-center justify-between px-4 py-3 shrink-0">
+            {/* Counter badge */}
+            <div className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white">
+              {activeIndex + 1} / {images.length}
+            </div>
+
+            {/* Top-right controls */}
+            <div className="flex items-center gap-2">
+              <button
+                ref={closeButtonRef}
+                className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+                aria-label="Close gallery"
+                onClick={closeLightbox}
+              >
+                <X className="size-5" />
+              </button>
+            </div>
           </div>
 
-          {/* Main image */}
-          <div className="flex flex-1 items-center justify-center relative px-14">
+          {/* Main image area */}
+          <div className="flex flex-1 items-center justify-center relative px-12 min-h-0">
             <button
-              className="absolute left-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+              className="absolute left-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors z-10"
               onClick={prev}
-              aria-label="Previous photo"
+              aria-label="Previous image"
             >
               <ChevronLeft className="size-6" />
             </button>
 
             <div className="relative w-full max-w-4xl aspect-[4/3]">
               <Image
-                src={images[activeIndex].src}
-                alt={images[activeIndex].alt}
+                src={currentImage.src}
+                alt={currentImage.alt}
                 fill
                 loading="lazy"
                 className="object-contain"
                 sizes="90vw"
               />
+
+              {/* AI Highlight overlay */}
+              {currentImage.aiHighlight && (
+                <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-black/60 backdrop-blur-sm border border-teal-700/30 p-3">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="size-4 shrink-0 text-[color:var(--color-brand-secondary)]" />
+                    <span className="text-xs font-medium text-teal-200">
+                      Britestate AI Highlight
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm italic text-white/90">
+                    {currentImage.aiHighlight}
+                  </p>
+                </div>
+              )}
             </div>
 
             <button
-              className="absolute right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+              className="absolute right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors z-10"
               onClick={next}
-              aria-label="Next photo"
+              aria-label="Next image"
             >
               <ChevronRight className="size-6" />
             </button>
@@ -302,13 +280,13 @@ export function HeroGallery({ images, highlightText, className }: HeroGalleryPro
               <button
                 key={i}
                 onClick={() => setActiveIndex(i)}
+                aria-label={`View image ${i + 1}: ${img.alt}`}
                 className={cn(
                   "relative h-16 w-24 shrink-0 overflow-hidden rounded-md border-2 transition-all",
                   i === activeIndex
                     ? "border-white"
-                    : "border-transparent opacity-50 hover:opacity-80",
+                    : "border-transparent opacity-60 hover:opacity-100",
                 )}
-                aria-label={`Go to photo ${i + 1}`}
               >
                 <Image
                   src={img.src}

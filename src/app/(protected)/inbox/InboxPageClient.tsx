@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export default function InboxPageClient() {
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
+  const [activeRecipientId, setActiveRecipientId] = useState<string | null>(null);
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -68,7 +69,10 @@ export default function InboxPageClient() {
       >
         <InboxList
           activeId={activeConversation ?? undefined}
-          onSelectConversation={setActiveConversation}
+          onSelectConversation={(id, recipientId) => {
+            setActiveConversation(id);
+            setActiveRecipientId(recipientId);
+          }}
         />
       </div>
 
@@ -80,7 +84,7 @@ export default function InboxPageClient() {
         )}
       >
         {activeConversation ? (
-          <MessageThread conversationId={activeConversation} recipientId="" />
+          <MessageThread conversationId={activeConversation} recipientId={activeRecipientId ?? ""} />
         ) : (
           <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
             Select a conversation to start messaging

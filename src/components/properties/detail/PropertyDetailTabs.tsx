@@ -1,73 +1,80 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useState } from "react";
 
-// ---------------------------------------------------------------------------
-// Tab definitions
-// ---------------------------------------------------------------------------
-
-type Tab = {
-  id: string;
-  label: string;
-};
-
-const TABS: Tab[] = [
-  { id: "overview", label: "Overview" },
-  { id: "photos", label: "Photos" },
-  { id: "floorplan", label: "Floor Plan" },
-  { id: "map", label: "Map" },
-  { id: "insights", label: "Insights" },
-  { id: "financial", label: "Financial" },
-  { id: "roi", label: "ROI" },
-];
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+const TABS = [
+  { id: "overview", label: "Overview", sectionId: "section-overview" },
+  { id: "photos", label: "Photos", sectionId: "section-photos" },
+  { id: "floor-plan", label: "Floor Plan", sectionId: "section-floor-plan" },
+  { id: "map", label: "Map & Area", sectionId: "section-map" },
+  { id: "insights", label: "Insights", sectionId: "section-insights" },
+  { id: "financial", label: "Financial", sectionId: "section-financial" },
+  { id: "roi", label: "ROI", sectionId: "section-roi" },
+] as const;
 
 type PropertyDetailTabsProps = Readonly<{
-  activeTab: string;
-  onTabChange: (tab: string) => void;
+  className?: string;
 }>;
 
 export function PropertyDetailTabs({
-  activeTab,
-  onTabChange,
+  className = "",
 }: PropertyDetailTabsProps) {
-  return (
-    <nav
-      aria-label="Property sections"
-      className="lg:hidden -mx-4 px-4 border-b bg-background"
-    >
-      <div className="flex overflow-x-auto gap-0 pb-0 scrollbar-none">
-        {TABS.map((tab) => {
-          const isActive = tab.id === activeTab;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={cn(
-                "relative shrink-0 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]/50 rounded-t-sm",
-                isActive
-                  ? "text-[#1B4D3E]"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-              aria-current={isActive ? "page" : undefined}
-            >
-              {tab.label}
+  const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
 
-              {/* Active underline */}
-              {isActive && (
-                <span
-                  aria-hidden="true"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[#1B4D3E]"
-                />
-              )}
-            </button>
-          );
-        })}
+  // Scroll spy: detect which section is in view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the first intersecting entry
+        const intersecting = entries.find((e) => e.isIntersecting);
+        if (intersecting) {
+          const sectionId = intersecting.target.id;
+          const tab = TABS.find((t) => t.sectionId === sectionId);
+          if (tab) {
+            setActiveTab(tab.id);
+          }
+        }
+      },
+      { rootMargin: "-20% 0px -70% 0px", threshold: 0 }
+    );
+
+    // Observe all section elements
+    TABS.forEach(({ sectionId }) => {
+      const el = document.getElementById(sectionId);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Handle tab click: smooth scroll to section
+  const handleTabClick = useCallback((sectionId: string) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
+  return (
+    <div
+      className={`sticky top-[112px] z-10 -mx-4 lg:hidden bg-background border-b border-border ${className}`}
+    >
+      <div className="scrollbar-hide flex overflow-x-auto px-4 gap-0">
+        {TABS.map(({ id, label, sectionId }) => (
+          <button
+            key={id}
+            onClick={() => handleTabClick(sectionId)}
+            className={`flex-shrink-0 py-2.5 px-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+              activeTab === id
+                ? "border-[#1B4D3E] text-[#1B4D3E]"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+            aria-current={activeTab === id ? "page" : undefined}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-    </nav>
+    </div>
   );
 }

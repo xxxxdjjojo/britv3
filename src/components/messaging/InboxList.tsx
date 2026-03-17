@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInbox } from "@/hooks/useInbox";
+import { useAuth } from "@/hooks/useAuth";
 import type { Conversation } from "@/types/messaging";
 
 // ---------------------------------------------------------------------------
@@ -42,10 +43,16 @@ function ConversationRow(
   props: Readonly<{
     conversation: Conversation;
     isActive: boolean;
-    onSelect: (id: string) => void;
+    currentUserId: string;
+    onSelect: (id: string, recipientId: string) => void;
   }>,
 ) {
-  const { conversation: conv, isActive, onSelect } = props;
+  const { conversation: conv, isActive, currentUserId, onSelect } = props;
+
+  const otherUserId =
+    conv.participant_1_id === currentUserId
+      ? conv.participant_2_id
+      : conv.participant_1_id;
 
   const initials =
     conv.participant_name
@@ -59,7 +66,7 @@ function ConversationRow(
   return (
     <button
       type="button"
-      onClick={() => onSelect(conv.id)}
+      onClick={() => onSelect(conv.id, otherUserId)}
       className={cn(
         "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
         isActive && "bg-muted border-l-2 border-primary",
@@ -121,10 +128,12 @@ function SkeletonRow() {
 export default function InboxList(
   props: Readonly<{
     activeId?: string;
-    onSelectConversation?: (id: string) => void;
+    onSelectConversation?: (id: string, recipientId: string) => void;
   }>,
 ) {
   const { activeId, onSelectConversation } = props;
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? "";
   const [search, setSearch] = useState("");
 
   const { data, isLoading, error } = useInbox({
@@ -179,6 +188,7 @@ export default function InboxList(
                 key={conv.id}
                 conversation={conv}
                 isActive={conv.id === activeId}
+                currentUserId={currentUserId}
                 onSelect={onSelectConversation ?? (() => {})}
               />
             ))}

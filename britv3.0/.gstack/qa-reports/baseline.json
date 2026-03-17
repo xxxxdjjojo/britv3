@@ -1,0 +1,25 @@
+{
+  "date": "2026-03-17",
+  "url": "http://localhost:3000",
+  "healthScore": 58,
+  "issues": [
+    { "id": "ISSUE-001", "title": "Middleware redirects unknown/public routes to login", "severity": "critical", "category": "functional" },
+    { "id": "ISSUE-002", "title": "Homepage service category links all 404", "severity": "critical", "category": "links" },
+    { "id": "ISSUE-003", "title": "Agent search fails with PGRST200 DB relationship error", "severity": "high", "category": "functional" },
+    { "id": "ISSUE-004", "title": "Marketplace search does nothing", "severity": "high", "category": "functional" },
+    { "id": "ISSUE-005", "title": "Property listing images all show No image placeholder", "severity": "medium", "category": "visual" },
+    { "id": "ISSUE-006", "title": "Google OAuth returns raw JSON error", "severity": "medium", "category": "functional" },
+    { "id": "ISSUE-007", "title": "Persistent 400 Bad Request on page load", "severity": "medium", "category": "console" },
+    { "id": "ISSUE-008", "title": "Next.js Image components missing sizes prop", "severity": "low", "category": "performance" }
+  ],
+  "categoryScores": {
+    "console": 40,
+    "links": 40,
+    "visual": 85,
+    "functional": 35,
+    "ux": 60,
+    "performance": 70,
+    "content": 90,
+    "accessibility": 80
+  }
+}

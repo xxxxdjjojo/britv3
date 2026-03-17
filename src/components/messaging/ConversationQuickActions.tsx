@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, CreditCard, FileText } from "lucide-react";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { ViewingBooking } from "@/components/properties/ViewingBooking";
 import { QuoteCreateForm } from "@/components/marketplace/QuoteCreateForm";
+import { createClient } from "@/lib/supabase/client";
 
 type Props = Readonly<{
   participantName: string;
@@ -25,9 +26,51 @@ export default function ConversationQuickActions({
 }: Props) {
   const [viewingOpen, setViewingOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const [propertyAddress, setPropertyAddress] = useState<string | null>(null);
+  const [addressLoading, setAddressLoading] = useState(false);
 
   const showQuote = contextType === "rfq";
   const hasRfq = Boolean(contextId);
+
+  // Fetch the listing's property address when context is a listing
+  useEffect(() => {
+    if (contextType !== "listing" || !contextId) return;
+
+    let cancelled = false;
+    setAddressLoading(true);
+
+    const supabase = createClient();
+    supabase
+      .from("listings")
+      .select("properties(address_line1, city, postcode)")
+      .eq("id", contextId)
+      .single()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const prop = data?.properties as {
+          address_line1: string;
+          city: string;
+          postcode: string;
+        } | null;
+        if (prop) {
+          setPropertyAddress(
+            `${prop.address_line1}, ${prop.city}, ${prop.postcode}`,
+          );
+        }
+        setAddressLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [contextType, contextId]);
+
+  const resolvedPropertyAddress =
+    contextType === "listing"
+      ? addressLoading
+        ? "Loading..."
+        : (propertyAddress ?? "Property")
+      : "Property";
 
   return (
     <>
@@ -78,7 +121,7 @@ export default function ConversationQuickActions({
           </DialogHeader>
           <ViewingBooking
             agentName={participantName}
-            propertyAddress="Selected property"
+            propertyAddress={resolvedPropertyAddress}
           />
         </DialogContent>
       </Dialog>
