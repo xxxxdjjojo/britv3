@@ -11,7 +11,7 @@ import { MobileNav } from "@/components/layout/MobileNav";
 const NAV_LINKS = [
   { href: "/search?type=buy", label: "Buy" },
   { href: "/search?type=rent", label: "Rent" },
-  { href: "/marketplace", label: "Find Services" },
+  { href: "/services", label: "Find Services" },
   { href: "/valuation", label: "Valuations" },
   { href: "/blog", label: "Advice" },
 ] as const;

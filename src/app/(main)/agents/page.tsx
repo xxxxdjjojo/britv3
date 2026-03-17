@@ -33,17 +33,7 @@ export default async function AgentsPage({ searchParams }: Props) {
     const supabase = await createClient();
     let query = supabase
       .from("agent_agency_profiles")
-      .select(
-        `
-        *,
-        profiles (
-          id,
-          avatar_url,
-          full_name,
-          email
-        )
-      `,
-      )
+      .select("*")
       .limit(20);
 
     if (q) {
@@ -56,9 +46,8 @@ export default async function AgentsPage({ searchParams }: Props) {
     }
 
     if (area) {
-      // areas_covered is a text[] column — use the overlap/contains approach
-      // cs (contains) works for array columns in Supabase PostgREST
-      query = query.contains("areas_covered", [area]);
+      // coverage_areas is a text[] column on agent_agency_profiles
+      query = query.contains("coverage_areas", [area]);
     }
 
     const { data, error } = await query;
@@ -90,7 +79,7 @@ export default async function AgentsPage({ searchParams }: Props) {
   const hasFilters = q || area || minRating;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
@@ -254,23 +243,21 @@ export default async function AgentsPage({ searchParams }: Props) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAgents.map((agent) => {
+              // Use actual agent_agency_profiles columns
+              const raw = agent as unknown as Record<string, unknown>;
               const agencyName =
-                (agent.agency as { name?: string } | null)?.name ??
-                agent.display_name;
+                (raw.agency_name as string | null) ??
+                agent.display_name ??
+                "Agency";
               const logoUrl =
-                (agent.agency as { logo_url?: string | null } | null)
-                  ?.logo_url ??
-                (
-                  agent.profiles as
-                    | { avatar_url?: string | null }
-                    | null
-                )?.avatar_url ??
-                null;
+                (raw.logo_url as string | null) ?? null;
               const city =
-                (agent.agency as { address?: string | null } | null)
-                  ?.address ?? null;
+                (raw.city as string | null) ?? null;
 
-              const areasCovered = agent.areas_covered ?? [];
+              const areasCovered =
+                (raw.coverage_areas as string[] | null) ??
+                agent.areas_covered ??
+                [];
 
               return (
                 <div
