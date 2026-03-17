@@ -227,3 +227,19 @@ export async function assignMemberToBranch(
 
   return data as AgentTeamMember;
 }
+
+export async function deleteBranch(
+  supabase: SupabaseClient,
+  branchId: string,
+  agentId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("agent_branches")
+    .delete()
+    .eq("id", branchId)
+    .eq("agent_id", agentId);
+
+  if (error) {
+    throw new Error(`Failed to delete branch: ${error.message}`);
+  }
+}
