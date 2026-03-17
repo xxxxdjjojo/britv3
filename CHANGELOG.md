@@ -2,27 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.2] - 2026-03-17
-
-### Fixed
-- Strip ILIKE wildcard characters (`%`, `_`) in `sanitizePostgrestInput()` to prevent filter bypass
-
-## [0.3.1] - 2026-03-17
+## [0.3.3] - 2026-03-17
 
 ### Added
-- **Marketplace Discovery** — Service Directory page at `/services` with category browsing and search
+- **Service Directory** — Browse-by-profession page at `/services` with category grid and "Post a Job" CTA
 - **Specialist Search Pages** — Dedicated pages for mortgage brokers, conveyancers, surveyors, and architects
-- **Job Board** — SSR job board at `/jobs` with postcode masking for privacy
-- **Agent Search** — Enhanced agents page with area filter (county/city) and rating filter
-- **Compare Bar** — Floating UI for comparing up to 3 providers side-by-side; compare API endpoint at `/api/marketplace/compare`
-- **Provider Profile Redirect** — ProviderCard links now use `/services/[category]/[slug]` URL structure
+- **Job Board** — SSR job board at `/jobs` with postcode masking, category/urgency filters, pagination
+- **Agent Search Filters** — Area and minimum rating filters on `/agents` page
+- **Compare Bar** — Floating UI for side-by-side provider comparison; API at `/api/providers/compare`
+- **Provider Profile Links** — ProviderCard now links to `/services/[category]/[slug]` URL structure
 
 ### Fixed
+- Agents page PGRST200 error — removed broken `profiles(...)` JOIN from `agent_agency_profiles` query
+- Agent profiles RLS — added public read policy so visitors can see agent directory
+- "Find Services" nav link now points to `/services` instead of `/marketplace`
+- Strip ILIKE wildcard characters (`%`, `_`) in `sanitizePostgrestInput()` to prevent filter bypass
+- Extract shared `sanitizePostgrestInput()` for consistent PostgREST filter sanitization
 - RPC parameter rename `p_category` → `p_service_category` in provider service
 - `localStorage` safety guards for SSR environments in marketplace utilities
-- DRY label deduplication in marketplace filter components
 - Budget cross-field validation (max >= min) and past-date guard in `rfqCreateSchema`
-- Extract shared `sanitizePostgrestInput()` for consistent PostgREST filter sanitization across agents, admin, CRM, and category pages
 - `GBPToPence` → `gbpToPence` to match currency.ts export
 
 ### Changed
