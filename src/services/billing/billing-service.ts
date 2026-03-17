@@ -8,7 +8,7 @@
  * @see src/lib/billing-config.ts for price IDs and plan definitions.
  */
 import "server-only";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { BillingRole } from "@/lib/billing-config";
 import { getStripe } from "@/lib/stripe";

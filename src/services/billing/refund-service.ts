@@ -78,10 +78,18 @@ export async function createRequest(
   const admin = createAdminClient();
   const stripe = getStripe();
 
-  const autoApprove = amountPence <= REFUND_AUTO_APPROVE_LIMIT_PENCE;
-  const initialStatus: RefundStatus = autoApprove ? "auto_approved" : "pending_review";
+  // Enforce refund window — charge must be within REFUND_WINDOW_DAYS
+  const charge = await stripe.charges.retrieve(stripeChargeId);
+  const chargeDate = new Date(charge.created * 1000);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - REFUND_WINDOW_DAYS);
+  if (chargeDate < cutoff) {
+    throw new Error(
+      `Refund window expired. Refunds must be requested within ${REFUND_WINDOW_DAYS} days of the charge.`,
+    );
+  }
 
-  // Insert the request
+  // Always insert as "submitted" first — canonical initial state
   const { data: request, error: insertError } = await admin
     .from("refund_requests")
     .insert({
@@ -90,7 +98,7 @@ export async function createRequest(
       amount_pence: amountPence,
       reason,
       details: details ?? null,
-      status: initialStatus,
+      status: "submitted" as RefundStatus,
     })
     .select("*")
     .single();
@@ -99,8 +107,10 @@ export async function createRequest(
     throw new Error(`Failed to create refund request: ${insertError?.message ?? "unknown error"}`);
   }
 
-  // Auto-approve: process via Stripe immediately
+  const autoApprove = amountPence <= REFUND_AUTO_APPROVE_LIMIT_PENCE;
+
   if (autoApprove) {
+    // Transition submitted → auto_approved → processed (if Stripe succeeds)
     try {
       const refund = await stripe.refunds.create({
         charge: stripeChargeId,
@@ -111,8 +121,8 @@ export async function createRequest(
       const { error: updateError } = await admin
         .from("refund_requests")
         .update({
-          stripe_refund_id: refund.id,
           status: "processed" as RefundStatus,
+          stripe_refund_id: refund.id,
           processed_at: new Date().toISOString(),
         })
         .eq("id", request.id);
@@ -123,12 +133,12 @@ export async function createRequest(
 
       return {
         ...request,
-        stripe_refund_id: refund.id,
         status: "processed",
+        stripe_refund_id: refund.id,
         processed_at: new Date().toISOString(),
       } as RefundRequest;
     } catch (stripeError) {
-      // Stripe refund failed — mark as pending_review for manual handling
+      // Stripe call failed — fall back to pending_review for manual handling
       await admin
         .from("refund_requests")
         .update({
@@ -144,7 +154,20 @@ export async function createRequest(
     }
   }
 
-  return request as RefundRequest;
+  // Not auto-approvable — transition submitted → pending_review
+  const { error: updateError } = await admin
+    .from("refund_requests")
+    .update({ status: "pending_review" as RefundStatus })
+    .eq("id", request.id);
+
+  if (updateError) {
+    console.error("Failed to transition refund to pending_review:", updateError);
+  }
+
+  return {
+    ...request,
+    status: "pending_review",
+  } as RefundRequest;
 }
 
 // ============================================================================
@@ -198,33 +221,56 @@ export async function processRefund(
     return updated as RefundRequest;
   }
 
-  // action === "approve"
+  // action === "approve" — attempt Stripe refund
   const stripe = getStripe();
 
-  const refund = await stripe.refunds.create({
-    charge: request.stripe_charge_id as string,
-    amount: request.amount_pence as number,
-    reason: "requested_by_customer",
-  });
+  try {
+    const refund = await stripe.refunds.create({
+      charge: request.stripe_charge_id as string,
+      amount: request.amount_pence as number,
+      reason: "requested_by_customer",
+    });
 
-  const { data: updated, error: updateError } = await admin
-    .from("refund_requests")
-    .update({
-      status: "approved" as RefundStatus,
-      admin_id: adminId,
-      admin_notes: notes ?? null,
-      stripe_refund_id: refund.id,
-      processed_at: new Date().toISOString(),
-    })
-    .eq("id", requestId)
-    .select("*")
-    .single();
+    // Stripe succeeded → "processed"
+    const { data: updated, error: updateError } = await admin
+      .from("refund_requests")
+      .update({
+        status: "processed" as RefundStatus,
+        admin_id: adminId,
+        admin_notes: notes ?? null,
+        stripe_refund_id: refund.id,
+        processed_at: new Date().toISOString(),
+      })
+      .eq("id", requestId)
+      .select("*")
+      .single();
 
-  if (updateError || !updated) {
-    throw new Error(`Failed to update approved refund: ${updateError?.message ?? "unknown"}`);
+    if (updateError || !updated) {
+      throw new Error(`Failed to update processed refund: ${updateError?.message ?? "unknown"}`);
+    }
+
+    return updated as RefundRequest;
+  } catch (stripeError) {
+    // Stripe call failed → set "approved", let webhook handle transition to "processed"
+    const { data: updated, error: updateError } = await admin
+      .from("refund_requests")
+      .update({
+        status: "approved" as RefundStatus,
+        admin_id: adminId,
+        admin_notes: notes
+          ? `${notes}\n[Stripe call failed: ${stripeError instanceof Error ? stripeError.message : "unknown"}]`
+          : `Stripe call failed: ${stripeError instanceof Error ? stripeError.message : "unknown"}`,
+      })
+      .eq("id", requestId)
+      .select("*")
+      .single();
+
+    if (updateError || !updated) {
+      throw new Error(`Failed to update approved refund: ${updateError?.message ?? "unknown"}`);
+    }
+
+    return updated as RefundRequest;
   }
-
-  return updated as RefundRequest;
 }
 
 // ============================================================================
