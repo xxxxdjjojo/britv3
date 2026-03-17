@@ -22,8 +22,13 @@ import type { StripeConnectAccount } from "@/types/provider-dashboard";
 // Stripe client — server-only
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder") as unknown as Stripe;
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder");
+  }
+  return _stripe;
+}
 
 // ---------------------------------------------------------------------------
 // Return types
@@ -135,7 +140,7 @@ export async function initiateStripeConnect(
   if (existing) return existing.stripe_account_id;
 
   // Create Stripe Express account
-  const account = await stripe.accounts.create({
+  const account = await getStripe().accounts.create({
     type: "express",
     country: "GB",
     email: userEmail,
@@ -178,7 +183,7 @@ export async function getOnboardingLink(
   stripeAccountId: string,
   origin: string,
 ): Promise<OnboardingLink> {
-  const link = await stripe.accountLinks.create({
+  const link = await getStripe().accountLinks.create({
     account: stripeAccountId,
     refresh_url: `${origin}/dashboard/provider/payments/connect/refresh`,
     return_url: `${origin}/dashboard/provider/payments/connect/return`,
@@ -220,7 +225,7 @@ export async function getStripeBalance(
 
   let balance: Stripe.Balance;
   try {
-    balance = await stripe.balance.retrieve({
+    balance = await getStripe().balance.retrieve({
       stripeAccount: stripeAccountId,
     });
   } catch (err) {
@@ -246,7 +251,7 @@ export async function getStripeBalance(
   let nextPayoutDate: string | null = null;
   let nextPayoutAmountPence: number | null = null;
   try {
-    const payouts = await stripe.payouts.list(
+    const payouts = await getStripe().payouts.list(
       { limit: 1, status: "pending" },
       { stripeAccount: stripeAccountId },
     );
@@ -289,7 +294,7 @@ export async function getPayoutHistory(
   }
 
   try {
-    const payouts = await stripe.payouts.list(
+    const payouts = await getStripe().payouts.list(
       { limit, expand: ["data.destination"] },
       { stripeAccount: stripeAccountId },
     );
@@ -404,7 +409,7 @@ export async function getTransactionDetail(
   }
 
   try {
-    const charge = await stripe.charges.retrieve(transactionId, {
+    const charge = await getStripe().charges.retrieve(transactionId, {
       stripeAccount: stripeAccountId,
     });
 

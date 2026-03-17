@@ -19,8 +19,13 @@ import type { BoostType, ProviderBoost } from "@/types/provider-dashboard";
 // Stripe client — server-only
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder") as unknown as Stripe;
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder");
+  }
+  return _stripe;
+}
 
 // ---------------------------------------------------------------------------
 // Input / return types
@@ -91,7 +96,7 @@ export async function createBoostCheckout(
   const label = boostLabels[config.boost_type];
   const daysLabel = `${config.duration_days} day${config.duration_days !== 1 ? "s" : ""}`;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: [
       {
