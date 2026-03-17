@@ -1,45 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type {
-  AgentViewingSlot,
-  AgentViewingFeedback,
-  PriceOpinion,
-  LikelihoodToOffer,
-} from "@/types/agent";
-import { Star, MessageSquare } from "lucide-react";
+import { Plus, Star, MessageSquare } from "lucide-react";
+import type { AgentViewingFeedback, PriceOpinion, LikelihoodToOffer } from "@/types/agent";
 
-// ============================================================================
-// Star Rating component
-// ============================================================================
+// ── Stars rating ─────────────────────────────────────────────────────────────
 
-type StarRatingProps = Readonly<{
-  value: number;
-  onChange: (v: number) => void;
-}>;
-
-function StarRating({ value, onChange }: StarRatingProps) {
+function StarRating({
+  value,
+  onChange,
+  readOnly = false,
+}: Readonly<{ value: number; onChange?: (v: number) => void; readOnly?: boolean }>) {
   return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((n) => (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }, (_, i) => (
         <button
-          key={n}
+          key={i}
           type="button"
-          onClick={() => onChange(n)}
-          aria-label={`Rate ${n} star${n > 1 ? "s" : ""}`}
-          className="focus:outline-none"
+          disabled={readOnly}
+          onClick={() => onChange?.(i + 1)}
+          className={`size-5 transition-colors disabled:cursor-default ${
+            i < value ? "text-amber-400" : "text-neutral-300"
+          }`}
         >
           <Star
-            className={`size-6 transition-colors ${
-              n <= value
-                ? "fill-amber-400 text-amber-400"
-                : "text-muted-foreground"
-            }`}
+            className="size-5"
+            fill={i < value ? "currentColor" : "none"}
           />
         </button>
       ))}
@@ -47,41 +40,45 @@ function StarRating({ value, onChange }: StarRatingProps) {
   );
 }
 
-// ============================================================================
-// Feedback display card (read-only)
-// ============================================================================
+// ── Price opinion badge colour ────────────────────────────────────────────────
 
-const PRICE_OPINION_LABELS: Record<PriceOpinion, string> = {
-  too_high: "Too high",
-  about_right: "About right",
-  good_value: "Good value",
-};
+function priceOpinionVariant(opinion: PriceOpinion) {
+  if (opinion === "too_high") return "bg-red-100 text-red-700";
+  if (opinion === "about_right") return "bg-amber-100 text-amber-700";
+  return "bg-green-100 text-green-700";
+}
 
-const LIKELIHOOD_LABELS: Record<LikelihoodToOffer, string> = {
-  unlikely: "Unlikely",
-  possible: "Possible",
-  likely: "Likely",
-  very_likely: "Very likely",
-};
+function priceOpinionLabel(opinion: PriceOpinion) {
+  if (opinion === "too_high") return "Too high";
+  if (opinion === "about_right") return "About right";
+  return "Good value";
+}
 
-const LIKELIHOOD_COLOURS: Record<LikelihoodToOffer, string> = {
-  unlikely: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  possible: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-  likely: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  very_likely: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-};
+function likelihoodLabel(likelihood: LikelihoodToOffer) {
+  if (likelihood === "unlikely") return "Unlikely";
+  if (likelihood === "possible") return "Possible";
+  if (likelihood === "likely") return "Likely";
+  return "Very likely";
+}
 
-type FeedbackCardProps = Readonly<{
-  feedback: AgentViewingFeedback;
-}>;
+function likelihoodVariant(likelihood: LikelihoodToOffer) {
+  if (likelihood === "unlikely") return "bg-red-50 text-red-600";
+  if (likelihood === "possible") return "bg-amber-50 text-amber-600";
+  if (likelihood === "likely") return "bg-blue-50 text-blue-600";
+  return "bg-green-50 text-green-700";
+}
 
-function FeedbackCard({ feedback }: FeedbackCardProps) {
+// ── Feedback card ─────────────────────────────────────────────────────────────
+
+function FeedbackCard({
+  feedback,
+}: Readonly<{ feedback: AgentViewingFeedback }>) {
   return (
     <Card>
-      <CardContent className="pt-4 space-y-3">
-        <div className="flex items-start justify-between gap-2">
+      <CardContent className="pt-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <p className="font-medium">{feedback.buyer_name ?? "Anonymous buyer"}</p>
+            <p className="font-medium">{feedback.buyer_name}</p>
             <p className="text-xs text-muted-foreground">
               {new Date(feedback.created_at).toLocaleDateString("en-GB", {
                 day: "numeric",
@@ -90,41 +87,31 @@ function FeedbackCard({ feedback }: FeedbackCardProps) {
               })}
             </p>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            {feedback.likelihood_to_offer && (
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium ${LIKELIHOOD_COLOURS[feedback.likelihood_to_offer]}`}
-              >
-                {LIKELIHOOD_LABELS[feedback.likelihood_to_offer]}
-              </span>
-            )}
-            {feedback.price_opinion && (
-              <Badge variant="outline" className="text-xs">
-                {PRICE_OPINION_LABELS[feedback.price_opinion]}
-              </Badge>
-            )}
-          </div>
-        </div>
-        {feedback.interest_level != null && (
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <Star
-                key={n}
-                className={`size-4 ${
-                  n <= feedback.interest_level!
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-muted-foreground"
-                }`}
-              />
-            ))}
-            <span className="text-xs text-muted-foreground ml-1">
-              ({feedback.interest_level}/5)
+          <div className="flex flex-wrap gap-2">
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${priceOpinionVariant(feedback.price_opinion)}`}
+            >
+              {priceOpinionLabel(feedback.price_opinion)}
+            </span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${likelihoodVariant(feedback.likelihood_to_offer)}`}
+            >
+              {likelihoodLabel(feedback.likelihood_to_offer)}
             </span>
           </div>
-        )}
+        </div>
+
+        <div className="mt-3">
+          <StarRating value={feedback.interest_level} readOnly />
+        </div>
+
         {feedback.comments && (
-          <p className="text-sm text-muted-foreground border-l-2 pl-3 italic">
-            {feedback.comments}
+          <p className="mt-2 text-sm text-neutral-700">{feedback.comments}</p>
+        )}
+
+        {feedback.viewing_slot_id && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Slot: {feedback.viewing_slot_id.slice(0, 8)}…
           </p>
         )}
       </CardContent>
@@ -132,77 +119,57 @@ function FeedbackCard({ feedback }: FeedbackCardProps) {
   );
 }
 
-// ============================================================================
-// Feedback collection form
-// ============================================================================
+// ── Add feedback form ─────────────────────────────────────────────────────────
 
-type CollectFeedbackFormProps = Readonly<{
-  slot: AgentViewingSlot;
-  onSubmitted: () => void;
-}>;
+type FormState = {
+  buyer_name: string;
+  interest_level: number;
+  price_opinion: PriceOpinion;
+  likelihood_to_offer: LikelihoodToOffer;
+  comments: string;
+  viewing_slot_id: string;
+};
 
-function CollectFeedbackForm({ slot, onSubmitted }: CollectFeedbackFormProps) {
-  const [expanded, setExpanded] = useState(false);
+const EMPTY_FORM: FormState = {
+  buyer_name: "",
+  interest_level: 3,
+  price_opinion: "about_right",
+  likelihood_to_offer: "possible",
+  comments: "",
+  viewing_slot_id: "",
+};
+
+function AddFeedbackForm({ onAdded }: Readonly<{ onAdded: () => void }>) {
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    buyer_name: slot.booked_by ?? "",
-    interest_level: 0,
-    price_opinion: "" as PriceOpinion | "",
-    likelihood_to_offer: "" as LikelihoodToOffer | "",
-    comments: "",
-  });
 
-  if (!expanded) {
-    return (
-      <Card className="border-dashed">
-        <CardContent className="pt-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-sm">Collect post-viewing feedback</p>
-              <p className="text-xs text-muted-foreground">
-                Slot on{" "}
-                {new Date(slot.start_time).toLocaleDateString("en-GB", {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                })}{" "}
-                at {new Date(slot.start_time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
-              </p>
-            </div>
-            <Button size="sm" onClick={() => setExpanded(true)}>
-              <MessageSquare className="mr-2 size-3" />
-              Collect Feedback
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.buyer_name) {
+      toast.error("Buyer name is required");
+      return;
+    }
 
-  async function handleSubmit() {
     setSubmitting(true);
-    setError(null);
     try {
       const res = await fetch("/api/agent/viewings/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          viewing_slot_id: slot.id,
-          buyer_name: form.buyer_name || null,
-          interest_level: form.interest_level > 0 ? form.interest_level : null,
-          price_opinion: form.price_opinion || null,
-          likelihood_to_offer: form.likelihood_to_offer || null,
-          comments: form.comments || null,
-        }),
+        body: JSON.stringify(form),
       });
+
       if (!res.ok) {
-        const data = await res.json() as { error?: string };
-        throw new Error(data.error ?? "Failed to submit feedback");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error ?? "Failed to submit feedback");
       }
-      onSubmitted();
+
+      toast.success("Feedback submitted");
+      setForm(EMPTY_FORM);
+      onAdded();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to submit feedback",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -211,141 +178,160 @@ function CollectFeedbackForm({ slot, onSubmitted }: CollectFeedbackFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Collect Feedback</CardTitle>
+        <CardTitle className="text-base">Add Viewing Feedback</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-1">
-          <Label>Buyer name</Label>
-          <input
-            type="text"
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            placeholder="Buyer's name"
-            value={form.buyer_name}
-            onChange={(e) => setForm((f) => ({ ...f, buyer_name: e.target.value }))}
-          />
-        </div>
-
-        <div className="space-y-1">
-          <Label>Interest level</Label>
-          <StarRating
-            value={form.interest_level}
-            onChange={(v) => setForm((f) => ({ ...f, interest_level: v }))}
-          />
-        </div>
-
-        <div className="space-y-1">
-          <Label>Price opinion</Label>
-          <div className="flex gap-2">
-            {(["too_high", "about_right", "good_value"] as PriceOpinion[]).map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => setForm((f) => ({ ...f, price_opinion: f.price_opinion === opt ? "" : opt }))}
-                className={`flex-1 rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
-                  form.price_opinion === opt
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input hover:bg-muted"
-                }`}
-              >
-                {PRICE_OPINION_LABELS[opt]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label>Likelihood to offer</Label>
-          <div className="grid grid-cols-2 gap-2">
-            {(["unlikely", "possible", "likely", "very_likely"] as LikelihoodToOffer[]).map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() =>
-                  setForm((f) => ({ ...f, likelihood_to_offer: f.likelihood_to_offer === opt ? "" : opt }))
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <Label htmlFor="buyer_name">Buyer name *</Label>
+              <Input
+                id="buyer_name"
+                value={form.buyer_name}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, buyer_name: e.target.value }))
                 }
-                className={`rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
-                  form.likelihood_to_offer === opt
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input hover:bg-muted"
-                }`}
-              >
-                {LIKELIHOOD_LABELS[opt]}
-              </button>
-            ))}
+                placeholder="e.g. John Smith"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="viewing_slot_id">Viewing slot ID (optional)</Label>
+              <Input
+                id="viewing_slot_id"
+                value={form.viewing_slot_id}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, viewing_slot_id: e.target.value }))
+                }
+                placeholder="UUID of the viewing slot"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-1">
-          <Label>Comments (optional)</Label>
-          <Textarea
-            placeholder="Any additional notes from the buyer..."
-            value={form.comments}
-            onChange={(e) => setForm((f) => ({ ...f, comments: e.target.value }))}
-            rows={3}
-          />
-        </div>
+          <div className="space-y-1">
+            <Label>Interest level</Label>
+            <StarRating
+              value={form.interest_level}
+              onChange={(v) => setForm((f) => ({ ...f, interest_level: v }))}
+            />
+          </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="space-y-2">
+            <Label>Price opinion</Label>
+            <div className="flex flex-wrap gap-2">
+              {(["too_high", "about_right", "good_value"] as PriceOpinion[]).map(
+                (op) => (
+                  <label key={op} className="flex cursor-pointer items-center gap-1.5">
+                    <input
+                      type="radio"
+                      name="price_opinion"
+                      value={op}
+                      checked={form.price_opinion === op}
+                      onChange={() =>
+                        setForm((f) => ({ ...f, price_opinion: op }))
+                      }
+                      className="accent-primary"
+                    />
+                    <span className="text-sm">{priceOpinionLabel(op)}</span>
+                  </label>
+                ),
+              )}
+            </div>
+          </div>
 
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setExpanded(false)}>Cancel</Button>
-          <Button onClick={() => void handleSubmit()} disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit feedback"}
-          </Button>
-        </div>
+          <div className="space-y-2">
+            <Label>Likelihood to offer</Label>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  "unlikely",
+                  "possible",
+                  "likely",
+                  "very_likely",
+                ] as LikelihoodToOffer[]
+              ).map((lh) => (
+                <label key={lh} className="flex cursor-pointer items-center gap-1.5">
+                  <input
+                    type="radio"
+                    name="likelihood_to_offer"
+                    value={lh}
+                    checked={form.likelihood_to_offer === lh}
+                    onChange={() =>
+                      setForm((f) => ({ ...f, likelihood_to_offer: lh }))
+                    }
+                    className="accent-primary"
+                  />
+                  <span className="text-sm">{likelihoodLabel(lh)}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="comments">Comments</Label>
+            <Textarea
+              id="comments"
+              value={form.comments}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, comments: e.target.value }))
+              }
+              placeholder="Notes from the viewing…"
+              rows={3}
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Submitting…" : "Submit Feedback"}
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );
 }
 
-// ============================================================================
-// Main ViewingFeedbackForm component
-// ============================================================================
-
-type ViewingFeedbackFormProps = Readonly<{
-  feedbackList: AgentViewingFeedback[];
-  bookedSlotsWithoutFeedback: AgentViewingSlot[];
-}>;
+// ── Main component ────────────────────────────────────────────────────────────
 
 export function ViewingFeedbackForm({
-  feedbackList,
-  bookedSlotsWithoutFeedback,
-}: ViewingFeedbackFormProps) {
-  const [submittedSlotIds, setSubmittedSlotIds] = useState<Set<string>>(new Set());
-
-  function handleSubmitted(slotId: string) {
-    setSubmittedSlotIds((prev) => new Set([...prev, slotId]));
-  }
-
-  const pendingSlots = bookedSlotsWithoutFeedback.filter(
-    (s) => !submittedSlotIds.has(s.id),
-  );
+  feedbacks,
+}: Readonly<{ feedbacks: AgentViewingFeedback[] }>) {
+  const [showForm, setShowForm] = useState(false);
 
   return (
     <div className="space-y-6">
-      {pendingSlots.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-base font-semibold">Feedback to collect ({pendingSlots.length})</h2>
-          {pendingSlots.map((slot) => (
-            <CollectFeedbackForm
-              key={slot.id}
-              slot={slot}
-              onSubmitted={() => handleSubmitted(slot.id)}
-            />
+      {/* Toggle add form */}
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={() => setShowForm((v) => !v)}>
+          <Plus className="mr-1 size-4" />
+          {showForm ? "Hide Form" : "Add Feedback"}
+        </Button>
+      </div>
+
+      {showForm && (
+        <AddFeedbackForm onAdded={() => setShowForm(false)} />
+      )}
+
+      {/* Existing feedback */}
+      {feedbacks.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <MessageSquare className="mb-3 size-10 text-muted-foreground" />
+            <p className="font-medium">No feedback yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Feedback submitted after viewings will appear here.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {feedbacks.length} feedback record{feedbacks.length !== 1 ? "s" : ""}
+          </p>
+          {feedbacks.map((fb) => (
+            <FeedbackCard key={fb.id} feedback={fb} />
           ))}
         </div>
       )}
-
-      <div className="space-y-3">
-        <h2 className="text-base font-semibold">
-          Feedback received ({feedbackList.length})
-        </h2>
-        {feedbackList.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No feedback received yet.</p>
-        ) : (
-          feedbackList.map((fb) => <FeedbackCard key={fb.id} feedback={fb} />)
-        )}
-      </div>
     </div>
   );
 }

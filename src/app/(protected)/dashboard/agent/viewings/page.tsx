@@ -3,40 +3,40 @@ import { createClient } from "@/lib/supabase/server";
 import { getAgentViewingSlots } from "@/services/agent/agent-viewing-service";
 import { ViewingCalendar } from "@/components/dashboard/agent/viewings/ViewingCalendar";
 
+export const metadata = {
+  title: "Viewing Calendar - Agent Dashboard",
+  description: "Manage and schedule property viewings",
+};
+
 export default async function AgentViewingsPage() {
   const supabase = await createClient();
-
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError || !user) {
+  if (!user) {
     redirect("/login");
   }
 
-  // Fetch viewing slots for the current month
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  const end = new Date(now.getFullYear(), now.getMonth() + 2, 0).toISOString();
+  const start = new Date();
+  start.setDate(1);
+  const end = new Date(start);
+  end.setMonth(end.getMonth() + 1);
 
-  let slots: Awaited<ReturnType<typeof getAgentViewingSlots>> = [];
-
-  try {
-    slots = await getAgentViewingSlots(supabase, user.id, undefined, { start, end });
-  } catch {
-    // Graceful fallback: table may not exist in current environment
-  }
+  let slots = await getAgentViewingSlots(supabase, user.id, undefined, {
+    start: start.toISOString(),
+    end: end.toISOString(),
+  }).catch(() => []);
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Viewings Calendar</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Viewing Calendar</h1>
         <p className="text-muted-foreground">
-          Manage your viewing schedule and publish availability for buyers
+          Schedule and manage property viewing slots
         </p>
       </div>
-      <ViewingCalendar initialSlots={slots} agentId={user.id} />
+      <ViewingCalendar initialSlots={slots} />
     </div>
   );
 }
