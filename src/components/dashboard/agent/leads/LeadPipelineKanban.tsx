@@ -217,11 +217,9 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
         </div>
 
         <Dialog open={addLeadOpen} onOpenChange={setAddLeadOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <UserPlus className="mr-2 size-4" />
-              Add Lead
-            </Button>
+          <DialogTrigger render={<Button />}>
+            <UserPlus className="mr-2 size-4" />
+            Add Lead
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -252,7 +250,7 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="lead-source">Source</Label>
-                <Select value={addLeadSource} onValueChange={setAddLeadSource}>
+                <Select value={addLeadSource} onValueChange={(v) => setAddLeadSource(v ?? "")}>
                   <SelectTrigger id="lead-source">
                     <SelectValue placeholder="Select source" />
                   </SelectTrigger>
