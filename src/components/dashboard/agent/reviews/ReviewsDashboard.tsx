@@ -3,15 +3,13 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
   LineChart,
   Line,
+  XAxis,
+  YAxis,
   CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,254 +21,239 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Star, MessageSquare } from "lucide-react";
+import { MessageSquare, Star } from "lucide-react";
 
-// ============================================================================
-// Types
-// ============================================================================
-
-export type AgentReview = Readonly<{
+type Review = {
   id: string;
-  reviewer_name: string | null;
   rating: number;
-  review_text: string | null;
-  agent_response: string | null;
-  responded_at: string | null;
+  review_text?: string;
+  reviewer_name?: string;
   created_at: string;
-}>;
+  agent_response?: string;
+  responded_at?: string;
+};
 
-export type MonthlyRating = Readonly<{
-  month: string;
-  avg_rating: number;
-}>;
+type Stats = {
+  overall_avg: number;
+  total_count: number;
+  by_star: Record<number, number>;
+};
 
-export type ReviewsDashboardProps = Readonly<{
-  reviews: AgentReview[];
-  monthlyTrend: MonthlyRating[];
-}>;
+type Props = Readonly<{ reviews: Review[]; stats: Stats }>;
 
-// ============================================================================
-// Helpers
-// ============================================================================
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function StarRating({ rating, size = 16 }: Readonly<{ rating: number; size?: number }>) {
+function StarDisplay({ rating, size = "md" }: { rating: number; size?: "sm" | "md" | "lg" }) {
+  const sizeClass = size === "lg" ? "text-3xl" : size === "sm" ? "text-sm" : "text-lg";
   return (
-    <span className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          size={size}
-          className={
-            i <= rating
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300 dark:text-gray-600"
-          }
-        />
+    <span className={`${sizeClass} tracking-tight`} aria-label={`${rating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={star <= Math.round(rating) ? "text-yellow-400" : "text-muted-foreground/30"}
+        >
+          ★
+        </span>
       ))}
     </span>
   );
 }
 
-// ============================================================================
-// ReviewsDashboard component
-// ============================================================================
-
-export function ReviewsDashboard({ reviews, monthlyTrend }: ReviewsDashboardProps) {
+export function ReviewsDashboard({ reviews, stats }: Props) {
   const [starFilter, setStarFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [responseFilter, setResponseFilter] = useState<string>("all");
 
-  // Aggregate stats
-  const totalCount = reviews.length;
-  const avgRating =
-    totalCount > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalCount
-      : 0;
-
-  const ratingCounts = useMemo(() => {
-    const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    reviews.forEach((r) => {
-      counts[r.rating] = (counts[r.rating] ?? 0) + 1;
-    });
-    return counts;
+  // Sentiment trend: group by month, compute avg rating
+  const trendData = useMemo(() => {
+    const monthMap: Record<string, { sum: number; count: number }> = {};
+    for (const r of reviews) {
+      const date = new Date(r.created_at);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      if (!monthMap[key]) monthMap[key] = { sum: 0, count: 0 };
+      monthMap[key].sum += r.rating;
+      monthMap[key].count += 1;
+    }
+    return Object.entries(monthMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-12)
+      .map(([month, { sum, count }]) => ({
+        month: month.slice(5), // "MM"
+        avg: parseFloat((sum / count).toFixed(2)),
+      }));
   }, [reviews]);
 
-  const distributionData = [5, 4, 3, 2, 1].map((star) => ({
-    star: `${star}★`,
-    count: ratingCounts[star] ?? 0,
-  }));
-
-  // Filter reviews
   const filteredReviews = useMemo(() => {
     return reviews.filter((r) => {
-      if (starFilter !== "all" && r.rating !== parseInt(starFilter, 10)) return false;
-      if (statusFilter === "responded" && !r.agent_response) return false;
-      if (statusFilter === "unresponded" && r.agent_response) return false;
-      return true;
+      const starOk = starFilter === "all" || r.rating === parseInt(starFilter, 10);
+      const respOk =
+        responseFilter === "all" ||
+        (responseFilter === "responded" ? !!r.agent_response : !r.agent_response);
+      return starOk && respOk;
     });
-  }, [reviews, starFilter, statusFilter]);
+  }, [reviews, starFilter, responseFilter]);
 
   return (
     <div className="space-y-6">
-      {/* Hero: Overall rating */}
+      {/* Header */}
+      <div>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">Reviews</h1>
+        <p className="text-muted-foreground">Monitor and respond to client feedback</p>
+      </div>
+
+      {/* Hero rating */}
       <Card>
-        <CardContent className="flex flex-col items-center justify-center gap-2 py-8">
-          <p className="text-6xl font-bold text-gray-900 dark:text-gray-100">
-            {avgRating > 0 ? avgRating.toFixed(1) : "—"}
-          </p>
-          <StarRating rating={Math.round(avgRating)} size={24} />
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Based on {totalCount} {totalCount === 1 ? "review" : "reviews"}
-          </p>
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-6 sm:text-left">
+            <div>
+              <p className="font-heading text-6xl font-bold tabular-nums">
+                {stats.overall_avg.toFixed(1)}
+              </p>
+              <StarDisplay rating={stats.overall_avg} size="lg" />
+              <p className="mt-1 text-sm text-muted-foreground">
+                Based on {stats.total_count} review{stats.total_count !== 1 ? "s" : ""}
+              </p>
+            </div>
+
+            {/* Distribution bars */}
+            <div className="flex-1 space-y-1.5 w-full max-w-sm">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const count = stats.by_star[star] ?? 0;
+                const pct = stats.total_count > 0 ? (count / stats.total_count) * 100 : 0;
+                return (
+                  <div key={star} className="flex items-center gap-2 text-sm">
+                    <span className="w-6 shrink-0 text-right">{star}★</span>
+                    <div className="flex-1 rounded-full bg-muted h-2 overflow-hidden">
+                      <div
+                        className="bg-yellow-400 h-2 rounded-full transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="w-6 shrink-0 text-muted-foreground">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Rating distribution */}
+      {/* Sentiment trend chart */}
+      {trendData.length > 1 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Rating Distribution</CardTitle>
+            <CardTitle className="font-heading text-lg">Rating Trend</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={distributionData} layout="vertical" margin={{ left: 0, right: 16 }}>
-                <XAxis type="number" hide />
-                <YAxis type="category" dataKey="star" width={32} tick={{ fontSize: 13 }} />
-                <Tooltip
-                  formatter={(value: number) => [`${value} reviews`, "Count"]}
-                  contentStyle={{ fontSize: 12 }}
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis domain={[1, 5]} tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="avg"
+                  stroke="#f59e0b"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
                 />
-                <Bar dataKey="count" fill="#f59e0b" radius={[0, 4, 4, 0]} />
-              </BarChart>
+              </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
+      )}
 
-        {/* Sentiment trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Rating Trend (12 months)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {monthlyTrend.length === 0 ? (
-              <p className="py-8 text-center text-sm text-gray-500">Not enough data yet</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={180}>
-                <LineChart data={monthlyTrend} margin={{ left: -16, right: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                  <YAxis domain={[1, 5]} tick={{ fontSize: 11 }} />
-                  <Tooltip
-                    formatter={(value: number) => [value.toFixed(1), "Avg rating"]}
-                    contentStyle={{ fontSize: 12 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="avg_rating"
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
+      {/* Filter controls */}
+      <div className="flex flex-wrap gap-3">
+        <Select value={starFilter} onValueChange={setStarFilter}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="All Stars" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Stars</SelectItem>
+            {[5, 4, 3, 2, 1].map((s) => (
+              <SelectItem key={s} value={String(s)}>
+                {s} Star{s !== 1 ? "s" : ""}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={responseFilter} onValueChange={setResponseFilter}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="All" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="responded">Responded</SelectItem>
+            <SelectItem value="not_responded">Not Responded</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Filters + review list */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="text-base">Reviews</CardTitle>
-            <div className="flex gap-2">
-              <Select value={starFilter} onValueChange={(v) => setStarFilter(v ?? "all")}>
-                <SelectTrigger className="w-36">
-                  <SelectValue placeholder="All stars" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All stars</SelectItem>
-                  {[5, 4, 3, 2, 1].map((s) => (
-                    <SelectItem key={s} value={String(s)}>
-                      {s} star{s !== 1 ? "s" : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "all")}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="All reviews" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All reviews</SelectItem>
-                  <SelectItem value="responded">Responded</SelectItem>
-                  <SelectItem value="unresponded">Not responded</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="divide-y divide-gray-100 dark:divide-gray-800">
-          {filteredReviews.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-500">No reviews match your filters.</p>
-          ) : (
-            filteredReviews.map((review) => (
-              <div key={review.id} className="flex flex-col gap-2 py-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {review.reviewer_name ?? "Anonymous"}
-                    </p>
-                    <StarRating rating={review.rating} size={14} />
-                  </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <p className="text-xs text-gray-400">{formatDate(review.created_at)}</p>
-                    {review.agent_response ? (
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">
-                        Responded
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">
-                        Not responded
-                      </Badge>
+      {/* Review list */}
+      <div className="space-y-4">
+        {filteredReviews.length === 0 && (
+          <Card>
+            <CardContent className="py-12 text-center text-muted-foreground">
+              <Star className="mx-auto mb-3 size-8 opacity-30" />
+              <p>No reviews match your filters.</p>
+            </CardContent>
+          </Card>
+        )}
+        {filteredReviews.map((review) => {
+          const truncated =
+            review.review_text && review.review_text.length > 150
+              ? review.review_text.slice(0, 150) + "…"
+              : review.review_text;
+          const dateStr = new Date(review.created_at).toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+          return (
+            <Card key={review.id}>
+              <CardContent className="pt-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium">
+                        {review.reviewer_name ?? "Anonymous"}
+                      </p>
+                      <StarDisplay rating={review.rating} size="sm" />
+                      <span className="text-xs text-muted-foreground">{dateStr}</span>
+                      {review.agent_response ? (
+                        <Badge variant="secondary">Responded</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-amber-600 border-amber-300">
+                          Awaiting response
+                        </Badge>
+                      )}
+                    </div>
+                    {truncated && (
+                      <p className="text-sm text-muted-foreground">{truncated}</p>
+                    )}
+                    {review.agent_response && (
+                      <div className="mt-2 rounded-md bg-muted p-3 text-sm">
+                        <p className="font-medium text-xs text-muted-foreground mb-1">
+                          Your response
+                        </p>
+                        <p>{review.agent_response}</p>
+                      </div>
                     )}
                   </div>
-                </div>
-                {review.review_text && (
-                  <p className="line-clamp-3 text-sm text-gray-700 dark:text-gray-300">
-                    {review.review_text}
-                  </p>
-                )}
-                {!review.agent_response && (
-                  <Link href={`/dashboard/agent/reviews/${review.id}/respond`}>
-                    <Button variant="outline" size="sm" className="gap-1.5">
-                      <MessageSquare size={14} />
-                      Respond
+                  {!review.agent_response && (
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/dashboard/agent/reviews/${review.id}/respond`}>
+                        <MessageSquare className="mr-1.5 size-3.5" />
+                        Respond
+                      </Link>
                     </Button>
-                  </Link>
-                )}
-                {review.agent_response && (
-                  <div className="rounded-md bg-blue-50 px-3 py-2 dark:bg-blue-950">
-                    <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">
-                      Your response
-                    </p>
-                    <p className="text-sm text-blue-900 dark:text-blue-100 line-clamp-2">
-                      {review.agent_response}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }

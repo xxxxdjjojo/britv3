@@ -2,56 +2,16 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ExternalLink,
-  CheckCircle2,
-  AlertCircle,
-  CreditCard,
-  Calendar,
-  RefreshCw,
-} from "lucide-react";
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export type StripeSubscriptionSummary = Readonly<{
-  id: string;
-  status: string;
-  plan_name: string;
-  price_amount: number; // pence
-  currency: string;
-  interval: string;
-  current_period_end: number; // Unix timestamp
-  cancel_at_period_end: boolean;
-}>;
-
-export type StripeInvoiceSummary = Readonly<{
-  id: string;
-  created: number; // Unix timestamp
-  amount_paid: number; // pence
-  currency: string;
-  status: string;
-  invoice_pdf: string | null;
-}>;
-
-export type SubscriptionBillingProps = Readonly<{
-  subscription: StripeSubscriptionSummary | null;
-  invoices: StripeInvoiceSummary[];
-}>;
-
-// ============================================================================
-// Subscription plan definitions (Britestate agent tiers)
-// ============================================================================
+import { Check, CreditCard, ExternalLink, Zap } from "lucide-react";
 
 type Plan = {
   name: string;
-  priceId: string; // Stripe price ID — set via env or CMS in production
-  price: number; // monthly pence
-  interval: string;
+  price: number;
+  priceId: string;
+  description: string;
   features: string[];
   highlighted?: boolean;
 };
@@ -59,319 +19,245 @@ type Plan = {
 const PLANS: Plan[] = [
   {
     name: "Basic",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_AGENT_BASIC_PRICE_ID ?? "price_agent_basic",
-    price: 4900, // £49/month
-    interval: "month",
+    price: 99,
+    priceId: "price_basic_monthly",
+    description: "For independent agents getting started",
     features: [
-      "Up to 25 active listings",
-      "Standard property photos",
-      "Lead management",
+      "Up to 10 active listings",
+      "Lead management CRM",
+      "Viewing scheduler",
       "Email support",
+      "Basic analytics",
     ],
   },
   {
     name: "Professional",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_AGENT_PRO_PRICE_ID ?? "price_agent_pro",
-    price: 9900, // £99/month
-    interval: "month",
-    features: [
-      "Unlimited active listings",
-      "Premium photo hosting",
-      "Full CRM suite",
-      "Viewing calendar",
-      "Offer management",
-      "Priority support",
-    ],
+    price: 199,
+    priceId: "price_pro_monthly",
+    description: "For growing agencies with multiple negotiators",
     highlighted: true,
+    features: [
+      "Up to 50 active listings",
+      "Full CRM with pipeline tracking",
+      "Automated viewing reminders",
+      "Offer management suite",
+      "Sale progression tracker",
+      "Team members (up to 5)",
+      "Priority email & phone support",
+      "Advanced analytics & reports",
+      "Vendor report generator",
+    ],
   },
   {
     name: "Enterprise",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_AGENT_ENT_PRICE_ID ?? "price_agent_enterprise",
-    price: 24900, // £249/month
-    interval: "month",
+    price: 399,
+    priceId: "price_enterprise_monthly",
+    description: "For multi-branch agencies at scale",
     features: [
-      "Everything in Professional",
+      "Unlimited active listings",
+      "Unlimited team members",
       "Multi-branch management",
-      "Team member accounts",
+      "Property feed integrations (Reapit, Alto, Jupix)",
       "API access",
+      "White-label vendor portal",
       "Dedicated account manager",
-      "Custom branding",
+      "SLA-backed support",
+      "Custom analytics dashboards",
     ],
   },
 ];
 
-// ============================================================================
-// Helpers
-// ============================================================================
+type Props = Readonly<{ subscription: unknown | null }>;
 
-function formatGBP(pence: number): string {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(pence / 100);
-}
-
-function formatDate(unix: number): string {
-  return new Date(unix * 1000).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function statusBadge(status: string) {
-  const map: Record<string, { label: string; className: string }> = {
-    active: { label: "Active", className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
-    trialing: { label: "Trial", className: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
-    past_due: { label: "Past due", className: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200" },
-    canceled: { label: "Cancelled", className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
-    paid: { label: "Paid", className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" },
-    open: { label: "Open", className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" },
-    uncollectible: { label: "Failed", className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" },
-  };
-  const cfg = map[status] ?? { label: status, className: "bg-gray-100 text-gray-800" };
-  return <Badge className={`${cfg.className} text-xs`}>{cfg.label}</Badge>;
-}
-
-// ============================================================================
-// No subscription state
-// ============================================================================
-
-function NoPlanCard() {
+export function SubscriptionBilling({ subscription }: Props) {
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+  const [loadingPortal, setLoadingPortal] = useState(false);
+
+  const hasSubscription = subscription !== null;
 
   async function handleSubscribe(priceId: string) {
     setLoadingPriceId(priceId);
     try {
-      const successUrl = `${window.location.origin}/dashboard/agent/billing?success=1`;
-      const cancelUrl = `${window.location.origin}/dashboard/agent/billing`;
-      const res = await fetch("/api/agent/billing?action=checkout", {
+      const res = await fetch("/api/agent/billing", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ price_id: priceId, success_url: successUrl, cancel_url: cancelUrl }),
+        body: JSON.stringify({
+          action: "checkout",
+          priceId,
+          successUrl: "/dashboard/agent/billing?success=1",
+          cancelUrl: "/dashboard/agent/billing",
+        }),
       });
-      const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !data.url) throw new Error(data.error ?? "Failed to start checkout");
-      window.location.href = data.url;
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to start checkout");
+
+      if (res.status === 503 || res.status === 501) {
+        toast.error("Billing not configured. Please contact support.");
+        return;
+      }
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? "Checkout failed");
+      }
+
+      const { url } = (await res.json()) as { url?: string };
+      if (url) {
+        window.location.href = url;
+      }
+    } catch {
+      toast.error("Billing not configured. Please contact support.");
     } finally {
       setLoadingPriceId(null);
     }
   }
 
+  async function handlePortal() {
+    setLoadingPortal(true);
+    try {
+      const res = await fetch("/api/agent/billing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "portal",
+          returnUrl: window.location.href,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? "Portal unavailable");
+      }
+
+      const { url } = (await res.json()) as { url?: string };
+      if (url) {
+        window.location.href = url;
+      }
+    } catch {
+      toast.error("Billing not configured. Please contact support.");
+    } finally {
+      setLoadingPortal(false);
+    }
+  }
+
+  if (hasSubscription) {
+    const sub = subscription as Record<string, unknown>;
+    return (
+      <div className="max-w-2xl space-y-6">
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight">Billing</h1>
+          <p className="text-muted-foreground">Manage your Britestate subscription</p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="font-heading text-lg">Current Plan</CardTitle>
+              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">Active</Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-3 text-sm">
+              <div>
+                <p className="text-muted-foreground">Plan</p>
+                <p className="font-medium">{String(sub.plan_name ?? "Professional")}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Monthly cost</p>
+                <p className="font-medium">{String(sub.amount ?? "£199")}/mo</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Next renewal</p>
+                <p className="font-medium">{String(sub.current_period_end ?? "—")}</p>
+              </div>
+            </div>
+
+            <Button onClick={handlePortal} disabled={loadingPortal} variant="outline">
+              <ExternalLink className="mr-2 size-4" />
+              {loadingPortal ? "Opening portal…" : "Manage Subscription"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-heading text-base">Payment History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Invoice history is available in the Stripe Customer Portal.
+            </p>
+          </CardContent>
+        </Card>
+
+        <p className="text-sm text-muted-foreground">
+          Britestate charges a 2.5% platform commission on completed sales.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
-        <CardContent className="flex items-start gap-3 py-4">
-          <AlertCircle className="mt-0.5 shrink-0 text-orange-500" size={18} />
-          <div>
-            <p className="font-medium text-orange-900 dark:text-orange-100">No active plan</p>
-            <p className="text-sm text-orange-700 dark:text-orange-300">
-              Subscribe to a plan to start listing properties and managing clients on Britestate.
-            </p>
-          </div>
+      <div>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">Choose a Plan</h1>
+        <p className="text-muted-foreground">
+          Get started with Britestate — grow your agency with the right tools.
+        </p>
+      </div>
+
+      <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+        <CardContent className="flex items-center gap-3 pt-4 pb-4">
+          <Zap className="size-5 text-amber-600 shrink-0" />
+          <p className="text-sm text-amber-800 dark:text-amber-300">
+            No active plan. Subscribe below to unlock your agent dashboard features.
+          </p>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {PLANS.map((plan) => (
           <Card
-            key={plan.name}
-            className={plan.highlighted ? "border-blue-400 ring-2 ring-blue-400" : ""}
+            key={plan.priceId}
+            className={plan.highlighted ? "border-brand-primary shadow-md ring-1 ring-brand-primary" : ""}
           >
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between text-base">
-                {plan.name}
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="font-heading text-lg">{plan.name}</CardTitle>
                 {plan.highlighted && (
-                  <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">
-                    Most popular
-                  </Badge>
+                  <Badge className="bg-brand-primary text-white border-0 text-xs">Popular</Badge>
                 )}
-              </CardTitle>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {formatGBP(plan.priceMonthly)}
-                <span className="text-sm font-normal text-gray-500">/month</span>
-              </p>
+              </div>
+              <div className="flex items-end gap-1">
+                <span className="text-3xl font-bold">£{plan.price}</span>
+                <span className="text-muted-foreground pb-0.5">/mo</span>
+              </div>
+              <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <ul className="space-y-1.5">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-green-500" />
-                    {f}
+            <CardContent className="space-y-4">
+              <ul className="space-y-2">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-sm">
+                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               <Button
                 className="w-full"
                 variant={plan.highlighted ? "default" : "outline"}
-                onClick={() => void handleSubscribe(plan.priceIdMonthly)}
-                disabled={loadingPriceId !== null}
+                disabled={loadingPriceId === plan.priceId}
+                onClick={() => handleSubscribe(plan.priceId)}
               >
-                {loadingPriceId === plan.priceIdMonthly ? "Redirecting..." : `Subscribe — ${formatGBP(plan.priceMonthly)}/mo`}
+                <CreditCard className="mr-2 size-4" />
+                {loadingPriceId === plan.priceId ? "Redirecting…" : "Subscribe"}
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <p className="text-xs text-gray-400 dark:text-gray-500">
-        A 2.5% platform commission applies on sales transactions completed through Britestate, in addition to your monthly subscription fee.
+      <p className="text-sm text-muted-foreground">
+        Britestate charges a 2.5% platform commission on completed sales.
       </p>
     </div>
   );
-}
-
-// ============================================================================
-// Active subscription state
-// ============================================================================
-
-function ActiveSubscriptionCard({
-  subscription,
-  invoices,
-}: Readonly<{
-  subscription: StripeSubscriptionSummary;
-  invoices: StripeInvoiceSummary[];
-}>) {
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
-  async function handleManage() {
-    setIsRedirecting(true);
-    try {
-      const returnUrl = `${window.location.origin}/dashboard/agent/billing`;
-      const res = await fetch("/api/agent/billing?action=portal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ return_url: returnUrl }),
-      });
-      const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !data.url) throw new Error(data.error ?? "Failed to open billing portal");
-      window.location.href = data.url;
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to open billing portal");
-    } finally {
-      setIsRedirecting(false);
-    }
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Current plan card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <CreditCard size={16} className="text-blue-500" />
-              Current Plan
-            </CardTitle>
-            {statusBadge(subscription.status)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Plan</p>
-              <p className="font-semibold text-gray-900 dark:text-gray-100">
-                {subscription.plan_name || "Britestate Agent"}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Price</p>
-              <p className="font-semibold text-gray-900 dark:text-gray-100">
-                {formatGBP(subscription.price_amount)}/{subscription.interval}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Next renewal</p>
-              <p className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-1">
-                <Calendar size={13} />
-                {formatDate(subscription.current_period_end)}
-              </p>
-            </div>
-            {subscription.cancel_at_period_end && (
-              <div>
-                <p className="text-xs text-orange-500 font-semibold">Cancels on</p>
-                <p className="text-sm text-orange-700 dark:text-orange-300">
-                  {formatDate(subscription.current_period_end)}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3 pt-2">
-            <Button onClick={() => void handleManage()} disabled={isRedirecting} className="gap-1.5">
-              <ExternalLink size={14} />
-              {isRedirecting ? "Opening portal..." : "Manage Subscription"}
-            </Button>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              Upgrade, downgrade, cancel, or update payment via Stripe portal
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment history */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <RefreshCw size={15} className="text-gray-400" />
-            Payment History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {invoices.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-500">No invoices yet.</p>
-          ) : (
-            <div className="divide-y divide-gray-100 dark:divide-gray-800">
-              {invoices.map((inv) => (
-                <div key={inv.id} className="flex items-center justify-between py-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {formatDate(inv.created)}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formatGBP(inv.amount_paid)}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {statusBadge(inv.status)}
-                    {inv.invoice_pdf && (
-                      <a
-                        href={inv.invoice_pdf}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-blue-600 hover:underline dark:text-blue-400 flex items-center gap-1"
-                      >
-                        <ExternalLink size={12} />
-                        PDF
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <p className="text-xs text-gray-400 dark:text-gray-500">
-        A 2.5% platform commission applies on sales transactions completed through Britestate, in addition to your monthly subscription fee. All billing changes are managed securely via Stripe.
-      </p>
-    </div>
-  );
-}
-
-// ============================================================================
-// Main SubscriptionBilling component
-// ============================================================================
-
-export function SubscriptionBilling({ subscription, invoices }: SubscriptionBillingProps) {
-  if (!subscription) {
-    return <NoPlanCard />;
-  }
-
-  return <ActiveSubscriptionCard subscription={subscription} invoices={invoices} />;
 }

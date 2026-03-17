@@ -7,229 +7,220 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Star, Eye, EyeOff, Send } from "lucide-react";
-import type { AgentReview } from "./ReviewsDashboard";
+import { ArrowLeft, Eye, EyeOff, Send } from "lucide-react";
+import Link from "next/link";
 
-// ============================================================================
-// Profanity list — kept intentionally minimal (expand as needed)
-// ============================================================================
+type Review = {
+  id: string;
+  rating: number;
+  review_text?: string;
+  reviewer_name?: string;
+  created_at: string;
+  agent_response?: string;
+  responded_at?: string;
+};
 
-const PROFANITY_LIST = new Set([
-  "arse", "ass", "asshole", "bastard", "bitch", "bollocks", "bugger",
-  "bullshit", "cock", "crap", "cunt", "damn", "dick", "dickhead",
-  "dumbass", "fag", "fuck", "fucker", "fucking", "git", "idiot",
-  "jackass", "jerk", "knob", "moron", "motherfucker", "piss", "prick",
-  "pussy", "shit", "shite", "slut", "son of a bitch", "stupid",
-  "tit", "tosser", "twat", "wanker", "whore",
-]);
+const PROFANITY_LIST = [
+  "damn", "hell", "crap", "ass", "bastard", "bitch", "shit", "fuck", "piss",
+  "dick", "cock", "cunt", "twat", "wank", "bollocks", "arse", "bloody", "bugger",
+  "shite", "arsehole", "wanker", "tosser", "pillock", "muppet", "bellend",
+  "knobhead", "numpty", "twit", "prat", "git", "plonker", "sod", "blimey",
+  "idiot", "moron", "stupid", "dumbass", "jackass", "douchebag", "asshole",
+  "motherfucker", "goddamn", "jesus christ", "christ",
+] as const;
 
-function containsProfanity(text: string): boolean {
+function checkProfanity(text: string): string[] {
   const lower = text.toLowerCase();
-  for (const word of PROFANITY_LIST) {
-    // Whole-word boundary check using regex
-    const pattern = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
-    if (pattern.test(lower)) return true;
-  }
-  return false;
+  return PROFANITY_LIST.filter((word) => lower.includes(word));
 }
 
-// ============================================================================
-// Helpers
-// ============================================================================
-
-const MAX_CHARS = 500;
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function StarDisplay({ rating }: Readonly<{ rating: number }>) {
+function StarDisplay({ rating }: { rating: number }) {
   return (
-    <span className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          size={16}
-          className={
-            i <= rating
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300 dark:text-gray-600"
-          }
-        />
+    <span className="text-lg" aria-label={`${rating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={star <= rating ? "text-yellow-400" : "text-muted-foreground/30"}
+        >
+          ★
+        </span>
       ))}
     </span>
   );
 }
 
-// ============================================================================
-// ReviewResponseForm
-// ============================================================================
+type Props = Readonly<{ review: Review }>;
 
-export type ReviewResponseFormProps = Readonly<{
-  review: AgentReview;
-  reviewId: string;
-}>;
-
-export function ReviewResponseForm({ review, reviewId }: ReviewResponseFormProps) {
+export function ReviewResponseForm({ review }: Props) {
   const router = useRouter();
-  const [responseText, setResponseText] = useState(review.agent_response ?? "");
+  const [response, setResponse] = useState(review.agent_response ?? "");
   const [isPreview, setIsPreview] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profanityWarning, setProfanityWarning] = useState(false);
 
-  const charCount = responseText.length;
-  const isOverLimit = charCount > MAX_CHARS;
+  const charCount = response.length;
+  const isNearLimit = charCount > 480;
 
-  function handleChange(value: string) {
-    setResponseText(value);
-    setProfanityWarning(false);
-  }
+  const dateStr = new Date(review.created_at).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!responseText.trim()) {
-      toast.error("Please enter a response before submitting.");
+  async function handleSubmit() {
+    setError(null);
+    const flagged = checkProfanity(response);
+    if (flagged.length > 0) {
+      setError("Response contains inappropriate language. Please revise before submitting.");
       return;
     }
-    if (isOverLimit) {
-      toast.error(`Response must be ${MAX_CHARS} characters or fewer.`);
-      return;
-    }
-    if (containsProfanity(responseText)) {
-      setProfanityWarning(true);
-      toast.error("Your response contains inappropriate language. Please revise it.");
+    if (response.trim().length < 10) {
+      setError("Response must be at least 10 characters.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/agent/reviews/${reviewId}/respond`, {
-        method: "POST",
+      const res = await fetch("/api/agent/reviews", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ response: responseText }),
+        body: JSON.stringify({ id: review.id, agent_response: response.trim() }),
       });
 
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
-        throw new Error(data.error ?? "Failed to submit response");
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? "Failed to submit response");
       }
 
-      toast.success("Response published successfully.");
+      toast.success("Response submitted successfully");
       router.push("/dashboard/agent/reviews");
-      router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to submit response");
+      toast.error(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="space-y-6">
-      {/* Original review */}
+    <div className="max-w-2xl space-y-6">
+      {/* Back link */}
+      <div>
+        <Button asChild variant="ghost" size="sm" className="-ml-2">
+          <Link href="/dashboard/agent/reviews">
+            <ArrowLeft className="mr-1.5 size-4" />
+            Back to Reviews
+          </Link>
+        </Button>
+      </div>
+
+      <div>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">Respond to Review</h1>
+        <p className="text-muted-foreground">Write a professional public response</p>
+      </div>
+
+      {/* Review display */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Review from {review.reviewer_name ?? "Anonymous"}</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="font-heading text-base">Original Review</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-3">
+        <CardContent className="space-y-2">
+          <div className="flex items-center gap-3 flex-wrap">
+            <p className="font-medium">{review.reviewer_name ?? "Anonymous"}</p>
             <StarDisplay rating={review.rating} />
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {formatDate(review.created_at)}
-            </span>
+            <span className="text-sm text-muted-foreground">{dateStr}</span>
+            {review.agent_response && (
+              <Badge variant="secondary">Already responded</Badge>
+            )}
           </div>
           {review.review_text && (
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              {review.review_text}
-            </p>
+            <p className="text-sm leading-relaxed">{review.review_text}</p>
           )}
         </CardContent>
       </Card>
 
-      {/* Response form or preview */}
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">Your response</span>
+        </div>
+      </div>
+
+      {/* Response input / preview */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Your Public Response</CardTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setIsPreview((p) => !p)}
-            >
-              {isPreview ? (
-                <>
-                  <EyeOff size={14} /> Edit
-                </>
-              ) : (
-                <>
-                  <Eye size={14} /> Preview
-                </>
-              )}
-            </Button>
-          </div>
+        <CardHeader className="pb-3 flex flex-row items-center justify-between">
+          <CardTitle className="font-heading text-base">
+            {isPreview ? "Preview" : "Write Response"}
+          </CardTitle>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsPreview(!isPreview)}
+          >
+            {isPreview ? (
+              <>
+                <EyeOff className="mr-1.5 size-4" />
+                Edit
+              </>
+            ) : (
+              <>
+                <Eye className="mr-1.5 size-4" />
+                Preview
+              </>
+            )}
+          </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           {isPreview ? (
-            <div className="space-y-3">
-              <div className="rounded-md bg-blue-50 px-4 py-3 dark:bg-blue-950">
-                <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">
-                  Agent response (public)
-                </p>
-                <p className="text-sm text-blue-900 dark:text-blue-100 whitespace-pre-wrap leading-relaxed">
-                  {responseText || (
-                    <span className="italic text-gray-400">Your response will appear here.</span>
-                  )}
-                </p>
-              </div>
-              <Badge variant="secondary" className="text-xs">
-                This is how your response will appear to prospective clients.
-              </Badge>
+            <div className="rounded-md border bg-muted/40 p-4 text-sm leading-relaxed">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Agency Response
+              </p>
+              <p>{response || <span className="italic text-muted-foreground">No response written yet.</span>}</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <>
               <Textarea
-                value={responseText}
-                onChange={(e) => handleChange(e.target.value)}
+                value={response}
+                onChange={(e) => {
+                  setResponse(e.target.value);
+                  setError(null);
+                }}
+                maxLength={500}
+                rows={6}
                 placeholder="Write a professional, helpful response to this review..."
-                rows={5}
-                className={`resize-none ${isOverLimit ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-                disabled={isSubmitting}
+                className="resize-none"
               />
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1">
-                  <span
-                    className={`text-xs ${
-                      isOverLimit
-                        ? "text-red-600 dark:text-red-400 font-semibold"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {charCount} / {MAX_CHARS} characters
-                  </span>
-                  {profanityWarning && (
-                    <span className="text-xs text-red-600 dark:text-red-400">
-                      Please remove inappropriate language before submitting.
-                    </span>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || isOverLimit || !responseText.trim()}
-                  className="gap-1.5"
-                >
-                  <Send size={14} />
-                  {isSubmitting ? "Publishing..." : "Publish Response"}
-                </Button>
+              <div className="flex items-center justify-between text-xs">
+                <span className={isNearLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
+                  {charCount}/500
+                </span>
+                <span className="text-muted-foreground">Be professional and constructive</span>
               </div>
-            </form>
+            </>
           )}
+
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || response.trim().length < 10}
+            className="w-full"
+          >
+            {isSubmitting ? (
+              "Submitting..."
+            ) : (
+              <>
+                <Send className="mr-2 size-4" />
+                Submit Response
+              </>
+            )}
+          </Button>
         </CardContent>
       </Card>
     </div>
