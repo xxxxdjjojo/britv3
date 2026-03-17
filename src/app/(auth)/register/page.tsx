@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -27,7 +28,9 @@ export default function RegisterPage() {
         <div className="h-px flex-1 bg-neutral-200" />
       </div>
 
-      <RegisterForm />
+      <Suspense>
+        <RegisterForm />
+      </Suspense>
 
       <p className="text-center font-body text-sm text-neutral-500">
         Already have an account?{" "}

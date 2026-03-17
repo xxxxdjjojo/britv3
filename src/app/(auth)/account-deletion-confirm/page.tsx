@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarX, Trash2 } from "lucide-react";
+import { CalendarX, Trash2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -17,6 +17,7 @@ export default function AccountDeletionConfirmPage() {
   const router = useRouter();
   const [cancelling, setCancelling] = useState(false);
   const [proceeding, setProceeding] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   const deletionDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
     "en-GB",
@@ -25,14 +26,21 @@ export default function AccountDeletionConfirmPage() {
 
   async function handleCancel() {
     setCancelling(true);
+    setCancelError(null);
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from("profiles")
-          .update({ scheduled_deletion_at: null })
-          .eq("id", user.id);
+      if (!user) {
+        setCancelError("Failed to cancel deletion. Please try again.");
+        return;
+      }
+      const { error } = await supabase
+        .from("profiles")
+        .update({ scheduled_deletion_at: null })
+        .eq("id", user.id);
+      if (error) {
+        setCancelError("Failed to cancel deletion. Please try again.");
+        return;
       }
       router.push("/dashboard");
     } finally {
@@ -79,6 +87,13 @@ export default function AccountDeletionConfirmPage() {
           ))}
         </ul>
       </div>
+
+      {cancelError && (
+        <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          <AlertCircle className="size-4 shrink-0" />
+          {cancelError}
+        </div>
+      )}
 
       <Button
         onClick={handleCancel}

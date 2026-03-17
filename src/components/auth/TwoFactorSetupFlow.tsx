@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Check, Copy, Download } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Check, Copy, Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OTPInput } from "@/components/auth/OTPInput";
@@ -57,19 +57,42 @@ export function TwoFactorSetupFlow(
   const [savedConfirmed, setSavedConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [enrollError, setEnrollError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Enroll on mount
-    const supabase = createClient();
-    supabase.auth.mfa.enroll({ factorType: "totp", issuer: "Britestate" }).then(({ data, error: enrollError }) => {
-      if (enrollError || !data) return;
+  const runEnrollMFA = useCallback(async () => {
+    setIsEnrolling(true);
+    setEnrollError(null);
+    try {
+      const supabase = createClient();
+      const { data, error: enrollErr } = await supabase.auth.mfa.enroll({
+        factorType: "totp",
+        issuer: "Britestate",
+      });
+      if (enrollErr || !data) {
+        setEnrollError(
+          enrollErr?.message ??
+            "Unable to set up 2FA. You may already have a factor enrolled.",
+        );
+        return;
+      }
       setFactorId(data.id);
       if (data.totp) {
         setQrCode(data.totp.qr_code);
         setSecret(data.totp.secret);
       }
-    });
+    } catch {
+      setEnrollError(
+        "Unable to set up 2FA. You may already have a factor enrolled.",
+      );
+    } finally {
+      setIsEnrolling(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void runEnrollMFA();
+  }, [runEnrollMFA]);
 
   async function handleVerify() {
     if (otpCode.length !== 6) return;
@@ -164,39 +187,68 @@ export function TwoFactorSetupFlow(
           <p className="font-body text-sm text-neutral-600">
             Scan this QR code with your authenticator app.
           </p>
-          {qrCode ? (
-            <div className="flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrCode} alt="QR code for 2FA setup" className="size-40 rounded" />
-            </div>
-          ) : (
-            <div className="flex size-40 mx-auto items-center justify-center rounded bg-neutral-100 text-sm text-neutral-400">
-              Loading QR…
+
+          {/* Enrollment loading state */}
+          {isEnrolling && (
+            <div className="flex size-40 mx-auto items-center justify-center rounded bg-neutral-100">
+              <Loader2 className="size-6 animate-spin text-neutral-400" />
             </div>
           )}
-          {secret && (
-            <p className="text-center font-mono text-xs text-neutral-500 break-all">
-              Manual code: {secret}
-            </p>
-          )}
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <div className="space-y-2">
-            <p className="text-sm text-neutral-600">Enter the 6-digit code from your app:</p>
-            <div className="flex justify-center">
-              <OTPInput value={otpCode} onChange={setOtpCode} autoFocus />
+
+          {/* Enrollment error state */}
+          {!isEnrolling && enrollError && (
+            <div className="space-y-3">
+              <Alert variant="destructive">
+                <AlertDescription>{enrollError}</AlertDescription>
+              </Alert>
+              <Button
+                variant="outline"
+                onClick={() => void runEnrollMFA()}
+                className="w-full"
+              >
+                Retry
+              </Button>
             </div>
-          </div>
-          <Button
-            onClick={handleVerify}
-            disabled={otpCode.length !== 6 || loading}
-            className="w-full"
-          >
-            {loading ? "Verifying…" : "Verify"}
-          </Button>
+          )}
+
+          {/* QR code — only shown once enrollment succeeded */}
+          {!isEnrolling && !enrollError && (
+            <>
+              {qrCode ? (
+                <div className="flex justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrCode} alt="QR code for 2FA setup" className="size-40 rounded" />
+                </div>
+              ) : (
+                <div className="flex size-40 mx-auto items-center justify-center rounded bg-neutral-100 text-sm text-neutral-400">
+                  Loading QR…
+                </div>
+              )}
+              {secret && (
+                <p className="text-center font-mono text-xs text-neutral-500 break-all">
+                  Manual code: {secret}
+                </p>
+              )}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <div className="space-y-2">
+                <p className="text-sm text-neutral-600">Enter the 6-digit code from your app:</p>
+                <div className="flex justify-center">
+                  <OTPInput value={otpCode} onChange={setOtpCode} autoFocus />
+                </div>
+              </div>
+              <Button
+                onClick={handleVerify}
+                disabled={otpCode.length !== 6 || loading}
+                className="w-full"
+              >
+                {loading ? "Verifying…" : "Verify"}
+              </Button>
+            </>
+          )}
         </div>
       )}
 

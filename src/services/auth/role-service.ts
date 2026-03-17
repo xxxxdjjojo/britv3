@@ -7,8 +7,40 @@ type RoleServiceResult<T = null> = {
 };
 
 /**
+ * Single source of truth for assigning a single role to a user (server-only).
+ * Upserts into user_roles (prevents duplicate rows) and sets active_role on profile.
+ * Throws on failure — callers are responsible for error handling.
+ */
+export async function assignRole(
+  userId: string,
+  role: UserRole,
+): Promise<void> {
+  if (!userId) throw new Error("assignRole: userId is required");
+
+  const supabase = await createClient();
+
+  // TODO: wrap in RPC for atomicity
+  const { error: upsertError } = await supabase
+    .from("user_roles")
+    .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+
+  if (upsertError) {
+    throw new Error(`Failed to assign role: ${upsertError.message}`);
+  }
+
+  const { error: updateError } = await supabase
+    .from("profiles")
+    .update({ active_role: role })
+    .eq("id", userId);
+
+  if (updateError) {
+    throw new Error(`Failed to update active_role: ${updateError.message}`);
+  }
+}
+
+/**
  * Select roles for a user during registration.
- * Inserts into user_roles and sets active_role on profile.
+ * Upserts into user_roles (idempotent — prevents duplicate rows from retry) and sets active_role on profile.
  */
 export async function selectRoles(
   userId: string,
@@ -22,12 +54,15 @@ export async function selectRoles(
 
   const supabase = await createClient();
 
-  const { error: insertError } = await supabase
+  const { error: upsertError } = await supabase
     .from("user_roles")
-    .insert(uniqueRoles.map((role) => ({ user_id: userId, role })));
+    .upsert(
+      uniqueRoles.map((role) => ({ user_id: userId, role })),
+      { onConflict: "user_id,role" },
+    );
 
-  if (insertError) {
-    return { data: null, error: { message: insertError.message } };
+  if (upsertError) {
+    return { data: null, error: { message: upsertError.message } };
   }
 
   const { error: updateError } = await supabase

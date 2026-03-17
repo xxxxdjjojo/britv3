@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -30,9 +30,20 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+// Professional roles that can be pre-selected via ?professional= param
+const PROFESSIONAL_ROLE_MAP: Record<string, UserRole> = {
+  agent: "agent",
+  seller: "seller",
+  landlord: "landlord",
+  provider: "service_provider",
+  service_provider: "service_provider",
+};
+
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [professionalRole, setProfessionalRole] = useState<UserRole | null>(null);
 
   const {
     register,
@@ -51,43 +62,82 @@ export function RegisterForm() {
     },
   });
 
+  // Bug 4: Read ?professional= param on mount and pre-set role intent
+  useEffect(() => {
+    const professional = searchParams.get("professional");
+    if (professional) {
+      const mappedRole = PROFESSIONAL_ROLE_MAP[professional.toLowerCase()];
+      if (mappedRole) {
+        setProfessionalRole(mappedRole);
+      }
+    }
+  }, [searchParams]);
+
   const password = watch("password");
   const intent = watch("intent");
 
   async function onSubmit(data: RegisterFormValues) {
-    setError(null);
-    const displayName = `${data.firstName} ${data.lastName}`.trim();
-    const { error: authError } = await signUp(
-      data.email,
-      data.password,
-      displayName,
-    );
-    if (authError) {
-      setError(authError.message);
-      return;
-    }
-
-    // Set role based on intent
+    // Bug 9: Wrap entire onSubmit in try/catch with specific error handling
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const role: UserRole = data.intent === "rent" ? "renter" : "homebuyer";
-        await supabase
-          .from("user_roles")
-          .insert({ user_id: user.id, role });
-        await supabase
-          .from("profiles")
-          .update({ active_role: role })
-          .eq("id", user.id);
+      setError(null);
+      const displayName = `${data.firstName} ${data.lastName}`.trim();
+      const { error: authError } = await signUp(
+        data.email,
+        data.password,
+        displayName,
+      );
+      if (authError) {
+        const msg = authError.message ?? "";
+        if (
+          (authError as { status?: number }).status === 429 ||
+          msg.includes("429") ||
+          /rate/i.test(msg)
+        ) {
+          setError("Too many attempts. Please wait a moment.");
+        } else {
+          setError(msg || "An unexpected error occurred. Please try again.");
+        }
+        return;
       }
-    } catch {
-      // Non-blocking: role can be set later
-    }
 
-    router.push("/dashboard");
+      // Assign role inline (avoids importing server-only role-service)
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          const role: UserRole = professionalRole
+            ? professionalRole
+            : data.intent === "rent"
+              ? "renter"
+              : "homebuyer";
+          await supabase
+            .from("user_roles")
+            .upsert({ user_id: user.id, role }, { onConflict: "user_id,role" });
+          await supabase
+            .from("profiles")
+            .update({ active_role: role })
+            .eq("id", user.id);
+        }
+      } catch {
+        // Non-blocking: role can be set later
+      }
+
+      // Bug 3: Redirect to /verify-email instead of /dashboard
+      router.push("/verify-email");
+    } catch (err) {
+      if (err instanceof TypeError) {
+        setError("No internet connection. Please try again.");
+      } else if (
+        err instanceof Error &&
+        (err.message.includes("429") || /rate/i.test(err.message))
+      ) {
+        setError("Too many attempts. Please wait a moment.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    }
   }
 
   return (
@@ -101,35 +151,39 @@ export function RegisterForm() {
       {/* Role badge */}
       <div className="flex justify-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-medium text-brand-primary">
-          Signing up as: {intent === "rent" ? "Renter" : "Buyer"}
+          {professionalRole
+            ? `Signing up as: ${professionalRole.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}`
+            : `Signing up as: ${intent === "rent" ? "Renter" : "Buyer"}`}
         </span>
       </div>
 
-      {/* Intent Toggle: Buy / Rent */}
-      <div className="flex rounded-lg border border-neutral-200 p-1">
-        <button
-          type="button"
-          onClick={() => setValue("intent", "buy")}
-          className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition-colors ${
-            intent === "buy"
-              ? "bg-brand-primary text-white"
-              : "text-neutral-600 hover:text-neutral-900"
-          }`}
-        >
-          I want to buy
-        </button>
-        <button
-          type="button"
-          onClick={() => setValue("intent", "rent")}
-          className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition-colors ${
-            intent === "rent"
-              ? "bg-brand-primary text-white"
-              : "text-neutral-600 hover:text-neutral-900"
-          }`}
-        >
-          I want to rent
-        </button>
-      </div>
+      {/* Intent Toggle: Buy / Rent — hidden when professional role is pre-selected */}
+      {!professionalRole && (
+        <div className="flex rounded-lg border border-neutral-200 p-1">
+          <button
+            type="button"
+            onClick={() => setValue("intent", "buy")}
+            className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition-colors ${
+              intent === "buy"
+                ? "bg-brand-primary text-white"
+                : "text-neutral-600 hover:text-neutral-900"
+            }`}
+          >
+            I want to buy
+          </button>
+          <button
+            type="button"
+            onClick={() => setValue("intent", "rent")}
+            className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition-colors ${
+              intent === "rent"
+                ? "bg-brand-primary text-white"
+                : "text-neutral-600 hover:text-neutral-900"
+            }`}
+          >
+            I want to rent
+          </button>
+        </div>
+      )}
 
       {/* Name fields — side by side */}
       <div className="grid grid-cols-2 gap-3">

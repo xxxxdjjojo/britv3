@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -27,7 +28,9 @@ export default function LoginPage() {
         <div className="h-px flex-1 bg-neutral-200" />
       </div>
 
-      <LoginForm />
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
 
       <p className="text-center font-body text-sm text-neutral-500">
         Don&apos;t have an account?{" "}
