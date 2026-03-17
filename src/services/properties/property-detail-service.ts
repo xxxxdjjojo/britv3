@@ -4,6 +4,7 @@
  * Provides all DB queries needed for the property detail page.
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
 // -- Types -------------------------------------------------------------------
@@ -501,4 +502,77 @@ export async function getPropertyInsights(
   }
 
   return data.data ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// getPropertyViewCount
+// ---------------------------------------------------------------------------
+
+const DEFAULT_VIEW_WINDOW_MINUTES = 30;
+
+/**
+ * Count recent property views within a time window (default 30 min).
+ * Degrades gracefully — view count is non-critical.
+ */
+export async function getPropertyViewCount(
+  supabase: SupabaseClient,
+  propertyId: string,
+  sinceMinutes = DEFAULT_VIEW_WINDOW_MINUTES,
+): Promise<number> {
+  const since = new Date(Date.now() - sinceMinutes * 60 * 1000).toISOString();
+
+  const { count, error } = await supabase
+    .from("property_views")
+    .select("*", { count: "exact", head: true })
+    .eq("property_id", propertyId)
+    .gte("created_at", since);
+
+  if (error) return 0;
+  return count ?? 0;
+}
+
+// ---------------------------------------------------------------------------
+// getSaveState
+// ---------------------------------------------------------------------------
+
+/**
+ * Return whether the user has saved a listing and any attached notes.
+ */
+export async function getSaveState(
+  supabase: SupabaseClient,
+  userId: string,
+  listingId: string,
+): Promise<{ saved: boolean; notes: string | null }> {
+  const { data } = await supabase
+    .from("saved_properties")
+    .select("notes")
+    .eq("user_id", userId)
+    .eq("listing_id", listingId)
+    .maybeSingle();
+
+  if (!data) return { saved: false, notes: null };
+  return { saved: true, notes: (data as Record<string, unknown>).notes as string | null };
+}
+
+// ---------------------------------------------------------------------------
+// getRenovationBenchmarks
+// ---------------------------------------------------------------------------
+
+type RenovationBenchmark = Record<string, unknown>;
+
+/**
+ * Fetch renovation benchmarks for a UK region.
+ */
+export async function getRenovationBenchmarks(
+  supabase: SupabaseClient,
+  region: string,
+): Promise<RenovationBenchmark[]> {
+  const { data, error } = await supabase
+    .from("renovation_type_benchmarks")
+    .select("*")
+    .eq("region", region)
+    .order("renovation_type", { ascending: true });
+
+  if (error) return [];
+  return (data ?? []) as unknown as RenovationBenchmark[];
 }
