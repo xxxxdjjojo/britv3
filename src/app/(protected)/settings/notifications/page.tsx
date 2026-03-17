@@ -2,10 +2,11 @@
 
 import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
-import { Bell, Mail, MessageSquare, Smartphone } from "lucide-react";
+import { Bell, BellOff, Mail, MessageSquare, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { NEW_DEFAULTS } from "@/lib/settings/notification-prefs";
 
 type NotificationPrefs = Record<string, boolean>;
@@ -22,6 +23,13 @@ type NotificationCategory = {
   description: string;
   channels: ChannelToggle[];
 };
+
+const MARKETING_KEYS = [
+  "market_reports_email",
+  "market_reports_push",
+  "market_reports_sms",
+  "market_reports_inapp",
+] as const;
 
 const CATEGORIES: readonly NotificationCategory[] = [
   {
@@ -137,6 +145,67 @@ export default function NotificationsSettingsPage() {
     }
   }
 
+  const allMarketingOff = MARKETING_KEYS.every((key) => prefs[key] === false);
+
+  async function handleUnsubscribeAllMarketing() {
+    const updates = Object.fromEntries(MARKETING_KEYS.map((key) => [key, false]));
+
+    // Optimistic update
+    setPrefs((prev) => ({ ...prev, ...updates }));
+
+    try {
+      const res = await fetch("/api/settings/notifications", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+
+      if (!res.ok) throw new Error("Save failed");
+
+      toast.success("Unsubscribed from all marketing communications.", { duration: 3000 });
+    } catch {
+      // Revert
+      setPrefs((prev) => {
+        const reverted = { ...prev };
+        for (const key of MARKETING_KEYS) {
+          reverted[key] = prev[key];
+        }
+        return reverted;
+      });
+      toast.error("Failed to unsubscribe. Please try again.");
+    }
+  }
+
+  async function handleResubscribeAllMarketing() {
+    const updates = Object.fromEntries(
+      MARKETING_KEYS.map((key) => [key, NEW_DEFAULTS[key] ?? false]),
+    );
+
+    // Optimistic update
+    setPrefs((prev) => ({ ...prev, ...updates }));
+
+    try {
+      const res = await fetch("/api/settings/notifications", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+
+      if (!res.ok) throw new Error("Save failed");
+
+      toast.success("Resubscribed to marketing communications.", { duration: 3000 });
+    } catch {
+      setPrefs((prev) => {
+        const reverted = { ...prev };
+        for (const key of MARKETING_KEYS) {
+          reverted[key] = prev[key];
+        }
+        return reverted;
+      });
+      toast.error("Failed to resubscribe. Please try again.");
+    }
+  }
+
   return (
     <div className="space-y-8">
       {/* Page header */}
@@ -218,6 +287,79 @@ export default function NotificationsSettingsPage() {
                   </div>
                 </div>
               ))}
+        </div>
+      </section>
+
+      {/* Marketing Communications */}
+      <section className="space-y-4">
+        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          Marketing Communications
+        </h3>
+
+        <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900">
+          <div className="p-4">
+            <p className="font-body text-sm text-neutral-500">
+              Marketing &amp; Promotional
+            </p>
+            <p className="mt-0.5 font-body text-xs text-neutral-400">
+              Periodic market reports, promotions, and partner offers.
+            </p>
+
+            <div className="mt-4 rounded-md border border-neutral-100 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-800/50">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <BellOff className="mt-0.5 size-4 shrink-0 text-neutral-400" aria-hidden="true" />
+                  <div>
+                    <p className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                      {allMarketingOff ? "Unsubscribed from all marketing" : "Unsubscribe from all marketing"}
+                    </p>
+                    <p className="font-body text-xs text-neutral-500">
+                      {allMarketingOff
+                        ? "You are not receiving any marketing or promotional communications."
+                        : "Stop receiving all marketing and promotional communications across all channels."}
+                    </p>
+                  </div>
+                </div>
+
+                {allMarketingOff ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                    onClick={() => void handleResubscribeAllMarketing()}
+                    disabled={loading}
+                  >
+                    Re-subscribe
+                  </Button>
+                ) : (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="shrink-0"
+                    onClick={() => void handleUnsubscribeAllMarketing()}
+                    disabled={loading}
+                  >
+                    Unsubscribe
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {allMarketingOff && (
+              <div className="mt-3 flex items-center gap-2 rounded-md border border-green-100 bg-green-50 px-3 py-2 dark:border-green-900/40 dark:bg-green-900/20">
+                <span className="size-1.5 shrink-0 rounded-full bg-green-500" aria-hidden="true" />
+                <p className="font-body text-xs text-green-700 dark:text-green-400">
+                  You are unsubscribed from all marketing emails.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-neutral-100 px-4 py-3 dark:border-neutral-800">
+            <p className="font-body text-xs text-neutral-400">
+              You can also control individual marketing channels in the notification preferences above.
+            </p>
+          </div>
         </div>
       </section>
     </div>
