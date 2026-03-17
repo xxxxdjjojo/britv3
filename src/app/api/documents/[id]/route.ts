@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { deleteDocument } from "@/services/landlord/document-service";
+import { deleteDocument, isServiceError } from "@/services/documents/documents-service";
 
 export async function DELETE(
   _request: Request,
@@ -22,12 +22,19 @@ export async function DELETE(
       );
     }
 
-    await deleteDocument(supabase, documentId);
+    const result = await deleteDocument(supabase, user.id, documentId);
+
+    if (isServiceError(result)) {
+      if (result.error === "NOT_FOUND") {
+        return NextResponse.json({ error: "Document not found" }, { status: 404 });
+      }
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to delete document";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

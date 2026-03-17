@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { updateBookingStatus } from "@/services/marketplace/booking-service";
 import type { BookingStatus } from "@/types/marketplace";
+import { sendViewingConfirmation, BASE_URL } from "@/services/email/email-service";
 
 export async function PATCH(
   request: Request,
@@ -42,6 +43,60 @@ export async function PATCH(
       status,
       reason,
     );
+
+    // Fire-and-forget: send confirmation email to the customer when booking is confirmed
+    if (status === "confirmed") {
+      try {
+        const { data: customerProfile } = await supabase
+          .from("profiles")
+          .select("email, display_name")
+          .eq("id", booking.user_id)
+          .single();
+
+        // Fetch related service request for a description
+        const { data: serviceRequest } = await supabase
+          .from("service_requests")
+          .select("title, service_category")
+          .eq("id", booking.service_request_id)
+          .maybeSingle();
+
+        // Fetch provider profile for agentName equivalent
+        const { data: providerProfile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", booking.provider_id)
+          .single();
+
+        if (customerProfile?.email) {
+          const firstName =
+            (customerProfile.display_name as string | undefined)?.split(" ")[0] ?? "";
+          const serviceTitle =
+            (serviceRequest?.title as string | undefined) ??
+            (serviceRequest?.service_category as string | undefined) ??
+            "your booking";
+          const providerName =
+            (providerProfile?.display_name as string | undefined) ?? "Your provider";
+
+          const viewingDate = new Date(booking.scheduled_start_date as string)
+            .toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+          const viewingTime = new Date(booking.scheduled_start_date as string)
+            .toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+          void sendViewingConfirmation({
+            userId: booking.user_id as string,
+            email: customerProfile.email as string,
+            firstName,
+            propertyAddress: serviceTitle,
+            viewingDate,
+            viewingTime,
+            agentName: providerName,
+            propertyUrl: `${BASE_URL}/dashboard/bookings/${booking.id}`,
+          });
+        }
+      } catch (emailError) {
+        console.error("PATCH /api/bookings/[id]/status sendViewingConfirmation error:", emailError);
+      }
+    }
 
     return NextResponse.json({ data: booking }, { status: 200 });
   } catch (err) {

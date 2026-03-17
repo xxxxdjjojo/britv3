@@ -2,90 +2,222 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PoundSterling, TrendingUp, TrendingDown, Clock, Home } from "lucide-react";
+import { Clock, Home, PoundSterling } from "lucide-react";
+import { penceToGBP } from "@/lib/currency";
 
-const offers = [
-    { id: 1, property: "4 Bed Detached, Kensington", asking: "£1,250,000", offered: "£1,200,000", buyer: "Mr. Williams", date: "10 Mar 2026", status: "Pending" },
-    { id: 2, property: "4 Bed Detached, Kensington", asking: "£1,250,000", offered: "£1,180,000", buyer: "Ms. Patel", date: "8 Mar 2026", status: "Declined" },
-    { id: 3, property: "2 Bed Maisonette, Clapham", asking: "£575,000", offered: "£575,000", buyer: "Mr. & Mrs. Green", date: "7 Mar 2026", status: "Accepted" },
-    { id: 4, property: "2 Bed Maisonette, Clapham", asking: "£575,000", offered: "£550,000", buyer: "Dr. Khan", date: "5 Mar 2026", status: "Declined" },
-    { id: 5, property: "2 Bed Maisonette, Clapham", asking: "£575,000", offered: "£560,000", buyer: "Ms. Rodriguez", date: "3 Mar 2026", status: "Expired" },
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type OfferStatus =
+  | "submitted"
+  | "solicitors_instructed"
+  | "searches"
+  | "survey"
+  | "mortgage_approved"
+  | "exchange"
+  | "completion"
+  | "withdrawn"
+  | "rejected";
+
+type BuyerOffer = Readonly<{
+  id: number;
+  property_address: string;
+  /** Offer amount stored in pence. */
+  amount_pence: number;
+  status: OfferStatus;
+  submitted_at: string;
+}>;
+
+// ---------------------------------------------------------------------------
+// Status helpers
+// ---------------------------------------------------------------------------
+
+const STATUS_LABELS: Record<OfferStatus, string> = {
+  submitted: "Submitted",
+  solicitors_instructed: "Solicitors Instructed",
+  searches: "Searches",
+  survey: "Survey",
+  mortgage_approved: "Mortgage Approved",
+  exchange: "Exchange",
+  completion: "Completion",
+  withdrawn: "Withdrawn",
+  rejected: "Rejected",
+};
+
+/**
+ * Progress order for the offer state machine.
+ * Higher index = further along.
+ */
+const PROGRESSION: OfferStatus[] = [
+  "submitted",
+  "solicitors_instructed",
+  "searches",
+  "survey",
+  "mortgage_approved",
+  "exchange",
+  "completion",
 ];
 
+function getNextStep(status: OfferStatus): string {
+  const idx = PROGRESSION.indexOf(status);
+  if (idx === -1) return "No further steps";
+  if (idx === PROGRESSION.length - 1) return "Congratulations — sale complete!";
+  const next = PROGRESSION[idx + 1];
+  return `Next: ${STATUS_LABELS[next]}`;
+}
+
+function getBadgeVariant(
+  status: OfferStatus,
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case "completion":
+      return "default";
+    case "submitted":
+    case "solicitors_instructed":
+    case "searches":
+    case "survey":
+    case "mortgage_approved":
+    case "exchange":
+      return "secondary";
+    case "withdrawn":
+    case "rejected":
+      return "destructive";
+    default:
+      return "outline";
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Placeholder data (replaced by real API data in Wave 1)
+// ---------------------------------------------------------------------------
+
+const offers: BuyerOffer[] = [
+  {
+    id: 1,
+    property_address: "14 Maple Avenue, Bristol, BS1 4JQ",
+    amount_pence: 32500000, // £325,000
+    status: "searches",
+    submitted_at: "2026-03-01",
+  },
+  {
+    id: 2,
+    property_address: "7 Oak Street, Bath, BA1 2AB",
+    amount_pence: 45000000, // £450,000
+    status: "submitted",
+    submitted_at: "2026-03-10",
+  },
+  {
+    id: 3,
+    property_address: "22 Elm Road, Bristol, BS2 6GH",
+    amount_pence: 28750000, // £287,500
+    status: "rejected",
+    submitted_at: "2026-02-20",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Derived summary stats
+// ---------------------------------------------------------------------------
+
+const activeOffers = offers.filter(
+  (o) => o.status !== "withdrawn" && o.status !== "rejected",
+);
+const progressingOffers = offers.filter((o) => PROGRESSION.indexOf(o.status) > 0);
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export default function OffersPage() {
-    return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight">Offers & Negotiations</h1>
-                <p className="text-muted-foreground">Review and manage offers on your properties</p>
-            </div>
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">My Offers</h1>
+        <p className="text-muted-foreground">
+          Track the progress of your submitted offers
+        </p>
+      </div>
 
-            <div className="grid gap-4 md:grid-cols-4">
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Total Offers</CardDescription><CardTitle className="text-3xl">5</CardTitle></CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Pending</CardDescription><CardTitle className="text-3xl text-amber-600">1</CardTitle></CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Accepted</CardDescription><CardTitle className="text-3xl text-green-600">1</CardTitle></CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Highest Offer</CardDescription><CardTitle className="text-2xl">£1,200,000</CardTitle></CardHeader>
-                </Card>
-            </div>
+      {/* Summary cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Offers</CardDescription>
+            <CardTitle className="text-3xl">{offers.length}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Active</CardDescription>
+            <CardTitle className="text-3xl text-green-600">
+              {activeOffers.length}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>In Progression</CardDescription>
+            <CardTitle className="text-3xl text-blue-600">
+              {progressingOffers.length}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
 
-            <Card>
-                <CardHeader><CardTitle>All Offers</CardTitle><CardDescription>Sorted by most recent</CardDescription></CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Property</TableHead>
-                                <TableHead>Asking Price</TableHead>
-                                <TableHead>Offer Amount</TableHead>
-                                <TableHead>Buyer</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {offers.map((o) => (
-                                <TableRow key={o.id}>
-                                    <TableCell><div className="flex items-center gap-2"><Home className="size-4 text-muted-foreground" /><span className="font-medium">{o.property}</span></div></TableCell>
-                                    <TableCell className="text-muted-foreground">{o.asking}</TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-1 font-medium">
-                                            <PoundSterling className="size-3" />{o.offered.replace("£", "")}
-                                            {o.offered >= o.asking ? <TrendingUp className="size-3 text-green-600" /> : <TrendingDown className="size-3 text-red-600" />}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{o.buyer}</TableCell>
-                                    <TableCell><div className="flex items-center gap-1 text-sm"><Clock className="size-3" />{o.date}</div></TableCell>
-                                    <TableCell>
-                                        <Badge variant={o.status === "Accepted" ? "default" : o.status === "Pending" ? "secondary" : "outline"}>
-                                            {o.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {o.status === "Pending" ? (
-                                            <div className="flex justify-end gap-2">
-                                                <Button size="sm">Accept</Button>
-                                                <Button variant="outline" size="sm">Counter</Button>
-                                            </div>
-                                        ) : (
-                                            <Button variant="ghost" size="sm">View</Button>
-                                        )}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        </div>
-    );
+      {/* Offers table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>All Offers</CardTitle>
+          <CardDescription>Sorted by most recent</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Property</TableHead>
+                <TableHead>Offer Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date Submitted</TableHead>
+                <TableHead>Next Step</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {offers.map((offer) => (
+                <TableRow key={offer.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Home className="size-4 text-muted-foreground" />
+                      <span className="font-medium">{offer.property_address}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 font-medium">
+                      <PoundSterling className="size-3" />
+                      {penceToGBP(offer.amount_pence).toLocaleString("en-GB")}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getBadgeVariant(offer.status)}>
+                      {STATUS_LABELS[offer.status]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 text-sm">
+                      <Clock className="size-3" />
+                      {offer.submitted_at}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {getNextStep(offer.status)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

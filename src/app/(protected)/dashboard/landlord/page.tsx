@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Building2, Percent, PoundSterling, Wrench, Plus, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { getPortfolioKPIs } from "@/services/landlord/portfolio-service";
+import { getPortfolioKPIs, getHealthScore } from "@/services/landlord/portfolio-service";
 import { getComplianceSummary } from "@/services/landlord/document-service";
 import { KpiCard } from "@/components/landlord/KpiCard";
+import { HealthScoreCard } from "@/components/landlord/HealthScoreCard";
 import { ComplianceAlertBanner } from "@/components/landlord/ComplianceAlertBanner";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -15,9 +16,10 @@ export const metadata = {
 async function DashboardContent() {
   const supabase = await createClient();
 
-  const [kpis, complianceDocs] = await Promise.all([
+  const [kpis, complianceDocs, healthScore] = await Promise.all([
     getPortfolioKPIs(supabase),
     getComplianceSummary(supabase),
+    getHealthScore(supabase),
   ]);
 
   // Filter to only expired or expiring_soon documents
@@ -68,6 +70,11 @@ async function DashboardContent() {
         <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 opacity-10">
           <Building2 className="h-full w-full translate-x-1/4 -translate-y-1/4" />
         </div>
+      </section>
+
+      {/* Health Score */}
+      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <HealthScoreCard score={healthScore} />
       </section>
 
       {/* KPI Cards */}

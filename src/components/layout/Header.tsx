@@ -69,11 +69,11 @@ export function Header({ transparent = false }: HeaderProps) {
 
         {/* Auth Buttons (Desktop) */}
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="sm" render={<Link href="/login" />}>
-            Sign In
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/login">Sign In</Link>
           </Button>
-          <Button size="sm" render={<Link href="/register" />}>
-            List Property
+          <Button size="sm" asChild>
+            <Link href="/register">List Property</Link>
           </Button>
         </div>
 

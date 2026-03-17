@@ -34,10 +34,10 @@ type CategoryCard = {
 const CATEGORIES: CategoryCard[] = [
   { slug: "plumbers", label: "Plumbers", icon: Wrench, href: "/services/tradespeople?category=plumber" },
   { slug: "electricians", label: "Electricians", icon: Zap, href: "/services/tradespeople?category=electrician" },
-  { slug: "builders", label: "Builders", icon: Building2, href: "/services/tradespeople?category=handyman" },
-  { slug: "plasterers", label: "Plasterers", icon: Paintbrush, href: "/services/tradespeople?category=other" },
-  { slug: "painters", label: "Painters", icon: SprayCan, href: "/services/tradespeople?category=other" },
-  { slug: "carpenters", label: "Carpenters", icon: Hammer, href: "/services/tradespeople?category=other" },
+  { slug: "builders", label: "Builders", icon: Building2, href: "/services/tradespeople?category=builder" },
+  { slug: "plasterers", label: "Plasterers", icon: Paintbrush, href: "/services/tradespeople?category=plasterer" },
+  { slug: "painters", label: "Painters", icon: SprayCan, href: "/services/tradespeople?category=painter" },
+  { slug: "carpenters", label: "Carpenters", icon: Hammer, href: "/services/tradespeople?category=carpenter" },
   { slug: "landscapers", label: "Landscapers", icon: Trees, href: "/services/tradespeople?category=landscaping" },
   { slug: "cleaners", label: "Cleaners", icon: Home, href: "/services/tradespeople?category=cleaning" },
   { slug: "estate-agents", label: "Estate Agents", icon: BriefcaseBusiness, href: "/agents" },
@@ -58,7 +58,7 @@ export default async function MarketplaceLandingPage() {
     .gt("total_reviews", 5)
     .limit(6);
 
-  const featured = (featuredRaw ?? []) as Array<{
+  const featured = (featuredRaw ?? []) as unknown as Array<{
     provider_id: string;
     average_rating: number;
     total_reviews: number;

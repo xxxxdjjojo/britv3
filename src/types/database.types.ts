@@ -4048,6 +4048,10 @@ export type Database = {
         | "property_management"
         | "pest_control"
         | "locksmith"
+        | "builder"
+        | "plasterer"
+        | "painter"
+        | "carpenter"
         | "other"
       tenancy_status: "active" | "expired" | "terminated" | "pending"
       tenure_type: "freehold" | "leasehold" | "shared_ownership"
@@ -4306,6 +4310,10 @@ export const Constants = {
         "property_management",
         "pest_control",
         "locksmith",
+        "builder",
+        "plasterer",
+        "painter",
+        "carpenter",
         "other",
       ],
       tenancy_status: ["active", "expired", "terminated", "pending"],

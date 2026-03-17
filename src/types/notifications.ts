@@ -52,6 +52,8 @@ export type PlatformEvent = Readonly<{
 export type EventChannelPreferences = Readonly<{
   in_app: boolean;
   email: boolean;
+  push: boolean;
+  sms: boolean;
 }>;
 
 /** Quiet hours configuration */
@@ -73,15 +75,15 @@ export type NotificationPreferences = Readonly<{
 /** Default notification preferences for new users */
 export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   per_type: {
-    new_message: { in_app: true, email: true },
-    quote_received: { in_app: true, email: true },
-    quote_sent: { in_app: true, email: false },
-    booking_confirmed: { in_app: true, email: true },
-    booking_updated: { in_app: true, email: false },
-    milestone_updated: { in_app: true, email: true },
-    offer_received: { in_app: true, email: true },
-    viewing_scheduled: { in_app: true, email: true },
-    review_posted: { in_app: true, email: false },
+    new_message: { in_app: true, email: true, push: false, sms: false },
+    quote_received: { in_app: true, email: true, push: false, sms: false },
+    quote_sent: { in_app: true, email: false, push: false, sms: false },
+    booking_confirmed: { in_app: true, email: true, push: false, sms: false },
+    booking_updated: { in_app: true, email: false, push: false, sms: false },
+    milestone_updated: { in_app: true, email: true, push: false, sms: false },
+    offer_received: { in_app: true, email: true, push: false, sms: false },
+    viewing_scheduled: { in_app: true, email: true, push: false, sms: false },
+    review_posted: { in_app: true, email: false, push: false, sms: false },
   },
   quiet_hours: {
     enabled: false,

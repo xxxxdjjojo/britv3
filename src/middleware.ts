@@ -58,6 +58,21 @@ export async function middleware(request: NextRequest) {
   const nonce = generateNonce();
   const { pathname } = request.nextUrl;
 
+  // ── Maintenance mode ────────────────────────────────────────────────────
+  // Set NEXT_PUBLIC_MAINTENANCE_MODE=true in env to redirect all traffic to /maintenance.
+  // Exempt: /maintenance itself, static files, and _next paths.
+  if (
+    process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true" &&
+    pathname !== "/maintenance" &&
+    !pathname.startsWith("/_next") &&
+    !pathname.startsWith("/api/health")
+  ) {
+    const maintenanceUrl = new URL("/maintenance", request.url);
+    const redirectResponse = NextResponse.redirect(maintenanceUrl);
+    setSecurityHeaders(redirectResponse, nonce);
+    return redirectResponse;
+  }
+
   // Create a response to modify headers
   let response = NextResponse.next({
     request: {
@@ -127,18 +142,26 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  // Admin route guard: require is_admin flag on profile
+  // Admin route guard: require authentication and role === 'admin' on profile
   const isAdminRoute = pathname.startsWith("/admin");
-  if (isAdminRoute && isAuthenticated) {
+  if (isAdminRoute) {
+    if (!isAuthenticated) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirectTo", pathname);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      setSecurityHeaders(redirectResponse, nonce);
+      return redirectResponse;
+    }
+
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_admin")
+      .select("role")
       .eq("id", user!.id)
       .single();
 
-    if (!profile?.is_admin) {
-      const homeUrl = new URL("/", request.url);
-      const redirectResponse = NextResponse.redirect(homeUrl);
+    if (profile?.role !== "admin") {
+      const forbiddenUrl = new URL("/forbidden", request.url);
+      const redirectResponse = NextResponse.redirect(forbiddenUrl);
       setSecurityHeaders(redirectResponse, nonce);
       return redirectResponse;
     }

@@ -7,6 +7,7 @@
  */
 
 import { use } from "react";
+import { redirect } from "next/navigation";
 import { DashboardShell, StatCardGrid } from "@/components/dashboard/DashboardShell";
 import { StatCard, StatCardSkeleton } from "@/components/dashboard/StatCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
@@ -104,15 +105,33 @@ function RoleDashboardContent({ data }: Readonly<{ data: DashboardData }>) {
 // Page component
 // ---------------------------------------------------------------------------
 
+const VALID_ROLES: ReadonlyArray<UserRole> = [
+  "homebuyer",
+  "renter",
+  "seller",
+  "landlord",
+  "agent",
+  "service_provider",
+  "mortgage_broker",
+];
+
 export default function RoleDashboardPage(
   props: Readonly<{
     params: Promise<{ role: string }>;
   }>,
 ) {
   const { role } = use(props.params);
-  const typedRole = role as UserRole;
+
+  // All hooks must be called unconditionally before any early return
   const { data: result, isLoading, isError, refetch } = useDashboard();
   const refreshDashboard = useRefreshDashboard();
+
+  // Validation after all hooks have been called
+  if (!VALID_ROLES.includes(role as UserRole)) {
+    redirect("/dashboard/homebuyer");
+  }
+
+  const typedRole = role as UserRole;
 
   // Loading state
   if (isLoading) {

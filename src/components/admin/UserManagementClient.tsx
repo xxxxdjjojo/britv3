@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { UserSearchResult } from "@/services/admin-service";
+import type { UserSearchResult } from "@/services/admin/user-service";
 import { UserTable } from "@/components/admin/UserTable";
 import { UserDetailModal } from "@/components/admin/UserDetailModal";
 

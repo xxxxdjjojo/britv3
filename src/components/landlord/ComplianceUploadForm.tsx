@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -212,6 +213,7 @@ export default function ComplianceUploadForm({
 
       setUploadProgress(100);
       toast.success("Certificate uploaded successfully");
+      posthog.capture("landlord_cert_uploaded", { category: data.category });
 
       // Redirect back to compliance dashboard
       router.push("/dashboard/landlord/compliance");

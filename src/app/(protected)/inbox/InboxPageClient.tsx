@@ -1,12 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import InboxList from "@/components/messaging/InboxList";
 import MessageThread from "@/components/messaging/MessageThread";
+import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
 export default function InboxPageClient() {
-  const [activeConversation, setActiveConversation] = useState<string | null>("1");
+  const [activeConversation, setActiveConversation] = useState<string | null>(null);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const channelRef = useRef<RealtimeChannel | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`inbox:${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+          filter: `participant_1_id=eq.${user.id}`,
+        },
+        () => {
+          void queryClient.invalidateQueries({ queryKey: ["inbox"] });
+          void queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+          filter: `participant_2_id=eq.${user.id}`,
+        },
+        () => {
+          void queryClient.invalidateQueries({ queryKey: ["inbox"] });
+          void queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+        },
+      )
+      .subscribe();
+
+    channelRef.current = channel;
+
+    return () => {
+      void channel.unsubscribe();
+      channelRef.current = null;
+    };
+  }, [user?.id, queryClient]);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden border-t">
@@ -31,7 +80,7 @@ export default function InboxPageClient() {
         )}
       >
         {activeConversation ? (
-          <MessageThread />
+          <MessageThread conversationId={activeConversation} recipientId="" />
         ) : (
           <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
             Select a conversation to start messaging

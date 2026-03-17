@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DEFAULT_NOTIFICATION_PREFERENCES } from "@/types/notifications";
-import type { NotificationPreferences as NotifPrefs, EventType, DigestFrequency } from "@/types/notifications";
+import type { NotificationPreferences as NotifPrefs, EventType, DigestFrequency, EventChannelPreferences } from "@/types/notifications";
 
 const EVENT_TYPE_LABELS: Record<EventType, string> = {
   new_message: "New Message",
@@ -81,9 +81,9 @@ export function NotificationPreferences() {
     debounceRef.current = setTimeout(() => savePrefs(updated), 500);
   }
 
-  function toggleChannel(eventType: EventType, channel: "in_app" | "email") {
+  function toggleChannel(eventType: EventType, channel: keyof EventChannelPreferences) {
     setPrefs((prev) => {
-      const current = prev.per_type[eventType] ?? { in_app: true, email: false };
+      const current = prev.per_type[eventType] ?? { in_app: true, email: false, push: false, sms: false };
       const updated: NotifPrefs = {
         ...prev,
         per_type: {
@@ -148,18 +148,20 @@ export function NotificationPreferences() {
 
       {/* Per-type toggles */}
       <div className="mb-6">
-        <div className="mb-2 grid grid-cols-[1fr_64px_64px] gap-2 text-sm font-medium text-muted-foreground">
+        <div className="mb-2 grid grid-cols-[1fr_64px_64px_64px_64px] gap-2 text-sm font-medium text-muted-foreground">
           <span>Event Type</span>
           <span className="text-center">In-App</span>
           <span className="text-center">Email</span>
+          <span className="text-center text-muted-foreground/60">Push</span>
+          <span className="text-center text-muted-foreground/60">SMS</span>
         </div>
         <div className="space-y-3">
           {ALL_EVENT_TYPES.map((eventType) => {
-            const current = prefs.per_type[eventType] ?? { in_app: true, email: false };
+            const current = prefs.per_type[eventType] ?? { in_app: true, email: false, push: false, sms: false };
             return (
               <div
                 key={eventType}
-                className="grid grid-cols-[1fr_64px_64px] items-center gap-2"
+                className="grid grid-cols-[1fr_64px_64px_64px_64px] items-center gap-2"
               >
                 <span className="text-sm">{EVENT_TYPE_LABELS[eventType]}</span>
                 <div className="flex justify-center">
@@ -175,6 +177,14 @@ export function NotificationPreferences() {
                     onCheckedChange={() => toggleChannel(eventType, "email")}
                     size="sm"
                   />
+                </div>
+                {/* Push — Coming soon */}
+                <div className="flex justify-center">
+                  <Switch checked={false} disabled title="Coming soon" size="sm" />
+                </div>
+                {/* SMS — Coming soon */}
+                <div className="flex justify-center">
+                  <Switch checked={false} disabled title="Coming soon" size="sm" />
                 </div>
               </div>
             );
@@ -231,14 +241,17 @@ export function NotificationPreferences() {
       </div>
 
       {/* Explicit save button as fallback */}
-      <div className="mt-6">
+      <div className="mt-6 flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">
+          Push and SMS notifications coming soon
+        </p>
         <Button
           variant="outline"
           onClick={() => savePrefs(prefs)}
           disabled={saving}
         >
           {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-          Save All Preferences
+          Save Changes
         </Button>
       </div>
     </Card>

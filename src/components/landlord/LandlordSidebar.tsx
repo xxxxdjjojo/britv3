@@ -33,7 +33,7 @@ type NavItem = {
   icon: React.ComponentType<{ className?: string }>;
 };
 
-const NAV_ITEMS: NavItem[] = [
+const BASE_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard/landlord", icon: LayoutDashboard },
   { label: "Properties", href: "/dashboard/landlord/properties", icon: Building2 },
   { label: "Tenants", href: "/dashboard/landlord/tenants", icon: Users },
@@ -42,11 +42,18 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Maintenance", href: "/dashboard/landlord/maintenance", icon: Wrench },
   { label: "Finance", href: "/dashboard/landlord/finance/expenses", icon: TrendingUp },
   { label: "Documents", href: "/dashboard/landlord/deposits", icon: FolderOpen },
-  { label: "Legal", href: "/dashboard/landlord/legal/notices", icon: Scale },
   { label: "Tools", href: "/dashboard/landlord/tools/yield-calculator", icon: Calculator },
   { label: "Analytics", href: "/dashboard/landlord/analytics", icon: BarChart3 },
   { label: "Find Agent", href: "/dashboard/landlord/find-agent", icon: Handshake },
 ];
+
+const LEGAL_NAV_ITEM: NavItem = { label: "Legal", href: "/dashboard/landlord/legal/notices", icon: Scale };
+
+// Note: NEXT_PUBLIC_* vars are inlined by the bundler at build time.
+// Toggling this flag requires a full redeploy to take effect.
+const NAV_ITEMS: NavItem[] = process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED === "true"
+  ? [...BASE_NAV_ITEMS.slice(0, 8), LEGAL_NAV_ITEM, ...BASE_NAV_ITEMS.slice(8)]
+  : BASE_NAV_ITEMS;
 
 function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
   const { item, pathname } = props;

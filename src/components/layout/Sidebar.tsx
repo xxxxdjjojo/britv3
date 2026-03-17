@@ -69,10 +69,10 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
   ],
   landlord: [
     { href: "/dashboard/landlord", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/landlord/portfolio", label: "Portfolio", icon: Building },
+    { href: "/dashboard/landlord/properties", label: "Portfolio", icon: Building },
     { href: "/dashboard/landlord/tenants", label: "Tenants", icon: Users },
     { href: "/dashboard/landlord/maintenance", label: "Maintenance", icon: WrenchIcon },
-    { href: "/dashboard/landlord/finances", label: "Finances", icon: PoundSterling },
+    { href: "/dashboard/landlord/finance/expenses", label: "Finances", icon: PoundSterling },
     { href: "/dashboard/landlord/compliance", label: "Compliance", icon: Shield },
   ],
   agent: [

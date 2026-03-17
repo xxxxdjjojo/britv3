@@ -166,7 +166,7 @@ export default async function TaxSummaryPage({ searchParams }: Props) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/landlord/finances">Finances</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/landlord/finance/expenses">Finances</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

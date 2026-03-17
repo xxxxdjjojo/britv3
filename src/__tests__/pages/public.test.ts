@@ -22,13 +22,13 @@ describe("Public pages", () => {
   });
 
   it("Terms page exports a default function component", async () => {
-    const mod = await import("@/app/(main)/terms/page");
+    const mod = await import("@/app/(main)/legal/terms/page");
     expect(mod.default).toBeDefined();
     expect(typeof mod.default).toBe("function");
   });
 
   it("Privacy page exports a default function component", async () => {
-    const mod = await import("@/app/(main)/privacy/page");
+    const mod = await import("@/app/(main)/legal/privacy/page");
     expect(mod.default).toBeDefined();
     expect(typeof mod.default).toBe("function");
   });

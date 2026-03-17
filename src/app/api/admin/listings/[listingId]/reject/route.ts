@@ -1,20 +1,29 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { rejectListing } from "@/services/admin/listing-service";
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ listingId: string }> },
 ) {
   const { listingId } = await params;
-  const supabase = await createClient();
 
-  const { error } = await supabase
-    .from("properties")
-    .update({ status: "rejected" })
-    .eq("id", listingId);
-
-  if (error) {
-    return NextResponse.json({ error: "Failed to reject listing" }, { status: 500 });
+  let reason: string | undefined;
+  try {
+    const body = (await req.json()) as { reason?: string };
+    reason = body.reason;
+  } catch {
+    // reason is optional — continue without it
   }
-  return NextResponse.json({ success: true });
+
+  return auditedAdminAction(
+    req,
+    "listing.reject",
+    "listing",
+    listingId,
+    async ({ supabase }) => {
+      const result = await rejectListing(supabase, listingId, reason);
+      if (!result.success) throw new Error("Failed to reject listing");
+      return { success: true };
+    },
+  );
 }

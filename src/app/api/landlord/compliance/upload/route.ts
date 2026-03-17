@@ -75,12 +75,26 @@ export async function POST(request: Request) {
     );
   }
 
+  // Prevent path traversal: decode first, then validate path is scoped to this property
+  let decodedPath: string;
+  try {
+    decodedPath = decodeURIComponent(storage_path);
+  } catch {
+    return NextResponse.json({ error: "Invalid storage path" }, { status: 400 });
+  }
+  if (decodedPath.includes("..") || !decodedPath.startsWith(`${property_id}/`)) {
+    return NextResponse.json(
+      { error: "Invalid storage path" },
+      { status: 400 },
+    );
+  }
+
   // Create signed URL for internal reference (never expose public URL)
   // The storage_path is stored as the document_url reference
   // Consumers fetch a signed URL on demand via createSignedUrl
   const { data: signedUrlData, error: signedUrlError } = await supabase.storage
     .from("landlord-documents")
-    .createSignedUrl(storage_path, 60 * 60); // 1 hour signed URL
+    .createSignedUrl(decodedPath, 60 * 60); // 1 hour signed URL
 
   if (signedUrlError) {
     return NextResponse.json(
@@ -88,6 +102,14 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+
+  // Soft-archive previous certs for same (property_id, category)
+  await supabase
+    .from("property_documents")
+    .update({ is_active: false })
+    .eq("property_id", property_id)
+    .eq("category", category)
+    .eq("is_active", true);
 
   // Insert document record
   // document_url stores the storage path (not the signed URL which is ephemeral)
@@ -98,10 +120,11 @@ export async function POST(request: Request) {
       uploaded_by: user.id,
       name: document_name,
       category,
-      file_url: storage_path, // store path, not public URL
+      file_url: decodedPath, // store path, not public URL
       expiry_date,
       next_reminder_date: next_reminder_date ?? null,
       reminder_sent: false,
+      is_active: true,
     })
     .select()
     .single();
@@ -117,7 +140,6 @@ export async function POST(request: Request) {
     {
       document_id: document.id,
       document_url: signedUrlData.signedUrl,
-      storage_path,
     },
     { status: 201 },
   );

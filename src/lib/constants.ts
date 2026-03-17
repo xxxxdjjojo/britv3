@@ -195,11 +195,25 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/search",
   "/properties",
   "/marketplace",
+  "/services",
+  "/agents",
+  "/mortgage-brokers",
+  "/conveyancers",
+  "/surveyors",
+  "/architects",
+  "/post-a-job",
+  "/compare",
   "/help",
   "/verify-email",
   "/verify-email/confirmed",
   "/register/role-select",
   "/register/onboarding",
+  // System/error state pages — always publicly accessible
+  "/forbidden",
+  "/maintenance",
+  "/offline",
+  "/session-expired",
+  "/rate-limited",
 ] as const;
 
 /** Routes for unauthenticated users only (login, register, etc.) */

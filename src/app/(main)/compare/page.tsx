@@ -25,7 +25,7 @@ export default function ComparePage() {
       )
       .in("id", ids)
       .then(({ data }) => {
-        setProviders((data as CompareProvider[]) ?? []);
+        setProviders((data as unknown as CompareProvider[]) ?? []);
         setLoading(false);
       });
   }, [ids]);

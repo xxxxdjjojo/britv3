@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { getReportedReviews } from "@/services/admin-service";
+import { getReportedReviews } from "@/services/admin/review-service";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { ReviewModerationQueueClient } from "@/components/admin/ReviewModerationQueueClient";
+import { Star } from "lucide-react";
 
 export default async function AdminReviewsPage() {
   const supabase = await createClient();
@@ -12,18 +15,23 @@ export default async function AdminReviewsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900">Review Moderation</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Review and resolve reported reviews. {reports.length} report
-          {reports.length !== 1 ? "s" : ""} awaiting action.
-        </p>
-      </div>
-
-      <ReviewModerationQueueClient
-        reports={reports}
-        adminId={user?.id ?? ""}
+      <AdminPageHeader
+        title="Review Moderation"
+        description={`${reports.length} report${reports.length !== 1 ? "s" : ""} awaiting action.`}
       />
+
+      {reports.length === 0 ? (
+        <AdminEmptyState
+          icon={Star}
+          title="No reported reviews"
+          description="All review reports have been resolved."
+        />
+      ) : (
+        <ReviewModerationQueueClient
+          reports={reports}
+          adminId={user?.id ?? ""}
+        />
+      )}
     </div>
   );
 }

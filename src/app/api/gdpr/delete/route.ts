@@ -4,6 +4,7 @@ import {
   createDeletionRequest,
   hasPendingDeletion,
 } from "@/services/gdpr/consent-service";
+import { sendAccountDeletion } from "@/services/email/email-service";
 
 /**
  * POST /api/gdpr/delete
@@ -49,6 +50,30 @@ export async function POST() {
       event_type: "deletion_requested",
       ip_address: null,
     });
+
+    // Fire-and-forget: send account deletion confirmation email
+    if (user.email) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name")
+          .eq("id", user.id)
+          .single();
+
+        const firstName =
+          (profile?.display_name as string | undefined)?.split(" ")[0] ?? "";
+
+        void sendAccountDeletion({
+          userId: user.id,
+          email: user.email,
+          firstName,
+          deletedAt: new Date().toISOString(),
+          dataRetentionDays: 30,
+        });
+      } catch (emailError) {
+        console.error("POST /api/gdpr/delete sendAccountDeletion error:", emailError);
+      }
+    }
 
     return NextResponse.json({
       scheduled_purge_at: data?.scheduled_purge_at,
