@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ProviderProfile } from "./ProviderProfile";
+import { notFound, redirect } from "next/navigation";
 
 type PageParams = {
   params: Promise<{ slug: string }>;
@@ -43,9 +42,10 @@ export default async function ProviderProfilePage({ params }: PageParams) {
     notFound();
   }
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      <ProviderProfile provider={provider} />
-    </div>
-  );
+  const category: string =
+    Array.isArray(provider.services) && provider.services.length > 0
+      ? (provider.services[0] as string)
+      : "other";
+
+  redirect(`/services/${category}/${slug}`);
 }
