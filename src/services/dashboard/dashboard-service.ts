@@ -558,6 +558,63 @@ export async function logActivity(
 // Safe query helpers (handle missing tables gracefully)
 // ---------------------------------------------------------------------------
 
+/**
+ * Specialised query for viewings that JOINs viewing_slots → listings to
+ * resolve the property address. The `viewings` table does not have a
+ * `property_address` column; it is derived from the associated listing.
+ *
+ * Supabase foreign-key expand syntax:
+ *   viewing_slots!inner( listings!inner(address) )
+ */
+async function safeViewingsQuery(
+  supabase: SupabaseClient,
+  filters: Record<string, string>,
+  limit: number,
+): Promise<Array<{ id: string; property_address: string; scheduled_at: string; status: string }>> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query: any = supabase
+      .from("viewings")
+      .select(
+        "id, scheduled_at, status, viewing_slots!inner(listings!inner(address))",
+      );
+
+    for (const [key, val] of Object.entries(filters)) {
+      query = query.eq(key, val);
+    }
+
+    const { data, error } = await query.limit(limit);
+
+    if (error || !data) {
+      console.error("[dashboard-service] safeViewingsQuery failed", {
+        error,
+        filters,
+      });
+      return [];
+    }
+
+    return (
+      data as Array<{
+        id: string;
+        scheduled_at: string;
+        status: string;
+        viewing_slots: { listings: { address: string } };
+      }>
+    ).map((row) => ({
+      id: row.id,
+      scheduled_at: row.scheduled_at,
+      status: row.status,
+      property_address: row.viewing_slots.listings.address,
+    }));
+  } catch (err) {
+    console.error("[dashboard-service] safeViewingsQuery threw", {
+      error: err,
+      filters,
+    });
+    return [];
+  }
+}
+
 async function safeCount(
   supabase: SupabaseClient,
   table: string,
@@ -571,12 +628,22 @@ async function safeCount(
       .eq(column, value);
 
     if (error) {
-      console.error("[dashboard-service] query failed", { table, error });
+      console.error("[dashboard-service] safeCount failed", {
+        error,
+        table,
+        column,
+        value,
+      });
       return 0;
     }
     return count ?? 0;
-  } catch (error) {
-    console.error("[dashboard-service] unexpected error", { table, error });
+  } catch (err) {
+    console.error("[dashboard-service] safeCount threw", {
+      error: err,
+      table,
+      column,
+      value,
+    });
     return 0;
   }
 }
@@ -599,14 +666,20 @@ async function safeQuery<T>(
     const { data, error } = await query.limit(limit);
 
     if (error || !data) {
-      if (error) {
-        console.error("[dashboard-service] query failed", { table, error });
-      }
+      console.error("[dashboard-service] safeQuery failed", {
+        error,
+        table,
+        filters,
+      });
       return [];
     }
     return data as T[];
-  } catch (error) {
-    console.error("[dashboard-service] unexpected error", { table, error });
+  } catch (err) {
+    console.error("[dashboard-service] safeQuery threw", {
+      error: err,
+      table,
+      filters,
+    });
     return [];
   }
 }
@@ -627,15 +700,17 @@ async function safeQuerySingle<T>(
 
     const { data, error } = await query.limit(1).maybeSingle();
 
-    if (error || !data) {
-      if (error) {
-        console.error("[dashboard-service] query failed", { table, error });
-      }
+    if (error) {
+      console.error("[dashboard-service] safeQuerySingle failed", { error, table, filters });
       return null;
     }
-    return data as T;
-  } catch (error) {
-    console.error("[dashboard-service] unexpected error", { table, error });
+    return data as T | null; // null when row not found — that is fine
+  } catch (err) {
+    console.error("[dashboard-service] safeQuerySingle threw", {
+      error: err,
+      table,
+      filters,
+    });
     return null;
   }
 }

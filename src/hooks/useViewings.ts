@@ -1,22 +1,23 @@
 "use client";
 
 /**
- * Client-side hooks for viewings using @tanstack/react-query.
- * Covers listing, booking, cancelling, and rescheduling viewings.
+ * Hooks for buyer viewings — list, book, cancel, reschedule.
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import type { ViewingWithDetails } from "@/services/viewings/viewings-service";
+import type { Viewing } from "@/services/viewings/viewings-service";
 
-export const VIEWINGS_QUERY_KEY = ["viewings"];
+const QUERY_KEY = ["viewings"];
+const STALE_TIME_MS = 60_000; // 1 minute
 
-/**
- * Fetch the user's viewings list.
- */
+// ---------------------------------------------------------------------------
+// Fetch
+// ---------------------------------------------------------------------------
+
 export function useViewings() {
-  return useQuery<ViewingWithDetails[]>({
-    queryKey: VIEWINGS_QUERY_KEY,
+  return useQuery<Viewing[]>({
+    queryKey: QUERY_KEY,
+    staleTime: STALE_TIME_MS,
     queryFn: async () => {
       const response = await fetch("/api/viewings");
       if (!response.ok) {
@@ -24,116 +25,101 @@ export function useViewings() {
       }
       return response.json();
     },
-    staleTime: 60_000,
   });
 }
 
-/**
- * Mutation to book a viewing slot.
- * Shows a success toast or a slot-unavailable error toast.
- */
+// ---------------------------------------------------------------------------
+// Book
+// ---------------------------------------------------------------------------
+
+export type BookViewingVars = {
+  viewingSlotId: string;
+  listingId: string;
+  type: "in_person" | "virtual";
+};
+
 export function useBookViewing() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      slotId,
-      listingId,
-      type,
-    }: {
-      slotId: string;
-      listingId: string;
-      type: "in_person" | "virtual";
-    }) => {
-      const response = await fetch("/api/viewings", {
+  return useMutation<{ viewingId: string }, Error, BookViewingVars>({
+    mutationFn: async (vars) => {
+      const response = await fetch("/api/viewings/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slot_id: slotId,
-          listing_id: listingId,
-          type,
-        }),
+        body: JSON.stringify(vars),
       });
 
-      const data = (await response.json()) as {
-        error?: string;
-        success?: boolean;
-        viewingId?: string;
-      };
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error ?? `Failed to book viewing: ${response.status}`);
+        throw Object.assign(new Error(data.error ?? "Failed to book viewing"), {
+          code: data.error,
+        });
       }
+
+      // TODO: posthog.capture("viewing.booked", { viewingId: data.viewingId })
 
       return data;
     },
     onSuccess: () => {
-      toast.success("Viewing booked");
-      queryClient.invalidateQueries({ queryKey: VIEWINGS_QUERY_KEY });
-    },
-    onError: (error: Error) => {
-      if (error.message.includes("SLOT_UNAVAILABLE")) {
-        toast.error("Slot no longer available");
-      } else {
-        toast.error(error.message || "Failed to book viewing");
-      }
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
 }
 
-/**
- * Mutation to cancel a viewing by ID.
- */
+// ---------------------------------------------------------------------------
+// Cancel
+// ---------------------------------------------------------------------------
+
 export function useCancelViewing() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({ viewingId }: { viewingId: string }) => {
+  return useMutation<void, Error, { viewingId: string }>({
+    mutationFn: async ({ viewingId }) => {
       const response = await fetch(`/api/viewings/${viewingId}`, {
         method: "DELETE",
       });
 
       if (!response.ok && response.status !== 204) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? `Failed to cancel viewing: ${response.status}`);
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error ?? "Failed to cancel viewing");
       }
+
+      // TODO: posthog.capture("viewing.cancelled", { viewingId })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: VIEWINGS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
 }
 
-/**
- * Mutation to reschedule a viewing to a new slot.
- */
+// ---------------------------------------------------------------------------
+// Reschedule
+// ---------------------------------------------------------------------------
+
 export function useRescheduleViewing() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      viewingId,
-      newSlotId,
-    }: {
-      viewingId: string;
-      newSlotId: string;
-    }) => {
+  return useMutation<void, Error, { viewingId: string; newSlotId: string }>({
+    mutationFn: async ({ viewingId, newSlotId }) => {
       const response = await fetch(`/api/viewings/${viewingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ new_slot_id: newSlotId }),
+        body: JSON.stringify({ newSlotId }),
       });
 
-      const data = (await response.json()) as { error?: string };
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error ?? `Failed to reschedule viewing: ${response.status}`);
+        throw Object.assign(new Error(data.error ?? "Failed to reschedule viewing"), {
+          code: data.error,
+        });
       }
 
-      return data;
+      // TODO: posthog.capture("viewing.rescheduled", { viewingId, newSlotId })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: VIEWINGS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
 }

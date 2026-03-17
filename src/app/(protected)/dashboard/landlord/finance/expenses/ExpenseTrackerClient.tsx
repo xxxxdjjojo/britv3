@@ -198,7 +198,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/landlord/finances">Finances</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/landlord/finance/expenses">Finances</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

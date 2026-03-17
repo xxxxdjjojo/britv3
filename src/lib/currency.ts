@@ -1,34 +1,23 @@
 /**
- * Currency utilities for GBP/pence conversion.
+ * Currency utilities for Britestate.
  *
- * IMPORTANT: All monetary amounts stored in the database (offers.amount,
- * and other financial columns) are stored as INTEGER PENCE.
- * Always call penceToGBP() when reading and GBPToPence() when writing.
+ * Offer amounts, property prices and monetary values are stored in pence
+ * (integer) in the database to avoid floating-point rounding issues.
+ * Use these helpers to convert between pence and GBP at the UI boundary.
  */
 
 /**
- * Convert pence (integer) to GBP (decimal).
- * e.g. 125000p → £1,250.00
+ * Convert a pence integer from the database to a GBP float.
+ * e.g. penceToGBP(125000) → 1250.00
  */
 export function penceToGBP(pence: number): number {
   return pence / 100;
 }
 
 /**
- * Convert GBP (decimal) to pence (integer).
- * e.g. £1,250.00 → 125000p
+ * Convert a GBP float to a pence integer for storage in the database.
+ * e.g. gbpToPence(1250.50) → 125050
  */
-export function GBPToPence(gbp: number): number {
+export function gbpToPence(gbp: number): number {
   return Math.round(gbp * 100);
-}
-
-/**
- * Format pence as a GBP string with £ symbol and comma separators.
- * e.g. 125000 → "£1,250.00"
- */
-export function formatPenceAsGBP(pence: number): string {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-  }).format(penceToGBP(pence));
 }

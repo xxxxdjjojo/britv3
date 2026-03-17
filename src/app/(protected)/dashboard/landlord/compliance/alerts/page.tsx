@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, XCircle, AlertTriangle, Upload, ArrowLeft } from "lucide-react";
+import { ComplianceExpiryCalendar } from "@/components/landlord/ComplianceExpiryCalendar";
 import type { ComplianceDocument } from "@/types/landlord";
 
 // -- Helpers -----------------------------------------------------------------
@@ -141,6 +142,9 @@ export default async function ComplianceAlertsPage({
           </Link>
         ))}
       </div>
+
+      {/* 90-day expiry calendar — shows all docs including valid ones */}
+      <ComplianceExpiryCalendar documents={allDocs} />
 
       {/* Empty state */}
       {alertDocs.length === 0 && (

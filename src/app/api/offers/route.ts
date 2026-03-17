@@ -1,16 +1,11 @@
-/**
- * API routes for offers (buyer perspective).
- * GET: list offers submitted by the authenticated user
- * POST: submit a new offer on a listing
- */
-
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getMyOffers, submitOffer } from "@/services/offers/offers-service";
+import {
+  getOffers,
+  submitOffer,
+  isServiceError,
+} from "@/services/offers/offers-service";
 
-/**
- * GET /api/offers — list my submitted offers
- */
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -23,21 +18,19 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const offers = await getMyOffers(supabase, user.id);
-    return NextResponse.json(offers);
-  } catch (error) {
-    console.error("[offers] GET error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    const result = await getOffers(supabase, user.id);
+
+    if (isServiceError(result)) {
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
+
+    return NextResponse.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-/**
- * POST /api/offers — submit a new offer
- * Body: { listing_id: string, agent_id: string, amount_gbp: number, conditions?: string }
- */
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -50,70 +43,64 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = (await request.json()) as {
-      listing_id?: unknown;
-      agent_id?: unknown;
-      amount_gbp?: unknown;
-      conditions?: unknown;
+    let body: Record<string, unknown>;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const { listingId, amountGBP, agentId, aipDocumentId } = body as {
+      listingId?: unknown;
+      amountGBP?: unknown;
+      agentId?: unknown;
+      aipDocumentId?: unknown;
     };
 
-    const { listing_id, agent_id, amount_gbp, conditions } = body;
-
-    if (!listing_id || typeof listing_id !== "string") {
+    if (!listingId || typeof listingId !== "string") {
+      return NextResponse.json({ error: "listingId is required" }, { status: 400 });
+    }
+    if (amountGBP === undefined || typeof amountGBP !== "number" || amountGBP <= 0) {
       return NextResponse.json(
-        { error: "listing_id is required and must be a string" },
+        { error: "amountGBP must be a positive number" },
         { status: 400 },
       );
     }
-
-    if (!agent_id || typeof agent_id !== "string") {
-      return NextResponse.json(
-        { error: "agent_id is required and must be a string" },
-        { status: 400 },
-      );
+    if (!agentId || typeof agentId !== "string") {
+      return NextResponse.json({ error: "agentId is required" }, { status: 400 });
     }
 
-    if (typeof amount_gbp !== "number" || amount_gbp <= 0) {
+    // Require AIP document for offers above £250,000
+    const AIP_THRESHOLD_GBP = 250000;
+    if (amountGBP > AIP_THRESHOLD_GBP && !aipDocumentId) {
       return NextResponse.json(
-        { error: "amount_gbp must be a positive number" },
-        { status: 400 },
+        { error: "AIP_REQUIRED" },
+        { status: 422 },
       );
     }
-
-    const conditionsStr =
-      typeof conditions === "string" ? conditions : undefined;
 
     const result = await submitOffer(
       supabase,
       user.id,
-      listing_id,
-      agent_id,
-      amount_gbp,
-      conditionsStr,
+      listingId,
+      amountGBP,
+      agentId,
+      typeof aipDocumentId === "string" ? aipDocumentId : undefined,
     );
 
-    if ("error" in result) {
+    if (isServiceError(result)) {
       if (result.error === "DUPLICATE_OFFER") {
-        return NextResponse.json(
-          { error: "You already have an active offer on this property" },
-          { status: 409 },
-        );
-      }
-      if (result.error === "INVALID_LISTING") {
-        return NextResponse.json(
-          { error: "Listing or agent not found" },
-          { status: 422 },
-        );
+        return NextResponse.json({ error: "DUPLICATE_OFFER" }, { status: 409 });
       }
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    return NextResponse.json(result.offer, { status: 201 });
-  } catch (error) {
-    console.error("[offers] POST error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    // TODO: posthog.capture("offer.submitted", { offerId: result.offerId })
+
+    return NextResponse.json({ offerId: result.offerId }, { status: 201 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+

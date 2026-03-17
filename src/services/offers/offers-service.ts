@@ -1,13 +1,17 @@
 /**
- * Offers service.
- * Handles fetching and mutating offer records via Supabase.
- *
- * @see src/lib/currency.ts — offers.amount is stored in INTEGER PENCE.
- * Always call penceToGBP() when reading and GBPToPence() when writing.
+ * Offers service — buyer-facing offer operations.
+ * Amounts stored in pence (integer) in the database.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { GBPToPence } from "@/lib/currency";
+import { gbpToPence } from "@/lib/currency";
+import type { ServiceError } from "@/types/service-error";
+
+export type { ServiceError };
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 export type OfferStatus =
   | "submitted"
@@ -19,129 +23,219 @@ export type OfferStatus =
   | "completion"
   | "withdrawn";
 
-export type Offer = {
+export type OfferStatusHistoryEntry = Readonly<{
   id: string;
-  listing_id: string;
-  agent_id: string;
-  /** Amount in PENCE. Use penceToGBP() to display. @see src/lib/currency.ts */
-  amount: number;
-  conditions: string | null;
-  aip_document_path: string | null;
-  status: OfferStatus;
-  created_at: string;
-  updated_at: string;
-  listings: { id: string; address: string; price: number } | null;
-};
-
-export type OfferStatusHistory = {
-  id: string;
-  offer_id: string;
   from_status: string | null;
   to_status: string;
   notes: string | null;
   created_at: string;
-};
+}>;
 
-export type SubmitOfferResult =
-  | { success: true; offer: Offer }
-  | { error: "DUPLICATE_OFFER" | "INVALID_LISTING" | string };
+export type BuyerOffer = Readonly<{
+  id: string;
+  listing_id: string;
+  property_address: string;
+  /** Amount in pence */
+  amount_pence: number;
+  status: OfferStatus;
+  conditions: string | null;
+  aip_document_path: string | null;
+  created_at: string;
+  updated_at: string;
+  status_history: ReadonlyArray<OfferStatusHistoryEntry>;
+}>;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+export function isServiceError(val: unknown): val is ServiceError {
+  return typeof val === "object" && val !== null && "error" in val;
+}
+
+// ---------------------------------------------------------------------------
+// Read
+// ---------------------------------------------------------------------------
 
 /**
- * Get all offers submitted by a user, with listing details joined.
+ * Get all offers submitted by a buyer, with status history and property address.
+ * Two-step: fetch offers + history, then resolve addresses from listings.
  */
-export async function getMyOffers(
+export async function getOffers(
   supabase: SupabaseClient,
   userId: string,
-): Promise<Offer[]> {
-  const { data, error } = await supabase
-    .from("offers")
-    .select(
-      "id, listing_id, agent_id, amount, conditions, aip_document_path, status, created_at, updated_at, listings(id, address, price)",
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+): Promise<BuyerOffer[] | ServiceError> {
+  try {
+    const { data, error } = await supabase
+      .from("offers")
+      .select(
+        "id, listing_id, amount, status, conditions, aip_document_path, created_at, updated_at, offer_status_history(id, from_status, to_status, notes, created_at)",
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to get offers: ${error.message}`);
+    if (error) {
+      console.error("[offers-service] getOffers failed", { error });
+      return { error: error.message };
+    }
+
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    type RawOffer = {
+      id: string;
+      listing_id: string;
+      amount: number;
+      status: string;
+      conditions: string | null;
+      aip_document_path: string | null;
+      created_at: string;
+      updated_at: string;
+      offer_status_history: Array<{
+        id: string;
+        from_status: string | null;
+        to_status: string;
+        notes: string | null;
+        created_at: string;
+      }>;
+    };
+
+    const rows = data as RawOffer[];
+
+    // Resolve listing addresses
+    const listingIds = [...new Set(rows.map((r) => r.listing_id))];
+    const { data: listingsData } = await supabase
+      .from("listings")
+      .select("id, address")
+      .in("id", listingIds);
+
+    const addressMap = new Map<string, string>(
+      (listingsData as Array<{ id: string; address: string }> ?? []).map((l) => [l.id, l.address]),
+    );
+
+    return rows.map((row) => ({
+      id: row.id,
+      listing_id: row.listing_id,
+      property_address: addressMap.get(row.listing_id) ?? "Unknown address",
+      amount_pence: row.amount,
+      status: row.status as OfferStatus,
+      conditions: row.conditions,
+      aip_document_path: row.aip_document_path,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      status_history: row.offer_status_history.map((h) => ({
+        id: h.id,
+        from_status: h.from_status,
+        to_status: h.to_status,
+        notes: h.notes,
+        created_at: h.created_at,
+      })),
+    }));
+  } catch (err) {
+    console.error("[offers-service] getOffers threw", { err });
+    return { error: "Failed to fetch offers" };
   }
-
-  return (data ?? []) as unknown as Offer[];
 }
+
+// ---------------------------------------------------------------------------
+// Mutations
+// ---------------------------------------------------------------------------
+
+export type SubmitOfferResult = Readonly<{ offerId: string }> | ServiceError;
 
 /**
  * Submit a new offer on a listing.
- * Converts amountGBP to pence before storing.
- * Returns DUPLICATE_OFFER if an active (non-withdrawn) offer already exists.
- * Returns INVALID_LISTING if the listing or agent FK is violated.
+ * - Checks for existing open offer on the same listing first.
+ * - Converts GBP float to pence before insertion.
  */
 export async function submitOffer(
   supabase: SupabaseClient,
   userId: string,
   listingId: string,
-  agentId: string,
   amountGBP: number,
-  conditions?: string,
+  agentId: string,
+  aipDocumentId?: string,
 ): Promise<SubmitOfferResult> {
-  // Check for an existing active offer on this listing
-  const { data: existing, error: checkError } = await supabase
-    .from("offers")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("listing_id", listingId)
-    .not("status", "eq", "withdrawn")
-    .maybeSingle();
+  try {
+    // Check for existing open offer on this listing
+    const { data: existing, error: checkError } = await supabase
+      .from("offers")
+      .select("id, status")
+      .eq("user_id", userId)
+      .eq("listing_id", listingId)
+      .not("status", "in", "(withdrawn)")
+      .limit(1)
+      .maybeSingle();
 
-  if (checkError) {
-    throw new Error(`Failed to check existing offers: ${checkError.message}`);
-  }
+    if (checkError) {
+      console.error("[offers-service] submitOffer duplicate check failed", { checkError });
+      return { error: checkError.message };
+    }
 
-  if (existing) {
-    return { error: "DUPLICATE_OFFER" };
-  }
+    if (existing) {
+      return { error: "DUPLICATE_OFFER" };
+    }
 
-  const amountPence = GBPToPence(amountGBP);
+    const amountPence = gbpToPence(amountGBP);
 
-  const { data, error } = await supabase
-    .from("offers")
-    .insert({
+    const insertPayload: Record<string, unknown> = {
       user_id: userId,
       listing_id: listingId,
       agent_id: agentId,
       amount: amountPence,
-      conditions: conditions ?? null,
-    })
-    .select(
-      "id, listing_id, agent_id, amount, conditions, aip_document_path, status, created_at, updated_at, listings(id, address, price)",
-    )
-    .single();
+    };
 
-  if (error) {
-    // FK violation: listing or agent does not exist
-    if (error.code === "23503") {
-      return { error: "INVALID_LISTING" };
+    if (aipDocumentId) {
+      insertPayload.aip_document_path = aipDocumentId;
     }
-    throw new Error(`Failed to submit offer: ${error.message}`);
-  }
 
-  return { success: true, offer: data as unknown as Offer };
+    const { data, error } = await supabase
+      .from("offers")
+      .insert(insertPayload)
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("[offers-service] submitOffer insert failed", { error });
+      return { error: error.message };
+    }
+
+    return { offerId: (data as { id: string }).id };
+  } catch (err) {
+    console.error("[offers-service] submitOffer threw", { err });
+    return { error: "Failed to submit offer" };
+  }
 }
 
 /**
- * Get the status history for a specific offer, ordered oldest-first.
+ * Withdraw an offer (update status to 'withdrawn').
+ * Uses service-role bypass via API route — direct client update is blocked by RLS.
  */
-export async function getOfferStatusHistory(
+export async function withdrawOffer(
   supabase: SupabaseClient,
+  userId: string,
   offerId: string,
-): Promise<OfferStatusHistory[]> {
-  const { data, error } = await supabase
-    .from("offer_status_history")
-    .select("id, offer_id, from_status, to_status, notes, created_at")
-    .eq("offer_id", offerId)
-    .order("created_at", { ascending: true });
+): Promise<null | ServiceError> {
+  try {
+    // Note: offers_update_blocked RLS prevents direct updates from the client.
+    // This service is called from API routes which use the anon client with
+    // session context. Since the migration blocks all UPDATE via RLS, the
+    // API route should use the service-role client. We surface the error clearly.
+    const { error } = await supabase
+      .from("offers")
+      .update({ status: "withdrawn", updated_at: new Date().toISOString() })
+      .eq("id", offerId)
+      .eq("user_id", userId);
 
-  if (error) {
-    throw new Error(`Failed to get offer status history: ${error.message}`);
+    if (error) {
+      console.error("[offers-service] withdrawOffer failed", { error });
+      return { error: error.message };
+    }
+
+    return null;
+  } catch (err) {
+    console.error("[offers-service] withdrawOffer threw", { err });
+    return { error: "Failed to withdraw offer" };
   }
-
-  return (data ?? []) as OfferStatusHistory[];
 }

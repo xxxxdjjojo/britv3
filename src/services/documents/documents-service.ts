@@ -1,22 +1,25 @@
 /**
- * Buyer documents service.
- * Handles upload, retrieval, and deletion of user_documents records
- * backed by the buyer-documents Supabase Storage bucket.
- *
- * Storage path convention: {userId}/{documentId}/{fileName}
+ * Buyer documents service — upload, list, and delete user documents.
+ * Stores files in Supabase Storage bucket "buyer-documents" at path
+ * [userId]/[uuid].[ext], then records metadata in user_documents table.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { ServiceError } from "@/types/service-error";
+
+export type { ServiceError };
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-export type DocumentType = "id_proof" | "proof_of_funds" | "aip_letter" | "other";
 export type DocumentStatus = "uploaded" | "pending_review" | "verified" | "rejected";
 
-export type UserDocument = {
+export type DocumentType = "id_proof" | "proof_of_funds" | "aip_letter" | "other";
+
+export type UserDocument = Readonly<{
   id: string;
+  user_id: string;
   offer_id: string | null;
   document_type: DocumentType;
   storage_path: string;
@@ -26,153 +29,207 @@ export type UserDocument = {
   status: DocumentStatus;
   created_at: string;
   updated_at: string;
-};
+}>;
+
+export type UploadDocumentResult = Readonly<{ document: UserDocument }> | ServiceError;
 
 // ---------------------------------------------------------------------------
-// Service functions
+// Constants
+// ---------------------------------------------------------------------------
+
+const BUCKET = "buyer-documents";
+
+const ALLOWED_MIME_TYPES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+export function isServiceError(val: unknown): val is ServiceError {
+  return typeof val === "object" && val !== null && "error" in val;
+}
+
+function getExtension(mimeType: string): string {
+  const map: Record<string, string> = {
+    "application/pdf": "pdf",
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  };
+  return map[mimeType] ?? "bin";
+}
+
+// ---------------------------------------------------------------------------
+// Read
 // ---------------------------------------------------------------------------
 
 /**
- * Return all documents for the given user, ordered newest-first.
+ * Fetch all documents belonging to a user.
  */
 export async function getDocuments(
   supabase: SupabaseClient,
   userId: string,
-): Promise<UserDocument[]> {
-  const { data, error } = await supabase
-    .from("user_documents")
-    .select(
-      "id, offer_id, document_type, storage_path, file_name, file_size_bytes, mime_type, status, created_at, updated_at",
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+): Promise<UserDocument[] | ServiceError> {
+  try {
+    const { data, error } = await supabase
+      .from("user_documents")
+      .select(
+        "id, user_id, offer_id, document_type, storage_path, file_name, file_size_bytes, mime_type, status, created_at, updated_at",
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error(`Failed to fetch documents: ${error.message}`);
+    if (error) {
+      console.error("[documents-service] getDocuments failed", { error });
+      return { error: error.message };
+    }
+
+    return (data ?? []) as UserDocument[];
+  } catch (err) {
+    console.error("[documents-service] getDocuments threw", { err });
+    return { error: "Failed to fetch documents" };
   }
-
-  return (data ?? []) as UserDocument[];
 }
 
+// ---------------------------------------------------------------------------
+// Mutations
+// ---------------------------------------------------------------------------
+
 /**
- * Upload a file to Supabase Storage and create the user_documents row.
- * Throws if the storage upload fails.
+ * Upload a document to storage and insert a record in user_documents.
+ * Validates file size and MIME type before uploading.
  */
 export async function uploadDocument(
   supabase: SupabaseClient,
   userId: string,
   file: File,
   documentType: DocumentType,
-  offerId?: string,
-): Promise<UserDocument> {
-  const documentId = crypto.randomUUID();
-  const storagePath = `${userId}/${documentId}/${file.name}`;
+): Promise<UploadDocumentResult> {
+  try {
+    // Client-side validations (also enforced at API layer)
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      return { error: "FILE_TOO_LARGE" };
+    }
 
-  const { error: uploadError } = await supabase.storage
-    .from("buyer-documents")
-    .upload(storagePath, file, {
-      contentType: file.type,
-      upsert: false,
-    });
+    if (!ALLOWED_MIME_TYPES.has(file.type)) {
+      return { error: "INVALID_MIME_TYPE" };
+    }
 
-  if (uploadError) {
-    throw new Error(`Upload failed: ${uploadError.message}`);
+    const ext = getExtension(file.type);
+    const fileId = crypto.randomUUID();
+    const storagePath = `${userId}/${fileId}.${ext}`;
+
+    // Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET)
+      .upload(storagePath, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("[documents-service] uploadDocument storage upload failed", { uploadError });
+      return { error: uploadError.message };
+    }
+
+    // Insert metadata record
+    const { data, error: insertError } = await supabase
+      .from("user_documents")
+      .insert({
+        user_id: userId,
+        document_type: documentType,
+        storage_path: storagePath,
+        file_name: file.name,
+        file_size_bytes: file.size,
+        mime_type: file.type,
+        status: "uploaded",
+      })
+      .select(
+        "id, user_id, offer_id, document_type, storage_path, file_name, file_size_bytes, mime_type, status, created_at, updated_at",
+      )
+      .single();
+
+    if (insertError) {
+      console.error("[documents-service] uploadDocument insert failed", { insertError });
+      // Attempt to clean up the orphaned storage file
+      const { error: cleanupError } = await supabase.storage.from(BUCKET).remove([storagePath]);
+      if (cleanupError) {
+        console.error("[documents-service] Failed to clean up orphaned storage file", { storagePath, cleanupError });
+      }
+      return { error: insertError.message };
+    }
+
+    return { document: data as UserDocument };
+  } catch (err) {
+    console.error("[documents-service] uploadDocument threw", { err });
+    return { error: "Failed to upload document" };
   }
-
-  const { data, error: insertError } = await supabase
-    .from("user_documents")
-    .insert({
-      id: documentId,
-      user_id: userId,
-      offer_id: offerId ?? null,
-      document_type: documentType,
-      storage_path: storagePath,
-      file_name: file.name,
-      file_size_bytes: file.size,
-      mime_type: file.type,
-      status: "uploaded",
-    })
-    .select(
-      "id, offer_id, document_type, storage_path, file_name, file_size_bytes, mime_type, status, created_at, updated_at",
-    )
-    .single();
-
-  if (insertError) {
-    // Best-effort cleanup of the orphaned storage object
-    await supabase.storage.from("buyer-documents").remove([storagePath]);
-    throw new Error(`Failed to save document record: ${insertError.message}`);
-  }
-
-  return data as UserDocument;
 }
 
 /**
- * Delete a document: verifies ownership, removes storage object, then deletes the row.
+ * Delete a document from storage and the database record.
  */
 export async function deleteDocument(
   supabase: SupabaseClient,
   userId: string,
   documentId: string,
-): Promise<void> {
-  // Fetch with ownership check
-  const { data, error: fetchError } = await supabase
-    .from("user_documents")
-    .select("storage_path")
-    .eq("id", documentId)
-    .eq("user_id", userId)
-    .single();
+): Promise<null | ServiceError> {
+  try {
+    // Fetch the record first to get the storage path
+    const { data: doc, error: fetchError } = await supabase
+      .from("user_documents")
+      .select("storage_path")
+      .eq("id", documentId)
+      .eq("user_id", userId)
+      .maybeSingle();
 
-  if (fetchError || !data) {
-    throw new Error("Document not found or access denied");
+    if (fetchError) {
+      console.error("[documents-service] deleteDocument fetch failed", { fetchError });
+      return { error: fetchError.message };
+    }
+
+    if (!doc) {
+      return { error: "NOT_FOUND" };
+    }
+
+    const { storage_path } = doc as { storage_path: string };
+
+    // Delete database record first
+    const { error: deleteError } = await supabase
+      .from("user_documents")
+      .delete()
+      .eq("id", documentId)
+      .eq("user_id", userId);
+
+    if (deleteError) {
+      console.error("[documents-service] deleteDocument db delete failed", { deleteError });
+      return { error: deleteError.message };
+    }
+
+    // Delete from storage (best-effort — record is already gone)
+    const { error: storageError } = await supabase.storage.from(BUCKET).remove([storage_path]);
+
+    if (storageError) {
+      console.error("[documents-service] deleteDocument storage delete failed (non-fatal)", {
+        storageError,
+      });
+      // Non-fatal: DB record is deleted, storage cleanup can be done by a cron
+    }
+
+    return null;
+  } catch (err) {
+    console.error("[documents-service] deleteDocument threw", { err });
+    return { error: "Failed to delete document" };
   }
-
-  const { storage_path } = data as { storage_path: string };
-
-  // Remove from storage (ignore storage errors — row delete is authoritative)
-  await supabase.storage.from("buyer-documents").remove([storage_path]);
-
-  const { error: deleteError } = await supabase
-    .from("user_documents")
-    .delete()
-    .eq("id", documentId)
-    .eq("user_id", userId);
-
-  if (deleteError) {
-    throw new Error(`Failed to delete document: ${deleteError.message}`);
-  }
-}
-
-/**
- * Generate a short-lived signed download URL for a document.
- * expiresIn is in seconds; defaults to 1 hour.
- */
-export async function getSignedDownloadUrl(
-  supabase: SupabaseClient,
-  userId: string,
-  documentId: string,
-  expiresIn = 3600,
-): Promise<string> {
-  // Verify ownership
-  const { data, error: fetchError } = await supabase
-    .from("user_documents")
-    .select("storage_path")
-    .eq("id", documentId)
-    .eq("user_id", userId)
-    .single();
-
-  if (fetchError || !data) {
-    throw new Error("Document not found or access denied");
-  }
-
-  const { storage_path } = data as { storage_path: string };
-
-  const { data: urlData, error: signError } = await supabase.storage
-    .from("buyer-documents")
-    .createSignedUrl(storage_path, expiresIn);
-
-  if (signError || !urlData) {
-    throw new Error(`Failed to generate download URL: ${signError?.message ?? "unknown error"}`);
-  }
-
-  return urlData.signedUrl;
 }

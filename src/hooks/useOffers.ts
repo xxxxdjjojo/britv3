@@ -1,21 +1,23 @@
 "use client";
 
 /**
- * Client-side hooks for offers (buyer perspective) using @tanstack/react-query.
+ * Hooks for buyer offers — list, submit, withdraw.
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import type { Offer } from "@/services/offers/offers-service";
+import type { BuyerOffer } from "@/services/offers/offers-service";
 
-export const OFFERS_QUERY_KEY = ["offers"];
+const QUERY_KEY = ["offers"];
+const STALE_TIME_MS = 60_000; // 1 minute
 
-/**
- * Fetch the authenticated user's submitted offers.
- */
-export function useMyOffers() {
-  return useQuery<Offer[]>({
-    queryKey: OFFERS_QUERY_KEY,
+// ---------------------------------------------------------------------------
+// Fetch
+// ---------------------------------------------------------------------------
+
+export function useOffers() {
+  return useQuery<BuyerOffer[]>({
+    queryKey: QUERY_KEY,
+    staleTime: STALE_TIME_MS,
     queryFn: async () => {
       const response = await fetch("/api/offers");
       if (!response.ok) {
@@ -23,60 +25,70 @@ export function useMyOffers() {
       }
       return response.json();
     },
-    staleTime: 60_000,
   });
 }
 
-/**
- * Mutation to submit a new offer.
- * Shows success toast or a duplicate-offer error toast.
- */
+// ---------------------------------------------------------------------------
+// Submit
+// ---------------------------------------------------------------------------
+
+export type SubmitOfferVars = {
+  listingId: string;
+  amountGBP: number;
+  agentId: string;
+  aipDocumentId?: string;
+};
+
 export function useSubmitOffer() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: async ({
-      listingId,
-      agentId,
-      amountGBP,
-      conditions,
-    }: {
-      listingId: string;
-      agentId: string;
-      amountGBP: number;
-      conditions?: string;
-    }) => {
+  return useMutation<{ offerId: string }, Error, SubmitOfferVars>({
+    mutationFn: async (vars) => {
       const response = await fetch("/api/offers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          listing_id: listingId,
-          agent_id: agentId,
-          amount_gbp: amountGBP,
-          conditions,
-        }),
+        body: JSON.stringify(vars),
       });
 
-      const data = (await response.json()) as { error?: string } & Partial<Offer>;
+      const data = await response.json();
 
       if (!response.ok) {
         throw Object.assign(new Error(data.error ?? "Failed to submit offer"), {
-          status: response.status,
+          code: data.error,
         });
       }
 
-      return data as Offer;
+      // TODO: posthog.capture("offer.submitted", { offerId: data.offerId })
+
+      return data;
     },
     onSuccess: () => {
-      toast.success("Offer submitted");
-      queryClient.invalidateQueries({ queryKey: OFFERS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-    onError: (error: Error & { status?: number }) => {
-      if (error.status === 409) {
-        toast.error("You already have an active offer on this property");
-      } else {
-        toast.error(error.message || "Failed to submit offer");
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Withdraw
+// ---------------------------------------------------------------------------
+
+export function useWithdrawOffer() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { offerId: string }>({
+    mutationFn: async ({ offerId }) => {
+      const response = await fetch(`/api/offers/${offerId}`, {
+        method: "PATCH",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Failed to withdraw offer");
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
 }

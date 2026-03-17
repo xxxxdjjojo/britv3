@@ -328,7 +328,7 @@ export default function CheckOutPage() {
     <div className="flex flex-col gap-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link href="/dashboard/landlord/portfolio" className="hover:text-foreground">
+        <Link href="/dashboard/landlord/properties" className="hover:text-foreground">
           Properties
         </Link>
         <ChevronRight className="size-4" />
