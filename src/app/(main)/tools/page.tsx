@@ -11,6 +11,10 @@ import {
   ArrowRight,
   ShieldCheck,
   Star,
+  ArrowRightLeft,
+  Truck,
+  GraduationCap,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -103,12 +107,57 @@ const TOOLS: Tool[] = [
     stat: "£145",
     statLabel: "Average monthly energy bill",
   },
+  {
+    href: "/tools/mortgage-comparison",
+    icon: BarChart3,
+    title: "Mortgage Comparison",
+    description:
+      "Compare illustrative mortgage products from major UK lenders side by side. See how property price, deposit, and term affect your monthly payments across different rates and LTV bands.",
+    color:
+      "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+    stat: "10+",
+    statLabel: "Products compared",
+  },
+  {
+    href: "/tools/remortgage-calculator",
+    icon: ArrowRightLeft,
+    title: "Remortgage Calculator",
+    description:
+      "Find out how much you could save by switching your mortgage deal. Compare your current repayments against a new rate and term to see monthly savings and total interest saved.",
+    color:
+      "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+    stat: "£187",
+    statLabel: "Average monthly saving",
+  },
+  {
+    href: "/tools/moving-cost-estimator",
+    icon: Truck,
+    title: "Moving Cost Estimator",
+    description:
+      "Get a complete breakdown of the costs involved in buying and moving home — stamp duty, solicitor fees, surveys, removals, and EPC. Supports England, Wales, Scotland, and Northern Ireland.",
+    color:
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+    stat: "£5,000",
+    statLabel: "Typical additional costs",
+  },
+  {
+    href: "/tools/first-time-buyer-guide",
+    icon: GraduationCap,
+    title: "First-Time Buyer Guide",
+    description:
+      "Everything you need to know about buying your first home in the UK — eligibility, Help to Buy ISA, Lifetime ISA, Shared Ownership, and Right to Buy. Includes an affordability checker.",
+    badge: "Guide",
+    color:
+      "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
+    stat: "5",
+    statLabel: "Government schemes covered",
+  },
 ];
 
 const STATS = [
   { value: "50,000+", label: "Monthly Users" },
   { value: "£0", label: "Completely Free" },
-  { value: "6", label: "Property Tools" },
+  { value: "10", label: "Property Tools" },
   { value: "4.9★", label: "User Rating" },
 ];
 
