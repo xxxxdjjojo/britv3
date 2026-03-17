@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate Admin - Listing Moderation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b4b3d",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#141e1b",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-heading { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-body">
+<div class="flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-primary/10 bg-white dark:bg-background-dark flex flex-col sticky top-0 h-screen">
+<div class="p-6 flex items-center gap-3">
+<div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<span class="text-xl font-heading font-bold text-primary">Britestate</span>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="text-sm font-medium">Moderation Queue</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">real_estate_agent</span>
+<span class="text-sm font-medium">Property Listings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">User Management</span>
+</a>
+</nav>
+<div class="p-4 border-t border-primary/10 mt-auto">
+<div class="flex items-center gap-3 p-2">
+<div class="h-10 w-10 rounded-full bg-primary/20 bg-cover bg-center" data-alt="Admin user profile avatar portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAFrWY4p9huaXV7OCbVss70n2KMLAHSq84FnfAD0B0z04DEk3b87fDd7SNY5XMbdS8qfA3BO0z8H-VqJVsVsdxbGJnFSmhinGhKZMrTAuqModD247OqTGu3wVcto9q7bDctVVGczouJugCcHVg2a7I2Z48_z2MY7dORbX7W-XSQ4FgzXfVZ4Z3HbrjX6UGc41q-Fu-pCNxnRhVw2tUvEcJDkj7x3V5TpIRbcghYmmTsHf-AT6BCbp5cTFBZWSdbILRhpUHzQYkY2Wc')"></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Alex Smith</p>
+<p class="text-xs text-slate-500 truncate">Senior Admin</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col">
+<!-- Header -->
+<header class="h-16 border-b border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-10">
+<h1 class="text-xl font-bold font-heading">Listing Moderation</h1>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-slate-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="pl-10 pr-4 py-2 bg-primary/5 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary w-64 lg:w-80" placeholder="Search properties..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-primary/5 rounded-lg relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+</div>
+</header>
+<!-- Content Body -->
+<div class="p-8 max-w-7xl mx-auto w-full">
+<!-- Filter Tabs -->
+<div class="flex border-b border-primary/10 mb-8 overflow-x-auto">
+<button class="px-6 py-3 border-b-2 border-primary text-primary font-semibold text-sm whitespace-nowrap">
+                    Pending Approval (24)
+                </button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 hover:text-primary font-medium text-sm whitespace-nowrap">
+                    Flagged (5)
+                </button>
+<button class="px-6 py-3 border-b-2 border-transparent text-slate-500 hover:text-primary font-medium text-sm whitespace-nowrap">
+                    Recently Approved
+                </button>
+</div>
+<!-- Table Section -->
+<div class="bg-white dark:bg-background-dark border border-primary/10 rounded-xl overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 text-slate-600 dark:text-slate-400">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Property</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Submitted By</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">AI Auto-Check</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5">
+<!-- Row 1 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-16 rounded-lg bg-primary/10 bg-cover bg-center" data-alt="Modern townhouse facade exterior view" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDK46v0z604sIOg_2MGNHhxa5pKheAvhhx0bzTZXDKq3C39SiIJuZm3hLyYQLZ-PL7T3TV8tMDZoeLZ05RHPhJzpmaDAlIN035tZzcvi-sT0h-bVcd0-47aVIoPXLnArZK-4gfCYwtRL8E5WYbCXerGLHQ4ZBw2EIl6FExb5-FYLE6dmmY5ZzkHGYn1J2APGAmwLRmR4l63R3WEsemgnZlNJ-oBE_99zlEBSytzP3KJIJ5L-aB0Zh36nqjVsC1Q67yb9w47qg6dqW0')"></div>
+<div class="min-w-0">
+<p class="font-bold text-sm truncate">123 Maple St, London</p>
+<p class="text-xs text-slate-500">Residential • £450,000</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">
+<p class="font-medium">John Doe</p>
+<p class="text-xs text-slate-500">Professional Agent</p>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">
+                                Oct 12, 2023
+                            </td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 w-fit uppercase">
+<span class="material-symbols-outlined text-[14px]">photo_library</span> Low resolution photos
+                                    </span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-primary hover:bg-primary/10 rounded-lg title='Approve'">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg" title="Reject">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+<button class="p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg" title="Flag Manual Review">
+<span class="material-symbols-outlined">flag</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-16 rounded-lg bg-primary/10 bg-cover bg-center" data-alt="Luxury apartment balcony with city skyline" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDRy3gXOcjYbQwfp5kPeXE53a8cApQm0hb9me3PSuC6D6gmQooiTE1wqJ0P8QRuxiOR89WTdpKRrNwpC0P044kBzlQJHGa9CckZIdssy8lbOIcvocTe854VqP8f_zfx1UZWmUTtU_vaR7QasV1A14aBTXJ8D6lg1Uj2zHrTSVtJLBuPRUmpRmqTHOu0s6PIogVdui9XW1_t80Bj8lIFlxsbCEMi-1P-Ijrhky_zWTrlvdlSvnTAQou8MpS06QFlzQOkNYwZY6BbrEg')"></div>
+<div class="min-w-0">
+<p class="font-bold text-sm truncate">456 Oak Ave, Manchester</p>
+<p class="text-xs text-slate-500">Penthouse • £1,200,000</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">
+<p class="font-medium">Jane Smith</p>
+<p class="text-xs text-slate-500">Individual Seller</p>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">
+                                Oct 11, 2023
+                            </td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 w-fit uppercase">
+<span class="material-symbols-outlined text-[14px]">content_copy</span> Potential duplicate
+                                    </span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-primary hover:bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+<button class="p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg">
+<span class="material-symbols-outlined">flag</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="h-12 w-16 rounded-lg bg-primary/10 bg-cover bg-center" data-alt="Traditional brick cottage with green garden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQYPCFUREgenB0OU9Te-QnzBUzdi6djYEZ86CMNKZRLNKeWYX3496fxgKb9KL8Nu-vtCkrv5PmrJkfW8xuroFvh_5HNmiy-0bDlo227rSJr6FUJvWrVtE9NRqvTU2M76E7SCDyK2MlzVAsOUSr8qaPCFeq_YFvOduYR1oCqvlTbN-puqaN4tvNW8ZQqbfLfKYupY4WQwv3NbW5yPABKoPOToQ7BGZrFsh0qkxhlSuKKYYAVG5mNW_vDEywkZgHgcbmNySFiNgXaKg')"></div>
+<div class="min-w-0">
+<p class="font-bold text-sm truncate">789 Pine Rd, Bristol</p>
+<p class="text-xs text-slate-500">Cottage • £325,000</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">
+<p class="font-medium">Bob Wilson</p>
+<p class="text-xs text-slate-500">Agency Admin</p>
+</td>
+<td class="px-6 py-4 text-sm text-slate-500">
+                                Oct 10, 2023
+                            </td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1.5">
+<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 w-fit uppercase">
+<span class="material-symbols-outlined text-[14px]">verified</span> Clear
+                                    </span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-primary hover:bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+<button class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
+<span class="material-symbols-outlined">cancel</span>
+</button>
+<button class="p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg">
+<span class="material-symbols-outlined">flag</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Contextual Action Panel (Rejection) -->
+<div class="mt-8 bg-white dark:bg-background-dark border border-primary/10 p-6 rounded-xl shadow-sm">
+<div class="flex flex-col md:flex-row md:items-end gap-6">
+<div class="flex-1 space-y-2">
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Quick Rejection Reason (for selected)</label>
+<select class="w-full bg-primary/5 border-primary/10 rounded-lg text-sm px-4 py-3 focus:ring-primary focus:border-primary">
+<option value="">Select a standard rejection reason...</option>
+<option value="quality">Poor Image Quality</option>
+<option value="duplicate">Duplicate Listing</option>
+<option value="fraud">Potential Fraudulent Data</option>
+<option value="category">Incorrect Category</option>
+<option value="other">Other (Manual Note Required)</option>
+</select>
+</div>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+                        Reject Selected
+                    </button>
+<button class="bg-primary/10 text-primary px-8 py-3 rounded-lg font-bold text-sm hover:bg-primary/20 transition-all border border-primary/20">
+                        Bulk Approve
+                    </button>
+</div>
+<div class="mt-4 flex items-center gap-2 text-xs text-slate-500">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Selecting a reason will automatically notify the submitter via email.</span>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between mt-6 px-2">
+<p class="text-sm text-slate-500">Showing 1 to 3 of 24 properties</p>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-primary/10 rounded-lg hover:bg-primary/5 text-slate-400">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold">1</button>
+<button class="px-4 py-2 border border-primary/10 rounded-lg text-sm font-medium hover:bg-primary/5">2</button>
+<button class="px-4 py-2 border border-primary/10 rounded-lg text-sm font-medium hover:bg-primary/5">3</button>
+<button class="p-2 border border-primary/10 rounded-lg hover:bg-primary/5 text-slate-400">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

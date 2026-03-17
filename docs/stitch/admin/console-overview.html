@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate Admin Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#11d432",
+                "background-light": "#f6f8f6",
+                "background-dark": "#102213",
+              },
+              fontFamily: {
+                "display": ["Public Sans"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .chart-grid { background-image: radial-gradient(circle, rgba(17, 212, 50, 0.05) 1px, transparent 1px); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 z-50">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-sm">domain</span>
+</div>
+<span class="font-bold text-lg tracking-tight">Britestate<span class="text-primary">Admin</span></span>
+</div>
+<nav class="px-4 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg font-medium transition-colors" href="#">
+<span class="material-icons text-[20px]">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors" href="#">
+<span class="material-icons text-[20px]">group</span>
+                User Management
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors" href="#">
+<span class="material-icons text-[20px]">apartment</span>
+                Active Listings
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors" href="#">
+<span class="material-icons text-[20px]">payments</span>
+                Finance &amp; Revenue
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors" href="#">
+<span class="material-icons text-[20px]">verified_user</span>
+                Verification Queue
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg transition-colors" href="#">
+<span class="material-icons text-[20px]">gavel</span>
+                Content Moderation
+            </a>
+</nav>
+<div class="absolute bottom-0 left-0 w-full p-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<img alt="Admin" class="w-8 h-8 rounded-full border border-primary/20" data-alt="Headshot of a professional male administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkhmaua9NagtnrLcCjzm_amGhTNtZGVxBDrw-0bCSbvir9CZK4UuVS7AG_aFSJmRjbcayWOtdkfZvnkMjThE7HErF1e5W6VN5wo7PxnuR_agf27wgNSUqArCTGm--h-xTRCVigRE6iI-E8RFBV4WjzfEjgxacMYAstGf62394aVpcey0Ubo8z0QgHwThlAdYMpJNEkDzf14h6NOw_Ufrnhh5_gf4u7a6uuawsS_tiX5KvrEJkXz0noIXTa4nHO6p-Qx02wiBdZzmA"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-semibold truncate">Alex Thorne</p>
+<p class="text-xs text-slate-500 truncate">System Architect</p>
+</div>
+<button class="text-slate-400 hover:text-slate-100">
+<span class="material-icons text-[18px]">settings</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 p-8">
+<!-- Header -->
+<header class="flex justify-between items-center mb-8">
+<div>
+<h1 class="text-2xl font-bold">Admin Console Overview</h1>
+<p class="text-slate-500 text-sm">Real-time platform performance and operational metrics.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm w-64 focus:ring-primary focus:border-primary outline-none" placeholder="Search system logs..." type="text"/>
+</div>
+<button class="p-2 relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:border-primary transition-colors">
+<span class="material-icons text-slate-500">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<div class="h-8 w-px bg-slate-200 dark:border-slate-800"></div>
+<div class="px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-[12px] font-bold uppercase tracking-wider">
+                    SYSTEM LIVE
+                </div>
+</div>
+</header>
+<!-- KPI Row -->
+<div class="grid grid-cols-5 gap-4 mb-8">
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Total Users</p>
+<div class="flex items-end justify-between mt-2">
+<h3 class="text-2xl font-bold tracking-tight">84,291</h3>
+<span class="text-primary text-xs font-bold flex items-center mb-1">
+<span class="material-icons text-[14px]">trending_up</span> 12%
+                    </span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Active Listings</p>
+<div class="flex items-end justify-between mt-2">
+<h3 class="text-2xl font-bold tracking-tight">12,402</h3>
+<span class="text-primary text-xs font-bold flex items-center mb-1">
+<span class="material-icons text-[14px]">trending_up</span> 8.4%
+                    </span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800">
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Revenue (MTD)</p>
+<div class="flex items-end justify-between mt-2">
+<h3 class="text-2xl font-bold tracking-tight">$428.5k</h3>
+<span class="text-primary text-xs font-bold flex items-center mb-1">
+<span class="material-icons text-[14px]">trending_up</span> 15.2%
+                    </span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 ring-2 ring-yellow-500/20">
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Verification Queue</p>
+<div class="flex items-end justify-between mt-2">
+<h3 class="text-2xl font-bold tracking-tight text-yellow-500">412</h3>
+<span class="text-slate-400 text-xs font-bold flex items-center mb-1">
+<span class="material-icons text-[14px] rotate-180">trending_down</span> 3.1%
+                    </span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 ring-2 ring-red-500/20">
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Mod. Queue</p>
+<div class="flex items-end justify-between mt-2">
+<h3 class="text-2xl font-bold tracking-tight text-red-500">28</h3>
+<span class="text-red-500 text-xs font-bold flex items-center mb-1">
+<span class="material-icons text-[14px]">priority_high</span> High
+                    </span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8 mb-8">
+<!-- Charts Column -->
+<div class="col-span-8 space-y-8">
+<!-- User Growth Multi-line Chart -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold">User Growth (12 Months)</h4>
+<div class="flex gap-4 text-xs">
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-primary"></span> Buyers</div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-400"></span> Sellers</div>
+<div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span> Agents</div>
+</div>
+</div>
+<div class="h-64 relative chart-grid border-b border-l border-slate-200 dark:border-slate-800 flex items-end">
+<svg class="absolute inset-0 w-full h-full p-2 overflow-visible">
+<!-- Buyer Line -->
+<path d="M0 180 Q 50 160, 100 170 T 200 120 T 300 100 T 400 80 T 500 40 T 600 20" fill="none" stroke="#11d432" stroke-linecap="round" stroke-width="3"></path>
+<!-- Seller Line -->
+<path d="M0 200 Q 50 190, 100 195 T 200 160 T 300 150 T 400 140 T 500 120 T 600 110" fill="none" opacity="0.6" stroke="#60a5fa" stroke-linecap="round" stroke-width="3"></path>
+<!-- Agent Line -->
+<path d="M0 220 Q 50 215, 100 210 T 200 200 T 300 190 T 400 185 T 500 180 T 600 175" fill="none" opacity="0.6" stroke="#fbbf24" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full translate-y-full flex justify-between pt-2 px-2 text-[10px] text-slate-500 uppercase tracking-tighter">
+<span>Jul 23</span><span>Sep 23</span><span>Nov 23</span><span>Jan 24</span><span>Mar 24</span><span>May 24</span><span>Jul 24</span>
+</div>
+</div>
+</div>
+<!-- Revenue Stacked Bar Chart -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold">Revenue Breakdown (MRR)</h4>
+<select class="text-xs bg-slate-100 dark:bg-slate-800 border-none rounded focus:ring-primary">
+<option>Last 6 Months</option>
+<option>YTD</option>
+</select>
+</div>
+<div class="flex items-end justify-between h-48 gap-4 px-2">
+<!-- Bar Item 1 -->
+<div class="flex-1 flex flex-col gap-1 h-full justify-end">
+<div class="w-full bg-primary/40 h-[20%] rounded-t-sm" title="Lead Gen"></div>
+<div class="w-full bg-primary/70 h-[40%] shadow-lg" title="Premium"></div>
+<div class="w-full bg-primary h-[20%] rounded-b-sm" title="Subs"></div>
+<span class="text-[10px] text-center mt-2 text-slate-500">FEB</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 h-full justify-end">
+<div class="w-full bg-primary/40 h-[22%] rounded-t-sm"></div>
+<div class="w-full bg-primary/70 h-[38%] shadow-lg"></div>
+<div class="w-full bg-primary h-[25%] rounded-b-sm"></div>
+<span class="text-[10px] text-center mt-2 text-slate-500">MAR</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 h-full justify-end">
+<div class="w-full bg-primary/40 h-[25%] rounded-t-sm"></div>
+<div class="w-full bg-primary/70 h-[42%] shadow-lg"></div>
+<div class="w-full bg-primary h-[28%] rounded-b-sm"></div>
+<span class="text-[10px] text-center mt-2 text-slate-500">APR</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 h-full justify-end">
+<div class="w-full bg-primary/40 h-[28%] rounded-t-sm"></div>
+<div class="w-full bg-primary/70 h-[45%] shadow-lg"></div>
+<div class="w-full bg-primary h-[32%] rounded-b-sm"></div>
+<span class="text-[10px] text-center mt-2 text-slate-500">MAY</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 h-full justify-end">
+<div class="w-full bg-primary/40 h-[30%] rounded-t-sm"></div>
+<div class="w-full bg-primary/70 h-[48%] shadow-lg"></div>
+<div class="w-full bg-primary h-[35%] rounded-b-sm"></div>
+<span class="text-[10px] text-center mt-2 text-slate-500">JUN</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 h-full justify-end">
+<div class="w-full bg-primary/40 h-[35%] rounded-t-sm"></div>
+<div class="w-full bg-primary/70 h-[52%] shadow-lg"></div>
+<div class="w-full bg-primary h-[40%] rounded-b-sm"></div>
+<span class="text-[10px] text-center mt-2 text-slate-500 font-bold text-primary">JUL</span>
+</div>
+</div>
+</div>
+<!-- Platform Health Section -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<h4 class="font-bold mb-6">Platform Technical Health</h4>
+<div class="grid grid-cols-3 gap-8">
+<div class="flex flex-col items-center">
+<div class="relative w-24 h-24 mb-3">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-slate-100 dark:text-slate-800" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="50" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-bold text-lg">120ms</div>
+</div>
+<span class="text-xs text-slate-500 uppercase font-bold tracking-widest">API Response</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="relative w-24 h-24 mb-3">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-slate-100 dark:text-slate-800" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-blue-500" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="240" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-bold text-lg">0.04%</div>
+</div>
+<span class="text-xs text-slate-500 uppercase font-bold tracking-widest">Error Rate</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="relative w-24 h-24 mb-3">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-slate-100 dark:text-slate-800" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="2" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-bold text-lg">99.9%</div>
+</div>
+<span class="text-xs text-slate-500 uppercase font-bold tracking-widest">Uptime</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Alerts Sidebar Section -->
+<div class="col-span-4 h-full">
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 h-full flex flex-col sticky top-8 overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+<h4 class="font-bold">Critical Alerts Feed</h4>
+<span class="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">3 NEW</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- Alert Item -->
+<div class="p-4 rounded-lg bg-red-500/5 border-l-4 border-red-500">
+<div class="flex justify-between items-start mb-1">
+<h5 class="font-bold text-red-500 text-sm">Server Latency High</h5>
+<span class="text-[10px] text-slate-500">2m ago</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400">Node cluster-US-EAST is experiencing 400ms+ delay. Auto-scaling initiated.</p>
+<div class="mt-3 flex gap-2">
+<button class="px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded">DIAGNOSE</button>
+<button class="px-3 py-1 border border-slate-200 dark:border-slate-800 text-[10px] font-bold rounded">DISMISS</button>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="p-4 rounded-lg bg-yellow-500/5 border-l-4 border-yellow-500">
+<div class="flex justify-between items-start mb-1">
+<h5 class="font-bold text-yellow-500 text-sm">Failed Payouts</h5>
+<span class="text-[10px] text-slate-500">14m ago</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400">12 vendor payouts failed via Stripe API. Network timeout detected.</p>
+<div class="mt-3 flex gap-2">
+<button class="px-3 py-1 bg-yellow-500 text-black text-[10px] font-bold rounded">RETRY ALL</button>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="p-4 rounded-lg bg-blue-500/5 border-l-4 border-blue-500">
+<div class="flex justify-between items-start mb-1">
+<h5 class="font-bold text-blue-500 text-sm">Queue Backlog</h5>
+<span class="text-[10px] text-slate-500">1h ago</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400">Moderation queue exceeded 25 items threshold. Reviewer assignment suggested.</p>
+</div>
+<!-- Alert Item -->
+<div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 opacity-60">
+<div class="flex justify-between items-start mb-1">
+<h5 class="font-bold text-sm">SSL Certificate Renewed</h5>
+<span class="text-[10px] text-slate-500">3h ago</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400">Primary domain wildcard certificate successfully auto-renewed.</p>
+</div>
+<!-- Alert Item -->
+<div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 opacity-60">
+<div class="flex justify-between items-start mb-1">
+<h5 class="font-bold text-sm">Backup Complete</h5>
+<span class="text-[10px] text-slate-500">6h ago</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400">Daily snapshot for DB_BRITESTATE_MAIN completed. 4.2TB stored.</p>
+</div>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+<button class="w-full text-center text-xs font-bold text-slate-500 hover:text-primary transition-colors">VIEW FULL SYSTEM LOGS</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

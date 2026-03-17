@@ -1,6 +1,7 @@
 "use client";
 
-import { use, useEffect, useRef, useState, KeyboardEvent } from "react";
+import { use, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import type { JSX } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Paperclip } from "lucide-react";

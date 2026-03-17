@@ -128,14 +128,15 @@ export default function AlertsPage() {
   const mutation = useMutation<
     NotificationPreferences,
     Error,
-    { key: NotificationKey; value: boolean; previousPrefs: NotificationPreferences }
+    { key: NotificationKey; value: boolean },
+    NotificationPreferences
   >({
     mutationFn: ({ key, value }) => savePreference({ [key]: value }),
     onMutate: async ({ key, value }) => {
       // Cancel any in-flight queries to prevent overwriting the optimistic update
       await queryClient.cancelQueries({ queryKey: ["notification-preferences"] });
 
-      // Snapshot the previous value
+      // Snapshot the previous value (returned as context for rollback)
       const previousPrefs =
         queryClient.getQueryData<NotificationPreferences>(["notification-preferences"]) ?? {};
 
@@ -145,12 +146,12 @@ export default function AlertsPage() {
         (old) => ({ ...old, [key]: value }),
       );
 
-      return { key, value, previousPrefs };
+      return previousPrefs;
     },
     onError: (_err, _vars, context) => {
       // Revert to previous value
-      if (context?.previousPrefs !== undefined) {
-        queryClient.setQueryData(["notification-preferences"], context.previousPrefs);
+      if (context !== undefined) {
+        queryClient.setQueryData(["notification-preferences"], context);
       }
       toast.error("Failed to save preference");
     },
@@ -163,9 +164,7 @@ export default function AlertsPage() {
   });
 
   function handleToggle(key: NotificationKey, value: boolean) {
-    const previousPrefs =
-      queryClient.getQueryData<NotificationPreferences>(["notification-preferences"]) ?? {};
-    mutation.mutate({ key, value, previousPrefs });
+    mutation.mutate({ key, value });
   }
 
   function pref(key: NotificationKey): boolean {

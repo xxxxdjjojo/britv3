@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate Admin | User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<!-- Sidebar Navigation (Minimalist) -->
+<aside class="w-20 lg:w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col hidden md:flex">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+<span class="material-icons-outlined text-sm">domain</span>
+</div>
+<span class="font-bold text-lg tracking-tight hidden lg:block uppercase">Britestate</span>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">dashboard</span>
+<span class="hidden lg:block font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary transition-colors" href="#">
+<span class="material-icons-outlined">people</span>
+<span class="hidden lg:block font-semibold">Users</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">real_estate_agent</span>
+<span class="hidden lg:block font-medium">Listings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">security</span>
+<span class="hidden lg:block font-medium">Moderation</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 px-3 py-2">
+<img class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700" data-alt="Admin user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHLwroysFfAkgNCGVjuhk3ZZ0ee9-8fc1GlSnnH-QH21Fzkb8SLHRKIf5tFAKlwbBtWG69GNcW37b4RAQeVracbR1tvpx40PgBLpMruE0WrDfjro3tgv8mF8e1DTER8QZs4gNbhGXMIqi6XEQq2kR3Rb0EazJ2Tvm2L6uuy4Tw058aEdo3GRKco6msD3eygYl8_2jEsaTUKjjeUoHOqzYAxuyYLKtkgESqrHGT0IQyno8JCDAs9eBHdbaS9vyR2M7cxiacelS1K5E"/>
+<div class="hidden lg:block overflow-hidden">
+<p class="text-sm font-semibold truncate">Alex Rivera</p>
+<p class="text-xs text-slate-500">Super Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+<!-- Top Header -->
+<header class="h-16 flex items-center justify-between px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<h1 class="text-xl font-bold">User Management</h1>
+<div class="flex gap-2 ml-4">
+<span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-medium text-slate-600 dark:text-slate-400">12,482 Users</span>
+<span class="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 rounded text-xs font-medium text-red-600 dark:text-red-400">24 Flagged</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-icons-outlined">notifications</span>
+</button>
+<button class="bg-primary text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:bg-blue-600 transition-all">
+<span class="material-icons-outlined text-sm">person_add</span>
+                    Create User
+                </button>
+</div>
+</header>
+<!-- Filter Bar -->
+<section class="p-6 pb-0">
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-4">
+<div class="flex-1 min-w-[300px] relative">
+<span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search by name, email or ID..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<select class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm py-2 px-3 focus:ring-2 focus:ring-primary/20">
+<option>All Roles</option>
+<option>Broker</option>
+<option>Agent</option>
+<option>Client</option>
+<option>Admin</option>
+</select>
+<select class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm py-2 px-3 focus:ring-2 focus:ring-primary/20">
+<option>Status</option>
+<option>Active</option>
+<option>Suspended</option>
+<option>Banned</option>
+</select>
+<select class="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-sm py-2 px-3 focus:ring-2 focus:ring-primary/20">
+<option>Verification</option>
+<option>Verified</option>
+<option>Pending</option>
+<option>Unverified</option>
+</select>
+<button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
+<span class="material-icons-outlined text-sm">filter_list</span>
+                        More
+                    </button>
+</div>
+</div>
+</section>
+<!-- Main Workspace (Table + Sidebar) -->
+<div class="flex-1 flex overflow-hidden p-6 gap-6">
+<!-- Table Container -->
+<div class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden flex flex-col shadow-sm">
+<div class="flex-1 overflow-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="bg-slate-50/50 dark:bg-slate-800/50 sticky top-0 border-b border-slate-200 dark:border-slate-800">
+<th class="p-4 w-10">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">User</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">Role</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">Status</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">Verification</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">Joined</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider">Last Active</th>
+<th class="p-4 text-xs font-semibold uppercase text-slate-500 tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1 (Selected/Active) -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer bg-primary/5 transition-colors">
+<td class="p-4"><input checked="" class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk26h7eIPn2KdrOPAUZrWjUMIRuYrroFt8PuZ5drlIKraKucdMRO2QiPEX13JjoCsCgYbuHUQK5qDBB3LqeAPWDgrJjzkm_ikW3QE943mI-X66KECMILQpf9hsz9PQqNtENr3bwMHuRJi5_-3hWcI5ltkFDqUWRkRT1hAJliDkJvT34rwxFYFFDq5pmG0-PguT3BGjJ5qnpdFxR4RbsZ8qoHmZ9jRNdS5P_PuItz8qsG6eIB5e1gqBNdYOGQWhHCgZgmTs8mR4f78"/>
+<div>
+<p class="font-semibold text-sm">Marcus Sterling</p>
+<p class="text-xs text-slate-500">m.sterling@agency.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-[10px] font-bold uppercase">Broker</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+<span class="material-icons-outlined text-base">verified</span>
+<span class="text-xs font-semibold uppercase">ID Verified</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">Oct 12, 2022</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">2 mins ago</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors" title="Impersonate"><span class="material-icons-outlined text-lg">login</span></button>
+<button class="p-1.5 text-slate-400 hover:text-orange-500 transition-colors" title="Suspend"><span class="material-icons-outlined text-lg">block</span></button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Ban"><span class="material-icons-outlined text-lg">gavel</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+<td class="p-4"><input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-80BTIeS_ErHV6QZ_L_0AhVVO0Fh5ACFNNe6S276_Z_bhyH8rXc_I3y3s-q8FfBzVG4XxAXI5BS0NhIC1vVDhhCI6ieNNK4fdenacq188ca7LvA62GU5dvwNJ9v0fZs3xKnMgSDpht9uDQbbVGCkHxOcCExaHNtORwsApWjYgrWqnKAMGO9xIeMdXZQKLDANqHRqv6GbsntagvHDbSZVEEsNFtsrcNTKR-Pcf756r25sbYEhTNzDnExhgSDGBBsa4W7V91DOers0"/>
+<div>
+<p class="font-semibold text-sm">Elena Rodriguez</p>
+<p class="text-xs text-slate-500">elena.rod@realty.net</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-[10px] font-bold uppercase">Agent</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2 text-orange-500">
+<div class="w-2 h-2 rounded-full bg-orange-500"></div>
+<span class="text-sm font-medium">Suspended</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-icons-outlined text-base">info</span>
+<span class="text-xs font-semibold uppercase">Pending</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">Jan 05, 2023</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">14 hours ago</td>
+<td class="p-4 text-right text-slate-400">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 hover:text-primary transition-colors"><span class="material-icons-outlined text-lg">login</span></button>
+<button class="p-1.5 text-orange-500 transition-colors"><span class="material-icons-outlined text-lg">lock_open</span></button>
+<button class="p-1.5 hover:text-red-500 transition-colors"><span class="material-icons-outlined text-lg">gavel</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+<td class="p-4"><input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnvUPUxSpme9K3EgCtPhd4j7sLoqNpt__dRF3QktUrTIJbN61rSbCSU2dFkKAJtvOJrvTw4DVdKnvErJ4OTOizLf9_EO7BhZZlXDu3lfZLioTqrKfubXpHmYt4gu7evnBRMp8P--_bTaJoZCns5hacyJ85XWOtXJLW5iuMOK23IxxAsrN14CkEPdesAtX3mactQuOX2xWniwmGdZaFV6DvPbOD0zIVgWMKNUe9kJeog-WEZJOP8IamOHGce36HB_ENQ5CreEg8akc"/>
+<div>
+<p class="font-semibold text-sm">Jordan Smith</p>
+<p class="text-xs text-slate-500">jordan@buyer.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded text-[10px] font-bold uppercase">Client</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="p-4 text-slate-400">
+<span class="text-xs font-semibold uppercase">Unverified</span>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">Mar 22, 2023</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">3 days ago</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors"><span class="material-icons-outlined text-lg">login</span></button>
+<button class="p-1.5 text-slate-400 hover:text-orange-500 transition-colors"><span class="material-icons-outlined text-lg">block</span></button>
+<button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors"><span class="material-icons-outlined text-lg">gavel</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+<td class="p-4"><input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full" data-alt="User profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFWpajc9IPMUHhF--j0Y6KtWeYlvQ3TzlsiEpXQoS5356mfJlVh0ht2nXxJCOdrpj3tMb0KkS1-juQOd2OXGaxP1XAe6DHIWOcXLfwd27V8OrQzyzM85RezqOUSWpDnITK7M7x6SODENHkrqV80iqgQKdJa6wUUyzIMGqmOZcF-wsLP4rhQm0w5f1kwOfdtpiWpQDDcuLcDH0EkY8z7fGBzA1Fc8zovSUngiVk1Qoerx9r487inAJ4iX20paBJ02spMpkEM13ejLU"/>
+<div>
+<p class="font-semibold text-sm">Sarah Vane</p>
+<p class="text-xs text-slate-500">sv@banned.com</p>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-[10px] font-bold uppercase">Agent</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2 text-red-500">
+<div class="w-2 h-2 rounded-full bg-red-500"></div>
+<span class="text-sm font-medium">Banned</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1 text-red-600/60">
+<span class="material-icons-outlined text-base">no_accounts</span>
+<span class="text-xs font-semibold uppercase">Flagged</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">Jun 10, 2021</td>
+<td class="p-4 text-sm text-slate-600 dark:text-slate-400">1 year ago</td>
+<td class="p-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 text-slate-200 cursor-not-allowed" disabled=""><span class="material-icons-outlined text-lg">login</span></button>
+<button class="p-1.5 text-slate-400 hover:text-primary transition-colors"><span class="material-icons-outlined text-lg">restore</span></button>
+<button class="p-1.5 text-red-600"><span class="material-icons-outlined text-lg">delete_forever</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<span class="text-xs font-medium text-slate-500">Showing 1-25 of 12,482</span>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+<span class="material-icons-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">3</button>
+<span class="px-1 text-slate-400">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">500</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+<span class="material-icons-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Detail Sidebar (Fixed Width) -->
+<aside class="w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col shadow-xl overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start">
+<div class="flex flex-col items-center w-full text-center">
+<div class="relative">
+<img class="w-24 h-24 rounded-full border-4 border-slate-50 dark:border-slate-800 shadow-sm" data-alt="User avatar large" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCMLVhVmbOMZHMs2hEJSloIrZAY_BwTSMz-iCvpeCY9W3tEYZZY3GW6iy_0Lmi4C0m3zRrr8H4XvBlvMepE_hfIOpIZvKAEwLDciMjsODODORmFCWqNNfjw_1gWj1rC4cx6TRlRzbcuMKGlkq4rSQzYIYQCAZ6bntS8vfaRd4McA8hN77QE99wI7s2_j9Dc1XKvR_mxwmDoZ1-rlHtdlCdtfDiHAWt-SM454w0q6SaM60NSbpv6wmmOikfbwplOa1XI2ntcnAaZk4"/>
+<div class="absolute bottom-1 right-1 w-6 h-6 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
+</div>
+<h2 class="mt-4 text-lg font-bold">Marcus Sterling</h2>
+<p class="text-sm text-slate-500">Broker | ID: BST-99231</p>
+<div class="flex gap-2 mt-4 w-full">
+<button class="flex-1 bg-primary/10 text-primary py-2 rounded-lg text-sm font-semibold hover:bg-primary/20 transition-all">Impersonate</button>
+<button class="flex-1 border border-slate-200 dark:border-slate-700 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Edit</button>
+</div>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex border-b border-slate-100 dark:border-slate-800">
+<button class="flex-1 py-3 text-xs font-bold uppercase border-b-2 border-primary text-primary">Overview</button>
+<button class="flex-1 py-3 text-xs font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-slate-600">Activity</button>
+<button class="flex-1 py-3 text-xs font-bold uppercase border-b-2 border-transparent text-slate-400 hover:text-slate-600">Notes</button>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-auto custom-scrollbar p-6 space-y-6">
+<!-- User Info -->
+<div>
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">User Details</h3>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Email Address</span>
+<span class="font-medium">m.sterling@agency.com</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Phone</span>
+<span class="font-medium">+1 (555) 012-3456</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Company</span>
+<span class="font-medium">Sterling Realty Group</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity -->
+<div>
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Recent Activity</h3>
+<div class="space-y-4">
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-icons-outlined text-sm">add_home</span>
+</div>
+<div>
+<p class="text-xs font-semibold">Created listing "The Glass House"</p>
+<p class="text-[10px] text-slate-400 uppercase mt-0.5">Today, 10:42 AM</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+<span class="material-icons-outlined text-sm">login</span>
+</div>
+<div>
+<p class="text-xs font-semibold">Logged in from IP: 192.168.1.1</p>
+<p class="text-[10px] text-slate-400 uppercase mt-0.5">Today, 08:15 AM</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-500">
+<span class="material-icons-outlined text-sm">check_circle</span>
+</div>
+<div>
+<p class="text-xs font-semibold">Identity verification approved</p>
+<p class="text-[10px] text-slate-400 uppercase mt-0.5">Yesterday, 04:30 PM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Admin Notes -->
+<div>
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Quick Note</h3>
+<textarea class="w-full text-sm bg-slate-50 dark:bg-slate-800 border-none rounded-lg p-3 h-24 focus:ring-1 focus:ring-primary/20 resize-none" placeholder="Add a private note about this user..."></textarea>
+<button class="mt-2 w-full text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase py-2">Save Note</button>
+</div>
+</div>
+<!-- Moderation Actions Footer -->
+<div class="p-6 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 space-y-3">
+<button class="w-full bg-orange-500/10 text-orange-600 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-orange-500/20 transition-all">
+<span class="material-icons-outlined text-sm">block</span>
+                        Suspend Account
+                    </button>
+<button class="w-full bg-red-600/10 text-red-600 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-600/20 transition-all">
+<span class="material-icons-outlined text-sm">gavel</span>
+                        Ban Permanent
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+</body></html>

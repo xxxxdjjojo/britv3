@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Fraud &amp; Security Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f7ae6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "risk-critical": "#ef4444",
+                        "risk-high": "#f97316",
+                        "risk-medium": "#f59e0b",
+                        "risk-low": "#10b981",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hidden lg:flex flex-col">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-icons text-white text-sm">shield</span>
+</div>
+<span class="text-xl font-bold tracking-tight">Britestate</span>
+</div>
+</div>
+<nav class="flex-1 p-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2 bg-primary/10 text-primary rounded-lg font-medium" href="#">
+<span class="material-icons text-sm">dashboard</span>
+                Security Center
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-sm">notifications</span>
+                Alerts Feed
+                <span class="ml-auto bg-risk-critical text-white text-[10px] px-1.5 py-0.5 rounded-full">12</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-sm">group</span>
+                User Monitoring
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-sm">map</span>
+                Threat Map
+            </a>
+<div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mb-2">Settings</p>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-icons text-sm">settings</span>
+                    Policies
+                </a>
+</div>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2">
+<div class="w-8 h-8 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+<img alt="Admin Profile" data-alt="Headshot of a professional security administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmkvwtNIZllGW20hfg_IkD-60yDHgx9L-TgbAZH3bG6jASNWWKKXogOx3aDqVVJr7Eweubf5c79BFOtRX-XPdSdlBwKzy9GWCjKd9yqQgof2sPRC_qxQN5LMy6fZCmt0jAhSlmbB3LoSx20pygeVqovVU1ngmaLYW_P8YijFlto2yuuL-fzpxargucZp9DH3L3ZNFQVGNYtLPjwtjYA5HoYOU11pxSOrV5VMcC7Q_2G8qjYcsCjhrn7kq8B4vYXo1OR5HeLKh6oFI"/>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-semibold truncate">Alex Chen</p>
+<p class="text-xs text-slate-500 truncate">Security Lead</p>
+</div>
+<span class="material-icons text-sm text-slate-400">logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Top Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md flex items-center justify-between px-8">
+<div class="flex items-center gap-4">
+<h1 class="text-lg font-semibold">Fraud &amp; Security Center</h1>
+<span class="px-2 py-0.5 rounded bg-risk-low/10 text-risk-low text-[10px] font-bold uppercase tracking-wider border border-risk-low/20 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-risk-low animate-pulse"></span>
+                    Live Monitoring
+                </span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-icons text-slate-400 group-hover:text-primary transition-colors cursor-pointer">search</span>
+</div>
+<div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+<span class="material-icons text-sm text-slate-500">calendar_today</span>
+<span class="text-xs font-medium">Last 24 Hours</span>
+<span class="material-icons text-sm text-slate-500">expand_more</span>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-all shadow-sm">
+                    New Investigation
+                </button>
+</div>
+</header>
+<!-- Dashboard Content Scrollable -->
+<div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+<!-- KPI Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Threats</span>
+<span class="material-icons text-risk-critical">warning</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">12</span>
+<span class="text-xs text-risk-critical font-medium">+4 since 1h</span>
+</div>
+<div class="mt-4 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-risk-critical h-full w-3/4"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Blocked IPs</span>
+<span class="material-icons text-primary">block</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">1,429</span>
+<span class="text-xs text-risk-low font-medium">↑ 12% today</span>
+</div>
+<div class="mt-4 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-1/2"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Risk Score</span>
+<span class="material-icons text-risk-medium">speed</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">42</span>
+<span class="text-xs text-slate-400 font-medium">Platform Baseline</span>
+</div>
+<div class="mt-4 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-risk-medium h-full w-[42%]"></div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Auto-Remediation</span>
+<span class="material-icons text-risk-low">verified_user</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold">94.2%</span>
+<span class="text-xs text-risk-low font-medium">Efficiency</span>
+</div>
+<div class="mt-4 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-risk-low h-full w-[94%]"></div>
+</div>
+</div>
+</div>
+<!-- Threat Map & Distribution -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
+<div class="xl:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 min-h-[400px] flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="font-bold text-lg">Account Takeover (ATO) Map</h3>
+<p class="text-sm text-slate-500">Live geographic distribution of failed login bursts</p>
+</div>
+<div class="flex gap-2">
+<span class="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+<span class="w-2 h-2 rounded-full bg-risk-critical"></span> High Attempt
+                            </span>
+<span class="flex items-center gap-1.5 text-xs font-medium text-slate-500 ml-4">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Safe Traffic
+                            </span>
+</div>
+</div>
+<div class="flex-1 relative bg-slate-100 dark:bg-slate-950 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+<img alt="World Map" class="w-full h-full object-cover opacity-60" data-alt="Dark stylized world map with security data overlay" data-location="World" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpqzGXWRJ9ObYKKBgaDNE59vOCnWBKb5SLwKIak15GMoKiG-3RrhNjNzSlsZdbYZe-Oslc5bBSQONh0QLCVPjcnynmIgVkbnINtK8EsyE9topqsuFDzG_aWC85Z7Aar5gjGfGwNGZ9VsAj889M5JnzGb-5Ehz0XLhfpVWuIoP0Y0OGHc8HANQ5-nnN3G71oIvhtRmvryJlLpBuXWZfhePFjAlLdeINpajb4A_bpGQAk2-n9bglqWkjdzJsPHpRRZIbbhggPzyosb0"/>
+<!-- Simulated Pings -->
+<div class="absolute top-1/4 left-1/3 w-4 h-4 bg-risk-critical rounded-full animate-ping"></div>
+<div class="absolute top-1/4 left-1/3 w-3 h-3 bg-risk-critical rounded-full"></div>
+<div class="absolute top-1/2 left-2/3 w-4 h-4 bg-risk-high rounded-full animate-ping" style="animation-delay: 1s"></div>
+<div class="absolute top-1/2 left-2/3 w-3 h-3 bg-risk-high rounded-full"></div>
+<div class="absolute bottom-1/4 right-1/4 w-3 h-3 bg-primary rounded-full"></div>
+<!-- Overlay Legend -->
+<div class="absolute bottom-4 left-4 bg-background-dark/80 backdrop-blur p-3 rounded-lg border border-slate-700 text-[10px] space-y-2">
+<div class="flex justify-between gap-4"><span>North America</span><span class="text-risk-critical">High</span></div>
+<div class="flex justify-between gap-4"><span>Europe</span><span class="text-risk-medium">Moderate</span></div>
+<div class="flex justify-between gap-4"><span>Asia-Pacific</span><span class="text-risk-low">Low</span></div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col">
+<h3 class="font-bold text-lg mb-4">Risk Distribution</h3>
+<div class="flex-1 flex flex-col justify-center space-y-6">
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-500">Critical Threats</span>
+<span class="font-bold">12</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full">
+<div class="h-full bg-risk-critical rounded-full" style="width: 15%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-500">High Risk Patterns</span>
+<span class="font-bold">48</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full">
+<div class="h-full bg-risk-high rounded-full" style="width: 35%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-500">Suspicious (Medium)</span>
+<span class="font-bold">156</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full">
+<div class="h-full bg-risk-medium rounded-full" style="width: 60%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-500">Low Risk / Routine</span>
+<span class="font-bold">892</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full">
+<div class="h-full bg-risk-low rounded-full" style="width: 90%"></div>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+<button class="w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors rounded-lg text-sm font-medium">
+                            Download Threat Report
+                        </button>
+</div>
+</div>
+</div>
+<!-- Activity Table Section -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div>
+<h3 class="font-bold text-lg">Suspicious Activity Alerts</h3>
+<p class="text-sm text-slate-500">Review and moderate flagged system events</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 text-xs font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                            Filter
+                        </button>
+<button class="px-3 py-1.5 text-xs font-medium border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800">
+                            Export CSV
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4">User / Source</th>
+<th class="px-6 py-4">Event Type</th>
+<th class="px-6 py-4">Risk Score</th>
+<th class="px-6 py-4">Timestamp</th>
+<th class="px-6 py-4">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1: Critical -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-risk-critical/10 flex items-center justify-center text-risk-critical">
+<span class="material-icons">person_outline</span>
+</div>
+<div>
+<p class="text-sm font-semibold">user_9921_beta</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">IP: 182.16.2.45</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-risk-critical/10 text-risk-critical border border-risk-critical/20">
+                                        CREDENTIAL STUFFING
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-12 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-risk-critical" style="width: 96%"></div>
+</div>
+<span class="text-sm font-bold text-risk-critical">96</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs text-slate-500">2 mins ago</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<button class="p-1.5 bg-risk-critical text-white rounded hover:bg-risk-critical/90 shadow-sm" title="Ban User">
+<span class="material-icons text-sm">gavel</span>
+</button>
+<button class="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded hover:text-primary transition-colors" title="Investigate">
+<span class="material-icons text-sm">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Warning -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-risk-high/10 flex items-center justify-center text-risk-high">
+<span class="material-icons">campaign</span>
+</div>
+<div>
+<p class="text-sm font-semibold">MarketGenius_X</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">IP: 45.191.22.1</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-risk-high/10 text-risk-high border border-risk-high/20">
+                                        LISTING SPAM
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-12 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-risk-high" style="width: 78%"></div>
+</div>
+<span class="text-sm font-bold text-risk-high">78</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs text-slate-500">14 mins ago</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<button class="p-1.5 bg-risk-high text-white rounded hover:bg-risk-high/90 shadow-sm" title="Suspend">
+<span class="material-icons text-sm">block</span>
+</button>
+<button class="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded hover:text-primary transition-colors" title="Investigate">
+<span class="material-icons text-sm">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Medium -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-risk-medium/10 flex items-center justify-center text-risk-medium">
+<span class="material-icons">rate_review</span>
+</div>
+<div>
+<p class="text-sm font-semibold">reviewer_bot_?01</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-tighter">IP: 102.11.88.9</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded text-[10px] font-bold bg-risk-medium/10 text-risk-medium border border-risk-medium/20">
+                                        FAKE REVIEW PATTERN
+                                    </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-12 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-risk-medium" style="width: 52%"></div>
+</div>
+<span class="text-sm font-bold text-risk-medium">52</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs text-slate-500">1 hour ago</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<button class="p-1.5 bg-risk-low text-white rounded hover:bg-risk-low/90 shadow-sm" title="Clear/Safe">
+<span class="material-icons text-sm">check</span>
+</button>
+<button class="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded hover:text-primary transition-colors" title="Investigate">
+<span class="material-icons text-sm">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+<p>Showing 3 of 156 active alerts</p>
+<div class="flex gap-1">
+<button class="px-2 py-1 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 cursor-not-allowed">Prev</button>
+<button class="px-2 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">1</button>
+<button class="px-2 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">2</button>
+<button class="px-2 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Side Investigation Panel (Quick View) -->
+<aside class="w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark hidden 2xl:flex flex-col">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h3 class="font-bold">Risk Profile</h3>
+<span class="material-icons text-slate-400 text-sm">close</span>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+<!-- Profile Header -->
+<div class="text-center">
+<div class="w-20 h-20 mx-auto bg-risk-critical/20 rounded-full flex items-center justify-center mb-4 border-4 border-risk-critical/10">
+<span class="material-icons text-4xl text-risk-critical">security_update_warning</span>
+</div>
+<h4 class="text-lg font-bold">user_9921_beta</h4>
+<p class="text-xs text-slate-500">Created: Jan 12, 2024 (2 days old)</p>
+</div>
+<!-- Risk Breakdown -->
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Risk Breakdown</p>
+<div class="space-y-4">
+<div class="flex items-center justify-between text-sm">
+<span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-risk-critical"></span> IP Reputation</span>
+<span class="font-mono text-risk-critical">High</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-risk-high"></span> Device Fingerprint</span>
+<span class="font-mono text-risk-high">Suspect</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-risk-medium"></span> Behavior Velocity</span>
+<span class="font-mono text-risk-medium">Abnormal</span>
+</div>
+</div>
+</div>
+<!-- Evidence Logs -->
+<div>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Evidence Feed</p>
+<div class="space-y-3">
+<div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg text-xs border-l-2 border-risk-critical">
+<p class="font-semibold mb-1">Failed Login Peak</p>
+<p class="text-slate-500">42 attempts from 14 unique IPs in 2 minutes.</p>
+<p class="mt-2 text-[10px] opacity-50">14:02:11 GMT</p>
+</div>
+<div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg text-xs border-l-2 border-risk-high">
+<p class="font-semibold mb-1">User-Agent Mismatch</p>
+<p class="text-slate-500">Header spoofing detected on session 882x-p.</p>
+<p class="mt-2 text-[10px] opacity-50">13:58:04 GMT</p>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+<button class="w-full py-2.5 bg-risk-critical text-white font-bold rounded-lg text-sm hover:brightness-110 shadow-lg shadow-risk-critical/20">
+                    PERMANENT BAN
+                </button>
+<button class="w-full py-2.5 bg-slate-200 dark:bg-slate-800 font-bold rounded-lg text-sm hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                    CLEAR FLAG
+                </button>
+</div>
+</div>
+</aside>
+</body></html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Management | Britestate Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1B4D3E",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#141e1b",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-body">
+<div class="flex min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-primary/10 bg-white dark:bg-slate-900 sticky top-0 h-screen flex flex-col justify-between p-4 shrink-0">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="size-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-primary text-base font-bold leading-none">Britestate</h1>
+<p class="text-slate-500 text-xs font-medium">Admin Portal</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+<span class="text-sm font-semibold">User Management</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">real_estate_agent</span>
+<span class="text-sm font-medium">Properties</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">receipt_long</span>
+<span class="text-sm font-medium">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">analytics</span>
+<span class="text-sm font-medium">Reports</span>
+</a>
+<div class="pt-4 mt-4 border-t border-primary/10">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="mt-auto">
+<div class="p-3 bg-primary/5 rounded-xl flex items-center gap-3 mb-4">
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+</div>
+<div>
+<p class="text-xs font-bold text-primary">Need help?</p>
+<p class="text-[10px] text-slate-500">Contact Support</p>
+</div>
+</div>
+<div class="flex items-center gap-3 px-2 border-t border-primary/10 pt-4">
+<div class="size-9 rounded-full bg-slate-200" data-alt="Admin user avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBjWNrGDwYnc030ooGWk93h9gldTAHOIjdBKQ3POtMjtmmQf0aR3kSHYTln48f5qrBvogZKtI_otY1k1t6K6lkuKAVB-IZXbU0VE24S6JgtFGJsaQRAPhwWu2Br-jK2NNVFkrN_g72nsm6ERwBQ3yl57iho-diklzzOsQBalGDCK1FABhDx-U4708I14oiK7B2Z8_uyZre1qHoDoa7jXdqLM3mq9_qTEiafV_4kGGyPop5q3CbSHscOZNMlGnsidUepqATydKqtLJE");'></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-sm font-bold truncate">Alex Morgan</p>
+<p class="text-[11px] text-slate-500 truncate">Super Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0 overflow-auto">
+<!-- Header -->
+<header class="h-16 border-b border-primary/10 bg-white dark:bg-slate-900 flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-slate-400" placeholder="Quick search..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="size-10 flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 border-2 border-white rounded-full"></span>
+</button>
+<button class="size-10 flex items-center justify-center text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-px bg-slate-200"></div>
+<button class="bg-primary text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                        New User
+                    </button>
+</div>
+</header>
+<div class="p-8">
+<!-- Page Title Area -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">User Management</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Manage, verify and audit users across the Britestate network.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Export Data
+                        </button>
+<button class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-red-100 transition-colors">
+<span class="material-symbols-outlined text-lg">block</span>
+                            Bulk Suspend
+                        </button>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-primary/10 p-4 mb-6 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+<div class="lg:col-span-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Search name, email, or user ID..." type="text"/>
+</div>
+</div>
+<div>
+<select class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-primary">
+<option>All Roles</option>
+<option>Buyer</option>
+<option>Seller</option>
+<option>Landlord</option>
+<option>Agent</option>
+<option>Tradesperson</option>
+</select>
+</div>
+<div>
+<select class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-primary">
+<option>All Status</option>
+<option>Active</option>
+<option>Suspended</option>
+<option>Banned</option>
+</select>
+</div>
+<div>
+<button class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-600 dark:text-slate-400 flex items-center justify-between">
+<span>Date Range</span>
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+<span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Filters:</span>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-primary/5 text-primary text-[11px] font-bold rounded flex items-center gap-1 cursor-pointer">Verification: High <span class="material-symbols-outlined text-[10px]">close</span></span>
+<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[11px] font-bold rounded flex items-center gap-1 cursor-pointer">Recently Active <span class="material-symbols-outlined text-[10px]">close</span></span>
+</div>
+<button class="ml-auto text-xs font-bold text-primary hover:underline">Clear all filters</button>
+</div>
+</div>
+<!-- Table -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-primary/10 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+<th class="p-4 w-10">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name &amp; Email</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Verification</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Joined Date</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Last Active</th>
+<th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 shrink-0" data-alt="User avatar for Marcus Thorne" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlgOZ_LWEu4VwmH-HbY2rN8O6IiDOPV9jQcs5VfMK-MNVoGdeLXgrJCvE4-0tP9K17VQTnnjNc2eYD8L0rJ3mxQqjcMYLHMEe8Rad9kNBn68O0Wao7WDLSEepkoZo_s-dCaDSFyCvd3XdxFN6ITtT1QVxaeM9bsFt5xUI0O-m0y6qK2CKD1dOwjGU0zdoTTfKwJWp62pUTsjqFnrQ7ud6MqZFydjqbrjt0k0CfyPQtGkrGO2byzAIHtwU2OohaascfuNV-nWt-OU4");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Marcus Thorne</span>
+<span class="text-xs text-slate-500">marcus.t@example.com</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold uppercase tracking-wider">Agent</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-green-500 text-sm">verified</span>
+<span class="text-sm font-medium">Level 3</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-500">Oct 12, 2023</td>
+<td class="p-4 text-sm text-slate-500">2 mins ago</td>
+<td class="p-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 shrink-0" data-alt="User avatar for Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAntj90x63kuXG__fr5nHih0283Gl_YIEyC7Kz1UO-b0Dk1wkLih2RyN2V-1BqDuTgwfznN5SJaqMLY-6QyU1u_pFpYGRK-ffWhEl2Y6iymW_nMb2PkPbs0EGvG4yDbWRaKXwILv6M4SSJ6ezntLUvKF-vvRVXvizuzP7RuCvuE79lC4-Shnh_jh7g8VD_PSEPlQQDfcwpI0um1I-jS71j3R1-qvRhR2GcdmpXKNoRuwT5CBO62Vcedogwetsblpf6WjOmHEHl6SgI");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Sarah Jenkins</span>
+<span class="text-xs text-slate-500">s.jenkins@test.com</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-wider">Landlord</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-green-500 text-sm">verified</span>
+<span class="text-sm font-medium">Level 2</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-500">Sep 28, 2023</td>
+<td class="p-4 text-sm text-slate-500">5 hours ago</td>
+<td class="p-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 shrink-0" data-alt="User avatar for David Miller" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCaoPqHDshLTpV0lxRzwytJU-J5J4SZpwamUyUTlh3PNOQNEBEH-gXeVsqnfDykaA9UVSzfxdZeH_5bZDSSQlq59a1XRytlOG-5EeNR_GdZIR4Gzqcv2cXKrZtRPUepCsFoIRCYu2PfhG8xOL_fLvS-SJlNuezPDo_V1MP5lzZksBTHg4bbCkIyTHToEkoCPenloocj780vb1gjYB98vSM1baIZQbZx_jcZFvTf5dabIZMXg_5tpxsDXGvt2rdmUintv4bRrwurS0Y");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">David Miller</span>
+<span class="text-xs text-slate-500">d.miller@webmail.com</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold uppercase tracking-wider">Buyer</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-300 text-sm">verified</span>
+<span class="text-sm font-medium">Level 1</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-amber-500"></div>
+<span class="text-sm font-medium">Suspended</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-500">Jan 05, 2024</td>
+<td class="p-4 text-sm text-slate-500">3 days ago</td>
+<td class="p-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 shrink-0" data-alt="User avatar for Lisa Wong" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAkOByppd5e539xKdIJv9HtftWCZ92OlCqHUjsfC1y35LFWsz01raJ84jgBqfchtI4WlIDZW-7a4cu1re6wDkwdJf8ozw6LJndD7N0v7nilbefKAQzvIQN21BTKYh3KBhNvpevOreESpcEJkHUfj3lo8BylGvYpaQVcMgbi7c3PA3iSCm_pglWI0eN6YdQCsoLJI0Ar_OGY-ni8Olpb_LTz-tpp8UlNdbBdSCxFU8VE4uG26psd0xhuSC-fABkO9qf-uqEWmVh8GAk");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Lisa Wong</span>
+<span class="text-xs text-slate-500">lwong@construction.co</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-bold uppercase tracking-wider">Tradesperson</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-green-500 text-sm">verified</span>
+<span class="text-sm font-medium">Level 4</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-500">Nov 15, 2023</td>
+<td class="p-4 text-sm text-slate-500">1 hour ago</td>
+<td class="p-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="p-4">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 shrink-0" data-alt="User avatar for Robert Chen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTLVf8FyYWJ-OYBe55eRuqql3xHhocZIy_5igmXx6GUp1WtS1bRzqSYcmZgzahcIUFgq5HGYzuiXzCaW2G-dxPfk32EDrgV2kLQ0ETmdU9DIrqxSfxW02TcMwvUUfyqECmAr3i0NyQyZqvIOxjArb0HfAugwUihsCq9yUe_qcn33sT1cKmLzWThOD85P4Ye7FLOhmQSAau-FpQ6pT6W8YmY_EazL32NZC34mkSkg7y0kRsPhbMNvexsIWtmdKIg7HYbVzGmZW5cuY");'></div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Robert Chen</span>
+<span class="text-xs text-slate-500">r.chen@brokerage.com</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<span class="px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 text-[11px] font-bold uppercase tracking-wider">Seller</span>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-slate-300 text-sm">verified</span>
+<span class="text-sm font-medium">Level 2</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-red-500"></div>
+<span class="text-sm font-medium">Banned</span>
+</div>
+</td>
+<td class="p-4 text-sm text-slate-500">Feb 10, 2024</td>
+<td class="p-4 text-sm text-slate-500">Never</td>
+<td class="p-4 text-right">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+<p class="text-xs font-medium text-slate-500">Showing 1 to 5 of 2,410 users</p>
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded bg-primary text-white text-xs font-bold">1</button>
+<button class="size-8 flex items-center justify-center rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-white transition-colors">2</button>
+<button class="size-8 flex items-center justify-center rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-white transition-colors">3</button>
+<button class="size-8 flex items-center justify-center rounded border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

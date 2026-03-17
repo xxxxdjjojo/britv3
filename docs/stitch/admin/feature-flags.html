@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Feature Flags &amp; Rollouts | Britestate Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .slider-thumb::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #137fec;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .slider-thumb::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #137fec;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Header Navigation -->
+<header class="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-30">
+<div class="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons text-white text-sm">flag</span>
+</div>
+<span class="font-bold text-lg tracking-tight">Britestate <span class="text-primary">Admin</span></span>
+</div>
+<nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+<a class="hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary border-b-2 border-primary py-5" href="#">Feature Flags</a>
+<a class="hover:text-primary transition-colors" href="#">Environments</a>
+<a class="hover:text-primary transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-icons text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary w-64" placeholder="Search flags..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all">
+<span class="material-icons text-sm">add</span>
+                    Create Flag
+                </button>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto p-6 lg:p-8">
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Content: Flags List -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<div class="flex items-center justify-between mb-2">
+<h1 class="text-2xl font-bold">Feature Flags</h1>
+<div class="flex items-center gap-4 text-sm">
+<span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> 12 Active
+                        </span>
+<span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+<span class="w-2 h-2 rounded-full bg-slate-400"></span> 3 Scheduled
+                        </span>
+</div>
+</div>
+<!-- Flag Card 1 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<h3 class="text-lg font-semibold tracking-tight">new-dashboard-ui</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">Production</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Enables the revamped property management dashboard for beta participants.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Status</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400">
+<span class="material-icons">more_vert</span>
+</button>
+</div>
+</div>
+<div class="grid md:grid-cols-2 gap-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Rollout Percentage</span>
+<span class="text-xs font-bold text-primary">25%</span>
+</div>
+<input class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary slider-thumb" type="range" value="25"/>
+<div class="flex justify-between mt-2 text-[10px] text-slate-400 font-medium">
+<span>0%</span>
+<span>50%</span>
+<span>100%</span>
+</div>
+</div>
+<div>
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-widest block mb-3">Targeting Rules</span>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs flex items-center gap-1.5">
+<span class="material-icons text-xs">group</span> beta-testers
+                                </span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs flex items-center gap-1.5">
+<span class="material-icons text-xs">public</span> UK
+                                </span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs flex items-center gap-1.5">
+<span class="material-icons text-xs">public</span> US
+                                </span>
+<button class="px-2 py-1 border border-dashed border-slate-300 dark:border-slate-600 text-slate-400 rounded-full text-[10px] uppercase font-bold hover:border-primary hover:text-primary transition-colors">
+                                    + Add Rule
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Flag Card 2 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<h3 class="text-lg font-semibold tracking-tight">api-v2-migration</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/20">Staging</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">Routes traffic to the new GraphQL endpoint for internal performance testing.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Status</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400">
+<span class="material-icons">more_vert</span>
+</button>
+</div>
+</div>
+<div class="grid md:grid-cols-2 gap-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Rollout Percentage</span>
+<span class="text-xs font-bold text-slate-400">0%</span>
+</div>
+<input class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary slider-thumb" type="range" value="0"/>
+</div>
+<div>
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-widest block mb-3">Targeting Rules</span>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-xs flex items-center gap-1.5">
+<span class="material-icons text-xs">badge</span> internal-staff
+                                </span>
+<button class="px-2 py-1 border border-dashed border-slate-300 dark:border-slate-600 text-slate-400 rounded-full text-[10px] uppercase font-bold hover:border-primary hover:text-primary transition-colors">
+                                    + Add Rule
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Flag Card 3 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm opacity-60">
+<div class="flex items-start justify-between mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-3">
+<h3 class="text-lg font-semibold tracking-tight">experimental-search-filter</h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">Archived</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400">New elastic search weighting for residential properties.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400">
+<span class="material-icons text-sm">settings_backup_restore</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar: Recent Activity -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden flex flex-col h-full shadow-sm">
+<div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h2 class="font-bold text-sm uppercase tracking-widest text-slate-500 dark:text-slate-400">Recent Activity</h2>
+<span class="material-icons text-slate-400 text-lg">history</span>
+</div>
+<div class="p-4 space-y-6 overflow-y-auto max-h-[600px]">
+<!-- Activity Item 1 -->
+<div class="flex gap-3 relative">
+<div class="absolute left-4 top-8 bottom-0 w-px bg-slate-100 dark:bg-slate-800"></div>
+<div class="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden border-2 border-primary">
+<img alt="Jane Doe" class="w-full h-full object-cover" data-alt="Profile picture of a professional woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6Tvv6EEIdg1NkjqLZYPLIfRIV6MOp4TxI0fKSpPGoXsO605yqV3tHJJSRZ_xVnPVsyiOf3T9Z93B94U64Dvo6M5a82EzGbsTkw9dN9LkkY56Dl4k0Jh_qMNg8CgGzlweG341b32x7YS0WP-zBhT5F-7IaI3k1ZGeAwHk4cLQGWXTkFzm-yiAM-o3a8OkDopOXVuAbRsr_HANmtiA1uyuJ-wzsj-C9UUA7clC9lGD8Z6CtucjxRGXxZRiE0HKOceVC5Wsdt41Kijk"/>
+</div>
+<div class="flex-grow">
+<p class="text-sm">
+<span class="font-semibold">Jane Doe</span>
+<span class="text-slate-500 dark:text-slate-400">updated rollout to</span>
+<span class="font-mono text-xs font-bold text-primary bg-primary/10 px-1 rounded">25%</span>
+</p>
+<p class="text-xs font-medium text-primary mt-0.5">new-dashboard-ui</p>
+<p class="text-[10px] text-slate-400 mt-2 font-medium">2 mins ago</p>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex gap-3 relative">
+<div class="absolute left-4 top-8 bottom-0 w-px bg-slate-100 dark:bg-slate-800"></div>
+<div class="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+<img alt="John Smith" class="w-full h-full object-cover" data-alt="Profile picture of a professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6_Iv4GMn64DkamzWsDRwxgtOjU7EW0aCXYckvwFY6c3eyx0zcV1VbY6baBwny6y8zGnXMRdf_fxnPXGC5QHL8sE0SbIWGXnNHSsoG4OnHO5_KxqCHLzdEj-NWOHi6Uiz80Mzfo29X3J4PaU4dJ-hoJW29Zq7bMy8bZPficE8lFAYLV8W5fjA3L7pmI2CP-dhG259Xs2XYCa5sRc-SRX6BiBuH4hDLCo9FkFY3HTGjSKC5RNpB6kV6Av1QQuTI4Ew7-q4kdSdYnBU"/>
+</div>
+<div class="flex-grow">
+<p class="text-sm">
+<span class="font-semibold">John Smith</span>
+<span class="text-slate-500 dark:text-slate-400">disabled flag</span>
+</p>
+<p class="text-xs font-medium text-slate-400 mt-0.5">experimental-search-filter</p>
+<p class="text-[10px] text-slate-400 mt-2 font-medium">1 hour ago</p>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex gap-3 relative">
+<div class="absolute left-4 top-8 bottom-0 w-px bg-slate-100 dark:bg-slate-800"></div>
+<div class="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+<img alt="Sarah Connor" class="w-full h-full object-cover" data-alt="Profile picture of a female administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBUx5Bc7oLKdile76w5iUMerq-ZAMQW_ZcJTcLfHtD4yXHyUe_P1IltNHV-HLqHUbzgCcbQffW6pJKfMpjcAaRe_C4fdl1pJVioZsUbE3TOFWweqSPeSqvNAXWOFa3iQowwy7m0Gx6AepzFCZkD6sXpSvYVLaRSZt5auVid7uQ05ZsLFPM6yTZpf6KhsDpktJZVaTULMfecpTsvcdRmPe5T2qgNvlaBP1sydoo6QF1madWZkN2cFWC5srCTIUJAfKt1DlQ49GuGQY"/>
+</div>
+<div class="flex-grow">
+<p class="text-sm">
+<span class="font-semibold">Sarah Connor</span>
+<span class="text-slate-500 dark:text-slate-400">created new flag</span>
+</p>
+<p class="text-xs font-medium text-primary mt-0.5">api-v2-migration</p>
+<p class="text-[10px] text-slate-400 mt-2 font-medium">4 hours ago</p>
+</div>
+</div>
+<!-- Activity Item 4 -->
+<div class="flex gap-3 relative">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+<span class="material-icons text-sm text-slate-400">system_update_alt</span>
+</div>
+<div class="flex-grow">
+<p class="text-sm text-slate-500 dark:text-slate-400">
+<span class="font-semibold text-slate-700 dark:text-slate-200">System</span>
+                                    archived 12 stale flags
+                                </p>
+<p class="text-[10px] text-slate-400 mt-2 font-medium">Yesterday</p>
+</div>
+</div>
+</div>
+<button class="w-full p-4 text-xs font-bold text-slate-400 hover:text-primary border-t border-slate-200 dark:border-slate-800 transition-colors bg-slate-50 dark:bg-slate-900/50 uppercase tracking-widest">
+                        View Full Audit Log
+                    </button>
+</div>
+<!-- Stats/Health Card -->
+<div class="bg-primary/5 border border-primary/20 rounded-xl p-5 space-y-4">
+<h4 class="text-xs font-bold text-primary uppercase tracking-wider">System Health</h4>
+<div class="flex items-center justify-between">
+<span class="text-sm text-slate-600 dark:text-slate-300">Targeting Accuracy</span>
+<span class="text-sm font-bold text-slate-800 dark:text-white">99.9%</span>
+</div>
+<div class="w-full h-2 bg-primary/20 rounded-full overflow-hidden">
+<div class="w-[99.9%] h-full bg-primary"></div>
+</div>
+<div class="flex items-center gap-2 text-[11px] text-emerald-500 font-medium">
+<span class="material-icons text-sm">check_circle</span>
+                        All edge nodes synchronized
+                    </div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Meta -->
+<footer class="max-w-[1440px] mx-auto px-6 py-8 border-t border-slate-200 dark:border-slate-800 mt-12">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-4 text-xs text-slate-400 font-medium">
+<span>SDK: React v4.2.0</span>
+<span>•</span>
+<span>Region: us-east-1</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Connected</span>
+</div>
+<div class="text-xs text-slate-400">
+                © 2024 Britestate Admin Panel. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>

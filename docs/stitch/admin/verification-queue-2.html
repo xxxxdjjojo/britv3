@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | Verification Approval Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<!-- Top Navigation Bar -->
+<nav class="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-50">
+<div class="max-w-full mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+<span class="material-icons-outlined">verified_user</span>
+</div>
+<span class="text-xl font-bold tracking-tight">Britestate<span class="text-primary">Admin</span></span>
+</div>
+<div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+<a class="hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary border-b-2 border-primary py-5" href="#">Verification Queue</a>
+<a class="hover:text-primary transition-colors" href="#">Providers</a>
+<a class="hover:text-primary transition-colors" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary" placeholder="Search provider or ID..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full relative">
+<span class="material-icons-outlined text-xl">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-200 dark:border-slate-700">
+<img class="w-full h-full object-cover" data-alt="Admin user profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_PJT_6MUmNlXm_Q4echFrIbjKg8wINATNSi1D8X9m-Da8vWKoXZmYyHgMjRjOvotYNkPOV07aB3Dzm5JeJudUBE288rpGvN8fw2x8eQVIwsaynPqu7xeDwTCijlLNCFVCNyYM-7iu7LYP4GQhYmtoKKU-4FkD2bHfjRApEuWM4QaECa53XFMhIREMubM1YjnsrPM8sqSXbr0seS1qFpzG-0ja3ggmwVIdGOQzadk3ghMdF57eQ_lnlthwq8CTK0I0ZVKrLryNtEI"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="flex h-[calc(100-4rem)] overflow-hidden">
+<!-- Main Content Area -->
+<div class="flex-1 p-6 overflow-y-auto custom-scrollbar">
+<!-- Stats Ribbon -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Pending Tasks</span>
+<span class="material-icons-outlined text-primary">pending_actions</span>
+</div>
+<div class="text-2xl font-bold">128</div>
+<div class="text-xs text-green-500 mt-1 flex items-center gap-1">
+<span class="material-icons-outlined text-sm">trending_down</span>
+<span>12% from yesterday</span>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Avg. Processing Time</span>
+<span class="material-icons-outlined text-orange-500">timer</span>
+</div>
+<div class="text-2xl font-bold">4.2h</div>
+<div class="text-xs text-slate-400 mt-1 italic">Industry avg: 12h</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Approval Rate</span>
+<span class="material-icons-outlined text-emerald-500">check_circle</span>
+</div>
+<div class="text-2xl font-bold">84.5%</div>
+<div class="text-xs text-slate-400 mt-1">Last 30 days</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Queue Health</span>
+<span class="material-icons-outlined text-blue-500">bolt</span>
+</div>
+<div class="text-2xl font-bold">Optimal</div>
+<div class="text-xs text-green-500 mt-1">3 active reviewers</div>
+</div>
+</div>
+<!-- Verification Queue Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Identity Column -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+<span class="material-icons-outlined text-primary text-xl">badge</span>
+                            Identity Documents
+                        </h2>
+<span class="bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-bold">42</span>
+</div>
+<!-- ID Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border-l-4 border-l-primary border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer border-r-primary/20">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover opacity-80" data-alt="Government ID document thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7R_AwhKmRTTKPO69io99iAyZ-p7bNDol45yqgt6D_t3VXmHmEN4u2GRizSer8VNllR6mx1NCwNBhPc-GJMNRkH0lVZDmXOYHHAY38cm3HYfg1Pcj-hCP860bscgJ5qraNXLFqxCcMRBaxG8WOtKd_NmIdgOHEqD6G0TBRRl2ZMX1-VLjIUYisB04b97VlGiZYfHdYE36RkWPCSy8qLXnvIoygjwjdnnog87y6xIi5rE2-aniWRtprO1SnfEDg-Y2OpQ6VWF_Q7A4"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-semibold text-sm truncate">Marcus Chen</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 rounded font-bold uppercase">Urgent</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Passport • Exp: 2028-10-12</p>
+<button class="w-full py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold rounded transition-colors flex items-center justify-center gap-1">
+                                    Review Details <span class="material-icons-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ID Card 2 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover grayscale opacity-80" data-alt="Driver license card thumbnail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYugZl0V0V9EmL-MhFkmUkN3JYiyVmZrkSJFvDEL_z4WMEBQVXwpN8VWdzthwPitBXtk2810m6kbyUpofDoYL9gbgo7BigsLRfpyidYPat0lZ1jLmwpkjA-p_3VUmuvwZ5qJ9207A0_I0TuGsj7RSuuqlHqFPZWCBg0tXk6OOYZEWb4r0wmPWuVrVhChRnws4vYy2iNZ8Jd9j_NZDAuysEvf9Xd4g3UHwzRrwwvPb5uWJAayAlYGmYx5LD06imMWGWXYAyVquor9U"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-semibold text-sm truncate">Elena Rodriguez</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded font-bold uppercase">New</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Driver's License • CA, USA</p>
+<button class="w-full py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold rounded transition-colors flex items-center justify-center gap-1">
+                                    Review Details <span class="material-icons-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Insurance Column -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+<span class="material-icons-outlined text-orange-500 text-xl">gavel</span>
+                            Insurance Policies
+                        </h2>
+<span class="bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-bold">15</span>
+</div>
+<!-- Insurance Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+<span class="material-icons-outlined text-slate-400 text-3xl">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-semibold text-sm truncate">Skyline HVAC Services</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 rounded font-bold uppercase">Expiring</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Public Liability • $2M Limit</p>
+<button class="w-full py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold rounded transition-colors flex items-center justify-center gap-1">
+                                    Review Details <span class="material-icons-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Qualifications Column -->
+<div class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+<span class="material-icons-outlined text-emerald-500 text-xl">history_edu</span>
+                            Qualifications
+                        </h2>
+<span class="bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-bold">29</span>
+</div>
+<!-- Qual Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover opacity-80" data-alt="Professional certificate document preview" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB51drmVwTqbG7PUEqXgRBuS_uCuk8ykr2iwAH2eoUZ0f1aY71xMEJRwdt-7WJuYe-RUXBYQBxQ8GshDGswJV68uLvqUdPzZQhW9fpqIDZ0uUwg0RxqfSxcOrzvGbAe_Zgexgvw3KU28_Jt7TODVzAwGLBwh2-BRMImK1CT5XSpDQsdRkIslnmNWzmT0Z5vO395xg7p8u0sfnRv6fd0XR2mnDq-t9sMd8fxm-TARARPvGYUWalETk3kXcGwdisBIbfoAySOOWrcAqA"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h3 class="font-semibold text-sm truncate">James Patterson</h3>
+<span class="text-[10px] px-1.5 py-0.5 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded font-bold uppercase">Resubmitted</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Certified Electrician • NVQ L3</p>
+<button class="w-full py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold rounded transition-colors flex items-center justify-center gap-1">
+                                    Review Details <span class="material-icons-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Review Side Panel -->
+<aside class="w-[450px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col z-40">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div>
+<h2 class="font-bold text-lg">Review Document</h2>
+<p class="text-xs text-slate-500">Case ID: #VR-98234-AX</p>
+</div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+<span class="material-icons-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+<!-- Document Viewer -->
+<div class="relative group mb-6">
+<div class="aspect-[3/4] rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200 dark:border-slate-700 relative">
+<img class="w-full h-full object-contain" data-alt="Full size passport document preview for review" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCPEE3Y4t3_4xruyJR_ha-FrVORiEXzmzj_B7OoiSFA2JQnNQDrn9jgjcOibFCYANGlk6AfMg3DHE7DtUAaS70bWtpwNcFz5APjQ8GNWWYFBKK7z0lAmsmv5h0apqRmhiZg9bK4Zhzw_iMlbKblLmJttVWveqmyStG8dpC5yWmIcKKarJ1khKKMWH5XlJJa8NiinurgWUPTaWlrlU6Nc1CCRCnO6Rgxy28Hybpe_gTqTkAYKpRHDyC5j0APc46cRrinBByp9GCwHo"/>
+<!-- Overlay Controls -->
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-slate-900/80 backdrop-blur p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-white hover:bg-white/20 rounded-full transition-colors">
+<span class="material-icons-outlined text-lg">zoom_in</span>
+</button>
+<button class="p-1.5 text-white hover:bg-white/20 rounded-full transition-colors">
+<span class="material-icons-outlined text-lg">zoom_out</span>
+</button>
+<div class="w-[1px] h-4 bg-white/20"></div>
+<button class="p-1.5 text-white hover:bg-white/20 rounded-full transition-colors">
+<span class="material-icons-outlined text-lg">rotate_right</span>
+</button>
+<button class="p-1.5 text-white hover:bg-white/20 rounded-full transition-colors">
+<span class="material-icons-outlined text-lg">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Metadata Details -->
+<div class="space-y-6">
+<div>
+<h4 class="text-[10px] uppercase font-bold text-slate-400 mb-3 tracking-widest">Provider Information</h4>
+<div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-icons-outlined">person</span>
+</div>
+<div>
+<div class="font-bold text-sm">Marcus Chen</div>
+<div class="text-xs text-slate-500">marcus.chen@example.com</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-[10px] uppercase font-bold text-slate-400 mb-3 tracking-widest">Document Attributes</h4>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">Document Type</label>
+<div class="text-xs font-semibold">Passport (International)</div>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">Expiration Date</label>
+<div class="text-xs font-semibold">2028-10-12</div>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">Country of Issue</label>
+<div class="text-xs font-semibold">Singapore</div>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">ID Number</label>
+<div class="text-xs font-semibold">S129****J</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-[10px] uppercase font-bold text-slate-400 mb-3 tracking-widest">Administrative Notes</h4>
+<textarea class="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-xs focus:ring-primary focus:border-primary" placeholder="Enter private internal notes..." rows="3"></textarea>
+</div>
+</div>
+</div>
+<!-- Panel Actions -->
+<div class="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all">
+<span class="material-icons-outlined text-lg">check</span>
+                        Approve Document
+                    </button>
+<div class="grid grid-cols-2 gap-3">
+<button class="py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all">
+<span class="material-icons-outlined text-lg text-orange-500">help_outline</span>
+                            Request Info
+                        </button>
+<button class="py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-red-500 hover:text-red-500 text-slate-700 dark:text-slate-200 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all">
+<span class="material-icons-outlined text-lg">block</span>
+                            Reject
+                        </button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Floating Help Button -->
+<button class="fixed bottom-6 right-6 w-12 h-12 bg-slate-900 text-white rounded-full shadow-xl flex items-center justify-center hover:scale-105 transition-transform z-50">
+<span class="material-icons-outlined">question_answer</span>
+</button>
+</body></html>

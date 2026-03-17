@@ -858,3 +858,77 @@ Show contextual prompts in ReviewForm based on trade category (e.g., "How was th
 
 ### P3 | Review Sentiment Emoji Badge
 Show sentiment indicator badge (green/amber/red) next to each review. Visible to moderators initially, optionally public. Leverages existing sentiment analysis data. Effort: S.
+
+---
+
+## Account Settings (Pages 19.1–19.12)
+
+### P3/S — useBeforeUnload Hook for Settings Forms
+**What:** Add unsaved-changes warning to Profile, Privacy, and Notification forms.
+**Why:** User edits profile name, navigates away, loses changes silently. Standard UX pattern prevents data loss frustration.
+**Pros:** Prevents accidental data loss. Standard pattern.
+**Cons:** Browser confirm dialogs are ugly and not customizable.
+**Context:** Prior settings plan noted this as P3. Pattern: `isDirty` flag set on first edit, cleared on save. Show browser confirm dialog on navigation/tab close when `isDirty=true`.
+**Effort:** S
+**Priority:** P3
+**Depends on:** Nothing.
+
+---
+
+### P2/M — Streaming GDPR Data Export
+**What:** Convert `/api/gdpr/export` from blocking JSON response to streaming download with progress indicator.
+**Why:** Users with lots of saved properties/viewings/messages could have large exports that timeout. Current implementation blocks until all data is aggregated.
+**Pros:** Better UX (progress bar), no timeout risk, handles large data volumes.
+**Cons:** More complex server code (ReadableStream), needs progress events.
+**Context:** DataExportButton currently fires `fetch('/api/gdpr/export')` and blocks. Replace with streaming response + animated progress bar in the component.
+**Effort:** M
+**Priority:** P2
+**Depends on:** GDPR export rate limiting (adding in current phase).
+
+---
+
+### P2/L — Role-Aware Notification Categories
+**What:** Different user roles get different notification categories in the matrix. Sellers: 'Offer received', 'Viewing requested'. Buyers: 'Price drop', 'New matching listing'. Agents: 'Lead received', 'Review posted'.
+**Why:** Current matrix shows the same categories to all 7 roles, but half are irrelevant to any given user. Sellers don't need 'Price drop' alerts.
+**Pros:** Dramatically better UX — no confusion about irrelevant categories. Cleaner, shorter matrix per role.
+**Cons:** Requires role-to-category mapping table, conditional rendering, potentially different JSONB shapes per role.
+**Context:** Current implementation has 5 generic categories (Property Alerts, Viewings, Offers, Messages, Market Reports). Need a `ROLE_NOTIFICATION_CATEGORIES` config map.
+**Effort:** L
+**Priority:** P2
+**Depends on:** Notification matrix expansion (building in current phase).
+
+---
+
+### P3/XL — Notification Digest Scheduling
+**What:** Let users choose 'Real-time', 'Daily digest (9am)', or 'Weekly digest (Monday 9am)' per notification category.
+**Why:** Power users (agents, landlords) get overwhelmed by real-time notifications. A daily digest email is how professionals want to consume property alerts.
+**Pros:** Massively reduces notification fatigue, premium feel.
+**Cons:** Requires server-side cron/scheduled function to batch and send digests. Significant backend work.
+**Context:** Current implementation is fire-and-forget (real-time only). Would need Supabase Edge Function with pg_cron to batch pending notifications and send aggregated emails.
+**Effort:** XL
+**Priority:** P3
+**Depends on:** Email template system (Phase 22), notification matrix.
+
+---
+
+### P2/L — Login Anomaly Detection ("Was This You?")
+**What:** When login from new device or unusual location, show in-app banner + email: 'New login from Chrome on Windows in Paris, FR. Was this you?' with 'Yes' (dismiss) / 'No, secure my account' (force logout + password reset).
+**Why:** FAANG-standard security feature. Every major platform does this. Builds massive trust. Catches account compromise early.
+**Pros:** Users feel protected. Early detection of account compromise. Trust differentiator.
+**Cons:** Requires IP geolocation service (free: ip-api.com or MaxMind GeoLite2). Device fingerprinting adds complexity.
+**Context:** Login history data will be available after current phase. Anomaly detection adds intelligence on top. Compare new login IP/UA against last 5 known sessions.
+**Effort:** L
+**Priority:** P2
+**Depends on:** Login history (building in current phase), email template system.
+
+---
+
+### P3/S — Notification Preview Cards
+**What:** Below each notification category in the matrix, show a tiny preview of what the notification looks like: mock email subject, push banner, SMS text.
+**Why:** Helps users understand what they're opting into. Example: 'Property Alerts — Email: "New 3-bed in W1 matching your search"'.
+**Pros:** Makes notification settings tangible and trustworthy.
+**Cons:** Adds visual complexity to an already dense matrix.
+**Context:** Static mockup content, no backend work. Expandable disclosure below each row.
+**Effort:** S
+**Priority:** P3
+**Depends on:** Notification matrix expansion (building in current phase).

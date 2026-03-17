@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate Admin | Listing Moderation Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0 flex flex-col hidden lg:flex">
+<div class="p-6">
+<div class="flex items-center gap-2 text-primary font-bold text-xl">
+<span class="material-icons-outlined">domain</span>
+<span>Britestate</span>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-semibold" href="#">
+<span class="material-icons-outlined">fact_check</span>
+<span>Moderation Queue</span>
+<span class="ml-auto bg-primary text-white text-[10px] px-2 py-0.5 rounded-full">24</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">inventory_2</span>
+<span class="font-medium">Active Listings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">people</span>
+<span class="font-medium">Agents &amp; Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-icons-outlined">analytics</span>
+<span class="font-medium">Market Reports</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="Admin user profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4cS0qbH6BR9JjVKlH_B02Dww0taLfb1nNCARt4OYjQqZ1uN-WyJP035v1IKjovn8DE9aJkulsg1HgEV5zPafILcObnveIT3_95l3KwanPj_gWnzQl8OK1vPDEVd1qKyLJcmc36KrTKEVE_Tb0lqTki8rZX1JLelxaoxwqdDKsMR_kAYsgY1p0l7xkuWXGXzyf_j9SHlItOx-3xAkWb7r9Dks7zwlxchcH3TwPVs3_USUhdThi-ShIk0rl1SZT5SQMMRnimpbz7Qo"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate">Alex Henderson</p>
+<p class="text-xs text-slate-500">Senior Moderator</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+<!-- Header -->
+<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 sticky top-0 z-10">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-7xl mx-auto w-full">
+<div>
+<h1 class="text-2xl font-bold">Moderation Queue</h1>
+<p class="text-sm text-slate-500">Reviewing <span class="font-semibold text-slate-700 dark:text-slate-300">24</span> pending properties from the last 24 hours.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative group">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-outlined text-sm">search</span>
+</span>
+<input class="pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm w-64" placeholder="Search by ID or Agent..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 font-medium transition-colors text-sm">
+<span class="material-icons-outlined text-sm">tune</span>
+                        Filters
+                    </button>
+</div>
+</div>
+</header>
+<!-- Bulk Action Bar -->
+<div class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 px-6 py-3">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm font-medium">Select All</span>
+</label>
+<div class="h-4 w-[1px] bg-slate-300 dark:bg-slate-700 mx-2"></div>
+<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bulk Actions:</span>
+<button class="text-xs font-semibold text-primary hover:underline">Approve Selected</button>
+<button class="text-xs font-semibold text-red-500 hover:underline">Reject Selected</button>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+<button class="px-3 py-1 bg-slate-100 dark:bg-slate-700 rounded shadow-sm text-xs font-medium">Grid View</button>
+<button class="px-3 py-1 hover:bg-slate-50 dark:hover:bg-slate-700 rounded text-xs font-medium text-slate-500">List View</button>
+</div>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-6">
+<div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-6">
+<!-- Card 1: AI High Confidence Flag -->
+<div class="bg-white dark:bg-slate-900 border-l-4 border-amber-500 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row border border-slate-200 dark:border-slate-800">
+<div class="md:w-56 h-48 md:h-auto relative">
+<img alt="Property" class="w-full h-full object-cover" data-alt="Modern luxury house with swimming pool" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCPjCLg6RGGhwdzmw8QE01riPR5JLrJiwAFY2jgXK0Gg1Jl3nacxYJV7U-GxZlFDufn_zV7YTWrd-RJWSyIENKA2Z4DUQGxhzi1qJXSWQoMFcW-Lk4WvrgsXWOjQeH6L3f7qkUMFd7tgoS8AMd54R-ZfyNYPWwT0RL3y9J7ymICbWuZ-_BSyrLHk03PipC-tID5jsxbZuWV5dMhkGHe6Mbj1WhJ5sIftEz0swDPEcG2W-yAPK4lE49ZBR9nHW4FH4VJ-lB5MRoI8A"/>
+<div class="absolute top-2 left-2 bg-amber-500 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">AI Flagged</div>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded">8 Photos</div>
+</div>
+<div class="flex-1 p-5 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-bold text-lg leading-tight">Modern Villa - Silicon Valley</h3>
+<p class="text-sm text-slate-500 flex items-center gap-1">
+<span class="material-icons-outlined text-xs">place</span> 
+                                    1240 Oakwood Ave, Palo Alto, CA
+                                </p>
+</div>
+<span class="font-bold text-primary text-lg">$2,450,000</span>
+</div>
+<div class="flex items-center gap-3 mb-4 py-2 border-y border-slate-50 dark:border-slate-800/50">
+<img alt="Agent" class="w-6 h-6 rounded-full object-cover border border-slate-200" data-alt="Agent profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3YvRcVCd5fIlBIJaVQpjagBI-1qg76uOW6fBPa2L-_BWzwk9tLt0jbBYu1z47QDnY31oPFiyakd5_SS4GEVL7ls5WFFXPmHvWbG8r33G-4x2nGkhhjqhFRFHkxetd3xupDWn3bDUmqZBaXZ1WtqKIM8tqCUOM01xIF2dBdZyMXR0-Muj0DeSLPMaqSBkcFZm_5iqA3N8quGLaSQaNbolHWEXOoSfzw6Wbvq7rWHhftAKhMylMg7NK-vqqYviDxGjcwInE3dWZHa8"/>
+<span class="text-xs font-medium">Marcus Sterling (Platinum Agent)</span>
+</div>
+<div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/50 p-3 rounded-lg mb-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-icons-outlined text-amber-600 text-sm">smart_toy</span>
+<span class="text-xs font-bold text-amber-800 dark:text-amber-400">AI Duplicate Detection</span>
+</div>
+<p class="text-[11px] text-amber-700 dark:text-amber-500 leading-tight">
+                                High probability (92%) duplicate of listing <span class="underline font-semibold text-amber-800 dark:text-amber-300">#BR-8821</span>. Description matches 100%.
+                            </p>
+</div>
+<div class="mt-auto flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">Approve</button>
+<button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors">Reject</button>
+</div>
+<button class="p-2 text-slate-400 hover:text-amber-500 transition-colors" title="Flag for manual review">
+<span class="material-icons-outlined">flag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2: Safe Listing -->
+<div class="bg-white dark:bg-slate-900 border-l-4 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row border border-slate-200 dark:border-slate-800">
+<div class="md:w-56 h-48 md:h-auto relative">
+<img alt="Property" class="w-full h-full object-cover" data-alt="Blue family home with garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyhtcbsCY-QHQHP_wecDLTagDfYtB9QT1gH0O6xc1edP2ZGrlIg7wQgMExfNsv2aGAiRMM7NasGGFGh0vy_etKSyxpUu-YzNSsJA7PA1REem4YaGw-9dDKasTP4rxFStj7x5B01DqD-wBsQKxQGzzkHFLWpoqB23rjF_cFiUt2uPEgpUgFcFQom0dSDOS4mE39D9FAAKGenUZfZ0WyuZ-NFkR-_QPIBqJoUMTtwYabBy_gKgk5mOix-ILGsx1T0oergKk-9AjPOco"/>
+<div class="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Clear</div>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded">15 Photos</div>
+</div>
+<div class="flex-1 p-5 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-bold text-lg leading-tight">Cozy Suburban Home</h3>
+<p class="text-sm text-slate-500 flex items-center gap-1">
+<span class="material-icons-outlined text-xs">place</span> 
+                                    882 Primrose Lane, Austin, TX
+                                </p>
+</div>
+<span class="font-bold text-primary text-lg">$580,000</span>
+</div>
+<div class="flex items-center gap-3 mb-4 py-2 border-y border-slate-50 dark:border-slate-800/50">
+<img alt="Agent" class="w-6 h-6 rounded-full object-cover border border-slate-200" data-alt="Female agent profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnKdPPnXWpcZMZlu_GpvNURAsFadWhdu3ebv_Xv6-6j3-MZR46vXI6Ge4P1w4-0jZCiblit3E1BiA8iCZoVTtLjzMpBRrg5FtQ9OLFZaBXthox7_kBX4bXT-mJrZETWGx_rlBHB_78yMc3K0nZv1RYAdIkA4VDYp9L7JlnduBVeB60hzwfy5rYHGVkyAv10oOktwb8YS2ezhehrmwuKTau1TjZeyxzpB1-8yMolpZuWjs9QN4mbnNwGr-c-DqWicqJsQ5gtTt5sMI"/>
+<span class="text-xs font-medium">Sarah Jenkins (New Member)</span>
+</div>
+<div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/50 p-3 rounded-lg mb-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-icons-outlined text-emerald-600 text-sm">verified</span>
+<span class="text-xs font-bold text-emerald-800 dark:text-emerald-400">AI Content Check</span>
+</div>
+<p class="text-[11px] text-emerald-700 dark:text-emerald-500 leading-tight">
+                                No duplicates found. Imagery verified. Content quality: <span class="font-bold">Excellent</span>.
+                            </p>
+</div>
+<div class="mt-auto flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">Approve</button>
+<button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors">Reject</button>
+</div>
+<button class="p-2 text-slate-400 hover:text-amber-500 transition-colors" title="Flag for manual review">
+<span class="material-icons-outlined">flag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3: Flagged for Low Quality -->
+<div class="bg-white dark:bg-slate-900 border-l-4 border-amber-500 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row border border-slate-200 dark:border-slate-800">
+<div class="md:w-56 h-48 md:h-auto relative">
+<div class="w-full h-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+<img alt="Property" class="w-full h-full object-cover opacity-50 grayscale" data-alt="Blurry or low resolution house photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwJ8k7wt9USMnCSaSJKU6eYbWOdlJ27gp4xgXwf1t9uFzgnMEitGRIC8jYCQ7kfpdQo2mNYzrOvvBoFJQY1yeqfROor3qo4kMP67JcgHs6mLjBfQh6z9YwfkR-rKjOBvgQxQmbcYnOkV-ZMaU6u3_beGsjb1ubIkcRReOO8dVdv2m0dYeNwFveMvaUsp7ylDQGcm4ubu5MYfQZRo8xtG4eq-rQJYv-DLMa9uw1TovnBMAzudNchOladv8yx284guYvFNlKEIooESg"/>
+</div>
+<div class="absolute inset-0 flex items-center justify-center bg-black/20">
+<span class="material-icons-outlined text-white text-4xl">warning</span>
+</div>
+<div class="absolute top-2 left-2 bg-amber-500 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Low Quality</div>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded">2 Photos</div>
+</div>
+<div class="flex-1 p-5 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-bold text-lg leading-tight">Downtown Studio Loft</h3>
+<p class="text-sm text-slate-500 flex items-center gap-1">
+<span class="material-icons-outlined text-xs">place</span> 
+                                    12 N Broadway, Denver, CO
+                                </p>
+</div>
+<span class="font-bold text-primary text-lg">$1,800/mo</span>
+</div>
+<div class="flex items-center gap-3 mb-4 py-2 border-y border-slate-50 dark:border-slate-800/50">
+<img alt="Agent" class="w-6 h-6 rounded-full object-cover border border-slate-200" data-alt="Male agent profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8BMYyQCEuRf5vvVm-JZAaGWzJRUdrZJ2bX1aFZof9_NTrew9jZ2-iG1kE2EH2Sjj7RoQcKOxV1uZmy0XVmz-r2YRL6bG2suweReKTeemAgSFW0FpRWDzBJGbxeWOvkrdzyIBRhj11fDPxjeJt1oqEfRY26yaDVXw0n4bPFA-9cGiLR8MEonIbgftlnH8s2lqhlyD3MJ-ts54cTlqEvVJiyic120npWbe--thaVbVKQdGQJYnHl6koAUlv53E3aE-jgtBj9DHnwU0"/>
+<span class="text-xs font-medium">David K. (Independent)</span>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3 rounded-lg mb-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-icons-outlined text-slate-600 dark:text-slate-400 text-sm">visibility_off</span>
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">Image Quality Check</span>
+</div>
+<p class="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
+                                Images resolution below 600px. High blur detected in primary photo. Professional photography requested.
+                            </p>
+</div>
+<div class="mt-auto flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">Approve</button>
+<button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors">Reject</button>
+</div>
+<button class="p-2 text-amber-500 transition-colors" title="Flagged">
+<span class="material-icons">flag</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4: Potential Profanity -->
+<div class="bg-white dark:bg-slate-900 border-l-4 border-red-500 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row border border-slate-200 dark:border-slate-800">
+<div class="md:w-56 h-48 md:h-auto relative">
+<img alt="Property" class="w-full h-full object-cover" data-alt="Traditional suburban house" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd-3FYIx8T0BT1dbwl1dGiDYh0Xxxz3-3tjNIRMh-g8k8nLEBrFL04IoMcId1_lTd0c8nTAcM08P92dhHJmhdZIKwBF3wWxRWBy0Pm_lRcF4zKt0dHRMdwdXbG5FzjszHRz4JQMouUlPGgtdV10sGn5Zt9OqSkX1e-NhxH6bh2lP3lVtbwfdOt1qrahRiP81MbkRC7dZ7u62hRuLK1RuN8AhGcMmyf3lAvQdIsxgTaSc0jZjq8B9blvW6GsqC5eHflBEBh9xJa_No"/>
+<div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">Policy Violation</div>
+</div>
+<div class="flex-1 p-5 flex flex-col">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-bold text-lg leading-tight">Heritage Estates - Plot 4</h3>
+<p class="text-sm text-slate-500 flex items-center gap-1">
+<span class="material-icons-outlined text-xs">place</span> 
+                                    Greenwich, CT
+                                </p>
+</div>
+<span class="font-bold text-primary text-lg">$1,200,000</span>
+</div>
+<div class="flex items-center gap-3 mb-4 py-2 border-y border-slate-50 dark:border-slate-800/50">
+<img alt="Agent" class="w-6 h-6 rounded-full object-cover border border-slate-200" data-alt="Agent profile photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA74cEiOvGV2hgd0-WK4Eumni8Ky4biIxtyD8C3roIsPJwwDE2OLk0OS9iP7VjcQnYJ5ayG9rE3qgz8YxJ4xpDhcd7Tim04WHrDUT4B-nyu8GyOxwOoPSMjYlNoREN-P0EKfAMH3H8ltmFVlVdMFqUkuY_4ZRIowp1KaLDZ_5C73dQb33Fg5YxV2wGiqZmVnDqf3WIIJmjXN6W-Q1nDB3jkmlqVjm3uAnp7q9Mt5MOKyXK6euaZRnKM2eFGQkOeiukzAMjuvL_casI"/>
+<span class="text-xs font-medium">Elena Rodriguez</span>
+</div>
+<div class="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 p-3 rounded-lg mb-4">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-icons-outlined text-red-600 text-sm">gavel</span>
+<span class="text-xs font-bold text-red-800 dark:text-red-400">Content Policy Flag</span>
+</div>
+<p class="text-[11px] text-red-700 dark:text-red-500 leading-tight">
+                                Sensitive keywords detected in description: <span class="bg-red-200 dark:bg-red-800 px-1 rounded text-red-900 dark:text-red-100">[Restricted Term]</span>. Manual review required.
+                            </p>
+</div>
+<div class="mt-auto flex items-center justify-between gap-2">
+<div class="flex gap-2">
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">Approve</button>
+<button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-50 transition-colors">Reject</button>
+</div>
+<button class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-icons-outlined">flag</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Load More -->
+<div class="flex justify-center mt-12 mb-8">
+<button class="flex items-center gap-2 px-8 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-sm transition-all">
+                    Load More Items
+                    <span class="material-icons-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Reject Modal (Hidden by default, shown for structure visualization) -->
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+<div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-xl font-bold">Reject Listing</h2>
+<button class="text-slate-400 hover:text-slate-600"><span class="material-icons-outlined">close</span></button>
+</div>
+<div class="p-6 space-y-4">
+<div>
+<label class="block text-sm font-semibold mb-2">Rejection Reason</label>
+<select class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg py-2.5 text-sm">
+<option>Low Quality Images</option>
+<option>Duplicate Listing</option>
+<option>Inappropriate Content</option>
+<option>Incorrect Categorization</option>
+<option>Missing Key Information</option>
+<option>Other</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-semibold mb-2">Internal Comments</label>
+<textarea class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg text-sm p-3" placeholder="Add additional context for the agent..." rows="4"></textarea>
+</div>
+<div class="flex items-center gap-2">
+<input class="rounded border-slate-300 text-primary" id="email-agent" type="checkbox"/>
+<label class="text-sm text-slate-600 dark:text-slate-400" for="email-agent">Send automated email to agent</label>
+</div>
+</div>
+<div class="p-6 bg-slate-50 dark:bg-slate-800/50 flex gap-3">
+<button class="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors">Confirm Rejection</button>
+<button class="px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-semibold">Cancel</button>
+</div>
+</div>
+</div>
+<!-- Keyboard Shortcuts Overlay (Optional utility) -->
+<div class="fixed bottom-6 right-6 flex flex-col gap-2 pointer-events-none">
+<div class="bg-slate-900/80 text-white px-3 py-1.5 rounded-lg text-[10px] font-mono flex items-center gap-2">
+<span class="bg-white/20 px-1 rounded">A</span> Approve
+        </div>
+<div class="bg-slate-900/80 text-white px-3 py-1.5 rounded-lg text-[10px] font-mono flex items-center gap-2">
+<span class="bg-white/20 px-1 rounded">R</span> Reject
+        </div>
+<div class="bg-slate-900/80 text-white px-3 py-1.5 rounded-lg text-[10px] font-mono flex items-center gap-2">
+<span class="bg-white/20 px-1 rounded">F</span> Flag
+        </div>
+</div>
+</body></html>
