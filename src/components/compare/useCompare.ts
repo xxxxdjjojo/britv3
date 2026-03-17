@@ -26,15 +26,23 @@ export function useCompare() {
     const current = readStorage();
     if (current.length >= MAX_COMPARE || current.includes(id)) return;
     const next = [...current, id];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setIds(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setIds(next);
+    } catch {
+      // Storage full or unavailable — don't update state
+    }
   }
 
   function remove(id: string) {
     const current = readStorage();
     const next = current.filter((x) => x !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setIds(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      setIds(next);
+    } catch {
+      // Storage full or unavailable — don't update state
+    }
   }
 
   function has(id: string): boolean {

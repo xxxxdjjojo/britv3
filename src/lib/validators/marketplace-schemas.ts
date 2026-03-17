@@ -23,6 +23,10 @@ const SERVICE_CATEGORIES = [
   "property_management",
   "pest_control",
   "locksmith",
+  "builder",
+  "plasterer",
+  "painter",
+  "carpenter",
   "other",
 ] as const;
 
@@ -93,27 +97,55 @@ export const documentUploadSchema = z.object({
 export type DocumentUploadInput = z.infer<typeof documentUploadSchema>;
 
 /** RFQ (service request) creation form */
-export const rfqCreateSchema = z.object({
-  service_category: z.enum(SERVICE_CATEGORIES),
-  title: z
-    .string()
-    .min(10, "Title must be at least 10 characters")
-    .max(200, "Title must be at most 200 characters"),
-  description: z
-    .string()
-    .min(50, "Description must be at least 50 characters")
-    .max(5000, "Description must be at most 5000 characters"),
-  property_address: z.string().optional(),
-  property_postcode: z
-    .string()
-    .regex(UK_POSTCODE_REGEX, "Enter a valid UK postcode"),
-  preferred_start_date: z.coerce.date().optional(),
-  urgency_level: z
-    .enum(["low", "normal", "high", "emergency"])
-    .default("normal"),
-  budget_min: z.number().min(0).optional(),
-  budget_max: z.number().min(0).optional(),
-});
+export const rfqCreateSchema = z
+  .object({
+    service_category: z.enum(SERVICE_CATEGORIES),
+    title: z
+      .string()
+      .min(10, "Title must be at least 10 characters")
+      .max(200, "Title must be at most 200 characters"),
+    description: z
+      .string()
+      .min(50, "Description must be at least 50 characters")
+      .max(5000, "Description must be at most 5000 characters"),
+    property_address: z.string().optional(),
+    property_postcode: z
+      .string()
+      .regex(UK_POSTCODE_REGEX, "Enter a valid UK postcode"),
+    preferred_start_date: z.coerce.date().optional(),
+    urgency_level: z
+      .enum(["low", "normal", "high", "emergency"])
+      .default("normal"),
+    budget_min: z.number().min(0).optional(),
+    budget_max: z.number().min(0).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.budget_min != null && data.budget_max != null) {
+        return data.budget_max >= data.budget_min;
+      }
+      return true;
+    },
+    {
+      message:
+        "Maximum budget must be greater than or equal to minimum",
+      path: ["budget_max"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.preferred_start_date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return data.preferred_start_date >= today;
+      }
+      return true;
+    },
+    {
+      message: "Preferred start date cannot be in the past",
+      path: ["preferred_start_date"],
+    },
+  );
 
 export type RfqCreateInput = z.infer<typeof rfqCreateSchema>;
 
@@ -178,6 +210,19 @@ export const reviewCreateSchema = z.object({
 });
 
 export type ReviewCreateInput = z.infer<typeof reviewCreateSchema>;
+
+/** Review edit form (within 48h window) */
+export const reviewEditSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters").max(100, "Title must be under 100 characters"),
+  review_text: z.string().min(20, "Review must be at least 20 characters").max(2000, "Review must be under 2000 characters"),
+  overall_rating: z.number().int().min(1).max(5),
+  punctuality_rating: z.number().int().min(1).max(5).optional(),
+  quality_rating: z.number().int().min(1).max(5).optional(),
+  value_rating: z.number().int().min(1).max(5).optional(),
+  professionalism_rating: z.number().int().min(1).max(5).optional(),
+});
+
+export type ReviewEditInput = z.infer<typeof reviewEditSchema>;
 
 /** Provider search form */
 export const providerSearchSchema = z.object({

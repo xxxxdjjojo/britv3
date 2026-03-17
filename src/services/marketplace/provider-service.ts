@@ -211,7 +211,7 @@ export async function searchProviders(
   const rpcParams: Record<string, unknown> = {};
 
   if (params.service_category) {
-    rpcParams.p_category = params.service_category;
+    rpcParams.p_service_category = params.service_category;
   }
 
   if (params.postcode && params.postcode !== "") {

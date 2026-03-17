@@ -191,7 +191,7 @@ describe("provider-service", () => {
       expect(mockClient.rpc).toHaveBeenCalledWith(
         "search_providers",
         expect.objectContaining({
-          p_category: "plumber",
+          p_service_category: "plumber",
           p_latitude: 51.501,
           p_longitude: -0.141,
           p_radius_miles: 10,
@@ -215,7 +215,7 @@ describe("provider-service", () => {
       });
 
       expect(mockClient.rpc).toHaveBeenCalledWith("search_providers", {
-        p_category: "electrician",
+        p_service_category: "electrician",
       });
     });
   });

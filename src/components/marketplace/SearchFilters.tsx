@@ -5,25 +5,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { ServiceCategory } from "@/types/marketplace";
-
-const SERVICE_CATEGORY_LABELS: Record<ServiceCategory, string> = {
-  conveyancing: "Conveyancing",
-  surveying: "Surveying",
-  mortgage_broker: "Mortgage Broker",
-  moving_company: "Moving Company",
-  home_inspector: "Home Inspector",
-  cleaning: "Cleaning",
-  handyman: "Handyman",
-  plumber: "Plumber",
-  electrician: "Electrician",
-  landscaping: "Landscaping",
-  interior_design: "Interior Design",
-  architect: "Architect",
-  property_management: "Property Management",
-  pest_control: "Pest Control",
-  locksmith: "Locksmith",
-  other: "Other",
-};
+import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
 
 const DISTANCE_OPTIONS = [
   { label: "Under 5 miles", value: 5 },
@@ -132,7 +114,7 @@ export function SearchFilters({
               className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
             >
               <option value="">All services</option>
-              {Object.entries(SERVICE_CATEGORY_LABELS).map(([value, label]) => (
+              {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>
