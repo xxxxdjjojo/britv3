@@ -47,6 +47,7 @@ import { ProfileTabs } from "./ProfileTabs";
 import { ProviderSearchCard } from "@/components/providers/ProviderSearchCard";
 import { CategoryPageFAQ } from "@/components/seo/CategoryPageFAQ";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 // ISR: revalidate every hour. Applies to location pages; provider profiles use
 // dynamic rendering via fetchProviderBySlug (live data).
@@ -147,7 +148,7 @@ async function CategoryLocationPage({
     )
     .contains("services", [categoryDb])
     .or(
-      `city.ilike.%${locationDisplay}%,service_postcodes.cs.{${location.split("-")[0].toUpperCase()}}`,
+      `city.ilike.%${sanitizePostgrestInput(locationDisplay)}%,service_postcodes.cs.{${sanitizePostgrestInput(location.split("-")[0].toUpperCase())}}`,
     )
     .eq("profiles.provider_verification_status", "verified")
     .order("created_at", { ascending: false })

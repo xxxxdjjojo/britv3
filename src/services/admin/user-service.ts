@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 export type UserSearchResult = {
   id: string;
@@ -32,8 +33,7 @@ export async function searchUsers(
   const to = from + limit - 1;
 
   // Sanitize query to prevent Supabase PostgREST filter injection
-  // Strip %, _, and \ which have special meaning in ILIKE patterns
-  const sanitized = query.replace(/[%_\\]/g, "").slice(0, 100);
+  const sanitized = sanitizePostgrestInput(query).slice(0, 100);
 
   const { data, count, error } = await supabase
     .from("profiles")

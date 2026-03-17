@@ -10,6 +10,7 @@ import type {
   CreateCrmClientInput,
   UpdateCrmClientInput,
 } from "@/types/agent";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 export type CrmClientsPage = {
   clients: AgentCrmClient[];
@@ -42,10 +43,13 @@ export async function getCrmClients(
     .range(offset, offset + limit - 1);
 
   if (search && search.trim()) {
-    const term = `%${search.trim()}%`;
-    query = query.or(
-      `name.ilike.${term},email.ilike.${term},phone.ilike.${term},notes.ilike.${term}`,
-    );
+    const safe = sanitizePostgrestInput(search.trim());
+    if (safe.length > 0) {
+      const term = `%${safe}%`;
+      query = query.or(
+        `name.ilike.${term},email.ilike.${term},phone.ilike.${term},notes.ilike.${term}`,
+      );
+    }
   }
 
   if (clientTypes && clientTypes.length > 0) {

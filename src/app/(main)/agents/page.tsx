@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { AgentPublicProfile } from "@/types/providers";
+import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 export const metadata: Metadata = {
   title: "Find an Estate Agent Near You | Britestate",
@@ -46,8 +47,7 @@ export default async function AgentsPage({ searchParams }: Props) {
       .limit(20);
 
     if (q) {
-      // Sanitize q: strip PostgREST special chars that could break .or() filter syntax
-      const safeQ = q.replace(/[,().\\]/g, "");
+      const safeQ = sanitizePostgrestInput(q);
       if (safeQ.length > 0) {
         query = query.or(
           `display_name.ilike.%${safeQ}%,agency->name.ilike.%${safeQ}%`,

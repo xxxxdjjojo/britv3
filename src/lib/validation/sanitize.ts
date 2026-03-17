@@ -38,3 +38,16 @@ export function sanitizeText(dirty: string): string {
     ALLOWED_ATTR: [],
   });
 }
+
+/**
+ * Strip PostgREST filter-syntax characters from user input before
+ * interpolating into `.or()` / `.filter()` strings.
+ *
+ * Removes: , . ( ) \ which are used to separate conditions, construct
+ * field.operator.value expressions, group filters, and escape characters.
+ */
+export function sanitizePostgrestInput(dirty: string): string {
+  if (dirty == null) return "";
+  if (typeof dirty !== "string") return "";
+  return dirty.replace(/[,().\\]/g, "");
+}
