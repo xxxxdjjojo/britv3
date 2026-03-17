@@ -2,6 +2,59 @@
 
 All notable changes to Britestate are documented here.
 
+## [0.3.0] - 2026-03-17
+
+### Added
+
+- **Account Settings (19.1–19.12)**
+  - Security page refactored into sub-components: `PasswordChangeCard`, `TotpEnrollmentCard`, `ConnectedAccountsCard`, `ActiveSessionsList`, `LoginHistoryTable`
+  - Connected Accounts: OAuth provider display + unlink with last-provider guard (prevents removing only login method)
+  - Login History: paginated table querying `auth.audit_log_entries` via service role with graceful fallback
+  - Notification matrix expanded to 5 categories × 4 channels (20 keys) with migration-on-read from old schema
+  - Notification client race condition fix: single-key PUT instead of full-object replacement
+  - Marketing unsubscribe section with one-click bulk unsubscribe/resubscribe
+  - Preferences page (`/settings/preferences`): language/region selectors + accessibility controls + dark mode live preview
+  - API routes: `/api/settings/connected`, `/api/settings/login-history`, `/api/settings/prefs` (all with `requireAuth()` helper)
+  - `SecurityScoreBadge` (SVG progress ring) + `PrivacyShieldBadge` in settings layout sidebar
+  - `QuickPrivacyMode` one-click privacy switcher (Public/Members/Ghost)
+  - GDPR export rate limiting (Upstash, 1/hour) with graceful degradation
+  - Delete Account removed from `/account` (canonical location in `/privacy`)
+  - Dead code cleanup: `mfa-service.ts` deleted
+  - DB migration: `language_preferences` + `accessibility_preferences` JSONB columns on profiles
+  - Vitest setup + unit tests for notification migration and last-provider guard
+
+- **Reviews & Ratings (17.1–17.15)**
+  - `ReviewCardEnhanced` with optimistic votes, edit/report modals, verified badge
+  - `ReviewAggregateHero` for area-level review stats
+  - Area aggregate page at `/reviews/[area]` with category cards
+  - `EditReviewForm` (48h edit window with audit trail)
+  - `ReportReviewModal` with 7 flag reasons
+  - PII auto-redaction (phone numbers, emails)
+  - Atomic vote RPC (`atomic_vote_review`) replacing race-prone read-modify-write
+  - Atomic flag RPC with duplicate prevention + rate limiting
+  - Sentiment/spam wrapped in try-catch (fail-open)
+  - DB migration: flag_count, edit columns, atomic RPCs, area_rating_stats materialized view
+
+- **Messaging improvements**
+  - Alerts page, conversation detail page at `/dashboard/[role]/messages/[id]`
+  - `ConversationQuickActions` for Schedule Viewing modal
+  - Fixed: listing address resolution, recipientId passing, addressLoading init state
+
+### Changed
+
+- Privacy page upgraded to 2-column layout with Data Sharing + Activity Visibility grid
+- Settings layout: 5 tabs (Privacy, Security, Notifications, Profile, Preferences)
+- Notification prefs API: whitelist updated to 20 new keys
+
+### Fixed
+
+- Property view tracking: TOCTOU race fixed with upsert + UNIQUE index
+- Review votes: FOR UPDATE + UNIQUE constraint prevents duplicate votes
+- Nightly ROI precompute: LLM output now validated before Redis cache
+- Session ID capped at 64 chars to prevent storage abuse
+- `viewed_at` → `created_at` column name mismatch in view tracking route
+- Middleware: API routes now pass through instead of redirecting to login
+
 ## [0.2.0] - 2026-03-16
 
 ### Added
