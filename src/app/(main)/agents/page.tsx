@@ -46,7 +46,13 @@ export default async function AgentsPage({ searchParams }: Props) {
       .limit(20);
 
     if (q) {
-      query = query.or(`display_name.ilike.%${q}%,agency->name.ilike.%${q}%`);
+      // Sanitize q: strip PostgREST special chars that could break .or() filter syntax
+      const safeQ = q.replace(/[,().\\]/g, "");
+      if (safeQ.length > 0) {
+        query = query.or(
+          `display_name.ilike.%${safeQ}%,agency->name.ilike.%${safeQ}%`,
+        );
+      }
     }
 
     if (area) {
