@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { PasswordChangeCard } from "@/components/settings/security/PasswordChangeCard";
 import { TotpEnrollmentCard } from "@/components/settings/security/TotpEnrollmentCard";
+import { ConnectedAccountsCard } from "@/components/settings/security/ConnectedAccountsCard";
 import { ActiveSessionsList } from "@/components/settings/security/ActiveSessionsList";
 
 // ---------------------------------------------------------------------------
@@ -69,6 +70,19 @@ export default function SecuritySettingsPage() {
   const [regenerating, setRegenerating] = useState(false);
   const [copiedAll, setCopiedAll] = useState(false);
 
+  // ---- Connected accounts state ----
+  const [identities, setIdentities] = useState<
+    Array<{
+      id: string;
+      provider: string;
+      identity_data?: Record<string, unknown>;
+      created_at?: string;
+    }>
+  >([]);
+  const [identitiesLoading, setIdentitiesLoading] = useState(true);
+  const [identitiesError, setIdentitiesError] = useState<string | null>(null);
+  const [disconnecting, setDisconnecting] = useState<string | null>(null);
+
   // ---- Sessions state ----
   const [sessions, setSessions] = useState<SessionInfo[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
@@ -111,6 +125,34 @@ export default function SecuritySettingsPage() {
   }, []);
 
   // ---------------------------------------------------------------------------
+  // On mount: load connected accounts
+  // ---------------------------------------------------------------------------
+
+  const loadIdentities = useCallback(async () => {
+    setIdentitiesLoading(true);
+    setIdentitiesError(null);
+    try {
+      const res = await fetch("/api/settings/connected");
+      if (!res.ok) {
+        throw new Error("Failed to load connected accounts");
+      }
+      const body = (await res.json()) as {
+        identities: typeof identities;
+        error?: string;
+      };
+      if (body.error) {
+        setIdentitiesError(body.error);
+      }
+      setIdentities(body.identities ?? []);
+    } catch (err) {
+      console.error(err);
+      setIdentitiesError("unavailable");
+    } finally {
+      setIdentitiesLoading(false);
+    }
+  }, []);
+
+  // ---------------------------------------------------------------------------
   // On mount: load sessions
   // ---------------------------------------------------------------------------
 
@@ -136,8 +178,9 @@ export default function SecuritySettingsPage() {
 
   useEffect(() => {
     void checkMfaStatus();
+    void loadIdentities();
     void loadSessions();
-  }, [checkMfaStatus, loadSessions]);
+  }, [checkMfaStatus, loadIdentities, loadSessions]);
 
   // ---------------------------------------------------------------------------
   // Section 1: Change Password
@@ -316,7 +359,34 @@ export default function SecuritySettingsPage() {
   }
 
   // ---------------------------------------------------------------------------
-  // Section 3: Sessions
+  // Section 3: Connected Accounts
+  // ---------------------------------------------------------------------------
+
+  async function handleDisconnect(identityId: string) {
+    setDisconnecting(identityId);
+    try {
+      const res = await fetch(
+        `/api/settings/connected?identity_id=${identityId}`,
+        { method: "DELETE" },
+      );
+      const body = (await res.json()) as { success?: boolean; error?: string };
+
+      if (!res.ok) {
+        toast.error(body.error ?? "Failed to disconnect account");
+        return;
+      }
+
+      setIdentities((prev) => prev.filter((i) => i.id !== identityId));
+      toast.success("Account disconnected");
+    } catch {
+      toast.error("Failed to disconnect account");
+    } finally {
+      setDisconnecting(null);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Section 4: Sessions
   // ---------------------------------------------------------------------------
 
   async function handleSignOutAll() {
@@ -399,6 +469,14 @@ export default function SecuritySettingsPage() {
         onDismissBackupCodes={() => setBackupCodes(null)}
         onTotpCodeChange={setTotpCode}
         onRestartSetup={handleStartEnroll}
+      />
+
+      <ConnectedAccountsCard
+        identities={identities}
+        loading={identitiesLoading}
+        error={identitiesError}
+        disconnecting={disconnecting}
+        onDisconnect={handleDisconnect}
       />
 
       <ActiveSessionsList
