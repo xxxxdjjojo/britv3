@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Download, Trash2 } from "lucide-react";
+import { AlertTriangle, Database, Download, Eye, Shield, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,6 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { ConsentForm } from "@/components/gdpr/ConsentForm";
 import { DataExportButton } from "@/components/gdpr/DataExportButton";
+import { QuickPrivacyMode } from "@/components/settings/QuickPrivacyMode";
 import { createClient } from "@/lib/supabase/client";
 
 type VisibilityValue = "public" | "registered_only" | "private";
@@ -43,6 +44,22 @@ const DEFAULT_SETTINGS: PrivacySettings = {
   active_status: true,
   last_viewed_visible: false,
 };
+
+function deriveQuickMode(
+  settings: PrivacySettings,
+): "public" | "members" | "ghost" {
+  if (
+    settings.visibility === "private" &&
+    !settings.search_indexing &&
+    !settings.active_status
+  ) {
+    return "ghost";
+  }
+  if (settings.visibility === "registered_only") {
+    return "members";
+  }
+  return "public";
+}
 
 export default function PrivacySettingsPage() {
   const router = useRouter();
@@ -90,6 +107,31 @@ export default function PrivacySettingsPage() {
     } catch {
       setSettings((prev) => ({ ...prev, [key]: previous }));
       toast.error("Failed to save");
+    }
+  }
+
+  async function handleQuickModeChange(
+    mode: "public" | "members" | "ghost",
+  ) {
+    const updates: Partial<PrivacySettings> =
+      mode === "public"
+        ? { visibility: "public", search_indexing: true, active_status: true }
+        : mode === "members"
+          ? { visibility: "registered_only" }
+          : {
+              visibility: "private",
+              search_indexing: false,
+              anonymous_analytics: false,
+              third_party_marketing: false,
+              active_status: false,
+              last_viewed_visible: false,
+            };
+
+    for (const [key, value] of Object.entries(updates)) {
+      await updateSetting(
+        key as keyof PrivacySettings,
+        value as PrivacySettings[keyof PrivacySettings],
+      );
     }
   }
 
@@ -148,6 +190,12 @@ export default function PrivacySettingsPage() {
           Manage your privacy, consent preferences, and personal data
         </p>
       </div>
+
+      {/* Quick Privacy Mode */}
+      <QuickPrivacyMode
+        currentMode={deriveQuickMode(settings)}
+        onModeChange={(mode) => void handleQuickModeChange(mode)}
+      />
 
       {/* Section 1: Profile Visibility */}
       <section className="rounded-lg border border-neutral-200 p-6">
@@ -237,111 +285,120 @@ export default function PrivacySettingsPage() {
         </div>
       </section>
 
-      {/* Section 2: Data Sharing */}
-      <section className="rounded-lg border border-neutral-200 p-6">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Data Sharing
-        </h3>
-        <p className="mt-1 font-body text-sm text-neutral-500">
-          Choose how your data can be used beyond core platform functionality.
-        </p>
+      {/* 2-column grid: Data Sharing + Activity Visibility */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Section 2: Data Sharing */}
+        <section className="rounded-lg border border-neutral-200 p-6">
+          <div className="flex items-center gap-2">
+            <Database className="size-4 text-brand-primary" />
+            <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+              Data Sharing
+            </h3>
+          </div>
+          <p className="mt-1 font-body text-sm text-neutral-500">
+            Choose how your data can be used beyond core platform functionality.
+          </p>
 
-        <div className="mt-4 space-y-4">
-          <div className="flex items-start gap-3">
-            <Checkbox
-              id="anonymous-analytics"
-              checked={settings.anonymous_analytics}
-              onCheckedChange={(checked) =>
-                void updateSetting("anonymous_analytics", checked === true)
-              }
-              className="mt-0.5"
-            />
-            <div>
-              <Label
-                htmlFor="anonymous-analytics"
-                className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-              >
-                Anonymous Analytics
-              </Label>
-              <p className="font-body text-xs text-neutral-500">
-                Help us improve the platform with anonymised usage data
-              </p>
+          <div className="mt-4 space-y-4">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="anonymous-analytics"
+                checked={settings.anonymous_analytics}
+                onCheckedChange={(checked) =>
+                  void updateSetting("anonymous_analytics", checked === true)
+                }
+                className="mt-0.5"
+              />
+              <div>
+                <Label
+                  htmlFor="anonymous-analytics"
+                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                >
+                  Anonymous Analytics
+                </Label>
+                <p className="font-body text-xs text-neutral-500">
+                  Help us improve the platform with anonymised usage data
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="third-party-marketing"
+                checked={settings.third_party_marketing}
+                onCheckedChange={(checked) =>
+                  void updateSetting("third_party_marketing", checked === true)
+                }
+                className="mt-0.5"
+              />
+              <div>
+                <Label
+                  htmlFor="third-party-marketing"
+                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                >
+                  Third-party Marketing
+                </Label>
+                <p className="font-body text-xs text-neutral-500">
+                  Receive personalised offers from our partners
+                </p>
+              </div>
             </div>
           </div>
+        </section>
 
-          <div className="flex items-start gap-3">
-            <Checkbox
-              id="third-party-marketing"
-              checked={settings.third_party_marketing}
-              onCheckedChange={(checked) =>
-                void updateSetting("third_party_marketing", checked === true)
-              }
-              className="mt-0.5"
-            />
-            <div>
-              <Label
-                htmlFor="third-party-marketing"
-                className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-              >
-                Third-party Marketing
-              </Label>
-              <p className="font-body text-xs text-neutral-500">
-                Receive personalised offers from our partners
-              </p>
+        {/* Section 3: Activity Visibility */}
+        <section className="rounded-lg border border-neutral-200 p-6">
+          <div className="flex items-center gap-2">
+            <Eye className="size-4 text-brand-primary" />
+            <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+              Activity Visibility
+            </h3>
+          </div>
+          <p className="mt-1 font-body text-sm text-neutral-500">
+            Control what others can see about your activity on the platform.
+          </p>
+
+          <div className="mt-4 space-y-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-body text-sm font-medium text-neutral-900">
+                  Active Status
+                </p>
+                <p className="font-body text-xs text-neutral-500">
+                  Show when you were last active
+                </p>
+              </div>
+              <Switch
+                checked={settings.active_status}
+                onCheckedChange={(checked) =>
+                  void updateSetting("active_status", checked)
+                }
+                aria-label="Active status"
+              />
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-body text-sm font-medium text-neutral-900">
+                  Last Viewed Properties
+                </p>
+                <p className="font-body text-xs text-neutral-500">
+                  Let agents see which properties you&apos;ve viewed
+                </p>
+              </div>
+              <Switch
+                checked={settings.last_viewed_visible}
+                onCheckedChange={(checked) =>
+                  void updateSetting("last_viewed_visible", checked)
+                }
+                aria-label="Last viewed properties visibility"
+              />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Section 3: Activity Visibility */}
-      <section className="rounded-lg border border-neutral-200 p-6">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Activity Visibility
-        </h3>
-        <p className="mt-1 font-body text-sm text-neutral-500">
-          Control what others can see about your activity on the platform.
-        </p>
-
-        <div className="mt-4 space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="font-body text-sm font-medium text-neutral-900">
-                Active Status
-              </p>
-              <p className="font-body text-xs text-neutral-500">
-                Show when you were last active
-              </p>
-            </div>
-            <Switch
-              checked={settings.active_status}
-              onCheckedChange={(checked) =>
-                void updateSetting("active_status", checked)
-              }
-              aria-label="Active status"
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="font-body text-sm font-medium text-neutral-900">
-                Last Viewed Properties
-              </p>
-              <p className="font-body text-xs text-neutral-500">
-                Let agents see which properties you&apos;ve viewed
-              </p>
-            </div>
-            <Switch
-              checked={settings.last_viewed_visible}
-              onCheckedChange={(checked) =>
-                void updateSetting("last_viewed_visible", checked)
-              }
-              aria-label="Last viewed properties visibility"
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Section 4: Consent Preferences */}
       <section className="space-y-4">
