@@ -20,6 +20,7 @@ import SpecialistHero from "@/components/providers/SpecialistHero";
 import { ConveyancerCredentials } from "@/components/providers/SpecialistCredentials";
 import SpecialistSidebar from "@/components/providers/SpecialistSidebar";
 import { ReviewsTab } from "@/components/providers/ReviewsTab";
+import { ProfileTabs } from "@/components/profiles/ProfileTabs";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -71,13 +72,27 @@ export default async function ConveyancerProfilePage({ params }: Params) {
         <main className="max-w-7xl mx-auto px-6 py-8">
           <SpecialistHero provider={provider} specialistType="conveyancer" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <ConveyancerCredentials provider={provider} />
-              <ReviewsTab
-                reviews={reviews.reviews}
-                total={reviews.total}
-                providerName={provider.business_name}
-                providerId={provider.id}
+            <div className="lg:col-span-2">
+              <ProfileTabs
+                tabs={[
+                  {
+                    id: "overview",
+                    label: "Overview",
+                    content: <ConveyancerCredentials provider={provider} />,
+                  },
+                  {
+                    id: "reviews",
+                    label: "Reviews",
+                    content: (
+                      <ReviewsTab
+                        reviews={reviews.reviews}
+                        total={reviews.total}
+                        providerName={provider.business_name}
+                        providerId={provider.id}
+                      />
+                    ),
+                  },
+                ]}
               />
             </div>
             <aside>

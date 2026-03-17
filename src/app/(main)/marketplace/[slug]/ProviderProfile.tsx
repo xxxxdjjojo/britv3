@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { RatingStars } from "@/components/reviews/RatingStars";
 import { RatingDistribution } from "@/components/reviews/RatingDistribution";
 import { ReviewsList } from "@/components/reviews/ReviewsList";
+import { ProfileTabs } from "@/components/profiles/ProfileTabs";
 import type {
   ServiceCategory,
   Review,
@@ -132,160 +133,217 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
         </Link>
       </div>
 
-      {/* About */}
-      {provider.business_description && (
-        <Card>
-          <CardHeader>
-            <CardTitle>About</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {provider.business_description}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Tabbed content */}
+      <ProfileTabs
+        tabs={[
+          {
+            id: "overview",
+            label: "Overview",
+            content: (
+              <div className="space-y-8">
+                {/* About */}
+                {provider.business_description && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>About</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {provider.business_description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
 
-      {/* Details grid */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Coverage */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Coverage Area</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="size-4 text-muted-foreground" />
-              <span>{provider.service_radius} mile radius</span>
-            </div>
-            {provider.service_postcodes.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {provider.service_postcodes.map((pc) => (
-                  <Badge key={pc} variant="outline" className="text-xs">
-                    {pc}
-                  </Badge>
-                ))}
+                {/* Details grid */}
+                <div className="grid gap-4 md:grid-cols-2">
+                  {/* Coverage */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Coverage Area</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="size-4 text-muted-foreground" />
+                        <span>{provider.service_radius} mile radius</span>
+                      </div>
+                      {provider.service_postcodes.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {provider.service_postcodes.map((pc) => (
+                            <Badge key={pc} variant="outline" className="text-xs">
+                              {pc}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Qualifications */}
+                  {(provider.qualifications?.length || provider.accreditations?.length) ? (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Qualifications</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2 text-sm">
+                        {provider.qualifications?.map((q) => (
+                          <div key={q} className="flex items-center gap-1.5">
+                            <CheckCircle2 className="size-3.5 text-green-600" />
+                            <span>{q}</span>
+                          </div>
+                        ))}
+                        {provider.accreditations?.map((a) => (
+                          <div key={a} className="flex items-center gap-1.5">
+                            <CheckCircle2 className="size-3.5 text-brand-primary" />
+                            <span>{a}</span>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  ) : null}
+
+                  {/* Website / Contact */}
+                  {provider.website_url && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Website</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <a
+                          href={provider.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-sm text-brand-primary hover:underline"
+                        >
+                          <Globe className="size-3.5" />
+                          {provider.website_url.replace(/^https?:\/\//, "")}
+                          <ExternalLink className="size-3" />
+                        </a>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Rating Distribution */}
+                {stats && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Rating Breakdown</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 sm:grid-cols-2">
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <span className="text-4xl font-bold text-foreground">
+                          {stats.average_rating.toFixed(1)}
+                        </span>
+                        <RatingStars rating={stats.average_rating} size="lg" />
+                        <span className="text-sm text-muted-foreground">
+                          {stats.total_reviews} reviews
+                        </span>
+                      </div>
+                      <RatingDistribution
+                        counts={{
+                          count_5_star: stats.count_5_star,
+                          count_4_star: stats.count_4_star,
+                          count_3_star: stats.count_3_star,
+                          count_2_star: stats.count_2_star,
+                          count_1_star: stats.count_1_star,
+                        }}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Qualifications */}
-        {(provider.qualifications?.length || provider.accreditations?.length) ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>Qualifications</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              {provider.qualifications?.map((q) => (
-                <div key={q} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="size-3.5 text-green-600" />
-                  <span>{q}</span>
+            ),
+          },
+          {
+            id: "portfolio",
+            label: "Portfolio / Gallery",
+            content: (
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-foreground">Portfolio</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Before &amp; after photos from {provider.business_name}&apos;s completed projects.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div
+                      key={i}
+                      className="aspect-[4/3] rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm text-muted-foreground"
+                    >
+                      Project photo {i}
+                    </div>
+                  ))}
                 </div>
-              ))}
-              {provider.accreditations?.map((a) => (
-                <div key={a} className="flex items-center gap-1.5">
-                  <CheckCircle2 className="size-3.5 text-brand-primary" />
-                  <span>{a}</span>
+              </div>
+            ),
+          },
+          {
+            id: "services",
+            label: "Services & Pricing",
+            content: (
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-foreground">Services &amp; Pricing</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-700">
+                        <th className="text-left py-3 px-4 font-semibold text-foreground">Service</th>
+                        <th className="text-right py-3 px-4 font-semibold text-foreground">Price Range</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.keys(provider.pricing).length > 0 ? (
+                        Object.entries(provider.pricing).map(([key, value]) => (
+                          <tr key={key} className="border-b border-slate-100 dark:border-slate-800">
+                            <td className="py-3 px-4 capitalize text-muted-foreground">
+                              {key.replace(/_/g, " ")}
+                            </td>
+                            <td className="py-3 px-4 text-right font-medium text-foreground">
+                              {typeof value === "number"
+                                ? new Intl.NumberFormat("en-GB", {
+                                    style: "currency",
+                                    currency: "GBP",
+                                  }).format(value)
+                                : String(value)}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={2} className="py-8 text-center text-muted-foreground">
+                            Contact for pricing details.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        ) : null}
-
-        {/* Pricing */}
-        {Object.keys(provider.pricing).length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Pricing</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1 text-sm">
-              {Object.entries(provider.pricing).map(([key, value]) => (
-                <div key={key} className="flex justify-between">
-                  <span className="capitalize text-muted-foreground">
-                    {key.replace(/_/g, " ")}
-                  </span>
-                  <span className="font-medium">
-                    {typeof value === "number"
-                      ? new Intl.NumberFormat("en-GB", {
-                          style: "currency",
-                          currency: "GBP",
-                        }).format(value)
-                      : String(value)}
-                  </span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Website / Contact */}
-        {provider.website_url && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Website</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <a
-                href={provider.website_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-brand-primary hover:underline"
-              >
-                <Globe className="size-3.5" />
-                {provider.website_url.replace(/^https?:\/\//, "")}
-                <ExternalLink className="size-3" />
-              </a>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Rating Distribution */}
-      {stats && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Rating Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-6 sm:grid-cols-2">
-            <div className="flex flex-col items-center justify-center gap-1">
-              <span className="text-4xl font-bold text-foreground">
-                {stats.average_rating.toFixed(1)}
-              </span>
-              <RatingStars rating={stats.average_rating} size="lg" />
-              <span className="text-sm text-muted-foreground">
-                {stats.total_reviews} reviews
-              </span>
-            </div>
-            <RatingDistribution
-              counts={{
-                count_5_star: stats.count_5_star,
-                count_4_star: stats.count_4_star,
-                count_3_star: stats.count_3_star,
-                count_2_star: stats.count_2_star,
-                count_1_star: stats.count_1_star,
-              }}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Reviews */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Reviews</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ReviewsList
-            reviews={reviews}
-            totalCount={reviewTotal}
-            currentPage={reviewPage}
-            sort={reviewSort}
-            onPageChange={handlePageChange}
-            onSortChange={handleSortChange}
-          />
-        </CardContent>
-      </Card>
+              </div>
+            ),
+          },
+          {
+            id: "reviews",
+            label: "Reviews",
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Reviews</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReviewsList
+                    reviews={reviews}
+                    totalCount={reviewTotal}
+                    currentPage={reviewPage}
+                    sort={reviewSort}
+                    onPageChange={handlePageChange}
+                    onSortChange={handleSortChange}
+                  />
+                </CardContent>
+              </Card>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }
