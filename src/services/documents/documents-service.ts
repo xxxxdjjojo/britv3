@@ -102,6 +102,36 @@ export async function getDocuments(
   }
 }
 
+/**
+ * Generate a short-lived signed download URL for a document.
+ */
+export async function getSignedDownloadUrl(
+  supabase: SupabaseClient,
+  userId: string,
+  documentId: string,
+): Promise<string> {
+  const { data: doc, error: fetchError } = await supabase
+    .from("user_documents")
+    .select("storage_path")
+    .eq("id", documentId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (fetchError || !doc) {
+    throw new Error("Document not found");
+  }
+
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl((doc as { storage_path: string }).storage_path, 300);
+
+  if (error || !data?.signedUrl) {
+    throw new Error("Failed to generate download URL");
+  }
+
+  return data.signedUrl;
+}
+
 // ---------------------------------------------------------------------------
 // Mutations
 // ---------------------------------------------------------------------------
