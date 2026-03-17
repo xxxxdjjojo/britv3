@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { AvatarUploader } from "@/components/settings/AvatarUploader";
 import { ProfileForm } from "@/components/settings/ProfileForm";
-import { DangerZone } from "@/components/settings/DangerZone";
 
 export const metadata: Metadata = {
   title: "Account | Britestate",
@@ -73,30 +71,6 @@ export default async function AccountSettingsPage() {
         />
       </section>
 
-      {/* Danger zone */}
-      <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-error">
-          Danger Zone
-        </h3>
-        <div className="rounded-lg border border-error/20 bg-error/5 p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 size-5 text-error" />
-            <div className="space-y-2">
-              <p className="font-body text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                Deactivate your account
-              </p>
-              <ul className="list-inside list-disc space-y-1 font-body text-xs text-neutral-600 dark:text-neutral-400">
-                <li>Your account will be scheduled for deletion in 30 days</li>
-                <li>
-                  You can cancel by logging back in within the grace period
-                </li>
-                <li>After 30 days, all your data will be permanently removed</li>
-              </ul>
-              <DangerZone />
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

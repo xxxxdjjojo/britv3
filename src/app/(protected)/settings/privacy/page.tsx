@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Download, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, Eye, Ghost, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { ConsentForm } from "@/components/gdpr/ConsentForm";
 import { DataExportButton } from "@/components/gdpr/DataExportButton";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
 type VisibilityValue = "public" | "registered_only" | "private";
 
@@ -43,6 +44,68 @@ const DEFAULT_SETTINGS: PrivacySettings = {
   active_status: true,
   last_viewed_visible: false,
 };
+
+// ---------------------------------------------------------------------------
+// Quick Privacy Mode presets
+// ---------------------------------------------------------------------------
+
+type PrivacyMode = "public" | "members-only" | "ghost";
+
+const PRIVACY_MODES: {
+  id: PrivacyMode;
+  label: string;
+  description: string;
+  icon: typeof Eye;
+  settings: Partial<PrivacySettings>;
+}[] = [
+  {
+    id: "public",
+    label: "Public",
+    description: "Maximum visibility. Your profile and activity are visible to everyone.",
+    icon: Eye,
+    settings: {
+      visibility: "public",
+      search_indexing: true,
+      active_status: true,
+      last_viewed_visible: true,
+    },
+  },
+  {
+    id: "members-only",
+    label: "Members Only",
+    description: "Visible to registered Britestate users only. Hidden from search engines.",
+    icon: Users,
+    settings: {
+      visibility: "registered_only",
+      search_indexing: false,
+      active_status: true,
+      last_viewed_visible: false,
+    },
+  },
+  {
+    id: "ghost",
+    label: "Ghost",
+    description: "Maximum privacy. Your profile is private and all tracking is off.",
+    icon: Ghost,
+    settings: {
+      visibility: "private",
+      search_indexing: false,
+      active_status: false,
+      last_viewed_visible: false,
+      third_party_marketing: false,
+    },
+  },
+];
+
+function detectCurrentMode(settings: PrivacySettings): PrivacyMode | null {
+  for (const mode of PRIVACY_MODES) {
+    const match = Object.entries(mode.settings).every(
+      ([key, value]) => settings[key as keyof PrivacySettings] === value,
+    );
+    if (match) return mode.id;
+  }
+  return null;
+}
 
 export default function PrivacySettingsPage() {
   const router = useRouter();
@@ -92,6 +155,34 @@ export default function PrivacySettingsPage() {
       toast.error("Failed to save");
     }
   }
+
+  async function applyPrivacyMode(mode: PrivacyMode) {
+    const preset = PRIVACY_MODES.find((m) => m.id === mode);
+    if (!preset) return;
+
+    const previousSettings = { ...settings };
+    const newSettings = { ...settings, ...preset.settings };
+    setSettings(newSettings);
+
+    try {
+      const response = await fetch("/api/settings/privacy", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(preset.settings),
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      toast.success(`${preset.label} mode applied`);
+    } catch {
+      setSettings(previousSettings);
+      toast.error("Failed to apply privacy mode");
+    }
+  }
+
+  const currentMode = detectCurrentMode(settings);
 
   async function handleDeleteAccount() {
     if (deleteConfirmation !== "DELETE") return;
@@ -148,6 +239,49 @@ export default function PrivacySettingsPage() {
           Manage your privacy, consent preferences, and personal data
         </p>
       </div>
+
+      {/* Quick Privacy Mode */}
+      <section className="space-y-3">
+        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          Quick Privacy Mode
+        </h3>
+        <p className="font-body text-sm text-neutral-500">
+          Choose a preset to configure all privacy settings at once.
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {PRIVACY_MODES.map((mode) => {
+            const Icon = mode.icon;
+            const isActive = currentMode === mode.id;
+            return (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => void applyPrivacyMode(mode.id)}
+                className={cn(
+                  "relative flex flex-col items-center gap-2 rounded-lg border-2 p-5 text-center transition-all",
+                  isActive
+                    ? "border-brand-primary bg-brand-primary/5 ring-1 ring-brand-primary/20"
+                    : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-700",
+                )}
+              >
+                {isActive && (
+                  <span className="absolute right-2 top-2 size-2 rounded-full bg-brand-primary" />
+                )}
+                <Icon className={cn(
+                  "size-6",
+                  isActive ? "text-brand-primary" : "text-neutral-500",
+                )} />
+                <span className="font-heading text-sm font-semibold text-neutral-900 dark:text-white">
+                  {mode.label}
+                </span>
+                <span className="font-body text-xs text-neutral-500">
+                  {mode.description}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Section 1: Profile Visibility */}
       <section className="rounded-lg border border-neutral-200 p-6">
@@ -237,111 +371,114 @@ export default function PrivacySettingsPage() {
         </div>
       </section>
 
-      {/* Section 2: Data Sharing */}
-      <section className="rounded-lg border border-neutral-200 p-6">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Data Sharing
-        </h3>
-        <p className="mt-1 font-body text-sm text-neutral-500">
-          Choose how your data can be used beyond core platform functionality.
-        </p>
+      {/* 2-column grid: Data Sharing + Activity Visibility */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Section 2: Data Sharing */}
+        <section className="rounded-lg border border-neutral-200 p-6">
+          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+            Data Sharing
+          </h3>
+          <p className="mt-1 font-body text-sm text-neutral-500">
+            Choose how your data can be used beyond core platform functionality.
+          </p>
 
-        <div className="mt-4 space-y-4">
-          <div className="flex items-start gap-3">
-            <Checkbox
-              id="anonymous-analytics"
-              checked={settings.anonymous_analytics}
-              onCheckedChange={(checked) =>
-                void updateSetting("anonymous_analytics", checked === true)
-              }
-              className="mt-0.5"
-            />
-            <div>
-              <Label
-                htmlFor="anonymous-analytics"
-                className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-              >
-                Anonymous Analytics
-              </Label>
-              <p className="font-body text-xs text-neutral-500">
-                Help us improve the platform with anonymised usage data
-              </p>
+          <div className="mt-4 space-y-4">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="anonymous-analytics"
+                checked={settings.anonymous_analytics}
+                onCheckedChange={(checked) =>
+                  void updateSetting("anonymous_analytics", checked === true)
+                }
+                className="mt-0.5"
+              />
+              <div>
+                <Label
+                  htmlFor="anonymous-analytics"
+                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                >
+                  Anonymous Analytics
+                </Label>
+                <p className="font-body text-xs text-neutral-500">
+                  Help us improve the platform with anonymised usage data
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="third-party-marketing"
+                checked={settings.third_party_marketing}
+                onCheckedChange={(checked) =>
+                  void updateSetting("third_party_marketing", checked === true)
+                }
+                className="mt-0.5"
+              />
+              <div>
+                <Label
+                  htmlFor="third-party-marketing"
+                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                >
+                  Third-party Marketing
+                </Label>
+                <p className="font-body text-xs text-neutral-500">
+                  Receive personalised offers from our partners
+                </p>
+              </div>
             </div>
           </div>
+        </section>
 
-          <div className="flex items-start gap-3">
-            <Checkbox
-              id="third-party-marketing"
-              checked={settings.third_party_marketing}
-              onCheckedChange={(checked) =>
-                void updateSetting("third_party_marketing", checked === true)
-              }
-              className="mt-0.5"
-            />
-            <div>
-              <Label
-                htmlFor="third-party-marketing"
-                className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
-              >
-                Third-party Marketing
-              </Label>
-              <p className="font-body text-xs text-neutral-500">
-                Receive personalised offers from our partners
-              </p>
+        {/* Section 3: Activity Visibility */}
+        <section className="rounded-lg border border-neutral-200 p-6">
+          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+            Activity Visibility
+          </h3>
+          <p className="mt-1 font-body text-sm text-neutral-500">
+            Control what others can see about your activity on the platform.
+          </p>
+
+          <div className="mt-4 space-y-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-body text-sm font-medium text-neutral-900">
+                  Active Status
+                </p>
+                <p className="font-body text-xs text-neutral-500">
+                  Show when you were last active
+                </p>
+              </div>
+              <Switch
+                checked={settings.active_status}
+                onCheckedChange={(checked) =>
+                  void updateSetting("active_status", checked)
+                }
+                aria-label="Active status"
+              />
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-body text-sm font-medium text-neutral-900">
+                  Last Viewed Properties
+                </p>
+                <p className="font-body text-xs text-neutral-500">
+                  Let agents see which properties you&apos;ve viewed
+                </p>
+              </div>
+              <Switch
+                checked={settings.last_viewed_visible}
+                onCheckedChange={(checked) =>
+                  void updateSetting("last_viewed_visible", checked)
+                }
+                aria-label="Last viewed properties visibility"
+              />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Section 3: Activity Visibility */}
-      <section className="rounded-lg border border-neutral-200 p-6">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Activity Visibility
-        </h3>
-        <p className="mt-1 font-body text-sm text-neutral-500">
-          Control what others can see about your activity on the platform.
-        </p>
-
-        <div className="mt-4 space-y-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="font-body text-sm font-medium text-neutral-900">
-                Active Status
-              </p>
-              <p className="font-body text-xs text-neutral-500">
-                Show when you were last active
-              </p>
-            </div>
-            <Switch
-              checked={settings.active_status}
-              onCheckedChange={(checked) =>
-                void updateSetting("active_status", checked)
-              }
-              aria-label="Active status"
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="font-body text-sm font-medium text-neutral-900">
-                Last Viewed Properties
-              </p>
-              <p className="font-body text-xs text-neutral-500">
-                Let agents see which properties you&apos;ve viewed
-              </p>
-            </div>
-            <Switch
-              checked={settings.last_viewed_visible}
-              onCheckedChange={(checked) =>
-                void updateSetting("last_viewed_visible", checked)
-              }
-              aria-label="Last viewed properties visibility"
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Section 4: Consent Preferences */}
       <section className="space-y-4">

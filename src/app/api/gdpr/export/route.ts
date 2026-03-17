@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { exportUserData } from "@/services/gdpr/export-service";
+import { createRateLimiter } from "@/lib/cache/redis";
+
+// 1 GDPR export per hour per user — gracefully degrades if Redis unavailable
+const gdprExportLimiter = createRateLimiter(1, "1 h");
 
 /**
  * GET /api/gdpr/export
@@ -18,6 +22,19 @@ export async function GET() {
       { error: "Not authenticated" },
       { status: 401 },
     );
+  }
+
+  // Rate limit: 1 export per hour per user
+  try {
+    const { success } = await gdprExportLimiter.limit(user.id);
+    if (!success) {
+      return NextResponse.json(
+        { error: "You can only export your data once per hour." },
+        { status: 429 },
+      );
+    }
+  } catch {
+    // Redis unavailable — skip rate limiting (graceful degradation)
   }
 
   try {
