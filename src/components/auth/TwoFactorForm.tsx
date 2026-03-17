@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { createClient } from "@/lib/supabase/client";
-import { createMFAChallenge, verifyMFAChallenge } from "@/services/auth/mfa-service";
 
 const MAX_ATTEMPTS = 3;
 const CODE_TTL_SECONDS = 30;
@@ -34,7 +33,7 @@ export function TwoFactorForm() {
       const totp = data?.totp?.[0];
       if (!totp) return;
       setFactorId(totp.id);
-      const { data: challenge, error: cErr } = await createMFAChallenge(totp.id);
+      const { data: challenge, error: cErr } = await supabase.auth.mfa.challenge({ factorId: totp.id });
       if (!cErr && challenge) {
         setChallengeId(challenge.id);
       }
@@ -54,7 +53,8 @@ export function TwoFactorForm() {
     setLoading(true);
     setError(null);
     try {
-      const { error: vErr } = await verifyMFAChallenge(factorId, challengeId, code);
+      const supabase = createClient();
+      const { error: vErr } = await supabase.auth.mfa.verify({ factorId, challengeId, code });
       if (vErr) {
         const newAttempts = attempts + 1;
         setAttempts(newAttempts);
