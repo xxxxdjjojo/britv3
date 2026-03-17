@@ -2,30 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.3] - 2026-03-17
+## [0.3.4] - 2026-03-17
 
 ### Added
+- **Account Settings: Security** — Refactored into sub-components; added Connected Accounts (OAuth link/unlink with last-provider guard), Login History (paginated, graceful fallback)
+- **Account Settings: Notifications** — Upgraded to 5×4 matrix (Property Alerts, Viewings, Offers, Messages, Market Reports × Email, Push, SMS, In-App); migration-on-read from old 7-key schema; Marketing Unsubscribe section
+- **Account Settings: Privacy** — 2-column layout; Quick Privacy Mode (Public/Members/Ghost one-click presets); Delete Account moved to Privacy only
+- **Account Settings: Preferences** — New page with Language/Region (locale, date format, currency, timezone) and Accessibility (font size, reduced motion, high contrast, dark mode with live preview, screen reader hints)
+- **Sidebar Badges** — Security Score (progress ring, 4 factors) and Privacy Shield (protection level) in settings sidebar
 - **Service Directory** — Browse-by-profession page at `/services` with category grid and "Post a Job" CTA
 - **Specialist Search Pages** — Dedicated pages for mortgage brokers, conveyancers, surveyors, and architects
 - **Job Board** — SSR job board at `/jobs` with postcode masking, category/urgency filters, pagination
 - **Agent Search Filters** — Area and minimum rating filters on `/agents` page
 - **Compare Bar** — Floating UI for side-by-side provider comparison; API at `/api/providers/compare`
-- **Provider Profile Links** — ProviderCard now links to `/services/[category]/[slug]` URL structure
+- **`requireAuth()` helper** — Shared auth boilerplate for API routes
+- DB migration: `language_preferences` and `accessibility_preferences` JSONB columns on profiles
 
 ### Fixed
+- Notification race condition — client now sends single-key `{ [key]: value }` instead of full object
+- GDPR export rate limiting — Upstash 1/hour per user
 - Agents page PGRST200 error — removed broken `profiles(...)` JOIN from `agent_agency_profiles` query
-- Agent profiles RLS — added public read policy so visitors can see agent directory
-- "Find Services" nav link now points to `/services` instead of `/marketplace`
-- Strip ILIKE wildcard characters (`%`, `_`) in `sanitizePostgrestInput()` to prevent filter bypass
-- Extract shared `sanitizePostgrestInput()` for consistent PostgREST filter sanitization
+- Agent profiles RLS — added public read policy for agent directory
+- `sanitizePostgrestInput()` — strips ILIKE wildcards (`%`, `_`) and PostgREST filter syntax
 - RPC parameter rename `p_category` → `p_service_category` in provider service
-- `localStorage` safety guards for SSR environments in marketplace utilities
-- Budget cross-field validation (max >= min) and past-date guard in `rfqCreateSchema`
 - `GBPToPence` → `gbpToPence` to match currency.ts export
 
 ### Changed
 - Added service categories: `builder`, `plasterer`, `painter`, `carpenter` to marketplace schemas
-- Added `reviewEditSchema` for 48-hour review edit window
+- Security page refactored from 788-line monolith into 4 focused components
+
+### Removed
+- `mfa-service.ts` — dead code (MFA calls inlined into components)
 
 ## [0.3.0] - 2026-03-15
 
