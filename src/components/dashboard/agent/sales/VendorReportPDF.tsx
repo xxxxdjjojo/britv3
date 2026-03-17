@@ -1,291 +1,311 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-} from "@react-pdf/renderer";
-import type { AgentVendorReport, ReportType } from "@/types/agent";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FileText, Download, RefreshCw } from "lucide-react";
+import type { AgentVendorReport } from "@/types/agent";
 
-// ============================================================================
-// Styles
-// ============================================================================
+// --------------------------------------------------------------------------
+// Types
+// --------------------------------------------------------------------------
 
-const styles = StyleSheet.create({
-  page: {
-    fontFamily: "Helvetica",
-    fontSize: 11,
-    padding: 48,
-    color: "#111827",
-  },
-  // Letterhead
-  letterhead: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 32,
-    paddingBottom: 16,
-    borderBottomWidth: 2,
-    borderBottomColor: "#2563EB",
-    borderBottomStyle: "solid",
-  },
-  agencyName: {
-    fontSize: 20,
-    fontFamily: "Helvetica-Bold",
-    color: "#2563EB",
-  },
-  agencyTagline: {
-    fontSize: 9,
-    color: "#6B7280",
-    marginTop: 2,
-  },
-  reportMeta: {
-    alignItems: "flex-end",
-  },
-  reportMetaLabel: {
-    fontSize: 9,
-    color: "#6B7280",
-  },
-  reportMetaValue: {
-    fontSize: 10,
-    fontFamily: "Helvetica-Bold",
-    marginTop: 1,
-  },
-
-  // Section
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontFamily: "Helvetica-Bold",
-    color: "#1E40AF",
-    marginBottom: 10,
-    paddingBottom: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#DBEAFE",
-    borderBottomStyle: "solid",
-  },
-
-  // Key-value rows
-  row: {
-    flexDirection: "row",
-    marginBottom: 5,
-  },
-  rowLabel: {
-    width: 160,
-    color: "#6B7280",
-    fontSize: 10,
-  },
-  rowValue: {
-    flex: 1,
-    fontFamily: "Helvetica-Bold",
-    fontSize: 10,
-  },
-
-  // Stat cards
-  statsGrid: {
-    flexDirection: "row",
-    gap: 10,
-    flexWrap: "wrap",
-  },
-  statCard: {
-    flex: 1,
-    minWidth: 90,
-    backgroundColor: "#F0F9FF",
-    padding: 10,
-    borderRadius: 4,
-  },
-  statCardLabel: {
-    fontSize: 9,
-    color: "#6B7280",
-    marginBottom: 3,
-  },
-  statCardValue: {
-    fontSize: 16,
-    fontFamily: "Helvetica-Bold",
-    color: "#1D4ED8",
-  },
-
-  // Footer
-  footer: {
-    position: "absolute",
-    bottom: 32,
-    left: 48,
-    right: 48,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-    borderTopStyle: "solid",
-    paddingTop: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  footerText: {
-    fontSize: 8,
-    color: "#9CA3AF",
-  },
-});
-
-// ============================================================================
-// Helpers
-// ============================================================================
-
-const REPORT_TYPE_LABELS: Record<ReportType, string> = {
-  listing_performance: "Listing Performance Report",
-  viewing_summary: "Viewing Summary Report",
-  market_analysis: "Market Analysis Report",
+type Listing = {
+  id: string;
+  title: string | null;
+  address_line_1: string | null;
 };
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
+// --------------------------------------------------------------------------
+// PDF download component — lazy-loads @react-pdf/renderer on click only
+// --------------------------------------------------------------------------
 
-// ============================================================================
-// Component
-// ============================================================================
+type ReportData = Record<string, unknown>;
 
-type VendorReportPDFProps = Readonly<{
-  report: AgentVendorReport;
-  agencyName?: string;
-}>;
+export function VendorReportDownload({
+  reportData,
+  agencyName,
+}: Readonly<{
+  reportData: ReportData;
+  agencyName: string;
+}>) {
+  const [loading, setLoading] = useState(false);
 
-export default function VendorReportPDF({
-  report,
-  agencyName = "Britestate Realty",
-}: VendorReportPDFProps) {
-  const data = report.data as Record<string, unknown>;
-  const reportLabel = REPORT_TYPE_LABELS[report.report_type];
+  async function handleDownload() {
+    setLoading(true);
+    try {
+      const { pdf, Document, Page, Text, View, StyleSheet } = await import(
+        "@react-pdf/renderer"
+      );
+
+      const styles = StyleSheet.create({
+        page: {
+          padding: 40,
+          fontFamily: "Helvetica",
+          fontSize: 11,
+          color: "#1a1a1a",
+        },
+        header: {
+          marginBottom: 24,
+          borderBottomWidth: 2,
+          borderBottomColor: "#2563eb",
+          paddingBottom: 12,
+        },
+        title: {
+          fontSize: 20,
+          fontWeight: "bold",
+          color: "#2563eb",
+          marginBottom: 4,
+        },
+        subtitle: { fontSize: 11, color: "#6b7280" },
+        section: { marginTop: 16 },
+        sectionTitle: {
+          fontSize: 13,
+          fontWeight: "bold",
+          marginBottom: 8,
+          color: "#111827",
+        },
+        row: {
+          flexDirection: "row",
+          marginBottom: 4,
+          gap: 8,
+        },
+        label: { color: "#6b7280", width: 140 },
+        value: { flex: 1 },
+        footer: {
+          position: "absolute",
+          bottom: 30,
+          left: 40,
+          right: 40,
+          fontSize: 9,
+          color: "#9ca3af",
+          textAlign: "center",
+          borderTopWidth: 1,
+          borderTopColor: "#e5e7eb",
+          paddingTop: 8,
+        },
+      });
+
+      const ReportDocument = () => (
+        <Document>
+          <Page size="A4" style={styles.page}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Vendor Report</Text>
+              <Text style={styles.subtitle}>{agencyName}</Text>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Report Summary</Text>
+              {Object.entries(reportData).map(([key, value]) => (
+                <View key={key} style={styles.row}>
+                  <Text style={styles.label}>{key.replace(/_/g, " ")}:</Text>
+                  <Text style={styles.value}>
+                    {typeof value === "object"
+                      ? JSON.stringify(value)
+                      : String(value ?? "")}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            <Text style={styles.footer}>
+              Generated {new Date().toLocaleDateString("en-GB")} — Britestate
+              Vendor Report
+            </Text>
+          </Page>
+        </Document>
+      );
+
+      const blob = await pdf(<ReportDocument />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `vendor-report-${Date.now()}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to generate PDF",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <Document
-      title={`${reportLabel} — ${formatDate(report.generated_at)}`}
-      author={agencyName}
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleDownload}
+      disabled={loading}
     >
-      <Page size="A4" style={styles.page}>
-        {/* Letterhead */}
-        <View style={styles.letterhead}>
-          <View>
-            <Text style={styles.agencyName}>{agencyName}</Text>
-            <Text style={styles.agencyTagline}>Professional Property Services</Text>
-          </View>
-          <View style={styles.reportMeta}>
-            <Text style={styles.reportMetaLabel}>Report Type</Text>
-            <Text style={styles.reportMetaValue}>{reportLabel}</Text>
-            <Text style={styles.reportMetaLabel}>Generated</Text>
-            <Text style={styles.reportMetaValue}>
-              {formatDate(report.generated_at)}
-            </Text>
-          </View>
-        </View>
+      {loading ? (
+        <RefreshCw className="mr-2 size-3.5 animate-spin" />
+      ) : (
+        <Download className="mr-2 size-3.5" />
+      )}
+      Download PDF
+    </Button>
+  );
+}
 
-        {/* Property details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Property Details</Text>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Property ID</Text>
-            <Text style={styles.rowValue}>{report.property_id}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Report ID</Text>
-            <Text style={styles.rowValue}>{report.id}</Text>
-          </View>
-        </View>
+// --------------------------------------------------------------------------
+// VendorReportList — main page client component
+// --------------------------------------------------------------------------
 
-        {/* Performance data — listing_performance */}
-        {report.report_type === "listing_performance" && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Performance Metrics</Text>
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statCardLabel}>Total Offers</Text>
-                <Text style={styles.statCardValue}>
-                  {String(data.total_offers ?? 0)}
-                </Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statCardLabel}>Accepted Offers</Text>
-                <Text style={styles.statCardValue}>
-                  {String(data.accepted_offers ?? 0)}
-                </Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statCardLabel}>Total Viewings</Text>
-                <Text style={styles.statCardValue}>
-                  {String(data.total_viewings ?? 0)}
-                </Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statCardLabel}>Booked Viewings</Text>
-                <Text style={styles.statCardValue}>
-                  {String(data.booked_viewings ?? 0)}
-                </Text>
-              </View>
-            </View>
-            {data.highest_offer != null && (
-              <View style={{ marginTop: 12, ...styles.row }}>
-                <Text style={styles.rowLabel}>Highest Offer</Text>
-                <Text style={styles.rowValue}>
-                  {new Intl.NumberFormat("en-GB", {
-                    style: "currency",
-                    currency: "GBP",
-                    minimumFractionDigits: 0,
-                  }).format((data.highest_offer as number) / 100)}
-                </Text>
-              </View>
+export function VendorReportList({
+  listings,
+  reports: initialReports,
+  userId,
+}: Readonly<{
+  listings: Listing[];
+  reports: AgentVendorReport[];
+  userId: string;
+}>) {
+  const [reports, setReports] = useState<AgentVendorReport[]>(initialReports);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>("");
+  const [generating, setGenerating] = useState(false);
+
+  // Suppress unused variable warning — userId available for future use
+  void userId;
+
+  async function handleGenerate() {
+    if (!selectedPropertyId) {
+      toast.error("Please select a property first.");
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/agent/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          property_id: selectedPropertyId,
+          report_type: "listing_performance",
+        }),
+      });
+
+      if (!res.ok) {
+        const body = (await res.json()) as { error?: string };
+        throw new Error(body.error ?? "Failed to generate report");
+      }
+
+      const newReport = (await res.json()) as AgentVendorReport;
+      setReports((prev) => [newReport, ...prev]);
+      toast.success("Vendor report generated successfully.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to generate report",
+      );
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Generator panel */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Generate Vendor Report</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-end">
+          <div className="flex flex-1 flex-col gap-1.5">
+            <label className="text-sm font-medium text-foreground">
+              Select Property
+            </label>
+            <Select
+              value={selectedPropertyId}
+              onValueChange={setSelectedPropertyId}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose a listing..." />
+              </SelectTrigger>
+              <SelectContent>
+                {listings.map((l) => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.title ?? l.address_line_1 ?? l.id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            onClick={handleGenerate}
+            disabled={generating || !selectedPropertyId}
+            className="shrink-0"
+          >
+            {generating ? (
+              <RefreshCw className="mr-2 size-4 animate-spin" />
+            ) : (
+              <FileText className="mr-2 size-4" />
             )}
-          </View>
-        )}
+            Generate Report
+          </Button>
+        </CardContent>
+      </Card>
 
-        {/* Viewing summary */}
-        {report.report_type === "viewing_summary" && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Viewing Summary</Text>
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statCardLabel}>Total Slots</Text>
-                <Text style={styles.statCardValue}>
-                  {String(data.total_slots ?? 0)}
-                </Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statCardLabel}>Booked Slots</Text>
-                <Text style={styles.statCardValue}>
-                  {String(data.booked_slots ?? 0)}
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
-
-        {/* Market analysis placeholder */}
-        {report.report_type === "market_analysis" && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Market Analysis</Text>
-            <Text style={{ fontSize: 10, color: "#6B7280", lineHeight: 1.6 }}>
-              Market analysis data is generated from comparable properties in
-              the same postcode district. Use the Market Appraisal tool in your
-              dashboard to generate detailed comparable data, then re-run this
-              report.
-            </Text>
-          </View>
-        )}
-
-        {/* Footer */}
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>
-            Confidential — Prepared for vendor use only
-          </Text>
-          <Text style={styles.footerText}>
-            {agencyName} · Powered by Britestate
-          </Text>
-        </View>
-      </Page>
-    </Document>
+      {/* Reports list */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">
+            Previous Reports
+            <Badge variant="secondary" className="ml-2">
+              {reports.length}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {reports.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              No reports generated yet.
+            </p>
+          ) : (
+            <div className="flex flex-col divide-y">
+              {reports.map((report) => (
+                <div
+                  key={report.id}
+                  className="flex items-center justify-between gap-4 py-3"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <FileText className="size-4 text-muted-foreground" />
+                      <span className="text-sm font-medium capitalize text-foreground">
+                        {report.report_type.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Property: {report.property_id.substring(0, 8)}… &middot;{" "}
+                      {new Date(report.generated_at).toLocaleDateString(
+                        "en-GB",
+                        {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        },
+                      )}
+                    </p>
+                  </div>
+                  <VendorReportDownload
+                    reportData={(report.data as Record<string, unknown>) ?? {}}
+                    agencyName="Britestate"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

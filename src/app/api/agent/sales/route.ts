@@ -1,36 +1,35 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   getAgentSaleProgressions,
   updateSaleStage,
 } from "@/services/agent/agent-sale-service";
-import { SALE_STAGES } from "@/types/agent";
 import type { SaleStage } from "@/types/agent";
+import { SALE_STAGES } from "@/types/agent";
 
 /**
  * GET /api/agent/sales
- *
- * Returns all active sale progressions for the authenticated agent.
+ * Returns all sale progressions for the authenticated agent.
  */
 export async function GET() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const progressions = await getAgentSaleProgressions(supabase, user.id);
-
-    return NextResponse.json({ progressions });
+    return NextResponse.json(progressions);
   } catch (error) {
-    console.error("GET /api/agent/sales error:", error);
+    console.error("Failed to fetch sale progressions:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to fetch sale progressions" },
       { status: 500 },
     );
   }
@@ -38,66 +37,61 @@ export async function GET() {
 
 /**
  * PATCH /api/agent/sales
- *
- * Update the stage (and optionally notes) of a sale progression.
- * Body: { id: string, stage: SaleStage, notes?: string }
- *
- * Returns 422 if the transition is invalid (adjacent-only rule).
+ * Updates the stage of a sale progression.
+ * Body: { id: string; stage: SaleStage; notes?: string }
+ * Returns 400 if the stage transition is invalid.
  */
-export async function PATCH(request: NextRequest) {
+export async function PATCH(request: Request) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const supabase = await createClient();
+    const body = (await request.json()) as unknown;
+    const { id, stage, notes } = body as {
+      id?: string;
+      stage?: string;
+      notes?: string;
+    };
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = (await request.json()) as Record<string, unknown>;
-
-    if (!body.id || typeof body.id !== "string") {
+    if (!id || typeof id !== "string") {
       return NextResponse.json(
         { error: "id is required" },
         { status: 400 },
       );
     }
 
-    const stageParam = body.stage;
-    if (
-      !stageParam ||
-      typeof stageParam !== "string" ||
-      !(SALE_STAGES as readonly string[]).includes(stageParam)
-    ) {
+    if (!stage || !SALE_STAGES.includes(stage as SaleStage)) {
       return NextResponse.json(
         { error: `stage must be one of: ${SALE_STAGES.join(", ")}` },
         { status: 400 },
       );
     }
 
-    const notes =
-      typeof body.notes === "string" ? body.notes : undefined;
-
-    const progression = await updateSaleStage(
+    const updated = await updateSaleStage(
       supabase,
-      body.id,
+      id,
       user.id,
-      stageParam as SaleStage,
+      stage as SaleStage,
       notes,
     );
 
-    return NextResponse.json({ progression });
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("PATCH /api/agent/sales error:", error);
-
-    if (error instanceof Error && error.message.includes("Invalid stage transition")) {
-      return NextResponse.json({ error: error.message }, { status: 422 });
-    }
-
+    // updateSaleStage throws on invalid transitions — surface as 400
     const message =
-      error instanceof Error ? error.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+      error instanceof Error ? error.message : "Failed to update sale stage";
+    const isTransitionError = message.includes("Invalid stage transition");
+    return NextResponse.json(
+      { error: message },
+      { status: isTransitionError ? 400 : 500 },
+    );
   }
 }

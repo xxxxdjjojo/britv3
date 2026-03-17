@@ -1,45 +1,44 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserPlus, MoreVertical } from "lucide-react";
 import type { AgentTeamMember, AgentBranch, TeamRole } from "@/types/agent";
 import { TEAM_ROLES } from "@/types/agent";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  UserPlus,
-  MoreVertical,
-  UserMinus,
-  Building2,
-  Shield,
-} from "lucide-react";
 
-// ---- Role display helpers ---------------------------------------------------
+type Props = Readonly<{
+  members: AgentTeamMember[];
+  branches: AgentBranch[];
+}>;
+
+type FilterState = {
+  branch: string;
+  role: string;
+  status: string;
+};
+
+const ROLE_COLOURS: Record<TeamRole, string> = {
+  admin: "bg-red-100 text-red-700",
+  senior_negotiator: "bg-blue-100 text-blue-700",
+  negotiator: "bg-green-100 text-green-700",
+  lettings_manager: "bg-purple-100 text-purple-700",
+  viewer: "bg-gray-100 text-gray-700",
+};
+
+const ROLE_BADGE_VARIANT: Record<TeamRole, "default" | "secondary" | "outline" | "destructive"> = {
+  admin: "destructive",
+  senior_negotiator: "default",
+  negotiator: "secondary",
+  lettings_manager: "secondary",
+  viewer: "outline",
+};
 
 const ROLE_LABELS: Record<TeamRole, string> = {
   admin: "Admin",
@@ -49,606 +48,417 @@ const ROLE_LABELS: Record<TeamRole, string> = {
   viewer: "Viewer",
 };
 
-const ROLE_COLOURS: Record<TeamRole, string> = {
-  admin: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-  senior_negotiator:
-    "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  negotiator:
-    "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300",
-  lettings_manager:
-    "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  viewer:
-    "bg-slate-100 text-slate-700 dark:bg-slate-700/30 dark:text-slate-300",
-};
-
-const STATUS_COLOURS: Record<string, string> = {
-  active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  inactive: "bg-slate-100 text-slate-600 dark:bg-slate-700/30 dark:text-slate-400",
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-};
-
-// ---- Initials helper --------------------------------------------------------
-
-function initials(name: string | null): string {
-  if (!name) return "?";
+function getInitials(name: string): string {
   return name
     .split(" ")
     .map((n) => n[0])
     .join("")
-    .slice(0, 2)
-    .toUpperCase();
+    .toUpperCase()
+    .slice(0, 2);
 }
 
-// ---- Props ------------------------------------------------------------------
-
-type Props = Readonly<{
-  initialMembers: AgentTeamMember[];
-  branches: (AgentBranch & { member_count: number })[];
-}>;
-
-// ---- Invite form state type -------------------------------------------------
-
-type InviteFormState = {
-  email: string;
-  name: string;
-  role: TeamRole;
-  branch_id: string | null;
-};
-
-// ---- Component --------------------------------------------------------------
-
-export function TeamMemberList({ initialMembers, branches }: Props) {
+export function TeamMemberList({ members: initialMembers, branches }: Props) {
   const [members, setMembers] = useState<AgentTeamMember[]>(initialMembers);
+  const [filter, setFilter] = useState<FilterState>({ branch: "all", role: "all", status: "all" });
+
+  // Invite dialog state
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<AgentTeamMember | null>(
-    null,
-  );
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [inviteRole, setInviteRole] = useState<TeamRole>("negotiator");
+  const [inviteBranch, setInviteBranch] = useState("none");
+  const [inviteLoading, setInviteLoading] = useState(false);
 
-  // Filters
-  const [filterBranch, setFilterBranch] = useState("all");
-  const [filterRole, setFilterRole] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
+  // Change role dialog
+  const [roleDialogMember, setRoleDialogMember] = useState<AgentTeamMember | null>(null);
+  const [newRole, setNewRole] = useState<TeamRole>("negotiator");
+  const [roleLoading, setRoleLoading] = useState(false);
 
-  // Invite form
-  const [invite, setInvite] = useState<InviteFormState>({
-    email: "",
-    name: "",
-    role: "negotiator",
-    branch_id: null,
+  // Assign branch dialog
+  const [branchDialogMember, setBranchDialogMember] = useState<AgentTeamMember | null>(null);
+  const [newBranchId, setNewBranchId] = useState("none");
+  const [branchLoading, setBranchLoading] = useState(false);
+
+  // Remove dialog
+  const [removeMember, setRemoveMember] = useState<AgentTeamMember | null>(null);
+  const [removeLoading, setRemoveLoading] = useState(false);
+
+  const filtered = members.filter((m) => {
+    if (filter.branch !== "all" && m.branch_id !== filter.branch) return false;
+    if (filter.role !== "all" && m.role !== filter.role) return false;
+    if (filter.status !== "all" && m.status !== filter.status) return false;
+    return true;
   });
 
-  // Derived filtered list
-  const filtered = useMemo(() => {
-    return members.filter((m) => {
-      if (filterBranch !== "all" && m.branch_id !== filterBranch) return false;
-      if (filterRole !== "all" && m.role !== filterRole) return false;
-      if (filterStatus !== "all" && m.status !== filterStatus) return false;
-      return true;
-    });
-  }, [members, filterBranch, filterRole, filterStatus]);
-
-  // Branch name lookup
-  const branchMap = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const b of branches) {
-      map.set(b.id, b.name);
-    }
-    return map;
-  }, [branches]);
-
-  // ---- Handlers -------------------------------------------------------------
-
   async function handleInvite() {
-    setSubmitting(true);
-    setError(null);
+    if (!inviteEmail || !inviteName) return;
+    setInviteLoading(true);
     try {
       const res = await fetch("/api/agent/team", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: crypto.randomUUID(), // placeholder until real invite flow
-          email: invite.email,
-          name: invite.name,
-          role: invite.role,
-          branch_id: invite.branch_id || null,
+          action: "invite_member",
+          email: inviteEmail,
+          name: inviteName,
+          role: inviteRole,
+          branch_id: inviteBranch === "none" ? undefined : inviteBranch,
         }),
       });
-
-      if (!res.ok) {
-        const json = (await res.json()) as { error?: string };
-        throw new Error(json.error ?? "Failed to invite");
-      }
-
-      const newMember = (await res.json()) as AgentTeamMember;
-      setMembers((prev) => [newMember, ...prev]);
+      if (!res.ok) throw new Error("Failed");
+      toast.success(`Invitation sent to ${inviteEmail}`);
       setInviteOpen(false);
-      setInvite({ email: "", name: "", role: "negotiator", branch_id: null });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setInviteEmail("");
+      setInviteName("");
+      setInviteRole("negotiator");
+      setInviteBranch("none");
+    } catch {
+      toast.error("Failed to send invitation");
     } finally {
-      setSubmitting(false);
+      setInviteLoading(false);
     }
   }
 
-  async function handleRoleChange(memberId: string, newRole: TeamRole) {
+  async function handleChangeRole() {
+    if (!roleDialogMember) return;
+    setRoleLoading(true);
     try {
       const res = await fetch("/api/agent/team", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: memberId, action: "update_role", role: newRole }),
+        body: JSON.stringify({ id: roleDialogMember.id, role: newRole }),
       });
-      if (!res.ok) throw new Error("Failed to update role");
-      const updated = (await res.json()) as AgentTeamMember;
-      setMembers((prev) => prev.map((m) => (m.id === memberId ? updated : m)));
-    } catch (err) {
-      console.error(err);
+      if (!res.ok) throw new Error("Failed");
+      setMembers((prev) =>
+        prev.map((m) => (m.id === roleDialogMember.id ? { ...m, role: newRole } : m)),
+      );
+      toast.success("Role updated");
+      setRoleDialogMember(null);
+    } catch {
+      toast.error("Failed to update role");
+    } finally {
+      setRoleLoading(false);
     }
   }
 
-  async function handleBranchAssign(memberId: string, branchId: string) {
+  async function handleAssignBranch() {
+    if (!branchDialogMember) return;
+    setBranchLoading(true);
     try {
       const res = await fetch("/api/agent/team", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: memberId,
-          action: "assign_branch",
-          branch_id: branchId,
+          id: branchDialogMember.id,
+          branch_id: newBranchId === "none" ? null : newBranchId,
         }),
       });
-      if (!res.ok) throw new Error("Failed to assign branch");
-      const updated = (await res.json()) as AgentTeamMember;
-      setMembers((prev) => prev.map((m) => (m.id === memberId ? updated : m)));
-    } catch (err) {
-      console.error(err);
+      if (!res.ok) throw new Error("Failed");
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.id === branchDialogMember.id
+            ? { ...m, branch_id: newBranchId === "none" ? null : newBranchId }
+            : m,
+        ),
+      );
+      toast.success("Branch assignment updated");
+      setBranchDialogMember(null);
+    } catch {
+      toast.error("Failed to assign branch");
+    } finally {
+      setBranchLoading(false);
     }
   }
 
   async function handleRemove() {
-    if (!removeTarget) return;
-    setSubmitting(true);
+    if (!removeMember) return;
+    setRemoveLoading(true);
     try {
-      const res = await fetch(
-        `/api/agent/team?id=${encodeURIComponent(removeTarget.id)}`,
-        { method: "DELETE" },
-      );
-      if (!res.ok) throw new Error("Failed to remove member");
-      setMembers((prev) =>
-        prev.map((m) =>
-          m.id === removeTarget.id ? { ...m, status: "inactive" as const } : m,
-        ),
-      );
-      setRemoveTarget(null);
-    } catch (err) {
-      console.error(err);
+      const res = await fetch(`/api/agent/team?member_id=${removeMember.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed");
+      setMembers((prev) => prev.filter((m) => m.id !== removeMember.id));
+      toast.success(`${removeMember.name} removed from team`);
+      setRemoveMember(null);
+    } catch {
+      toast.error("Failed to remove member");
     } finally {
-      setSubmitting(false);
+      setRemoveLoading(false);
     }
   }
 
-  // ---- Render ---------------------------------------------------------------
+  function getBranchName(branchId: string | null): string {
+    if (!branchId) return "No branch";
+    return branches.find((b) => b.id === branchId)?.name ?? "No branch";
+  }
 
   return (
-    <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Select value={filterBranch} onValueChange={(v) => setFilterBranch(v ?? "all")}>
-            <SelectTrigger className="h-8 w-40 text-sm">
-              <SelectValue placeholder="All branches" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All branches</SelectItem>
-              {branches.map((b) => (
-                <SelectItem key={b.id} value={b.id}>
-                  {b.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={filterRole} onValueChange={(v) => setFilterRole(v ?? "all")}>
-            <SelectTrigger className="h-8 w-44 text-sm">
-              <SelectValue placeholder="All roles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All roles</SelectItem>
-              {TEAM_ROLES.map((r) => (
-                <SelectItem key={r} value={r}>
-                  {ROLE_LABELS[r]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v ?? "all")}>
-            <SelectTrigger className="h-8 w-36 text-sm">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Team Members</h1>
+          <p className="text-muted-foreground">{members.length} member{members.length !== 1 ? "s" : ""}</p>
         </div>
-
-        {/* Invite button */}
-        <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <UserPlus className="mr-2 size-4" />
-              Invite Team Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Invite Team Member</DialogTitle>
-              <DialogDescription>
-                Send an invitation email to a new team member.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-2">
-              <div className="space-y-1">
-                <Label htmlFor="invite-email">Email address</Label>
-                <Input
-                  id="invite-email"
-                  type="email"
-                  placeholder="colleague@agency.co.uk"
-                  value={invite.email}
-                  onChange={(e) =>
-                    setInvite((p) => ({ ...p, email: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="invite-name">Full name</Label>
-                <Input
-                  id="invite-name"
-                  placeholder="Jane Smith"
-                  value={invite.name}
-                  onChange={(e) =>
-                    setInvite((p) => ({ ...p, name: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-1">
-                <Label>Role</Label>
-                <Select
-                  value={invite.role}
-                  onValueChange={(v) => {
-                    if (v) setInvite((p) => ({ ...p, role: v as TeamRole }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TEAM_ROLES.map((r) => (
-                      <SelectItem key={r} value={r}>
-                        {ROLE_LABELS[r]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {branches.length > 0 && (
-                <div className="space-y-1">
-                  <Label>Branch (optional)</Label>
-                  <Select
-                    value={invite.branch_id ?? ""}
-                    onValueChange={(v) =>
-                      setInvite((p) => ({ ...p, branch_id: v || null }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="No branch assigned" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">No branch assigned</SelectItem>
-                      {branches.map((b) => (
-                        <SelectItem key={b.id} value={b.id}>
-                          {b.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setInviteOpen(false)}
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleInvite}
-                disabled={submitting || !invite.email || !invite.name}
-              >
-                {submitting ? "Sending..." : "Send Invite"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setInviteOpen(true)}>
+          <UserPlus className="mr-2 size-4" />
+          Invite Team Member
+        </Button>
       </div>
 
-      {/* Member grid */}
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3">
+        <Select value={filter.branch} onValueChange={(v) => setFilter((f) => ({ ...f, branch: v }))}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="All Branches" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Branches</SelectItem>
+            {branches.map((b) => (
+              <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filter.role} onValueChange={(v) => setFilter((f) => ({ ...f, role: v }))}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="All Roles" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Roles</SelectItem>
+            {TEAM_ROLES.map((r) => (
+              <SelectItem key={r} value={r}>{ROLE_LABELS[r]}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filter.status} onValueChange={(v) => setFilter((f) => ({ ...f, status: v }))}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="All Statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Members grid */}
       {filtered.length === 0 ? (
-        <p className="py-12 text-center text-muted-foreground">
-          No team members match the selected filters.
-        </p>
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            No team members found.
+          </CardContent>
+        </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((member) => (
-            <MemberCard
-              key={member.id}
-              member={member}
-              branchName={member.branch_id ? branchMap.get(member.branch_id) : undefined}
-              branches={branches}
-              onRoleChange={handleRoleChange}
-              onBranchAssign={handleBranchAssign}
-              onRemove={() => setRemoveTarget(member)}
-            />
+            <Card key={member.id}>
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex size-10 items-center justify-center rounded-full text-sm font-semibold ${ROLE_COLOURS[member.role]}`}
+                    >
+                      {getInitials(member.name)}
+                    </div>
+                    <div>
+                      <p className="font-semibold leading-tight">{member.name}</p>
+                      <p className="text-xs text-muted-foreground">{member.email}</p>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <MoreVertical className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setRoleDialogMember(member);
+                          setNewRole(member.role);
+                        }}
+                      >
+                        Change Role
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setBranchDialogMember(member);
+                          setNewBranchId(member.branch_id ?? "none");
+                        }}
+                      >
+                        Assign to Branch
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => setRemoveMember(member)}
+                      >
+                        Remove Member
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant={ROLE_BADGE_VARIANT[member.role]}>{ROLE_LABELS[member.role]}</Badge>
+                  <Badge
+                    variant="outline"
+                    className={
+                      member.status === "active"
+                        ? "border-green-500 text-green-700"
+                        : member.status === "pending"
+                          ? "border-yellow-500 text-yellow-700"
+                          : "border-gray-400 text-gray-500"
+                    }
+                  >
+                    {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">{getBranchName(member.branch_id)}</p>
+                <p className="text-xs text-muted-foreground">Leads: 0 | Viewings: 0</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
 
-      {/* Remove confirmation dialog */}
-      <Dialog
-        open={removeTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) setRemoveTarget(null);
-        }}
-      >
-        <DialogContent className="sm:max-w-sm">
+      {/* Invite Dialog */}
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Remove team member?</DialogTitle>
-            <DialogDescription>
-              {removeTarget?.name ?? removeTarget?.email} will be set to
-              inactive and lose access to the dashboard.
-            </DialogDescription>
+            <DialogTitle>Invite Team Member</DialogTitle>
           </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Name *</label>
+              <input
+                className="w-full rounded-md border px-3 py-2 text-sm"
+                value={inviteName}
+                onChange={(e) => setInviteName(e.target.value)}
+                placeholder="Full name"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Email *</label>
+              <input
+                className="w-full rounded-md border px-3 py-2 text-sm"
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="email@example.com"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Role</label>
+              <Select value={inviteRole} onValueChange={(v) => setInviteRole(v as TeamRole)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TEAM_ROLES.map((r) => (
+                    <SelectItem key={r} value={r}>{ROLE_LABELS[r]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Branch (optional)</label>
+              <Select value={inviteBranch} onValueChange={setInviteBranch}>
+                <SelectTrigger>
+                  <SelectValue placeholder="No branch" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No branch</SelectItem>
+                  {branches.map((b) => (
+                    <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setRemoveTarget(null)}
-              disabled={submitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleRemove}
-              disabled={submitting}
-            >
-              {submitting ? "Removing..." : "Remove Member"}
+            <Button variant="outline" onClick={() => setInviteOpen(false)}>Cancel</Button>
+            <Button onClick={handleInvite} disabled={inviteLoading || !inviteEmail || !inviteName}>
+              {inviteLoading ? "Sending..." : "Send Invitation"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
 
-// ---- Member Card sub-component ----------------------------------------------
-
-type MemberCardProps = Readonly<{
-  member: AgentTeamMember;
-  branchName: string | undefined;
-  branches: (AgentBranch & { member_count: number })[];
-  onRoleChange: (memberId: string, role: TeamRole) => void;
-  onBranchAssign: (memberId: string, branchId: string) => void;
-  onRemove: () => void;
-}>;
-
-function MemberCard({
-  member,
-  branchName,
-  branches,
-  onRoleChange,
-  onBranchAssign,
-  onRemove,
-}: MemberCardProps) {
-  const [roleDialogOpen, setRoleDialogOpen] = useState(false);
-  const [branchDialogOpen, setBranchDialogOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<TeamRole>(member.role);
-  const [selectedBranch, setSelectedBranch] = useState(
-    member.branch_id ?? "",
-  );
-
-  return (
-    <Card className="relative">
-      {/* Actions dropdown */}
-      <div className="absolute right-3 top-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-7">
-              <MoreVertical className="size-4" />
-              <span className="sr-only">Actions</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setRoleDialogOpen(true)}>
-              <Shield className="mr-2 size-4" />
-              Change Role
-            </DropdownMenuItem>
-            {branches.length > 0 && (
-              <DropdownMenuItem onClick={() => setBranchDialogOpen(true)}>
-                <Building2 className="mr-2 size-4" />
-                Assign to Branch
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={onRemove}
-              disabled={member.status === "inactive"}
-            >
-              <UserMinus className="mr-2 size-4" />
-              Remove Member
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-3">
-          <Avatar className="size-10">
-            <AvatarFallback className="text-sm font-medium">
-              {initials(member.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-medium">
-              {member.name ?? "Invited user"}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {member.email ?? "—"}
-            </p>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-3 pt-0">
-        {/* Role & status badges */}
-        <div className="flex flex-wrap gap-1.5">
-          <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_COLOURS[member.role]}`}
-          >
-            {ROLE_LABELS[member.role]}
-          </span>
-          <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_COLOURS[member.status] ?? ""}`}
-          >
-            {member.status}
-          </span>
-        </div>
-
-        {/* Branch */}
-        {branchName && (
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Building2 className="size-3.5" />
-            {branchName}
-          </p>
-        )}
-
-        {/* Performance metrics (leads / viewings — placeholders from DB would replace 0s) */}
-        <div className="grid grid-cols-3 gap-2 border-t pt-3">
-          <div className="text-center">
-            <p className="text-lg font-semibold">0</p>
-            <p className="text-xs text-muted-foreground">Leads</p>
-          </div>
-          <div className="text-center">
-            <p className="text-lg font-semibold">0</p>
-            <p className="text-xs text-muted-foreground">Viewings</p>
-          </div>
-          <div className="text-center">
-            <p className="text-lg font-semibold">0</p>
-            <p className="text-xs text-muted-foreground">Deals</p>
-          </div>
-        </div>
-      </CardContent>
-
-      {/* Change Role dialog */}
-      <Dialog open={roleDialogOpen} onOpenChange={setRoleDialogOpen}>
-        <DialogContent className="sm:max-w-xs">
+      {/* Change Role Dialog */}
+      <Dialog open={!!roleDialogMember} onOpenChange={(open) => !open && setRoleDialogMember(null)}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Change Role</DialogTitle>
-            <DialogDescription>
-              Update the role for {member.name ?? member.email}.
-            </DialogDescription>
+            <DialogTitle>Change Role — {roleDialogMember?.name}</DialogTitle>
           </DialogHeader>
-          <Select
-            value={selectedRole}
-            onValueChange={(v) => { if (v) setSelectedRole(v as TeamRole); }}
-          >
+          <Select value={newRole} onValueChange={(v) => setNewRole(v as TeamRole)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {TEAM_ROLES.map((r) => (
-                <SelectItem key={r} value={r}>
-                  {ROLE_LABELS[r]}
-                </SelectItem>
+                <SelectItem key={r} value={r}>{ROLE_LABELS[r]}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRoleDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                onRoleChange(member.id, selectedRole);
-                setRoleDialogOpen(false);
-              }}
-            >
-              Save
+            <Button variant="outline" onClick={() => setRoleDialogMember(null)}>Cancel</Button>
+            <Button onClick={handleChangeRole} disabled={roleLoading}>
+              {roleLoading ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Assign Branch dialog */}
-      <Dialog open={branchDialogOpen} onOpenChange={setBranchDialogOpen}>
-        <DialogContent className="sm:max-w-xs">
+      {/* Assign Branch Dialog */}
+      <Dialog open={!!branchDialogMember} onOpenChange={(open) => !open && setBranchDialogMember(null)}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign to Branch</DialogTitle>
-            <DialogDescription>
-              Select a branch for {member.name ?? member.email}.
-            </DialogDescription>
+            <DialogTitle>Assign Branch — {branchDialogMember?.name}</DialogTitle>
           </DialogHeader>
-          <Select
-            value={selectedBranch}
-            onValueChange={(v) => setSelectedBranch(v ?? "")}
-          >
+          <Select value={newBranchId} onValueChange={setNewBranchId}>
             <SelectTrigger>
               <SelectValue placeholder="No branch" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">No branch</SelectItem>
               {branches.map((b) => (
-                <SelectItem key={b.id} value={b.id}>
-                  {b.name}
-                </SelectItem>
+                <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setBranchDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (selectedBranch) {
-                  onBranchAssign(member.id, selectedBranch);
-                }
-                setBranchDialogOpen(false);
-              }}
-            >
-              Assign
+            <Button variant="outline" onClick={() => setBranchDialogMember(null)}>Cancel</Button>
+            <Button onClick={handleAssignBranch} disabled={branchLoading}>
+              {branchLoading ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+
+      {/* Remove Member AlertDialog */}
+      <AlertDialog open={!!removeMember} onOpenChange={(open) => !open && setRemoveMember(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {removeMember?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will mark them as inactive. They will lose access to the agency dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemove} disabled={removeLoading}>
+              {removeLoading ? "Removing..." : "Remove Member"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

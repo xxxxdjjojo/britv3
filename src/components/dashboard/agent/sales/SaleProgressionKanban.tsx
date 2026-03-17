@@ -1,638 +1,418 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   DndContext,
   DragOverlay,
+  closestCorners,
   PointerSensor,
   useSensor,
   useSensors,
-  closestCenter,
+  useDroppable,
+  type DragEndEvent,
 } from "@dnd-kit/core";
-import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
-import { useDraggable, useDroppable } from "@dnd-kit/core";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import type { AgentSaleProgression, SaleStage } from "@/types/agent";
 import { SALE_STAGES } from "@/types/agent";
-import { CalendarDays, Clock, Building2, User } from "lucide-react";
 
-// ============================================================================
-// Constants and helpers
-// ============================================================================
+// --------------------------------------------------------------------------
+// Stage metadata
+// --------------------------------------------------------------------------
 
-const STAGE_LABELS: Record<SaleStage, string> = {
-  offer_accepted: "Offer Accepted",
-  memorandum_of_sale: "Memorandum of Sale",
-  solicitors_instructed: "Solicitors Instructed",
-  searches: "Searches",
-  survey: "Survey",
-  mortgage: "Mortgage",
-  exchange: "Exchange",
-  completion: "Completion",
+const STAGE_LABELS: Record<SaleStage, { label: string; desc: string }> = {
+  offer_accepted: {
+    label: "Offer Accepted",
+    desc: "Offer accepted, memo of sale pending",
+  },
+  memorandum_of_sale: {
+    label: "Memo of Sale",
+    desc: "Memorandum of sale issued",
+  },
+  solicitors_instructed: {
+    label: "Solicitors",
+    desc: "Both parties solicitors instructed",
+  },
+  searches: { label: "Searches", desc: "Local searches underway" },
+  survey: { label: "Survey", desc: "Property survey booked" },
+  mortgage: { label: "Mortgage", desc: "Mortgage offer received" },
+  exchange: { label: "Exchange", desc: "Contracts exchanged" },
+  completion: { label: "Completion", desc: "Completion day" },
 };
 
-/** Days since updated_at */
-function daysInStage(updatedAt: string): number {
-  const diff = Date.now() - new Date(updatedAt).getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
+// --------------------------------------------------------------------------
+// Health colour helper
+// --------------------------------------------------------------------------
+
+function getDaysInStage(updatedAt: string): number {
+  return Math.floor(
+    (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24),
+  );
 }
 
-function healthClass(days: number): string {
-  if (days <= 7) return "bg-green-500";
-  if (days <= 14) return "bg-amber-500";
-  return "bg-red-500";
+function healthColour(days: number): string {
+  if (days <= 7) return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300";
+  if (days <= 14) return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
+  return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
 }
 
-function healthTextClass(days: number): string {
-  if (days <= 7) return "text-green-700 dark:text-green-400";
-  if (days <= 14) return "text-amber-700 dark:text-amber-400";
-  return "text-red-700 dark:text-red-400";
-}
+// --------------------------------------------------------------------------
+// SortableCard
+// --------------------------------------------------------------------------
 
-function formatDate(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatGBP(pence: number | null | undefined): string {
-  if (pence == null) return "—";
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(pence / 100);
-}
-
-/** Returns index of stage in SALE_STAGES */
-function stageIndex(stage: SaleStage): number {
-  return SALE_STAGES.indexOf(stage);
-}
-
-/** Adjacent-only drop target detection */
-function isAdjacentStage(from: SaleStage, to: SaleStage): boolean {
-  return Math.abs(stageIndex(from) - stageIndex(to)) === 1;
-}
-
-// ============================================================================
-// Draggable card
-// ============================================================================
-
-type CardProps = Readonly<{
+function SortableCard({
+  progression,
+  onOpen,
+}: Readonly<{
   progression: AgentSaleProgression;
-  isDragging?: boolean;
-  onClick: () => void;
-}>;
+  onOpen: (p: AgentSaleProgression) => void;
+}>) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: progression.id });
 
-function ProgressionCard({ progression, isDragging, onClick }: CardProps) {
-  const days = daysInStage(progression.updated_at);
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
 
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: progression.id,
-    data: { progression },
-  });
-
-  const style = transform
-    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
-    : undefined;
+  const days = getDaysInStage(progression.updated_at);
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      {...listeners}
       {...attributes}
-      className={`bg-card border rounded-lg p-3 cursor-grab space-y-2 select-none hover:shadow-md transition-shadow ${
-        isDragging ? "opacity-50 shadow-lg" : ""
-      }`}
-      onClick={(e) => {
-        // Don't open panel if currently dragging
-        if (!transform) onClick();
-        e.stopPropagation();
-      }}
+      {...listeners}
+      className="cursor-grab rounded-lg border bg-card p-3 shadow-sm active:cursor-grabbing"
+      onClick={() => onOpen(progression)}
+      onKeyDown={(e) => e.key === "Enter" && onOpen(progression)}
+      role="button"
+      tabIndex={0}
     >
-      {/* Health indicator bar */}
-      <div className={`h-1 rounded-full ${healthClass(days)}`} />
-
-      {/* Property address */}
-      <div className="flex items-start gap-1.5">
-        <Building2 className="size-3.5 text-muted-foreground mt-0.5 shrink-0" />
-        <span className="text-xs font-medium line-clamp-2 leading-tight">
-          {progression.property_id.slice(0, 8)}...
+      <p className="truncate text-xs font-medium text-foreground">
+        {progression.property_id.substring(0, 8)}…
+      </p>
+      <div className="mt-1.5 flex items-center justify-between gap-2">
+        <Badge variant="secondary" className="text-[10px]">
+          {STAGE_LABELS[progression.stage].label}
+        </Badge>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${healthColour(days)}`}
+        >
+          {days}d
         </span>
       </div>
-
-      {/* Buyer name from offer details (property_id used as fallback) */}
-      <div className="flex items-center gap-1.5">
-        <User className="size-3.5 text-muted-foreground shrink-0" />
-        <span className="text-xs text-muted-foreground truncate">
-          ID: {progression.offer_id.slice(0, 8)}...
-        </span>
-      </div>
-
-      {/* Expected completion */}
       {progression.expected_completion_date && (
-        <div className="flex items-center gap-1.5">
-          <CalendarDays className="size-3.5 text-muted-foreground shrink-0" />
-          <span className="text-xs text-muted-foreground">
-            {formatDate(progression.expected_completion_date)}
-          </span>
-        </div>
+        <p className="mt-1.5 text-[10px] text-muted-foreground">
+          ETA:{" "}
+          {new Date(progression.expected_completion_date).toLocaleDateString(
+            "en-GB",
+          )}
+        </p>
       )}
-
-      {/* Days in stage */}
-      <div className="flex items-center gap-1.5">
-        <Clock className="size-3.5 text-muted-foreground shrink-0" />
-        <span className={`text-xs font-medium ${healthTextClass(days)}`}>
-          {days}d in stage
-        </span>
-      </div>
     </div>
   );
 }
 
-// ============================================================================
-// Droppable column
-// ============================================================================
+// --------------------------------------------------------------------------
+// DroppableColumn
+// --------------------------------------------------------------------------
 
-type ColumnProps = Readonly<{
-  stage: SaleStage;
-  progressions: AgentSaleProgression[];
-  isDragActive: boolean;
-  activeFromStage: SaleStage | null;
-  onCardClick: (p: AgentSaleProgression) => void;
-}>;
-
-function KanbanColumn({
+function DroppableColumn({
   stage,
   progressions,
-  isDragActive,
-  activeFromStage,
-  onCardClick,
-}: ColumnProps) {
-  const isValidTarget =
-    !isDragActive ||
-    activeFromStage === null ||
-    isAdjacentStage(activeFromStage, stage) ||
-    activeFromStage === stage;
-
+  onOpen,
+}: Readonly<{
+  stage: SaleStage;
+  progressions: AgentSaleProgression[];
+  onOpen: (p: AgentSaleProgression) => void;
+}>) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
+  const meta = STAGE_LABELS[stage];
 
   return (
     <div
-      className={`flex flex-col min-w-[200px] w-[200px] transition-opacity ${
-        isDragActive && !isValidTarget ? "opacity-40" : "opacity-100"
+      ref={setNodeRef}
+      className={`flex min-w-[200px] max-w-[240px] flex-shrink-0 flex-col gap-2 rounded-xl border p-3 transition-colors ${
+        isOver ? "border-brand-primary bg-brand-primary/5" : "bg-muted/40"
       }`}
     >
       {/* Column header */}
-      <div
-        className={`flex items-center justify-between px-3 py-2 rounded-t-lg border-b font-medium text-sm ${
-          isOver && isValidTarget
-            ? "bg-primary/10 border-primary/30"
-            : "bg-muted/60"
-        }`}
-      >
-        <span className="truncate">{STAGE_LABELS[stage]}</span>
-        <span className="ml-2 shrink-0 bg-muted text-muted-foreground text-xs rounded-full px-2 py-0.5">
-          {progressions.length}
-        </span>
+      <div className="mb-1">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-foreground">{meta.label}</p>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            {progressions.length}
+          </span>
+        </div>
+        <p className="mt-0.5 text-[10px] text-muted-foreground">{meta.desc}</p>
       </div>
 
-      {/* Drop zone */}
-      <div
-        ref={setNodeRef}
-        className={`flex-1 min-h-[400px] rounded-b-lg border border-t-0 p-2 space-y-2 transition-colors ${
-          isOver && isValidTarget
-            ? "bg-primary/5 border-primary/30"
-            : "bg-muted/20"
-        }`}
+      {/* Cards */}
+      <SortableContext
+        items={progressions.map((p) => p.id)}
+        strategy={verticalListSortingStrategy}
       >
-        {progressions.map((p) => (
-          <ProgressionCard
-            key={p.id}
-            progression={p}
-            onClick={() => onCardClick(p)}
-          />
-        ))}
-        {progressions.length === 0 && (
-          <div className="flex items-center justify-center h-20 text-xs text-muted-foreground border-2 border-dashed rounded-lg">
-            Drop here
-          </div>
-        )}
-      </div>
+        <div className="flex flex-col gap-2">
+          {progressions.map((p) => (
+            <SortableCard key={p.id} progression={p} onOpen={onOpen} />
+          ))}
+          {progressions.length === 0 && (
+            <div className="rounded-lg border-2 border-dashed border-muted py-6 text-center">
+              <p className="text-[10px] text-muted-foreground">No sales</p>
+            </div>
+          )}
+        </div>
+      </SortableContext>
     </div>
   );
 }
 
-// ============================================================================
-// Detail sheet
-// ============================================================================
+// --------------------------------------------------------------------------
+// Detail dialog
+// --------------------------------------------------------------------------
 
-type DetailSheetProps = Readonly<{
+function ProgressionDialog({
+  progression,
+  open,
+  onClose,
+}: Readonly<{
   progression: AgentSaleProgression | null;
+  open: boolean;
   onClose: () => void;
-  onSave: (id: string, patch: { notes?: string; expected_completion_date?: string }) => Promise<void>;
-}>;
-
-function DetailSheet({ progression, onClose, onSave }: DetailSheetProps) {
-  const [notes, setNotes] = useState(progression?.notes ?? "");
-  const [completionDate, setCompletionDate] = useState(
-    progression?.expected_completion_date?.slice(0, 10) ?? "",
-  );
-  const [saving, setSaving] = useState(false);
-
+}>) {
   if (!progression) return null;
 
-  const solicitorBuyer = progression.solicitor_buyer as {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-  const solicitorSeller = progression.solicitor_seller as {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-
-  async function handleNotesBlur() {
-    if (!progression) return;
-    setSaving(true);
-    try {
-      await onSave(progression.id, { notes });
-    } catch {
-      toast.error("Failed to save notes");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!progression) return;
-    setCompletionDate(e.target.value);
-    try {
-      await onSave(progression.id, {
-        expected_completion_date: e.target.value || undefined,
-      });
-    } catch {
-      toast.error("Failed to save completion date");
-    }
-  }
-
   return (
-    <Sheet open={!!progression} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <SheetContent className="w-[480px] sm:w-[540px] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Sale Progression</SheetTitle>
-          <SheetDescription>
-            Stage: {STAGE_LABELS[progression.stage]}
-          </SheetDescription>
-        </SheetHeader>
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Sale Details</DialogTitle>
+        </DialogHeader>
 
-        <div className="mt-6 space-y-6">
-          {/* IDs */}
-          <section>
-            <h3 className="text-sm font-semibold mb-2">Reference</h3>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Property ID</span>
-                <span className="font-mono text-xs">{progression.property_id}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Offer ID</span>
-                <span className="font-mono text-xs">{progression.offer_id}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Created</span>
-                <span>{formatDate(progression.created_at)}</span>
-              </div>
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground">Property ID</p>
+              <p className="font-mono text-xs">{progression.property_id}</p>
             </div>
-          </section>
+            <div>
+              <p className="text-xs text-muted-foreground">Offer ID</p>
+              <p className="font-mono text-xs">{progression.offer_id}</p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-xs text-muted-foreground">Stage</p>
+              <Badge variant="secondary">
+                {STAGE_LABELS[progression.stage].label}
+              </Badge>
+            </div>
+          </div>
 
-          {/* Buyer solicitor */}
-          <section>
-            <h3 className="text-sm font-semibold mb-2">Buyer Solicitor</h3>
-            {(solicitorBuyer.name || solicitorBuyer.email || solicitorBuyer.phone) ? (
-              <div className="space-y-1 text-sm">
-                {solicitorBuyer.name && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Name</span>
-                    <span>{solicitorBuyer.name}</span>
-                  </div>
-                )}
-                {solicitorBuyer.email && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Email</span>
-                    <a href={`mailto:${solicitorBuyer.email}`} className="text-primary hover:underline">
-                      {solicitorBuyer.email}
-                    </a>
-                  </div>
-                )}
-                {solicitorBuyer.phone && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Phone</span>
-                    <span>{solicitorBuyer.phone}</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Not yet recorded</p>
-            )}
-          </section>
-
-          {/* Seller solicitor */}
-          <section>
-            <h3 className="text-sm font-semibold mb-2">Seller Solicitor</h3>
-            {(solicitorSeller.name || solicitorSeller.email || solicitorSeller.phone) ? (
-              <div className="space-y-1 text-sm">
-                {solicitorSeller.name && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Name</span>
-                    <span>{solicitorSeller.name}</span>
-                  </div>
-                )}
-                {solicitorSeller.email && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Email</span>
-                    <a href={`mailto:${solicitorSeller.email}`} className="text-primary hover:underline">
-                      {solicitorSeller.email}
-                    </a>
-                  </div>
-                )}
-                {solicitorSeller.phone && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Phone</span>
-                    <span>{solicitorSeller.phone}</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Not yet recorded</p>
-            )}
-          </section>
-
-          {/* Expected completion date */}
-          <section>
-            <h3 className="text-sm font-semibold mb-2">Expected Completion Date</h3>
-            <input
+          <div>
+            <Label className="text-xs">Expected Completion Date</Label>
+            <Input
               type="date"
-              value={completionDate}
-              onChange={handleDateChange}
-              className="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+              defaultValue={progression.expected_completion_date ?? ""}
+              readOnly
+              className="mt-1 text-sm"
             />
-          </section>
+          </div>
 
-          {/* Notes */}
-          <section>
-            <h3 className="text-sm font-semibold mb-2">
-              Notes
-              {saving && (
-                <span className="ml-2 text-xs text-muted-foreground font-normal">
-                  Saving...
-                </span>
-              )}
-            </h3>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              onBlur={handleNotesBlur}
-              placeholder="Add notes about this progression..."
-              rows={5}
-              className="w-full border rounded-md px-3 py-2 text-sm bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </section>
-
-          {/* Stage info */}
-          <section>
-            <h3 className="text-sm font-semibold mb-2">Current Stage</h3>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary">{STAGE_LABELS[progression.stage]}</Badge>
-              <span className="text-sm text-muted-foreground">
-                since {formatDate(progression.updated_at)}
-              </span>
+          {progression.solicitor_buyer && (
+            <div>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">
+                Buyer Solicitor
+              </p>
+              <div className="rounded-md bg-muted p-2 text-xs font-mono">
+                {Object.entries(progression.solicitor_buyer).map(
+                  ([k, v]) => (
+                    <div key={k} className="flex gap-2">
+                      <span className="text-muted-foreground">{k}:</span>
+                      <span>{String(v)}</span>
+                    </div>
+                  ),
+                )}
+              </div>
             </div>
-          </section>
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-}
+          )}
 
-// ============================================================================
-// Main Kanban board
-// ============================================================================
-
-type SaleProgressionKanbanProps = Readonly<{
-  initialProgressions: Record<SaleStage, AgentSaleProgression[]>;
-}>;
-
-export function SaleProgressionKanban({
-  initialProgressions,
-}: SaleProgressionKanbanProps) {
-  const [grouped, setGrouped] = useState(initialProgressions);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeFromStage, setActiveFromStage] = useState<SaleStage | null>(null);
-  const [selectedProgression, setSelectedProgression] =
-    useState<AgentSaleProgression | null>(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    }),
-  );
-
-  // Find active progression for DragOverlay
-  const activeProgression = activeId
-    ? Object.values(grouped)
-        .flat()
-        .find((p) => p.id === activeId) ?? null
-    : null;
-
-  function handleDragStart(event: DragStartEvent) {
-    const id = event.active.id as string;
-    setActiveId(id);
-
-    // Determine which stage this card is in
-    for (const [stage, progressions] of Object.entries(grouped)) {
-      if (progressions.some((p) => p.id === id)) {
-        setActiveFromStage(stage as SaleStage);
-        break;
-      }
-    }
-  }
-
-  const handleDragEnd = useCallback(
-    async (event: DragEndEvent) => {
-      setActiveId(null);
-      setActiveFromStage(null);
-
-      const { active, over } = event;
-      if (!over) return;
-
-      const draggedId = active.id as string;
-      const targetStage = over.id as SaleStage;
-
-      // Find current stage
-      let currentStage: SaleStage | null = null;
-      let draggedProgression: AgentSaleProgression | null = null;
-
-      for (const [stage, progressions] of Object.entries(grouped)) {
-        const found = progressions.find((p) => p.id === draggedId);
-        if (found) {
-          currentStage = stage as SaleStage;
-          draggedProgression = found;
-          break;
-        }
-      }
-
-      if (!currentStage || !draggedProgression) return;
-      if (currentStage === targetStage) return;
-
-      // Validate adjacency
-      if (!isAdjacentStage(currentStage, targetStage)) {
-        toast.error("Can only move to adjacent stages (one step forward or backward)");
-        return;
-      }
-
-      // Optimistic update
-      const prevGrouped = grouped;
-      setGrouped((prev) => {
-        const next = { ...prev };
-        next[currentStage!] = prev[currentStage!].filter(
-          (p) => p.id !== draggedId,
-        );
-        next[targetStage] = [
-          { ...draggedProgression!, stage: targetStage, updated_at: new Date().toISOString() },
-          ...prev[targetStage],
-        ];
-        return next;
-      });
-
-      try {
-        const res = await fetch("/api/agent/sales", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: draggedId, stage: targetStage }),
-        });
-
-        if (!res.ok) {
-          const err = (await res.json()) as { error?: string };
-          throw new Error(err.error ?? "Failed to update stage");
-        }
-      } catch (error) {
-        // Revert
-        setGrouped(prevGrouped);
-        toast.error(
-          error instanceof Error ? error.message : "Failed to update stage",
-        );
-      }
-    },
-    [grouped],
-  );
-
-  async function handleSaveDetails(
-    id: string,
-    patch: { notes?: string; expected_completion_date?: string },
-  ) {
-    const res = await fetch("/api/agent/sales", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...patch }),
-    });
-
-    if (!res.ok) {
-      const err = (await res.json()) as { error?: string };
-      throw new Error(err.error ?? "Failed to save");
-    }
-
-    // Update local state
-    const { progression: updated } = (await res.json()) as {
-      progression: AgentSaleProgression;
-    };
-
-    setGrouped((prev) => {
-      const next = { ...prev };
-      for (const stage of SALE_STAGES) {
-        next[stage] = prev[stage].map((p) => (p.id === id ? updated : p));
-      }
-      return next;
-    });
-
-    if (selectedProgression?.id === id) {
-      setSelectedProgression(updated);
-    }
-  }
-
-  const totalCount = Object.values(grouped).reduce(
-    (sum, arr) => sum + arr.length,
-    0,
-  );
-
-  return (
-    <>
-      {/* Summary */}
-      <div className="mb-4 text-sm text-muted-foreground">
-        {totalCount} active sale{totalCount !== 1 ? "s" : ""} in progression
-      </div>
-
-      {/* Board */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="overflow-x-auto pb-4">
-          <div className="flex gap-3 min-w-[1600px]">
-            {SALE_STAGES.map((stage) => (
-              <KanbanColumn
-                key={stage}
-                stage={stage}
-                progressions={grouped[stage]}
-                isDragActive={activeId !== null}
-                activeFromStage={activeFromStage}
-                onCardClick={(p) => setSelectedProgression(p)}
-              />
-            ))}
+          <div>
+            <Label className="text-xs">Notes</Label>
+            <Textarea
+              defaultValue={progression.notes ?? ""}
+              readOnly
+              rows={3}
+              className="mt-1 resize-none text-sm"
+            />
           </div>
         </div>
 
-        {/* Drag overlay */}
+        <div className="mt-2 flex justify-end">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// --------------------------------------------------------------------------
+// Main Kanban component
+// --------------------------------------------------------------------------
+
+type ProgressionsMap = Partial<Record<SaleStage, AgentSaleProgression[]>>;
+
+export function SaleProgressionKanban({
+  initialProgressions,
+}: Readonly<{
+  initialProgressions: ProgressionsMap;
+}>) {
+  const [progressions, setProgressions] =
+    useState<ProgressionsMap>(initialProgressions);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<AgentSaleProgression | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  );
+
+  // Find a progression by id across all stages
+  function findProgression(id: string): AgentSaleProgression | undefined {
+    for (const stage of SALE_STAGES) {
+      const found = progressions[stage]?.find((p) => p.id === id);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  // Find which stage a progression currently lives in
+  function findStage(id: string): SaleStage | undefined {
+    for (const stage of SALE_STAGES) {
+      if (progressions[stage]?.some((p) => p.id === id)) return stage;
+    }
+    return undefined;
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over) return;
+
+    const sourceStage = findStage(active.id as string);
+    // over.id could be either a stage key or another card id
+    const targetStage = (
+      SALE_STAGES.includes(over.id as SaleStage)
+        ? over.id
+        : findStage(over.id as string)
+    ) as SaleStage | undefined;
+
+    if (!sourceStage || !targetStage || sourceStage === targetStage) return;
+
+    const progression = findProgression(active.id as string);
+    if (!progression) return;
+
+    // Optimistically update state
+    const prev = { ...progressions };
+    setProgressions((cur) => {
+      const next = { ...cur };
+      next[sourceStage] = (cur[sourceStage] ?? []).filter(
+        (p) => p.id !== progression.id,
+      );
+      next[targetStage] = [
+        ...(cur[targetStage] ?? []),
+        { ...progression, stage: targetStage },
+      ];
+      return next;
+    });
+
+    try {
+      const res = await fetch("/api/agent/sales", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: progression.id, stage: targetStage }),
+      });
+
+      if (!res.ok) {
+        const body = (await res.json()) as { error?: string };
+        throw new Error(body.error ?? "Failed to update stage");
+      }
+    } catch (err) {
+      // Revert on error
+      setProgressions(prev);
+      toast.error(err instanceof Error ? err.message : "Failed to update stage");
+    }
+  }
+
+  function openDetail(p: AgentSaleProgression) {
+    setSelected(p);
+    setDialogOpen(true);
+  }
+
+  const activeProgression = activeId ? findProgression(activeId) : null;
+
+  return (
+    <>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={(e) => setActiveId(e.active.id as string)}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex gap-3 overflow-x-auto pb-4">
+          {SALE_STAGES.map((stage) => (
+            <DroppableColumn
+              key={stage}
+              stage={stage}
+              progressions={progressions[stage] ?? []}
+              onOpen={openDetail}
+            />
+          ))}
+        </div>
+
         <DragOverlay>
           {activeProgression ? (
-            <div className="bg-card border rounded-lg p-3 shadow-2xl opacity-90 w-[196px] space-y-2">
-              <div
-                className={`h-1 rounded-full ${healthClass(
-                  daysInStage(activeProgression.updated_at),
-                )}`}
-              />
-              <p className="text-xs font-medium">
-                {activeProgression.property_id.slice(0, 8)}...
+            <div className="w-[220px] cursor-grabbing rounded-lg border bg-card p-3 shadow-lg">
+              <p className="truncate text-xs font-medium text-foreground">
+                {activeProgression.property_id.substring(0, 8)}…
               </p>
-              <p className="text-xs text-muted-foreground">
-                {daysInStage(activeProgression.updated_at)}d in stage
-              </p>
+              <Badge variant="secondary" className="mt-1 text-[10px]">
+                {STAGE_LABELS[activeProgression.stage].label}
+              </Badge>
             </div>
           ) : null}
         </DragOverlay>
       </DndContext>
 
-      {/* Detail sheet */}
-      <DetailSheet
-        progression={selectedProgression}
-        onClose={() => setSelectedProgression(null)}
-        onSave={handleSaveDetails}
+      <ProgressionDialog
+        progression={selected}
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
       />
     </>
   );
