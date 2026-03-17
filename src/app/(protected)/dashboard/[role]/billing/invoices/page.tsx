@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, ArrowLeft, Loader2 } from "lucide-react";
+import { formatGBP, formatUnixDate } from "@/lib/formatters";
 
 type Invoice = {
   id: string;
@@ -18,22 +19,6 @@ type Invoice = {
   invoicePdf: string | null;
   description: string | null;
 };
-
-function formatGBP(pence: number, currency = "gbp") {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 0,
-  }).format(pence / 100);
-}
-
-function formatDate(unix: number) {
-  return new Date(unix * 1000).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
@@ -139,7 +124,7 @@ export default function InvoicesPage() {
                 <div key={inv.id} className="flex items-center justify-between py-4">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {formatDate(inv.created)}
+                      {formatUnixDate(inv.created)}
                     </p>
                     <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                       {formatGBP(inv.amountPaid, inv.currency)}

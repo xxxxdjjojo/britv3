@@ -11,20 +11,7 @@ import "server-only";
 import Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { BillingRole } from "@/lib/billing-config";
-
-// ============================================================================
-// Stripe singleton
-// ============================================================================
-
-let _stripe: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (_stripe) return _stripe;
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY environment variable is not set");
-  _stripe = new Stripe(key);
-  return _stripe;
-}
+import { getStripe } from "@/lib/stripe";
 
 // ============================================================================
 // Types

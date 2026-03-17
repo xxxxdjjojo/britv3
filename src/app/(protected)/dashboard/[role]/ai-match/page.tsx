@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { GBPToPence, penceToGBP } from "@/lib/currency";
+import { gbpToPence, penceToGBP } from "@/lib/currency";
 import type { AiMatchPreferences, AiMatchResult } from "@/services/ai/ai-match-service";
 
 // ---------------------------------------------------------------------------
@@ -152,8 +152,8 @@ export default function AiMatchPage() {
 
     const payload: Omit<AiMatchPreferences, "id" | "user_id" | "updated_at"> = {
       location: location.trim() || null,
-      budget_min: budgetMin ? GBPToPence(parseFloat(budgetMin)) : null,
-      budget_max: budgetMax ? GBPToPence(parseFloat(budgetMax)) : null,
+      budget_min: budgetMin ? gbpToPence(parseFloat(budgetMin)) : null,
+      budget_max: budgetMax ? gbpToPence(parseFloat(budgetMax)) : null,
       bedrooms_min: bedroomsMin ? parseInt(bedroomsMin.replace("+", ""), 10) : null,
       bedrooms_max: bedroomsMax ? parseInt(bedroomsMax.replace("+", ""), 10) : null,
       must_haves: mustHaves

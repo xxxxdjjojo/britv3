@@ -76,11 +76,15 @@ CREATE TABLE IF NOT EXISTS public.refund_requests (
   user_id                    UUID        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   stripe_payment_intent_id   TEXT,
   stripe_charge_id           TEXT,
-  amount                     INTEGER,    -- pence requested for refund
+  amount_pence               INTEGER,    -- pence requested for refund
   reason                     TEXT        NOT NULL,
-  status                     TEXT        NOT NULL DEFAULT 'pending',
-  -- statuses: pending | under_review | approved | rejected | processed
+  details                    TEXT,
+  status                     TEXT        NOT NULL DEFAULT 'submitted'
+    CHECK (status IN ('submitted', 'auto_approved', 'pending_review', 'approved', 'rejected', 'processed')),
+  admin_id                   UUID        REFERENCES auth.users(id),
   admin_notes                TEXT,
+  stripe_refund_id           TEXT,
+  processed_at               TIMESTAMPTZ,
   created_at                 TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at                 TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -118,3 +122,8 @@ CREATE TRIGGER subscriptions_updated_at
 CREATE TRIGGER refund_requests_updated_at
   BEFORE UPDATE ON public.refund_requests
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+-- ----------------------------------------------------------------------------
+-- 4. Add stripe_customer_id to profiles (for linking Stripe customers)
+-- ----------------------------------------------------------------------------
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT UNIQUE;

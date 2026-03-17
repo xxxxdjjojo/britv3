@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Clock,
 } from "lucide-react";
+import { formatGBP, formatDate } from "@/lib/formatters";
 
 type SubscriptionRow = {
   status: string;
@@ -36,22 +37,6 @@ function statusConfig(status: string) {
     default:
       return { label: "No plan", icon: AlertCircle, color: "text-gray-500", bg: "bg-gray-50 border-gray-200 dark:bg-gray-900 dark:border-gray-800" };
   }
-}
-
-function formatGBP(pence: number, currency = "gbp") {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 0,
-  }).format(pence / 100);
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 }
 
 export default async function BillingPage({

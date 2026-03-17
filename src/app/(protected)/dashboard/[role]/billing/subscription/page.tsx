@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, CreditCard, Calendar, AlertCircle, CheckCircle2 } from "lucide-react";
 import type { BillingRole } from "@/lib/billing-config";
+import { formatGBP, formatDate } from "@/lib/formatters";
 
 type SubscriptionRow = {
   status: string;
@@ -19,14 +20,6 @@ type SubscriptionRow = {
   role: string | null;
   stripe_subscription_id: string | null;
 };
-
-function formatGBP(pence: number, currency = "gbp") {
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency: currency.toUpperCase(), minimumFractionDigits: 0 }).format(pence / 100);
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-}
 
 export default async function SubscriptionPage({
   params,
