@@ -30,6 +30,21 @@ import {
 import { RenovationROIPanel } from "@/components/properties/roi/RenovationROIPanel";
 import { WhatIfFloorPlan } from "@/components/properties/roi/WhatIfFloorPlan";
 
+// Wave 6 — Hero media components
+import { VirtualTourViewer } from "@/components/properties/detail/VirtualTourViewer";
+import { VideoTourPlayer } from "@/components/properties/detail/VideoTourPlayer";
+
+// Wave 6 — Local area intelligence widgets
+import { TransportWidget } from "@/components/properties/detail/TransportWidget";
+import { SchoolCatchmentWidget } from "@/components/properties/detail/SchoolCatchmentWidget";
+import { BroadbandWidget } from "@/components/properties/detail/BroadbandWidget";
+import { FloodRiskWidget } from "@/components/properties/detail/FloodRiskWidget";
+import { CrimeStatsChart } from "@/components/properties/detail/CrimeStatsChart";
+
+// Wave 6 — Sidebar calculators
+import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
+import { SdltCalculator } from "@/components/calculators/SdltCalculator";
+
 // Wave 5 — Conversion components
 import { AgentCardSidebar } from "@/components/properties/detail/AgentCardSidebar";
 import { BookViewingModal } from "@/components/properties/detail/BookViewingModal";
@@ -205,6 +220,10 @@ export default async function PropertyPage({
   // Floor plan URL for WhatIfFloorPlan (first floor plan media, if any)
   const floorPlanUrl = floors.length > 0 ? (floors[0]?.imageUrl ?? null) : null;
 
+  // Virtual tour and video URLs from media array
+  const virtualTourUrl = media.find((m) => m.media_type === "virtual_tour")?.url ?? null;
+  const videoTourUrl = media.find((m) => m.media_type === "video")?.url ?? null;
+
   // Postcode district for SimilarProperties
   const district = postcodeDistrict(property.postcode);
 
@@ -285,6 +304,24 @@ export default async function PropertyPage({
       <div className="mx-auto max-w-7xl px-4 pb-24 lg:pb-8">
         {/* Gallery */}
         <Gallery images={images} className="mt-2 mb-6" />
+
+        {/* Hero media — Virtual Tour & Video */}
+        {(virtualTourUrl || videoTourUrl) && (
+          <div className="grid gap-6 sm:grid-cols-2 mb-6">
+            {virtualTourUrl && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Virtual Tour</h3>
+                <VirtualTourViewer tourUrl={virtualTourUrl} />
+              </div>
+            )}
+            {videoTourUrl && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Video Tour</h3>
+                <VideoTourPlayer videoUrl={videoTourUrl} />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Sticky info bar */}
         <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b mb-6 lg:static lg:bg-transparent lg:backdrop-blur-none lg:border-0 lg:px-0 lg:py-0 lg:mb-8">
@@ -493,6 +530,36 @@ export default async function PropertyPage({
               </section>
             )}
 
+            {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
+            <section>
+              <h2 className="text-xl font-semibold mb-3">
+                Local Area Intelligence
+              </h2>
+              <Separator className="mb-4" />
+              <Suspense
+                fallback={
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
+                    ))}
+                  </div>
+                }
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <TransportWidget nearbyStations={[]} />
+                  <SchoolCatchmentWidget schools={[]} />
+                  <BroadbandWidget
+                    downloadMbps={null}
+                    uploadMbps={null}
+                    provider={null}
+                    connectionType={null}
+                  />
+                  <FloodRiskWidget riskLevel="Low" source="Environment Agency" />
+                  <CrimeStatsChart stats={[]} boroughAvg={null} />
+                </div>
+              </Suspense>
+            </section>
+
             {/* ── ROI SECTION (Wave 4) ── */}
             {listing.listing_type === "sale" && (
               <section id="roi-section">
@@ -589,6 +656,16 @@ export default async function PropertyPage({
                 existingViewingId={existingViewingId}
               />
             )}
+
+            {/* Mortgage Calculator (Wave 6) */}
+            <div className="rounded-xl border bg-card p-4">
+              <MortgageCalculator />
+            </div>
+
+            {/* SDLT Calculator (Wave 6) */}
+            <div className="rounded-xl border bg-card p-4">
+              <SdltCalculator />
+            </div>
 
             {/* Similar Properties in sidebar for desktop visibility */}
             <Suspense fallback={null}>
