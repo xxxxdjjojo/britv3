@@ -1,17 +1,22 @@
 /**
- * Agent feed integration service -- property feed connections to external CRM
- * providers (Reapit, Alto, Jupix) and sync status tracking.
+ * Agent feed integration service.
+ * Manages CRM feed provider integrations (Reapit, Alto, Jupix).
+ * API keys are base64-encoded as a placeholder for real encryption.
+ * All functions accept a Supabase client as first parameter for testability.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AgentFeedIntegration, FeedProvider, SyncStatus } from "@/types/agent";
-
-// ============================================================================
-// Feed integration CRUD
-// ============================================================================
+import type { AgentFeedIntegration, FeedProvider } from "@/types/agent";
 
 /**
- * Returns all feed integrations for the given agent with their current sync status.
+ * Encode an API key using base64 (placeholder for Supabase Vault encryption).
+ */
+function encryptApiKey(key: string): string {
+  return Buffer.from(key).toString("base64");
+}
+
+/**
+ * Get all feed integrations for an agent.
  */
 export async function getFeedIntegrations(
   supabase: SupabaseClient,
@@ -23,14 +28,17 @@ export async function getFeedIntegrations(
     .eq("agent_id", agentId)
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to get feed integrations: ${error.message}`);
+  }
+
   return (data ?? []) as AgentFeedIntegration[];
 }
 
 /**
- * Creates a new feed integration in 'disconnected' status.
- * The api_key is stored as-is in api_key_encrypted (real vault encryption
- * can be added later without changing the interface).
+ * Create a new feed integration.
+ * Encrypts the API key before storing.
+ * Sets initial sync_status to 'disconnected'.
  */
 export async function createFeedIntegration(
   supabase: SupabaseClient,
@@ -38,7 +46,7 @@ export async function createFeedIntegration(
   input: {
     provider: FeedProvider;
     api_key: string;
-    field_mapping?: Record<string, unknown>;
+    field_mapping?: Record<string, string>;
   },
 ): Promise<AgentFeedIntegration> {
   const { data, error } = await supabase
@@ -46,61 +54,63 @@ export async function createFeedIntegration(
     .insert({
       agent_id: agentId,
       provider: input.provider,
-      api_key_encrypted: input.api_key,
-      sync_status: "disconnected" as SyncStatus,
-      field_mapping: input.field_mapping ?? {},
-      error_log: [],
+      api_key_encrypted: encryptApiKey(input.api_key),
+      sync_status: "disconnected",
+      field_mapping: input.field_mapping ?? null,
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to create feed integration: ${error.message}`);
+  }
+
   return data as AgentFeedIntegration;
 }
 
 /**
- * Updates an existing feed integration's configuration.
+ * Update an existing feed integration.
+ * Re-encrypts the API key if a new one is provided.
  */
 export async function updateFeedIntegration(
   supabase: SupabaseClient,
   integrationId: string,
   agentId: string,
-  input: {
-    api_key?: string;
-    webhook_url?: string | null;
-    field_mapping?: Record<string, unknown>;
-    sync_status?: SyncStatus;
-  },
+  input: Partial<{
+    api_key: string;
+    field_mapping: Record<string, string>;
+    sync_status: string;
+  }>,
 ): Promise<AgentFeedIntegration> {
-  const payload: Record<string, unknown> = {};
+  const updatePayload: Record<string, unknown> = {};
 
   if (input.api_key !== undefined) {
-    payload.api_key_encrypted = input.api_key;
-  }
-  if (input.webhook_url !== undefined) {
-    payload.webhook_url = input.webhook_url;
+    updatePayload.api_key_encrypted = encryptApiKey(input.api_key);
   }
   if (input.field_mapping !== undefined) {
-    payload.field_mapping = input.field_mapping;
+    updatePayload.field_mapping = input.field_mapping;
   }
   if (input.sync_status !== undefined) {
-    payload.sync_status = input.sync_status;
+    updatePayload.sync_status = input.sync_status;
   }
 
   const { data, error } = await supabase
     .from("agent_feed_integrations")
-    .update(payload)
+    .update(updatePayload)
     .eq("id", integrationId)
     .eq("agent_id", agentId)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to update feed integration: ${error.message}`);
+  }
+
   return data as AgentFeedIntegration;
 }
 
 /**
- * Permanently deletes a feed integration.
+ * Hard-delete a feed integration.
  */
 export async function deleteFeedIntegration(
   supabase: SupabaseClient,
@@ -113,22 +123,19 @@ export async function deleteFeedIntegration(
     .eq("id", integrationId)
     .eq("agent_id", agentId);
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to delete feed integration: ${error.message}`);
+  }
 }
 
-// ============================================================================
-// Sync status
-// ============================================================================
-
 export type FeedSyncStatus = {
-  sync_status: SyncStatus;
+  sync_status: string | null;
   last_sync_at: string | null;
-  error_log: Record<string, unknown>[];
+  error_log: Record<string, unknown>[] | null;
 };
 
 /**
- * Returns the sync status, last sync timestamp, and error log for a single
- * feed integration.
+ * Get the current sync status and error log for a feed integration.
  */
 export async function getFeedSyncStatus(
   supabase: SupabaseClient,
@@ -142,17 +149,14 @@ export async function getFeedSyncStatus(
     .eq("agent_id", agentId)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to get feed sync status: ${error.message}`);
+  }
 
-  const row = data as {
-    sync_status: SyncStatus;
-    last_sync_at: string | null;
-    error_log: Record<string, unknown>[];
-  };
-
+  const row = data as Record<string, unknown>;
   return {
-    sync_status: row.sync_status,
-    last_sync_at: row.last_sync_at,
-    error_log: row.error_log ?? [],
+    sync_status: (row.sync_status as string) ?? null,
+    last_sync_at: (row.last_sync_at as string) ?? null,
+    error_log: (row.error_log as Record<string, unknown>[]) ?? null,
   };
 }

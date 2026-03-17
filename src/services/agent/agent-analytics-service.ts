@@ -1,68 +1,68 @@
 /**
- * Agent analytics service -- performance reporting, competitor analysis,
- * vendor reports, and market appraisal data.
- *
- * All data is shaped for Recharts (arrays with date/value pairs where relevant).
+ * Agent analytics service.
+ * Provides performance reports, competitor analysis, and market appraisal data.
+ * All functions accept a Supabase client as first parameter for testability.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AgentVendorReport, ReportType } from "@/types/agent";
 
-// ============================================================================
-// Shared types
-// ============================================================================
-
-export type DateRange = {
-  from: string; // ISO date string
-  to: string;   // ISO date string
-};
-
-export type TimeSeriesPoint = {
-  date: string;
-  value: number;
-};
-
-export type AgentPerformanceReport = {
+export type PerformanceReport = {
   listings_sold_count: number;
-  avg_time_on_market_days: number | null;
-  total_revenue_pence: number;
+  avg_time_on_market_days: number;
+  total_revenue: number;
   conversion_rate: number;
-  client_satisfaction_avg: number | null;
-  revenue_over_time: TimeSeriesPoint[];
-  listings_over_time: TimeSeriesPoint[];
+  client_satisfaction: number;
+  listings_sold_per_month: Array<{ month: string; count: number }>;
+  revenue_per_month: Array<{ month: string; amount: number }>;
 };
 
-export type CompetitorAgentData = {
+export type CompetitorEntry = {
   agent_id: string;
   listing_count: number;
-  avg_price_pence: number;
-  avg_time_on_market_days: number | null;
+  avg_price: number;
+  market_share_pct: number;
+};
+
+export type ComparableSale = {
+  id: string;
+  postcode: string;
+  price: number;
+  bedrooms: number | null;
+  sold_at: string | null;
 };
 
 export type MarketAppraisalData = {
-  postcode_district: string;
-  comparable_count: number;
-  suggested_min_pence: number;
-  suggested_max_pence: number;
-  avg_price_pence: number;
-  median_price_pence: number;
-  avg_days_on_market: number | null;
+  comparable_sales: ComparableSale[];
+  suggested_min_price: number;
+  suggested_max_price: number;
+  avg_price: number;
 };
 
-// ============================================================================
-// Performance reports
-// ============================================================================
-
 /**
- * Aggregates performance metrics for an agent over an optional date range.
- * Returns data shaped for Recharts consumption.
+ * Get an agent's performance report, optionally scoped to a date range.
  */
 export async function getAgentPerformanceReport(
   supabase: SupabaseClient,
   agentId: string,
-  dateRange?: DateRange,
-): Promise<AgentPerformanceReport> {
-  // -- Commissions (revenue) --------------------------------------------------
+  dateRange?: { start: string; end: string },
+): Promise<PerformanceReport> {
+  // Query sold listings
+  let listingsQuery = supabase
+    .from("listings")
+    .select("id, created_at, sold_at, price")
+    .eq("user_id", agentId)
+    .eq("status", "sold");
+
+  if (dateRange) {
+    listingsQuery = listingsQuery
+      .gte("sold_at", dateRange.start)
+      .lte("sold_at", dateRange.end);
+  }
+
+  const { data: soldListings } = await listingsQuery;
+  const listings = soldListings ?? [];
+
+  // Query commission revenue
   let commissionQuery = supabase
     .from("agent_commissions")
     .select("commission_amount, created_at")
@@ -71,305 +71,318 @@ export async function getAgentPerformanceReport(
 
   if (dateRange) {
     commissionQuery = commissionQuery
-      .gte("created_at", dateRange.from)
-      .lte("created_at", dateRange.to);
+      .gte("created_at", dateRange.start)
+      .lte("created_at", dateRange.end);
   }
 
-  const { data: commissions, error: commErr } = await commissionQuery;
-  if (commErr) throw commErr;
+  const { data: commissions } = await commissionQuery;
+  const commissionRows = commissions ?? [];
 
-  const totalRevenue = (commissions ?? []).reduce(
-    (acc, c) => acc + ((c as { commission_amount: number }).commission_amount ?? 0),
-    0,
-  );
-
-  // Revenue over time — group by month
-  const revenueByMonth = new Map<string, number>();
-  for (const c of commissions ?? []) {
-    const row = c as { created_at: string; commission_amount: number };
-    const month = row.created_at.slice(0, 7); // YYYY-MM
-    revenueByMonth.set(month, (revenueByMonth.get(month) ?? 0) + row.commission_amount);
-  }
-  const revenueOverTime: TimeSeriesPoint[] = Array.from(revenueByMonth.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, value]) => ({ date, value }));
-
-  // -- Listings sold (offer_accepted stage with offer accepted status) --------
-  let offerQuery = supabase
-    .from("agent_offers")
-    .select("id, created_at")
-    .eq("agent_id", agentId)
-    .eq("status", "accepted");
-
-  if (dateRange) {
-    offerQuery = offerQuery
-      .gte("created_at", dateRange.from)
-      .lte("created_at", dateRange.to);
-  }
-
-  const { data: acceptedOffers, error: offerErr } = await offerQuery;
-  if (offerErr) throw offerErr;
-
-  const listingsSoldCount = (acceptedOffers ?? []).length;
-
-  // Listings over time — group by month
-  const listingsByMonth = new Map<string, number>();
-  for (const o of acceptedOffers ?? []) {
-    const row = o as { created_at: string };
-    const month = row.created_at.slice(0, 7);
-    listingsByMonth.set(month, (listingsByMonth.get(month) ?? 0) + 1);
-  }
-  const listingsOverTime: TimeSeriesPoint[] = Array.from(listingsByMonth.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, value]) => ({ date, value }));
-
-  // -- Leads conversion rate -------------------------------------------------
-  let leadQuery = supabase
+  // Query leads for conversion rate
+  let leadsQuery = supabase
     .from("agent_leads")
-    .select("stage, created_at")
+    .select("id, stage")
     .eq("agent_id", agentId);
 
   if (dateRange) {
-    leadQuery = leadQuery
-      .gte("created_at", dateRange.from)
-      .lte("created_at", dateRange.to);
+    leadsQuery = leadsQuery
+      .gte("created_at", dateRange.start)
+      .lte("created_at", dateRange.end);
   }
 
-  const { data: leads, error: leadErr } = await leadQuery;
-  if (leadErr) throw leadErr;
+  const { data: leads } = await leadsQuery;
+  const leadRows = leads ?? [];
 
-  const totalLeads = (leads ?? []).length;
-  const closedLeads = (leads ?? []).filter(
-    (l) => (l as { stage: string }).stage === "closed",
+  // Calculate metrics
+  const listings_sold_count = listings.length;
+  const total_revenue = commissionRows.reduce(
+    (sum: number, c: Record<string, unknown>) =>
+      sum + ((c.commission_amount as number) ?? 0),
+    0,
+  );
+
+  // Average time on market (days between created_at and sold_at)
+  const timesOnMarket = listings
+    .filter(
+      (l: Record<string, unknown>) => l.sold_at && l.created_at,
+    )
+    .map((l: Record<string, unknown>) => {
+      const created = new Date(l.created_at as string).getTime();
+      const sold = new Date(l.sold_at as string).getTime();
+      return (sold - created) / (1000 * 60 * 60 * 24);
+    });
+
+  const avg_time_on_market_days =
+    timesOnMarket.length > 0
+      ? timesOnMarket.reduce((sum: number, t: number) => sum + t, 0) /
+        timesOnMarket.length
+      : 0;
+
+  // Conversion rate: closed / total leads
+  const closedLeads = leadRows.filter(
+    (l: Record<string, unknown>) => l.stage === "closed",
   ).length;
-  const conversionRate = totalLeads > 0 ? closedLeads / totalLeads : 0;
+  const conversion_rate =
+    leadRows.length > 0 ? closedLeads / leadRows.length : 0;
 
-  // -- Return aggregated report ----------------------------------------------
+  // Client satisfaction placeholder (would come from reviews table)
+  const client_satisfaction = 0;
+
+  // Group by month
+  const soldByMonth: Record<string, number> = {};
+  for (const listing of listings) {
+    const l = listing as Record<string, unknown>;
+    if (l.sold_at) {
+      const month = (l.sold_at as string).substring(0, 7);
+      soldByMonth[month] = (soldByMonth[month] ?? 0) + 1;
+    }
+  }
+
+  const revenueByMonth: Record<string, number> = {};
+  for (const commission of commissionRows) {
+    const c = commission as Record<string, unknown>;
+    const month = (c.created_at as string).substring(0, 7);
+    revenueByMonth[month] =
+      (revenueByMonth[month] ?? 0) + ((c.commission_amount as number) ?? 0);
+  }
+
+  const listings_sold_per_month = Object.entries(soldByMonth)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, count]) => ({ month, count }));
+
+  const revenue_per_month = Object.entries(revenueByMonth)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, amount]) => ({ month, amount }));
+
   return {
-    listings_sold_count: listingsSoldCount,
-    avg_time_on_market_days: null, // requires listing dates — deferred
-    total_revenue_pence: totalRevenue,
-    conversion_rate: Math.round(conversionRate * 10000) / 10000,
-    client_satisfaction_avg: null, // requires reviews table — deferred
-    revenue_over_time: revenueOverTime,
-    listings_over_time: listingsOverTime,
+    listings_sold_count,
+    avg_time_on_market_days,
+    total_revenue,
+    conversion_rate,
+    client_satisfaction,
+    listings_sold_per_month,
+    revenue_per_month,
   };
 }
 
 /**
- * Aggregates the same performance metrics as getAgentPerformanceReport but
- * scoped to a single branch via its team member IDs.
+ * Get performance report scoped to a specific branch.
+ * Looks up branch members then aggregates their metrics.
  */
 export async function getBranchPerformanceReport(
   supabase: SupabaseClient,
   agentId: string,
   branchId: string,
-): Promise<AgentPerformanceReport> {
-  // Get team member user_ids in this branch
-  const { data: members, error: memberErr } = await supabase
+): Promise<PerformanceReport> {
+  // Get member user IDs for this branch
+  const { data: members } = await supabase
     .from("agent_team_members")
     .select("user_id")
     .eq("agent_id", agentId)
     .eq("branch_id", branchId)
-    .neq("status", "inactive");
-
-  if (memberErr) throw memberErr;
+    .eq("status", "active");
 
   const memberIds = (members ?? []).map(
-    (m) => (m as { user_id: string }).user_id,
+    (m: Record<string, unknown>) => m.user_id as string,
   );
 
   // If no members, return empty report
   if (memberIds.length === 0) {
     return {
       listings_sold_count: 0,
-      avg_time_on_market_days: null,
-      total_revenue_pence: 0,
+      avg_time_on_market_days: 0,
+      total_revenue: 0,
       conversion_rate: 0,
-      client_satisfaction_avg: null,
-      revenue_over_time: [],
-      listings_over_time: [],
+      client_satisfaction: 0,
+      listings_sold_per_month: [],
+      revenue_per_month: [],
     };
   }
 
-  // Commissions for members in this branch
-  const { data: commissions, error: commErr } = await supabase
+  // Query sold listings for all branch members
+  const { data: soldListings } = await supabase
+    .from("listings")
+    .select("id, created_at, sold_at, price")
+    .in("user_id", memberIds)
+    .eq("status", "sold");
+
+  const listings = soldListings ?? [];
+  const listings_sold_count = listings.length;
+
+  const timesOnMarket = listings
+    .filter(
+      (l: Record<string, unknown>) => l.sold_at && l.created_at,
+    )
+    .map((l: Record<string, unknown>) => {
+      const created = new Date(l.created_at as string).getTime();
+      const sold = new Date(l.sold_at as string).getTime();
+      return (sold - created) / (1000 * 60 * 60 * 24);
+    });
+
+  const avg_time_on_market_days =
+    timesOnMarket.length > 0
+      ? timesOnMarket.reduce((sum: number, t: number) => sum + t, 0) /
+        timesOnMarket.length
+      : 0;
+
+  // Query commissions
+  const { data: commissions } = await supabase
     .from("agent_commissions")
     .select("commission_amount, created_at")
     .eq("agent_id", agentId)
     .eq("status", "paid");
 
-  if (commErr) throw commErr;
-
-  const totalRevenue = (commissions ?? []).reduce(
-    (acc, c) => acc + ((c as { commission_amount: number }).commission_amount ?? 0),
+  const commissionRows = commissions ?? [];
+  const total_revenue = commissionRows.reduce(
+    (sum: number, c: Record<string, unknown>) =>
+      sum + ((c.commission_amount as number) ?? 0),
     0,
   );
 
-  const revenueByMonth = new Map<string, number>();
-  for (const c of commissions ?? []) {
-    const row = c as { created_at: string; commission_amount: number };
-    const month = row.created_at.slice(0, 7);
-    revenueByMonth.set(month, (revenueByMonth.get(month) ?? 0) + row.commission_amount);
-  }
-  const revenueOverTime: TimeSeriesPoint[] = Array.from(revenueByMonth.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, value]) => ({ date, value }));
-
-  const { data: acceptedOffers, error: offerErr } = await supabase
-    .from("agent_offers")
-    .select("id, created_at")
+  // Query leads for branch members
+  const { data: leads } = await supabase
+    .from("agent_leads")
+    .select("id, stage")
     .eq("agent_id", agentId)
-    .eq("status", "accepted");
+    .in("assigned_to", memberIds);
 
-  if (offerErr) throw offerErr;
+  const leadRows = leads ?? [];
+  const closedLeads = leadRows.filter(
+    (l: Record<string, unknown>) => l.stage === "closed",
+  ).length;
+  const conversion_rate =
+    leadRows.length > 0 ? closedLeads / leadRows.length : 0;
 
-  const listingsSoldCount = (acceptedOffers ?? []).length;
+  const soldByMonth: Record<string, number> = {};
+  for (const listing of listings) {
+    const l = listing as Record<string, unknown>;
+    if (l.sold_at) {
+      const month = (l.sold_at as string).substring(0, 7);
+      soldByMonth[month] = (soldByMonth[month] ?? 0) + 1;
+    }
+  }
+
+  const revenueByMonth: Record<string, number> = {};
+  for (const commission of commissionRows) {
+    const c = commission as Record<string, unknown>;
+    const month = (c.created_at as string).substring(0, 7);
+    revenueByMonth[month] =
+      (revenueByMonth[month] ?? 0) + ((c.commission_amount as number) ?? 0);
+  }
 
   return {
-    listings_sold_count: listingsSoldCount,
-    avg_time_on_market_days: null,
-    total_revenue_pence: totalRevenue,
-    conversion_rate: 0,
-    client_satisfaction_avg: null,
-    revenue_over_time: revenueOverTime,
-    listings_over_time: [],
+    listings_sold_count,
+    avg_time_on_market_days,
+    total_revenue,
+    conversion_rate,
+    client_satisfaction: 0,
+    listings_sold_per_month: Object.entries(soldByMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, count]) => ({ month, count })),
+    revenue_per_month: Object.entries(revenueByMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, amount]) => ({ month, amount })),
   };
 }
 
-// ============================================================================
-// Competitor analysis
-// ============================================================================
-
 /**
- * Queries listings in the same postcode district and computes per-agent
- * aggregates: listing count, average price, and average time on market.
+ * Analyse competitor agents in a given area.
+ * Groups listings by agent (user_id) and calculates market share.
  */
 export async function getCompetitorAnalysis(
   supabase: SupabaseClient,
   agentId: string,
   area: string,
-): Promise<CompetitorAgentData[]> {
-  // Derive district from full postcode (e.g. "SW1A 1AA" -> "SW1A")
-  const district = area.trim().split(" ")[0].toUpperCase();
-
+): Promise<CompetitorEntry[]> {
   const { data, error } = await supabase
-    .from("properties")
-    .select("agent_id, price, created_at, status")
-    .ilike("postcode", `${district}%`);
+    .from("listings")
+    .select("user_id, price, postcode")
+    .ilike("postcode", `${area}%`);
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to get competitor analysis: ${error.message}`);
+  }
 
-  // Group by agent_id, excluding requesting agent
-  const agentMap = new Map<
+  const rows = (data ?? []) as Array<{
+    user_id: string;
+    price: number;
+    postcode: string;
+  }>;
+
+  // Group by agent
+  const grouped: Record<
     string,
-    { prices: number[]; created_ats: string[] }
-  >();
+    { listing_count: number; total_price: number }
+  > = {};
 
-  for (const row of data ?? []) {
-    const r = row as {
-      agent_id: string | null;
-      price: number | null;
-      created_at: string;
-    };
-    if (!r.agent_id || r.agent_id === agentId) continue;
-
-    if (!agentMap.has(r.agent_id)) {
-      agentMap.set(r.agent_id, { prices: [], created_ats: [] });
+  for (const row of rows) {
+    if (!grouped[row.user_id]) {
+      grouped[row.user_id] = { listing_count: 0, total_price: 0 };
     }
-    const entry = agentMap.get(r.agent_id)!;
-    if (r.price !== null) entry.prices.push(r.price);
-    entry.created_ats.push(r.created_at);
+    grouped[row.user_id].listing_count += 1;
+    grouped[row.user_id].total_price += row.price ?? 0;
   }
 
-  const results: CompetitorAgentData[] = [];
-  for (const [aid, { prices }] of Array.from(agentMap.entries())) {
-    const avg = prices.length > 0
-      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-      : 0;
+  const total_listings = rows.length;
 
-    results.push({
-      agent_id: aid,
-      listing_count: prices.length,
-      avg_price_pence: avg,
-      avg_time_on_market_days: null, // requires sold_date — deferred
-    });
-  }
-
-  return results.sort((a, b) => b.listing_count - a.listing_count);
+  return Object.entries(grouped)
+    .map(([agent_id, stats]) => ({
+      agent_id,
+      listing_count: stats.listing_count,
+      avg_price:
+        stats.listing_count > 0
+          ? Math.round(stats.total_price / stats.listing_count)
+          : 0,
+      market_share_pct:
+        total_listings > 0
+          ? Math.round((stats.listing_count / total_listings) * 10000) / 100
+          : 0,
+    }))
+    .sort((a, b) => b.listing_count - a.listing_count);
 }
 
-// ============================================================================
-// Vendor reports
-// ============================================================================
-
 /**
- * Generates a vendor performance report for a property and stores it in
- * agent_vendor_reports. Returns the created report record.
+ * Generate a vendor report for a specific property.
+ * Aggregates listing and viewing data, stores in agent_vendor_reports.
  */
 export async function generateVendorReport(
   supabase: SupabaseClient,
   agentId: string,
   propertyId: string,
-  reportType: ReportType,
-): Promise<AgentVendorReport> {
-  // Aggregate data depending on report type
-  let reportData: Record<string, unknown> = {};
+  reportType: string,
+): Promise<Record<string, unknown>> {
+  // Gather listing data
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("*")
+    .eq("property_id", propertyId)
+    .eq("user_id", agentId)
+    .maybeSingle();
 
-  if (reportType === "listing_performance") {
-    const [offersResult, viewingsResult] = await Promise.all([
-      supabase
-        .from("agent_offers")
-        .select("amount, status, created_at")
-        .eq("agent_id", agentId)
-        .eq("property_id", propertyId),
-      supabase
-        .from("agent_viewing_slots")
-        .select("id, is_booked, start_time")
-        .eq("agent_id", agentId)
-        .eq("property_id", propertyId),
-    ]);
+  // Gather viewing feedback
+  const { data: viewings } = await supabase
+    .from("agent_viewing_feedback")
+    .select("*")
+    .eq("agent_id", agentId);
 
-    if (offersResult.error) throw offersResult.error;
-    if (viewingsResult.error) throw viewingsResult.error;
+  // Gather offers
+  const { data: offers } = await supabase
+    .from("agent_offers")
+    .select("*")
+    .eq("property_id", propertyId)
+    .eq("agent_id", agentId);
 
-    const offers = offersResult.data ?? [];
-    const viewings = viewingsResult.data ?? [];
+  const reportData: Record<string, unknown> = {
+    property_id: propertyId,
+    report_type: reportType,
+    listing,
+    viewings_count: (viewings ?? []).length,
+    offers_count: (offers ?? []).length,
+    offers,
+    generated_at: new Date().toISOString(),
+  };
 
-    reportData = {
-      total_offers: offers.length,
-      accepted_offers: offers.filter(
-        (o) => (o as { status: string }).status === "accepted",
-      ).length,
-      highest_offer: offers.length > 0
-        ? Math.max(...offers.map((o) => (o as { amount: number }).amount))
-        : null,
-      total_viewings: viewings.length,
-      booked_viewings: viewings.filter((v) => (v as { is_booked: boolean }).is_booked).length,
-    };
-  } else if (reportType === "viewing_summary") {
-    const { data: viewings, error: viewErr } = await supabase
-      .from("agent_viewing_slots")
-      .select("id, is_booked, start_time")
-      .eq("agent_id", agentId)
-      .eq("property_id", propertyId);
-
-    if (viewErr) throw viewErr;
-
-    reportData = {
-      total_slots: (viewings ?? []).length,
-      booked_slots: (viewings ?? []).filter(
-        (v) => (v as { is_booked: boolean }).is_booked,
-      ).length,
-    };
-  } else {
-    // market_analysis
-    reportData = {
-      note: "Market analysis data requires postcode comparison — use getMarketAppraisalData",
-    };
-  }
-
-  const { data, error } = await supabase
+  const { data: savedReport, error } = await supabase
     .from("agent_vendor_reports")
     .insert({
       agent_id: agentId,
@@ -381,85 +394,55 @@ export async function generateVendorReport(
     .select()
     .single();
 
-  if (error) throw error;
-  return data as AgentVendorReport;
+  if (error) {
+    throw new Error(`Failed to generate vendor report: ${error.message}`);
+  }
+
+  return savedReport as Record<string, unknown>;
 }
 
 /**
- * Returns all vendor reports for a given property, most recent first.
- */
-export async function getVendorReports(
-  supabase: SupabaseClient,
-  agentId: string,
-  propertyId: string,
-): Promise<AgentVendorReport[]> {
-  const { data, error } = await supabase
-    .from("agent_vendor_reports")
-    .select("*")
-    .eq("agent_id", agentId)
-    .eq("property_id", propertyId)
-    .order("generated_at", { ascending: false });
-
-  if (error) throw error;
-  return (data ?? []) as AgentVendorReport[];
-}
-
-// ============================================================================
-// Market appraisal
-// ============================================================================
-
-/**
- * Finds comparable properties in the same postcode district and calculates
- * a suggested asking price range.
+ * Get market appraisal data for a postcode.
+ * Returns comparable sales and a suggested price range.
  */
 export async function getMarketAppraisalData(
   supabase: SupabaseClient,
   postcode: string,
 ): Promise<MarketAppraisalData> {
-  const district = postcode.trim().split(" ")[0].toUpperCase();
+  const postcodePrefix = postcode.substring(0, 4);
 
   const { data, error } = await supabase
-    .from("properties")
-    .select("price")
-    .ilike("postcode", `${district}%`)
-    .eq("status", "active");
+    .from("listings")
+    .select("id, postcode, price, bedrooms, sold_at")
+    .ilike("postcode", `${postcodePrefix}%`)
+    .eq("status", "sold")
+    .order("sold_at", { ascending: false })
+    .limit(20);
 
-  if (error) throw error;
-
-  const prices = (data ?? [])
-    .map((r) => (r as { price: number | null }).price)
-    .filter((p): p is number => p !== null)
-    .sort((a, b) => a - b);
-
-  if (prices.length === 0) {
-    return {
-      postcode_district: district,
-      comparable_count: 0,
-      suggested_min_pence: 0,
-      suggested_max_pence: 0,
-      avg_price_pence: 0,
-      median_price_pence: 0,
-      avg_days_on_market: null,
-    };
+  if (error) {
+    throw new Error(`Failed to get market appraisal data: ${error.message}`);
   }
 
-  const avg = Math.round(prices.reduce((a, b) => a + b, 0) / prices.length);
-  const mid = Math.floor(prices.length / 2);
-  const median =
-    prices.length % 2 === 0
-      ? Math.round((prices[mid - 1] + prices[mid]) / 2)
-      : prices[mid];
+  const comparables = (data ?? []) as ComparableSale[];
+  const prices = comparables.map((c) => c.price ?? 0).filter((p) => p > 0);
 
-  // Suggested range: ±10% of the average
-  const margin = Math.round(avg * 0.1);
+  const avg_price =
+    prices.length > 0
+      ? Math.round(prices.reduce((sum, p) => sum + p, 0) / prices.length)
+      : 0;
+
+  const sorted = [...prices].sort((a, b) => a - b);
+  const suggested_min_price =
+    sorted.length > 0 ? Math.round(sorted[0] * 0.95) : 0;
+  const suggested_max_price =
+    sorted.length > 0
+      ? Math.round(sorted[sorted.length - 1] * 1.05)
+      : 0;
 
   return {
-    postcode_district: district,
-    comparable_count: prices.length,
-    suggested_min_pence: avg - margin,
-    suggested_max_pence: avg + margin,
-    avg_price_pence: avg,
-    median_price_pence: median,
-    avg_days_on_market: null,
+    comparable_sales: comparables,
+    suggested_min_price,
+    suggested_max_price,
+    avg_price,
   };
 }

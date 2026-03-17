@@ -1,17 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import type { ReportType } from "@/types/agent";
-import { REPORT_TYPES } from "@/types/agent";
-import {
-  generateVendorReport,
-  getVendorReports,
-} from "@/services/agent/agent-analytics-service";
+import { generateVendorReport } from "@/services/agent/agent-analytics-service";
 
 /**
- * GET /api/agent/reports?propertyId=<id>
- * Returns all vendor reports for the given property, most recent first.
+ * GET /api/agent/reports
+ * List vendor reports for the agent.
+ * Optional: ?property_id=xxx to filter by property.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -23,19 +19,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const propertyId = searchParams.get("propertyId");
-
-  if (!propertyId) {
-    return NextResponse.json(
-      { error: "propertyId query parameter is required" },
-      { status: 400 },
-    );
-  }
-
   try {
-    const reports = await getVendorReports(supabase, user.id, propertyId);
-    return NextResponse.json(reports);
+    const { searchParams } = request.nextUrl;
+    const propertyId = searchParams.get("property_id");
+
+    let query = supabase
+      .from("agent_vendor_reports")
+      .select("*")
+      .eq("agent_id", user.id)
+      .order("generated_at", { ascending: false });
+
+    if (propertyId) {
+      query = query.eq("property_id", propertyId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return NextResponse.json(data ?? []);
   } catch (error) {
     console.error("Failed to fetch vendor reports:", error);
     return NextResponse.json(
@@ -47,10 +51,10 @@ export async function GET(request: Request) {
 
 /**
  * POST /api/agent/reports
- * Generates a new vendor report for a property.
- * Body: { propertyId: string, reportType: ReportType }
+ * Generate a new vendor report.
+ * Body: { property_id, report_type }
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -63,24 +67,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as Record<string, unknown>;
-    const { propertyId, reportType } = body as {
-      propertyId?: string;
-      reportType?: ReportType;
-    };
+    const body = await request.json();
+    const { property_id, report_type } = body;
 
-    if (!propertyId) {
+    if (!property_id || !report_type) {
       return NextResponse.json(
-        { error: "propertyId is required" },
-        { status: 400 },
-      );
-    }
-
-    if (!reportType || !(REPORT_TYPES as readonly string[]).includes(reportType)) {
-      return NextResponse.json(
-        {
-          error: `reportType is required. Valid values: ${REPORT_TYPES.join(" | ")}`,
-        },
+        { error: "property_id and report_type are required" },
         { status: 400 },
       );
     }
@@ -88,8 +80,8 @@ export async function POST(request: Request) {
     const report = await generateVendorReport(
       supabase,
       user.id,
-      propertyId,
-      reportType,
+      property_id,
+      report_type,
     );
 
     return NextResponse.json(report, { status: 201 });

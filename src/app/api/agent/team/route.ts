@@ -1,21 +1,20 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createTeamMemberSchema } from "@/types/agent";
-import type { TeamRole } from "@/types/agent";
 import {
   getTeamMembers,
   inviteTeamMember,
   updateTeamMemberRole,
-  assignMemberToBranch,
   removeTeamMember,
+  createBranch,
+  assignMemberToBranch,
 } from "@/services/agent/agent-team-service";
+import type { TeamRole } from "@/types/agent";
 
 /**
  * GET /api/agent/team
- * Returns team members for the authenticated agent.
- * Accepts ?branch_id filter.
+ * Returns team members, optionally filtered by ?branch_id.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -27,10 +26,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const branchId = searchParams.get("branch_id") ?? undefined;
-
   try {
+    const { searchParams } = request.nextUrl;
+    const branchId = searchParams.get("branch_id") ?? undefined;
+
     const members = await getTeamMembers(supabase, user.id, branchId);
     return NextResponse.json(members);
   } catch (error) {
@@ -44,9 +43,11 @@ export async function GET(request: Request) {
 
 /**
  * POST /api/agent/team
- * Invites a new team member (status = pending).
+ * ?action=invite_member — invite a team member
+ * ?action=create_branch — create a new branch
+ * Defaults to invite_member if no action is specified.
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -59,22 +60,22 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as unknown;
-    const parsed = createTeamMemberSchema.safeParse(body);
+    const { searchParams } = request.nextUrl;
+    const action = searchParams.get("action") ?? "invite_member";
+    const body = await request.json();
 
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid request body", details: parsed.error.flatten() },
-        { status: 400 },
-      );
+    if (action === "create_branch") {
+      const branch = await createBranch(supabase, user.id, body);
+      return NextResponse.json(branch, { status: 201 });
     }
 
-    const member = await inviteTeamMember(supabase, user.id, parsed.data);
+    // Default: invite_member
+    const member = await inviteTeamMember(supabase, user.id, body);
     return NextResponse.json(member, { status: 201 });
   } catch (error) {
-    console.error("Failed to invite team member:", error);
+    console.error("Failed to handle team POST:", error);
     return NextResponse.json(
-      { error: "Failed to invite team member" },
+      { error: "Failed to process team request" },
       { status: 500 },
     );
   }
@@ -82,11 +83,11 @@ export async function POST(request: Request) {
 
 /**
  * PATCH /api/agent/team
- * Updates a team member. Supports:
- *   { id, action: "update_role", role: TeamRole }
- *   { id, action: "assign_branch", branch_id: string }
+ * ?action=update_role — update a member's role (body: { member_id, role })
+ * ?action=assign_branch — assign member to branch (body: { member_id, branch_id })
+ * Defaults to update_role.
  */
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -99,51 +100,44 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as Record<string, unknown>;
-    const { id, action } = body;
+    const { searchParams } = request.nextUrl;
+    const action = searchParams.get("action") ?? "update_role";
+    const body = await request.json();
 
-    if (!id || typeof id !== "string") {
+    if (action === "assign_branch") {
+      const { member_id, branch_id } = body;
+      if (!member_id || !branch_id) {
+        return NextResponse.json(
+          { error: "member_id and branch_id are required" },
+          { status: 400 },
+        );
+      }
+      const member = await assignMemberToBranch(
+        supabase,
+        member_id,
+        user.id,
+        branch_id,
+      );
+      return NextResponse.json(member);
+    }
+
+    // Default: update_role
+    const { member_id, role } = body;
+    if (!member_id || !role) {
       return NextResponse.json(
-        { error: "Member id is required" },
+        { error: "member_id and role are required" },
         { status: 400 },
       );
     }
-
-    if (action === "update_role") {
-      const role = body.role as TeamRole;
-      if (!role) {
-        return NextResponse.json(
-          { error: "role is required for update_role action" },
-          { status: 400 },
-        );
-      }
-      const updated = await updateTeamMemberRole(supabase, id, user.id, role);
-      return NextResponse.json(updated);
-    }
-
-    if (action === "assign_branch") {
-      const branchId = body.branch_id as string;
-      if (!branchId) {
-        return NextResponse.json(
-          { error: "branch_id is required for assign_branch action" },
-          { status: 400 },
-        );
-      }
-      const updated = await assignMemberToBranch(
-        supabase,
-        id,
-        user.id,
-        branchId,
-      );
-      return NextResponse.json(updated);
-    }
-
-    return NextResponse.json(
-      { error: "Invalid action. Use update_role or assign_branch." },
-      { status: 400 },
+    const member = await updateTeamMemberRole(
+      supabase,
+      member_id,
+      user.id,
+      role as TeamRole,
     );
+    return NextResponse.json(member);
   } catch (error) {
-    console.error("Failed to update team member:", error);
+    console.error("Failed to handle team PATCH:", error);
     return NextResponse.json(
       { error: "Failed to update team member" },
       { status: 500 },
@@ -152,10 +146,10 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * DELETE /api/agent/team
- * Removes a team member (sets status to inactive). Requires ?id query param.
+ * DELETE /api/agent/team?member_id=xxx
+ * Remove a team member (sets status to inactive).
  */
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -167,18 +161,18 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json(
-      { error: "Member id is required" },
-      { status: 400 },
-    );
-  }
-
   try {
-    await removeTeamMember(supabase, id, user.id);
+    const { searchParams } = request.nextUrl;
+    const memberId = searchParams.get("member_id");
+
+    if (!memberId) {
+      return NextResponse.json(
+        { error: "member_id query parameter is required" },
+        { status: 400 },
+      );
+    }
+
+    await removeTeamMember(supabase, memberId, user.id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to remove team member:", error);

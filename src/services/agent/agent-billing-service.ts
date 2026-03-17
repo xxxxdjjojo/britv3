@@ -1,194 +1,146 @@
 /**
- * Agent billing service -- Stripe subscription management, feature boosts,
- * and API key generation/revocation.
+ * Agent billing service.
+ * Handles Stripe subscriptions, feature boosts, and API key management.
+ * NOTE: Stripe is not currently installed. All Stripe functions throw a stub error.
+ * Install stripe package and update imports when ready to activate.
  */
 
-import Stripe from "stripe";
-import { createHash, randomUUID } from "crypto";
+import { createHash, randomBytes } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AgentApiKey } from "@/types/agent";
 
-// ============================================================================
-// Stripe helpers
-// ============================================================================
+// ---------------------------------------------------------------------------
+// Stripe stub
+// Stripe is not listed in package.json. All Stripe-dependent functions below
+// throw a descriptive error at runtime. Replace this stub block with:
+//   import Stripe from "stripe";
+//   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", { apiVersion: "2025-01-27.acacia" });
+// once the stripe package is installed.
+// ---------------------------------------------------------------------------
 
-function getStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) {
-    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
-  }
-  return new Stripe(key);
+function stripeNotConfigured(): never {
+  throw new Error(
+    "Stripe not configured: install the stripe package and set STRIPE_SECRET_KEY.",
+  );
 }
 
-// ============================================================================
-// Subscription management
-// ============================================================================
-
 /**
- * Creates a Stripe Checkout session for a subscription plan.
- * Returns the checkout session URL for client-side redirect.
+ * Create a Stripe checkout session for a subscription plan.
+ * Returns the checkout session URL.
  */
 export async function createCheckoutSession(
-  agentId: string,
-  priceId: string,
-  successUrl: string,
-  cancelUrl: string,
+  _agentId: string,
+  _priceId: string,
+  _successUrl: string,
+  _cancelUrl: string,
 ): Promise<string> {
-  const stripe = getStripe();
-
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    client_reference_id: agentId,
-    metadata: { agent_id: agentId },
-  });
-
-  if (!session.url) {
-    throw new Error("Stripe did not return a checkout URL");
-  }
-
-  return session.url;
+  stripeNotConfigured();
 }
 
 /**
- * Creates a Stripe Customer Portal session for managing/cancelling subscriptions.
- * Looks up the Stripe customer ID from the user's profile.
+ * Get a Stripe customer portal URL for the agent.
  */
 export async function getCustomerPortalUrl(
   supabase: SupabaseClient,
   agentId: string,
-  returnUrl: string,
+  _returnUrl: string,
 ): Promise<string> {
-  const stripe = getStripe();
-
-  const { data: profile, error } = await supabase
+  // Verify the agent exists before attempting Stripe call
+  const { error } = await supabase
     .from("profiles")
-    .select("stripe_customer_id")
+    .select("id")
     .eq("id", agentId)
     .single();
 
-  if (error || !profile) {
-    throw new Error("Profile not found");
+  if (error) {
+    throw new Error(`Agent not found: ${error.message}`);
   }
 
-  const customerId = (profile as { stripe_customer_id: string | null })
-    .stripe_customer_id;
-
-  if (!customerId) {
-    throw new Error("No Stripe customer ID found — user has not subscribed yet");
-  }
-
-  const session = await stripe.billingPortal.sessions.create({
-    customer: customerId,
-    return_url: returnUrl,
-  });
-
-  return session.url;
+  stripeNotConfigured();
 }
 
 /**
- * Returns the current active Stripe subscription for the agent, or null if
- * no subscription exists.
+ * Get the current active Stripe subscription for an agent.
  */
 export async function getCurrentSubscription(
   supabase: SupabaseClient,
   agentId: string,
-): Promise<Stripe.Subscription | null> {
-  const stripe = getStripe();
-
-  const { data: profile, error } = await supabase
+): Promise<null> {
+  // Verify agent exists
+  const { error } = await supabase
     .from("profiles")
-    .select("stripe_customer_id")
+    .select("id")
     .eq("id", agentId)
     .single();
 
-  if (error || !profile) return null;
-
-  const customerId = (profile as { stripe_customer_id: string | null })
-    .stripe_customer_id;
-
-  if (!customerId) return null;
-
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customerId,
-    status: "active",
-    limit: 1,
-  });
-
-  return subscriptions.data[0] ?? null;
-}
-
-/**
- * Creates a Stripe Checkout session for a one-time featured listing boost.
- */
-export async function purchaseFeatureBoost(
-  agentId: string,
-  listingId: string,
-  durationDays: number,
-  priceId: string,
-  successUrl: string,
-  cancelUrl: string,
-): Promise<string> {
-  const stripe = getStripe();
-
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    client_reference_id: agentId,
-    metadata: {
-      agent_id: agentId,
-      listing_id: listingId,
-      duration_days: String(durationDays),
-      boost_type: "featured_listing",
-    },
-  });
-
-  if (!session.url) {
-    throw new Error("Stripe did not return a checkout URL");
+  if (error) {
+    throw new Error(`Agent not found: ${error.message}`);
   }
 
-  return session.url;
+  stripeNotConfigured();
 }
 
-// ============================================================================
-// API key management
-// ============================================================================
+/**
+ * Purchase a feature boost for a specific listing.
+ * Returns a Stripe checkout session URL for a one-time payment.
+ */
+export async function purchaseFeatureBoost(
+  _agentId: string,
+  _listingId: string,
+  _durationDays: number,
+  _priceId: string,
+  _successUrl: string,
+  _cancelUrl: string,
+): Promise<string> {
+  stripeNotConfigured();
+}
+
+// ---------------------------------------------------------------------------
+// API Key management (no Stripe dependency)
+// ---------------------------------------------------------------------------
 
 /**
- * Generates a new API key, stores the SHA-256 hash, and returns the full key
- * exactly once. The raw key is never stored and cannot be retrieved again.
+ * Generate a new API key for an agent.
+ * Stores only the SHA-256 hash and 8-char prefix.
+ * Returns the full plaintext key once — it cannot be retrieved again.
  */
 export async function generateApiKey(
   supabase: SupabaseClient,
   agentId: string,
   name: string,
-): Promise<string> {
-  const rawKey = `brite_${randomUUID().replace(/-/g, "")}`;
-  const keyPrefix = rawKey.slice(0, 8);
+): Promise<{ key: string; record: Omit<AgentApiKey, "key_hash"> }> {
+  const rawKey = randomBytes(32).toString("hex");
   const keyHash = createHash("sha256").update(rawKey).digest("hex");
+  const keyPrefix = rawKey.substring(0, 8);
 
-  const { error } = await supabase.from("agent_api_keys").insert({
-    agent_id: agentId,
-    key_hash: keyHash,
-    key_prefix: keyPrefix,
-    name,
-    is_active: true,
-    usage_count: 0,
-    rate_limit_per_minute: 60,
-  });
+  const { data, error } = await supabase
+    .from("agent_api_keys")
+    .insert({
+      agent_id: agentId,
+      key_hash: keyHash,
+      key_prefix: keyPrefix,
+      name,
+      rate_limit_per_minute: 60,
+      usage_count: 0,
+      is_active: true,
+    })
+    .select(
+      "id, agent_id, key_prefix, name, rate_limit_per_minute, last_used_at, usage_count, is_active, created_at, revoked_at",
+    )
+    .single();
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to generate API key: ${error.message}`);
+  }
 
-  // Return the raw key exactly once — this is the only time it is available
-  return rawKey;
+  return {
+    key: rawKey,
+    record: data as Omit<AgentApiKey, "key_hash">,
+  };
 }
 
 /**
- * Revokes an API key by setting is_active=false and recording revoked_at.
+ * Revoke an API key by setting is_active=false and recording revoked_at.
  */
 export async function revokeApiKey(
   supabase: SupabaseClient,
@@ -204,12 +156,13 @@ export async function revokeApiKey(
     .eq("id", keyId)
     .eq("agent_id", agentId);
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to revoke API key: ${error.message}`);
+  }
 }
 
 /**
- * Returns all API keys for an agent. The key_hash is excluded from the return
- * value — only key_prefix and metadata are returned.
+ * Get all API keys for an agent, excluding key_hash for security.
  */
 export async function getApiKeys(
   supabase: SupabaseClient,
@@ -223,6 +176,9 @@ export async function getApiKeys(
     .eq("agent_id", agentId)
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    throw new Error(`Failed to get API keys: ${error.message}`);
+  }
+
   return (data ?? []) as Omit<AgentApiKey, "key_hash">[];
 }

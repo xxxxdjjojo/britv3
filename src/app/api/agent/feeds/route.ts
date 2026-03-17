@@ -1,21 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import type { FeedProvider, SyncStatus } from "@/types/agent";
 import {
   getFeedIntegrations,
   createFeedIntegration,
   updateFeedIntegration,
   deleteFeedIntegration,
-  getFeedSyncStatus,
 } from "@/services/agent/agent-feed-service";
 
 /**
  * GET /api/agent/feeds
- *
  * Returns all feed integrations for the authenticated agent.
- * Pass ?id=<integrationId>&status=true to get sync status only.
  */
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = await createClient();
 
   const {
@@ -27,16 +23,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-  const statusOnly = searchParams.get("status") === "true";
-
   try {
-    if (id && statusOnly) {
-      const status = await getFeedSyncStatus(supabase, id, user.id);
-      return NextResponse.json(status);
-    }
-
     const integrations = await getFeedIntegrations(supabase, user.id);
     return NextResponse.json(integrations);
   } catch (error) {
@@ -50,10 +37,9 @@ export async function GET(request: Request) {
 
 /**
  * POST /api/agent/feeds
- * Creates a new feed integration.
- * Body: { provider: FeedProvider, api_key: string, field_mapping?: object }
+ * Create a new feed integration.
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -66,26 +52,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as Record<string, unknown>;
-    const { provider, api_key, field_mapping } = body as {
-      provider?: FeedProvider;
-      api_key?: string;
-      field_mapping?: Record<string, unknown>;
-    };
-
-    if (!provider || !api_key) {
-      return NextResponse.json(
-        { error: "provider and api_key are required" },
-        { status: 400 },
-      );
-    }
-
-    const integration = await createFeedIntegration(supabase, user.id, {
-      provider,
-      api_key,
-      field_mapping,
-    });
-
+    const body = await request.json();
+    const integration = await createFeedIntegration(supabase, user.id, body);
     return NextResponse.json(integration, { status: 201 });
   } catch (error) {
     console.error("Failed to create feed integration:", error);
@@ -97,11 +65,10 @@ export async function POST(request: Request) {
 }
 
 /**
- * PATCH /api/agent/feeds?id=<integrationId>
- * Updates an existing feed integration.
- * Body: { api_key?, webhook_url?, field_mapping?, sync_status? }
+ * PATCH /api/agent/feeds
+ * Update a feed integration. Requires id in request body.
  */
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -113,32 +80,20 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json(
-      { error: "id query parameter is required" },
-      { status: 400 },
-    );
-  }
-
   try {
-    const body = (await request.json()) as Record<string, unknown>;
-    const { api_key, webhook_url, field_mapping, sync_status } = body as {
-      api_key?: string;
-      webhook_url?: string | null;
-      field_mapping?: Record<string, unknown>;
-      sync_status?: SyncStatus;
-    };
+    const body = await request.json();
+    const { id, ...updates } = body;
 
-    const integration = await updateFeedIntegration(supabase, id, user.id, {
-      api_key,
-      webhook_url,
-      field_mapping,
-      sync_status,
-    });
+    if (!id) {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
 
+    const integration = await updateFeedIntegration(
+      supabase,
+      id,
+      user.id,
+      updates,
+    );
     return NextResponse.json(integration);
   } catch (error) {
     console.error("Failed to update feed integration:", error);
@@ -150,10 +105,10 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * DELETE /api/agent/feeds?id=<integrationId>
- * Permanently deletes a feed integration.
+ * DELETE /api/agent/feeds?id=xxx
+ * Hard-delete a feed integration.
  */
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   const supabase = await createClient();
 
   const {
@@ -165,17 +120,17 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json(
-      { error: "id query parameter is required" },
-      { status: 400 },
-    );
-  }
-
   try {
+    const { searchParams } = request.nextUrl;
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "id query parameter is required" },
+        { status: 400 },
+      );
+    }
+
     await deleteFeedIntegration(supabase, id, user.id);
     return NextResponse.json({ success: true });
   } catch (error) {
