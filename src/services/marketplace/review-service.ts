@@ -229,13 +229,6 @@ export async function editReview(
   }
 
   // Re-enter moderation queue with fresh priority
-  let sentimentResult: { sentiment: string };
-  try {
-    sentimentResult = analyzeReviewSentiment(sanitizedText);
-  } catch {
-    sentimentResult = { sentiment: "neutral" };
-  }
-
   let spamResult: { spam_score: number };
   try {
     spamResult = detectSpam(sanitizedText);
