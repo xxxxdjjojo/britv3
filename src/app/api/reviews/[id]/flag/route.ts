@@ -23,6 +23,21 @@ export async function POST(
     );
   }
 
+  // Rate limit: max 10 flags per user per 24h
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from("review_flags")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", twentyFourHoursAgo);
+
+  if ((count ?? 0) >= 10) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Maximum 10 flags per 24 hours." },
+      { status: 429 },
+    );
+  }
+
   try {
     const { id: reviewId } = await params;
     const body = await request.json();
@@ -39,6 +54,10 @@ export async function POST(
 
     if (message.includes("not found")) {
       return NextResponse.json({ error: message }, { status: 404 });
+    }
+
+    if (message.includes("already flagged")) {
+      return NextResponse.json({ error: message }, { status: 409 });
     }
 
     return NextResponse.json({ error: message }, { status: 500 });
