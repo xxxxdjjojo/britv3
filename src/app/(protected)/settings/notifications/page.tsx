@@ -2,36 +2,18 @@
 
 import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
-import { Bell, Mail, Smartphone } from "lucide-react";
+import { Bell, Mail, MessageSquare, Smartphone } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { NEW_DEFAULTS } from "@/lib/settings/notification-prefs";
 
-type NotificationPrefs = {
-  email_messages: boolean;
-  email_listings: boolean;
-  email_viewings: boolean;
-  email_marketing: boolean;
-  push_messages: boolean;
-  push_listings: boolean;
-  sms_alerts: boolean;
-};
-
-const DEFAULT_PREFS: NotificationPrefs = {
-  email_messages: true,
-  email_listings: true,
-  email_viewings: true,
-  email_marketing: false,
-  push_messages: true,
-  push_listings: false,
-  sms_alerts: false,
-};
+type NotificationPrefs = Record<string, boolean>;
 
 type ChannelToggle = {
   label: string;
   icon: ComponentType<{ className?: string }>;
-  key: keyof NotificationPrefs;
+  key: string;
 };
 
 type NotificationCategory = {
@@ -43,21 +25,14 @@ type NotificationCategory = {
 
 const CATEGORIES: readonly NotificationCategory[] = [
   {
-    id: "messages",
-    title: "Messages",
-    description: "Alerts when you receive new messages or replies.",
-    channels: [
-      { label: "Email", icon: Mail, key: "email_messages" },
-      { label: "Push", icon: Bell, key: "push_messages" },
-    ],
-  },
-  {
-    id: "listings",
-    title: "New Listings",
+    id: "property_alerts",
+    title: "Property Alerts",
     description: "Notifications for new properties matching your saved searches.",
     channels: [
-      { label: "Email", icon: Mail, key: "email_listings" },
-      { label: "Push", icon: Bell, key: "push_listings" },
+      { label: "Email", icon: Mail, key: "property_alerts_email" },
+      { label: "Push", icon: Bell, key: "property_alerts_push" },
+      { label: "SMS", icon: Smartphone, key: "property_alerts_sms" },
+      { label: "In-App", icon: MessageSquare, key: "property_alerts_inapp" },
     ],
   },
   {
@@ -65,15 +40,43 @@ const CATEGORIES: readonly NotificationCategory[] = [
     title: "Viewings",
     description: "Reminders and updates for scheduled property viewings.",
     channels: [
-      { label: "Email", icon: Mail, key: "email_viewings" },
+      { label: "Email", icon: Mail, key: "viewings_email" },
+      { label: "Push", icon: Bell, key: "viewings_push" },
+      { label: "SMS", icon: Smartphone, key: "viewings_sms" },
+      { label: "In-App", icon: MessageSquare, key: "viewings_inapp" },
     ],
   },
   {
-    id: "marketing",
-    title: "Marketing",
-    description: "News, promotions, and product updates from Britestate.",
+    id: "offers",
+    title: "Offers",
+    description: "Updates on offers you've made or received.",
     channels: [
-      { label: "Email", icon: Mail, key: "email_marketing" },
+      { label: "Email", icon: Mail, key: "offers_email" },
+      { label: "Push", icon: Bell, key: "offers_push" },
+      { label: "SMS", icon: Smartphone, key: "offers_sms" },
+      { label: "In-App", icon: MessageSquare, key: "offers_inapp" },
+    ],
+  },
+  {
+    id: "messages",
+    title: "Messages",
+    description: "Alerts when you receive new messages or replies.",
+    channels: [
+      { label: "Email", icon: Mail, key: "messages_email" },
+      { label: "Push", icon: Bell, key: "messages_push" },
+      { label: "SMS", icon: Smartphone, key: "messages_sms" },
+      { label: "In-App", icon: MessageSquare, key: "messages_inapp" },
+    ],
+  },
+  {
+    id: "market_reports",
+    title: "Market Reports",
+    description: "Periodic market insights and price trend reports.",
+    channels: [
+      { label: "Email", icon: Mail, key: "market_reports_email" },
+      { label: "Push", icon: Bell, key: "market_reports_push" },
+      { label: "SMS", icon: Smartphone, key: "market_reports_sms" },
+      { label: "In-App", icon: MessageSquare, key: "market_reports_inapp" },
     ],
   },
 ];
@@ -94,7 +97,7 @@ function SkeletonRow() {
 }
 
 export default function NotificationsSettingsPage() {
-  const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
+  const [prefs, setPrefs] = useState<NotificationPrefs>({ ...NEW_DEFAULTS });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -102,7 +105,7 @@ export default function NotificationsSettingsPage() {
       try {
         const res = await fetch("/api/settings/notifications");
         if (!res.ok) throw new Error("Failed to load");
-        const data: Partial<NotificationPrefs> = await res.json();
+        const data: NotificationPrefs = await res.json();
         setPrefs((prev) => ({ ...prev, ...data }));
       } catch {
         // Silently fall back to defaults — user can still interact
@@ -113,26 +116,23 @@ export default function NotificationsSettingsPage() {
     void loadPrefs();
   }, []);
 
-  async function handleToggle(key: keyof NotificationPrefs, value: boolean) {
-    const previous = prefs;
-    const updated = { ...prefs, [key]: value };
-
+  async function handleToggle(key: string, value: boolean) {
     // Optimistic update
-    setPrefs(updated);
+    setPrefs((prev) => ({ ...prev, [key]: value }));
 
     try {
       const res = await fetch("/api/settings/notifications", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
+        body: JSON.stringify({ [key]: value }),
       });
 
       if (!res.ok) throw new Error("Save failed");
 
       toast.success("Saved", { duration: 2000 });
     } catch {
-      // Revert on failure
-      setPrefs(previous);
+      // Revert single key on failure
+      setPrefs((prev) => ({ ...prev, [key]: !value }));
       toast.error("Failed to save. Please try again.");
     }
   }
@@ -149,19 +149,19 @@ export default function NotificationsSettingsPage() {
         </p>
       </div>
 
-      {/* Email & Push categories */}
+      {/* Notification categories */}
       <section className="space-y-4">
         <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Email &amp; Push
+          Notification Preferences
         </h3>
 
         <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900">
           {loading
-            ? Array.from({ length: 4 }).map((_, i) => (
+            ? Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
                   className={
-                    i < 3 ? "border-b border-neutral-100" : ""
+                    i < 4 ? "border-b border-neutral-100" : ""
                   }
                 >
                   <SkeletonRow />
@@ -206,7 +206,7 @@ export default function NotificationsSettingsPage() {
                             </Label>
                             <Switch
                               id={toggleId}
-                              checked={prefs[channel.key]}
+                              checked={prefs[channel.key] ?? false}
                               onCheckedChange={(checked) =>
                                 handleToggle(channel.key, checked)
                               }
@@ -218,51 +218,6 @@ export default function NotificationsSettingsPage() {
                   </div>
                 </div>
               ))}
-        </div>
-      </section>
-
-      {/* SMS section — visually separated */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-            SMS
-          </h3>
-          <Badge variant="outline">Coming soon</Badge>
-        </div>
-
-        <div className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-900">
-          {loading ? (
-            <SkeletonRow />
-          ) : (
-            <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0 flex-1">
-                <p className="font-body text-sm font-medium text-neutral-900 dark:text-white">
-                  SMS Alerts
-                </p>
-                <p className="font-body text-xs text-neutral-500">
-                  Receive time-sensitive alerts via text message.
-                </p>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-2">
-                <Smartphone className="size-3.5 text-neutral-400" />
-                <Label
-                  htmlFor="sms-alerts-toggle"
-                  className="cursor-not-allowed font-body text-sm text-neutral-600"
-                >
-                  SMS
-                </Label>
-                <Switch
-                  id="sms-alerts-toggle"
-                  checked={prefs.sms_alerts}
-                  onCheckedChange={(checked) =>
-                    handleToggle("sms_alerts", checked)
-                  }
-                  disabled
-                />
-              </div>
-            </div>
-          )}
         </div>
       </section>
     </div>

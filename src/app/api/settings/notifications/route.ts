@@ -1,17 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-const ALLOWED_NOTIFICATION_KEYS = [
-  "email_messages",
-  "email_listings",
-  "email_viewings",
-  "email_marketing",
-  "push_messages",
-  "push_listings",
-  "sms_alerts",
-] as const;
-
-type AllowedNotificationKey = (typeof ALLOWED_NOTIFICATION_KEYS)[number];
+import {
+  migrateNotificationPrefs,
+  ALLOWED_NOTIFICATION_KEYS,
+} from "@/lib/settings/notification-prefs";
 
 export async function GET() {
   const supabase = await createClient();
@@ -37,7 +29,10 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json(data?.notification_preferences ?? {});
+  const raw = (data?.notification_preferences as Record<string, unknown>) ?? {};
+  const migrated = migrateNotificationPrefs(raw);
+
+  return NextResponse.json(migrated);
 }
 
 export async function PUT(request: NextRequest) {
@@ -59,7 +54,7 @@ export async function PUT(request: NextRequest) {
   }
 
   // Only extract whitelisted boolean keys from body
-  const updates: Partial<Record<AllowedNotificationKey, boolean>> = {};
+  const updates: Record<string, boolean> = {};
   for (const key of ALLOWED_NOTIFICATION_KEYS) {
     if (key in body) {
       const value = body[key];
