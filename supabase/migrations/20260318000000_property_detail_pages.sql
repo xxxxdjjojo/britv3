@@ -42,6 +42,7 @@ CREATE TABLE property_views (
 );
 
 CREATE INDEX idx_property_views_property_id_created ON property_views(property_id, created_at);
+CREATE UNIQUE INDEX idx_property_views_dedup ON property_views(property_id, session_id);
 
 ALTER TABLE property_views ENABLE ROW LEVEL SECURITY;
 

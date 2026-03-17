@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 // POST /api/properties/[id]/view
 //
 // Records a property view. No auth required — anonymous users can insert.
-// Rate limit: 1 view per session_id per property per 10 minutes (DB check).
+// Uses upsert with ON CONFLICT to atomically deduplicate views.
 // ---------------------------------------------------------------------------
 
 export async function POST(
@@ -15,13 +15,14 @@ export async function POST(
   const { id: propertyId } = await params;
 
   // Read session_id from request body; fall back to a generated one
+  // Cap at 64 chars to prevent storage abuse
   let sessionId: string;
   try {
     const body = (await req.json()) as Record<string, unknown>;
     const candidate = body["session_id"];
     sessionId =
       typeof candidate === "string" && candidate.length > 0
-        ? candidate
+        ? candidate.slice(0, 64)
         : crypto.randomUUID();
   } catch {
     sessionId = crypto.randomUUID();
@@ -30,30 +31,18 @@ export async function POST(
   const supabase = await createClient();
 
   // ------------------------------------------------------------------
-  // Idempotency check: was this session_id+property seen in last 10 min?
+  // Upsert: insert view or silently skip if already recorded recently.
+  // Relies on a UNIQUE constraint on property_views(property_id, session_id)
+  // to prevent duplicates atomically (no TOCTOU race).
   // ------------------------------------------------------------------
-  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-
-  const { count } = await supabase
-    .from("property_views")
-    .select("id", { count: "exact", head: true })
-    .eq("property_id", propertyId)
-    .eq("session_id", sessionId)
-    .gte("viewed_at", tenMinutesAgo);
-
-  if ((count ?? 0) > 0) {
-    // Already recorded — return 200 silently (fire-and-forget callers ignore errors)
-    return NextResponse.json({ ok: true });
-  }
-
-  // ------------------------------------------------------------------
-  // Insert view record
-  // ------------------------------------------------------------------
-  await supabase.from("property_views").insert({
-    property_id: propertyId,
-    session_id: sessionId,
-    viewed_at: new Date().toISOString(),
-  });
+  await supabase.from("property_views").upsert(
+    {
+      property_id: propertyId,
+      session_id: sessionId,
+      created_at: new Date().toISOString(),
+    },
+    { onConflict: "property_id,session_id", ignoreDuplicates: true },
+  );
 
   return NextResponse.json({ ok: true });
 }

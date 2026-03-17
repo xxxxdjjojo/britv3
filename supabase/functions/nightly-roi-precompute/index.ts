@@ -296,14 +296,36 @@ async function callClaudeForROI(
       .replace(/\s*```\s*$/, "")
       .trim();
 
-    const parsed = JSON.parse(cleaned) as { renovations: ROIRenovation[] };
+    const parsed = JSON.parse(cleaned) as { renovations: unknown[] };
 
     if (!Array.isArray(parsed.renovations) || parsed.renovations.length === 0) {
       return null;
     }
 
+    // Validate each renovation object to prevent malformed LLM output from being cached
+    const VALID_CONFIDENCE = new Set(["high", "medium", "low"]);
+    const validated: ROIRenovation[] = [];
+    for (const item of parsed.renovations.slice(0, 10)) {
+      if (
+        typeof item === "object" && item !== null &&
+        typeof (item as Record<string, unknown>).type === "string" &&
+        typeof (item as Record<string, unknown>).cost_low === "number" &&
+        typeof (item as Record<string, unknown>).cost_high === "number" &&
+        typeof (item as Record<string, unknown>).value_uplift_pct === "number" &&
+        (item as Record<string, unknown>).cost_low >= 0 &&
+        (item as Record<string, unknown>).cost_high >= 0 &&
+        VALID_CONFIDENCE.has((item as Record<string, unknown>).confidence as string)
+      ) {
+        validated.push(item as ROIRenovation);
+      }
+    }
+
+    if (validated.length === 0) {
+      return null;
+    }
+
     return {
-      renovations: parsed.renovations.slice(0, 10),
+      renovations: validated,
       source: "ai",
       cached: false,
     };

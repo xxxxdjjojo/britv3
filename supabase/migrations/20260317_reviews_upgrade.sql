@@ -14,6 +14,11 @@ ALTER TABLE public.review_flags
   ADD CONSTRAINT review_flags_user_review_unique
   UNIQUE (review_id, user_id);
 
+-- 3b. Unique constraint on helpfulness votes (prevent duplicate votes)
+ALTER TABLE public.review_helpfulness
+  ADD CONSTRAINT review_helpfulness_user_review_unique
+  UNIQUE (review_id, user_id);
+
 -- 4. Atomic vote increment RPC (replaces race-condition-prone read-modify-write)
 CREATE OR REPLACE FUNCTION public.atomic_vote_review(
   p_review_id uuid,
@@ -30,7 +35,8 @@ DECLARE
 BEGIN
   SELECT is_helpful INTO v_existing_vote
   FROM public.review_helpfulness
-  WHERE review_id = p_review_id AND user_id = p_user_id;
+  WHERE review_id = p_review_id AND user_id = p_user_id
+  FOR UPDATE;
 
   IF v_existing_vote IS NOT NULL THEN
     IF v_existing_vote != p_is_helpful THEN
