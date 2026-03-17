@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Shield, Bell, Lock, User } from "lucide-react";
+import { ArrowLeft, Shield, Bell, Lock, User, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type SettingsTab = Readonly<{
@@ -32,6 +32,11 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     label: "Profile",
     href: "/settings/account",
     icon: User,
+  },
+  {
+    label: "Preferences",
+    href: "/settings/preferences",
+    icon: Settings2,
   },
 ];
 
