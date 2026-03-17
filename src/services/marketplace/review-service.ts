@@ -64,10 +64,28 @@ export async function createReview(
   const sanitizedTitle = redactPII(parsed.title);
 
   // Run sentiment analysis
-  const sentimentResult = analyzeReviewSentiment(sanitizedText);
+  let sentimentResult: { sentiment: string; confidence: number };
+  try {
+    sentimentResult = analyzeReviewSentiment(sanitizedText);
+  } catch {
+    sentimentResult = { sentiment: "neutral", confidence: 0 };
+  }
 
   // Run spam detection
-  const spamResult = detectSpam(sanitizedText);
+  let spamResult: ReturnType<typeof detectSpam>;
+  try {
+    spamResult = detectSpam(sanitizedText);
+  } catch {
+    spamResult = {
+      has_contact_info: false,
+      has_links: false,
+      has_excessive_caps: false,
+      has_promotional: false,
+      has_repeated_chars: false,
+      has_excessive_punctuation: false,
+      spam_score: 0,
+    };
+  }
 
   // Insert review (UNIQUE constraint on booking_id prevents duplicates)
   const { data: review, error: reviewError } = await supabase
@@ -108,10 +126,17 @@ export async function createReview(
     (review.fake_review_probability > 0.7 ? 10 : 0);
 
   // Insert into moderation queue
-  await supabase.from("moderation_queue").insert({
+  const { error: queueError } = await supabase.from("moderation_queue").insert({
     review_id: review.id,
     priority_score: priorityScore,
   });
+
+  if (queueError) {
+    console.error("[review-service] Failed to insert moderation queue entry", {
+      reviewId: review.id,
+      error: queueError.message,
+    });
+  }
 
   return review;
 }

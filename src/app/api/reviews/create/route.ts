@@ -21,6 +21,21 @@ export async function POST(request: Request) {
     );
   }
 
+  // Rate limit: max 3 reviews per user per 24h
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from("reviews")
+    .select("id", { count: "exact", head: true })
+    .eq("reviewer_id", user.id)
+    .gte("created_at", twentyFourHoursAgo);
+
+  if ((count ?? 0) >= 3) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Maximum 3 reviews per 24 hours." },
+      { status: 429 },
+    );
+  }
+
   try {
     const body = await request.json();
 
