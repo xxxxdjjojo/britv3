@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { ThumbsUp, ThumbsDown, Flag } from "lucide-react";
+import { useCallback } from "react";
+import { ReviewCardEnhanced } from "@/components/reviews/ReviewCardEnhanced";
 import { Button } from "@/components/ui/button";
-import { RatingStars } from "@/components/reviews/RatingStars";
 import { cn } from "@/lib/utils";
 import type { Review } from "@/types/marketplace";
 
@@ -13,108 +12,35 @@ type ReviewsListProps = Readonly<{
   pageSize?: number;
   onPageChange?: (page: number) => void;
   onSortChange?: (sort: "recent" | "helpful") => void;
-  onHelpful?: (reviewId: string, isHelpful: boolean) => void;
-  onFlag?: (reviewId: string) => void;
+  onEdit?: (review: Review) => void;
+  currentUserId?: string;
   currentPage?: number;
   sort?: "recent" | "helpful";
+  loading?: boolean;
   className?: string;
 }>;
 
-function ReviewItem({
-  review,
-  onHelpful,
-  onFlag,
-}: Readonly<{
-  review: Review;
-  onHelpful?: (reviewId: string, isHelpful: boolean) => void;
-  onFlag?: (reviewId: string) => void;
-}>) {
-  const [expanded, setExpanded] = useState(false);
-  const dateStr = new Date(review.created_at).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
+function ReviewSkeleton() {
   return (
-    <div className="border-b border-border py-4 last:border-0">
-      <div className="flex items-start justify-between gap-2">
-        <div className="space-y-1">
-          <RatingStars rating={review.overall_rating} size="sm" />
-          <h4 className="font-medium text-foreground">{review.title}</h4>
+    <div className="animate-pulse border-b border-border py-5 last:border-0">
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <div className="flex gap-0.5">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="size-4 rounded bg-neutral-200" />
+            ))}
+          </div>
+          <div className="h-4 w-48 rounded bg-neutral-200" />
         </div>
-        <span className="shrink-0 text-xs text-muted-foreground">
-          {dateStr}
-        </span>
+        <div className="h-3 w-20 rounded bg-neutral-200" />
       </div>
-
-      <div className="mt-2">
-        <p
-          className={cn(
-            "text-sm text-muted-foreground",
-            !expanded && "line-clamp-3",
-          )}
-        >
-          {review.review_text}
-        </p>
-        {review.review_text.length > 200 && !expanded && (
-          <button
-            type="button"
-            onClick={() => setExpanded(true)}
-            className="mt-1 text-xs font-medium text-brand-primary hover:underline"
-          >
-            Read more
-          </button>
-        )}
+      <div className="mt-3 space-y-2">
+        <div className="h-3 w-full rounded bg-neutral-200" />
+        <div className="h-3 w-3/4 rounded bg-neutral-200" />
       </div>
-
-      {review.provider_response && (
-        <div className="mt-3 rounded-md bg-muted/50 p-3">
-          <p className="text-xs font-medium text-foreground">
-            Provider response
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {review.provider_response}
-          </p>
-        </div>
-      )}
-
-      <div className="mt-3 flex items-center gap-3">
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => onHelpful?.(review.id, true)}
-            aria-label="Mark as helpful"
-          >
-            <ThumbsUp />
-          </Button>
-          <span className="text-xs text-muted-foreground">
-            {review.helpful_count}
-          </span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => onHelpful?.(review.id, false)}
-            aria-label="Mark as not helpful"
-          >
-            <ThumbsDown />
-          </Button>
-          <span className="text-xs text-muted-foreground">
-            {review.not_helpful_count}
-          </span>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={() => onFlag?.(review.id)}
-          aria-label="Flag review"
-          className="ml-auto"
-        >
-          <Flag />
-        </Button>
+      <div className="mt-3 flex gap-3">
+        <div className="h-7 w-16 rounded bg-neutral-200" />
+        <div className="h-7 w-16 rounded bg-neutral-200" />
       </div>
     </div>
   );
@@ -126,10 +52,11 @@ export function ReviewsList({
   pageSize = 10,
   onPageChange,
   onSortChange,
-  onHelpful,
-  onFlag,
+  onEdit,
+  currentUserId,
   currentPage = 1,
   sort = "recent",
+  loading = false,
   className,
 }: ReviewsListProps) {
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -158,17 +85,23 @@ export function ReviewsList({
       </div>
 
       <div>
-        {reviews.length === 0 ? (
+        {loading ? (
+          <>
+            <ReviewSkeleton />
+            <ReviewSkeleton />
+            <ReviewSkeleton />
+          </>
+        ) : reviews.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">
             No reviews yet.
           </p>
         ) : (
           reviews.map((review) => (
-            <ReviewItem
+            <ReviewCardEnhanced
               key={review.id}
               review={review}
-              onHelpful={onHelpful}
-              onFlag={onFlag}
+              currentUserId={currentUserId}
+              onEdit={onEdit}
             />
           ))
         )}
