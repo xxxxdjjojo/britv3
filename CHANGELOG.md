@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2] - 2026-03-17
+
+### Fixed
+- Strip ILIKE wildcard characters (`%`, `_`) in `sanitizePostgrestInput()` to prevent filter bypass
+
 ## [0.3.1] - 2026-03-17
 
 ### Added
