@@ -1,6 +1,6 @@
 /**
- * Agent offer service — offer management, negotiation, and status transitions
- * with full audit trail. Offer acceptance triggers sale progression creation.
+ * Agent Offer Service — manage property offers, counter-offers, and status transitions.
+ * Automatically triggers sale progression creation on offer acceptance.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -8,31 +8,22 @@ import type {
   AgentOffer,
   AgentOfferHistory,
   CreateOfferInput,
-  OfferStatus,
 } from "@/types/agent";
-import { createSaleProgression } from "@/services/agent/agent-sale-service";
-
-// ============================================================================
-// Offer query functions
-// ============================================================================
+import { createSaleProgression } from "./agent-sale-service";
 
 /**
- * Get all offers managed by an agent.
- * Optional filters: property_id and status.
- * Includes buyer details and AIP status.
- * Ordered by created_at DESC.
+ * Get all offers for an agent, with optional property and status filters.
  */
 export async function getAgentOffers(
   supabase: SupabaseClient,
   agentId: string,
   propertyId?: string,
-  status?: OfferStatus,
+  status?: string,
 ): Promise<AgentOffer[]> {
   let query = supabase
     .from("agent_offers")
     .select("*")
-    .eq("agent_id", agentId)
-    .order("created_at", { ascending: false });
+    .eq("agent_id", agentId);
 
   if (propertyId) {
     query = query.eq("property_id", propertyId);
@@ -42,7 +33,9 @@ export async function getAgentOffers(
     query = query.eq("status", status);
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query.order("created_at", {
+    ascending: false,
+  });
 
   if (error) {
     throw new Error(`Failed to fetch offers: ${error.message}`);
@@ -52,13 +45,13 @@ export async function getAgentOffers(
 }
 
 /**
- * Get a single offer by ID with full history from agent_offer_history.
+ * Get a single offer by ID, including its full history.
  */
 export async function getOfferById(
   supabase: SupabaseClient,
   offerId: string,
   agentId: string,
-): Promise<AgentOffer & { history: AgentOfferHistory[] }> {
+): Promise<(AgentOffer & { history: AgentOfferHistory[] }) | null> {
   const { data: offer, error: offerError } = await supabase
     .from("agent_offers")
     .select("*")
@@ -66,38 +59,43 @@ export async function getOfferById(
     .eq("agent_id", agentId)
     .single();
 
-  if (offerError || !offer) {
-    throw new Error("Offer not found or access denied");
+  if (offerError) {
+    if (offerError.code === "PGRST116") {
+      return null;
+    }
+    throw new Error(`Failed to fetch offer: ${offerError.message}`);
   }
 
-  const history = await getOfferHistory(supabase, offerId);
+  if (!offer) {
+    return null;
+  }
 
-  return { ...(offer as AgentOffer), history };
+  const { data: history, error: historyError } = await supabase
+    .from("agent_offer_history")
+    .select("*")
+    .eq("offer_id", offerId)
+    .order("created_at", { ascending: true });
+
+  if (historyError) {
+    throw new Error(`Failed to fetch offer history: ${historyError.message}`);
+  }
+
+  return {
+    ...(offer as AgentOffer),
+    history: (history ?? []) as AgentOfferHistory[],
+  };
 }
 
-// ============================================================================
-// Offer mutation functions
-// ============================================================================
-
 /**
- * Create a new offer in 'pending' status.
- * Creates an initial history entry recording the submission.
+ * Create a new offer with initial 'pending' status.
+ * Also inserts the initial history entry.
  */
 export async function createOffer(
   supabase: SupabaseClient,
   agentId: string,
   input: CreateOfferInput,
 ): Promise<AgentOffer> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
-
-  const { data: offer, error } = await supabase
+  const { data: offer, error: offerError } = await supabase
     .from("agent_offers")
     .insert({
       agent_id: agentId,
@@ -108,79 +106,70 @@ export async function createOffer(
       buyer_phone: input.buyer_phone ?? null,
       amount: input.amount,
       conditions: input.conditions ?? null,
-      solicitor_details: input.solicitor_details ?? {},
+      solicitor_details: input.solicitor_details ?? null,
       aip_status: input.aip_status ?? "not_provided",
       status: "pending",
+      counter_amount: null,
       vendor_notified: false,
     })
     .select()
     .single();
 
-  if (error) {
-    throw new Error(`Failed to create offer: ${error.message}`);
+  if (offerError || !offer) {
+    throw new Error(
+      `Failed to create offer: ${offerError?.message ?? "no data"}`,
+    );
   }
 
-  const typedOffer = offer as AgentOffer;
-
-  // Create initial history entry
+  // Insert initial history entry
   const { error: historyError } = await supabase
     .from("agent_offer_history")
     .insert({
-      offer_id: typedOffer.id,
+      offer_id: offer.id,
       previous_status: null,
       new_status: "pending",
-      actor_id: user.id,
-      note: "Offer submitted",
+      actor_id: agentId,
+      note: null,
     });
 
   if (historyError) {
-    // Non-fatal: offer was created, history recording failed
-    console.error("Failed to create offer history entry:", historyError.message);
+    // Non-fatal — offer was created; log and continue
+    console.error("Failed to create initial offer history:", historyError);
   }
 
-  return typedOffer;
+  return offer as AgentOffer;
 }
 
 /**
- * Update offer status with audit trail.
- * Sets vendor_notified=true on every status change.
- * If status transitions to 'accepted', creates a sale progression record.
+ * Update an offer's status and record a history entry.
+ * If the new status is 'accepted', automatically creates a sale progression.
  */
 export async function updateOfferStatus(
   supabase: SupabaseClient,
   offerId: string,
   agentId: string,
-  newStatus: OfferStatus,
+  newStatus: string,
   note?: string,
 ): Promise<AgentOffer> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
-
-  // Fetch current offer to record previous status
-  const { data: existing, error: fetchError } = await supabase
+  const { data: current, error: fetchError } = await supabase
     .from("agent_offers")
     .select("status, property_id")
     .eq("id", offerId)
     .eq("agent_id", agentId)
     .single();
 
-  if (fetchError || !existing) {
-    throw new Error("Offer not found or access denied");
+  if (fetchError || !current) {
+    throw new Error(
+      `Offer not found: ${fetchError?.message ?? "no data"}`,
+    );
   }
 
-  const previousStatus = existing.status as OfferStatus;
+  const previousStatus = current.status as string;
 
-  const { data: updatedOffer, error: updateError } = await supabase
+  const { data: updated, error: updateError } = await supabase
     .from("agent_offers")
     .update({
       status: newStatus,
-      vendor_notified: true,
       updated_at: new Date().toISOString(),
     })
     .eq("id", offerId)
@@ -188,49 +177,46 @@ export async function updateOfferStatus(
     .select()
     .single();
 
-  if (updateError) {
-    throw new Error(`Failed to update offer status: ${updateError.message}`);
+  if (updateError || !updated) {
+    throw new Error(
+      `Failed to update offer status: ${updateError?.message ?? "no data"}`,
+    );
   }
 
-  // Create history entry
+  // Record history
   const { error: historyError } = await supabase
     .from("agent_offer_history")
     .insert({
       offer_id: offerId,
       previous_status: previousStatus,
       new_status: newStatus,
-      actor_id: user.id,
+      actor_id: agentId,
       note: note ?? null,
     });
 
   if (historyError) {
-    console.error("Failed to create offer history entry:", historyError.message);
+    console.error("Failed to record offer history:", historyError);
   }
 
-  // If accepted, initialize the sale progression pipeline
+  // Trigger sale progression on acceptance
   if (newStatus === "accepted") {
     try {
       await createSaleProgression(
         supabase,
         agentId,
         offerId,
-        existing.property_id as string,
+        current.property_id as string,
       );
     } catch (saleError) {
-      // Log but do not roll back the status change
-      console.error(
-        "Failed to create sale progression after offer acceptance:",
-        saleError,
-      );
+      console.error("Failed to create sale progression:", saleError);
     }
   }
 
-  return updatedOffer as AgentOffer;
+  return updated as AgentOffer;
 }
 
 /**
- * Submit a counter-offer.
- * Updates status to 'countered', records the counter_amount, and creates an audit entry.
+ * Submit a counter-offer — updates status to 'countered' and sets counter_amount.
  */
 export async function counterOffer(
   supabase: SupabaseClient,
@@ -239,34 +225,26 @@ export async function counterOffer(
   counterAmount: number,
   note?: string,
 ): Promise<AgentOffer> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
-
-  const { data: existing, error: fetchError } = await supabase
+  const { data: current, error: fetchError } = await supabase
     .from("agent_offers")
     .select("status")
     .eq("id", offerId)
     .eq("agent_id", agentId)
     .single();
 
-  if (fetchError || !existing) {
-    throw new Error("Offer not found or access denied");
+  if (fetchError || !current) {
+    throw new Error(
+      `Offer not found: ${fetchError?.message ?? "no data"}`,
+    );
   }
 
-  const previousStatus = existing.status as OfferStatus;
+  const previousStatus = current.status as string;
 
-  const { data: updatedOffer, error: updateError } = await supabase
+  const { data: updated, error: updateError } = await supabase
     .from("agent_offers")
     .update({
       status: "countered",
       counter_amount: counterAmount,
-      vendor_notified: true,
       updated_at: new Date().toISOString(),
     })
     .eq("id", offerId)
@@ -274,30 +252,32 @@ export async function counterOffer(
     .select()
     .single();
 
-  if (updateError) {
-    throw new Error(`Failed to submit counter-offer: ${updateError.message}`);
+  if (updateError || !updated) {
+    throw new Error(
+      `Failed to submit counter-offer: ${updateError?.message ?? "no data"}`,
+    );
   }
 
-  // Create history entry
+  // Record history
   const { error: historyError } = await supabase
     .from("agent_offer_history")
     .insert({
       offer_id: offerId,
       previous_status: previousStatus,
       new_status: "countered",
-      actor_id: user.id,
-      note: note ?? `Counter-offer submitted at ${counterAmount} pence`,
+      actor_id: agentId,
+      note: note ?? null,
     });
 
   if (historyError) {
-    console.error("Failed to create offer history entry:", historyError.message);
+    console.error("Failed to record counter-offer history:", historyError);
   }
 
-  return updatedOffer as AgentOffer;
+  return updated as AgentOffer;
 }
 
 /**
- * Get all history entries for an offer, ordered by created_at ASC.
+ * Get the full history for an offer, ordered by creation time.
  */
 export async function getOfferHistory(
   supabase: SupabaseClient,

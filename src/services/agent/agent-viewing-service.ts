@@ -1,23 +1,13 @@
 /**
- * Agent viewing service — CRUD for viewing slots and post-viewing feedback.
- * All monetary values are in pence. All timestamps are ISO 8601 strings.
+ * Agent Viewing Service — manage viewing slots and feedback.
+ * All operations scoped to authenticated agent via agentId.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type {
-  AgentViewingSlot,
-  AgentViewingFeedback,
-  CreateViewingSlotInput,
-  CreateViewingFeedbackInput,
-} from "@/types/agent";
-
-// ============================================================================
-// Viewing slot functions
-// ============================================================================
+import type { AgentViewingSlot, AgentViewingFeedback } from "@/types/agent";
 
 /**
- * List viewing slots for an agent, with optional filters by property and date range.
- * Includes booked_by profile name via join when slot is booked.
+ * Get all viewing slots for an agent, with optional property and date filters.
  */
 export async function getAgentViewingSlots(
   supabase: SupabaseClient,
@@ -28,8 +18,7 @@ export async function getAgentViewingSlots(
   let query = supabase
     .from("agent_viewing_slots")
     .select("*")
-    .eq("agent_id", agentId)
-    .order("start_time", { ascending: true });
+    .eq("agent_id", agentId);
 
   if (propertyId) {
     query = query.eq("property_id", propertyId);
@@ -41,7 +30,7 @@ export async function getAgentViewingSlots(
       .lte("start_time", dateRange.end);
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query.order("start_time", { ascending: true });
 
   if (error) {
     throw new Error(`Failed to fetch viewing slots: ${error.message}`);
@@ -51,18 +40,20 @@ export async function getAgentViewingSlots(
 }
 
 /**
- * Create a new viewing slot for a property.
+ * Create a new viewing slot for the agent.
  * Validates that end_time is after start_time.
  */
 export async function createViewingSlot(
   supabase: SupabaseClient,
   agentId: string,
-  input: CreateViewingSlotInput,
+  input: {
+    property_id: string;
+    start_time: string;
+    end_time: string;
+    notes?: string;
+  },
 ): Promise<AgentViewingSlot> {
-  const start = new Date(input.start_time);
-  const end = new Date(input.end_time);
-
-  if (end <= start) {
+  if (new Date(input.end_time) <= new Date(input.start_time)) {
     throw new Error("end_time must be after start_time");
   }
 
@@ -79,24 +70,25 @@ export async function createViewingSlot(
     .select()
     .single();
 
-  if (error) {
-    throw new Error(`Failed to create viewing slot: ${error.message}`);
+  if (error || !data) {
+    throw new Error(
+      `Failed to create viewing slot: ${error?.message ?? "no data"}`,
+    );
   }
 
   return data as AgentViewingSlot;
 }
 
 /**
- * Update a viewing slot.
- * Only allowed if the slot has not yet been booked.
+ * Update a viewing slot — only allowed when not booked.
  */
 export async function updateViewingSlot(
   supabase: SupabaseClient,
   slotId: string,
   agentId: string,
-  input: Partial<CreateViewingSlotInput>,
+  input: Partial<{ start_time: string; end_time: string; notes: string }>,
 ): Promise<AgentViewingSlot> {
-  // Fetch current slot to check booked status
+  // Check the slot isn't already booked
   const { data: existing, error: fetchError } = await supabase
     .from("agent_viewing_slots")
     .select("is_booked")
@@ -105,52 +97,41 @@ export async function updateViewingSlot(
     .single();
 
   if (fetchError || !existing) {
-    throw new Error("Viewing slot not found or access denied");
+    throw new Error(
+      `Viewing slot not found: ${fetchError?.message ?? "no data"}`,
+    );
   }
 
   if (existing.is_booked) {
-    throw new Error("Cannot update a viewing slot that has already been booked");
-  }
-
-  // Validate time range if both times provided
-  if (input.start_time && input.end_time) {
-    const start = new Date(input.start_time);
-    const end = new Date(input.end_time);
-    if (end <= start) {
-      throw new Error("end_time must be after start_time");
-    }
+    throw new Error("Cannot update a booked viewing slot");
   }
 
   const { data, error } = await supabase
     .from("agent_viewing_slots")
-    .update({
-      ...(input.property_id !== undefined && { property_id: input.property_id }),
-      ...(input.start_time !== undefined && { start_time: input.start_time }),
-      ...(input.end_time !== undefined && { end_time: input.end_time }),
-      ...(input.notes !== undefined && { notes: input.notes }),
-    })
+    .update(input)
     .eq("id", slotId)
     .eq("agent_id", agentId)
     .select()
     .single();
 
-  if (error) {
-    throw new Error(`Failed to update viewing slot: ${error.message}`);
+  if (error || !data) {
+    throw new Error(
+      `Failed to update viewing slot: ${error?.message ?? "no data"}`,
+    );
   }
 
   return data as AgentViewingSlot;
 }
 
 /**
- * Delete a viewing slot.
- * Only allowed if the slot has not yet been booked.
+ * Delete a viewing slot — only allowed when not booked.
  */
 export async function deleteViewingSlot(
   supabase: SupabaseClient,
   slotId: string,
   agentId: string,
 ): Promise<void> {
-  // Fetch current slot to check booked status
+  // Check the slot isn't already booked
   const { data: existing, error: fetchError } = await supabase
     .from("agent_viewing_slots")
     .select("is_booked")
@@ -159,11 +140,13 @@ export async function deleteViewingSlot(
     .single();
 
   if (fetchError || !existing) {
-    throw new Error("Viewing slot not found or access denied");
+    throw new Error(
+      `Viewing slot not found: ${fetchError?.message ?? "no data"}`,
+    );
   }
 
   if (existing.is_booked) {
-    throw new Error("Cannot delete a viewing slot that has already been booked");
+    throw new Error("Cannot delete a booked viewing slot");
   }
 
   const { error } = await supabase
@@ -177,30 +160,35 @@ export async function deleteViewingSlot(
   }
 }
 
-// ============================================================================
-// Viewing feedback functions
-// ============================================================================
-
 /**
- * Get post-viewing feedback for an agent, with optional property filter.
- * Ordered by created_at DESC.
+ * Get viewing feedback for an agent, optionally filtered by property.
  */
 export async function getViewingFeedback(
   supabase: SupabaseClient,
   agentId: string,
   propertyId?: string,
 ): Promise<AgentViewingFeedback[]> {
-  let query = supabase
-    .from("agent_viewing_feedback")
-    .select("*, agent_viewing_slots!inner(property_id)")
-    .eq("agent_id", agentId)
-    .order("created_at", { ascending: false });
-
   if (propertyId) {
-    query = query.eq("agent_viewing_slots.property_id", propertyId);
+    // Join through agent_viewing_slots to filter by property
+    const { data, error } = await supabase
+      .from("agent_viewing_feedback")
+      .select("*, agent_viewing_slots!inner(property_id)")
+      .eq("agent_id", agentId)
+      .eq("agent_viewing_slots.property_id", propertyId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to fetch viewing feedback: ${error.message}`);
+    }
+
+    return (data ?? []) as AgentViewingFeedback[];
   }
 
-  const { data, error } = await query;
+  const { data, error } = await supabase
+    .from("agent_viewing_feedback")
+    .select("*")
+    .eq("agent_id", agentId)
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw new Error(`Failed to fetch viewing feedback: ${error.message}`);
@@ -210,29 +198,38 @@ export async function getViewingFeedback(
 }
 
 /**
- * Submit post-viewing feedback for a viewing slot.
+ * Submit feedback for a completed viewing.
  */
 export async function submitViewingFeedback(
   supabase: SupabaseClient,
   agentId: string,
-  input: CreateViewingFeedbackInput,
+  input: {
+    viewing_slot_id: string;
+    buyer_name: string;
+    interest_level: number;
+    price_opinion: string;
+    likelihood_to_offer: string;
+    comments?: string;
+  },
 ): Promise<AgentViewingFeedback> {
   const { data, error } = await supabase
     .from("agent_viewing_feedback")
     .insert({
       agent_id: agentId,
       viewing_slot_id: input.viewing_slot_id,
-      buyer_name: input.buyer_name ?? null,
-      interest_level: input.interest_level ?? null,
-      price_opinion: input.price_opinion ?? null,
-      likelihood_to_offer: input.likelihood_to_offer ?? null,
+      buyer_name: input.buyer_name,
+      interest_level: input.interest_level,
+      price_opinion: input.price_opinion,
+      likelihood_to_offer: input.likelihood_to_offer,
       comments: input.comments ?? null,
     })
     .select()
     .single();
 
-  if (error) {
-    throw new Error(`Failed to submit viewing feedback: ${error.message}`);
+  if (error || !data) {
+    throw new Error(
+      `Failed to submit viewing feedback: ${error?.message ?? "no data"}`,
+    );
   }
 
   return data as AgentViewingFeedback;
