@@ -27,7 +27,10 @@ export default function ConversationQuickActions({
   const [viewingOpen, setViewingOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [propertyAddress, setPropertyAddress] = useState<string | null>(null);
-  const [addressLoading, setAddressLoading] = useState(false);
+  // Initialise to true when we expect to fetch — avoids setState-in-effect anti-pattern
+  const [addressLoading, setAddressLoading] = useState(
+    contextType === "listing" && Boolean(contextId),
+  );
 
   const showQuote = contextType === "rfq";
   const hasRfq = Boolean(contextId);
@@ -37,7 +40,6 @@ export default function ConversationQuickActions({
     if (contextType !== "listing" || !contextId) return;
 
     let cancelled = false;
-    setAddressLoading(true);
 
     const supabase = createClient();
     supabase
