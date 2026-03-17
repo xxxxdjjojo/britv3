@@ -25,6 +25,10 @@ export const CATEGORY_SLUGS: Record<ServiceCategory, string> = {
   conveyancing: "conveyancers",
   surveying: "surveyors",
   mortgage_broker: "mortgage-brokers",
+  builder: "builders",
+  plasterer: "plasterers",
+  painter: "painters-decorators",
+  carpenter: "carpenters",
   other: "other-services",
 } as const;
 
