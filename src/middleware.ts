@@ -197,12 +197,12 @@ export async function middleware(request: NextRequest) {
   // Feature gate: subscription check for billing-gated routes
   // Routes under /dashboard/agent, /dashboard/landlord, /dashboard/provider
   // require an active subscription. Billing pages themselves are exempt.
+  // Exempt: billing pages, main dashboard overview, referrals page
   const SUBSCRIPTION_GATED_PREFIXES = [
     "/dashboard/agent",
     "/dashboard/landlord",
     "/dashboard/provider",
   ];
-  const BILLING_EXEMPT_SUFFIXES = ["/billing", "/billing/"];
 
   if (isAuthenticated) {
     const isGatedRoute = SUBSCRIPTION_GATED_PREFIXES.some((prefix) =>
@@ -210,16 +210,18 @@ export async function middleware(request: NextRequest) {
     );
     const isBillingPage =
       pathname.includes("/billing") || pathname === "/dashboard";
+    // Allow referrals page without subscription (needed to share referral links)
+    const isReferralsPage = pathname.includes("/referrals");
 
-    if (isGatedRoute && !isBillingPage) {
+    if (isGatedRoute && !isBillingPage && !isReferralsPage) {
       const { data: subscription } = await supabase
         .from("subscriptions")
-        .select("status")
+        .select("status, plan_name")
         .eq("user_id", user!.id)
         .maybeSingle();
 
-      const status = (subscription as { status?: string } | null)?.status;
-      const isActive = status === "active" || status === "trialing";
+      const sub = subscription as { status?: string; plan_name?: string } | null;
+      const isActive = sub?.status === "active" || sub?.status === "trialing";
 
       if (!isActive) {
         // Determine the role for the billing redirect
@@ -230,6 +232,7 @@ export async function middleware(request: NextRequest) {
         setSecurityHeaders(redirectResponse, nonce);
         return redirectResponse;
       }
+
     }
   }
 
