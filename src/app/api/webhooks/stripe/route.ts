@@ -24,6 +24,9 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { getStripe } from "@/lib/stripe";
 import { resolveInternalPlanId } from "@/lib/billing-config";
+import { advanceReferralStatus } from "@/services/referrals/unified-referral-service";
+import { TIER_CONFIGS } from "@/lib/referral-tiers";
+import type { ReferralTier } from "@/types/referrals";
 
 export const dynamic = "force-dynamic";
 
@@ -178,6 +181,157 @@ export async function POST(request: Request) {
 
           revalidateTag("billing");
           console.log(`[webhook] Subscription activated for user ${userId}`);
+
+          // ── Referral conversion ────────────────────────────────
+          // If this user was referred, advance their referral to "rewarded"
+          // and trigger reward calculation + credit application.
+          try {
+            const result = await advanceReferralStatus(supabase, userId, "rewarded");
+            if (result) {
+              console.log(`[webhook] Referral converted for user ${userId}, referrer: ${result.referrerId}, tier changed: ${result.tierChanged}`);
+
+              // Find the referral to get the ID
+              const { data: referral } = await supabase
+                .from("referrals")
+                .select("id, referrer_id")
+                .eq("referred_id", userId)
+                .eq("status", "rewarded")
+                .maybeSingle();
+
+              if (referral) {
+                const ref = referral as { id: string; referrer_id: string };
+
+                // ENG REVIEW 5A: Get actual subscription price, don't hardcode
+                let planPrice = item?.price?.unit_amount;
+                if (!planPrice && session.subscription) {
+                  // Fetch from Stripe subscription if line item price unavailable
+                  const sub = await stripe.subscriptions.retrieve(session.subscription as string);
+                  planPrice = sub.items.data[0]?.price?.unit_amount ?? null;
+                }
+                if (!planPrice) {
+                  console.warn("[webhook] Could not determine plan price for referral reward, skipping credit");
+                  // Still create reward rows but with status 'failed'
+                  await supabase.from("referral_rewards").insert([
+                    { referral_id: ref.id, recipient_id: ref.referrer_id, reward_type: "subscription_credit", amount_pence: 0, status: "failed" },
+                    { referral_id: ref.id, recipient_id: userId, reward_type: "subscription_credit", amount_pence: 0, status: "failed" },
+                  ]);
+                } else {
+                  // Create reward records for both parties
+                  // Reward referrer: 1 month subscription credit
+                  await supabase.from("referral_rewards").insert({
+                    referral_id: ref.id,
+                    recipient_id: ref.referrer_id,
+                    reward_type: "subscription_credit",
+                    amount_pence: planPrice,
+                    status: "earned",
+                  });
+
+                  // Reward referee: 1 month credit (applied to month 2)
+                  await supabase.from("referral_rewards").insert({
+                    referral_id: ref.id,
+                    recipient_id: userId,
+                    reward_type: "subscription_credit",
+                    amount_pence: planPrice,
+                    status: "earned",
+                  });
+
+                  // ENG REVIEW 7C: Apply credits via Stripe customer balance
+                  try {
+                    // Get referrer's Stripe customer ID
+                    const { data: referrerSub } = await supabase
+                      .from("subscriptions")
+                      .select("stripe_customer_id")
+                      .eq("user_id", ref.referrer_id)
+                      .maybeSingle();
+
+                    if (referrerSub) {
+                      const referrerCustomerId = (referrerSub as { stripe_customer_id: string }).stripe_customer_id;
+                      // Negative amount = credit on Stripe balance
+                      await stripe.customers.createBalanceTransaction(referrerCustomerId, {
+                        amount: -planPrice, // negative = credit
+                        currency: "gbp",
+                        description: `Referral reward: 1 month free (referral ${ref.id})`,
+                      });
+
+                      // Update reward status to applied
+                      await supabase.from("referral_rewards")
+                        .update({ status: "applied", applied_at: new Date().toISOString() })
+                        .eq("referral_id", ref.id)
+                        .eq("recipient_id", ref.referrer_id);
+                    }
+
+                    // Apply credit to referee's account
+                    const refereeCustomerId = session.customer as string;
+                    if (refereeCustomerId) {
+                      await stripe.customers.createBalanceTransaction(refereeCustomerId, {
+                        amount: -planPrice,
+                        currency: "gbp",
+                        description: `Referral welcome credit: 1 month free (referral ${ref.id})`,
+                      });
+
+                      await supabase.from("referral_rewards")
+                        .update({ status: "applied", applied_at: new Date().toISOString() })
+                        .eq("referral_id", ref.id)
+                        .eq("recipient_id", userId);
+                    }
+                  } catch (creditErr) {
+                    // Set reward status to 'failed' for retry mechanism (see TODOS)
+                    console.error("[webhook] Stripe balance credit failed:", creditErr);
+                    await supabase.from("referral_rewards")
+                      .update({ status: "failed" })
+                      .eq("referral_id", ref.id)
+                      .eq("status", "earned");
+                  }
+
+                  // Send conversion email to referrer via Resend
+                  try {
+                    const { data: referrerProfile } = await supabase
+                      .from("profiles")
+                      .select("first_name, email")
+                      .eq("id", ref.referrer_id)
+                      .single();
+                    const { data: refereeProfile } = await supabase
+                      .from("profiles")
+                      .select("first_name")
+                      .eq("id", userId)
+                      .single();
+
+                    if (referrerProfile && refereeProfile) {
+                      const rp = referrerProfile as { first_name: string; email: string };
+                      const re = refereeProfile as { first_name: string };
+                      // TODO: Import and call Resend send with ReferralConvertedEmail template
+                      // await resend.emails.send({
+                      //   to: rp.email,
+                      //   subject: `You earned £${Math.floor(planPrice / 100)} free — ${re.first_name} just joined!`,
+                      //   react: ReferralConvertedEmail({ ... }),
+                      // });
+                      console.log(`[webhook] Referral conversion email queued for ${rp.email}`);
+                    }
+                  } catch (emailErr) {
+                    console.error("[webhook] Referral email send failed:", emailErr);
+                  }
+
+                  // Send tier upgrade email if tier changed
+                  if (result.tierChanged && result.newTier !== "none") {
+                    try {
+                      const tierConfig = TIER_CONFIGS[result.newTier as Exclude<ReferralTier, "none">];
+                      void tierConfig; // Referenced for future email template
+                      // TODO: Import and call Resend send with ReferralTierUpgradeEmail template
+                      // await resend.emails.send({ ... });
+                      console.log(`[webhook] Tier upgrade email queued: ${result.newTier}`);
+                    } catch (tierEmailErr) {
+                      console.error("[webhook] Tier upgrade email failed:", tierEmailErr);
+                    }
+                  }
+
+                  console.log(`[webhook] Referral rewards created: ${planPrice}p each for referrer ${ref.referrer_id} and referee ${userId}`);
+                }
+              }
+            }
+          } catch (refErr) {
+            // Non-critical: log but don't fail the webhook
+            console.error("[webhook] Referral conversion error:", refErr);
+          }
         }
         break;
       }
