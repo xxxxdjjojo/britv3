@@ -932,3 +932,25 @@ Show sentiment indicator badge (green/amber/red) next to each review. Visible to
 **Effort:** S
 **Priority:** P3
 **Depends on:** Notification matrix expansion (building in current phase).
+
+---
+
+## SEO & Accessibility — Deferred TODOs
+
+### Sitemap index splitting for >50K URLs
+**What:** Split sitemap into sub-sitemaps (/sitemap/properties.xml, /sitemap/agents.xml) with a sitemap index when URL count exceeds ~40K.
+**Why:** Google enforces a 50K URL limit per sitemap file. Currently well under but will grow with listings.
+**Priority:** P3 | **Effort:** S
+**Where to start:** Refactor src/app/sitemap.ts to use generateSitemaps() for multi-sitemap support.
+
+### Product/RealEstateListing schema for property detail pages
+**What:** Add schema.org RealEstateListing (or Product) structured data to property detail pages showing price, images, location, beds/baths in rich SERP cards.
+**Why:** Rich property cards in Google results drive significantly higher click-through rates.
+**Priority:** P2 | **Effort:** M
+**Where to start:** Add builder to src/lib/seo/schemas.ts, inject via JsonLd component on property detail page. Research correct schema type for UK property listings.
+
+### SEO monitoring in admin dashboard
+**What:** Extend admin SEO page to show Lighthouse scores over time, indexed page count, broken OG tags, missing structured data.
+**Why:** Makes SEO health visible to the team. Currently only manages CMS article meta tags.
+**Priority:** P3 | **Effort:** L
+**Depends on:** Lighthouse CI data being stored, Google Search Console API integration.
