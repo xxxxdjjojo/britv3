@@ -124,6 +124,15 @@ export function RegisterForm() {
         // Non-blocking: role can be set later
       }
 
+      // Trigger referral attribution.
+      // The API reads the httpOnly britestate_ref cookie server-side (eng review 6A).
+      try {
+        await fetch("/api/referrals/v2/attribute", { method: "POST" });
+      } catch {
+        // Non-critical — don't block signup
+        console.warn("[referral] Failed to trigger attribution");
+      }
+
       // Bug 3: Redirect to /verify-email instead of /dashboard
       router.push("/verify-email");
     } catch (err) {
