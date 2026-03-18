@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { signUp } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
+import { handleSupabaseError } from "@/lib/supabase-error";
 import type { UserRole } from "@/types/auth";
 
 const registerSchema = z.object({
@@ -87,16 +88,7 @@ export function RegisterForm() {
         displayName,
       );
       if (authError) {
-        const msg = authError.message ?? "";
-        if (
-          (authError as { status?: number }).status === 429 ||
-          msg.includes("429") ||
-          /rate/i.test(msg)
-        ) {
-          setError("Too many attempts. Please wait a moment.");
-        } else {
-          setError(msg || "An unexpected error occurred. Please try again.");
-        }
+        setError(handleSupabaseError(authError).message);
         return;
       }
 
@@ -127,16 +119,7 @@ export function RegisterForm() {
       // Bug 3: Redirect to /verify-email instead of /dashboard
       router.push("/verify-email");
     } catch (err) {
-      if (err instanceof TypeError) {
-        setError("No internet connection. Please try again.");
-      } else if (
-        err instanceof Error &&
-        (err.message.includes("429") || /rate/i.test(err.message))
-      ) {
-        setError("Too many attempts. Please wait a moment.");
-      } else {
-        setError("An unexpected error occurred. Please try again.");
-      }
+      setError(handleSupabaseError(err).message);
     }
   }
 

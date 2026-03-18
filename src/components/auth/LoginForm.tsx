@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { signIn } from "@/services/auth/auth-service";
+import { handleSupabaseError } from "@/lib/supabase-error";
 import Link from "next/link";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -51,7 +52,7 @@ export function LoginForm() {
     setError(null);
     const { error: authError } = await signIn(data.email, data.password);
     if (authError) {
-      setError(authError.message);
+      setError(handleSupabaseError(authError).message);
       return;
     }
     router.push("/dashboard");
