@@ -93,7 +93,7 @@ export function RegisterForm() {
         return;
       }
 
-      // Assign role inline (avoids importing server-only role-service)
+      // Assign role atomically via RPC (avoids importing server-only role-service)
       try {
         const supabase = createClient();
         const {
@@ -105,16 +105,13 @@ export function RegisterForm() {
             : data.intent === "rent"
               ? "renter"
               : "homebuyer";
-          await supabase
-            .from("user_roles")
-            .upsert({ user_id: user.id, role }, { onConflict: "user_id,role" });
-          await supabase
-            .from("profiles")
-            .update({ active_role: role })
-            .eq("id", user.id);
+          await supabase.rpc("assign_role_atomic", {
+            p_user_id: user.id,
+            p_role: role,
+          });
         }
       } catch {
-        // Non-blocking: role can be set later
+        // Non-blocking: role can be set later via callback
       }
 
       // Bug 3: Redirect to /verify-email instead of /dashboard

@@ -18,7 +18,14 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_valid_roles text[] := ARRAY['homebuyer', 'renter', 'seller', 'landlord', 'agent', 'service_provider', 'mortgage_broker'];
 BEGIN
+  -- Validate role
+  IF p_role != ALL(v_valid_roles) THEN
+    RAISE EXCEPTION 'Invalid role: %', p_role;
+  END IF;
+
   -- Upsert role record (idempotent)
   INSERT INTO public.user_roles (user_id, role)
   VALUES (p_user_id, p_role)
@@ -55,7 +62,15 @@ SET search_path = public
 AS $$
 DECLARE
   r text;
+  v_valid_roles text[] := ARRAY['homebuyer', 'renter', 'seller', 'landlord', 'agent', 'service_provider', 'mortgage_broker'];
 BEGIN
+  -- Validate all roles
+  FOREACH r IN ARRAY p_roles LOOP
+    IF r != ALL(v_valid_roles) THEN
+      RAISE EXCEPTION 'Invalid role: %', r;
+    END IF;
+  END LOOP;
+
   -- Upsert each role (idempotent)
   FOREACH r IN ARRAY p_roles LOOP
     INSERT INTO public.user_roles (user_id, role)
@@ -94,7 +109,13 @@ SET search_path = public
 AS $$
 DECLARE
   v_old_role text;
+  v_valid_roles text[] := ARRAY['homebuyer', 'renter', 'seller', 'landlord', 'agent', 'service_provider', 'mortgage_broker'];
 BEGIN
+  -- Validate role
+  IF p_role != ALL(v_valid_roles) THEN
+    RAISE EXCEPTION 'Invalid role: %', p_role;
+  END IF;
+
   -- Verify user has the requested role
   IF NOT EXISTS (
     SELECT 1 FROM public.user_roles

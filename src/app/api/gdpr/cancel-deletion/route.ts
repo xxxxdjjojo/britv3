@@ -21,6 +21,20 @@ export async function POST() {
   }
 
   try {
+    // Check if there's actually a pending deletion
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("scheduled_deletion_at")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.scheduled_deletion_at) {
+      return NextResponse.json(
+        { error: "No pending deletion to cancel" },
+        { status: 409 },
+      );
+    }
+
     // Clear scheduled_deletion_at on the profile
     const { error: profileError } = await supabase
       .from("profiles")
@@ -35,18 +49,26 @@ export async function POST() {
     }
 
     // Cancel any pending deletion requests
-    await supabase
+    const { error: reqError } = await supabase
       .from("deletion_requests")
       .update({ status: "cancelled" })
       .eq("user_id", user.id)
       .eq("status", "pending");
 
+    if (reqError) {
+      console.error("[cancel-deletion] Failed to update deletion_requests:", reqError);
+    }
+
     // Audit log the cancellation
-    await supabase.from("auth_audit_log").insert({
+    const { error: auditError } = await supabase.from("auth_audit_log").insert({
       user_id: user.id,
       event_type: "deletion_cancelled",
       ip_address: null,
     });
+
+    if (auditError) {
+      console.error("[cancel-deletion] Failed to write audit log:", auditError);
+    }
 
     return NextResponse.json({
       message: "Account deletion cancelled successfully",
