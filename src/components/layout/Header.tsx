@@ -44,6 +44,13 @@ export function Header({ transparent = false }: HeaderProps) {
         scrolled ? "shadow-sm" : "shadow-none",
       )}
     >
+      {/* Skip-to-main link — WCAG 2.4.1 bypass block */}
+      <a
+        href="#main"
+        className="fixed -translate-y-full bg-brand-primary px-4 py-2 text-white rounded-md shadow-lg z-50 left-2 top-2 transition-transform focus:translate-y-0"
+      >
+        Skip to main content
+      </a>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 md:h-16 h-14">
         {/* Logo */}
         <Logo size="md" />
