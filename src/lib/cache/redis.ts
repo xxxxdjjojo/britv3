@@ -103,6 +103,10 @@ export async function invalidateCachePattern(pattern: string): Promise<void> {
 /**
  * Create a sliding-window rate limiter.
  * Default: 5 requests per hour (for email rate limiting).
+ *
+ * Fails OPEN: when Redis is unavailable all requests are allowed through.
+ * Use this for non-critical endpoints where availability > security.
+ * For auth endpoints use `createAuthRateLimiter` instead.
  */
 export function createRateLimiter(
   maxRequests = 5,
@@ -116,6 +120,43 @@ export function createRateLimiter(
         success: true,
         limit: maxRequests,
         remaining: maxRequests - 1,
+        reset: Date.now() + 3_600_000,
+      }),
+    };
+  }
+
+  return new Ratelimit({
+    redis: client,
+    limiter: Ratelimit.slidingWindow(maxRequests, windowMs),
+    analytics: false,
+  });
+}
+
+/**
+ * Create a sliding-window rate limiter for auth endpoints.
+ * Default: 5 requests per hour.
+ *
+ * Fails CLOSED: when Redis is unavailable ALL requests are denied.
+ * This preserves brute-force protection on sensitive auth endpoints
+ * (login, signup, MFA verify, password reset) at the cost of
+ * availability during a Redis outage. Use `createRateLimiter` for
+ * non-auth endpoints where fail-open behaviour is acceptable.
+ */
+export function createAuthRateLimiter(
+  maxRequests = 5,
+  windowMs: `${number} ms` | `${number} s` | `${number} m` | `${number} h` | `${number} d` = "1 h",
+) {
+  const client = getRedisClient();
+  if (!client) {
+    console.error(
+      "[redis] Auth rate limiter has no Redis client — failing closed to preserve brute-force protection",
+    );
+    // Fail closed: deny every request when Redis is unavailable
+    return {
+      limit: async (_identifier: string) => ({
+        success: false,
+        limit: maxRequests,
+        remaining: 0,
         reset: Date.now() + 3_600_000,
       }),
     };

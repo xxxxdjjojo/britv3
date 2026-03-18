@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Your Property", "Property Details", "Selling Intent"];
@@ -61,7 +62,7 @@ export function SellerOnboarding(
           .from("properties")
           .insert({
             owner_id: user.id,
-            address_line1: address,
+            address_line1: sanitize(address),
             property_type: propertyType,
             bedrooms,
             bathrooms,

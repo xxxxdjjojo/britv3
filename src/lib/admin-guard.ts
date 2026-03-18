@@ -27,12 +27,12 @@ export async function adminOnly(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let profile: { role: string | null } | null = null;
+  let profile: { is_admin: boolean | null } | null = null;
 
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select("role")
+      .select("is_admin")
       .eq("id", user.id)
       .single();
 
@@ -41,13 +41,13 @@ export async function adminOnly(
       return Response.json({ error: "Service unavailable" }, { status: 503 });
     }
 
-    profile = data as { role: string | null } | null;
+    profile = data as { is_admin: boolean | null } | null;
   } catch (e) {
     console.error("[admin-guard] DB error fetching profile:", e);
     return Response.json({ error: "Service unavailable" }, { status: 503 });
   }
 
-  if (profile?.role !== "admin") {
+  if (profile?.is_admin !== true) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 

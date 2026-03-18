@@ -131,9 +131,19 @@ export async function middleware(request: NextRequest) {
   );
 
   // Use getUser() (not getSession) for secure auth verification
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // All DB operations wrapped in try/catch — on failure, redirect to /login as safe fallback
+  let user;
+  try {
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    user = authUser;
+  } catch (error) {
+    console.error("[middleware] Auth check failed:", error);
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirectTo", pathname);
+    const redirectResponse = NextResponse.redirect(loginUrl);
+    setSecurityHeaders(redirectResponse, nonce);
+    return redirectResponse;
+  }
 
   const isAuthenticated = !!user;
   const isPublicRoute = matchesRoute(pathname, PUBLIC_ROUTES);
@@ -165,7 +175,7 @@ export async function middleware(request: NextRequest) {
     return redirectResponse;
   }
 
-  // Admin route guard: require authentication and role === 'admin' on profile
+  // Admin route guard: require authentication and is_admin flag on profile
   const isAdminRoute = pathname.startsWith("/admin");
   if (isAdminRoute) {
     if (!isAuthenticated) {
@@ -176,39 +186,50 @@ export async function middleware(request: NextRequest) {
       return redirectResponse;
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user!.id)
-      .single();
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", user!.id)
+        .single();
 
-    if (profile?.role !== "admin") {
-      const forbiddenUrl = new URL("/forbidden", request.url);
-      const redirectResponse = NextResponse.redirect(forbiddenUrl);
+      if (profile?.is_admin !== true) {
+        const forbiddenUrl = new URL("/forbidden", request.url);
+        const redirectResponse = NextResponse.redirect(forbiddenUrl);
+        setSecurityHeaders(redirectResponse, nonce);
+        return redirectResponse;
+      }
+    } catch (error) {
+      console.error("[middleware] Admin guard check failed:", error);
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirectTo", pathname);
+      const redirectResponse = NextResponse.redirect(loginUrl);
       setSecurityHeaders(redirectResponse, nonce);
       return redirectResponse;
     }
   }
 
-  // Default role fallback: if user accesses dashboard with no active_role, set homebuyer
+  // Role check: if user accesses dashboard with no active_role, redirect to role selection
   if (isAuthenticated && pathname.startsWith("/dashboard")) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("active_role")
-      .eq("id", user!.id)
-      .single();
-
-    if (profile && !profile.active_role) {
-      await supabase
+    try {
+      const { data: profile } = await supabase
         .from("profiles")
-        .update({ active_role: "homebuyer" })
-        .eq("id", user!.id);
-      await supabase
-        .from("user_roles")
-        .upsert(
-          { user_id: user!.id, role: "homebuyer" },
-          { onConflict: "user_id,role" },
-        );
+        .select("active_role")
+        .eq("id", user!.id)
+        .single();
+
+      if (profile && !profile.active_role) {
+        const roleSelectUrl = new URL("/register/role-select", request.url);
+        const redirectResponse = NextResponse.redirect(roleSelectUrl);
+        setSecurityHeaders(redirectResponse, nonce);
+        return redirectResponse;
+      }
+    } catch (error) {
+      console.error("[middleware] Profile role check failed:", error);
+      const loginUrl = new URL("/login", request.url);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      setSecurityHeaders(redirectResponse, nonce);
+      return redirectResponse;
     }
   }
 
@@ -232,25 +253,32 @@ export async function middleware(request: NextRequest) {
     const isReferralsPage = pathname.includes("/referrals");
 
     if (isGatedRoute && !isBillingPage && !isReferralsPage) {
-      const { data: subscription } = await supabase
-        .from("subscriptions")
-        .select("status, plan_name")
-        .eq("user_id", user!.id)
-        .maybeSingle();
+      try {
+        const { data: subscription } = await supabase
+          .from("subscriptions")
+          .select("status, plan_name")
+          .eq("user_id", user!.id)
+          .maybeSingle();
 
-      const sub = subscription as { status?: string; plan_name?: string } | null;
-      const isActive = sub?.status === "active" || sub?.status === "trialing";
+        const sub = subscription as { status?: string; plan_name?: string } | null;
+        const isActive = sub?.status === "active" || sub?.status === "trialing";
 
-      if (!isActive) {
-        // Determine the role for the billing redirect
-        const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
-        const role = roleMatch?.[1] ?? "agent";
-        const billingUrl = new URL(`/dashboard/${role}/billing/checkout/subscription`, request.url);
-        const redirectResponse = NextResponse.redirect(billingUrl);
+        if (!isActive) {
+          // Determine the role for the billing redirect
+          const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
+          const role = roleMatch?.[1] ?? "agent";
+          const billingUrl = new URL(`/dashboard/${role}/billing/checkout/subscription`, request.url);
+          const redirectResponse = NextResponse.redirect(billingUrl);
+          setSecurityHeaders(redirectResponse, nonce);
+          return redirectResponse;
+        }
+      } catch (error) {
+        console.error("[middleware] Subscription check failed:", error);
+        const loginUrl = new URL("/login", request.url);
+        const redirectResponse = NextResponse.redirect(loginUrl);
         setSecurityHeaders(redirectResponse, nonce);
         return redirectResponse;
       }
-
     }
   }
 

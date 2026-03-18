@@ -8,7 +8,8 @@ type RoleServiceResult<T = null> = {
 
 /**
  * Single source of truth for assigning a single role to a user (server-only).
- * Upserts into user_roles (prevents duplicate rows) and sets active_role on profile.
+ * Calls assign_role_atomic RPC which upserts into user_roles, sets active_role,
+ * and writes an audit log entry — all in one transaction.
  * Throws on failure — callers are responsible for error handling.
  */
 export async function assignRole(
@@ -19,28 +20,20 @@ export async function assignRole(
 
   const supabase = await createClient();
 
-  // TODO: wrap in RPC for atomicity
-  const { error: upsertError } = await supabase
-    .from("user_roles")
-    .upsert({ user_id: userId, role }, { onConflict: "user_id,role" });
+  const { error } = await supabase.rpc("assign_role_atomic", {
+    p_user_id: userId,
+    p_role: role,
+  });
 
-  if (upsertError) {
-    throw new Error(`Failed to assign role: ${upsertError.message}`);
-  }
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ active_role: role })
-    .eq("id", userId);
-
-  if (updateError) {
-    throw new Error(`Failed to update active_role: ${updateError.message}`);
+  if (error) {
+    throw new Error(`Failed to assign role: ${error.message}`);
   }
 }
 
 /**
  * Select roles for a user during registration.
- * Upserts into user_roles (idempotent — prevents duplicate rows from retry) and sets active_role on profile.
+ * Calls select_roles_atomic RPC which upserts all roles, sets active_role to
+ * the first role, and writes an audit log entry — all in one transaction.
  */
 export async function selectRoles(
   userId: string,
@@ -54,24 +47,13 @@ export async function selectRoles(
 
   const supabase = await createClient();
 
-  const { error: upsertError } = await supabase
-    .from("user_roles")
-    .upsert(
-      uniqueRoles.map((role) => ({ user_id: userId, role })),
-      { onConflict: "user_id,role" },
-    );
+  const { error } = await supabase.rpc("select_roles_atomic", {
+    p_user_id: userId,
+    p_roles: uniqueRoles,
+  });
 
-  if (upsertError) {
-    return { data: null, error: { message: upsertError.message } };
-  }
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ active_role: uniqueRoles[0] })
-    .eq("id", userId);
-
-  if (updateError) {
-    return { data: null, error: { message: updateError.message } };
+  if (error) {
+    return { data: null, error: { message: error.message } };
   }
 
   return { data: null, error: null };
@@ -79,6 +61,8 @@ export async function selectRoles(
 
 /**
  * Switch the user's active role. Only works if user has the role.
+ * Calls switch_role_atomic RPC which verifies role ownership, updates active_role,
+ * and writes an audit log entry with old and new role — all in one transaction.
  */
 export async function switchRole(
   userId: string,
@@ -86,24 +70,14 @@ export async function switchRole(
 ): Promise<RoleServiceResult> {
   const supabase = await createClient();
 
-  const { data: roleRecord } = await supabase
-    .from("user_roles")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("role", role)
-    .maybeSingle();
+  const { error } = await supabase.rpc("switch_role_atomic", {
+    p_user_id: userId,
+    p_role: role,
+  });
 
-  if (!roleRecord) {
-    return { data: null, error: { message: "User does not have the requested role" } };
-  }
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ active_role: role })
-    .eq("id", userId);
-
-  if (updateError) {
-    return { data: null, error: { message: updateError.message } };
+  if (error) {
+    // RPC raises an exception when user doesn't have the role — surface it cleanly
+    return { data: null, error: { message: error.message } };
   }
 
   return { data: null, error: null };

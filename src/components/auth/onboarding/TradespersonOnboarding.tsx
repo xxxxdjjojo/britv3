@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Trade Category", "Coverage Area", "Credentials", "Availability"];
@@ -58,8 +59,8 @@ export function TradespersonOnboarding(
           {
             user_id: user.id,
             trade_categories: tradeCategories,
-            qualifications,
-            insurance_policy_number: insuranceNumber,
+            qualifications: sanitize(qualifications),
+            insurance_policy_number: sanitize(insuranceNumber),
             accreditations,
             available_days: availableDays,
             response_time: responseTime,

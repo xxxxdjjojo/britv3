@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { resetPassword } from "@/services/auth/auth-service";
+import { handleSupabaseError } from "@/lib/supabase-error";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -41,7 +42,7 @@ export function ForgotPasswordForm() {
     setError(null);
     const { error: authError } = await resetPassword(data.email);
     if (authError) {
-      setError(authError.message);
+      setError(handleSupabaseError(authError).message);
       return;
     }
     setSubmittedEmail(data.email);
