@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/seo/config";
 
 /**
  * Root-level metadata defaults.
@@ -11,7 +12,7 @@ import type { Metadata } from "next";
  * child pages are broken in social share previews.
  */
 export const rootMetadata: Metadata = {
-  metadataBase: new URL("https://britestate.co.uk"),
+  metadataBase: new URL(SITE_URL),
   title: "Britestate | UK Property Portal",
   description:
     "Find your perfect UK property. Search, compare, and transact with AI-powered matching, verified agents, and trusted tradespeople.",

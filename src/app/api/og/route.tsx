@@ -2,6 +2,22 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
+/** Only allow images from trusted origins to prevent SSRF. */
+const ALLOWED_IMAGE_HOSTS = new Set([
+  "ynkqzzpcbpphjczmrfva.supabase.co",
+  "cdn.britestate.co.uk",
+  "britestate.co.uk",
+]);
+
+function isAllowedImageUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return ALLOWED_IMAGE_HOSTS.has(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function BrandHeader() {
   return (
     <div
@@ -120,7 +136,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const title = searchParams.get("title");
     const description = searchParams.get("description");
-    const image = searchParams.get("image");
+    const rawImage = searchParams.get("image");
+    const image = rawImage && isAllowedImageUrl(rawImage) ? rawImage : null;
     const type = searchParams.get("type") ?? "page";
 
     // If no title, return branded fallback

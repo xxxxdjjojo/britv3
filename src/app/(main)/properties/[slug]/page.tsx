@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/seo/schemas";
-import { SITE_URL } from "@/lib/seo/config";
+import { SITE_URL, getCanonicalUrl } from "@/lib/seo/config";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -212,10 +212,7 @@ export default async function PropertyPage({
   const district = postcodeDistrict(property.postcode);
 
   // Canonical property URL for Share modal
-  const propertyUrl =
-    typeof process !== "undefined"
-      ? `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/properties/${listing.slug ?? listing.id}`
-      : `/properties/${listing.slug ?? listing.id}`;
+  const propertyUrl = getCanonicalUrl(`/properties/${listing.slug ?? listing.id}`);
 
   // Property title for share / metadata
   const propertyTitle = `${property.bedrooms}-bed ${propertyTypeLabel} in ${property.city}`;

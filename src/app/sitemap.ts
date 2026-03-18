@@ -2,10 +2,12 @@ import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { SITE_URL } from "@/lib/seo/config";
 
+/** Regenerate the sitemap at most once per hour. */
+export const revalidate = 3600;
+
 const staticRoutes: MetadataRoute.Sitemap = [
   {
     url: `${SITE_URL}`,
-    lastModified: new Date(),
     changeFrequency: "daily",
     priority: 1.0,
   },
@@ -19,7 +21,6 @@ const staticRoutes: MetadataRoute.Sitemap = [
     "/tools",
   ].map((path) => ({
     url: `${SITE_URL}${path}`,
-    lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   })),
@@ -32,13 +33,11 @@ const staticRoutes: MetadataRoute.Sitemap = [
     "/legal/disclaimer",
   ].map((path) => ({
     url: `${SITE_URL}${path}`,
-    lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.3,
   })),
   ...["/pricing", "/how-it-works", "/careers"].map((path) => ({
     url: `${SITE_URL}${path}`,
-    lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.5,
   })),
@@ -55,7 +54,6 @@ const serviceCategories: MetadataRoute.Sitemap = [
   "/services/architects",
 ].map((path) => ({
   url: `${SITE_URL}${path}`,
-  lastModified: new Date(),
   changeFrequency: "weekly" as const,
   priority: 0.7,
 }));
