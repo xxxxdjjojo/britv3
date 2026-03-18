@@ -37,3 +37,48 @@
 **What:** Document that the public `/api/billing/plans` API response changes with new plan names and prices.
 **Why:** Any consumers of this API (future mobile app, external docs, partner integrations) need to handle the new plan structure.
 **Where to start:** The endpoint auto-updates from PLANS_BY_ROLE — no code change needed. Document the breaking change in API changelog if one exists.
+
+## Wave 2 Referral System — Deferred TODOs
+
+### Stripe balance credit retry mechanism
+**What:** Cron job or retry queue that picks up `referral_rewards` with `status='failed'` and retries Stripe `customer.balance_transactions` application.
+**Why:** Critical gap from eng review — when Stripe balance API fails after reward row creation, credits are tracked but never applied. Users miss their discount silently.
+**Effort:** M | **Priority:** P1
+**Where to start:** Edge function or cron job querying `referral_rewards WHERE status = 'failed'`, retrying Stripe balance call, updating status on success.
+**Depends on:** Wave 2 referral system being shipped.
+
+### Referral analytics admin dashboard
+**What:** Admin dashboard showing aggregate referral metrics (k-factor, conversion funnel, top referrers, reward costs).
+**Why:** Without this, growth engine health is invisible. Current workaround: Supabase dashboard queries.
+**Effort:** M | **Priority:** P2
+**Where to start:** New admin page at `/admin/referrals` with server-side aggregation queries.
+
+### Referral fraud detection cron
+**What:** Automated weekly scan for referral rings (A→B→C→A), churn-and-rejoin patterns, and burst referrals from single IP.
+**Why:** 3+3 verification is the main gate, but edge cases exist at scale.
+**Effort:** M | **Priority:** P2
+**Where to start:** Edge function or cron job querying referral patterns.
+
+### Referral link click tracking
+**What:** Redirect endpoint `/r/[code]` that logs clicks before redirecting to `/join?ref=[code]`.
+**Why:** Dashboard shows referral stats but not link click counts. Needed for conversion funnel visibility.
+**Effort:** S | **Priority:** P2
+**Where to start:** Create redirect API route + `click_count` column on `referral_codes_v2`.
+
+### Track B: Tradesperson-to-homeowner referrals
+**What:** Second referral track where tradespeople share /hire/[slug] links and earn £25 per homeowner booking.
+**Why:** Builds demand side of marketplace via existing member network.
+**Effort:** L | **Priority:** P3
+**Depends on:** Homeowner booking system being built.
+
+### Partner tier revenue share payouts
+**What:** Automated monthly payout of 5% revenue share to Partner tier members (10+ referrals).
+**Why:** Revenue share is the top-tier incentive. Currently tracked but not paid out.
+**Effort:** XL | **Priority:** P3
+**Depends on:** Legal review, Stripe Connect or manual payout process, tax reporting.
+
+### "Referred by" profile badge
+**What:** Show "Referred by [Name]" on new member profiles with link to referrer's profile.
+**Why:** Social proof + referrer recognition. Doc specifies this in Connector reward package.
+**Effort:** S | **Priority:** P3
+**Where to start:** Add `referred_by_display` column to profiles, render in profile page.
