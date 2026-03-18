@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd } from "@/lib/seo/schemas";
 import {
   Search,
   ShieldCheck,
@@ -207,6 +209,8 @@ const BLOG_POSTS = [
 export default function HomePage() {
   return (
     <>
+      <JsonLd data={buildOrganizationJsonLd()} />
+      <JsonLd data={buildWebSiteJsonLd()} />
       {/* ── 1. Hero ── */}
       <section>
         <div className="p-4 lg:p-6">

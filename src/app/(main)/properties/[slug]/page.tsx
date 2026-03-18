@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/schemas";
+import { SITE_URL } from "@/lib/seo/config";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -262,6 +265,13 @@ export default async function PropertyPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd
+        data={buildBreadcrumbJsonLd([
+          { name: "Home", url: SITE_URL },
+          { name: property.city, url: `${SITE_URL}/properties?location=${encodeURIComponent(property.city)}` },
+          { name: propertyTitle, url: `${SITE_URL}/properties/${listing.slug ?? listing.id}` },
+        ])}
+      />
       {/* Breadcrumbs */}
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-2">
         <nav className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
