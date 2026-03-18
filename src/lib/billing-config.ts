@@ -270,6 +270,24 @@ export const BOOST_PRICES = {
 } as const;
 
 // ============================================================================
+// Plan ID resolution
+// ============================================================================
+
+/**
+ * Resolve a Stripe price ID to our internal plan ID.
+ * Used by the webhook to store the correct plan_name in the subscriptions table.
+ * Falls back to the provided fallback (typically Stripe's plan nickname).
+ */
+export function resolveInternalPlanId(
+  stripePriceId: string | undefined | null,
+  fallback: string | null = null,
+): string | null {
+  if (!stripePriceId) return fallback;
+  const matched = getPlanByPriceId(stripePriceId);
+  return matched?.id ?? fallback;
+}
+
+// ============================================================================
 // Validation helpers
 // ============================================================================
 

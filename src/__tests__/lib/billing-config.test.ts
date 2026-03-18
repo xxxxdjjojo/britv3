@@ -10,6 +10,7 @@ import {
   PLANS_BY_ROLE,
   isPriceIdAllowed,
   getPlanByPriceId,
+  resolveInternalPlanId,
 } from "@/lib/billing-config";
 
 describe("PROVIDER_PLANS", () => {
@@ -103,5 +104,29 @@ describe("PLANS_BY_ROLE", () => {
     expect(PLANS_BY_ROLE.provider).toBe(PROVIDER_PLANS);
     expect(PLANS_BY_ROLE.agent).toBe(AGENT_PLANS);
     expect(PLANS_BY_ROLE.landlord).toBe(LANDLORD_PLANS);
+  });
+});
+
+describe("resolveInternalPlanId", () => {
+  it("resolves a known monthly price ID to internal plan ID", () => {
+    expect(resolveInternalPlanId("price_provider_member_test")).toBe("provider_member");
+  });
+
+  it("resolves a known annual price ID to internal plan ID", () => {
+    expect(resolveInternalPlanId("price_agent_pro_annual_test")).toBe("agent_professional");
+  });
+
+  it("resolves $0 agent plan price ID correctly", () => {
+    // [ENG REVIEW 9A] — critical: free plan must resolve to agent_performance
+    expect(resolveInternalPlanId("price_agent_perf_test")).toBe("agent_performance");
+  });
+
+  it("returns fallback for unknown price ID", () => {
+    expect(resolveInternalPlanId("price_unknown_xyz", "SomePlanNickname")).toBe("SomePlanNickname");
+  });
+
+  it("returns fallback for null/undefined price ID", () => {
+    expect(resolveInternalPlanId(null, "FallbackName")).toBe("FallbackName");
+    expect(resolveInternalPlanId(undefined)).toBeNull();
   });
 });

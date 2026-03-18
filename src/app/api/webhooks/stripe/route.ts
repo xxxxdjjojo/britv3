@@ -23,6 +23,7 @@ import { revalidateTag } from "next/cache";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { getStripe } from "@/lib/stripe";
+import { resolveInternalPlanId } from "@/lib/billing-config";
 
 export const dynamic = "force-dynamic";
 
@@ -146,7 +147,7 @@ export async function POST(request: Request) {
                 ? subscription.customer
                 : subscription.customer.id,
               status: subscription.status,
-              plan_name: plan?.nickname ?? plan?.metadata?.name ?? null,
+              plan_name: resolveInternalPlanId(plan?.id, plan?.nickname ?? null),
               price_amount: item?.price.unit_amount ?? null,
               currency: plan?.currency ?? "gbp",
               current_period_end: item?.current_period_end
@@ -205,7 +206,7 @@ export async function POST(request: Request) {
               stripe_subscription_id: subscription.id,
               stripe_customer_id: customerId,
               status: subscription.status,
-              plan_name: plan?.nickname ?? plan?.metadata?.name ?? null,
+              plan_name: resolveInternalPlanId(plan?.id, plan?.nickname ?? null),
               price_amount: item?.price.unit_amount ?? null,
               currency: plan?.currency ?? "gbp",
               current_period_end: item?.current_period_end
