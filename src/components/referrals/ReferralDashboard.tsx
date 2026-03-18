@@ -6,8 +6,6 @@ import { TierProgressBar } from "./TierProgressBar";
 import { ReferralSharePanel } from "./ReferralSharePanel";
 import { ReferralActivityFeed } from "./ReferralActivityFeed";
 import { TierCelebration } from "./TierCelebration";
-import { TIER_CONFIGS } from "@/lib/referral-tiers";
-import type { ReferralTier } from "@/types/referrals";
 
 type Props = Readonly<{
   stats: ReferralStats;
@@ -18,7 +16,7 @@ type Props = Readonly<{
 export function ReferralDashboard({ stats, showCelebration, celebrationTier }: Props) {
   const [celebrating, setCelebrating] = useState(showCelebration ?? false);
   const [currentStats, setCurrentStats] = useState(stats);
-  const [loadingAll, setLoadingAll] = useState(false);
+  const [, setLoadingAll] = useState(false);
 
   const handleShowAll = useCallback(async () => {
     setLoadingAll(true);
