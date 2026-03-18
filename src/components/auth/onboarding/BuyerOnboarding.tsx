@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Location", "Budget", "Property Type", "Alerts"];
@@ -41,7 +42,7 @@ export function BuyerOnboarding(
   const [alertFrequency, setAlertFrequency] = useState<AlertFrequency>("Daily");
 
   function addLocation() {
-    const val = locationInput.trim();
+    const val = sanitize(locationInput);
     if (val && locations.length < 5 && !locations.includes(val)) {
       setLocations([...locations, val]);
       setLocationInput("");

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Your Firm", "Specialisms", "Coverage"];
@@ -53,9 +54,9 @@ export function MortgageBrokerOnboarding(
         await supabase.from("mortgage_broker_profiles").upsert(
           {
             user_id: user.id,
-            firm_name: firmName,
-            fca_reference: fcaNumber,
-            office_address: officeAddress,
+            firm_name: sanitize(firmName),
+            fca_reference: sanitize(fcaNumber),
+            office_address: sanitize(officeAddress),
             specialisms,
             coverage_regions: coverageRegions,
             work_style: workStyle,

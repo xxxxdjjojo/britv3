@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 import { Upload, X } from "lucide-react";
 
@@ -80,10 +81,11 @@ export function LandlordOnboarding(
           { onConflict: "user_id" },
         );
         // First property
-        if (address) {
+        const cleanAddress = sanitize(address);
+        if (cleanAddress) {
           await supabase.from("properties").insert({
             owner_id: user.id,
-            address_line1: address,
+            address_line1: cleanAddress,
             property_type: propertyType || "house",
             bedrooms,
             monthly_rent: monthlyRent,

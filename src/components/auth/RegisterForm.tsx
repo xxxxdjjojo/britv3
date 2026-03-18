@@ -15,11 +15,12 @@ import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { signUp } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
 import { handleSupabaseError } from "@/lib/supabase-error";
+import { sanitize } from "@/lib/sanitize";
 import type { UserRole } from "@/types/auth";
 
 const registerSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  firstName: z.string().min(1, "First name is required").max(50, "First name must be 50 characters or fewer"),
+  lastName: z.string().min(1, "Last name is required").max(50, "Last name must be 50 characters or fewer"),
   email: z.string().email("Please enter a valid email address"),
   password: z
     .string()
@@ -81,7 +82,7 @@ export function RegisterForm() {
     // Bug 9: Wrap entire onSubmit in try/catch with specific error handling
     try {
       setError(null);
-      const displayName = `${data.firstName} ${data.lastName}`.trim();
+      const displayName = sanitize(`${data.firstName} ${data.lastName}`.trim());
       const { error: authError } = await signUp(
         data.email,
         data.password,

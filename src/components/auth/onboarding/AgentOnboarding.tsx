@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 import { Plus, X } from "lucide-react";
 
@@ -66,9 +67,9 @@ export function AgentOnboarding(
         const { data: agency } = await supabase
           .from("agencies")
           .insert({
-            name: agencyName,
-            address: agencyAddress,
-            registration_number: regNumber,
+            name: sanitize(agencyName),
+            address: sanitize(agencyAddress),
+            registration_number: sanitize(regNumber),
             owner_id: user.id,
           })
           .select("id")
@@ -79,7 +80,7 @@ export function AgentOnboarding(
           {
             user_id: user.id,
             agency_id: agency?.id,
-            job_title: jobTitle,
+            job_title: sanitize(jobTitle),
             coverage_areas: coverageRegions,
             specialisms,
           },
