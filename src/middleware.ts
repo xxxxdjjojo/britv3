@@ -80,6 +80,24 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  // ── Referral attribution cookie ────────────────────────────────────────
+  // Capture ref= param from any URL into a 90-day httpOnly cookie.
+  // First-touch attribution: don't overwrite existing cookie.
+  // ENG REVIEW 6A: httpOnly=true — server reads cookie in attribution API.
+  const refParam = request.nextUrl.searchParams.get("ref");
+  if (refParam && !request.cookies.get("britestate_ref")) {
+    const sanitizedRef = refParam.replace(/[^A-Za-z0-9]/g, "").slice(0, 12);
+    if (sanitizedRef.length >= 6) {
+      response.cookies.set("britestate_ref", sanitizedRef, {
+        httpOnly: true, // ENG REVIEW 6A: secure — read server-side only
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 90 * 24 * 60 * 60, // 90 days
+        path: "/",
+      });
+    }
+  }
+
   // Skip auth checks if Supabase is not configured
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     setSecurityHeaders(response, nonce);
