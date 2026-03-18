@@ -106,13 +106,21 @@ describe("advanceReferralStatus", () => {
       maybeSingle: { data: { id: "ref-1", referrer_id: "user-1", status: "pending" }, error: null },
     });
     const chain = (supabase as unknown as { _chain: Record<string, ReturnType<typeof vi.fn>> })._chain;
+    // Profile query's .single() returns previous tier
     chain.single.mockResolvedValueOnce({ data: { referral_tier: "none" }, error: null });
-    chain.select.mockReturnValueOnce({
-      ...chain,
-      eq: vi.fn().mockReturnValue({
-        eq: vi.fn().mockResolvedValue({ count: 1, error: null }),
-      }),
-    });
+    // Mock .select() calls in order:
+    // 1st: referral fetch .select("id, referrer_id, status") → default chain
+    // 2nd: profile .select("referral_tier") → default chain
+    // 3rd: count .select("id", { count }) → custom chain that resolves count
+    chain.select
+      .mockReturnValueOnce(chain)
+      .mockReturnValueOnce(chain)
+      .mockReturnValueOnce({
+        ...chain,
+        eq: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({ count: 1, error: null }),
+        }),
+      });
 
     const result = await advanceReferralStatus(supabase, "user-2", "rewarded");
     expect(result).not.toBeNull();
@@ -127,7 +135,8 @@ describe("getReferralDashboard", () => {
       maybeSingle: { data: { code: "ABC12345" }, error: null },
     });
     const chain = (supabase as unknown as { _chain: Record<string, ReturnType<typeof vi.fn>> })._chain;
-    chain.order.mockResolvedValueOnce({
+    // .order().limit() chain — limit() is the final awaitable
+    chain.limit.mockResolvedValueOnce({
       data: [
         { id: "1", status: "rewarded", referral_code: "ABC12345", referred_name: "Dave", created_at: "2026-01-01", converted_at: "2026-01-15", referrer_id: "user-1", referred_id: "user-2", track: "trade_to_trade" },
         { id: "2", status: "rewarded", referral_code: "ABC12345", referred_name: "Sarah", created_at: "2026-01-10", converted_at: "2026-01-25", referrer_id: "user-1", referred_id: "user-3", track: "trade_to_trade" },

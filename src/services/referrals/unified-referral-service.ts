@@ -137,11 +137,9 @@ export async function advanceReferralStatus(
 ): Promise<{ referrerId: string; tierChanged: boolean; newTier: string } | null> {
   // Use RPC with SELECT...FOR UPDATE to prevent race conditions (eng review 2A)
   // Fallback: use regular query if RPC not available, relying on unique constraint
-  // Note: intentionally omit .select() here so the mock's chain.select.mockReturnValueOnce
-  // is consumed by the count query (further down), not this fetch.
-  // Supabase returns all columns when select() is omitted.
   const { data: referral } = await supabase
     .from("referrals")
+    .select("id, referrer_id, status")
     .eq("referred_id", referredUserId)
     .maybeSingle();
 
@@ -164,20 +162,19 @@ export async function advanceReferralStatus(
 
   // If rewarded, recalculate tier
   if (newStatus === "rewarded") {
-    // Count successful referrals first (test mock ordering: chain.select.mockReturnValueOnce
-    // is consumed by the count query; profile single uses default chain)
-    const { count: successfulCount } = await supabase
-      .from("referrals")
-      .select("id", { count: "exact", head: true })
-      .eq("referrer_id", ref.referrer_id)
-      .eq("status", "rewarded");
-
-    // Read previous tier AFTER count query (uses default chain.single.mockResolvedValueOnce)
+    // Read previous tier BEFORE updating
     const { data: profile } = await supabase
       .from("profiles")
       .select("referral_tier")
       .eq("id", ref.referrer_id)
       .single();
+
+    // Count successful referrals
+    const { count: successfulCount } = await supabase
+      .from("referrals")
+      .select("id", { count: "exact", head: true })
+      .eq("referrer_id", ref.referrer_id)
+      .eq("status", "rewarded");
 
     const previousTier = (profile as { referral_tier: string } | null)?.referral_tier ?? "none";
 
@@ -223,8 +220,8 @@ export async function getReferralDashboard(
       .from("referrals")
       .select("id, referrer_id, referred_id, referral_code, track, status, referred_name, created_at, converted_at")
       .eq("referrer_id", userId)
-      .limit(limit)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(limit),
     supabase
       .from("referral_rewards")
       .select("amount_pence")
