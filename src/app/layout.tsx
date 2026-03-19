@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -17,8 +18,17 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
-  title: "Britestate | UK Property Portal",
+  title: {
+    template: "%s | Britestate",
+    default: "Britestate | UK Property Portal",
+  },
   description:
     "Find your perfect UK property. Search, compare, and transact with AI-powered matching, verified agents, and trusted tradespeople.",
 };
@@ -33,7 +43,9 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${inter.variable} antialiased`}
       >
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <PostHogProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </PostHogProvider>
       </body>
     </html>
   );

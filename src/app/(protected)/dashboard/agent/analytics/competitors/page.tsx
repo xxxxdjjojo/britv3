@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCompetitorAnalysis } from "@/services/agent/agent-analytics-service";
 import { getAgentListings } from "@/services/agent/agent-listings-service";
 import { CompetitorAnalysis } from "@/components/dashboard/agent/analytics/CompetitorAnalysis";
-import type { CompetitorAgentData } from "@/services/agent/agent-analytics-service";
+import type { CompetitorEntry } from "@/services/agent/agent-analytics-service";
 
 type AreaPriceTrend = {
   month: string;
@@ -33,7 +33,7 @@ export default async function CompetitorAnalyticsPage() {
     ?.coverage_areas ?? [];
   const primaryArea = coverageAreas[0] ?? "";
 
-  let competitors: CompetitorAgentData[] = [];
+  let competitors: CompetitorEntry[] = [];
   let agentListingCount = 0;
   const priceTrend: AreaPriceTrend[] = [];
 

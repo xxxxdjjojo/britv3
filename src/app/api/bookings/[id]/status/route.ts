@@ -77,9 +77,9 @@ export async function PATCH(
           const providerName =
             (providerProfile?.display_name as string | undefined) ?? "Your provider";
 
-          const viewingDate = new Date(booking.scheduled_start_date as string)
+          const viewingDate = new Date(booking.scheduled_start_date as unknown as string)
             .toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-          const viewingTime = new Date(booking.scheduled_start_date as string)
+          const viewingTime = new Date(booking.scheduled_start_date as unknown as string)
             .toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 
           void sendViewingConfirmation({

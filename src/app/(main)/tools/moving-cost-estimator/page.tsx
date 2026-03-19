@@ -253,7 +253,7 @@ export default function MovingCostEstimatorPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="location">Property Location</Label>
-                    <Select value={location} onValueChange={setLocation}>
+                    <Select value={location} onValueChange={(value: string | null) => setLocation(value ?? "")}>
                       <SelectTrigger id="location">
                         <SelectValue />
                       </SelectTrigger>

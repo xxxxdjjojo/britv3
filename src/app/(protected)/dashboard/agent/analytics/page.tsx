@@ -20,20 +20,20 @@ export default async function AgentAnalyticsPage() {
   const from = new Date(now);
   from.setFullYear(now.getFullYear() - 1);
 
-  let report = {
+  let report: Awaited<ReturnType<typeof getAgentPerformanceReport>> = {
     listings_sold_count: 0,
-    avg_time_on_market_days: null as number | null,
-    total_revenue_pence: 0,
+    avg_time_on_market_days: 0,
+    total_revenue: 0,
     conversion_rate: 0,
-    client_satisfaction_avg: null as number | null,
-    revenue_over_time: [] as Array<{ date: string; value: number }>,
-    listings_over_time: [] as Array<{ date: string; value: number }>,
+    client_satisfaction: 0,
+    listings_sold_per_month: [],
+    revenue_per_month: [],
   };
 
   try {
     report = await getAgentPerformanceReport(supabase, user.id, {
-      from: from.toISOString().slice(0, 10),
-      to: now.toISOString().slice(0, 10),
+      start: from.toISOString().slice(0, 10),
+      end: now.toISOString().slice(0, 10),
     });
   } catch {
     // Render with zero values on error

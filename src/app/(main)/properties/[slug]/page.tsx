@@ -18,10 +18,12 @@ import {
 import { Gallery } from "@/components/properties/Gallery";
 import { FloorPlan } from "@/components/properties/FloorPlan";
 import { PriceHistory } from "@/components/properties/PriceHistory";
-import type { PriceHistory as PriceHistoryRow, EpcRating, ListingType } from "@/types/property";
+import type { EpcRating, ListingType } from "@/types/property";
+import type { PriceHistoryEntry } from "@/services/properties/property-detail-service";
 import { createClient } from "@/lib/supabase/server";
 import {
   getPropertyBySlug,
+  getPriceHistory,
   getPropertyViewCount,
   getSaveState,
 } from "@/services/properties/property-detail-service";
@@ -84,7 +86,7 @@ export async function generateMetadata({
 
   const { property } = detail;
   const bedsLabel = `${property.bedrooms}-bed`;
-  const typeLabel = formatPropertyType(property.property_type);
+  const typeLabel = formatPropertyType(property.propertyType);
   const cityLabel = property.city;
 
   return {
@@ -94,9 +96,9 @@ export async function generateMetadata({
       title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
       description: (property.description ?? "").slice(0, 160),
       images: detail.media
-        .filter((m) => m.media_type === "image")
+        .filter((m) => m.mediaType === "image")
         .slice(0, 1)
-        .map((m) => ({ url: m.url, alt: m.alt_text ?? "" })),
+        .map((m) => ({ url: m.url, alt: m.altText ?? "" })),
     },
   };
 }
@@ -130,15 +132,12 @@ function extractFeatureItems(features: Record<string, unknown>): string[] {
 }
 
 function formatPriceHistory(
-  rows: PriceHistoryRow[],
+  rows: PriceHistoryEntry[],
 ): { date: string; price: number; event?: string }[] {
   return rows.map((row, i) => ({
-    date:
-      row.changed_at instanceof Date
-        ? row.changed_at.toISOString().slice(0, 10)
-        : String(row.changed_at).slice(0, 10),
-    price: row.new_price,
-    event: i === rows.length - 1 ? "Listed" : row.new_price < row.old_price ? "Reduced" : undefined,
+    date: String(row.changedAt).slice(0, 10),
+    price: row.newPrice,
+    event: i === rows.length - 1 ? "Listed" : row.newPrice < row.oldPrice ? "Reduced" : undefined,
   }));
 }
 
@@ -175,20 +174,22 @@ export default async function PropertyPage({
     notFound();
   }
 
-  const { listing, property, media, priceHistory, agentProfile } = detail;
+  const { listing, property, media, agent } = detail;
 
   // Status gate — DRAFT and ARCHIVED should never be visible
   if (listing.status === "draft" || listing.status === "archived") {
     notFound();
   }
 
+  const priceHistory = await getPriceHistory(listing.id);
+
   // ---------------------------------------------------------------------------
   // Derived display values
   // ---------------------------------------------------------------------------
 
   const address = [
-    property.address_line1,
-    property.address_line2,
+    property.addressLine1,
+    property.addressLine2,
     property.city,
     property.postcode,
   ]
@@ -196,21 +197,21 @@ export default async function PropertyPage({
     .join(", ");
 
   const priceFormatted = `£${listing.price.toLocaleString("en-GB")}`;
-  const sqft = property.square_footage ?? 0;
-  const propertyTypeLabel = formatPropertyType(property.property_type);
+  const sqft = property.squareFootage ?? 0;
+  const propertyTypeLabel = formatPropertyType(property.propertyType);
   const tenureLabel = formatTenure(property.tenure ?? null);
-  const epc: EpcRating | "N/A" = property.epc_rating ?? "N/A";
-  const councilTax = property.council_tax_band
-    ? `Band ${property.council_tax_band}`
+  const epc: EpcRating | "N/A" = (property.epcRating as EpcRating | null) ?? "N/A";
+  const councilTax = property.councilTaxBand
+    ? `Band ${property.councilTaxBand}`
     : "Unknown";
   const features = extractFeatureItems(property.features);
 
   const images = media
-    .filter((m) => m.media_type === "image")
-    .map((m) => ({ src: m.url, alt: m.alt_text ?? "" }));
+    .filter((m) => m.mediaType === "image")
+    .map((m) => ({ src: m.url, alt: m.altText ?? "" }));
 
   const floors = media
-    .filter((m) => m.media_type === "floor_plan")
+    .filter((m) => m.mediaType === "floor_plan")
     .map((m) => ({ label: m.caption ?? "Floor Plan", imageUrl: m.url }));
 
   const priceHistoryFormatted = formatPriceHistory(
@@ -220,9 +221,9 @@ export default async function PropertyPage({
   // Floor plan URL for WhatIfFloorPlan (first floor plan media, if any)
   const floorPlanUrl = floors.length > 0 ? (floors[0]?.imageUrl ?? null) : null;
 
-  // Virtual tour and video URLs from media array
-  const virtualTourUrl = media.find((m) => m.media_type === "virtual_tour")?.url ?? null;
-  const videoTourUrl = media.find((m) => m.media_type === "video")?.url ?? null;
+  // Virtual tour and video URLs from media array (media types may be extended)
+  const virtualTourUrl = media.find((m) => (m.mediaType as string) === "virtual_tour")?.url ?? null;
+  const videoTourUrl = media.find((m) => (m.mediaType as string) === "video")?.url ?? null;
 
   // Postcode district for SimilarProperties
   const district = postcodeDistrict(property.postcode);
@@ -267,17 +268,17 @@ export default async function PropertyPage({
   }
 
   // Save count for social proof badge (use listing.favorite_count as seed)
-  const saveCount = listing.favorite_count ?? 0;
+  const saveCount = (listing as Record<string, unknown>)["favorite_count"] as number ?? 0;
 
   // Agent details
-  const agentId = listing.user_id;
-  const agentName = agentProfile?.display_name || "Agent";
+  const agentId = agent?.id ?? "";
+  const agentName = agent?.displayName || "Agent";
 
   // Whether booking a viewing makes sense for this listing status
   const canBookViewing =
     listing.status !== "sold" &&
-    listing.status !== "archived" &&
-    listing.status !== "draft";
+    (listing.status as string) !== "archived" &&
+    (listing.status as string) !== "draft";
 
   return (
     <div className="min-h-screen bg-background">
@@ -496,7 +497,7 @@ export default async function PropertyPage({
             )}
 
             {/* EPC display */}
-            {property.epc_rating && (
+            {property.epcRating && (
               <section>
                 <h2 className="text-xl font-semibold mb-3">
                   Energy Performance Certificate
@@ -561,7 +562,7 @@ export default async function PropertyPage({
             </section>
 
             {/* ── ROI SECTION (Wave 4) ── */}
-            {listing.listing_type === "sale" && (
+            {listing.listingType === "sale" && (
               <section id="roi-section">
                 <h2 className="text-xl font-semibold mb-3">
                   Renovation ROI
@@ -580,7 +581,7 @@ export default async function PropertyPage({
                       </div>
                     }
                   >
-                    <RenovationROIPanel property={property} supabase={supabase} />
+                    <RenovationROIPanel property={property as unknown as import("@/types/property").Property} supabase={supabase} />
                   </Suspense>
 
                   {/* WhatIf Floor Plan — shows overlay when a renovation type is selected */}
@@ -621,9 +622,9 @@ export default async function PropertyPage({
               <SimilarProperties
                 propertyId={property.id}
                 postcodeDistrict={district}
-                listingType={listing.listing_type as ListingType}
+                listingType={listing.listingType as ListingType}
                 price={listing.price}
-                propertyType={property.property_type}
+                propertyType={property.propertyType}
               />
             </Suspense>
           </div>

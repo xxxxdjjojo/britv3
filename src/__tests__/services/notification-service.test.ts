@@ -312,7 +312,7 @@ describe("shouldSendEmail", () => {
   it("returns true when email enabled for event type", () => {
     const prefs: NotificationPreferences = {
       per_type: {
-        new_message: { in_app: true, email: true },
+        new_message: { in_app: true, email: true, push: false, sms: false },
       },
       quiet_hours: { enabled: false, start: "22:00", end: "07:00" },
       digest_frequency: "daily",
@@ -324,7 +324,7 @@ describe("shouldSendEmail", () => {
   it("returns false when email disabled for event type", () => {
     const prefs: NotificationPreferences = {
       per_type: {
-        new_message: { in_app: true, email: false },
+        new_message: { in_app: true, email: false, push: false, sms: false },
       },
       quiet_hours: { enabled: false, start: "22:00", end: "07:00" },
       digest_frequency: "daily",
@@ -342,7 +342,7 @@ describe("shouldSendEmail", () => {
 
     const prefs: NotificationPreferences = {
       per_type: {
-        new_message: { in_app: true, email: true },
+        new_message: { in_app: true, email: true, push: false, sms: false },
       },
       quiet_hours: {
         enabled: true,

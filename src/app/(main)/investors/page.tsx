@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import DOMPurify from "isomorphic-dompurify";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -80,11 +81,9 @@ export default async function InvestorsPage() {
         </>
       ) : (
         <>
-          {/* TODO: Sanitise HTML content with DOMPurify before rendering.
-              Install isomorphic-dompurify and use: DOMPurify.sanitize(content.content) */}
           <div
             className="prose prose-neutral mt-12 max-w-none"
-            dangerouslySetInnerHTML={{ __html: content.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.content) }}
           />
         </>
       )}

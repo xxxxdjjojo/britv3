@@ -122,7 +122,7 @@ export default function ProductsPage() {
           {/* Rate Type */}
           <div>
             <Label className="text-xs font-medium text-neutral-500">Rate Type</Label>
-            <Select value={rateTypeFilter} onValueChange={setRateTypeFilter}>
+            <Select value={rateTypeFilter} onValueChange={(value: string | null) => setRateTypeFilter(value ?? "")}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
@@ -138,7 +138,7 @@ export default function ProductsPage() {
           {/* Max LTV */}
           <div>
             <Label className="text-xs font-medium text-neutral-500">Min LTV Available</Label>
-            <Select value={maxLtvFilter} onValueChange={setMaxLtvFilter}>
+            <Select value={maxLtvFilter} onValueChange={(value: string | null) => setMaxLtvFilter(value ?? "")}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Any LTV" />
               </SelectTrigger>
@@ -156,7 +156,7 @@ export default function ProductsPage() {
           {/* Term */}
           <div>
             <Label className="text-xs font-medium text-neutral-500">Term</Label>
-            <Select value={termFilter} onValueChange={setTermFilter}>
+            <Select value={termFilter} onValueChange={(value: string | null) => setTermFilter(value ?? "")}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Any term" />
               </SelectTrigger>

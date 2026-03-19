@@ -39,11 +39,14 @@ export default async function RevenuePage() {
 
   if (!user) redirect("/login");
 
-  let report = {
+  let report: Awaited<ReturnType<typeof getAgentPerformanceReport>> = {
     listings_sold_count: 0,
-    total_revenue_pence: 0,
+    avg_time_on_market_days: 0,
+    total_revenue: 0,
     conversion_rate: 0,
-    revenue_over_time: [] as { date: string; value: number }[],
+    client_satisfaction: 0,
+    listings_sold_per_month: [],
+    revenue_per_month: [],
   };
   let recentCommissions: AgentCommission[] = [];
 
@@ -67,7 +70,7 @@ export default async function RevenuePage() {
 
   const avgCommission =
     report.listings_sold_count > 0
-      ? Math.round(report.total_revenue_pence / report.listings_sold_count)
+      ? Math.round(report.total_revenue / report.listings_sold_count)
       : 0;
 
   return (
@@ -81,7 +84,7 @@ export default async function RevenuePage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total Revenue</CardDescription>
-            <CardTitle className="text-2xl">{penceToGBP(report.total_revenue_pence)}</CardTitle>
+            <CardTitle className="text-2xl">{penceToGBP(report.total_revenue)}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -128,23 +131,23 @@ export default async function RevenuePage() {
         </Card>
       </div>
 
-      {report.revenue_over_time.length > 0 ? (
+      {report.revenue_per_month.length > 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Monthly Performance</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {report.revenue_over_time.map((m, i) => (
-                <div key={m.date}>
+              {report.revenue_per_month.map((m: { month: string; amount: number }, i: number) => (
+                <div key={m.month}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <BarChart3 className="size-4 text-muted-foreground" />
-                      <span className="font-medium">{formatMonth(m.date)}</span>
+                      <span className="font-medium">{formatMonth(m.month)}</span>
                     </div>
-                    <span className="font-medium">{penceToGBP(m.value)}</span>
+                    <span className="font-medium">{penceToGBP(m.amount)}</span>
                   </div>
-                  {i < report.revenue_over_time.length - 1 && <Separator className="mt-3" />}
+                  {i < report.revenue_per_month.length - 1 && <Separator className="mt-3" />}
                 </div>
               ))}
             </div>
