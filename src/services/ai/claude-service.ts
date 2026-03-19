@@ -3,8 +3,10 @@
  *
  * Provides:
  * - Dual rate limiting (global + per-user) via Upstash
- * - Daily spend kill switch
+ * - Daily spend kill switch (Redis-cached counter)
  * - Token tracking / usage logging
+ * - Input sanitization via sanitizeAiInput
+ * - Zod output validation when outputSchema is provided
  * - Graceful degradation (returns null on any failure)
  */
 
@@ -12,6 +14,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sanitizeAiInput } from "@/lib/ai/sanitize";
+import { getCached, setCache } from "@/lib/cache/redis";
 import type { AiCallOptions, AiCallResult } from "./types";
 
 const MODEL = "claude-haiku-4-5-20251001";
@@ -54,32 +58,26 @@ function getUserLimiter(): Ratelimit {
   return userLimiter;
 }
 
-// -- Daily spend tracking -----------------------------------------------------
+// -- Daily spend tracking (Redis-cached) --------------------------------------
+
+const DAILY_SPEND_KEY = "ai:daily_spend";
+const DAILY_SPEND_TTL_SECONDS = 86_400;
 
 /**
- * Query today's total AI spend from the ai_usage_log table.
+ * Get today's total AI spend from Redis cache.
  * Returns cost in USD.
  */
 export async function getDailySpend(): Promise<number> {
-  const supabase = createAdminClient();
-  const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
+  const cached = await getCached<number>(DAILY_SPEND_KEY);
+  return cached ?? 0;
+}
 
-  const { data, error } = await supabase
-    .from("ai_usage_log")
-    .select("input_tokens, output_tokens")
-    .gte("created_at", todayStart.toISOString());
-
-  if (error || !data) {
-    console.error("[AI] Failed to query daily spend:", error);
-    return 0;
-  }
-
-  return data.reduce((total, row) => {
-    const inputCost = (row.input_tokens / 1_000_000) * INPUT_PRICE_PER_MILLION;
-    const outputCost = (row.output_tokens / 1_000_000) * OUTPUT_PRICE_PER_MILLION;
-    return total + inputCost + outputCost;
-  }, 0);
+async function incrementDailySpend(inputTokens: number, outputTokens: number): Promise<void> {
+  const inputCost = (inputTokens / 1_000_000) * INPUT_PRICE_PER_MILLION;
+  const outputCost = (outputTokens / 1_000_000) * OUTPUT_PRICE_PER_MILLION;
+  const cost = inputCost + outputCost;
+  const current = await getDailySpend();
+  await setCache(DAILY_SPEND_KEY, current + cost, DAILY_SPEND_TTL_SECONDS);
 }
 
 // -- Usage logging ------------------------------------------------------------
@@ -112,12 +110,13 @@ async function logUsage(
 // -- Main API call wrapper ----------------------------------------------------
 
 /**
- * Call Claude with cost controls, rate limiting, and usage tracking.
+ * Call Claude with cost controls, rate limiting, input sanitization,
+ * and usage tracking. Optionally validates JSON output against a Zod schema.
  * Returns null on any failure -- callers should handle graceful degradation.
  */
-export async function callClaude(
-  options: AiCallOptions,
-): Promise<AiCallResult | null> {
+export async function callClaude<T = unknown>(
+  options: AiCallOptions<T>,
+): Promise<AiCallResult<T> | null> {
   try {
     // 1. Check daily spend limit
     const dailyLimit = parseFloat(
@@ -143,7 +142,10 @@ export async function callClaude(
       return null;
     }
 
-    // 4. Call Claude API
+    // 4. Sanitize user input
+    const sanitizedMessage = sanitizeAiInput(options.userMessage);
+
+    // 5. Call Claude API
     const client = new Anthropic();
     const requestOptions = options.timeoutMs !== undefined
       ? { signal: AbortSignal.timeout(options.timeoutMs) }
@@ -153,31 +155,51 @@ export async function callClaude(
         model: options.model ?? MODEL,
         max_tokens: options.maxTokens ?? 1024,
         system: options.systemPrompt,
-        messages: [{ role: "user", content: options.userMessage }],
+        messages: [{ role: "user", content: sanitizedMessage }],
       },
       requestOptions,
     );
 
-    // 5. Extract text from response
+    // 6. Extract text from response
     const textBlock = response.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
       console.error("[AI] No text block in response");
       return null;
     }
 
-    const result: AiCallResult = {
+    // 7. Validate output via Zod schema if provided
+    if (options.outputSchema) {
+      try {
+        const parsed = JSON.parse(textBlock.text);
+        const validated = options.outputSchema.parse(parsed);
+        await logUsage(options.feature, options.userId, response.usage.input_tokens, response.usage.output_tokens);
+        await incrementDailySpend(response.usage.input_tokens, response.usage.output_tokens);
+        return {
+          text: textBlock.text,
+          inputTokens: response.usage.input_tokens,
+          outputTokens: response.usage.output_tokens,
+          parsed: validated,
+        };
+      } catch (parseErr) {
+        console.error("[AI] Output validation failed:", parseErr);
+        return null;
+      }
+    }
+
+    const result: AiCallResult<T> = {
       text: textBlock.text,
       inputTokens: response.usage.input_tokens,
       outputTokens: response.usage.output_tokens,
     };
 
-    // 6. Log usage
+    // 8. Log usage and update spend counter
     await logUsage(
       options.feature,
       options.userId,
       result.inputTokens,
       result.outputTokens,
     );
+    await incrementDailySpend(result.inputTokens, result.outputTokens);
 
     return result;
   } catch (err) {
