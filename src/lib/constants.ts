@@ -189,8 +189,6 @@ export const CONSENT_TYPES: readonly ConsentTypeDefinition[] = [
 export const PUBLIC_ROUTES: readonly string[] = [
   "/",
   "/about",
-  "/terms",
-  "/privacy",
   "/overview",
   "/search",
   "/properties",
@@ -208,6 +206,15 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/verify-email/confirmed",
   "/register/role-select",
   "/register/onboarding",
+  // Content/marketing pages
+  "/blog",
+  "/legal",
+  "/valuation",
+  "/areas",
+  "/contact",
+  "/careers",
+  "/press",
+  "/sold-prices",
   // System/error state pages — always publicly accessible
   "/forbidden",
   "/maintenance",

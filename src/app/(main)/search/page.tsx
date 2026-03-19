@@ -6,8 +6,10 @@
  * views, and a mobile bottom action bar.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
   Search,
@@ -51,6 +53,8 @@ type ListingType = "all" | "sale" | "rent" | "new_build" | "commercial" | "land"
 
 type MockProperty = {
   id: string;
+  slug: string;
+  image: string | null;
   price: number;
   address: string;
   city: string;
@@ -69,14 +73,14 @@ type MockProperty = {
 // ---------------------------------------------------------------------------
 
 const MOCK_PROPERTIES: MockProperty[] = [
-  { id: "1", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794 },
-  { id: "2", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547 },
-  { id: "3", price: 320000, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821 },
-  { id: "4", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984 },
-  { id: "5", price: 540000, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235 },
-  { id: "6", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691 },
-  { id: "7", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "commercial", lat: 51.5095, lng: -0.1963 },
-  { id: "8", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale", lat: 51.5055, lng: -0.0910 },
+  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794 },
+  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547 },
+  { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821 },
+  { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984 },
+  { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235 },
+  { id: "6", slug: "7-peckham-rye-lane-london-sale", image: "/images/properties/property-3.jpg", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691 },
+  { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "commercial", lat: 51.5095, lng: -0.1963 },
+  { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale", lat: 51.5055, lng: -0.0910 },
 ];
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
@@ -98,13 +102,17 @@ const LISTING_TYPES: { value: ListingType; label: string }[] = [
 
 const PROPERTY_TYPES = ["Detached", "Semi-detached", "Terraced", "Flat", "Bungalow"];
 const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"];
-const MUST_HAVES = ["Garden", "Parking", "Garage", "Chain Free"];
+const MUST_HAVES_ALL = ["Garden", "Parking", "Garage", "Chain Free"];
+const MUST_HAVES_RENT = ["Garden", "Parking", "Garage"];
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatPrice(price: number): string {
+export function formatPrice(price: number, listingType?: ListingType): string {
+  if (listingType === "rent") {
+    return `\u00A3${price.toLocaleString("en-GB")}/mo`;
+  }
   return `\u00A3${price.toLocaleString("en-GB")}`;
 }
 
@@ -112,7 +120,7 @@ function formatPrice(price: number): string {
 function toMapProperty(p: MockProperty): MapProperty {
   return {
     id: p.id,
-    slug: p.id,
+    slug: p.slug,
     lat: p.lat,
     lng: p.lng,
     price: p.price,
@@ -121,6 +129,7 @@ function toMapProperty(p: MockProperty): MapProperty {
     sqft: p.sqft,
     address: `${p.address}, ${p.city} ${p.postcode}`,
     thumbnailUrl: null,
+    listing_type: p.listing_type,
   };
 }
 
@@ -171,18 +180,28 @@ function FilterSection({
 function MockPropertyCardGrid({ property }: Readonly<{ property: MockProperty }>) {
   return (
     <Link
-      href={`/properties/${property.id}`}
+      href={`/properties/${property.slug}`}
       className="group block overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      {/* Image placeholder */}
+      {/* Image */}
       <div className="relative aspect-[16/10] bg-neutral-200">
-        <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-xs">
-          No image
-        </div>
+        {property.image ? (
+          <Image
+            src={property.image}
+            alt={`${property.address}, ${property.city}`}
+            fill
+            sizes="(max-width: 640px) 100vw, 50vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-xs">
+            No image
+          </div>
+        )}
       </div>
 
       <div className="p-4">
-        <p className="text-lg font-semibold text-neutral-900">{formatPrice(property.price)}</p>
+        <p className="text-lg font-semibold text-neutral-900">{formatPrice(property.price, property.listing_type)}</p>
         <p className="mt-0.5 text-sm text-neutral-500">{property.type}</p>
         <p className="mt-1 truncate text-sm text-neutral-700">
           {property.address}, {property.city} {property.postcode}
@@ -213,18 +232,28 @@ function MockPropertyCardGrid({ property }: Readonly<{ property: MockProperty }>
 function MockPropertyCardList({ property }: Readonly<{ property: MockProperty }>) {
   return (
     <Link
-      href={`/properties/${property.id}`}
+      href={`/properties/${property.slug}`}
       className="group flex overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
-      {/* Image placeholder */}
+      {/* Image */}
       <div className="relative w-48 shrink-0 bg-neutral-200">
-        <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-xs">
-          No image
-        </div>
+        {property.image ? (
+          <Image
+            src={property.image}
+            alt={`${property.address}, ${property.city}`}
+            fill
+            sizes="192px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-xs">
+            No image
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col justify-center p-4">
-        <p className="text-lg font-semibold text-neutral-900">{formatPrice(property.price)}</p>
+        <p className="text-lg font-semibold text-neutral-900">{formatPrice(property.price, property.listing_type)}</p>
         <p className="mt-0.5 text-sm text-neutral-500">{property.type}</p>
         <p className="mt-1 truncate text-sm text-neutral-700">
           {property.address}, {property.city} {property.postcode}
@@ -252,7 +281,14 @@ function MockPropertyCardList({ property }: Readonly<{ property: MockProperty }>
 // Main page
 // ---------------------------------------------------------------------------
 
-export default function SearchPage() {
+function SearchPageInner() {
+  const searchParams = useSearchParams();
+
+  // Derive initial listing type from URL ?type= param
+  const initialType = searchParams.get("type");
+  const initialListingType: ListingType =
+    initialType === "rent" ? "rent" : initialType === "buy" ? "sale" : "all";
+
   // View / sort state
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [sortOption, setSortOption] = useState<SortOption>("most_recent");
@@ -270,7 +306,7 @@ export default function SearchPage() {
   });
 
   // Listing type filter
-  const [listingType, setListingType] = useState<ListingType>("all");
+  const [listingType, setListingType] = useState<ListingType>(initialListingType);
 
   // Mobile filters panel
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -442,7 +478,7 @@ export default function SearchPage() {
         {/* Must-haves */}
         <FilterSection title="Must-Haves">
           <div className="flex flex-col gap-2">
-            {MUST_HAVES.map((label) => (
+            {(listingType === "rent" ? MUST_HAVES_RENT : MUST_HAVES_ALL).map((label) => (
               <label key={label} className="flex cursor-pointer items-center justify-between text-sm text-neutral-700">
                 {label}
                 <button
@@ -578,7 +614,7 @@ export default function SearchPage() {
         {/* Must-haves */}
         <FilterSection title="Must-Haves">
           <div className="flex flex-col gap-2">
-            {MUST_HAVES.map((label) => (
+            {(listingType === "rent" ? MUST_HAVES_RENT : MUST_HAVES_ALL).map((label) => (
               <label key={label} className="flex cursor-pointer items-center justify-between text-sm text-neutral-700">
                 {label}
                 <button
@@ -902,5 +938,13 @@ export default function SearchPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-neutral-50"><p className="text-sm text-neutral-400">Loading search...</p></div>}>
+      <SearchPageInner />
+    </Suspense>
   );
 }

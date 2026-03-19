@@ -1,0 +1,27 @@
+{
+  "date": "2026-03-19",
+  "url": "http://localhost:3000",
+  "healthScore": 42,
+  "issues": [
+    { "id": "ISSUE-001", "title": "Middleware over-blocks public pages", "severity": "critical", "category": "functional" },
+    { "id": "ISSUE-002", "title": "Wrong dashboard for all roles", "severity": "critical", "category": "functional" },
+    { "id": "ISSUE-003", "title": "Rent search shows buy listings", "severity": "critical", "category": "functional" },
+    { "id": "ISSUE-004", "title": "Property detail page not found", "severity": "high", "category": "functional" },
+    { "id": "ISSUE-005", "title": "Header shows Sign In when authenticated", "severity": "high", "category": "ux" },
+    { "id": "ISSUE-006", "title": "Broker/Provider onboarding redirect to login", "severity": "high", "category": "functional" },
+    { "id": "ISSUE-007", "title": "Button-in-button hydration error", "severity": "medium", "category": "console" },
+    { "id": "ISSUE-008", "title": "Property images missing in search", "severity": "medium", "category": "visual" },
+    { "id": "ISSUE-009", "title": "Missing Seller role in role-select", "severity": "medium", "category": "functional" },
+    { "id": "ISSUE-010", "title": "Search cards not navigable", "severity": "low", "category": "functional" }
+  ],
+  "categoryScores": {
+    "console": 40,
+    "links": 85,
+    "visual": 77,
+    "functional": 20,
+    "ux": 35,
+    "performance": 70,
+    "content": 85,
+    "accessibility": 60
+  }
+}

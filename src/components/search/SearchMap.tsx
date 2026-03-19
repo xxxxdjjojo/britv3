@@ -24,6 +24,7 @@ export type MapProperty = {
   sqft: number;
   address: string;
   thumbnailUrl: string | null;
+  listing_type?: string;
 };
 
 export type MapProvider = {
