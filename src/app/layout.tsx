@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import { BreakpointProvider } from "@/contexts/BreakpointContext";
+import { DevBreakpointIndicator } from "@/components/responsive/DevBreakpointIndicator";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -44,7 +46,10 @@ export default function RootLayout({
         className={`${plusJakartaSans.variable} ${inter.variable} antialiased`}
       >
         <PostHogProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <BreakpointProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+            <DevBreakpointIndicator />
+          </BreakpointProvider>
         </PostHogProvider>
       </body>
     </html>
