@@ -30,6 +30,7 @@ describe("quote-draft-service", () => {
     it("returns structured QuoteDraft on success", async () => {
       mockCallClaude.mockResolvedValue({
         text: validQuoteJson,
+        parsed: JSON.parse(validQuoteJson),
         inputTokens: 100,
         outputTokens: 200,
       });
@@ -112,6 +113,7 @@ describe("quote-draft-service", () => {
     it("returns structured AgentProposal on success", async () => {
       mockCallClaude.mockResolvedValue({
         text: validProposalJson,
+        parsed: JSON.parse(validProposalJson),
         inputTokens: 150,
         outputTokens: 300,
       });

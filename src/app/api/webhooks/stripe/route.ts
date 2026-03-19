@@ -180,6 +180,18 @@ export async function POST(request: Request) {
           }
 
           revalidateTag("billing");
+
+          // Force JWT token refresh so custom claims update immediately
+          // Without this, user sees stale plan in JWT for up to 1 hour
+          try {
+            await supabase.auth.admin.updateUserById(userId, {
+              app_metadata: { force_refresh: Date.now() },
+            });
+          } catch (refreshErr) {
+            // Non-critical: claims will update on next natural token refresh
+            console.error("[webhook] Failed to force token refresh:", refreshErr);
+          }
+
           console.log(`[webhook] Subscription activated for user ${userId}`);
 
           // ── Referral conversion ────────────────────────────────
@@ -379,6 +391,20 @@ export async function POST(request: Request) {
         }
 
         revalidateTag("billing");
+
+        // Force JWT token refresh so custom claims update immediately
+        // Without this, user sees stale plan in JWT for up to 1 hour
+        if (userId) {
+          try {
+            await supabase.auth.admin.updateUserById(userId, {
+              app_metadata: { force_refresh: Date.now() },
+            });
+          } catch (refreshErr) {
+            // Non-critical: claims will update on next natural token refresh
+            console.error("[webhook] Failed to force token refresh:", refreshErr);
+          }
+        }
+
         break;
       }
 
@@ -399,6 +425,24 @@ export async function POST(request: Request) {
         }
 
         revalidateTag("billing");
+
+        // Force JWT token refresh to clear plan claim
+        try {
+          const { data: sub } = await supabase
+            .from("subscriptions")
+            .select("user_id")
+            .eq("stripe_customer_id", customerId)
+            .maybeSingle();
+          const cancelledUserId = (sub as { user_id: string } | null)?.user_id;
+          if (cancelledUserId) {
+            await supabase.auth.admin.updateUserById(cancelledUserId, {
+              app_metadata: { force_refresh: Date.now() },
+            });
+          }
+        } catch (refreshErr) {
+          console.error("[webhook] Failed to force token refresh on cancellation:", refreshErr);
+        }
+
         break;
       }
 
@@ -599,7 +643,26 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ received: true });
   } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     console.error("[webhook] Unhandled error processing event:", event.id, err);
+
+    // Emit to Inngest DLQ for retry
+    try {
+      const { inngest } = await import("@/inngest/client");
+      await inngest.send({
+        name: "billing/webhook.handler_failed",
+        data: {
+          eventId: event.id,
+          eventType: event.type,
+          errorMessage,
+          payload: event.data.object as Record<string, unknown>,
+          attempt: 1,
+        },
+      });
+    } catch (inngestErr) {
+      console.error("[webhook] Failed to emit DLQ event:", inngestErr);
+    }
+
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

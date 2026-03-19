@@ -6,6 +6,7 @@
  */
 
 import { callClaude } from "./claude-service";
+import { QuoteDraftSchema, AgentProposalSchema } from "@/lib/ai/schemas";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // -- Types -------------------------------------------------------------------
@@ -83,35 +84,6 @@ Return JSON with this exact shape:
   "fee_structure": "string"
 }`;
 
-// -- Validation helpers ------------------------------------------------------
-
-function isQuoteDraft(obj: unknown): obj is QuoteDraft {
-  if (!obj || typeof obj !== "object") return false;
-  const o = obj as Record<string, unknown>;
-  if (!Array.isArray(o.line_items)) return false;
-  if (typeof o.total !== "number") return false;
-  if (typeof o.estimated_duration !== "string") return false;
-  if (typeof o.scope_of_work !== "string") return false;
-  for (const item of o.line_items) {
-    if (!item || typeof item !== "object") return false;
-    const i = item as Record<string, unknown>;
-    if (typeof i.description !== "string" || typeof i.amount !== "number") return false;
-  }
-  return true;
-}
-
-function isAgentProposal(obj: unknown): obj is AgentProposal {
-  if (!obj || typeof obj !== "object") return false;
-  const o = obj as Record<string, unknown>;
-  if (!o.valuation_range || typeof o.valuation_range !== "object") return false;
-  const vr = o.valuation_range as Record<string, unknown>;
-  if (typeof vr.low !== "number" || typeof vr.high !== "number") return false;
-  if (!Array.isArray(o.comparable_properties)) return false;
-  if (typeof o.marketing_strategy !== "string") return false;
-  if (typeof o.fee_structure !== "string") return false;
-  return true;
-}
-
 // -- Public API --------------------------------------------------------------
 
 /**
@@ -131,17 +103,11 @@ export async function draftTradesQuote(
       systemPrompt: TRADES_SYSTEM_PROMPT,
       userMessage: TRADES_USER_TEMPLATE(rfqDescription, rateCard, marketPricing),
       maxTokens: 1024,
+      outputSchema: QuoteDraftSchema,
     });
 
-    if (!result) return null;
-
-    const parsed = JSON.parse(result.text);
-    if (!isQuoteDraft(parsed)) {
-      console.error("[AI] Quote draft response failed validation");
-      return null;
-    }
-
-    return parsed;
+    if (!result?.parsed) return null;
+    return result.parsed as QuoteDraft;
   } catch (err) {
     console.error("[AI] draftTradesQuote error:", err);
     return null;
@@ -164,17 +130,11 @@ export async function draftAgentProposal(
       systemPrompt: AGENT_SYSTEM_PROMPT,
       userMessage: AGENT_USER_TEMPLATE(propertyDetails, marketData),
       maxTokens: 1024,
+      outputSchema: AgentProposalSchema,
     });
 
-    if (!result) return null;
-
-    const parsed = JSON.parse(result.text);
-    if (!isAgentProposal(parsed)) {
-      console.error("[AI] Agent proposal response failed validation");
-      return null;
-    }
-
-    return parsed;
+    if (!result?.parsed) return null;
+    return result.parsed as AgentProposal;
   } catch (err) {
     console.error("[AI] draftAgentProposal error:", err);
     return null;

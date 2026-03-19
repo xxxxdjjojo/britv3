@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { PUBLIC_ROUTES, AUTH_ROUTES } from "@/lib/constants";
+import { isFeatureEnabled } from "@/lib/features";
 
 /**
  * Generate a base64-encoded nonce for CSP Level 3.
@@ -54,6 +55,27 @@ function matchesRoute(pathname: string, routes: readonly string[]): boolean {
   );
 }
 
+/**
+ * Build a redirect response with security headers applied.
+ * Optionally appends search params (e.g. redirectTo).
+ */
+function redirectWithHeaders(
+  path: string,
+  nonce: string,
+  request: NextRequest,
+  searchParams?: Record<string, string>,
+): NextResponse {
+  const url = new URL(path, request.url);
+  if (searchParams) {
+    for (const [key, value] of Object.entries(searchParams)) {
+      url.searchParams.set(key, value);
+    }
+  }
+  const response = NextResponse.redirect(url);
+  setSecurityHeaders(response, nonce);
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const nonce = generateNonce();
   const { pathname } = request.nextUrl;
@@ -67,10 +89,7 @@ export async function middleware(request: NextRequest) {
     !pathname.startsWith("/_next") &&
     !pathname.startsWith("/api/health")
   ) {
-    const maintenanceUrl = new URL("/maintenance", request.url);
-    const redirectResponse = NextResponse.redirect(maintenanceUrl);
-    setSecurityHeaders(redirectResponse, nonce);
-    return redirectResponse;
+    return redirectWithHeaders("/maintenance", nonce, request);
   }
 
   // Create a response to modify headers
@@ -138,12 +157,22 @@ export async function middleware(request: NextRequest) {
     user = authUser;
   } catch (error) {
     console.error("[middleware] Auth check failed:", error);
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirectTo", pathname);
-    const redirectResponse = NextResponse.redirect(loginUrl);
-    setSecurityHeaders(redirectResponse, nonce);
-    return redirectResponse;
+    return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
   }
+
+  // ── JWT custom claims extraction ────────────────────────────────────────
+  // When the `jwt_claims_middleware` feature flag is ON and the JWT token
+  // contains role/plan/is_admin in app_metadata (injected by the PG auth hook),
+  // skip DB round-trips entirely. Falls back to DB calls when:
+  //   - flag is OFF (safe rollout)
+  //   - claims are absent (old tokens before hook was deployed)
+  const useJwtClaims = isFeatureEnabled("jwt_claims_middleware");
+  const appMetadata = user?.app_metadata as {
+    role?: string;
+    plan?: string;
+    is_admin?: boolean;
+  } | undefined;
+  const hasClaims = useJwtClaims && appMetadata?.role !== undefined && appMetadata?.role !== "";
 
   const isAuthenticated = !!user;
   const isPublicRoute = matchesRoute(pathname, PUBLIC_ROUTES);
@@ -157,11 +186,7 @@ export async function middleware(request: NextRequest) {
       return response;
     }
     // Page routes: redirect to login
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirectTo", pathname);
-    const redirectResponse = NextResponse.redirect(loginUrl);
-    setSecurityHeaders(redirectResponse, nonce);
-    return redirectResponse;
+    return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
   }
 
   // Allow authenticated users to access professional registration sub-routes
@@ -169,67 +194,59 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthenticated && isAuthRoute && !isProfessionalRegistration) {
     // Authenticated user trying to access auth route -> redirect to dashboard
-    const dashboardUrl = new URL("/dashboard", request.url);
-    const redirectResponse = NextResponse.redirect(dashboardUrl);
-    setSecurityHeaders(redirectResponse, nonce);
-    return redirectResponse;
+    return redirectWithHeaders("/dashboard", nonce, request);
   }
 
   // Admin route guard: require authentication and is_admin flag on profile
   const isAdminRoute = pathname.startsWith("/admin");
   if (isAdminRoute) {
     if (!isAuthenticated) {
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("redirectTo", pathname);
-      const redirectResponse = NextResponse.redirect(loginUrl);
-      setSecurityHeaders(redirectResponse, nonce);
-      return redirectResponse;
+      return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
     }
 
-    try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_admin")
-        .eq("id", user!.id)
-        .single();
-
-      if (profile?.is_admin !== true) {
-        const forbiddenUrl = new URL("/forbidden", request.url);
-        const redirectResponse = NextResponse.redirect(forbiddenUrl);
-        setSecurityHeaders(redirectResponse, nonce);
-        return redirectResponse;
+    if (hasClaims) {
+      if (appMetadata?.is_admin !== true) {
+        return redirectWithHeaders("/forbidden", nonce, request);
       }
-    } catch (error) {
-      console.error("[middleware] Admin guard check failed:", error);
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("redirectTo", pathname);
-      const redirectResponse = NextResponse.redirect(loginUrl);
-      setSecurityHeaders(redirectResponse, nonce);
-      return redirectResponse;
+    } else {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user!.id)
+          .single();
+
+        if (profile?.is_admin !== true) {
+          return redirectWithHeaders("/forbidden", nonce, request);
+        }
+      } catch (error) {
+        console.error("[middleware] Admin guard check failed:", error);
+        return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
+      }
     }
   }
 
   // Role check: if user accesses dashboard with no active_role, redirect to role selection
   if (isAuthenticated && pathname.startsWith("/dashboard")) {
-    try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("active_role")
-        .eq("id", user!.id)
-        .single();
-
-      if (profile && !profile.active_role) {
-        const roleSelectUrl = new URL("/register/role-select", request.url);
-        const redirectResponse = NextResponse.redirect(roleSelectUrl);
-        setSecurityHeaders(redirectResponse, nonce);
-        return redirectResponse;
+    if (hasClaims) {
+      if (!appMetadata?.role) {
+        return redirectWithHeaders("/register/role-select", nonce, request);
       }
-    } catch (error) {
-      console.error("[middleware] Profile role check failed:", error);
-      const loginUrl = new URL("/login", request.url);
-      const redirectResponse = NextResponse.redirect(loginUrl);
-      setSecurityHeaders(redirectResponse, nonce);
-      return redirectResponse;
+    } else {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("active_role")
+          .eq("id", user!.id)
+          .single();
+
+        if (profile && !profile.active_role) {
+          return redirectWithHeaders("/register/role-select", nonce, request);
+        }
+      } catch (error) {
+        console.error("[middleware] Profile role check failed:", error);
+        return redirectWithHeaders("/login", nonce, request);
+      }
     }
   }
 
@@ -253,31 +270,41 @@ export async function middleware(request: NextRequest) {
     const isReferralsPage = pathname.includes("/referrals");
 
     if (isGatedRoute && !isBillingPage && !isReferralsPage) {
-      try {
-        const { data: subscription } = await supabase
-          .from("subscriptions")
-          .select("status, plan_name")
-          .eq("user_id", user!.id)
-          .maybeSingle();
-
-        const sub = subscription as { status?: string; plan_name?: string } | null;
-        const isActive = sub?.status === "active" || sub?.status === "trialing";
-
-        if (!isActive) {
-          // Determine the role for the billing redirect
+      if (hasClaims) {
+        const hasPlan = appMetadata?.plan && appMetadata.plan !== "";
+        if (!hasPlan) {
           const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
           const role = roleMatch?.[1] ?? "agent";
-          const billingUrl = new URL(`/dashboard/${role}/billing/checkout/subscription`, request.url);
-          const redirectResponse = NextResponse.redirect(billingUrl);
-          setSecurityHeaders(redirectResponse, nonce);
-          return redirectResponse;
+          return redirectWithHeaders(
+            `/dashboard/${role}/billing/checkout/subscription`,
+            nonce,
+            request,
+          );
         }
-      } catch (error) {
-        console.error("[middleware] Subscription check failed:", error);
-        const loginUrl = new URL("/login", request.url);
-        const redirectResponse = NextResponse.redirect(loginUrl);
-        setSecurityHeaders(redirectResponse, nonce);
-        return redirectResponse;
+      } else {
+        try {
+          const { data: subscription } = await supabase
+            .from("subscriptions")
+            .select("status, plan_name")
+            .eq("user_id", user!.id)
+            .maybeSingle();
+
+          const sub = subscription as { status?: string; plan_name?: string } | null;
+          const isActive = sub?.status === "active" || sub?.status === "trialing";
+
+          if (!isActive) {
+            const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
+            const role = roleMatch?.[1] ?? "agent";
+            return redirectWithHeaders(
+              `/dashboard/${role}/billing/checkout/subscription`,
+              nonce,
+              request,
+            );
+          }
+        } catch (error) {
+          console.error("[middleware] Subscription check failed:", error);
+          return redirectWithHeaders("/login", nonce, request);
+        }
       }
     }
   }
