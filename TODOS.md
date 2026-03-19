@@ -141,3 +141,47 @@
 **Effort:** M | **Priority:** P3
 **Where to start:** Create `<EmptyState>` component with responsive illustration sizing.
 **Depends on:** Nothing — can be done independently.
+
+## Backend Blueprint v2 — Eng Review Additions
+
+_From engineering plan review, 2026-03-19. 14 decisions locked._
+
+### pgvector embedding pipeline for semantic property similarity
+**What:** Build property embedding generation (Claude API call per listing), add vector column to properties/search_listings, create backfill job for existing listings, add Inngest function for incremental embedding on listing create/update, implement pgvector similarity query (`ORDER BY embedding <=> query_embedding LIMIT N`).
+**Why:** Current SimilarProperties uses heuristic (postcode + ±20% price range). pgvector gives true semantic matching — "properties like this" based on description, features, and structured attributes. Zillow uses embeddings for their similar homes feature.
+**Effort:** L | **Priority:** P2
+**Depends on:** AI budget approval for embedding costs (~$0.01 per listing via Claude Haiku).
+**Where to start:** Add `embedding vector(1536)` column to search_listings MV. Create `src/services/ai/embedding-service.ts`. Backfill via Inngest batch job.
+
+### Stripe webhook handler DRY refactor
+**What:** Extract duplicated subscription upsert logic (identical between `checkout.session.completed` and `customer.subscription.updated` handlers) into `upsertSubscription()` helper. Extract referral conversion block (~150 lines) into `processReferralConversion()`. Reduce webhook from 605 lines to ~300.
+**Why:** Two copies of the same upsert means bugs must be fixed in two places. The referral block is deeply nested and hard to test independently.
+**Effort:** M | **Priority:** P2
+**Depends on:** Nothing — pure refactor.
+**Where to start:** `src/app/api/webhooks/stripe/route.ts`. Extract helpers into `src/services/billing/webhook-handlers.ts`.
+
+### Edge-case tests for backend blueprint features (10 branches)
+**What:** Write tests for: (b) stale JWT claims race condition, (g) LLM input exceeds max length, (h) control chars in JSON-embedded strings, (m) instant search query < 2 chars, (n) instant search Redis unavailable fallback, (o) instant search DB timeout, (r) price drop with no matching saved searches, (s) price drop email send failure, (t) large result set batching (1000+ drops), (x) Inngest unavailable during webhook DLQ emit.
+**Why:** 12 critical tests are in the blueprint build. These 10 edge cases are lower risk but increase coverage.
+**Effort:** S | **Priority:** P2
+**Where to start:** `src/__tests__/backend-blueprint/` — extend existing test files with additional cases.
+
+### JWT claims Sentry Performance integration
+**What:** When Sentry Performance is set up, add tracing spans for: JWT hook execution time, claims-present ratio in middleware, fallback-to-DB rate. Create alert for fallback rate > 10%.
+**Why:** The jwt_claims_errors table + Inngest monitor catches hard failures. Sentry catches degradation (e.g., hook is slow, or claims are present but stale).
+**Effort:** S | **Priority:** P1
+**Depends on:** Sentry Performance setup (separate P1 TODO in blueprint v1).
+**Where to start:** Add `Sentry.startSpan()` in middleware JWT decode path. Track `claims_present` vs `claims_missing` as custom metrics.
+
+### Remaining 12 Inngest functions
+**What:** Build these Inngest functions incrementally (3-4 per sprint):
+- **Billing:** cache-invalidation-on-mutation, webhook-retry-monitor
+- **Search:** cache-warming-popular-prefixes, search-analytics-rollup
+- **Compliance:** compliance-reminder-checker, stale-listing-cleanup
+- **Notifications:** email-digest-weekly, booking-reminders, quote-expiry-checker
+- **Analytics:** analytics-aggregation-daily
+- **Security:** referral-fraud-scan-weekly
+- **Data:** MV-refresh-backup (fallback if pg_cron fails)
+**Why:** Event-driven architecture decouples services, enables retry/replay, and makes the system observable. Currently 4 functions (rfq-notify, price-drop, webhook-dlq, jwt-monitor).
+**Effort:** L (total) | **Priority:** P1 (incremental)
+**Where to start:** `src/inngest/functions/` — start with cache-invalidation-on-mutation and stale-listing-cleanup as they have the most immediate value.
