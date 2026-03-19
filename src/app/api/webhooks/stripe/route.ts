@@ -643,7 +643,26 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ received: true });
   } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     console.error("[webhook] Unhandled error processing event:", event.id, err);
+
+    // Emit to Inngest DLQ for retry
+    try {
+      const { inngest } = await import("@/inngest/client");
+      await inngest.send({
+        name: "billing/webhook.handler_failed",
+        data: {
+          eventId: event.id,
+          eventType: event.type,
+          errorMessage,
+          payload: event.data.object as Record<string, unknown>,
+          attempt: 1,
+        },
+      });
+    } catch (inngestErr) {
+      console.error("[webhook] Failed to emit DLQ event:", inngestErr);
+    }
+
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
