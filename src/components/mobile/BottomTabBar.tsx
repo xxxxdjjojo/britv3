@@ -17,6 +17,8 @@ import {
   ClipboardList,
 } from "lucide-react";
 import { useRole } from "@/hooks/useRole";
+import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
+import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/auth";
 
 // ---------------------------------------------------------------------------
@@ -87,6 +89,7 @@ const TAB_CONFIG: Record<UserRole, TabItem[]> = {
 export function BottomTabBar() {
   const pathname = usePathname();
   const { activeRole } = useRole();
+  const keyboardOpen = useVirtualKeyboard();
 
   if (!activeRole) return null;
 
@@ -95,7 +98,10 @@ export function BottomTabBar() {
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-neutral-200 bg-white pb-safe md:hidden"
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-neutral-200 bg-white pb-safe lg:hidden transition-transform duration-200",
+        keyboardOpen && "translate-y-full",
+      )}
     >
       {tabs.map((tab) => {
         const isActive =

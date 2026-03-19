@@ -28,7 +28,7 @@ export default async function ProtectedLayout({
       />
       <ProtectedHeader />
       <PullToRefreshWrapper />
-      <main className="pb-16 md:pb-0">{children}</main>
+      <main className="pb-16 lg:pb-0">{children}</main>
       <BottomTabBarWrapper />
     </QueryProvider>
   );
