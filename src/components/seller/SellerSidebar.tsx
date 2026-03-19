@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ResponsiveSidebar } from "@/components/responsive/ResponsiveSidebar";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard/seller", icon: LayoutDashboard },
@@ -27,11 +28,11 @@ type Props = Readonly<{
   avatarUrl: string | null;
 }>;
 
-export function SellerSidebar({ userName, avatarUrl }: Props) {
+function SidebarContent({ userName, avatarUrl }: Props) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-[#1B4D3E] flex flex-col z-40">
+    <>
       <div className="px-6 py-6 border-b border-white/10">
         <span className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-white tracking-tight">
           britestate
@@ -83,6 +84,14 @@ export function SellerSidebar({ userName, avatarUrl }: Props) {
           </Link>
         </div>
       </div>
-    </aside>
+    </>
+  );
+}
+
+export function SellerSidebar({ userName, avatarUrl }: Props) {
+  return (
+    <ResponsiveSidebar className="bg-[#1B4D3E] border-r-0">
+      <SidebarContent userName={userName} avatarUrl={avatarUrl} />
+    </ResponsiveSidebar>
   );
 }
