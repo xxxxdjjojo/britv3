@@ -35,6 +35,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ResponsiveSidebar } from "@/components/responsive/ResponsiveSidebar";
 
 type NavItem = {
   label: string;
@@ -203,11 +204,11 @@ function CollapsibleGroup({
   );
 }
 
-export function AdminSidebar() {
+function SidebarContent() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 flex w-64 flex-col border-r border-neutral-200 bg-white overflow-y-auto">
+    <>
       <div
         className="flex h-16 shrink-0 items-center px-4"
         style={{ backgroundColor: "#1B4D3E" }}
@@ -220,7 +221,7 @@ export function AdminSidebar() {
         </span>
       </div>
 
-      <nav className="flex flex-col gap-1 p-3 flex-1">
+      <nav className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
         {NAV_GROUPS.map((group) => (
           <CollapsibleGroup
             key={group.label}
@@ -229,6 +230,14 @@ export function AdminSidebar() {
           />
         ))}
       </nav>
-    </aside>
+    </>
+  );
+}
+
+export function AdminSidebar() {
+  return (
+    <ResponsiveSidebar className="border-neutral-200 bg-white">
+      <SidebarContent />
+    </ResponsiveSidebar>
   );
 }
