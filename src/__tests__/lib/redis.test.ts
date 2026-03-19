@@ -13,8 +13,8 @@ vi.mock("@upstash/redis", () => {
 });
 
 // Set env vars so the redis client initializes
-process.env.UPSTASH_REDIS_URL = "https://fake-redis.upstash.io";
-process.env.UPSTASH_REDIS_TOKEN = "fake-token";
+process.env.UPSTASH_REDIS_REST_URL = "https://fake-redis.upstash.io";
+process.env.UPSTASH_REDIS_REST_TOKEN = "fake-token";
 
 // Dynamic import after mocks are set up
 const { getCached, setCache, invalidateCache, invalidateCachePattern } =

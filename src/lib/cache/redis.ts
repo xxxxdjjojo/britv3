@@ -15,12 +15,12 @@ let _redis: Redis | null = null;
 function getRedisClient(): Redis | null {
   if (_redis) return _redis;
 
-  const url = process.env.UPSTASH_REDIS_URL;
-  const token = process.env.UPSTASH_REDIS_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
     console.warn(
-      "[redis] UPSTASH_REDIS_URL or UPSTASH_REDIS_TOKEN not set -- using no-op fallback",
+      "[redis] UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not set -- using no-op fallback",
     );
     return null;
   }

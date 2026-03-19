@@ -7,8 +7,8 @@ import { Ratelimit } from "@upstash/ratelimit";
 
 // 3 regenerations per 24 hours per user (fixed window)
 function getBackupCodesRateLimiter() {
-  const url = process.env.UPSTASH_REDIS_URL;
-  const token = process.env.UPSTASH_REDIS_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
     // Degrade gracefully — always allow when Redis is not configured
