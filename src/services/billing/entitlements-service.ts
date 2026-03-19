@@ -20,24 +20,34 @@ export async function getUserEntitlements(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<UserEntitlements> {
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("plan_name, status")
-    .eq("user_id", userId)
-    .in("status", ACTIVE_STATUSES as unknown as string[])
-    .maybeSingle();
+  try {
+    const { data: subscription, error } = await supabase
+      .from("subscriptions")
+      .select("plan_name, status")
+      .eq("user_id", userId)
+      .in("status", ACTIVE_STATUSES as unknown as string[])
+      .maybeSingle();
 
-  const sub = subscription as { plan_name: string; status: string } | null;
+    if (error) {
+      console.error("[entitlements] DB query failed for user", userId, error.message);
+      return { planId: null, planName: null, features: new Set() };
+    }
 
-  if (!sub || !(ACTIVE_STATUSES as readonly string[]).includes(sub.status)) {
+    const sub = subscription as { plan_name: string; status: string } | null;
+
+    if (!sub || !(ACTIVE_STATUSES as readonly string[]).includes(sub.status)) {
+      return { planId: null, planName: null, features: new Set() };
+    }
+
+    const features = getEntitlementsForPlan(sub.plan_name);
+
+    return {
+      planId: sub.plan_name,
+      planName: sub.plan_name,
+      features,
+    };
+  } catch (err) {
+    console.error("[entitlements] Unexpected error for user", userId, err);
     return { planId: null, planName: null, features: new Set() };
   }
-
-  const features = getEntitlementsForPlan(sub.plan_name);
-
-  return {
-    planId: sub.plan_name,
-    planName: sub.plan_name,
-    features,
-  };
 }
