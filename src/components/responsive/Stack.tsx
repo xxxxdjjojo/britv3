@@ -69,7 +69,7 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>(
   ) {
     return (
       <Tag
-        ref={ref}
+        ref={ref as React.Ref<never>}
         className={cn(
           "flex",
           resolveDirectionClasses(direction),

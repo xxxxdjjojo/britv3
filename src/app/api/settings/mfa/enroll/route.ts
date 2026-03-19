@@ -32,7 +32,7 @@ export async function POST() {
   }
 
   // Unenroll any unverified stale TOTP factor before starting fresh
-  const unverifiedFactor = totpFactors.find((f) => f.status === "unverified");
+  const unverifiedFactor = totpFactors.find((f) => (f.status as string) === "unverified");
   if (unverifiedFactor) {
     const { error: unenrollError } = await supabase.auth.mfa.unenroll({
       factorId: unverifiedFactor.id,
