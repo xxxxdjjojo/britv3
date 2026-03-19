@@ -6,7 +6,7 @@ import {
 } from "@/services/agent/agent-analytics-service";
 import { getTeamMembers, getBranches } from "@/services/agent/agent-team-service";
 import { BranchPerformanceCharts } from "@/components/dashboard/agent/analytics/BranchPerformanceCharts";
-import type { AgentPerformanceReport } from "@/services/agent/agent-analytics-service";
+import type { PerformanceReport } from "@/services/agent/agent-analytics-service";
 import type { AgentBranch, AgentTeamMember } from "@/types/agent";
 
 export default async function BranchAnalyticsPage() {
@@ -23,16 +23,16 @@ export default async function BranchAnalyticsPage() {
 
   let branches: AgentBranch[] = [];
   let teamMembers: AgentTeamMember[] = [];
-  let branchReport: AgentPerformanceReport = {
+  let branchReport: PerformanceReport = {
     listings_sold_count: 0,
-    avg_time_on_market_days: null,
-    total_revenue_pence: 0,
+    avg_time_on_market_days: 0,
+    total_revenue: 0,
     conversion_rate: 0,
-    client_satisfaction_avg: null,
-    revenue_over_time: [],
-    listings_over_time: [],
+    client_satisfaction: 0,
+    listings_sold_per_month: [],
+    revenue_per_month: [],
   };
-  let agencyAvg: AgentPerformanceReport = { ...branchReport };
+  let agencyAvg: PerformanceReport = { ...branchReport };
 
   try {
     branches = await getBranches(supabase, user.id);

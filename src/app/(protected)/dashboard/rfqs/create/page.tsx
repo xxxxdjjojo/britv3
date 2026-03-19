@@ -47,6 +47,10 @@ const SERVICE_CATEGORY_LABELS: Record<ServiceCategory, string> = {
   property_management: "Property Management",
   pest_control: "Pest Control",
   locksmith: "Locksmith",
+  builder: "Builder",
+  plasterer: "Plasterer",
+  painter: "Painter",
+  carpenter: "Carpenter",
   other: "Other",
 };
 
