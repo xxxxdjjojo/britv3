@@ -76,7 +76,7 @@ export function Step2Details({ listing, listingId }: Props) {
           <p className="text-slate-500 text-sm mt-1">Tell buyers about the key details of your property</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <label className="text-sm font-semibold text-slate-700">Bedrooms</label>
             <input

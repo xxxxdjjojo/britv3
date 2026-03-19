@@ -154,7 +154,7 @@ export function TwoFactorSetupFlow(
           <p className="font-body text-sm text-neutral-600">
             Download an authenticator app to generate verification codes.
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { name: "Google Authenticator", store: "App Store / Google Play" },
               { name: "Authy", store: "App Store / Google Play" },

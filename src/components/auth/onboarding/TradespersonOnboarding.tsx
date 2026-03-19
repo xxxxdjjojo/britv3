@@ -163,7 +163,7 @@ export function TradespersonOnboarding(
           </div>
           <div className="space-y-2">
             <Label>Response time</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {RESPONSE_TIMES.map((rt) => (
                 <button key={rt.value} type="button" onClick={() => setResponseTime(rt.value)} className={cn("rounded-lg border-2 px-4 py-2 text-sm font-medium transition-colors", responseTime === rt.value ? "border-brand-primary bg-brand-primary/5 text-brand-primary" : "border-neutral-200 text-neutral-700")}>
                   {rt.label}

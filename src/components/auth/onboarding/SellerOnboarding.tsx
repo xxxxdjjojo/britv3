@@ -166,7 +166,7 @@ export function SellerOnboarding(
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Bedrooms</Label>
               <div className="flex items-center gap-2">
@@ -274,7 +274,7 @@ export function SellerOnboarding(
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Timeline</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {TIMELINES.map((t) => (
                 <button
                   key={t.value}

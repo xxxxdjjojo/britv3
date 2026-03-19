@@ -103,7 +103,7 @@ export function PropertyDetails(
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="city">City / Town</Label>
             <Input
@@ -216,7 +216,7 @@ export function PropertyDetails(
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="square_footage">Sq Ft (optional)</Label>
             <Input

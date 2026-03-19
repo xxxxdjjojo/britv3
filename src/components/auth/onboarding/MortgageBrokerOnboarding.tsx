@@ -100,7 +100,7 @@ export function MortgageBrokerOnboarding(
 
       {step === 1 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {SPECIALISMS.map((s) => (
               <button key={s.value} type="button" onClick={() => toggleItem(specialisms, s.value, setSpecialisms)} className={cn("rounded-lg border-2 px-3 py-3 text-sm font-medium transition-colors text-left", specialisms.includes(s.value) ? "border-brand-primary bg-brand-primary/5 text-brand-primary" : "border-neutral-200 text-neutral-700 hover:border-neutral-300")}>
                 {s.label}

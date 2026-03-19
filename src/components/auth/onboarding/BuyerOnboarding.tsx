@@ -146,7 +146,7 @@ export function BuyerOnboarding(
       {/* Step 1: Budget */}
       {step === 1 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Minimum</Label>
               <div className="relative">
@@ -183,7 +183,7 @@ export function BuyerOnboarding(
       {/* Step 2: Property type */}
       {step === 2 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {PROPERTY_TYPES.map((type) => (
               <button
                 key={type}
