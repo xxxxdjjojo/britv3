@@ -82,3 +82,62 @@
 **Why:** Social proof + referrer recognition. Doc specifies this in Connector reward package.
 **Effort:** S | **Priority:** P3
 **Where to start:** Add `referred_by_display` column to profiles, render in profile page.
+
+## Responsive Design System — Deferred TODOs
+
+### Add `sizes` prop to all Next.js Image components
+**What:** Audit ~20 files using `next/image` and add appropriate `sizes` prop for responsive image loading.
+**Why:** Without `sizes`, images download full-resolution on mobile, wasting bandwidth and hurting LCP (Largest Contentful Paint). Example: a 1440px hero image downloaded on a 375px phone.
+**Pattern:** `sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"` — adjust per component.
+**Effort:** M | **Priority:** P2
+**Where to start:** `grep -r "from \"next/image\"" src/ --include="*.tsx" -l` to find all files.
+**Depends on:** Nothing — can be done independently.
+
+### Add Playwright viewport regression tests
+**What:** E2E tests that load each dashboard role at 375px, 768px, and 1280px viewports. Assert: (a) no horizontal overflow, (b) navigation accessible, (c) main content visible and not obscured.
+**Why:** Catches responsive regressions in CI. Without automated tests, mobile breakage is only caught by manual QA.
+**Effort:** M | **Priority:** P1
+**Where to start:** Install Playwright, create `e2e/responsive/` test directory. One test per dashboard role × 3 viewports.
+**Depends on:** Playwright being installed (currently planned but not set up).
+
+### Migrate existing pages to Container component
+**What:** Replace ad-hoc `px-4 sm:px-6 lg:px-8` + `max-w-*` + `mx-auto` patterns with `<Container>` component across ~30 pages.
+**Why:** DRY — Container enforces consistent responsive padding. Currently 30+ pages each define their own padding.
+**Effort:** L | **Priority:** P2
+**Where to start:** `grep -r "mx-auto.*max-w" src/app/ --include="*.tsx" -l` to find candidates.
+**Depends on:** Container component from responsive design system (now built).
+
+### Add container query support to Card components
+**What:** Use Tailwind v4 `@container` to make Cards adapt to their container width, not viewport width.
+**Why:** A Card in a 2-col grid at 1280px should behave like a Card on a 640px viewport. Currently all Cards use viewport breakpoints, so Cards in narrow containers look cramped.
+**Effort:** M | **Priority:** P3
+**Where to start:** Add `@container` to Card parent, use `@sm:`, `@md:` etc. in Card component.
+**Depends on:** Responsive design system + Tailwind v4 container query setup.
+
+### Swipe-to-navigate mobile dashboard tabs (vision)
+**What:** Swipe left/right to move between dashboard tabs (Overview → Listings → Viewings).
+**Why:** Makes the app feel native on mobile. Like iOS tab swiping.
+**Effort:** M | **Priority:** P3
+**Where to start:** Use gesture library (e.g., `@use-gesture/react`) on dashboard wrapper.
+**Depends on:** Responsive sidebar system (now built).
+
+### Responsive morphing stat cards (vision)
+**What:** Dashboard stat cards that morph on mobile: Desktop shows grid with icon + label + value + sparkline. Mobile shows horizontal scroll strip with value + mini label.
+**Why:** Users see more data in less space on mobile. Swipeable horizontal scroll feels native.
+**Effort:** M | **Priority:** P3
+**Where to start:** New `ResponsiveStatCard` component wrapping existing `StatCard`.
+**Depends on:** Responsive design system.
+
+### Haptic feedback on mobile interactions (vision)
+**What:** Subtle vibration via `navigator.vibrate(10)` on key interactions: nav taps, sidebar toggle, form submit.
+**Why:** Makes the web app feel native. Progressive enhancement — no-op on unsupported browsers.
+**Effort:** S | **Priority:** P3
+**Where to start:** Create `useHaptics()` hook, apply to BottomTabBar and ResponsiveSidebar.
+**Depends on:** Nothing.
+
+### Responsive empty states (vision)
+**What:** Mobile-optimized empty state illustrations + CTAs that fill the screen when a dashboard section has no data.
+**Why:** Current empty states show a small centered message. On mobile, full-screen empty states feel intentional, not broken.
+**Effort:** M | **Priority:** P3
+**Where to start:** Create `<EmptyState>` component with responsive illustration sizing.
+**Depends on:** Nothing — can be done independently.
