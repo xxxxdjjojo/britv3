@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 const FEATURED_PROPERTIES = [
   {
     id: 1,
+    slug: "modern-2-bed-flat-clifton-bristol-sale",
     price: "£450,000",
     title: "Modern 2 Bed Flat",
     location: "Clifton, Bristol",
@@ -42,6 +43,7 @@ const FEATURED_PROPERTIES = [
   },
   {
     id: 2,
+    slug: "4-bed-period-terrace-hackney-london-sale",
     price: "£850,000",
     title: "4 Bed Period Terrace",
     location: "Hackney, London",
@@ -54,6 +56,7 @@ const FEATURED_PROPERTIES = [
   },
   {
     id: 3,
+    slug: "cotswold-stone-cottage-burford-oxfordshire-sale",
     price: "£375,000",
     title: "Cotswold Stone Cottage",
     location: "Burford, Oxfordshire",
@@ -66,6 +69,7 @@ const FEATURED_PROPERTIES = [
   },
   {
     id: 4,
+    slug: "5-bed-family-home-hampstead-london-sale",
     price: "£1,200,000",
     title: "5 Bed Family Home",
     location: "Hampstead, London",
