@@ -3,18 +3,11 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger as SheetTriggerBase,
+  SheetTrigger,
 } from "@/components/ui/sheet";
-
-// Type cast needed for base-ui Dialog.Trigger prop compatibility
-const SheetTrigger = SheetTriggerBase as React.ComponentType<{
-  asChild?: boolean;
-  children: React.ReactNode;
-}>;
 
 type ResponsiveSidebarProps = Readonly<{
   children: React.ReactNode;
@@ -54,15 +47,11 @@ export function ResponsiveSidebar({
       {/* Mobile/Tablet: hamburger button + Sheet drawer, visible <lg */}
       <div className="fixed left-4 top-4 z-50 lg:hidden">
         <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Open navigation menu"
-              className="bg-white/90 backdrop-blur-sm shadow-sm"
-            >
-              <Menu className="size-5" />
-            </Button>
+          <SheetTrigger
+            className="inline-flex size-10 items-center justify-center rounded-md border bg-white/90 text-foreground shadow-sm backdrop-blur-sm hover:bg-accent"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="size-5" />
           </SheetTrigger>
           <SheetContent side={side} className={cn(width, "p-0")} showCloseButton>
             {children}

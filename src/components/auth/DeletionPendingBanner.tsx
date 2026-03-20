@@ -20,13 +20,14 @@ export function DeletionPendingBanner() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("scheduled_deletion_at")
         .eq("id", user.id)
         .single();
 
-      if (profile?.scheduled_deletion_at) {
+      // Column may not exist yet if migration hasn't been applied — fail silently
+      if (!error && profile?.scheduled_deletion_at) {
         setDeletionDate(profile.scheduled_deletion_at as string);
       }
     }
