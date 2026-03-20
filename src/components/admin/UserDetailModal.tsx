@@ -35,7 +35,7 @@ export function UserDetailModal({ user, open, onClose }: Props) {
         <dl className="space-y-3 text-sm">
           <div>
             <dt className="font-medium text-neutral-500">Name</dt>
-            <dd className="mt-0.5 text-neutral-900">{user.full_name ?? "—"}</dd>
+            <dd className="mt-0.5 text-neutral-900">{user.display_name ?? "—"}</dd>
           </div>
           <div>
             <dt className="font-medium text-neutral-500">Email</dt>
@@ -43,7 +43,7 @@ export function UserDetailModal({ user, open, onClose }: Props) {
           </div>
           <div>
             <dt className="font-medium text-neutral-500">Role</dt>
-            <dd className="mt-0.5 text-neutral-900">{user.role ?? "—"}</dd>
+            <dd className="mt-0.5 text-neutral-900">{user.active_role ?? "—"}{user.is_admin ? " (Admin)" : ""}</dd>
           </div>
           <div>
             <dt className="font-medium text-neutral-500">Status</dt>

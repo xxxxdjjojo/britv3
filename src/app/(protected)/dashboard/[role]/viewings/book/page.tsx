@@ -6,7 +6,7 @@
  * Query params: listingId (required)
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -31,11 +31,11 @@ function formatSlotTime(isoString: string): string {
 
 export default function BookViewingPage({
   params,
-}: Readonly<{ params: { role: string } }>) {
+}: Readonly<{ params: Promise<{ role: string }> }>) {
+  const { role: roleParam } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const listingId = searchParams.get("listingId");
-  const roleParam = params.role;
 
   const [slots, setSlots] = useState<ViewingSlot[] | null>(null);
   const [loadingSlots, setLoadingSlots] = useState(false);

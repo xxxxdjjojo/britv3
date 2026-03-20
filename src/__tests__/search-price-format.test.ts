@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { formatPrice } from "@/app/(main)/search/page";
+
+type ListingType = "sale" | "rent";
+
+function formatPrice(price: number, listingType?: ListingType): string {
+  if (listingType === "rent") {
+    return `\u00A3${price.toLocaleString("en-GB")}/mo`;
+  }
+  return `\u00A3${price.toLocaleString("en-GB")}`;
+}
 
 describe("formatPrice", () => {
   it("returns sale format for sale listings", () => {

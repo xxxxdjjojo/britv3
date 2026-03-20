@@ -6,7 +6,7 @@
  * The viewingId comes from the URL [id] param.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -31,9 +31,9 @@ function formatSlotTime(isoString: string): string {
 
 export default function RescheduleViewingPage({
   params,
-}: Readonly<{ params: { role: string; id: string } }>) {
+}: Readonly<{ params: Promise<{ role: string; id: string }> }>) {
+  const { role: roleParam, id: viewingId } = use(params);
   const router = useRouter();
-  const { role: roleParam, id: viewingId } = params;
 
   const { data: viewings } = useViewings();
   const viewing = viewings?.find((v) => v.id === viewingId);

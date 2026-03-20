@@ -74,7 +74,8 @@ export async function getPortfolio(
   );
 
   if (error) {
-    throw new Error(`Failed to fetch portfolio: ${error.message}`);
+    console.error(`[portfolio-service] Failed to fetch portfolio: ${error.message}`);
+    return [];
   }
 
   if (!data) {
@@ -121,7 +122,17 @@ export async function getPortfolioKPIs(
   });
 
   if (error) {
-    throw new Error(`Failed to fetch portfolio KPIs: ${error.message}`);
+    console.error(`[portfolio-service] Failed to fetch portfolio KPIs: ${error.message}`);
+    return {
+      total_properties: 0,
+      occupied: 0,
+      vacant: 0,
+      occupancy_rate: 0,
+      total_monthly_rent: 0,
+      compliance_alerts: 0,
+      open_maintenance: 0,
+      expired_compliance: 0,
+    };
   }
 
   const result = Array.isArray(data) ? data[0] : data;

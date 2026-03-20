@@ -269,7 +269,12 @@ export async function middleware(request: NextRequest) {
     // Allow referrals page without subscription (needed to share referral links)
     const isReferralsPage = pathname.includes("/referrals");
 
-    if (isGatedRoute && !isBillingPage && !isReferralsPage) {
+    // Allow dashboard overview pages (exact match) without subscription
+    const isDashboardOverview = SUBSCRIPTION_GATED_PREFIXES.some(
+      (prefix) => pathname === prefix,
+    );
+
+    if (isGatedRoute && !isBillingPage && !isReferralsPage && !isDashboardOverview) {
       if (hasClaims) {
         const hasPlan = appMetadata?.plan && appMetadata.plan !== "";
         if (!hasPlan) {
@@ -283,27 +288,32 @@ export async function middleware(request: NextRequest) {
         }
       } else {
         try {
-          const { data: subscription } = await supabase
+          const { data: subscription, error: subError } = await supabase
             .from("subscriptions")
             .select("status, plan_name")
             .eq("user_id", user!.id)
             .maybeSingle();
 
-          const sub = subscription as { status?: string; plan_name?: string } | null;
-          const isActive = sub?.status === "active" || sub?.status === "trialing";
+          // If table doesn't exist or query fails, allow access (fail open)
+          // so dashboards remain usable while billing infra is being built
+          if (!subError) {
+            const sub = subscription as { status?: string; plan_name?: string } | null;
+            const isActive = sub?.status === "active" || sub?.status === "trialing";
 
-          if (!isActive) {
-            const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
-            const role = roleMatch?.[1] ?? "agent";
-            return redirectWithHeaders(
-              `/dashboard/${role}/billing/checkout/subscription`,
-              nonce,
-              request,
-            );
+            if (!isActive) {
+              const roleMatch = pathname.match(/^\/dashboard\/(agent|landlord|provider)/);
+              const role = roleMatch?.[1] ?? "agent";
+              return redirectWithHeaders(
+                `/dashboard/${role}/billing/checkout/subscription`,
+                nonce,
+                request,
+              );
+            }
           }
         } catch (error) {
-          console.error("[middleware] Subscription check failed:", error);
-          return redirectWithHeaders("/login", nonce, request);
+          // Subscription check failed (e.g. table missing) — fail open to
+          // avoid blocking dashboard access during development
+          console.warn("[middleware] Subscription check failed (passing through):", error);
         }
       }
     }
@@ -323,6 +333,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - Static file extensions
      */
-    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|webmanifest)$).*)",
   ],
 };

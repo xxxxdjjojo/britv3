@@ -39,7 +39,7 @@ export async function POST(
       if (!VALID_ROLES.includes(newRole)) {
         throw new Error(`Invalid role: ${newRole}`);
       }
-      const result = await demoteFromAdmin(supabase, userId, newRole);
+      const result = await demoteFromAdmin(supabase, userId);
       if (!result.success) throw new Error("Failed to demote user");
       return { success: true };
     },

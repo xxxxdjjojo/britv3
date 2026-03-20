@@ -114,7 +114,7 @@ function getDefaultMustHaves(type: string): Record<string, boolean> {
 // Helpers
 // ---------------------------------------------------------------------------
 
-export function formatPrice(price: number, listingType?: ListingType): string {
+function formatPrice(price: number, listingType?: ListingType): string {
   if (listingType === "rent") {
     return `\u00A3${price.toLocaleString("en-GB")}/mo`;
   }
