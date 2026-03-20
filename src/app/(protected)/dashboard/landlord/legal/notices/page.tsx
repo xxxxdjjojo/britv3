@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
 import posthog from "posthog-js";
 import dynamic from "next/dynamic";
 import { useForm, type Resolver } from "react-hook-form";
@@ -314,6 +315,15 @@ function NoticesPageInner() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
+      {/* Legal disclaimer banner */}
+      <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+        <p className="text-sm">
+          These documents are generated for reference only. Seek qualified legal
+          advice before serving any notice.
+        </p>
+      </div>
+
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Notice Builder</h1>
         <p className="mt-1 text-sm text-gray-500">
