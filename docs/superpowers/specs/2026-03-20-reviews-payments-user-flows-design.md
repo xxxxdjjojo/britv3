@@ -30,7 +30,27 @@
 
 ### Purpose
 
-This document defines 10 end-to-end user flow scenarios covering **Reviews & Ratings** (pages 17.1–17.5) and **Payments & Billing** (pages 18.1–18.8) for FAANG-level QA validation. Each scenario serves a triple function:
+This document defines 10 end-to-end user flow scenarios covering **Reviews & Ratings** (pages 17.1–17.5) and **Payments & Billing** (pages 18.1–18.8) for FAANG-level QA validation.
+
+### Page-to-Scenario Mapping
+
+| Page ID | Page Name | Scenario(s) |
+|---------|-----------|-------------|
+| 17.1 | Leave a Review — Form | Scenario 1 |
+| 17.2 | Review Verification Flow | Scenario 1 (Step 3) |
+| 17.3 | Review — Edit (within window) | Scenario 2 |
+| 17.4 | Report a Review | Scenario 3 |
+| 17.5 | Reviews — Aggregate by Category / Area | Scenario 4 |
+| 18.1 | Checkout — Subscription Purchase | Scenario 5 |
+| 18.2 | Checkout — One-Time Payment (boost, featured listing) | Scenario 6 |
+| 18.3 | Payment Method Management | Scenario 7 |
+| 18.4 | Billing History / Invoices | Scenario 8 |
+| 18.5 | Payment Confirmation | Scenario 5 (Step 4), Scenario 6 (Step 3) |
+| 18.6 | Payment Failed | Scenario 5 (Step 5), Scenario 10 (Step 1) |
+| 18.7 | Subscription Management (upgrade / downgrade / cancel) | Scenario 9 |
+| 18.8 | Refund Request | Scenario 10 |
+
+Each scenario serves a triple function:
 
 - **QA Validation** — Verifiable test steps with explicit pass/fail checkpoints
 - **UX Audit** — Qualitative assessment of information architecture, efficiency, and delight
@@ -81,7 +101,8 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 | Section | Route | Page | Auth |
 |---------|-------|------|------|
 | Public Reviews | `/reviews/[area]` | Area review aggregates | Public |
-| Public Reviews | `/reviews/[area]/[provider]` | Provider review detail | Public |
+| Public Reviews | `/reviews/[area]/[provider]` | Provider review detail (**NOT YET BUILT — see GAP-4.8**) | Public |
+| Broker Dashboard | `/dashboard/broker/reviews` | Broker review management | Protected |
 | Dashboard | `/dashboard/reviews` | User's submitted reviews | Protected |
 | Agent Dashboard | `/dashboard/agent/reviews` | Agent review management | Protected |
 | Provider Dashboard | `/dashboard/provider/reviews` | Provider review management | Protected |
@@ -647,6 +668,7 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 | GAP-4.5 | Missing Feature | P3 | No "Compare Providers" feature from aggregate page |
 | GAP-4.6 | Missing Link | P2 | No link from review aggregate to provider's booking/quote page |
 | GAP-4.7 | Data Gap | P2 | Review recency — are all reviews shown or only last 12 months? |
+| GAP-4.8 | Routing Bug | P1 | `/reviews/[area]/[provider]` route does not exist — page not yet built |
 
 ### Scenario 4 Scorecard
 
@@ -670,6 +692,7 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 | GAP-4.5 | Missing Feature | P3 | No "Compare Providers" feature |
 | GAP-4.6 | Missing Link | P2 | No link from aggregate to booking/quote page |
 | GAP-4.7 | Data Gap | P2 | Review recency/filtering by date range |
+| GAP-4.8 | Routing Bug | P1 | `/reviews/[area]/[provider]` route does not exist — page not yet built |
 
 ---
 
@@ -937,6 +960,17 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 |------|------|----------|--------|
 | GAP-6.3 | Missing Feature | P3 | No boost analytics dashboard (impressions, clicks during boost) |
 | GAP-6.4 | Edge Case | P2 | What if Elena boosts a listing that gets deactivated during boost period? |
+
+### Scenario 6 Scorecard
+
+| Dimension | Score (1–5) | Notes |
+|-----------|-------------|-------|
+| Task Completion | — | Can Elena purchase a boost and see it reflected on her listing? |
+| Efficiency | — | How many clicks from dashboard to boosted listing? |
+| Error Handling | — | Declined card, 3DS failure, already-boosted listing? |
+| Empty/Edge States | — | No listings to boost? Boost during listing deactivation? |
+| Information Architecture | — | Is the boost option discoverable? Is ROI clear? |
+| Delight & Polish | — | Embedded payment feels native, immediate boost activation? |
 
 ### Scenario 6 Summary of Gaps
 
@@ -1411,7 +1445,7 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 #### P0 — Blockers
 *None identified — core flows appear functional.*
 
-#### P1 — Critical (9 gaps)
+#### P1 — Critical (12 gaps)
 
 | ID | Scenario | Description |
 |----|----------|-------------|
@@ -1426,8 +1460,9 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 | GAP-9.5 | Subscription Mgmt | Active boosts orphaned after cancellation |
 | GAP-10.1 | Refund Request | No automatic refund for duplicate charges |
 | GAP-10.4 | Refund Request | No appeal path for rejected refunds |
+| GAP-4.8 | Aggregate Reviews | `/reviews/[area]/[provider]` route not built |
 
-#### P2 — Important (27 gaps)
+#### P2 — Important (31 gaps)
 
 | ID | Scenario | Description |
 |----|----------|-------------|
@@ -1466,7 +1501,7 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 | GAP-10.5 | Refund Request | No status change notifications |
 | GAP-10.6 | Refund Request | Sub cancellation during pending refund |
 
-#### P3 — Nice-to-Have (11 gaps)
+#### P3 — Nice-to-Have (14 gaps)
 
 | ID | Scenario | Description |
 |----|----------|-------------|
@@ -1494,6 +1529,7 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 | Edge Case | 8 | GAP-5.4 (webhook race), GAP-7.3 (remove all cards) |
 | Data Gap | 7 | GAP-8.3 (invoice descriptions) |
 | Missing Link | 4 | GAP-1.1 (email to review link) |
+| Routing Bug | 1 | GAP-4.8 (provider review detail route) |
 
 ### Cross-Cutting Themes
 
@@ -1502,6 +1538,7 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 3. **Transparency** — Status tracking is insufficient for moderation outcomes and refund processing
 4. **UK Compliance** — VAT handling and invoice formatting need verification against HMRC requirements
 5. **Stripe Boundary** — Webhook race conditions and redirect edge cases need defensive handling
+6. **Mobile Coverage** — No dedicated mobile scenarios in this spec. Scenario 3 (Marcus, provider) and Scenario 7 (Fatima, landlord) should be re-tested on mobile viewports, particularly Stripe Elements rendering and review form usability on small screens
 
 ---
 
@@ -1549,4 +1586,4 @@ This document defines 10 end-to-end user flow scenarios covering **Reviews & Rat
 
 ---
 
-*End of specification. 10 scenarios, 47 gaps identified (11 P1, 27 P2, 11 P3), 4 user roles covered.*
+*End of specification. 10 scenarios, 57 gaps identified (12 P1, 31 P2, 14 P3), 4 user roles covered (homebuyer, renter, estate agent, service provider, landlord).*
