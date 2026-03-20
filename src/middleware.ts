@@ -109,7 +109,7 @@ export async function middleware(request: NextRequest) {
     if (sanitizedRef.length >= 6) {
       response.cookies.set("britestate_ref", sanitizedRef, {
         httpOnly: true, // ENG REVIEW 6A: secure — read server-side only
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV !== "development",
         sameSite: "lax",
         maxAge: 90 * 24 * 60 * 60, // 90 days
         path: "/",
