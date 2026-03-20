@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Find Trusted Professionals | Britestate Services",
+  title: "Find Trusted Professionals | Services",
   description:
     "Browse all property professionals on Britestate — tradespeople, estate agents, mortgage brokers, conveyancers, surveyors and more.",
 };

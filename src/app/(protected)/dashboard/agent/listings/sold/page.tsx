@@ -4,7 +4,7 @@ import { getAgentListings } from "@/services/agent/agent-listings-service";
 import { SoldLetListings } from "@/components/dashboard/agent/listings/SoldLetListings";
 
 export const metadata = {
-  title: "Sold & Let Listings | Agent | Britestate",
+  title: "Sold & Let Listings | Agent",
 };
 
 export default async function AgentSoldListingsPage() {

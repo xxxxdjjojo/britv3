@@ -20,11 +20,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Britestate",
+  title: "Privacy Policy",
   description: "How Britestate collects, uses, and protects your personal data under UK GDPR.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/privacy` },
-  openGraph: { title: "Privacy Policy | Britestate", description: "Britestate Privacy Policy." },
+  openGraph: { title: "Privacy Policy", description: "Britestate Privacy Policy." },
 };
 
 export default function PrivacyPage() {

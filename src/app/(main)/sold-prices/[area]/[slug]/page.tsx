@@ -65,9 +65,9 @@ export async function generateMetadata({ params }: SoldPriceSlugProps): Promise<
     notFound();
   }
   const property = await fetchPropertyBySlug(slug);
-  if (!property) return { title: "Property Not Found | Britestate" };
+  if (!property) return { title: "Property Not Found" };
   return {
-    title: `${property.address} Sold Price History | Britestate`,
+    title: `${property.address} Sold Price History`,
     description: `See the full sold price history for ${property.address}. Last sold for £${property.lastPrice.toLocaleString()}.`,
     alternates: { canonical: `/sold-prices/${area}/${slug}` },
   };

@@ -21,9 +21,9 @@ function toTitleCase(slug: string): string {
 const CATEGORY_SLUG_TO_ENUM: Record<string, ServiceCategory> = {
   plumbers: "plumber",
   electricians: "electrician",
-  builders: "handyman",
-  painters: "other",
-  carpenters: "other",
+  builders: "builder",
+  painters: "painter",
+  carpenters: "carpenter",
   landscapers: "landscaping",
   cleaners: "cleaning",
 };
@@ -86,7 +86,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category, location } = await params;
   return {
-    title: `${toTitleCase(category)} in ${toTitleCase(location)} | Britestate`,
+    title: `${toTitleCase(category)} in ${toTitleCase(location)}`,
     description: `Find trusted ${toTitleCase(category).toLowerCase()} in ${toTitleCase(location)}. Compare reviews, prices and get free quotes.`,
   };
 }

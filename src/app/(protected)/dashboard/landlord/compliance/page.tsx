@@ -96,8 +96,14 @@ export default async function CompliancePage() {
 
   // Fetch compliance docs and portfolio in parallel
   const [docs, properties] = await Promise.all([
-    getComplianceSummary(supabase).catch(() => [] as ComplianceDocument[]),
-    getPortfolioProperties(supabase).catch(() => []),
+    getComplianceSummary(supabase).catch((err: unknown) => {
+      console.error("[landlord/compliance] getComplianceSummary failed:", err instanceof Error ? err.message : err, err);
+      return [] as ComplianceDocument[];
+    }),
+    getPortfolioProperties(supabase).catch((err: unknown) => {
+      console.error("[landlord/compliance] getPortfolioProperties failed:", err instanceof Error ? err.message : err, err);
+      return [];
+    }),
   ]);
 
   const totalProperties = properties.length;

@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { FAQ_SECTIONS } from "@/content/help-faq";
 
 export const metadata: Metadata = {
-  title: "Help Center | Britestate",
+  title: "Help Center",
   description:
     "Find answers to common questions about Britestate -- property search, accounts, service providers, messaging, and more.",
 };

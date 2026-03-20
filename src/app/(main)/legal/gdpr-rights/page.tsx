@@ -23,7 +23,7 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "GDPR Data Subject Rights | Britestate",
+  title: "GDPR Data Subject Rights",
   description: "Exercise your eight rights under UK GDPR — access, erasure, portability, and more.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/gdpr-rights` },

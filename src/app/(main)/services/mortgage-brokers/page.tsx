@@ -6,7 +6,7 @@ import type { ServiceCategory } from "@/types/marketplace";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 export const metadata: Metadata = {
-  title: "Find a Mortgage Broker Near You | Britestate",
+  title: "Find a Mortgage Broker Near You",
   description:
     "Compare FCA-regulated mortgage brokers. Get free mortgage advice and compare rates across the UK.",
 };

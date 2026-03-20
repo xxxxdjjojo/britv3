@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProfilePageClient } from "./ProfilePageClient";
 
 export const metadata: Metadata = {
-  title: "Profile | Britestate",
+  title: "Profile",
   description: "Manage your Britestate profile, avatar, and settings.",
 };
 

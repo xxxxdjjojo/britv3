@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 
 export async function generateMetadata(props: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await props.params;
-  return { title: `Property ${id} | Landlord Dashboard | Britestate` };
+  return { title: `Property ${id} | Landlord Dashboard` };
 }
 
 async function PropertyDetailContent(props: Readonly<{ id: string }>) {
@@ -28,7 +28,10 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
   // Run all data fetches in parallel
   const [property, tenancies, financialEntries, documents, maintenanceRequests] =
     await Promise.all([
-      getPropertyDetail(supabase, props.id).catch(() => null),
+      getPropertyDetail(supabase, props.id).catch((err: unknown) => {
+        console.error("[landlord/properties/[id]] getPropertyDetail failed:", err instanceof Error ? err.message : err, err);
+        return null;
+      }),
       getTenancies(supabase, props.id),
       getFinancialEntries(supabase, props.id),
       getDocuments(supabase, props.id),

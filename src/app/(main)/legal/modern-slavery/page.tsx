@@ -16,11 +16,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Modern Slavery Statement | Britestate",
+  title: "Modern Slavery Statement",
   description: "Britestate's commitment under the Modern Slavery Act 2015.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/modern-slavery` },
-  openGraph: { title: "Modern Slavery Statement | Britestate", description: "Britestate Modern Slavery Statement." },
+  openGraph: { title: "Modern Slavery Statement", description: "Britestate Modern Slavery Statement." },
 };
 
 export default function ModernSlaveryPage() {

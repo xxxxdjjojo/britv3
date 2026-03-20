@@ -10,7 +10,7 @@ import { ComplianceAlertBanner } from "@/components/landlord/ComplianceAlertBann
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
-  title: "Dashboard | Landlord | Britestate",
+  title: "Dashboard | Landlord",
 };
 
 async function DashboardContent() {

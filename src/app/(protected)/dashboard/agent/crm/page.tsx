@@ -5,7 +5,7 @@ import { ClientList } from "@/components/dashboard/agent/crm/ClientList";
 import type { AgentCrmClient } from "@/types/agent";
 
 export const metadata = {
-  title: "CRM Clients | Agent | Britestate",
+  title: "CRM Clients | Agent",
 };
 
 export default async function AgentCrmPage() {

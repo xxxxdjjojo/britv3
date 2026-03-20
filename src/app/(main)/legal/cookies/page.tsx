@@ -24,7 +24,7 @@ const COOKIE_TABLE = [
 ];
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Britestate",
+  title: "Cookie Policy",
   description: "Details of cookies Britestate uses and how to manage your preferences.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/cookies` },

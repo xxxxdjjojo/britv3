@@ -15,11 +15,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Disclaimer | Britestate",
+  title: "Disclaimer",
   description: "Limitations on the advice and information Britestate provides.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/disclaimer` },
-  openGraph: { title: "Disclaimer | Britestate", description: "Britestate disclaimer." },
+  openGraph: { title: "Disclaimer", description: "Britestate disclaimer." },
 };
 
 export default function DisclaimerPage() {

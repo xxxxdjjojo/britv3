@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Investor Relations | Britestate",
+  title: "Investor Relations",
   description:
     "Key metrics, financials, and investor information for Britestate.",
 };

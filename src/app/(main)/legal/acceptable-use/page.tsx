@@ -15,7 +15,7 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Acceptable Use Policy | Britestate",
+  title: "Acceptable Use Policy",
   description: "Conduct standards and prohibited activities on the Britestate platform.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/acceptable-use` },

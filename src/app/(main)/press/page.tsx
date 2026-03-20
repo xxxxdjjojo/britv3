@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Press | Britestate",
+  title: "Press",
   description:
     "Press releases, media resources, and the latest news from Britestate.",
 };

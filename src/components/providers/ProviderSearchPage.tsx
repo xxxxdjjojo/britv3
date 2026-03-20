@@ -26,7 +26,7 @@ type ProviderSearchPageProps = Readonly<{
   pageSubtitle: string;
   defaultCategory?: ServiceCategory | null;
   categoryOptions?: { value: string; label: string }[];
-  specialistBadge?: "FCA" | "RICS" | "SRA" | null;
+  specialistBadge?: "FCA" | "RICS" | "SRA" | "RIBA" | null;
   initialProviders: ServiceProviderPublicProfile[];
   initialCount: number;
 }>;
@@ -230,6 +230,7 @@ export function ProviderSearchPage({
   const [providers, setProviders] =
     useState<ServiceProviderPublicProfile[]>(initialProviders);
   const [count, setCount] = useState(initialCount);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   // Use a ref to skip the initial render (data already provided as props)
   const isFirstRender = useRef(true);
@@ -246,10 +247,11 @@ export function ProviderSearchPage({
 
     startTransition(async () => {
       try {
+        setError(null);
         const apiUrl = buildSearchUrl(filters, sort);
         const res = await fetch(apiUrl);
         if (!res.ok) {
-          console.error("Provider search failed:", res.status);
+          setError("Search failed. Please try again.");
           return;
         }
         const json = (await res.json()) as {
@@ -258,8 +260,8 @@ export function ProviderSearchPage({
         };
         setProviders(json.data ?? []);
         setCount(json.count ?? 0);
-      } catch (err) {
-        console.error("Provider search error:", err);
+      } catch {
+        setError("Unable to load results. Please check your connection and try again.");
       }
     });
   }, [filters, sort]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -349,6 +351,24 @@ export function ProviderSearchPage({
                 </select>
               </div>
             </div>
+
+            {/* Error state */}
+            {error && (
+              <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-4 text-center">
+                <p className="text-sm text-red-700 dark:text-red-400 font-medium">{error}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    isFirstRender.current = false;
+                    setFilters((prev) => ({ ...prev }));
+                  }}
+                  className="mt-2 text-sm text-red-600 dark:text-red-400 underline underline-offset-2 hover:text-red-800 dark:hover:text-red-300"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
             {/* Results grid */}
             {isPending ? (

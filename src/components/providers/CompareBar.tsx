@@ -15,10 +15,10 @@ export function CompareBar() {
       aria-live="polite"
       aria-label={`${count} of 3 providers selected for comparison`}
     >
-      <div className="bg-white/95 backdrop-blur-md shadow-lg border-t border-gray-200">
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg border-t border-gray-200 dark:border-slate-700">
         <div className="mx-auto max-w-7xl px-4 py-3">
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-gray-700 dark:text-slate-300">
               <span className="mr-1 text-[#2563EB] font-semibold">{count}</span>
               of 3 providers selected
             </p>
@@ -27,7 +27,7 @@ export function CompareBar() {
               <button
                 type="button"
                 onClick={clearAll}
-                className="text-sm text-gray-500 underline-offset-2 hover:underline hover:text-gray-700 transition-colors"
+                className="text-sm text-gray-500 dark:text-slate-400 underline-offset-2 hover:underline hover:text-gray-700 dark:hover:text-slate-200 transition-colors"
               >
                 Clear All
               </button>

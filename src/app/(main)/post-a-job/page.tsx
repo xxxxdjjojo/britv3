@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RFQCreateForm } from "@/components/marketplace/RFQCreateForm";
 
 export const metadata: Metadata = {
-  title: "Post a Job — Get Free Quotes | Britestate",
+  title: "Post a Job — Get Free Quotes",
   description:
     "Describe your job and get matched with verified tradespeople. Compare quotes and choose the best fit — free service.",
 };

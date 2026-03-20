@@ -139,7 +139,7 @@ export async function generateMetadata({
   const { slug } = await params;
   void slug;
   return {
-    title: `${MOCK_ARTICLE.title} | Britestate Blog`,
+    title: `${MOCK_ARTICLE.title} | Blog`,
     description: MOCK_ARTICLE.excerpt,
   };
 }

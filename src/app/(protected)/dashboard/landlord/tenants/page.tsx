@@ -5,7 +5,10 @@ import { TenantScreeningClient } from "@/components/landlord/TenantScreeningClie
 export default async function TenantsPage() {
   const supabase = await createClient();
 
-  let applications = await listApplications(supabase).catch(() => []);
+  let applications = await listApplications(supabase).catch((err: unknown) => {
+    console.error("[landlord/tenants] listApplications failed:", err instanceof Error ? err.message : err, err);
+    return [];
+  });
 
   return <TenantScreeningClient initialApplications={applications} />;
 }

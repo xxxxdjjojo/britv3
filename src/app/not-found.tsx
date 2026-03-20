@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "404 — Page Not Found | Britestate",
+  title: "404 — Page Not Found",
 };
 
 export default async function NotFound() {

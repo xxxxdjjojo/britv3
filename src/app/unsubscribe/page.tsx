@@ -3,7 +3,7 @@ import { verifyUnsubscribeToken } from "@/lib/unsubscribe-token";
 import UnsubscribeClient from "./UnsubscribeClient";
 
 export const metadata: Metadata = {
-  title: "Unsubscribe | Britestate",
+  title: "Unsubscribe",
 };
 
 type PageProps = Readonly<{

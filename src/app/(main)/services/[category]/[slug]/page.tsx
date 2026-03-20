@@ -99,12 +99,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   // Provider profile metadata
   const provider = await fetchProviderBySlug(slug);
   if (!provider) {
-    return { title: "Provider Not Found | Britestate" };
+    return { title: "Provider Not Found" };
   }
   const categoryLabel = SLUG_TO_CATEGORY[category] ?? category;
   const displayCategory = String(categoryLabel).replace(/_/g, " ");
   return {
-    title: `${provider.business_name} | ${displayCategory} | Britestate`,
+    title: `${provider.business_name} | ${displayCategory}`,
     description:
       provider.description ??
       `View ${provider.business_name}'s profile, reviews, portfolio and pricing on Britestate.`,

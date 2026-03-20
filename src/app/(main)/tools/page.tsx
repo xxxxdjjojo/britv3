@@ -19,11 +19,11 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Property Tools & Calculators | Britestate",
+  title: "Property Tools & Calculators",
   description:
     "Free UK property calculators. Calculate mortgage repayments, stamp duty, rental yield, affordability, energy bills, and whether to buy or rent. Trusted by 50,000+ homebuyers.",
   openGraph: {
-    title: "Property Tools & Calculators | Britestate",
+    title: "Property Tools & Calculators",
     description:
       "Free UK property calculators. Mortgage, stamp duty, rental yield, affordability and more.",
     type: "website",

@@ -62,9 +62,16 @@ export async function fetchProviderBySlug(
     `,
     )
     .eq("slug", slug)
+    .eq("profiles.provider_verification_status", "verified")
     .single();
 
   if (error || !data) {
+    return null;
+  }
+
+  // Double-check verification status in application layer
+  const profile = data.profiles as { provider_verification_status?: string } | null;
+  if (profile?.provider_verification_status !== "verified") {
     return null;
   }
 

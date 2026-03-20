@@ -18,6 +18,13 @@ export default async function PortfolioAnalyticsPage() {
     getPortfolioProperties(supabase),
   ]);
 
+  if (kpisResult.status === "rejected") {
+    console.error("[landlord/analytics] getPortfolioKPIs failed:", kpisResult.reason instanceof Error ? kpisResult.reason.message : kpisResult.reason, kpisResult.reason);
+  }
+  if (propertiesResult.status === "rejected") {
+    console.error("[landlord/analytics] getPortfolioProperties failed:", propertiesResult.reason instanceof Error ? propertiesResult.reason.message : propertiesResult.reason, propertiesResult.reason);
+  }
+
   const kpis =
     kpisResult.status === "fulfilled"
       ? kpisResult.value
@@ -57,8 +64,9 @@ export default async function PortfolioAnalyticsPage() {
 
       entries = (data ?? []) as typeof entries;
     }
-  } catch {
+  } catch (err: unknown) {
     // Graceful degradation — charts render with empty data
+    console.error("[landlord/analytics] financial_entries query failed:", err instanceof Error ? err.message : err, err);
   }
 
   return (

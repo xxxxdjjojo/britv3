@@ -3,7 +3,7 @@ import { getPropertyDetail } from "@/services/landlord/portfolio-service";
 import PropertyOverview from "@/components/landlord/PropertyOverview";
 
 export const metadata = {
-  title: "Property Overview | Britestate",
+  title: "Property Overview",
 };
 
 export default async function PropertyOverviewPage(

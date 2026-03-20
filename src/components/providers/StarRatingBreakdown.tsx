@@ -21,7 +21,7 @@ function FilledStars({ rating }: Readonly<{ rating: number }>) {
           className={`w-5 h-5 ${
             star <= Math.round(rating)
               ? "fill-amber-400 text-amber-400"
-              : "fill-slate-200 text-slate-200"
+              : "fill-slate-200 dark:fill-slate-600 text-slate-200 dark:text-slate-600"
           }`}
         />
       ))}
@@ -45,10 +45,10 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
     <section className="space-y-6">
       {/* Large rating display */}
       <div className="flex items-center gap-4">
-        <span className="text-5xl font-bold text-[#1B4D3E]">{avg.toFixed(1)}</span>
+        <span className="text-5xl font-bold text-[#1B4D3E] dark:text-emerald-400">{avg.toFixed(1)}</span>
         <div className="space-y-1">
           <FilledStars rating={avg} />
-          <p className="text-sm text-slate-500">({total} reviews)</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">({total} reviews)</p>
         </div>
       </div>
 
@@ -58,14 +58,14 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
           const pct = total > 0 ? Math.round((count / total) * 100) : 0;
           return (
             <div key={label} className="flex items-center gap-3">
-              <span className="text-sm text-slate-600 w-6 shrink-0">{label}</span>
-              <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <span className="text-sm text-slate-600 dark:text-slate-300 w-6 shrink-0">{label}</span>
+              <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-[#1B4D3E] rounded-full"
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-sm text-slate-500 w-8 text-right shrink-0">{count}</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400 w-8 text-right shrink-0">{count}</span>
             </div>
           );
         })}

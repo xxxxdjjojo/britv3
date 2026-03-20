@@ -235,6 +235,7 @@ export const providerSearchSchema = z.object({
   radius: z.number().min(1).max(100).default(25),
   min_rating: z.number().min(1).max(5).optional(),
   search_query: z.string().optional(),
+  sort: z.enum(["rating", "reviews", "newest", "price_low", "price_high"]).optional(),
 });
 
 export type ProviderSearchInput = z.infer<typeof providerSearchSchema>;

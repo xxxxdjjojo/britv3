@@ -9,7 +9,7 @@ import { LeadDetailTimeline } from "@/components/dashboard/agent/leads/LeadDetai
 import type { AgentLead, AgentLeadActivity, AgentTeamMember } from "@/types/agent";
 
 export const metadata = {
-  title: "Lead Detail | Agent | Britestate",
+  title: "Lead Detail | Agent",
 };
 
 type Props = Readonly<{

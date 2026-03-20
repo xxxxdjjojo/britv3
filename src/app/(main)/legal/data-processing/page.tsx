@@ -27,11 +27,11 @@ const SUB_PROCESSORS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Data Processing Agreement | Britestate",
+  title: "Data Processing Agreement",
   description: "DPA terms for service providers operating on the Britestate platform.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/data-processing` },
-  openGraph: { title: "Data Processing Agreement | Britestate", description: "Britestate Data Processing Agreement." },
+  openGraph: { title: "Data Processing Agreement", description: "Britestate Data Processing Agreement." },
 };
 
 export default function DataProcessingPage() {

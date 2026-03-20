@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const { city } = await params;
   const cityName = city.charAt(0).toUpperCase() + city.slice(1);
   return {
-    title: `Properties in ${cityName} | Britestate Area Guide`,
+    title: `Properties in ${cityName} | Area Guide`,
     description: `Explore ${cityName} property market data, prices, schools and transport.`,
     alternates: { canonical: `/areas/${city}` },
   };

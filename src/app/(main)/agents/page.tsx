@@ -6,7 +6,7 @@ import type { AgentPublicProfile } from "@/types/providers";
 import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
 
 export const metadata: Metadata = {
-  title: "Find an Estate Agent Near You | Britestate",
+  title: "Find an Estate Agent Near You",
   description:
     "Compare local estate agents — check sold prices, reviews, and fees before choosing your agent.",
 };
@@ -79,7 +79,7 @@ export default async function AgentsPage({ searchParams }: Props) {
   const hasFilters = q || area || minRating;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 pb-20">
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
@@ -110,7 +110,7 @@ export default async function AgentsPage({ searchParams }: Props) {
       </section>
 
       {/* Filters */}
-      <section className="border-b border-gray-200 bg-white shadow-sm">
+      <section className="border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-5">
           <form
             action="/agents"
@@ -124,7 +124,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             <div className="flex flex-col gap-1.5 min-w-0">
               <label
                 htmlFor="area-filter"
-                className="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide"
               >
                 Area
               </label>
@@ -133,20 +133,20 @@ export default async function AgentsPage({ searchParams }: Props) {
                 name="area"
                 defaultValue={area}
                 placeholder="e.g. Manchester, SW1A"
-                className="px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent w-52"
+                className="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent w-52"
               />
             </div>
 
             {/* Min rating filter */}
             <fieldset className="flex flex-col gap-1.5">
-              <legend className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              <legend className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
                 Min Rating
               </legend>
               <div className="flex items-center gap-3">
                 {MIN_RATING_OPTIONS.map((opt) => (
                   <label
                     key={opt.value}
-                    className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-700"
+                    className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-700 dark:text-slate-300"
                   >
                     <input
                       type="radio"
@@ -159,7 +159,7 @@ export default async function AgentsPage({ searchParams }: Props) {
                   </label>
                 ))}
                 {minRating ? (
-                  <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-400">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-400 dark:text-slate-500">
                     <input
                       type="radio"
                       name="min_rating"
@@ -196,8 +196,8 @@ export default async function AgentsPage({ searchParams }: Props) {
 
       {/* Results */}
       <section className="max-w-6xl mx-auto px-6 py-12">
-        <p className="text-gray-600 mb-6">
-          <span className="font-semibold text-gray-900">
+        <p className="text-gray-600 dark:text-slate-400 mb-6">
+          <span className="font-semibold text-gray-900 dark:text-white">
             {filteredAgents.length}
           </span>{" "}
           estate agent{filteredAgents.length !== 1 ? "s" : ""} found
@@ -205,7 +205,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             <>
               {" "}
               for{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">
                 &ldquo;{q}&rdquo;
               </span>
             </>
@@ -214,14 +214,14 @@ export default async function AgentsPage({ searchParams }: Props) {
             <>
               {" "}
               in{" "}
-              <span className="font-semibold text-gray-900">{area}</span>
+              <span className="font-semibold text-gray-900 dark:text-white">{area}</span>
             </>
           ) : null}
           {minRating ? (
             <>
               {" "}
               rated{" "}
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">
                 {minRating}+
               </span>
             </>
@@ -230,7 +230,7 @@ export default async function AgentsPage({ searchParams }: Props) {
 
         {filteredAgents.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg mb-4">
+            <p className="text-gray-500 dark:text-slate-400 text-lg mb-4">
               No estate agents found. Try adjusting your filters.
             </p>
             <Link
@@ -262,11 +262,11 @@ export default async function AgentsPage({ searchParams }: Props) {
               return (
                 <div
                   key={agent.id}
-                  className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow flex flex-col"
                 >
                   {/* Card header */}
                   <div className="p-6 flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-xl bg-gray-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden flex items-center justify-center">
                       {logoUrl ? (
                         <Image
                           src={logoUrl}
@@ -276,20 +276,20 @@ export default async function AgentsPage({ searchParams }: Props) {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-2xl font-bold text-gray-400">
+                        <span className="text-2xl font-bold text-gray-400 dark:text-slate-500">
                           {agencyName.charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
                     <div className="min-w-0">
-                      <h2 className="font-semibold text-gray-900 truncate">
+                      <h2 className="font-semibold text-gray-900 dark:text-white truncate">
                         {agencyName}
                       </h2>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-gray-500 dark:text-slate-400 truncate">
                         {agent.display_name}
                       </p>
                       {city ? (
-                        <p className="text-xs text-gray-400 mt-0.5 truncate">
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 truncate">
                           {city}
                         </p>
                       ) : null}
@@ -302,13 +302,13 @@ export default async function AgentsPage({ searchParams }: Props) {
                       {areasCovered.slice(0, 3).map((a) => (
                         <span
                           key={a}
-                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                         >
                           {a}
                         </span>
                       ))}
                       {areasCovered.length > 3 ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400">
                           +{areasCovered.length - 3} more
                         </span>
                       ) : null}
@@ -316,7 +316,7 @@ export default async function AgentsPage({ searchParams }: Props) {
                   ) : null}
 
                   {/* Card footer */}
-                  <div className="mt-auto border-t border-gray-100 p-4">
+                  <div className="mt-auto border-t border-gray-100 dark:border-slate-800 p-4">
                     <Link
                       href={`/agents/${agent.slug}`}
                       className="block w-full text-center py-2 px-4 bg-[#1B4D3E] text-white text-sm font-semibold rounded-xl hover:bg-[#163d32] transition-colors"

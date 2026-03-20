@@ -19,7 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Find Service Providers | Britestate",
+  title: "Find Service Providers",
   description:
     "Browse verified tradespeople, estate agents, mortgage brokers, conveyancers and surveyors across the UK.",
 };
@@ -41,9 +41,9 @@ const CATEGORIES: CategoryCard[] = [
   { slug: "landscapers", label: "Landscapers", icon: Trees, href: "/services/tradespeople?category=landscaping" },
   { slug: "cleaners", label: "Cleaners", icon: Home, href: "/services/tradespeople?category=cleaning" },
   { slug: "estate-agents", label: "Estate Agents", icon: BriefcaseBusiness, href: "/agents" },
-  { slug: "mortgage-brokers", label: "Mortgage Brokers", icon: FileText, href: "/mortgage-brokers" },
-  { slug: "conveyancers", label: "Conveyancers", icon: Scale, href: "/conveyancers" },
-  { slug: "surveyors", label: "Surveyors", icon: Ruler, href: "/surveyors" },
+  { slug: "mortgage-brokers", label: "Mortgage Brokers", icon: FileText, href: "/services/mortgage-brokers" },
+  { slug: "conveyancers", label: "Conveyancers", icon: Scale, href: "/services/conveyancers" },
+  { slug: "surveyors", label: "Surveyors", icon: Ruler, href: "/services/surveyors" },
 ];
 
 export default async function MarketplaceLandingPage() {

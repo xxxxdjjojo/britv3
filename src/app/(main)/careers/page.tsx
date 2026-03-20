@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Careers | Britestate",
+  title: "Careers",
   description:
     "Join the team building the future of UK property. Explore open roles at Britestate.",
 };

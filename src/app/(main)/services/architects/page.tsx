@@ -6,7 +6,7 @@ import type { ServiceCategory } from "@/types/marketplace";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 export const metadata: Metadata = {
-  title: "Find an Architect Near You | Britestate",
+  title: "Find an Architect Near You",
   description:
     "Compare architects for extensions, renovations, and new builds. Find an architect near you on Britestate.",
 };
@@ -45,7 +45,7 @@ export default async function ArchitectsPage({ searchParams }: PageProps) {
       pageTitle="Find an Architect"
       pageSubtitle="Compare architects for extensions, renovations, and new builds."
       defaultCategory={defaultCat}
-      specialistBadge={null}
+      specialistBadge="RIBA"
       initialProviders={initialProviders}
       initialCount={initialCount}
     />

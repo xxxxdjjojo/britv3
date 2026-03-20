@@ -80,7 +80,7 @@ export async function generateMetadata({
 
   if (!detail) {
     return {
-      title: "Property not found | Britestate",
+      title: "Property not found",
     };
   }
 
@@ -90,10 +90,10 @@ export async function generateMetadata({
   const cityLabel = property.city;
 
   return {
-    title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
+    title: `${bedsLabel} ${typeLabel} in ${cityLabel}`,
     description: (property.description ?? "").slice(0, 160),
     openGraph: {
-      title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
+      title: `${bedsLabel} ${typeLabel} in ${cityLabel}`,
       description: (property.description ?? "").slice(0, 160),
       images: detail.media
         .filter((m) => m.mediaType === "image")

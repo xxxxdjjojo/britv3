@@ -14,11 +14,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Complaints Procedure | Britestate",
+  title: "Complaints Procedure",
   description: "How to raise a complaint with Britestate and escalation options.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/complaints` },
-  openGraph: { title: "Complaints Procedure | Britestate", description: "Britestate complaints procedure." },
+  openGraph: { title: "Complaints Procedure", description: "Britestate complaints procedure." },
 };
 
 export default function ComplaintsPage() {

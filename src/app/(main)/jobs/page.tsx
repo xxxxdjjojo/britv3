@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { MapPin, Clock, Briefcase, MessageSquare } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Job Board — Find Work Near You | Britestate",
+  title: "Job Board — Find Work Near You",
   description:
     "Browse open jobs and RFQs posted by homeowners. Filter by trade category and urgency.",
 };

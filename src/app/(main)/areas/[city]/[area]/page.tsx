@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: AreaPageProps): Promise<Metad
   const name = area.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   const cityName = city.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   return {
-    title: `${name} Area Guide — ${MOCK_AREA.postcode} | Britestate`,
+    title: `${name} Area Guide — ${MOCK_AREA.postcode}`,
     description: `Discover ${name}: property prices, schools, transport and lifestyle in ${cityName}.`,
     alternates: { canonical: `/areas/${city}/${area}` },
   };

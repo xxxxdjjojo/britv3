@@ -5,7 +5,7 @@ import { AvatarUploader } from "@/components/settings/AvatarUploader";
 import { ProfileForm } from "@/components/settings/ProfileForm";
 
 export const metadata: Metadata = {
-  title: "Account | Britestate",
+  title: "Account",
 };
 
 export default async function AccountSettingsPage() {

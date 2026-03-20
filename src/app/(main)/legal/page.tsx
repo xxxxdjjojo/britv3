@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Legal Hub | Britestate",
+  title: "Legal Hub",
   description: "Britestate's legal documents, policies, and compliance information.",
   robots: { index: true, follow: true },
   alternates: {

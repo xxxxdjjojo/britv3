@@ -5,7 +5,7 @@ import { SdltCalculator } from "@/components/calculators/SdltCalculator";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Stamp Duty Calculator | Britestate",
+  title: "Stamp Duty Calculator",
   description:
     "Calculate your Stamp Duty Land Tax (SDLT) for residential property purchases in England and Northern Ireland. Supports first-time buyer relief and additional property surcharge.",
 };

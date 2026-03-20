@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { CreateListingWizard } from "@/components/dashboard/agent/listings/CreateListingWizard";
 
 export const metadata = {
-  title: "Create Listing | Agent | Britestate",
+  title: "Create Listing | Agent",
 };
 
 export default async function AgentCreateListingPage() {

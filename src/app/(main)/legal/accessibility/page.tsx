@@ -15,11 +15,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Accessibility Statement | Britestate",
+  title: "Accessibility Statement",
   description: "Britestate's WCAG 2.1 AA compliance status and known accessibility limitations.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/accessibility` },
-  openGraph: { title: "Accessibility Statement | Britestate", description: "Britestate accessibility statement." },
+  openGraph: { title: "Accessibility Statement", description: "Britestate accessibility statement." },
 };
 
 export default function AccessibilityPage() {

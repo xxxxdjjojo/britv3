@@ -59,7 +59,10 @@ export default async function ComplianceAlertsPage({
 
   const supabase = await createClient();
   const allDocs = await getComplianceSummary(supabase).catch(
-    () => [] as ComplianceDocument[],
+    (err: unknown) => {
+      console.error("[landlord/compliance/alerts] getComplianceSummary failed:", err instanceof Error ? err.message : err, err);
+      return [] as ComplianceDocument[];
+    },
   );
 
   // Filter to expired + expiring_soon only, then optionally by category

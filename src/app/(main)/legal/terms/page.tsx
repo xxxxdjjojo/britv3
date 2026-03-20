@@ -17,11 +17,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Britestate",
+  title: "Terms of Service",
   description: "The terms and conditions governing your use of the Britestate platform.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/terms` },
-  openGraph: { title: "Terms of Service | Britestate", description: "Terms and conditions for Britestate." },
+  openGraph: { title: "Terms of Service", description: "Terms and conditions for Britestate." },
 };
 
 export default function TermsPage() {

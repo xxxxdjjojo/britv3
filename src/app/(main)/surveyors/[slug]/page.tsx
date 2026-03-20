@@ -28,10 +28,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const provider = await fetchProviderBySlug(slug);
   if (!provider) {
-    return { title: "Surveyor Not Found | Britestate" };
+    return { title: "Surveyor Not Found" };
   }
   return {
-    title: `${provider.business_name} | Surveyor | Britestate`,
+    title: `${provider.business_name} | Surveyor`,
     description:
       provider.description ??
       `View ${provider.business_name}'s surveyor profile, RICS credentials, survey types, and reviews on Britestate.`,

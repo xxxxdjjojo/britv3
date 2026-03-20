@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Support | Help | Britestate",
+  title: "Contact Support | Help",
   description:
     "Get in touch with the Britestate support team. We respond within one business day.",
 };

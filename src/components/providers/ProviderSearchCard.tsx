@@ -152,13 +152,13 @@ export function ProviderSearchCard({ provider, category, latestReview }: Props) 
         <div className="flex flex-wrap gap-2 mt-4">
           <a
             href={`/services/${category}/${slug}`}
-            className="bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#1D4ED8] transition-colors"
+            className="bg-[#2563EB] text-white px-4 py-2 min-h-[44px] inline-flex items-center rounded-lg text-sm font-semibold hover:bg-[#1D4ED8] transition-colors"
           >
             View Profile
           </a>
           <a
             href={`/services/${category}/${slug}#services`}
-            className="border border-slate-300 dark:border-slate-700 px-4 py-2 rounded-lg text-sm font-semibold hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
+            className="border border-slate-300 dark:border-slate-700 px-4 py-2 min-h-[44px] inline-flex items-center rounded-lg text-sm font-semibold hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
           >
             Get a Quote
           </a>

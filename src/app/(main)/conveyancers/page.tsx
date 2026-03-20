@@ -6,7 +6,7 @@ import type { ServiceProviderPublicProfile } from "@/types/providers";
 import type { ServiceCategory } from "@/types/marketplace";
 
 export const metadata: Metadata = {
-  title: "Find a Conveyancer Near You | Britestate",
+  title: "Find a Conveyancer Near You",
   description:
     "Compare SRA-regulated solicitors and licensed conveyancers. Fixed fees, no sale no fee options, and fast turnarounds.",
 };

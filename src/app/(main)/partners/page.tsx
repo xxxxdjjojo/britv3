@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Partners | Britestate",
+  title: "Partners",
   description:
     "Partner with Britestate to reach millions of UK property seekers. Learn about our partnership programmes.",
 };

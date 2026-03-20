@@ -17,11 +17,11 @@ const SECTIONS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Anti-Money Laundering Policy | Britestate",
+  title: "Anti-Money Laundering Policy",
   description: "Britestate's AML obligations under the Money Laundering Regulations 2017.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/aml-policy` },
-  openGraph: { title: "Anti-Money Laundering Policy | Britestate", description: "Britestate AML Policy." },
+  openGraph: { title: "Anti-Money Laundering Policy", description: "Britestate AML Policy." },
 };
 
 export default function AmlPolicyPage() {

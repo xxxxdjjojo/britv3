@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "UK Property Market Trends | Britestate",
+  title: "UK Property Market Trends",
   description:
     "Live UK property market data, regional price trends, and expert analysis. Track house prices, transaction volumes, and market indicators.",
 };

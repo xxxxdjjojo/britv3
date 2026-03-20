@@ -34,7 +34,7 @@ export async function generateMetadata({
   const { area } = await params;
   const areaName = formatAreaName(area);
   return {
-    title: `Sold Prices in ${areaName} | Britestate`,
+    title: `Sold Prices in ${areaName}`,
     description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by Britestate.`,
   };
 }

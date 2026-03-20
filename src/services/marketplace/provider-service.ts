@@ -239,6 +239,49 @@ export async function searchProviders(
 
   const results = (data ?? []) as ServiceProviderDetails[];
 
+  // Application-level sorting (RPC does not support sort parameter)
+  if (params.sort) {
+    const sorted = [...results];
+    switch (params.sort) {
+      case "rating":
+        sorted.sort((a, b) => {
+          const ra = (a as unknown as Record<string, unknown>).avg_rating as number | null;
+          const rb = (b as unknown as Record<string, unknown>).avg_rating as number | null;
+          return (rb ?? 0) - (ra ?? 0);
+        });
+        break;
+      case "reviews":
+        sorted.sort((a, b) => {
+          const ra = (a as unknown as Record<string, unknown>).total_reviews as number | null;
+          const rb = (b as unknown as Record<string, unknown>).total_reviews as number | null;
+          return (rb ?? 0) - (ra ?? 0);
+        });
+        break;
+      case "newest":
+        sorted.sort((a, b) => {
+          const da = (a as unknown as Record<string, unknown>).created_at as string | null;
+          const db = (b as unknown as Record<string, unknown>).created_at as string | null;
+          return new Date(db ?? 0).getTime() - new Date(da ?? 0).getTime();
+        });
+        break;
+      case "price_low":
+        sorted.sort((a, b) => {
+          const pa = ((a as unknown as Record<string, unknown>).pricing as Record<string, number> | null)?.hourly_rate ?? Infinity;
+          const pb = ((b as unknown as Record<string, unknown>).pricing as Record<string, number> | null)?.hourly_rate ?? Infinity;
+          return pa - pb;
+        });
+        break;
+      case "price_high":
+        sorted.sort((a, b) => {
+          const pa = ((a as unknown as Record<string, unknown>).pricing as Record<string, number> | null)?.hourly_rate ?? 0;
+          const pb = ((b as unknown as Record<string, unknown>).pricing as Record<string, number> | null)?.hourly_rate ?? 0;
+          return pb - pa;
+        });
+        break;
+    }
+    return { data: sorted, count: sorted.length };
+  }
+
   return {
     data: results,
     count: results.length,

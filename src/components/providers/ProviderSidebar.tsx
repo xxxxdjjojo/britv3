@@ -1,5 +1,7 @@
+"use client";
+
 /**
- * ProviderSidebar — Server Component
+ * ProviderSidebar — Client Component
  *
  * Renders the sticky "Get a Free Quote" sidebar widget and trust card for
  * a tradesperson public profile page.

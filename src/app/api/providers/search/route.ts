@@ -64,6 +64,9 @@ export async function GET(request: NextRequest) {
     const searchQuery = searchParams.get("search_query");
     if (searchQuery) rawParams.search_query = searchQuery;
 
+    const sort = searchParams.get("sort");
+    if (sort) rawParams.sort = sort;
+
     // Validate
     const parseResult = providerSearchSchema.safeParse(rawParams);
 

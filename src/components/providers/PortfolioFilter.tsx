@@ -48,7 +48,7 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
           <button
             type="button"
             onClick={() => setActiveCategory(null)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 min-h-[44px] rounded-full text-sm font-medium transition-colors ${
               activeCategory === null
                 ? "bg-[#2563EB] text-white"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
@@ -61,7 +61,7 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
               key={cat}
               type="button"
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              className={`px-4 py-2 min-h-[44px] rounded-full text-sm font-medium transition-colors ${
                 activeCategory === cat
                   ? "bg-[#2563EB] text-white"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
@@ -74,7 +74,7 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
       )}
 
       {/* Masonry grid */}
-      <div className="[column-count:2] [column-gap:1rem] md:[column-count:3]">
+      <div className="[column-count:1] sm:[column-count:2] [column-gap:1rem] md:[column-count:3]">
         {filteredItems.map((item) => (
           <PortfolioLightbox key={item.id} item={item} />
         ))}

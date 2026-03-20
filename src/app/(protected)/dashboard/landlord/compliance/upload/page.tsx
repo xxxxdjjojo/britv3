@@ -39,7 +39,10 @@ export default async function ComplianceUploadPage({
 
   // Fetch landlord's properties for dropdown
   const portfolioProperties = await getPortfolioProperties(supabase).catch(
-    () => [],
+    (err: unknown) => {
+      console.error("[landlord/compliance/upload] getPortfolioProperties failed:", err instanceof Error ? err.message : err, err);
+      return [];
+    },
   );
 
   // Map to simple address format for the form

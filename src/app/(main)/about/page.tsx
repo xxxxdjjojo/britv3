@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About | Britestate",
+  title: "About",
   description:
     "Learn about Britestate -- the UK property portal that brings together search, services, and transactions in one platform.",
 };

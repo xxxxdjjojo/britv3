@@ -5,7 +5,7 @@ import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Session Expired | Britestate",
+  title: "Session Expired",
   robots: { index: false },
 };
 

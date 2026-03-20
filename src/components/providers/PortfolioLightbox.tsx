@@ -60,6 +60,8 @@ export function PortfolioLightbox({ item }: PortfolioLightboxProps) {
               width={1200}
               height={900}
               className="w-full h-auto object-contain"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
             />
           </div>
           {(item.title || item.description || item.category) && (

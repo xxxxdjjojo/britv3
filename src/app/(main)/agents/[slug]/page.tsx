@@ -30,12 +30,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const agency = await fetchAgentBySlug(slug);
   if (!agency) {
-    return { title: "Agency Not Found | Britestate" };
+    return { title: "Agency Not Found" };
   }
   const agencyName = agency.agency?.name ?? agency.display_name;
   const logoUrl = agency.agency?.logo_url ?? null;
   return {
-    title: `${agencyName} Estate Agents | Britestate`,
+    title: `${agencyName} Estate Agents`,
     description:
       agency.bio ??
       `View ${agencyName}'s listings, sold properties, team and reviews on Britestate.`,
