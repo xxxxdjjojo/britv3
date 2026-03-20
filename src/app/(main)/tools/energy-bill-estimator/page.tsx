@@ -19,6 +19,7 @@ import {
   Wrench,
   Calculator,
   PoundSterling,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -180,11 +181,13 @@ export default function EnergyBillEstimatorPage() {
                   <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                     Property Type
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Property type">
                     {PROPERTY_TYPES.map(({ value, label, icon: Icon }) => (
                       <button
                         key={value}
                         type="button"
+                        role="radio"
+                        aria-checked={propertyType === value}
                         onClick={() => setPropertyType(value)}
                         className={`px-4 py-3 rounded-lg border-2 text-sm flex items-center justify-center gap-2 transition-colors ${
                           propertyType === value
@@ -203,11 +206,13 @@ export default function EnergyBillEstimatorPage() {
                   <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                     Number of Bedrooms
                   </label>
-                  <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg">
+                  <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg" role="radiogroup" aria-label="Number of bedrooms">
                     {BEDROOM_OPTIONS.map((num) => (
                       <button
                         key={num}
                         type="button"
+                        role="radio"
+                        aria-checked={bedrooms === num}
                         onClick={() => setBedrooms(num)}
                         className={`flex-1 py-2 rounded-md text-sm transition-colors ${
                           bedrooms === num
@@ -244,11 +249,13 @@ export default function EnergyBillEstimatorPage() {
                   <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                     Current EPC Rating
                   </label>
-                  <div className="flex justify-between gap-1 h-10">
+                  <div className="flex justify-between gap-1 h-10" role="radiogroup" aria-label="EPC rating">
                     {EPC_RATINGS.map((rating, idx) => (
                       <button
                         key={rating}
                         type="button"
+                        role="radio"
+                        aria-checked={epcRating === rating}
                         onClick={() => setEpcRating(rating)}
                         className={`flex-1 ${EPC_COLORS[rating]} transition-opacity flex items-center justify-center text-xs font-bold ${
                           rating === "D" ? "text-neutral-900" : "text-white"
@@ -568,6 +575,19 @@ export default function EnergyBillEstimatorPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Disclaimer */}
+          <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="flex gap-3">
+              <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
+              <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Disclaimer: Energy cost estimates are based on average UK
+                consumption data and Ofgem price cap rates. Actual costs vary
+                by provider, tariff, and usage. This tool is for informational
+                purposes only and does not constitute financial advice.
+              </p>
+            </div>
+          </div>
         </aside>
       </div>
     </main>

@@ -1,0 +1,42 @@
+{
+  "date": "2026-03-20",
+  "url": "http://localhost:3000/tools",
+  "scope": "Financial Tools (16.1-16.11)",
+  "healthScore": 93,
+  "severity": {
+    "critical": 0,
+    "high": 0,
+    "medium": 4,
+    "low": 2
+  },
+  "categoryScores": {
+    "console": 70,
+    "links": 100,
+    "visual": 92,
+    "functional": 100,
+    "ux": 92,
+    "performance": 70,
+    "content": 100,
+    "accessibility": 100
+  },
+  "issues": [
+    { "id": "FT-001", "title": "/tools requires authentication — should be public", "severity": "critical", "category": "Functional", "status": "fixed" },
+    { "id": "FT-002", "title": "Missing FCA disclaimer — Mortgage Calculator", "severity": "high", "category": "Content", "status": "fixed" },
+    { "id": "FT-003", "title": "Missing FCA disclaimer — Rental Yield Calculator", "severity": "high", "category": "Content", "status": "fixed" },
+    { "id": "FT-004", "title": "Missing FCA disclaimer — Stamp Duty Calculator", "severity": "high", "category": "Content", "status": "false-positive — disclaimer exists" },
+    { "id": "FT-005", "title": "Missing FCA disclaimer — Moving Cost Estimator", "severity": "high", "category": "Content", "status": "false-positive — disclaimer exists" },
+    { "id": "FT-006", "title": "Missing FCA disclaimer — Energy Bill Estimator", "severity": "high", "category": "Content", "status": "fixed" },
+    { "id": "FT-007", "title": "Heading hierarchy skip h1→h3 on Mortgage Calculator", "severity": "medium", "category": "Accessibility", "status": "fixed" },
+    { "id": "FT-008", "title": "Mortgage Calculator inputs lack aria-label", "severity": "medium", "category": "Accessibility", "status": "false-positive — Label htmlFor correctly associates labels" },
+    { "id": "FT-009", "title": "No Slider component on Mortgage Calculator", "severity": "medium", "category": "UX", "status": "false-positive — Slider exists in MortgageCalculator component" },
+    { "id": "FT-010", "title": "Moving Cost Estimator very slow to load in dev", "severity": "medium", "category": "Performance", "status": "wontfix — dev-mode only, not prod" },
+    { "id": "FT-011", "title": "Console errors on all tool pages (Supabase connection)", "severity": "medium", "category": "Console", "status": "wontfix — dev-mode only, expected without Supabase" },
+    { "id": "FT-012", "title": "Cookie consent banner overlaps tool inputs on mobile", "severity": "medium", "category": "Visual", "status": "open" },
+    { "id": "FT-013", "title": "Tools Hub card component inconsistency", "severity": "medium", "category": "Functional", "status": "wontfix — custom Link wrappers are intentional design" },
+    { "id": "FT-014", "title": "No cross-links from Rental Yield to Affordability Calculator", "severity": "low", "category": "UX", "status": "open" },
+    { "id": "FT-015", "title": "Mortgage Comparison shows APRC without explanation", "severity": "low", "category": "Content", "status": "fixed" },
+    { "id": "FT-016", "title": "Buy vs Rent verdict banner could mislead", "severity": "low", "category": "Content", "status": "fixed" },
+    { "id": "FT-017", "title": "Energy Bill Estimator button selectors need ARIA roles", "severity": "low", "category": "Accessibility", "status": "fixed" },
+    { "id": "FT-018", "title": "Affordability Calculator — Applicant 2 visible by default", "severity": "low", "category": "UX", "status": "open" }
+  ]
+}

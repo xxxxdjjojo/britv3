@@ -200,6 +200,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/surveyors",
   "/architects",
   "/post-a-job",
+  "/jobs",
   "/compare",
   "/help",
   "/verify-email",
@@ -215,6 +216,8 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/careers",
   "/press",
   "/sold-prices",
+  // Financial tools — publicly accessible calculators & guides
+  "/tools",
   // System/error state pages — always publicly accessible
   "/forbidden",
   "/maintenance",

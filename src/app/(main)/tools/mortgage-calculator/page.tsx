@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Calculator, PiggyBank, TrendingUp, ChevronDown } from "lucide-react";
+import { Calculator, Info, PiggyBank, TrendingUp, ChevronDown } from "lucide-react";
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Mortgage Calculator | Britestate",
+  title: "Mortgage Calculator",
   description:
     "Calculate your monthly mortgage payments, total interest, and loan-to-value ratio. Save your parameters to see personalised estimates on property listings.",
 };
@@ -51,7 +51,7 @@ export default function MortgageCalculatorPage() {
           {/* Broker CTA */}
           <Card className="overflow-hidden border-0 bg-neutral-900 text-white shadow-lg">
             <CardContent className="relative p-8">
-              <h3 className="mb-3 text-xl font-bold">Speak to a Broker</h3>
+              <h2 className="mb-3 text-xl font-bold">Speak to a Broker</h2>
               <p className="mb-6 text-sm leading-relaxed text-neutral-300">
                 Ready to take the next step? Get free expert advice from our
                 trusted partner brokers.
@@ -65,9 +65,9 @@ export default function MortgageCalculatorPage() {
           {/* Related Tools */}
           <Card>
             <CardContent className="p-6">
-              <h3 className="mb-4 font-bold text-neutral-900 dark:text-white">
+              <h2 className="mb-4 font-bold text-neutral-900 dark:text-white">
                 Other Tools
-              </h3>
+              </h2>
               <ul className="space-y-4">
                 <li>
                   <Link
@@ -99,6 +99,19 @@ export default function MortgageCalculatorPage() {
               </ul>
             </CardContent>
           </Card>
+
+          {/* Disclaimer */}
+          <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="flex gap-3">
+              <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
+              <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Disclaimer: This calculator is for illustrative purposes only
+                and does not constitute financial advice. Always consult a
+                qualified, FCA-regulated mortgage broker before making
+                financial decisions.
+              </p>
+            </div>
+          </div>
         </aside>
       </div>
 
@@ -106,9 +119,9 @@ export default function MortgageCalculatorPage() {
       <div className="mt-8 rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-6">
         <details className="group">
           <summary className="flex cursor-pointer list-none items-center justify-between">
-            <h3 className="font-bold text-neutral-900 dark:text-neutral-200">
+            <h2 className="font-bold text-neutral-900 dark:text-neutral-200">
               How is this calculated?
-            </h3>
+            </h2>
             <ChevronDown className="h-5 w-5 text-neutral-500 transition-transform group-open:rotate-180" />
           </summary>
           <div className="mt-4 space-y-2 text-sm leading-relaxed text-neutral-700 dark:text-neutral-400">
@@ -136,9 +149,9 @@ export default function MortgageCalculatorPage() {
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
-            <h4 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
+            <h3 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
               How do interest rates affect my monthly payment?
-            </h4>
+            </h3>
             <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               Even a small 0.5% increase in interest rates can add hundreds of
               pounds to your monthly repayments over time. It&apos;s always best
@@ -146,9 +159,9 @@ export default function MortgageCalculatorPage() {
             </p>
           </div>
           <div>
-            <h4 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
+            <h3 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
               Should I choose a longer or shorter mortgage term?
-            </h4>
+            </h3>
             <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               A longer term (e.g., 35-40 years) results in lower monthly
               payments but costs significantly more in total interest. Shorter
@@ -157,9 +170,9 @@ export default function MortgageCalculatorPage() {
             </p>
           </div>
           <div>
-            <h4 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
+            <h3 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
               How much deposit do I really need?
-            </h4>
+            </h3>
             <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               While many lenders accept 5%, having a 10% or 15% deposit often
               unlocks much better interest rate tiers, potentially saving you
@@ -167,9 +180,9 @@ export default function MortgageCalculatorPage() {
             </p>
           </div>
           <div>
-            <h4 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
+            <h3 className="mb-2 font-bold text-neutral-900 dark:text-neutral-200">
               What is the difference between fixed and variable rates?
-            </h4>
+            </h3>
             <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               Fixed rates stay the same for a set period (2-10 years), providing
               budget certainty. Variable rates can change based on the Bank of

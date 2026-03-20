@@ -220,7 +220,11 @@ export default function MortgageComparisonPage() {
                         <TableHead className="text-right">
                           Monthly Payment
                         </TableHead>
-                        <TableHead className="text-right">APRC</TableHead>
+                        <TableHead className="text-right">
+                          <span title="Annual Percentage Rate of Charge — reflects total cost over the full mortgage term, including fees and revert rate">
+                            APRC
+                          </span>
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

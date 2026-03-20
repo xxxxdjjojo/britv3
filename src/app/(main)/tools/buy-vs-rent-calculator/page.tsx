@@ -428,6 +428,9 @@ export default function BuyVsRentCalculatorPage() {
                     ? `Based on current market growth and interest rates, equity gain outpaces rent and costs at the ${results.breakEvenYear * 12}-month mark.`
                     : "With the current parameters, renting and investing your deposit produces better returns over the modelled period."}
                 </p>
+                <p className="mt-2 text-[10px] text-white/50">
+                  Based on your assumptions. Actual outcomes depend on property growth, rate changes, and market conditions.
+                </p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 relative z-10 w-full md:w-auto min-w-[240px]">
                 <div className="flex justify-between items-end mb-4">

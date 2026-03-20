@@ -594,6 +594,20 @@ export default function RentalYieldCalculatorPage() {
               <div className="absolute -bottom-10 -right-10 size-40 rounded-full bg-brand-primary/20 blur-3xl" />
             </div>
 
+            {/* Disclaimer */}
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+              <div className="flex gap-3">
+                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
+                  Disclaimer: This calculator is for illustrative purposes only
+                  and does not constitute financial advice. Yield figures are
+                  estimates based on the values you provide. Always consult a
+                  qualified, FCA-regulated adviser before making investment
+                  decisions.
+                </p>
+              </div>
+            </div>
+
             {/* Feedback */}
             <div className="p-4 text-center">
               <p className="text-xs text-neutral-400">
