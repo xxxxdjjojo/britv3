@@ -6,6 +6,7 @@ import { Heart, Star, Sparkles } from "lucide-react";
 
 type Property = Readonly<{
   id: number;
+  slug: string;
   price: string;
   title: string;
   location: string;
@@ -23,7 +24,7 @@ export function PropertyCardGrid({ properties }: Readonly<{ properties: readonly
       {properties.map((property) => (
         <Link
           key={property.id}
-          href={`/properties/${property.id}`}
+          href={`/properties/${property.slug}`}
           className="group flex flex-col gap-4"
         >
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-100">
@@ -31,6 +32,7 @@ export function PropertyCardGrid({ properties }: Readonly<{ properties: readonly
               src={property.image}
               alt={property.alt}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
