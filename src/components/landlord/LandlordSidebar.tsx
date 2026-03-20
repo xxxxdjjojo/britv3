@@ -23,7 +23,6 @@ import {
   SheetContent,
   SheetTrigger as SheetTriggerBase,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 
 const SheetTrigger = SheetTriggerBase as React.ComponentType<{ asChild?: boolean; children: React.ReactNode }>;
 
@@ -115,9 +114,13 @@ export function LandlordSidebar() {
       <div className="fixed left-4 top-4 z-50 lg:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" aria-label="Open navigation menu">
+            <button
+              type="button"
+              className="inline-flex size-10 items-center justify-center rounded-md border bg-background text-foreground shadow-sm hover:bg-accent"
+              aria-label="Open navigation menu"
+            >
               <Menu className="size-5" />
-            </Button>
+            </button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0" showCloseButton={true}>
             <SidebarInner pathname={pathname} />
