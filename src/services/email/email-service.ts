@@ -1353,5 +1353,72 @@ export async function sendRefundRejected(params: {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 21. Password Changed (always send — security notification)
+// ---------------------------------------------------------------------------
+
+export async function sendPasswordChanged(params: {
+  userId: string;
+  email: string;
+  firstName: string;
+}): Promise<void> {
+  const rawName = params.firstName || "there";
+  const name = rawName
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+  const changedAt = new Date().toLocaleString("en-GB", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "Europe/London",
+  });
+  const supportUrl = `${BASE_URL}/contact`;
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Password changed</title></head>
+<body style="font-family:sans-serif;color:#1a1a1a;background:#f9f9f9;padding:40px 20px;">
+  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:8px;padding:32px;">
+    <h1 style="font-size:20px;margin-bottom:8px;">Your password has been changed</h1>
+    <p>Hi ${name},</p>
+    <p>Your Britestate account password was successfully updated on <strong>${changedAt}</strong>.</p>
+    <p>For your security, all other active sessions have been signed out.</p>
+    <p>If you did not make this change, please <a href="${supportUrl}" style="color:#1d4ed8;">contact our support team</a> immediately.</p>
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
+    <p style="font-size:12px;color:#6b7280;">Britestate · The UK Property Platform</p>
+  </div>
+</body>
+</html>`;
+
+  try {
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: "Your Britestate password has been changed",
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "password-changed",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "password-changed",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendPasswordChanged failed", message);
+  }
+}
+
 // Re-export BASE_URL for use in other modules that build email links
 export { BASE_URL };

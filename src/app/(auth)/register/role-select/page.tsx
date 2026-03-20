@@ -1,29 +1,35 @@
 "use client";
-
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { RoleSelector } from "@/components/auth/RoleSelector";
-import { PROFESSIONAL_ROLES } from "@/lib/constants";
+import { PROFESSIONAL_ROLES, ROLES } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import type { UserRole } from "@/types/auth";
 
-export default function RoleSelectPage() {
+function RoleSelectContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const addRoleParam = searchParams.get("addRole");
+  const isAddSellerMode = addRoleParam === "seller";
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const SELLER_ROLE = ROLES.filter((r) => r.value === "seller");
 
   async function handleRolesSelected(roles: UserRole[]) {
     setLoading(true);
     setError(null);
 
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      // User not logged in yet — store selection and redirect to register
       const role = roles[0];
       router.push(`/register?professional=${role}`);
       return;
@@ -31,42 +37,42 @@ export default function RoleSelectPage() {
 
     const role = roles[0];
 
-    // Insert role into user_roles table
-    const { error: insertError } = await supabase
-      .from("user_roles")
-      .insert({ user_id: user.id, role });
+    const { error: rpcError } = await supabase.rpc("select_roles_atomic", {
+      p_user_id: user.id,
+      p_roles: [role],
+    });
 
-    if (insertError && !insertError.message.includes("duplicate")) {
-      setError(insertError.message);
+    if (rpcError) {
+      setError(rpcError.message);
       setLoading(false);
       return;
     }
 
-    // Set as active role
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ active_role: role })
-      .eq("id", user.id);
-
-    if (updateError) {
-      setError(updateError.message);
-      setLoading(false);
-      return;
-    }
-
-    // Navigate to onboarding for the selected role
     router.push(`/register/onboarding/${role}`);
   }
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="font-heading text-2xl font-bold text-neutral-900">
-          Welcome to Britestate
-        </h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          Select your professional type
-        </p>
+        {isAddSellerMode ? (
+          <>
+            <h1 className="font-heading text-2xl font-bold text-neutral-900">
+              Add Seller Role
+            </h1>
+            <p className="mt-2 text-sm text-neutral-500">
+              You can list and sell properties alongside your buyer account
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="font-heading text-2xl font-bold text-neutral-900">
+              Welcome to Britestate
+            </h1>
+            <p className="mt-2 text-sm text-neutral-500">
+              Select your professional type
+            </p>
+          </>
+        )}
       </div>
 
       {error && (
@@ -78,19 +84,29 @@ export default function RoleSelectPage() {
       <RoleSelector
         onSubmit={handleRolesSelected}
         loading={loading}
-        roles={PROFESSIONAL_ROLES}
+        roles={isAddSellerMode ? SELLER_ROLE : PROFESSIONAL_ROLES}
         singleSelect
       />
 
-      <p className="text-center font-body text-sm text-neutral-500">
-        Not a professional?{" "}
-        <Link
-          href="/register"
-          className="font-medium text-brand-accent hover:underline"
-        >
-          Sign up as a homebuyer
-        </Link>
-      </p>
+      {!isAddSellerMode && (
+        <p className="text-center font-body text-sm text-neutral-500">
+          Not a professional?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-brand-accent hover:underline"
+          >
+            Sign up as a homebuyer
+          </Link>
+        </p>
+      )}
     </div>
+  );
+}
+
+export default function RoleSelectPage() {
+  return (
+    <Suspense>
+      <RoleSelectContent />
+    </Suspense>
   );
 }

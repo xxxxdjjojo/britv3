@@ -4,14 +4,24 @@ function getSupabase() {
   return createClient();
 }
 
-export async function signUp(email: string, password: string, displayName: string) {
+export async function signUp(
+  email: string,
+  password: string,
+  displayName: string,
+  captchaToken?: string | null,
+  intendedRole?: string | null,
+) {
   const supabase = getSupabase();
   return supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { display_name: displayName },
+      data: {
+        display_name: displayName,
+        ...(intendedRole ? { intended_role: intendedRole } : {}),
+      },
       emailRedirectTo: `${window.location.origin}/auth/callback`,
+      ...(captchaToken ? { captchaToken } : {}),
     },
   });
 }
@@ -57,7 +67,15 @@ export async function resetPassword(email: string) {
 
 export async function updatePassword(password: string) {
   const supabase = getSupabase();
-  return supabase.auth.updateUser({ password });
+  const result = await supabase.auth.updateUser({ password });
+
+  if (!result.error) {
+    // Invalidate all other sessions after password change
+    // scope: "others" signs out other sessions, keeping current one active
+    await supabase.auth.signOut({ scope: "others" });
+  }
+
+  return result;
 }
 
 export async function getUser() {

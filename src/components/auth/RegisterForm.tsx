@@ -16,6 +16,7 @@ import { signUp } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
 import { handleSupabaseError } from "@/lib/supabase-error";
 import { sanitize } from "@/lib/sanitize";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 import type { UserRole } from "@/types/auth";
 
 const registerSchema = z.object({
@@ -28,6 +29,8 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, "Must contain an uppercase letter")
     .regex(/[0-9]/, "Must contain a number"),
   intent: z.enum(["buy", "rent"]),
+  termsConsent: z.literal(true, { message: "You must agree to the terms" }),
+  marketingConsent: z.boolean().optional(),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -46,6 +49,7 @@ export function RegisterForm() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [professionalRole, setProfessionalRole] = useState<UserRole | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -61,6 +65,8 @@ export function RegisterForm() {
       email: "",
       password: "",
       intent: "buy",
+      termsConsent: false as unknown as true,
+      marketingConsent: false,
     },
   });
 
@@ -82,13 +88,38 @@ export function RegisterForm() {
     // Bug 9: Wrap entire onSubmit in try/catch with specific error handling
     try {
       setError(null);
+
+      // Verify CAPTCHA if Turnstile is configured
+      if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+        setError("Please complete the CAPTCHA verification.");
+        return;
+      }
+
       const displayName = sanitize(`${data.firstName} ${data.lastName}`.trim());
+      const intendedRole = professionalRole
+        ? professionalRole
+        : data.intent === "rent"
+          ? "renter"
+          : "homebuyer";
       const { error: authError } = await signUp(
         data.email,
         data.password,
         displayName,
+        captchaToken,
+        intendedRole,
       );
+      // Always redirect to verify-email regardless of error to prevent enumeration.
+      // If user already exists, they'll get a "reset password" email instead.
+      // Only show error for network/unexpected failures.
       if (authError) {
+        const errMsg = (authError as { message?: string }).message ?? "";
+        const isUserExists = /already registered|already been registered|user_already_exists/i.test(errMsg);
+        if (isUserExists) {
+          // Don't reveal that the user exists — show same flow as success
+          router.push("/verify-email");
+          return;
+        }
+        // Only show error for genuine failures (network, server error, etc.)
         setError(handleSupabaseError(authError).message);
         return;
       }
@@ -240,17 +271,50 @@ export function RegisterForm() {
         <PasswordStrengthMeter password={password} />
       </div>
 
-      {/* Terms (inline) */}
-      <p className="text-xs text-neutral-500">
-        By creating an account, you agree to our{" "}
-        <Link href="/terms" className="text-brand-accent hover:underline" target="_blank">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy" className="text-brand-accent hover:underline" target="_blank">
-          Privacy Policy
-        </Link>
-      </p>
+      {/* GDPR Consent */}
+      <div className="space-y-3">
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="termsConsent"
+            {...register("termsConsent")}
+            className="mt-1 size-4 rounded border-neutral-300 accent-brand-primary"
+          />
+          <label htmlFor="termsConsent" className="text-xs text-neutral-600 cursor-pointer">
+            I agree to the{" "}
+            <Link href="/legal/terms" className="text-brand-accent hover:underline" target="_blank">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/legal/privacy" className="text-brand-accent hover:underline" target="_blank">
+              Privacy Policy
+            </Link>{" "}
+            <span className="text-error">*</span>
+          </label>
+        </div>
+        {errors.termsConsent && (
+          <p className="text-xs text-error">{errors.termsConsent.message}</p>
+        )}
+
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="marketingConsent"
+            {...register("marketingConsent")}
+            className="mt-1 size-4 rounded border-neutral-300 accent-brand-primary"
+          />
+          <label htmlFor="marketingConsent" className="text-xs text-neutral-600 cursor-pointer">
+            I&apos;d like to receive property alerts and market updates (optional)
+          </label>
+        </div>
+      </div>
+
+      {/* CAPTCHA */}
+      <TurnstileWidget
+        onVerify={setCaptchaToken}
+        onExpire={() => setCaptchaToken(null)}
+        onError={() => setCaptchaToken(null)}
+      />
 
       {/* Submit */}
       <Button

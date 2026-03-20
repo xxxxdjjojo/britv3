@@ -26,15 +26,21 @@ export async function GET(request: NextRequest) {
       .select("role")
       .eq("user_id", user.id);
 
-    // If no roles, assign default homebuyer — this is a brand-new user
+    // If no roles, assign the intended role from signup metadata, or default to homebuyer
     if (!roles || roles.length === 0) {
-      await supabase
-        .from("user_roles")
-        .insert({ user_id: user.id, role: "homebuyer" });
-      await supabase
-        .from("profiles")
-        .update({ active_role: "homebuyer" })
-        .eq("id", user.id);
+      const intendedRole =
+        (user.user_metadata?.intended_role as string | undefined) ?? "homebuyer";
+      const validRoles = ["homebuyer", "renter", "seller", "agent", "landlord", "service_provider", "mortgage_broker"];
+      const role = validRoles.includes(intendedRole) ? intendedRole : "homebuyer";
+
+      const { error: roleError } = await supabase.rpc("assign_role_atomic", {
+        p_user_id: user.id,
+        p_role: role,
+      });
+
+      if (roleError) {
+        return NextResponse.redirect(`${origin}/login?error=role_setup_failed`);
+      }
 
       // Send welcome email to new users (fire-and-forget)
       if (user.email) {
@@ -48,6 +54,9 @@ export async function GET(request: NextRequest) {
           firstName,
         });
       }
+
+      // New user → onboarding for their intended role
+      return NextResponse.redirect(`${origin}/register/onboarding/${role}`);
     }
   }
 

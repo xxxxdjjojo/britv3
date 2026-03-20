@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { resetPassword } from "@/services/auth/auth-service";
 import { handleSupabaseError } from "@/lib/supabase-error";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -23,6 +24,7 @@ export function ForgotPasswordForm() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [cooldown, setCooldown] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -40,6 +42,12 @@ export function ForgotPasswordForm() {
 
   async function onSubmit(data: ForgotPasswordFormValues) {
     setError(null);
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Please complete the CAPTCHA verification.");
+      return;
+    }
+
     const { error: authError } = await resetPassword(data.email);
     if (authError) {
       setError(handleSupabaseError(authError).message);
@@ -108,6 +116,13 @@ export function ForgotPasswordForm() {
           <p className="text-xs text-error">{errors.email.message}</p>
         )}
       </div>
+
+      {/* CAPTCHA */}
+      <TurnstileWidget
+        onVerify={setCaptchaToken}
+        onExpire={() => setCaptchaToken(null)}
+        onError={() => setCaptchaToken(null)}
+      />
 
       <Button
         type="submit"

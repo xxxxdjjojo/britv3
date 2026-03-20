@@ -44,19 +44,21 @@ export function useRole() {
     return () => { active = false; };
   }, [fetchRoles]);
 
-  const switchRole = useCallback(async (role: UserRole) => {
+  const switchRole = useCallback(async (role: UserRole): Promise<boolean> => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) return false;
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ active_role: role })
-      .eq("id", user.id);
+    const { error } = await supabase.rpc("switch_role_atomic", {
+      p_user_id: user.id,
+      p_role: role,
+    });
 
     if (!error) {
       setActiveRole(role);
+      return true;
     }
+    return false;
   }, []);
 
   return { roles, activeRole, loading, switchRole, refetch: fetchRoles };

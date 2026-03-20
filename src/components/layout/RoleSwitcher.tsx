@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useRole } from "@/hooks/useRole";
 import { ROLES } from "@/lib/constants";
 import type { UserRole } from "@/types/auth";
@@ -8,6 +9,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -22,6 +24,7 @@ import {
   ChevronDown,
   Check,
   Loader2,
+  Plus,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -40,6 +43,7 @@ function getRoleDefinition(role: UserRole) {
 export function RoleSwitcher() {
   const { roles, activeRole, switchRole, loading } = useRole();
   const [switching, setSwitching] = useState(false);
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -56,8 +60,11 @@ export function RoleSwitcher() {
   async function handleSwitch(role: UserRole) {
     if (role === activeRole) return;
     setSwitching(true);
-    await switchRole(role);
+    const success = await switchRole(role);
     setSwitching(false);
+    if (success) {
+      router.push(`/dashboard/${role}`);
+    }
   }
 
   return (
@@ -75,7 +82,9 @@ export function RoleSwitcher() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" sideOffset={4}>
+        <DropdownMenuGroup>
         <DropdownMenuLabel>Switch Role</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {roles.map((role) => {
           const def = getRoleDefinition(role);
@@ -90,6 +99,17 @@ export function RoleSwitcher() {
             </DropdownMenuItem>
           );
         })}
+        {/* Show "Add Seller Role" for buyer/renter users who don't already have seller */}
+        {!roles.includes("seller") &&
+          roles.some((r) => r === "homebuyer" || r === "renter") && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push("/register/role-select?addRole=seller")}>
+              <Plus className="size-4" />
+              <span className="flex-1">Add Seller Role</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

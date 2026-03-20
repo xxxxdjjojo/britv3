@@ -56,6 +56,14 @@ export function ResetPasswordForm() {
       setError(handleSupabaseError(authError).message);
       return;
     }
+
+    // Fire-and-forget: notify user about password change
+    try {
+      await fetch("/api/auth/password-changed", { method: "POST" });
+    } catch {
+      // Non-critical — don't block the flow
+    }
+
     router.push("/login?message=password-updated");
   }
 

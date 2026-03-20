@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarX, Trash2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 
 const DELETION_ITEMS = [
@@ -18,6 +20,8 @@ export default function AccountDeletionConfirmPage() {
   const [cancelling, setCancelling] = useState(false);
   const [proceeding, setProceeding] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const deletionDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
     "en-GB",
@@ -49,8 +53,23 @@ export default function AccountDeletionConfirmPage() {
   }
 
   async function handleProceed() {
+    if (!password) {
+      setPasswordError("Please enter your password to confirm deletion");
+      return;
+    }
     setProceeding(true);
+    setPasswordError(null);
     try {
+      const res = await fetch("/api/gdpr/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setPasswordError(data.error ?? "Failed to process deletion");
+        return;
+      }
       const supabase = createClient();
       await supabase.auth.signOut();
       router.push("/?deletion=scheduled");
@@ -103,6 +122,24 @@ export default function AccountDeletionConfirmPage() {
       >
         {cancelling ? "Cancelling…" : "Cancel Deletion — Keep My Account"}
       </Button>
+
+      {/* Re-auth for deletion */}
+      <div className="space-y-2">
+        <Label htmlFor="delete-password" className="text-sm font-medium text-neutral-700">
+          Enter your password to confirm
+        </Label>
+        <Input
+          id="delete-password"
+          type="password"
+          placeholder="Your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="h-10"
+        />
+        {passwordError && (
+          <p className="text-xs text-error">{passwordError}</p>
+        )}
+      </div>
 
       <p className="text-center">
         <button

@@ -17,11 +17,11 @@ function generateNonce(): string {
 function buildCsp(nonce: string): string {
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://js.stripe.com`,
+    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://js.stripe.com https://challenges.cloudflare.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://api.maptiler.com https://api.stripe.com",
-    "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com",
+    "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com https://challenges.cloudflare.com",
     "worker-src 'self' blob:",
     "form-action 'self'",
     "base-uri 'self'",
@@ -197,6 +197,40 @@ export async function middleware(request: NextRequest) {
     return redirectWithHeaders("/dashboard", nonce, request);
   }
 
+  // ── MFA / AAL2 enforcement ───────────────────────────────────────────────
+  // If the user has TOTP enrolled but the current session is only AAL1,
+  // redirect to the MFA challenge page before granting access to sensitive routes.
+  // Exempt: /two-factor and /two-factor-setup themselves (to avoid redirect loop).
+  const isTwoFactorPage =
+    pathname === "/two-factor" ||
+    pathname.startsWith("/two-factor/") ||
+    pathname === "/two-factor-setup" ||
+    pathname.startsWith("/two-factor-setup/");
+
+  const isMfaSensitiveRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/inbox");
+
+  if (isAuthenticated && isMfaSensitiveRoute && !isTwoFactorPage) {
+    try {
+      const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      const { data: factorsData } = await supabase.auth.mfa.listFactors();
+
+      const hasTotp = (factorsData?.totp?.length ?? 0) > 0;
+      const isOnlyAal1 = aalData?.currentLevel === "aal1";
+
+      if (hasTotp && isOnlyAal1) {
+        return redirectWithHeaders("/two-factor", nonce, request, {
+          next: encodeURIComponent(pathname),
+        });
+      }
+    } catch (error) {
+      console.error("[middleware] MFA AAL check failed:", error);
+      // Fail open — do not block the user if the MFA check itself errors
+    }
+  }
+
   // Admin route guard: require authentication and is_admin flag on profile
   const isAdminRoute = pathname.startsWith("/admin");
   if (isAdminRoute) {
@@ -246,6 +280,55 @@ export async function middleware(request: NextRequest) {
       } catch (error) {
         console.error("[middleware] Profile role check failed:", error);
         return redirectWithHeaders("/login", nonce, request);
+      }
+    }
+  }
+
+  // ── Dashboard role enforcement ───────────────────────────────────────────
+  // Prevent users from accessing dashboard routes that belong to a role they
+  // do not hold. E.g. a homebuyer visiting /dashboard/agent is blocked.
+  // Maps URL segment → role name stored in user_roles / app_metadata.
+  const DASHBOARD_ROLE_MAP: Record<string, string> = {
+    agent: "agent",
+    landlord: "landlord",
+    service_provider: "service_provider",
+    mortgage_broker: "mortgage_broker",
+    homebuyer: "homebuyer",
+    seller: "seller",
+    renter: "renter",
+  };
+
+  if (isAuthenticated && pathname.startsWith("/dashboard/")) {
+    // Extract the segment immediately after /dashboard/
+    const dashSegment = pathname.split("/")[2]; // e.g. "agent"
+    const requiredRole = dashSegment ? DASHBOARD_ROLE_MAP[dashSegment] : undefined;
+
+    if (requiredRole) {
+      if (hasClaims) {
+        // JWT claims path: active role must match the dashboard segment
+        const activeRole = appMetadata?.role;
+        if (activeRole && activeRole !== requiredRole) {
+          return redirectWithHeaders("/dashboard", nonce, request);
+        }
+      } else {
+        // DB path: check user_roles table for membership
+        try {
+          const { data: rolesData } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", user!.id);
+
+          const userRoles = (rolesData ?? []).map(
+            (r: { role: string }) => r.role,
+          );
+
+          if (userRoles.length > 0 && !userRoles.includes(requiredRole)) {
+            return redirectWithHeaders("/dashboard", nonce, request);
+          }
+        } catch (error) {
+          console.error("[middleware] Dashboard role enforcement check failed:", error);
+          // Fail open — do not block if the check errors
+        }
       }
     }
   }

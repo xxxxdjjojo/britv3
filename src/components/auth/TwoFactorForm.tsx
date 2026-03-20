@@ -5,23 +5,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { createClient } from "@/lib/supabase/client";
 
-const MAX_ATTEMPTS = 3;
 const CODE_TTL_SECONDS = 30;
 
 export function TwoFactorForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/dashboard";
+  const isBackupMode = searchParams.get("backup") === "true";
 
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
   const [challengeId, setChallengeId] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(CODE_TTL_SECONDS);
-  const [attempts, setAttempts] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,57 +49,69 @@ export function TwoFactorForm() {
   }, [timeLeft]);
 
   async function handleSubmit() {
-    if (!factorId || !challengeId || code.length !== 6) return;
+    if (!factorId || !challengeId || (isBackupMode ? code.length < 8 : code.length !== 6)) return;
     setLoading(true);
     setError(null);
     try {
-      const supabase = createClient();
-      const { error: vErr } = await supabase.auth.mfa.verify({ factorId, challengeId, code });
-      if (vErr) {
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-        if (newAttempts >= MAX_ATTEMPTS) {
+      const res = await fetch("/api/auth/mfa-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ factorId, challengeId, code }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.locked) {
           router.push("/account-locked");
           return;
         }
         setError(
-          `Invalid code. ${MAX_ATTEMPTS - newAttempts} attempt${MAX_ATTEMPTS - newAttempts === 1 ? "" : "s"} remaining.`,
+          data.remaining !== undefined
+            ? `Invalid code. ${data.remaining} attempt${data.remaining === 1 ? "" : "s"} remaining.`
+            : data.error ?? "Verification failed",
         );
         setCode("");
         return;
       }
+
       router.push(next);
     } finally {
       setLoading(false);
     }
   }
 
-  const attemptsRemaining = MAX_ATTEMPTS - attempts;
-
   return (
     <div className="space-y-6">
-      <div className="flex justify-center">
-        <OTPInput value={code} onChange={setCode} autoFocus />
-      </div>
+      {isBackupMode ? (
+        <div className="space-y-2">
+          <Input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Enter backup code"
+            className="h-12 text-center font-mono text-lg"
+            maxLength={20}
+            autoFocus
+          />
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <OTPInput value={code} onChange={setCode} autoFocus />
+        </div>
+      )}
 
-      {/* Countdown */}
-      <p className="text-center font-body text-sm text-neutral-500">
-        Code expires in{" "}
-        <span
-          className={
-            timeLeft <= 10
-              ? "font-medium text-warning"
-              : "font-medium text-neutral-700"
-          }
-        >
-          0:{String(timeLeft).padStart(2, "0")}
-        </span>
-      </p>
-
-      {/* Attempt warning */}
-      {attemptsRemaining <= 2 && attemptsRemaining > 0 && (
-        <p className="text-center font-body text-sm font-medium text-warning">
-          {attemptsRemaining} attempt{attemptsRemaining === 1 ? "" : "s"} remaining
+      {/* Countdown (only shown in TOTP mode) */}
+      {!isBackupMode && (
+        <p className="text-center font-body text-sm text-neutral-500">
+          Code expires in{" "}
+          <span
+            className={
+              timeLeft <= 10
+                ? "font-medium text-warning"
+                : "font-medium text-neutral-700"
+            }
+          >
+            0:{String(timeLeft).padStart(2, "0")}
+          </span>
         </p>
       )}
 
@@ -111,7 +123,7 @@ export function TwoFactorForm() {
 
       <Button
         onClick={handleSubmit}
-        disabled={code.length !== 6 || loading || !challengeId}
+        disabled={(isBackupMode ? code.length < 8 : code.length !== 6) || loading || !challengeId}
         className="w-full"
         size="lg"
       >
@@ -127,10 +139,10 @@ export function TwoFactorForm() {
 
       <p className="text-center font-body text-sm text-neutral-500">
         <Link
-          href="/two-factor?backup=true"
+          href={isBackupMode ? `/two-factor?next=${encodeURIComponent(next)}` : `/two-factor?backup=true&next=${encodeURIComponent(next)}`}
           className="font-medium text-brand-accent hover:underline"
         >
-          Use a backup code instead
+          {isBackupMode ? "Use authenticator app instead" : "Use a backup code instead"}
         </Link>
       </p>
     </div>

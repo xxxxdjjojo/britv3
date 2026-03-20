@@ -12,7 +12,20 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { signIn } from "@/services/auth/auth-service";
 import { handleSupabaseError } from "@/lib/supabase-error";
+import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
+
+function getSafeRedirectTarget(redirectTo: string | null): string {
+  if (
+    redirectTo &&
+    redirectTo.startsWith("/") &&
+    !redirectTo.startsWith("//")
+  ) {
+    return redirectTo;
+  }
+  return "/dashboard";
+}
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
   auth_callback_error: "Something went wrong signing you in. Please try again.",
@@ -36,8 +49,13 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const oauthError = getOAuthErrorMessage(searchParams.get("error"));
+  const successMessage =
+    searchParams.get("message") === "password-updated"
+      ? "Password updated successfully. Please sign in with your new password."
+      : null;
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const {
     register,
@@ -50,6 +68,12 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginFormValues) {
     setError(null);
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setError("Please complete the CAPTCHA verification.");
+      return;
+    }
+
     const { error: authError } = await signIn(data.email, data.password);
     if (authError) {
       // Detect account lockout / rate-limit: redirect rather than showing an
@@ -73,11 +97,30 @@ export function LoginForm() {
       setError(handleSupabaseError(authError).message);
       return;
     }
-    router.push("/dashboard");
+
+    const redirectTarget = getSafeRedirectTarget(searchParams.get("redirectTo"));
+
+    const supabase = createClient();
+    const { data: mfaData } = await supabase.auth.mfa.listFactors();
+    const hasTotp = mfaData?.totp && mfaData.totp.length > 0;
+    if (hasTotp) {
+      router.push(`/two-factor?next=${encodeURIComponent(redirectTarget)}`);
+      return;
+    }
+
+    router.push(redirectTarget);
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {successMessage && (
+        <div
+          role="alert"
+          className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+        >
+          {successMessage}
+        </div>
+      )}
       {oauthError && (
         <Alert variant="destructive">
           <AlertDescription>{oauthError}</AlertDescription>
@@ -148,6 +191,13 @@ export function LoginForm() {
           Forgot password?
         </Link>
       </div>
+
+      {/* CAPTCHA */}
+      <TurnstileWidget
+        onVerify={setCaptchaToken}
+        onExpire={() => setCaptchaToken(null)}
+        onError={() => setCaptchaToken(null)}
+      />
 
       {/* Submit */}
       <Button
