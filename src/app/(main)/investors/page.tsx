@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import DOMPurify from "isomorphic-dompurify";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
+import { SafeHTML } from "@/components/ui/SafeHTML";
 
 export const metadata: Metadata = {
   title: "Investor Relations | Britestate",
@@ -81,10 +81,7 @@ export default async function InvestorsPage() {
         </>
       ) : (
         <>
-          <div
-            className="prose prose-neutral mt-12 max-w-none"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.content) }}
-          />
+          <SafeHTML html={content.content} className="prose prose-neutral mt-12 max-w-none" />
         </>
       )}
     </div>
