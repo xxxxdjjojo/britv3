@@ -181,7 +181,7 @@ export async function getPropertyBySlug(
     return null;
   }
 
-  const property = listingRow.properties as Record<string, unknown> | null;
+  const property = listingRow.properties as unknown as Record<string, unknown> | null;
   if (!property) {
     return null;
   }

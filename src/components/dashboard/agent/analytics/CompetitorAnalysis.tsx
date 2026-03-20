@@ -24,7 +24,7 @@ import {
 } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowUpDown } from "lucide-react";
-import type { CompetitorAgentData } from "@/services/agent/agent-analytics-service";
+import type { CompetitorEntry as CompetitorAgentData } from "@/services/agent/agent-analytics-service";
 
 type AreaPriceTrend = {
   month: string;
@@ -164,7 +164,7 @@ export function CompetitorAnalysis({
       ),
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("avg_price_pence", {
+    columnHelper.accessor("avg_price", {
       header: ({ column }) => (
         <button
           className="flex items-center gap-1 text-sm"
@@ -173,9 +173,10 @@ export function CompetitorAnalysis({
           Avg Price <ArrowUpDown className="size-3" />
         </button>
       ),
-      cell: (info) => formatGbp(info.getValue()),
+      cell: (info) => formatGbp(info.getValue() as number),
     }),
-    columnHelper.accessor("avg_time_on_market_days", {
+    columnHelper.accessor((row) => (row as Record<string, unknown>).avg_time_on_market_days as number | null, {
+      id: "avg_time_on_market_days",
       header: "Avg Days",
       cell: (info) => {
         const v = info.getValue();

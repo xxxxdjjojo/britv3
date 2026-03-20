@@ -163,7 +163,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
 
       {/* Filter controls */}
       <div className="flex flex-wrap gap-3">
-        <Select value={starFilter} onValueChange={setStarFilter}>
+        <Select value={starFilter} onValueChange={(v) => setStarFilter(v ?? "")}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="All Stars" />
           </SelectTrigger>
@@ -177,7 +177,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={responseFilter} onValueChange={setResponseFilter}>
+        <Select value={responseFilter} onValueChange={(v) => setResponseFilter(v ?? "")}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All" />
           </SelectTrigger>

@@ -530,7 +530,7 @@ export async function sendOfferStatus(params: {
   firstName: string;
   propertyAddress: string;
   offerAmount: number;
-  status: string;
+  status: "accepted" | "rejected";
   message?: string;
 }): Promise<void> {
   const enabled = await checkUserEmailPref(params.userId, "email_offers");
@@ -1215,6 +1215,7 @@ export async function sendReEngagement(params: {
         lastActiveDate: params.lastActiveDate,
         featuredProperties: params.featuredProperties,
         loginUrl: params.loginUrl,
+        unsubscribeUrl: "",
       })
     );
 

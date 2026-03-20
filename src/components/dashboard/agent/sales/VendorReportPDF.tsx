@@ -226,7 +226,7 @@ export function VendorReportList({
             </label>
             <Select
               value={selectedPropertyId}
-              onValueChange={setSelectedPropertyId}
+              onValueChange={(v) => setSelectedPropertyId(v ?? "")}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Choose a listing..." />

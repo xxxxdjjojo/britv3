@@ -81,7 +81,8 @@ function StatusFilter({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  function handleChange(value: string) {
+  function handleChange(value: string | null) {
+    if (!value) return;
     const params = new URLSearchParams(searchParams.toString());
     if (value === "all") {
       params.delete("status");

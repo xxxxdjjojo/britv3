@@ -88,7 +88,7 @@ export async function getViewings(
       viewing_slots: { start_time: string; end_time: string };
     };
 
-    const rows = viewingsData as RawRow[];
+    const rows = viewingsData as unknown as RawRow[];
 
     // Step 2: Resolve listing addresses
     const listingIds = [...new Set(rows.map((r) => r.listing_id))];

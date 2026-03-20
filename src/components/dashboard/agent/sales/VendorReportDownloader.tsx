@@ -17,8 +17,9 @@ type Props = Readonly<{
 }>;
 
 export function VendorReportDownloader({ document, fileName }: Props) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
-    <PDFDownloadLink document={document} fileName={fileName}>
+    <PDFDownloadLink document={document as any} fileName={fileName}>
       {({ loading }: { loading: boolean }) => (
         <Button variant="outline" size="sm" disabled={loading}>
           {loading ? (

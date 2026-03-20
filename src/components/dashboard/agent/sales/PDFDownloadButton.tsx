@@ -9,7 +9,7 @@
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import VendorReportPDF from "./VendorReportPDF";
+import { VendorReportDownload as VendorReportPDF } from "./VendorReportPDF";
 import type { AgentVendorReport } from "@/types/agent";
 
 type PDFDownloadButtonProps = Readonly<{
@@ -23,7 +23,8 @@ export default function PDFDownloadButton({
 }: PDFDownloadButtonProps) {
   return (
     <PDFDownloadLink
-      document={<VendorReportPDF report={report} />}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      document={<VendorReportPDF reportData={report as Record<string, unknown>} agencyName="" /> as any}
       fileName={fileName}
     >
       {({ loading }: { loading: boolean }) => (

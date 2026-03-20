@@ -52,6 +52,8 @@ export type ProviderProfileInput = z.infer<typeof providerProfileSchema>;
 const eventChannelSchema = z.object({
   in_app: z.boolean(),
   email: z.boolean(),
+  push: z.boolean().optional().default(false),
+  sms: z.boolean().optional().default(false),
 });
 
 const quietHoursSchema = z.object({
@@ -62,7 +64,7 @@ const quietHoursSchema = z.object({
 
 export const notificationPreferencesSchema = z.object({
   per_type: z.record(z.string(), eventChannelSchema).transform((val) => {
-    return val as Partial<Record<EventType, { in_app: boolean; email: boolean }>>;
+    return val as unknown as NotificationPreferences["per_type"];
   }),
   quiet_hours: quietHoursSchema,
   digest_frequency: z.enum(["daily", "weekly", "never"] as const) as z.ZodType<DigestFrequency>,

@@ -216,7 +216,7 @@ export function ClientList({ clients }: Props) {
             onChange={(e) => handleSearchChange(e.target.value)}
             className="max-w-xs"
           />
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v ?? "")}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>

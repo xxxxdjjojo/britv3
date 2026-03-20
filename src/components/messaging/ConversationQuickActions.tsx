@@ -49,7 +49,7 @@ export default function ConversationQuickActions({
       .single()
       .then(({ data }) => {
         if (cancelled) return;
-        const prop = data?.properties as {
+        const prop = data?.properties as unknown as {
           address_line1: string;
           city: string;
           postcode: string;

@@ -92,7 +92,7 @@ function PromoteDemoteForm() {
           </SelectContent>
         </Select>
         {action === "demote" && (
-          <Select value={demoteTo} onValueChange={setDemoteTo}>
+          <Select value={demoteTo} onValueChange={(v) => setDemoteTo(v ?? "")}>
             <SelectTrigger className="w-44 h-8 text-sm">
               <SelectValue />
             </SelectTrigger>

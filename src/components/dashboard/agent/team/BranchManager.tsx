@@ -264,7 +264,7 @@ export function BranchManager({ branches: initialBranches, members }: Props) {
 
                   {/* Assign unassigned member */}
                   {unassignedMembers.length > 0 && (
-                    <Select onValueChange={(memberId) => handleAssignMember(branch.id, memberId)}>
+                    <Select onValueChange={(memberId: string | null) => memberId && handleAssignMember(branch.id, memberId)}>
                       <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Assign member..." />
                       </SelectTrigger>

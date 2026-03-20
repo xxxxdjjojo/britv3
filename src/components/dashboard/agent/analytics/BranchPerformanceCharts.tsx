@@ -21,7 +21,7 @@ import {
 } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrendingUp, Clock, PoundSterling, Percent, Star, ArrowUpDown } from "lucide-react";
-import type { AgentPerformanceReport } from "@/services/agent/agent-analytics-service";
+import type { PerformanceReport as AgentPerformanceReport } from "@/services/agent/agent-analytics-service";
 import type { AgentBranch, AgentTeamMember } from "@/types/agent";
 
 type TeamMemberRow = {
@@ -199,7 +199,7 @@ export function BranchPerformanceCharts({
     },
     {
       label: "Total Revenue",
-      value: formatGbp(report.total_revenue_pence),
+      value: formatGbp((report as Record<string, unknown>).total_revenue_pence as number ?? report.total_revenue),
       icon: <PoundSterling className="size-5 text-green-500" />,
       color: "text-green-600",
     },
@@ -211,14 +211,14 @@ export function BranchPerformanceCharts({
     },
     {
       label: "Client Satisfaction",
-      value: report.client_satisfaction_avg != null ? `${report.client_satisfaction_avg.toFixed(1)} / 5` : "—",
+      value: (report.client_satisfaction ?? null) != null ? `${report.client_satisfaction.toFixed(1)} / 5` : "—",
       icon: <Star className="size-5 text-yellow-500" />,
       color: "text-yellow-600",
     },
   ];
 
   // Delta vs agency avg
-  const deltaRevenue = report.total_revenue_pence - agencyAvg.total_revenue_pence;
+  const deltaRevenue = report.total_revenue - agencyAvg.total_revenue;
   const deltaConversion = (report.conversion_rate - agencyAvg.conversion_rate) * 100;
   const deltaSold = report.listings_sold_count - agencyAvg.listings_sold_count;
 

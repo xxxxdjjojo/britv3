@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrendingUp, Clock, PoundSterling, Percent, Star } from "lucide-react";
-import type { AgentPerformanceReport } from "@/services/agent/agent-analytics-service";
+import type { PerformanceReport as AgentPerformanceReport } from "@/services/agent/agent-analytics-service";
 
 type DateRangeOption = "30d" | "90d" | "12m";
 
@@ -127,12 +127,12 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
     void agentId; // used for future per-agent filters
   }
 
-  const revenueData = report.revenue_over_time.map((p) => ({
+  const revenueData = ((report as Record<string, unknown>).revenue_over_time as Array<{ date: string; value: number }> ?? []).map((p: { date: string; value: number }) => ({
     date: formatMonth(p.date),
     revenue: Math.round(p.value / 100),
   }));
 
-  const listingsData = report.listings_over_time.map((p) => ({
+  const listingsData = ((report as Record<string, unknown>).listings_over_time as Array<{ date: string; value: number }> ?? []).map((p: { date: string; value: number }) => ({
     date: formatMonth(p.date),
     sold: p.value,
   }));
@@ -158,7 +158,7 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
     },
     {
       label: "Total Revenue",
-      value: formatGbp(report.total_revenue_pence),
+      value: formatGbp((report as Record<string, unknown>).total_revenue_pence as number ?? report.total_revenue),
       icon: <PoundSterling className="size-5 text-green-500" />,
       color: "text-green-600",
     },
@@ -170,8 +170,8 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
     },
     {
       label: "Client Satisfaction",
-      value: report.client_satisfaction_avg != null
-        ? `${report.client_satisfaction_avg.toFixed(1)} / 5`
+      value: (report.client_satisfaction ?? null) != null
+        ? `${report.client_satisfaction.toFixed(1)} / 5`
         : "—",
       icon: <Star className="size-5 text-yellow-500" />,
       color: "text-yellow-600",
