@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   createReview,
+  editReview,
   listProviderReviews,
   voteHelpfulness,
   respondToReview,
@@ -302,6 +303,147 @@ describe("flagReview", () => {
     const result = await flagReview(supabase, "u1", "r1", { reason: "spam" });
 
     expect(result.reason).toBe("spam");
+  });
+});
+
+describe("editReview", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const validEditInput = {
+    title: "Updated review title",
+    review_text: "Updated review text that is at least twenty characters long",
+    overall_rating: 4,
+  };
+
+  it("successfully edits a review within the 48h window", async () => {
+    // Review created 1 hour ago — well within window
+    const recentCreatedAt = new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString();
+
+    const fetchQuery = mockQuery({
+      data: {
+        id: "r1",
+        reviewer_id: "u1",
+        review_text: "Original review text that is long enough",
+        title: "Original title",
+        created_at: recentCreatedAt,
+        edit_count: 0,
+        edit_history: [],
+        original_text: null,
+      },
+      error: null,
+    });
+
+    const updateQuery = mockQuery({
+      data: {
+        id: "r1",
+        reviewer_id: "u1",
+        title: "Updated review title",
+        review_text: "Updated review text that is at least twenty characters long",
+        overall_rating: 4,
+        edit_count: 1,
+        moderation_status: "pending",
+        original_text: "Original review text that is long enough",
+      },
+      error: null,
+    });
+
+    const upsertQuery = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(fetchQuery)   // reviews select
+      .mockReturnValueOnce(updateQuery)  // reviews update
+      .mockReturnValueOnce(upsertQuery); // moderation_queue upsert
+
+    const result = await editReview(supabase, "u1", "r1", validEditInput);
+
+    expect(result).toBeDefined();
+    expect(result.edit_count).toBe(1);
+    expect(result.moderation_status).toBe("pending");
+    expect(result.original_text).toBe("Original review text that is long enough");
+  });
+
+  it("rejects edit when the 48h window has expired", async () => {
+    // Review created 49 hours ago — outside the window
+    const expiredCreatedAt = new Date(Date.now() - 49 * 60 * 60 * 1000).toISOString();
+
+    const fetchQuery = mockQuery({
+      data: {
+        id: "r1",
+        reviewer_id: "u1",
+        review_text: "Original review text that is long enough",
+        title: "Original title",
+        created_at: expiredCreatedAt,
+        edit_count: 0,
+        edit_history: [],
+        original_text: null,
+      },
+      error: null,
+    });
+
+    const supabase = createMockSupabase();
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(fetchQuery);
+
+    await expect(
+      editReview(supabase, "u1", "r1", validEditInput),
+    ).rejects.toThrow("Edit window has expired");
+  });
+
+  it("rejects edit when max edits (2) have already been made", async () => {
+    // Review created 1 hour ago but already has 2 edits
+    const recentCreatedAt = new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString();
+
+    const fetchQuery = mockQuery({
+      data: {
+        id: "r1",
+        reviewer_id: "u1",
+        review_text: "Twice-edited review text that is long enough",
+        title: "Twice-edited title",
+        created_at: recentCreatedAt,
+        edit_count: 2,
+        edit_history: [
+          { text: "First version", title: "First title", edited_at: "2026-01-01T00:00:00Z" },
+          { text: "Second version", title: "Second title", edited_at: "2026-01-01T01:00:00Z" },
+        ],
+        original_text: "Original review text that is long enough",
+      },
+      error: null,
+    });
+
+    const supabase = createMockSupabase();
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(fetchQuery);
+
+    await expect(
+      editReview(supabase, "u1", "r1", validEditInput),
+    ).rejects.toThrow("Maximum number of edits (2) reached");
+  });
+
+  it("rejects edit when user is not the review author", async () => {
+    const recentCreatedAt = new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString();
+
+    const fetchQuery = mockQuery({
+      data: {
+        id: "r1",
+        reviewer_id: "other-user",
+        review_text: "Another user's review text that is long enough",
+        title: "Another user's title",
+        created_at: recentCreatedAt,
+        edit_count: 0,
+        edit_history: [],
+        original_text: null,
+      },
+      error: null,
+    });
+
+    const supabase = createMockSupabase();
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(fetchQuery);
+
+    await expect(
+      editReview(supabase, "u1", "r1", validEditInput),
+    ).rejects.toThrow("You can only edit your own reviews");
   });
 });
 
