@@ -260,7 +260,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Role check: if user accesses dashboard with no active_role, redirect to role selection
+  // Role check: if user accesses dashboard with no active_role, redirect to role selection.
+  // Also reconciles intended_role from signup metadata when active_role doesn't match.
   if (isAuthenticated && pathname.startsWith("/dashboard")) {
     if (hasClaims) {
       if (!appMetadata?.role) {
@@ -276,6 +277,23 @@ export async function middleware(request: NextRequest) {
 
         if (profile && !profile.active_role) {
           return redirectWithHeaders("/register/role-select", nonce, request);
+        }
+
+        // Reconcile intended_role: if user signed up as agent but got homebuyer
+        // (e.g. client-side RPC failed during registration), fix it now.
+        const intendedRole = user!.user_metadata?.intended_role as string | undefined;
+        const validRoles = ["homebuyer", "renter", "seller", "agent", "landlord", "service_provider", "mortgage_broker"];
+        if (
+          intendedRole &&
+          validRoles.includes(intendedRole) &&
+          profile?.active_role !== intendedRole
+        ) {
+          await supabase.rpc("assign_role_atomic", {
+            p_user_id: user!.id,
+            p_role: intendedRole,
+          });
+          // Redirect to the correct dashboard for the reconciled role
+          return redirectWithHeaders(`/dashboard/${intendedRole}`, nonce, request);
         }
       } catch (error) {
         console.error("[middleware] Profile role check failed:", error);
@@ -343,7 +361,10 @@ export async function middleware(request: NextRequest) {
     "/dashboard/provider",
   ];
 
-  if (isAuthenticated) {
+  // E2E testing bypass: skip subscription gate when BYPASS_SUBSCRIPTION_GATE is set
+  const bypassSubscription = process.env.BYPASS_SUBSCRIPTION_GATE === "true";
+
+  if (isAuthenticated && !bypassSubscription) {
     const isGatedRoute = SUBSCRIPTION_GATED_PREFIXES.some((prefix) =>
       pathname.startsWith(prefix),
     );
