@@ -2,12 +2,16 @@ import Link from "next/link";
 import { Home, SearchX, Building2, Headphones, MapPin } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "404 — Page Not Found | Britestate",
 };
 
-export default function NotFound() {
+export default async function NotFound() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <div className="flex min-h-screen flex-col bg-neutral-50">
       {/* ── Header ─────────────────────────────────────────────── */}
@@ -31,9 +35,15 @@ export default function NotFound() {
             </Link>
           ))}
         </nav>
-        <Button asChild size="sm" variant="outline">
-          <Link href="/login">Sign In</Link>
-        </Button>
+        {user ? (
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard">Dashboard</Link>
+          </Button>
+        ) : (
+          <Button asChild size="sm" variant="outline">
+            <Link href="/login">Sign In</Link>
+          </Button>
+        )}
       </header>
 
       {/* ── Main ───────────────────────────────────────────────── */}
