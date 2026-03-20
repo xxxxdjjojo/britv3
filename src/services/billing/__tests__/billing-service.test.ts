@@ -562,15 +562,171 @@ describe("getPaymentMethods", () => {
 
 describe("detachPaymentMethod", () => {
   it("calls stripe.paymentMethods.detach with the given pmId", async () => {
-    await detachPaymentMethod("pm_test_to_remove");
+    // Two payment methods — removal is safe regardless of subscription status
+    const client = createMockSupabaseClient();
+    client.from = vi.fn().mockImplementation((table: string) => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({
+        data: table === "profiles" ? { stripe_customer_id: CUSTOMER_ID } : null,
+        error: null,
+      }),
+      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    }));
+
+    mockStripeInstance.paymentMethods.list.mockResolvedValue({
+      data: [
+        { id: "pm_test_to_remove", card: { brand: "visa", last4: "4242", exp_month: 1, exp_year: 2028 } },
+        { id: "pm_other", card: { brand: "mastercard", last4: "1234", exp_month: 6, exp_year: 2027 } },
+      ],
+    });
+
+    await detachPaymentMethod(client as never, USER_ID, "pm_test_to_remove");
 
     expect(mockStripeInstance.paymentMethods.detach).toHaveBeenCalledOnce();
     expect(mockStripeInstance.paymentMethods.detach).toHaveBeenCalledWith("pm_test_to_remove");
   });
 
   it("resolves without returning a value", async () => {
-    const result = await detachPaymentMethod("pm_test_to_remove");
+    const client = createMockSupabaseClient();
+    client.from = vi.fn().mockImplementation((table: string) => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({
+        data: table === "profiles" ? { stripe_customer_id: CUSTOMER_ID } : null,
+        error: null,
+      }),
+      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    }));
+
+    mockStripeInstance.paymentMethods.list.mockResolvedValue({
+      data: [
+        { id: "pm_test_to_remove", card: { brand: "visa", last4: "4242", exp_month: 1, exp_year: 2028 } },
+        { id: "pm_other", card: { brand: "mastercard", last4: "1234", exp_month: 6, exp_year: 2027 } },
+      ],
+    });
+
+    const result = await detachPaymentMethod(client as never, USER_ID, "pm_test_to_remove");
     expect(result).toBeUndefined();
+  });
+
+  it("throws when removing the last payment method with an active subscription", async () => {
+    // Supabase: profiles returns customer, subscriptions returns an active row
+    const client = createMockSupabaseClient();
+    client.from = vi.fn().mockImplementation((table: string) => {
+      if (table === "profiles") {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: { stripe_customer_id: CUSTOMER_ID },
+            error: null,
+          }),
+        };
+      }
+      // subscriptions table
+      return {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        maybeSingle: vi.fn().mockResolvedValue({
+          data: { id: "sub-row-active" },
+          error: null,
+        }),
+      };
+    });
+
+    // Only one payment method on the customer
+    mockStripeInstance.paymentMethods.list.mockResolvedValue({
+      data: [{ id: "pm_only_card", card: { brand: "visa", last4: "4242", exp_month: 1, exp_year: 2028 } }],
+    });
+
+    await expect(
+      detachPaymentMethod(client as never, USER_ID, "pm_only_card"),
+    ).rejects.toThrow(
+      "Cannot remove your only payment method while you have an active subscription. Please add a new card first.",
+    );
+
+    expect(mockStripeInstance.paymentMethods.detach).not.toHaveBeenCalled();
+  });
+
+  it("allows removing the last payment method when no active subscription exists", async () => {
+    // Supabase: profiles returns customer, subscriptions returns null (no active sub)
+    const client = createMockSupabaseClient();
+    client.from = vi.fn().mockImplementation((table: string) => {
+      if (table === "profiles") {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: { stripe_customer_id: CUSTOMER_ID },
+            error: null,
+          }),
+        };
+      }
+      return {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+      };
+    });
+
+    mockStripeInstance.paymentMethods.list.mockResolvedValue({
+      data: [{ id: "pm_only_card", card: { brand: "visa", last4: "4242", exp_month: 1, exp_year: 2028 } }],
+    });
+
+    await expect(
+      detachPaymentMethod(client as never, USER_ID, "pm_only_card"),
+    ).resolves.toBeUndefined();
+
+    expect(mockStripeInstance.paymentMethods.detach).toHaveBeenCalledWith("pm_only_card");
+  });
+
+  it("allows removing a payment method when user has multiple cards", async () => {
+    // Supabase: active subscription exists, but there are two cards — removal is safe
+    const client = createMockSupabaseClient();
+    client.from = vi.fn().mockImplementation((table: string) => {
+      if (table === "profiles") {
+        return {
+          select: vi.fn().mockReturnThis(),
+          eq: vi.fn().mockReturnThis(),
+          single: vi.fn().mockResolvedValue({
+            data: { stripe_customer_id: CUSTOMER_ID },
+            error: null,
+          }),
+        };
+      }
+      return {
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        maybeSingle: vi.fn().mockResolvedValue({
+          data: { id: "sub-row-active" },
+          error: null,
+        }),
+      };
+    });
+
+    mockStripeInstance.paymentMethods.list.mockResolvedValue({
+      data: [
+        { id: "pm_card_1", card: { brand: "visa", last4: "4242", exp_month: 1, exp_year: 2028 } },
+        { id: "pm_card_2", card: { brand: "mastercard", last4: "1234", exp_month: 6, exp_year: 2027 } },
+      ],
+    });
+
+    await expect(
+      detachPaymentMethod(client as never, USER_ID, "pm_card_1"),
+    ).resolves.toBeUndefined();
+
+    expect(mockStripeInstance.paymentMethods.detach).toHaveBeenCalledWith("pm_card_1");
   });
 });
 

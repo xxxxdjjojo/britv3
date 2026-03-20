@@ -5,11 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { CheckCircle, Briefcase } from "lucide-react";
+import Link from "next/link";
 import {
   reviewCreateSchema,
   type ReviewCreateInput,
 } from "@/lib/validators/marketplace-schemas";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -158,14 +160,23 @@ export function ReviewForm({
 
   if (isSubmitted) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-center dark:bg-green-900/20 dark:border-green-800">
-        <CheckCircle className="mx-auto mb-2 size-8 text-green-600" />
-        <h3 className="text-lg font-semibold text-foreground">Review Submitted</h3>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Thank you for your feedback. Your review is pending moderation and
-          will be published shortly.
-        </p>
-      </div>
+      <Card>
+        <CardContent className="space-y-4 p-6 text-center">
+          <CheckCircle className="mx-auto h-12 w-12 text-[#1B4D3E]" />
+          <h3 className="text-lg font-semibold">Review Submitted!</h3>
+          <p className="text-sm text-muted-foreground">
+            Your review is being verified and will appear shortly.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+            <Button variant="outline" asChild>
+              <Link href="/dashboard/reviews">View My Reviews</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/reviews">Browse More Providers</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 

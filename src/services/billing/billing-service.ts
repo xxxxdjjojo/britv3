@@ -265,13 +265,37 @@ export async function getPaymentMethods(
 
 /**
  * Detaches a payment method from the customer.
- * Throws if the method is the only one and a subscription is active
- * (caller must check this).
+ * Throws if the method is the user's only payment method and they have an
+ * active or trialing subscription, preventing a silent renewal failure.
  */
 export async function detachPaymentMethod(
+  supabase: SupabaseClient,
+  userId: string,
   pmId: string,
 ): Promise<void> {
   const stripe = getStripe();
+  const customerId = await getCustomerId(supabase, userId);
+
+  if (customerId) {
+    const [pms, { data: activeSub }] = await Promise.all([
+      stripe.paymentMethods.list({ customer: customerId, type: "card" }),
+      supabase
+        .from("subscriptions")
+        .select("id")
+        .eq("user_id", userId)
+        .in("status", ["active", "trialing"])
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+    const isLastMethod = pms.data.length <= 1;
+    if (isLastMethod && activeSub) {
+      throw new Error(
+        "Cannot remove your only payment method while you have an active subscription. Please add a new card first.",
+      );
+    }
+  }
+
   await stripe.paymentMethods.detach(pmId);
 }
 
