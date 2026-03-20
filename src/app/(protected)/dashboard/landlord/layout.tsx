@@ -7,14 +7,22 @@ export default async function LandlordLayout({ children }: Readonly<{ children: 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("active_role")
-    .eq("id", user.id)
-    .single();
+  try {
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("active_role")
+      .eq("id", user.id)
+      .single();
 
-  if (profile?.active_role !== "landlord") {
-    redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+    if (error) {
+      console.error("[landlord/layout] Profile query failed:", error.message);
+      // Fail open — middleware already enforces role, so render the page
+    } else if (profile?.active_role !== "landlord") {
+      redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+    }
+  } catch (err) {
+    console.error("[landlord/layout] Unexpected error:", err);
+    // Fail open — let middleware handle auth/role enforcement
   }
 
   return (

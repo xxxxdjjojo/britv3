@@ -15,6 +15,7 @@ import {
   Calculator,
   BarChart3,
   Handshake,
+  Shield,
   Menu,
 } from "lucide-react";
 import React from "react";
@@ -41,6 +42,7 @@ const BASE_NAV_ITEMS: NavItem[] = [
   { label: "Documents", href: "/dashboard/landlord/deposits", icon: FolderOpen },
   { label: "Tools", href: "/dashboard/landlord/tools/yield-calculator", icon: Calculator },
   { label: "Analytics", href: "/dashboard/landlord/analytics", icon: BarChart3 },
+  { label: "Insurance", href: "/dashboard/landlord/insurance", icon: Shield },
   { label: "Find Agent", href: "/dashboard/landlord/find-agent", icon: Handshake },
 ];
 
