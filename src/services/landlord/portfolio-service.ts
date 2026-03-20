@@ -152,9 +152,23 @@ export type HealthScore = Readonly<{
   weakest_area: "compliance" | "rent" | "maintenance" | "deposits";
 }>;
 
+const HEALTH_SCORE_FALLBACK: HealthScore = {
+  total_score: 0,
+  compliance_score: 0,
+  compliance_max: 40,
+  rent_score: 0,
+  rent_max: 30,
+  maintenance_score: 0,
+  maintenance_max: 20,
+  deposit_score: 0,
+  deposit_max: 10,
+  weakest_area: "compliance",
+};
+
 /**
  * Fetch the 0-100 health score for the authenticated landlord.
  * Calls the get_landlord_health_score RPC (SECURITY DEFINER).
+ * Returns a zero fallback on error instead of throwing.
  */
 export async function getHealthScore(
   supabase: SupabaseClient,
@@ -165,7 +179,7 @@ export async function getHealthScore(
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    throw new Error("Authentication required");
+    return HEALTH_SCORE_FALLBACK;
   }
 
   const { data, error } = await supabase.rpc("get_landlord_health_score", {
@@ -173,7 +187,8 @@ export async function getHealthScore(
   });
 
   if (error) {
-    throw new Error(`Failed to fetch health score: ${error.message}`);
+    console.error("[getHealthScore] RPC failed:", error.message);
+    return HEALTH_SCORE_FALLBACK;
   }
 
   const result = Array.isArray(data) ? data[0] : data;
