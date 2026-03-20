@@ -148,7 +148,7 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
 
       {/* Link */}
       <Link
-        href={`/tradespeople/${tp.slug}`}
+        href={`/services/tradespeople/${tp.slug}`}
         className="shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold border border-[color:var(--brand-primary,#1B4D3E)] text-[color:var(--brand-primary,#1B4D3E)] hover:bg-[color:var(--brand-primary,#1B4D3E)] hover:text-white transition-colors"
       >
         View
