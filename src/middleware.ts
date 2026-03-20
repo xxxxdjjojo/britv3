@@ -281,6 +281,7 @@ export async function middleware(request: NextRequest) {
 
         // Reconcile intended_role: if user signed up as agent but got homebuyer
         // (e.g. client-side RPC failed during registration), fix it now.
+        // Non-blocking: if RPC fails, let user through with current role.
         const intendedRole = user!.user_metadata?.intended_role as string | undefined;
         const validRoles = ["homebuyer", "renter", "seller", "agent", "landlord", "service_provider", "mortgage_broker"];
         if (
@@ -288,16 +289,21 @@ export async function middleware(request: NextRequest) {
           validRoles.includes(intendedRole) &&
           profile?.active_role !== intendedRole
         ) {
-          await supabase.rpc("assign_role_atomic", {
-            p_user_id: user!.id,
-            p_role: intendedRole,
-          });
-          // Redirect to the correct dashboard for the reconciled role
-          return redirectWithHeaders(`/dashboard/${intendedRole}`, nonce, request);
+          try {
+            await supabase.rpc("assign_role_atomic", {
+              p_user_id: user!.id,
+              p_role: intendedRole,
+            });
+            // Redirect to the correct dashboard for the reconciled role
+            return redirectWithHeaders(`/dashboard/${intendedRole}`, nonce, request);
+          } catch (reconcileError) {
+            // Reconciliation failed — pass through with current role (fail open)
+            console.warn("[middleware] Role reconciliation failed:", reconcileError);
+          }
         }
       } catch (error) {
         console.error("[middleware] Profile role check failed:", error);
-        return redirectWithHeaders("/login", nonce, request);
+        // Fail open — don't redirect to login on profile check failure
       }
     }
   }
