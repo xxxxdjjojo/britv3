@@ -203,6 +203,12 @@ function PlanSelectionView() {
         role={billingRole}
       />
 
+      <div className="mt-4 text-center">
+        <Link href="/" className="text-sm text-muted-foreground hover:underline">
+          Skip for now — explore Britestate first
+        </Link>
+      </div>
+
       <p className="text-center text-xs text-gray-400 dark:text-gray-600">
         A 2.5% platform commission applies on sales transactions. All billing is managed securely via Stripe.
       </p>
