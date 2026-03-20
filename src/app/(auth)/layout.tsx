@@ -1,12 +1,22 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { RightPanelContent } from "@/components/auth/RightPanelContent";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  // Server-side auth check: redirect authenticated users to dashboard
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex min-h-screen">
       {/* Left panel — 44% on desktop, full width on mobile */}
