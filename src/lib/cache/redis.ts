@@ -5,6 +5,7 @@
 
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
+import { createInMemoryRateLimiter } from "@/lib/rate-limit-memory";
 
 // ---------------------------------------------------------------------------
 // Client singleton
@@ -142,24 +143,23 @@ export function createRateLimiter(
  * availability during a Redis outage. Use `createRateLimiter` for
  * non-auth endpoints where fail-open behaviour is acceptable.
  */
+function parseWindowMs(w: string): number {
+  const match = w.match(/^(\d+)\s*(ms|s|m|h|d)$/);
+  if (!match) return 3_600_000;
+  const n = parseInt(match[1], 10);
+  const unit = match[2];
+  const multipliers: Record<string, number> = { ms: 1, s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 };
+  return n * (multipliers[unit] ?? 3_600_000);
+}
+
 export function createAuthRateLimiter(
   maxRequests = 5,
   windowMs: `${number} ms` | `${number} s` | `${number} m` | `${number} h` | `${number} d` = "1 h",
 ) {
   const client = getRedisClient();
   if (!client) {
-    console.error(
-      "[redis] Auth rate limiter has no Redis client — failing closed to preserve brute-force protection",
-    );
-    // Fail closed: deny every request when Redis is unavailable
-    return {
-      limit: async (_identifier: string) => ({
-        success: false,
-        limit: maxRequests,
-        remaining: 0,
-        reset: Date.now() + 3_600_000,
-      }),
-    };
+    console.warn("[redis] Auth rate limiter falling back to in-memory — per-instance only");
+    return createInMemoryRateLimiter(maxRequests, parseWindowMs(windowMs));
   }
 
   return new Ratelimit({
