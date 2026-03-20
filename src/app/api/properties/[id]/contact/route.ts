@@ -129,7 +129,7 @@ export async function POST(
       agent_id: agentId,
       sender_id: user.id,
       error_type: err instanceof Error ? err.name : "unknown",
-      error_message: err instanceof Error ? err.message : String(err),
+      error_message: err instanceof Error ? err.message : "Unknown error",
     });
 
     return NextResponse.json(

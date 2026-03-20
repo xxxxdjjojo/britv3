@@ -35,7 +35,8 @@ export async function POST(request: Request) {
     const remaining = 2 - count; // count was before this generation
     return NextResponse.json({ description, attempts_remaining: remaining });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/describe] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 

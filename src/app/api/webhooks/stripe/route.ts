@@ -643,8 +643,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ received: true });
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    console.error("[webhook] Unhandled error processing event:", event.id, err);
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    console.error("[api/webhooks/stripe] error:", event.id, err);
 
     // Emit to Inngest DLQ for retry
     try {

@@ -50,6 +50,7 @@ export async function PATCH(
     const listing = await updateListing(supabase, id, patch);
     return NextResponse.json(listing);
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/listings/id] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

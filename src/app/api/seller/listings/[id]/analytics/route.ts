@@ -27,6 +27,7 @@ export async function GET(
     const summary = await getListingAnalyticsSummary(supabase, id, validDays);
     return NextResponse.json(summary);
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/listings/id/analytics] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

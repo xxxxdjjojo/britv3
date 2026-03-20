@@ -14,6 +14,7 @@ export async function GET(request: Request) {
     const offers = await getSellerOffers(supabase, listingId);
     return NextResponse.json(offers);
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/offers] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -14,7 +14,8 @@ export async function GET(request: Request) {
     const listings = await getSellerListings(supabase, status ?? undefined);
     return NextResponse.json(listings);
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/listings] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
     const listing = await createListing(supabase, body);
     return NextResponse.json(listing, { status: 201 });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/listings] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
