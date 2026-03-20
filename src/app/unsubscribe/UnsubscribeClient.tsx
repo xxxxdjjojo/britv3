@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, MailX, RefreshCw } from "lucide-react";
 
@@ -10,6 +11,7 @@ type Props = Readonly<{
 }>;
 
 export default function UnsubscribeClient({ token, status }: Props) {
+  const router = useRouter();
   const [state, setState] = useState<
     "idle" | "loading" | "done" | "error" | "resent"
   >("idle");
@@ -32,6 +34,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
           <Button
             onClick={() => {
               setState("resent");
+              router.push("/login?redirectTo=/settings/notifications");
             }}
             disabled={state === "loading" || state === "resent"}
             variant="outline"
@@ -43,7 +46,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
           </Button>
           {state === "resent" && (
             <p className="text-sm text-muted-foreground">
-              Please sign in to update your notification settings.
+              Redirecting to sign in...
             </p>
           )}
         </div>

@@ -77,7 +77,7 @@ function getActionDescription(event: PlatformEvent): string {
 function getNotificationUrl(event: PlatformEvent): string {
   switch (event.entity_type) {
     case "conversation":
-      return `/messages/${event.entity_id}`;
+      return `/inbox/${event.entity_id}`;
     case "booking":
       return `/bookings/${event.entity_id}`;
     case "listing":

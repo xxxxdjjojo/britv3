@@ -14,10 +14,7 @@ import {
   Phone,
   Video,
   MoreVertical,
-  Calendar,
   FileText,
-  MapPin,
-  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMessages, useMarkAsRead } from "@/hooks/useMessages";
@@ -25,15 +22,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import MessageComposer from "@/components/messaging/MessageComposer";
 import type { Message } from "@/types/messaging";
-
-/* ---------- Constants ---------- */
-
-const QUICK_ACTIONS = [
-  { label: "Schedule Viewing", icon: Calendar },
-  { label: "Send Document", icon: FileText },
-  { label: "Share Location", icon: MapPin },
-  { label: "Request Quote", icon: CreditCard },
-] as const;
 
 /* ---------- Sub-components ---------- */
 
@@ -170,27 +158,6 @@ function MessageBubble(
           {time}
         </span>
       </div>
-    </div>
-  );
-}
-
-function QuickActionsBar() {
-  return (
-    <div className="flex gap-2 px-4 py-2 border-t overflow-x-auto">
-      {QUICK_ACTIONS.map((action) => {
-        const Icon = action.icon;
-        return (
-          <Button
-            key={action.label}
-            variant="outline"
-            size="sm"
-            className="rounded-full shrink-0 text-xs gap-1.5"
-          >
-            <Icon className="h-3.5 w-3.5" />
-            {action.label}
-          </Button>
-        );
-      })}
     </div>
   );
 }
@@ -353,7 +320,6 @@ export default function MessageThread(
         </div>
       </ScrollArea>
 
-      <QuickActionsBar />
       {isOtherTyping && (
         <div className="px-4 py-1 text-xs text-muted-foreground italic flex items-center gap-1">
           <span className="inline-flex gap-0.5">

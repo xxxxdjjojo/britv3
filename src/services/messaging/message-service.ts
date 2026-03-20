@@ -246,7 +246,7 @@ export async function getOrCreateConversation(
     query = query.eq("context_id", contextId);
   }
 
-  const { data: existing } = await query.limit(1).single();
+  const { data: existing } = await query.limit(1).maybeSingle();
 
   if (existing) return { id: existing.id };
 

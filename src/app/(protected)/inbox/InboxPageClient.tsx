@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import InboxList from "@/components/messaging/InboxList";
 import MessageThread from "@/components/messaging/MessageThread";
 import { createClient } from "@/lib/supabase/client";
@@ -84,7 +86,23 @@ export default function InboxPageClient() {
         )}
       >
         {activeConversation ? (
-          <MessageThread conversationId={activeConversation} recipientId={activeRecipientId ?? ""} />
+          <>
+            <div className="flex items-center gap-2 border-b px-2 py-1.5 md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label="Back to inbox"
+                onClick={() => {
+                  setActiveConversation(null);
+                  setActiveRecipientId(null);
+                }}
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Inbox
+              </Button>
+            </div>
+            <MessageThread conversationId={activeConversation} recipientId={activeRecipientId ?? ""} />
+          </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
             Select a conversation to start messaging

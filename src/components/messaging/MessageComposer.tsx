@@ -4,7 +4,7 @@
  * MessageComposer -- textarea with file attach support and Ctrl+Enter send.
  */
 
-import { useRef, useState, useCallback, useMemo } from "react";
+import { useRef, useState, useCallback, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { useSendMessage } from "@/hooks/useMessages";
 import { createClient } from "@/lib/supabase/client";
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import AttachmentPreview from "@/components/messaging/AttachmentPreview";
 
 const MAX_CHARS = 5000;
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
 const supabase = createClient();
 
 export default function MessageComposer(
@@ -31,6 +32,18 @@ export default function MessageComposer(
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastTypingBroadcast = useRef<number>(0);
+
+  // Cleanup: send is_typing: false on unmount/blur
+  useEffect(() => {
+    return () => {
+      void supabase.channel(`typing:${conversationId}`).send({
+        type: "broadcast",
+        event: "typing",
+        payload: { user_id: currentUserId ?? "", is_typing: false },
+      });
+    };
+  }, [conversationId, currentUserId]);
 
   const suggestions = useMemo(
     () => (content === "" ? getSuggestedReplies(contextType, lastMessageContent) : []),
@@ -102,7 +115,11 @@ export default function MessageComposer(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        setSelectedFile(file);
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          toast.error("File too large. Maximum size is 2MB.");
+        } else {
+          setSelectedFile(file);
+        }
       }
       // Reset so same file can be re-selected
       e.target.value = "";
@@ -181,11 +198,15 @@ export default function MessageComposer(
             value={content}
             onChange={(e) => {
               setContent(e.target.value.slice(0, MAX_CHARS));
-              void supabase.channel(`typing:${conversationId}`).send({
-                type: "broadcast",
-                event: "typing",
-                payload: { user_id: currentUserId ?? "", is_typing: true },
-              });
+              const now = Date.now();
+              if (now - lastTypingBroadcast.current >= 1000) {
+                lastTypingBroadcast.current = now;
+                void supabase.channel(`typing:${conversationId}`).send({
+                  type: "broadcast",
+                  event: "typing",
+                  payload: { user_id: currentUserId ?? "", is_typing: true },
+                });
+              }
             }}
             onKeyDown={handleKeyDown}
             rows={1}
