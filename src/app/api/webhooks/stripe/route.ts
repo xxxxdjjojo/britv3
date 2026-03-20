@@ -179,7 +179,7 @@ export async function POST(request: Request) {
               .eq("id", userId);
           }
 
-          revalidateTag("billing");
+          revalidateTag("billing", "max");
 
           // Force JWT token refresh so custom claims update immediately
           // Without this, user sees stale plan in JWT for up to 1 hour
@@ -390,7 +390,7 @@ export async function POST(request: Request) {
           }
         }
 
-        revalidateTag("billing");
+        revalidateTag("billing", "max");
 
         // Force JWT token refresh so custom claims update immediately
         // Without this, user sees stale plan in JWT for up to 1 hour
@@ -424,7 +424,7 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: "Database write failed" }, { status: 500 });
         }
 
-        revalidateTag("billing");
+        revalidateTag("billing", "max");
 
         // Force JWT token refresh to clear plan claim
         try {
@@ -479,7 +479,7 @@ export async function POST(request: Request) {
           }
         }
 
-        revalidateTag("billing");
+        revalidateTag("billing", "max");
         break;
       }
 
@@ -517,7 +517,7 @@ export async function POST(request: Request) {
           }
         }
 
-        revalidateTag("billing");
+        revalidateTag("billing", "max");
         break;
       }
 
@@ -550,7 +550,7 @@ export async function POST(request: Request) {
           userId = (refundRequest as { user_id: string | null }).user_id;
         }
 
-        revalidateTag("billing");
+        revalidateTag("billing", "max");
         break;
       }
 
@@ -655,7 +655,7 @@ export async function POST(request: Request) {
           eventId: event.id,
           eventType: event.type,
           errorMessage,
-          payload: event.data.object as Record<string, unknown>,
+          payload: event.data.object as unknown as Record<string, unknown>,
           attempt: 1,
         },
       });

@@ -12,7 +12,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import {
   Home,
   Key,
@@ -63,18 +62,16 @@ export function RoleSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start gap-2 px-3">
-          {switching ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : ActiveIcon ? (
-            <ActiveIcon className="size-4 text-brand-primary" />
-          ) : null}
-          <span className="flex-1 truncate text-left text-sm font-medium">
-            {activeRoleDef?.label ?? "Select role"}
-          </span>
-          <ChevronDown className="size-4 text-neutral-400" />
-        </Button>
+      <DropdownMenuTrigger className="flex w-full items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus-visible:outline-none">
+        {switching ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : ActiveIcon ? (
+          <ActiveIcon className="size-4 text-brand-primary" />
+        ) : null}
+        <span className="flex-1 truncate text-left">
+          {activeRoleDef?.label ?? "Select role"}
+        </span>
+        <ChevronDown className="size-4 text-neutral-400" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" sideOffset={4}>

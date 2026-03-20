@@ -1,6 +1,22 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { ProviderSidebar } from "@/components/dashboard/provider/ProviderSidebar";
 
-export default function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function ProviderLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("active_role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.active_role !== "service_provider") {
+    redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+  }
+
   return (
     <div className="flex min-h-screen">
       <ProviderSidebar />

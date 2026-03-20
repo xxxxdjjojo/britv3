@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,8 +22,19 @@ export function BuyerOnboarding(
     onSkip: () => void;
   }>,
 ) {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("buyer_onboarding_step");
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
   const [saving, setSaving] = useState(false);
+
+  const updateStep = useCallback((newStep: number) => {
+    setStep(newStep);
+    sessionStorage.setItem("buyer_onboarding_step", String(newStep));
+  }, []);
 
   // Step 1 — Location
   const [locationInput, setLocationInput] = useState("");
@@ -78,6 +89,7 @@ export function BuyerOnboarding(
     } finally {
       setSaving(false);
     }
+    sessionStorage.removeItem("buyer_onboarding_step");
     props.onComplete();
   }
 
@@ -135,7 +147,7 @@ export function BuyerOnboarding(
           )}
           <p className="text-xs text-neutral-400">Add up to 5 areas</p>
           <div className="flex gap-3">
-            <Button onClick={() => setStep(1)} className="flex-1" disabled={locations.length === 0}>
+            <Button onClick={() => updateStep(1)} className="flex-1" disabled={locations.length === 0}>
               Continue
             </Button>
           </div>
@@ -173,8 +185,8 @@ export function BuyerOnboarding(
             </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep(0)} className="flex-1">Back</Button>
-            <Button onClick={() => setStep(2)} className="flex-1">Continue</Button>
+            <Button variant="outline" onClick={() => updateStep(0)} className="flex-1">Back</Button>
+            <Button onClick={() => updateStep(2)} className="flex-1">Continue</Button>
           </div>
           <SkipLink />
         </div>
@@ -229,8 +241,8 @@ export function BuyerOnboarding(
             </div>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep(1)} className="flex-1">Back</Button>
-            <Button onClick={() => setStep(3)} className="flex-1">Continue</Button>
+            <Button variant="outline" onClick={() => updateStep(1)} className="flex-1">Back</Button>
+            <Button onClick={() => updateStep(3)} className="flex-1">Continue</Button>
           </div>
           <SkipLink />
         </div>
@@ -257,7 +269,7 @@ export function BuyerOnboarding(
             ))}
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep(2)} className="flex-1">Back</Button>
+            <Button variant="outline" onClick={() => updateStep(2)} className="flex-1">Back</Button>
             <Button onClick={handleComplete} disabled={saving} className="flex-1">
               {saving ? "Saving…" : "Complete Setup"}
             </Button>

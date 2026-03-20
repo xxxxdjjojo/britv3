@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/Logo";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { createClient } from "@/lib/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const NAV_LINKS = [
   { href: "/search?type=buy", label: "Buy" },
@@ -23,6 +25,7 @@ type HeaderProps = Readonly<{
 export function Header({ transparent = false }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +33,17 @@ export function Header({ transparent = false }: HeaderProps) {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+      setUser(authUser);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const isTransparent = transparent && !scrolled;
@@ -69,12 +83,29 @@ export function Header({ transparent = false }: HeaderProps) {
 
         {/* Auth Buttons (Desktop) */}
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/register">List Property</Link>
-          </Button>
+          {user ? (
+            <Link
+              href="/dashboard"
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-neutral-100",
+                isTransparent ? "text-white hover:bg-white/10" : "text-neutral-700",
+              )}
+            >
+              <span className="flex size-8 items-center justify-center rounded-full bg-brand-primary text-white">
+                {user.email?.[0]?.toUpperCase() ?? <User className="size-4" />}
+              </span>
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/register">List Property</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger */}

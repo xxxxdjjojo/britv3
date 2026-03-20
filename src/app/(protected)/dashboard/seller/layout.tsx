@@ -11,9 +11,13 @@ export default async function SellerDashboardLayout(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url")
+    .select("full_name, avatar_url, active_role")
     .eq("id", user.id)
     .maybeSingle();
+
+  if (profile?.active_role !== "seller") {
+    redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex">

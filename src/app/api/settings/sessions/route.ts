@@ -25,12 +25,11 @@ export async function GET() {
   try {
     const admin = createAdminClient();
 
-    // @ts-expect-error — listUserSessions may not be typed in all SDK versions
-    if (typeof admin.auth.admin.listUserSessions === "function") {
-      // @ts-expect-error — same as above
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adminApi = admin.auth.admin as any;
+    if (typeof adminApi.listUserSessions === "function") {
       const { data: sessionData, error: sessionError } =
-        // @ts-expect-error — same as above
-        await admin.auth.admin.listUserSessions({ userId: user.id });
+        await adminApi.listUserSessions({ userId: user.id });
 
       if (!sessionError && sessionData?.sessions) {
         const rawSessions = sessionData.sessions as Array<{
@@ -111,10 +110,10 @@ export async function DELETE(request: NextRequest) {
   try {
     const admin = createAdminClient();
 
-    // @ts-expect-error — revokeUserSession may not be typed in all SDK versions
-    if (typeof admin.auth.admin.revokeUserSession === "function") {
-      // @ts-expect-error — same as above
-      const { error } = await admin.auth.admin.revokeUserSession({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adminApi = admin.auth.admin as any;
+    if (typeof adminApi.revokeUserSession === "function") {
+      const { error } = await adminApi.revokeUserSession({
         sessionId,
       });
 

@@ -102,7 +102,7 @@ function FlagRow({ flag }: { flag: FeatureFlag }) {
                 max={100}
                 step={1}
                 value={[displayPct]}
-                onValueChange={([v]) => setPendingRollout(v ?? flag.rollout_pct)}
+                onValueChange={(v) => setPendingRollout(Array.isArray(v) ? v[0] ?? flag.rollout_pct : v)}
                 disabled={toggling}
                 className="cursor-pointer"
               />

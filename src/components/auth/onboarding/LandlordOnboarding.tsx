@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
-import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 import { Upload, X } from "lucide-react";
 
@@ -80,18 +79,9 @@ export function LandlordOnboarding(
           },
           { onConflict: "user_id" },
         );
-        // First property
-        const cleanAddress = sanitize(address);
-        if (cleanAddress) {
-          await supabase.from("properties").insert({
-            owner_id: user.id,
-            address_line1: cleanAddress,
-            property_type: propertyType || "house",
-            bedrooms,
-            monthly_rent: monthlyRent,
-            status: "let",
-          });
-        }
+        // Property details from Step 2 are collected for UX continuity
+        // but not persisted here — properties are added via the dashboard's
+        // Add Property flow with full validation and correct schema.
       }
     } catch {
       // Non-blocking
@@ -191,11 +181,12 @@ export function LandlordOnboarding(
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Property address</Label>
-            <Input
+            <input
+              type="text"
               placeholder="e.g. 45 Park Lane, London, W1K 1PN"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="h-11"
+              className="h-11 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
             />
           </div>
           <div className="space-y-2">
