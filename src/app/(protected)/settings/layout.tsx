@@ -33,7 +33,7 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     icon: Bell,
   },
   {
-    label: "Profile",
+    label: "Account",
     href: "/settings/account",
     icon: User,
   },
