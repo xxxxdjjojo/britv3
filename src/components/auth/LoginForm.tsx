@@ -101,6 +101,33 @@ export function LoginForm() {
     const redirectTarget = getSafeRedirectTarget(searchParams.get("redirectTo"));
 
     const supabase = createClient();
+
+    // Reconcile intended_role from signup metadata with active_role in DB.
+    // Handles case where client-side RPC failed during registration or
+    // email verification callback hasn't run yet.
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const intendedRole = user.user_metadata?.intended_role as string | undefined;
+        if (intendedRole) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("active_role")
+            .eq("id", user.id)
+            .single();
+
+          if (profile && profile.active_role !== intendedRole) {
+            await supabase.rpc("assign_role_atomic", {
+              p_user_id: user.id,
+              p_role: intendedRole,
+            });
+          }
+        }
+      }
+    } catch {
+      // Non-blocking: role can be fixed on next login or via settings
+    }
+
     const { data: mfaData } = await supabase.auth.mfa.listFactors();
     const hasTotp = mfaData?.totp && mfaData.totp.length > 0;
     if (hasTotp) {
