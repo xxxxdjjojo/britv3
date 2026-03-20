@@ -28,12 +28,12 @@ BEGIN
 
   -- Upsert role record (idempotent)
   INSERT INTO public.user_roles (user_id, role)
-  VALUES (p_user_id, p_role)
+  VALUES (p_user_id, p_role::user_role)
   ON CONFLICT (user_id, role) DO NOTHING;
 
   -- Set active role on profile
   UPDATE public.profiles
-  SET active_role = p_role
+  SET active_role = p_role::user_role
   WHERE id = p_user_id;
 
   -- Audit log
@@ -74,13 +74,13 @@ BEGIN
   -- Upsert each role (idempotent)
   FOREACH r IN ARRAY p_roles LOOP
     INSERT INTO public.user_roles (user_id, role)
-    VALUES (p_user_id, r)
+    VALUES (p_user_id, r::user_role)
     ON CONFLICT (user_id, role) DO NOTHING;
   END LOOP;
 
   -- Set active role to first element
   UPDATE public.profiles
-  SET active_role = p_roles[1]
+  SET active_role = p_roles[1]::user_role
   WHERE id = p_user_id;
 
   -- Audit log
@@ -119,19 +119,19 @@ BEGIN
   -- Verify user has the requested role
   IF NOT EXISTS (
     SELECT 1 FROM public.user_roles
-    WHERE user_id = p_user_id AND role = p_role
+    WHERE user_id = p_user_id AND role = p_role::user_role
   ) THEN
     RAISE EXCEPTION 'User does not have the requested role';
   END IF;
 
   -- Capture current active role for audit log
-  SELECT active_role INTO v_old_role
+  SELECT active_role::text INTO v_old_role
   FROM public.profiles
   WHERE id = p_user_id;
 
   -- Switch active role
   UPDATE public.profiles
-  SET active_role = p_role
+  SET active_role = p_role::user_role
   WHERE id = p_user_id;
 
   -- Audit log
