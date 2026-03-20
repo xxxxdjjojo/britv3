@@ -90,6 +90,7 @@ const PRIVACY_MODES: {
     settings: {
       visibility: "private",
       search_indexing: false,
+      anonymous_analytics: false,
       active_status: false,
       last_viewed_visible: false,
       third_party_marketing: false,

@@ -161,35 +161,39 @@ export default function SettingsLayout({
       <div className="flex flex-col gap-8 lg:flex-row">
         {/* Side navigation -- tabs on desktop, horizontal scroll on mobile */}
         <div className="lg:w-56 lg:shrink-0">
-          <nav className="flex gap-1 overflow-x-auto lg:flex-col">
-            {SETTINGS_TABS.map((tab) => {
-              const isActive = pathname === tab.href;
-              const Icon = tab.icon;
-              return (
-                <Link
-                  key={tab.href}
-                  href={tab.disabled ? "#" : tab.href}
-                  aria-disabled={tab.disabled}
-                  className={cn(
-                    "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-body text-sm transition-colors",
-                    isActive
-                      ? "bg-brand-primary/10 font-medium text-brand-primary"
-                      : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
-                    tab.disabled &&
-                      "pointer-events-none cursor-not-allowed opacity-40",
-                  )}
-                >
-                  <Icon className="size-4" />
-                  {tab.label}
-                  {tab.disabled && (
-                    <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-400">
-                      Soon
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+          <div className="relative lg:static">
+            <nav className="flex gap-1 overflow-x-auto scrollbar-none lg:flex-col">
+              {SETTINGS_TABS.map((tab) => {
+                const isActive = pathname === tab.href;
+                const Icon = tab.icon;
+                return (
+                  <Link
+                    key={tab.href}
+                    href={tab.disabled ? "#" : tab.href}
+                    aria-disabled={tab.disabled}
+                    className={cn(
+                      "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-body text-sm transition-colors",
+                      isActive
+                        ? "bg-brand-primary/10 font-medium text-brand-primary"
+                        : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+                      tab.disabled &&
+                        "pointer-events-none cursor-not-allowed opacity-40",
+                    )}
+                  >
+                    <Icon className="size-4" />
+                    {tab.label}
+                    {tab.disabled && (
+                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-400">
+                        Soon
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+            {/* Right fade gradient hinting at horizontal scroll — mobile only */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-neutral-950 lg:hidden" />
+          </div>
 
           {/* Security & Privacy Badges — desktop only */}
           <div className="mt-4 hidden space-y-2 lg:block">
