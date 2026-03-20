@@ -105,6 +105,11 @@ const BEDROOM_OPTIONS = ["Any", "1", "2", "3", "4", "5+"];
 const MUST_HAVES_ALL = ["Garden", "Parking", "Garage", "Chain Free"];
 const MUST_HAVES_RENT = ["Garden", "Parking", "Garage"];
 
+function getDefaultMustHaves(type: string): Record<string, boolean> {
+  const keys = type === "rent" ? MUST_HAVES_RENT : MUST_HAVES_ALL;
+  return Object.fromEntries(keys.map((k) => [k, false]));
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -298,12 +303,9 @@ function SearchPageInner() {
   const [maxPrice, setMaxPrice] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedBedrooms, setSelectedBedrooms] = useState("Any");
-  const [mustHaves, setMustHaves] = useState<Record<string, boolean>>({
-    Garden: false,
-    Parking: false,
-    Garage: false,
-    "Chain Free": false,
-  });
+  const [mustHaves, setMustHaves] = useState<Record<string, boolean>>(
+    getDefaultMustHaves(initialListingType),
+  );
 
   // Listing type filter
   const [listingType, setListingType] = useState<ListingType>(initialListingType);
@@ -345,7 +347,7 @@ function SearchPageInner() {
     setMaxPrice("");
     setSelectedTypes([]);
     setSelectedBedrooms("Any");
-    setMustHaves({ Garden: false, Parking: false, Garage: false, "Chain Free": false });
+    setMustHaves(getDefaultMustHaves("all"));
   }
 
   const filteredProperties =
@@ -662,7 +664,7 @@ function SearchPageInner() {
               <button
                 key={lt.value}
                 type="button"
-                onClick={() => setListingType(lt.value)}
+                onClick={() => { setListingType(lt.value); setMustHaves(getDefaultMustHaves(lt.value)); }}
                 className={cn(
                   "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
                   listingType === lt.value
