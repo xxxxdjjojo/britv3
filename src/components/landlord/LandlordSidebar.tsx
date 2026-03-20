@@ -21,10 +21,8 @@ import React from "react";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger as SheetTriggerBase,
+  SheetTrigger,
 } from "@/components/ui/sheet";
-
-const SheetTrigger = SheetTriggerBase as React.ComponentType<{ asChild?: boolean; children: React.ReactNode }>;
 
 type NavItem = {
   label: string;
@@ -113,14 +111,11 @@ export function LandlordSidebar() {
       {/* Mobile hamburger + sheet drawer */}
       <div className="fixed left-4 top-4 z-50 lg:hidden">
         <Sheet>
-          <SheetTrigger asChild>
-            <button
-              type="button"
-              className="inline-flex size-10 items-center justify-center rounded-md border bg-background text-foreground shadow-sm hover:bg-accent"
-              aria-label="Open navigation menu"
-            >
-              <Menu className="size-5" />
-            </button>
+          <SheetTrigger
+            className="inline-flex size-10 items-center justify-center rounded-md border bg-background text-foreground shadow-sm hover:bg-accent"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="size-5" />
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0" showCloseButton={true}>
             <SidebarInner pathname={pathname} />
