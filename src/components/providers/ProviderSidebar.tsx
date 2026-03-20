@@ -1,11 +1,15 @@
+"use client";
+
 /**
- * ProviderSidebar — Server Component
+ * ProviderSidebar — Client Component
  *
  * Renders the sticky "Get a Free Quote" sidebar widget and trust card for
- * a tradesperson public profile page.
+ * a tradesperson public profile page. Opens QuoteModal on CTA click.
  */
 
+import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
+import { QuoteModal } from "@/components/providers/QuoteModal";
 import type { ServiceProviderPublicProfile } from "@/types/providers";
 
 type ProviderSidebarProps = Readonly<{
@@ -13,6 +17,12 @@ type ProviderSidebarProps = Readonly<{
 }>;
 
 export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
+  const [quoteOpen, setQuoteOpen] = useState(false);
+
+  const serviceNames = (provider.services ?? []).map((svc) =>
+    String(svc).replace(/_/g, " "),
+  );
+
   return (
     <div className="sticky top-24 space-y-4" id="quote">
       {/* Quote form card */}
@@ -24,7 +34,7 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
           </p>
         </div>
 
-        {/* Display-only form fields — actual submission via QuoteModal in 17-03 */}
+        {/* Display-only form fields — clicking CTA opens QuoteModal */}
         <div className="space-y-3">
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -68,7 +78,7 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
 
           <button
             type="button"
-            onClick={() => void 0}
+            onClick={() => setQuoteOpen(true)}
             className="w-full bg-[#2563EB] hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-sm"
           >
             Send Quote Request
@@ -92,6 +102,15 @@ export default function ProviderSidebar({ provider }: ProviderSidebarProps) {
           </div>
         </div>
       </div>
+
+      {/* QuoteModal */}
+      <QuoteModal
+        providerId={provider.id}
+        providerName={provider.business_name}
+        services={serviceNames}
+        open={quoteOpen}
+        onOpenChange={setQuoteOpen}
+      />
     </div>
   );
 }

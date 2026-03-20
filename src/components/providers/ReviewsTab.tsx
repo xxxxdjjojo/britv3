@@ -1,14 +1,19 @@
+"use client";
+
 /**
- * ReviewsTab — Server Component
+ * ReviewsTab — Client Component
  *
  * Renders a paginated list of approved reviews for a tradesperson's public
  * profile. Displays star ratings, reviewer initials/avatar, relative date,
- * and optional provider response block.
+ * optional provider response, and pagination controls (10 per page).
  */
 
-import { Star } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import type { PublicReview } from "@/types/providers";
 import { formatRelativeDate } from "@/lib/utils/date";
+
+const PAGE_SIZE = 10;
 
 function StarRow({ rating }: Readonly<{ rating: number }>) {
   return (
@@ -64,11 +69,49 @@ type ReviewsTabProps = Readonly<{
 }>;
 
 export function ReviewsTab({
-  reviews,
-  total,
+  reviews: initialReviews,
+  total: initialTotal,
   providerName,
   providerId,
 }: ReviewsTabProps) {
+  const [reviews, setReviews] = useState<PublicReview[]>(initialReviews);
+  const [total, setTotal] = useState(initialTotal);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const fetchPage = useCallback(
+    async (targetPage: number) => {
+      setLoading(true);
+      try {
+        const offset = (targetPage - 1) * PAGE_SIZE;
+        const res = await fetch(
+          `/api/reviews/list?provider_id=${providerId}&limit=${PAGE_SIZE}&offset=${offset}&sort=recent`,
+        );
+        if (res.ok) {
+          const json = await res.json();
+          setReviews(json.data ?? []);
+          setTotal(json.meta?.total ?? total);
+          setPage(targetPage);
+        }
+      } catch {
+        // Keep current reviews on error
+      } finally {
+        setLoading(false);
+      }
+    },
+    [providerId, total],
+  );
+
+  const goToPrev = useCallback(() => {
+    if (page > 1) fetchPage(page - 1);
+  }, [page, fetchPage]);
+
+  const goToNext = useCallback(() => {
+    if (page < totalPages) fetchPage(page + 1);
+  }, [page, totalPages, fetchPage]);
+
   return (
     <div className="space-y-6">
       {/* Section header */}
@@ -82,14 +125,14 @@ export function ReviewsTab({
       </div>
 
       {/* Review cards */}
-      {reviews.length === 0 ? (
+      {reviews.length === 0 && !loading ? (
         <div className="p-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             No reviews yet. Be the first to review {providerName}!
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
           {reviews.map((review) => (
             <div
               key={review.id}
@@ -142,6 +185,70 @@ export function ReviewsTab({
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            type="button"
+            onClick={goToPrev}
+            disabled={page <= 1 || loading}
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            aria-label="Previous page"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((p) => {
+              // Show first, last, and pages near current
+              if (p === 1 || p === totalPages) return true;
+              return Math.abs(p - page) <= 1;
+            })
+            .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+              if (idx > 0 && p - (arr[idx - 1]) > 1) {
+                acc.push("...");
+              }
+              acc.push(p);
+              return acc;
+            }, [])
+            .map((item, idx) =>
+              item === "..." ? (
+                <span
+                  key={`ellipsis-${idx}`}
+                  className="w-10 h-10 flex items-center justify-center text-slate-400 text-sm"
+                >
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => fetchPage(item as number)}
+                  disabled={loading}
+                  className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+                    page === item
+                      ? "bg-[#2563EB] text-white"
+                      : "border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  }`}
+                >
+                  {item}
+                </button>
+              ),
+            )}
+
+          <button
+            type="button"
+            onClick={goToNext}
+            disabled={page >= totalPages || loading}
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            aria-label="Next page"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
 
