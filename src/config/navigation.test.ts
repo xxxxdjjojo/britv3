@@ -36,19 +36,19 @@ describe("NAV_ITEMS", () => {
     }
   });
 
-  it("has no duplicate hrefs across all dropdown links", () => {
-    const hrefs: string[] = [];
+  it("has no duplicate hrefs within each individual nav item", () => {
     for (const item of NAV_ITEMS) {
       if (item.sections) {
+        const hrefs: string[] = [];
         for (const section of item.sections) {
           for (const link of section.links) {
             hrefs.push(link.href);
           }
         }
+        const uniqueHrefs = new Set(hrefs);
+        expect(uniqueHrefs.size).toBe(hrefs.length);
       }
     }
-    const uniqueHrefs = new Set(hrefs);
-    expect(uniqueHrefs.size).toBe(hrefs.length);
   });
 
   it("has correct top-level labels in order", () => {

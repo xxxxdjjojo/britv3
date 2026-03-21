@@ -202,11 +202,11 @@ export const NAV_ITEMS: NavItem[] = [
       {
         heading: "Calculators",
         links: [
-          { label: "Mortgage Calculator", href: "/tools/mortgage-calculator-hub" },
-          { label: "Stamp Duty Calculator", href: "/tools/stamp-duty-calculator-hub" },
-          { label: "Affordability Calculator", href: "/tools/affordability-calculator-hub" },
-          { label: "Buy vs Rent Calculator", href: "/tools/buy-vs-rent-calculator-hub" },
-          { label: "Rental Yield Calculator", href: "/tools/rental-yield-calculator-hub" },
+          { label: "Mortgage Calculator", href: "/tools/mortgage-calculator" },
+          { label: "Stamp Duty Calculator", href: "/tools/stamp-duty-calculator" },
+          { label: "Affordability Calculator", href: "/tools/affordability-calculator" },
+          { label: "Buy vs Rent Calculator", href: "/tools/buy-vs-rent-calculator" },
+          { label: "Rental Yield Calculator", href: "/tools/rental-yield-calculator" },
           { label: "Remortgage Calculator", href: "/tools/remortgage-calculator" },
           { label: "Moving Cost Estimator", href: "/tools/moving-cost-estimator" },
           { label: "Energy Bill Estimator", href: "/tools/energy-bill-estimator" },
@@ -223,7 +223,7 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Data",
         links: [
           { label: "Area Guides", href: "/areas" },
-          { label: "Market Trends", href: "/market-trends-hub" },
+          { label: "Market Trends", href: "/market-trends" },
         ],
       },
     ],
