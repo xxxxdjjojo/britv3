@@ -1,4 +1,3 @@
-"use client";
 
 import { CheckCircle, Clock, AlertCircle } from "lucide-react";
 import type { SaleProgressionStage, SaleProgressionDocument } from "@/types/seller";

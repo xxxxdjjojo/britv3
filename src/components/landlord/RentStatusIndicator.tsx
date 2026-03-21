@@ -1,4 +1,3 @@
-"use client";
 
 import { getRentStatus } from "@/lib/rent-period";
 

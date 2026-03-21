@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Welcome banner for dashboard pages.

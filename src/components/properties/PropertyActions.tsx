@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Property action sidebar -- save, share, contact agent buttons + location map.

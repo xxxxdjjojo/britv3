@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Service Provider / Tradesperson dashboard content.

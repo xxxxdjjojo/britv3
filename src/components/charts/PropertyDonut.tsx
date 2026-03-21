@@ -1,4 +1,3 @@
-"use client";
 
 type Segment = Readonly<{
   label: string;

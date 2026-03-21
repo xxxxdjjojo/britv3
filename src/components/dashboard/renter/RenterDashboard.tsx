@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Renter dashboard content.

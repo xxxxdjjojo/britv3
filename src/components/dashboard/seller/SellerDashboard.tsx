@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Seller Dashboard — Stitch-based design.

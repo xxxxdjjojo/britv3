@@ -1,4 +1,3 @@
-"use client";
 
 import type { LandRegistryComparable } from "@/types/seller";
 

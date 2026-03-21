@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Homebuyer dashboard — Stitch-based design.

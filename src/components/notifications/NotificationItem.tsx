@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Single notification item with icon, actor, description, and time ago.

@@ -1,4 +1,3 @@
-"use client";
 
 import { Home, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";

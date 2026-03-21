@@ -1,4 +1,3 @@
-"use client";
 
 import { GraduationCap } from "lucide-react";
 import type { OfstedSchool } from "@/services/properties/ofsted-service";

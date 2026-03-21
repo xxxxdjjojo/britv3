@@ -1,4 +1,3 @@
-"use client";
 
 import type { ReferralTier } from "@/types/referrals";
 import { TIER_CONFIGS, BADGE_COLORS, getNextTier } from "@/lib/referral-tiers";

@@ -1,4 +1,3 @@
-"use client";
 
 import type { LineItemRow } from "./QuoteBuilderForm";
 
