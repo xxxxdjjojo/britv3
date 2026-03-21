@@ -282,3 +282,135 @@ _From engineering plan review, 2026-03-19. 14 decisions locked._
 **Why:** Real-time signal reduces friction — users know the provider is responsive.
 **Effort:** M | **Priority:** P3
 **Depends on:** Provider availability/status feature being built.
+
+## Dashboard Demo Data & Testing System — CEO Review TODOs
+
+_From CEO plan review, 2026-03-21. EXPANSION mode. 11 items._
+
+### Install and configure Playwright for E2E testing
+**What:** Add `@playwright/test` to devDependencies, create `playwright.config.ts` with baseURL, auth setup, and screenshot config. Add `pnpm test:e2e` script to package.json.
+**Why:** Required foundation for all 8 E2E dashboard scenarios and screenshot automation. Currently "planned but not installed."
+**Effort:** S | **Priority:** P1
+**Depends on:** Nothing.
+**Where to start:** `cd britv3.0 && pnpm add -D @playwright/test && npx playwright install`
+
+### Post-seed verification SQL script
+**What:** `supabase/seed/verify.sql` that runs `SELECT COUNT(*)` on every seeded table, then queries AS each demo user (via `SET LOCAL role`) to verify RLS allows the expected rows.
+**Why:** Without this, seed data can silently fail — you INSERT rows but RLS hides them. This is the exact problem currently plaguing all dashboards. The verification script catches "data exists but is invisible" before you waste time debugging UI.
+**Effort:** S | **Priority:** P1
+**Depends on:** Seed SQL files being written.
+**Where to start:** Create `supabase/seed/verify.sql`. For each demo user UUID, run: `SET LOCAL role 'authenticated'; SET LOCAL request.jwt.claims = '{"sub":"<uuid>"}'; SELECT COUNT(*) FROM listings;`
+
+### Merge unmerged dashboard feature branches to main
+**What:** Merge 5 feature branches to main: `feature/15-estate-agent-dashboard` (78 files, 13K lines), `feature/phase-16-tradesperson-dashboard` (25+ pages), `feature/buyer-renter-dashboard` (viewings/offers/docs), `feature/phase-18-payments-billing` (billing flows), `feature/phase-19-account-settings` (settings pages).
+**Why:** Seed data populates tables that these branches' services query. If the dashboard code isn't on main, seed data is useless — the pages that would show the data don't exist in the deployed app. This is a hard prerequisite.
+**Effort:** L (conflict resolution across 5 branches) | **Priority:** P1
+**Depends on:** Code review of each branch.
+**Where to start:** Merge in dependency order: buyer-renter first (lowest conflict risk), then agent, then provider, then payments, then settings.
+
+### Demo mode UI banner
+**What:** Dismissible banner at top of dashboards: "You are viewing sample data. Add your first property to see real data." Controlled by `NEXT_PUBLIC_DEMO_MODE` env var. Component: `src/components/demo/DemoBanner.tsx`.
+**Why:** Without this, users and demo audiences can't distinguish sample data from real data. Prevents confusion during estate agent demos and video recordings.
+**Effort:** S | **Priority:** P2
+**Depends on:** Seed data being in place.
+**Where to start:** Create `src/components/demo/DemoBanner.tsx`, add to dashboard layouts. Check `process.env.NEXT_PUBLIC_DEMO_MODE === 'true'`.
+
+### Seed data cleanup script
+**What:** `supabase/seed/cleanup.sql` that DELETEs all rows associated with demo user UUIDs. Uses cascading deletes via FK relationships. One command to remove all demo data without dropping the database.
+**Why:** When done demoing or need to reset to clean state, this is the safe way to remove demo data. Alternative (`supabase db reset`) wipes everything including real data.
+**Effort:** S | **Priority:** P2
+**Depends on:** Seed SQL files with known demo UUIDs.
+**Where to start:** DELETE FROM auth.users WHERE id IN ('11111111-...', '22222222-...', ...); — FKs cascade.
+
+### CI pipeline: seed validation after migrations
+**What:** GitHub Action that spins up Supabase local (`supabase start`), runs all migrations, runs seed SQL, then runs `verify.sql`. Fails CI if any seed INSERT errors or verification counts are zero.
+**Why:** Without this, a migration that renames a column silently breaks seed data. You discover it only when someone tries to demo — likely at the worst possible time.
+**Effort:** M | **Priority:** P2
+**Depends on:** Seed SQL + verify.sql being written, Supabase CLI in CI.
+**Where to start:** `.github/workflows/seed-check.yml`. Use `supabase/setup-cli` action.
+
+### Coherent property story in seed data
+**What:** Design seed data as a narrative: "12 Kensington Gardens" listed by Agent Sarah → 3 viewings booked → 2 offers received → "under offer". Buyer James saved it, booked viewing, made winning offer. Provider Mike quoted for a boiler repair at the property.
+**Why:** During estate agent demos, the data makes sense as a realistic property journey. Random disconnected data looks like test noise. A coherent story makes the platform feel real and demonstrates the full value chain.
+**Effort:** S (thoughtful data design, not extra code) | **Priority:** P2
+**Where to start:** Map the story BEFORE writing SQL. Define characters (7 demo users with names/roles), properties (5-6 with addresses), and the relationships between them.
+
+### Real UK property photos for demo
+**What:** Source 20-30 royalty-free UK property images from Unsplash/Pexels. Store in `public/images/demo/`. Update seed SQL `property_media` URLs to reference these images.
+**Why:** Current seed references `/images/properties/property-1.jpg` which 404s. Broken image placeholders make dashboards look broken, not empty. Real photos make screenshots and videos look professional.
+**Effort:** S | **Priority:** P1
+**Where to start:** Search Unsplash for "UK house exterior", "London flat interior", "Victorian terrace". Download 4-5 per property (exterior, kitchen, bedroom, bathroom, garden).
+
+### One-command screenshot pipeline
+**What:** Playwright script (`e2e/screenshots/capture-all.spec.ts`) that logs in as each role, navigates to dashboard home + 2-3 key pages, captures high-res screenshots. Output: `e2e/screenshots/output/agent-dashboard.png`, etc.
+**Why:** Every UI update, run one command and get fresh screenshots for website, pitch deck, and social media. No more manual screenshotting. Reuses E2E test infrastructure.
+**Effort:** M | **Priority:** P2
+**Depends on:** Playwright installed, seed data in place, E2E auth setup.
+**Where to start:** Create `e2e/screenshots/capture-all.spec.ts`. Loop through demo users, navigate to key pages, `page.screenshot({ fullPage: true })`.
+
+### Demo role switcher (floating button)
+**What:** Floating button (bottom-right, only when `NEXT_PUBLIC_DEMO_MODE=true`) showing current role + dropdown to instantly switch between demo users. Calls `supabase.auth.signInWithPassword()` with the selected demo user's credentials.
+**Why:** During live demos or video recordings, switching roles is: logout → login → enter credentials → navigate. The switcher makes it instant — one click to see the platform from any role's perspective.
+**Effort:** M | **Priority:** P3
+**Depends on:** Demo mode env var, demo user credentials constants.
+**Where to start:** `src/components/demo/DemoRoleSwitcher.tsx`. Import demo user credentials from shared constants.
+
+### Time-series analytics seed data
+**What:** Use SQL `generate_series` to create 30 days of realistic daily_views, click_through_rate, and enquiry counts for property analytics. Use `sin()` + `random()` for realistic-looking trends (weekday peaks, weekend dips).
+**Why:** Agent and seller dashboards have Recharts chart components that show flat lines or nothing with no data. 30 days of trending data makes analytics pages look like an active, live platform.
+**Effort:** S | **Priority:** P2
+**Depends on:** Properties and listings being seeded first.
+**Where to start:** Add to `supabase/seed/05_seller_data.sql` or `03_agent_data.sql`. Use: `generate_series(CURRENT_DATE - 30, CURRENT_DATE, '1 day') AS d`.
+
+## Navigation Architecture — Deferred TODOs
+
+_From CEO plan review, 2026-03-21. 7 items._
+
+### CMS-driven navigation editing
+**What:** Admin dashboard page where navigation items can be reordered, added, or removed without code deploys.
+**Why:** Currently navigation is defined in static TypeScript config (navigation.ts). Content/marketing teams need to update nav without engineering.
+**Effort:** XL | **Priority:** P3
+**Where to start:** Create `navigation_items` Supabase table, admin CRUD UI at `/admin/navigation`, API endpoint to serve dynamic config.
+**Depends on:** Admin dashboard (Phase 20).
+
+### Personalized navigation from PostHog behavioral data
+**What:** Mega-menus surface most-clicked items per role (e.g., landlords see "Compliance" promoted in dropdown).
+**Why:** Generic nav treats all users the same. Personalization increases engagement with relevant features.
+**Effort:** L | **Priority:** P3
+**Where to start:** PostHog event query for top nav clicks per role, override mechanism in navigation config, A/B test framework.
+**Depends on:** PostHog analytics data accumulation (30+ days of usage).
+
+### AI-powered command palette natural language search
+**What:** Instead of fuzzy matching route names, users type "find me a plumber near Camden" and Claude interprets intent.
+**Why:** Natural language removes the need to know exact page names. Differentiator vs all competitors.
+**Effort:** L | **Priority:** P3
+**Where to start:** Add Claude API call in CommandPalette search path, intent classification for property search vs service search vs tool search.
+**Depends on:** Command palette (now built), Claude API integration.
+
+### Recently viewed properties in mega-menu
+**What:** When user hovers "Buy" dropdown, show their last 3 viewed properties with thumbnails in a sidebar panel.
+**Why:** Makes navigation feel alive and personal, like Amazon's "Recently Viewed".
+**Effort:** S | **Priority:** P3
+**Where to start:** Track views in localStorage or Supabase, add panel to MegaMenu Buy/Rent sections.
+**Depends on:** Property detail pages, view tracking.
+
+### Keyboard shortcut navigation (G+B, G+R, etc.)
+**What:** Two-key shortcuts: G then B = Go to Buy, G then R = Go to Rent, G then S = Go to Services, etc. With visible hint labels in mega-menu.
+**Why:** Power users (agents, landlords) who use the platform daily benefit from keyboard-first navigation. Linear and Figma do this.
+**Effort:** M | **Priority:** P3
+**Where to start:** Create `useKeyboardShortcuts()` hook with chord detection, add kbd hint components to MegaMenu items.
+**Depends on:** MegaMenu (now built).
+
+### Geo-dynamic footer area links
+**What:** If geolocation available, replace static "Popular Areas" footer column with areas near the user's location.
+**Why:** Increases relevance of footer links. User in Manchester sees Manchester areas, not London.
+**Effort:** S | **Priority:** P3
+**Where to start:** Geolocation API + area slug mapping, client component island in Footer for dynamic column.
+**Depends on:** Area guides data, geolocation permission UX.
+
+### Navigation debug overlay (?debug=nav)
+**What:** Hidden mode that overlays link targets on the page, showing href values next to each navigation link. Triggered by query param.
+**Why:** Useful for QA teams and content managers verifying link integrity after nav changes.
+**Effort:** S | **Priority:** P3
+**Where to start:** Create `NavDebugOverlay` component that reads all `<a>` tags and overlays their href. Mount conditionally on `?debug=nav`.
+**Depends on:** Nothing.
