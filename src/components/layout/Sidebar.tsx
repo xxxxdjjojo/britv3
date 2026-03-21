@@ -3,33 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { UserRole } from "@/types/auth";
 import { useRole } from "@/hooks/useRole";
 import { useAuth } from "@/hooks/useAuth";
+import { ROLE_NAV_ITEMS, navLinkClasses } from "@/config/navigation";
 import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  Heart,
-  Search,
-  Eye,
-  FileText,
-  Home,
-  ClipboardList,
-  Building,
-  Users,
-  Wrench as WrenchIcon,
-  PoundSterling,
-  Shield,
-  Tag,
-  TrendingUp,
-  Star,
-  BadgeCheck,
-  Briefcase,
-  UserPlus,
-  MessagesSquare,
+  ArrowLeft,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -39,73 +21,35 @@ import {
 } from "lucide-react";
 import UnreadBadge from "@/components/messaging/UnreadBadge";
 
-type NavItem = Readonly<{
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-}>;
+const RETURN_URL_KEY = "britestate-return-url";
 
-const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
-  homebuyer: [
-    { href: "/dashboard/homebuyer", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/homebuyer/saved", label: "Saved Properties", icon: Heart },
-    { href: "/dashboard/homebuyer/searches", label: "Searches", icon: Search },
-    { href: "/dashboard/homebuyer/viewings", label: "Viewings", icon: Eye },
-    { href: "/dashboard/homebuyer/documents", label: "Documents", icon: FileText },
-  ],
-  renter: [
-    { href: "/dashboard/renter", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/renter/saved", label: "Saved Rentals", icon: Heart },
-    { href: "/dashboard/renter/applications", label: "Applications", icon: ClipboardList },
-    { href: "/dashboard/renter/tenancy", label: "Tenancy", icon: Home },
-    { href: "/dashboard/renter/documents", label: "Documents", icon: FileText },
-  ],
-  seller: [
-    { href: "/dashboard/seller", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/seller/listings", label: "My Listings", icon: Tag },
-    { href: "/dashboard/seller/viewings", label: "Viewings", icon: Eye },
-    { href: "/dashboard/seller/offers", label: "Offers", icon: PoundSterling },
-    { href: "/dashboard/seller/documents", label: "Documents", icon: FileText },
-  ],
-  landlord: [
-    { href: "/dashboard/landlord", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/landlord/properties", label: "Portfolio", icon: Building },
-    { href: "/dashboard/landlord/tenants", label: "Tenants", icon: Users },
-    { href: "/dashboard/landlord/maintenance", label: "Maintenance", icon: WrenchIcon },
-    { href: "/dashboard/landlord/finance/expenses", label: "Finances", icon: PoundSterling },
-    { href: "/dashboard/landlord/compliance", label: "Compliance", icon: Shield },
-  ],
-  agent: [
-    { href: "/dashboard/agent", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/agent/listings", label: "Listings", icon: Building },
-    { href: "/dashboard/agent/leads", label: "Leads", icon: UserPlus },
-    { href: "/dashboard/agent/viewings", label: "Viewings", icon: Eye },
-    { href: "/dashboard/agent/revenue", label: "Revenue", icon: TrendingUp },
-    { href: "/dashboard/agent/team", label: "Team", icon: Briefcase },
-  ],
-  service_provider: [
-    { href: "/dashboard/service_provider", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/service_provider/jobs", label: "Jobs", icon: ClipboardList },
-    { href: "/dashboard/service_provider/quotes", label: "Quotes", icon: MessagesSquare },
-    { href: "/dashboard/service_provider/reviews", label: "Reviews", icon: Star },
-    { href: "/dashboard/service_provider/verification", label: "Verification", icon: BadgeCheck },
-    { href: "/dashboard/service_provider/earnings", label: "Earnings", icon: PoundSterling },
-  ],
-  mortgage_broker: [
-    { href: "/dashboard/mortgage_broker", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/mortgage_broker/cases", label: "Cases", icon: FileText },
-    { href: "/dashboard/mortgage_broker/clients", label: "Clients", icon: Users },
-    { href: "/dashboard/mortgage_broker/applications", label: "Applications", icon: ClipboardList },
-    { href: "/dashboard/mortgage_broker/revenue", label: "Revenue", icon: TrendingUp },
-    { href: "/dashboard/mortgage_broker/verification", label: "Verification", icon: BadgeCheck },
-  ],
-};
+function getReturnUrl(): string {
+  if (typeof window === "undefined") return "/";
+  const stored = sessionStorage.getItem(RETURN_URL_KEY);
+  if (stored) return stored;
+  if (document.referrer) {
+    try {
+      const referrerUrl = new URL(document.referrer);
+      if (
+        referrerUrl.origin === window.location.origin &&
+        !referrerUrl.pathname.startsWith("/dashboard")
+      ) {
+        sessionStorage.setItem(RETURN_URL_KEY, referrerUrl.pathname);
+        return referrerUrl.pathname;
+      }
+    } catch {
+      // Invalid referrer URL, keep fallback
+    }
+  }
+  return "/";
+}
 
 export function Sidebar() {
   const { activeRole } = useRole();
   const { user } = useAuth();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [returnUrl] = useState(getReturnUrl);
 
   const navItems = activeRole ? ROLE_NAV_ITEMS[activeRole] ?? [] : [];
   const displayName = user?.user_metadata?.display_name ?? user?.email ?? "User";
@@ -116,13 +60,31 @@ export function Sidebar() {
     .slice(0, 2)
     .toUpperCase();
 
+  // Notification count — hardcoded to 0 for now, will be connected to real data later
+  const notificationCount = 0;
+
   return (
     <aside
       className={cn(
-        "hidden flex-col border-r bg-white transition-all lg:flex",
+        "hidden flex-col border-r bg-white lg:flex transition-all duration-200 ease-out",
         collapsed ? "w-16" : "w-64",
       )}
     >
+      {/* Back to Site */}
+      <div className={cn("border-b p-2", collapsed && "px-1")}>
+        <Link
+          href={returnUrl}
+          className={cn(
+            navLinkClasses({ variant: "sidebar" }),
+            collapsed && "justify-center px-2",
+          )}
+          title="Back to Site"
+        >
+          <ArrowLeft className="size-5 shrink-0" />
+          {!collapsed && <span>Back to Site</span>}
+        </Link>
+      </div>
+
       {/* Role Switcher */}
       <div className={cn("border-b p-2", collapsed && "px-1")}>
         {collapsed ? (
@@ -134,8 +96,13 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Navigation */}
+      {/* Navigation — Manage section */}
       <nav className="flex-1 space-y-1 p-2" aria-label="Dashboard navigation">
+        {!collapsed && (
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-3 mt-4 mb-1">
+            Manage
+          </h3>
+        )}
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -143,10 +110,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-brand-primary/10 text-brand-primary"
-                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+                navLinkClasses({ variant: "sidebar", active: isActive }),
                 collapsed && "justify-center px-2",
               )}
               title={collapsed ? item.label : undefined}
@@ -158,15 +122,20 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Common links */}
+      {/* Communicate section */}
       <nav className="space-y-1 border-t p-2" aria-label="Communication">
+        {!collapsed && (
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-3 mt-4 mb-1">
+            Communicate
+          </h3>
+        )}
         <Link
           href="/inbox"
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-            pathname === "/inbox" || pathname.startsWith("/inbox/")
-              ? "bg-brand-primary/10 text-brand-primary"
-              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+            navLinkClasses({
+              variant: "sidebar",
+              active: pathname === "/inbox" || pathname.startsWith("/inbox/"),
+            }),
             collapsed && "justify-center px-2",
           )}
           title={collapsed ? "Inbox" : undefined}
@@ -182,24 +151,42 @@ export function Sidebar() {
         <Link
           href="/notifications"
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-            pathname === "/notifications"
-              ? "bg-brand-primary/10 text-brand-primary"
-              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+            navLinkClasses({
+              variant: "sidebar",
+              active: pathname === "/notifications",
+            }),
             collapsed && "justify-center px-2",
           )}
           title={collapsed ? "Notifications" : undefined}
         >
           <Bell className="size-5 shrink-0" />
-          {!collapsed && <span>Notifications</span>}
+          {!collapsed && (
+            <>
+              <span className="flex-1">Notifications</span>
+              {notificationCount > 0 && (
+                <span className="inline-flex items-center justify-center rounded-full bg-red-500 px-1.5 py-0 text-[10px] font-medium text-white">
+                  {notificationCount > 99 ? "99+" : notificationCount}
+                </span>
+              )}
+            </>
+          )}
         </Link>
+      </nav>
+
+      {/* Account section */}
+      <nav className="space-y-1 border-t p-2" aria-label="Account">
+        {!collapsed && (
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-3 mt-4 mb-1">
+            Account
+          </h3>
+        )}
         <Link
           href="/profile"
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-            pathname === "/profile" || pathname.startsWith("/profile/")
-              ? "bg-brand-primary/10 text-brand-primary"
-              : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+            navLinkClasses({
+              variant: "sidebar",
+              active: pathname === "/profile" || pathname.startsWith("/profile/"),
+            }),
             collapsed && "justify-center px-2",
           )}
           title={collapsed ? "Profile" : undefined}

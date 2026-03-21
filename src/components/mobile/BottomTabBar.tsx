@@ -2,85 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Search,
-  Heart,
-  Calendar,
-  MessageSquare,
-  User,
-  FileText,
-  Home,
-  Building2,
-  Users,
-  Wrench,
-  Briefcase,
-  ClipboardList,
-} from "lucide-react";
 import { useRole } from "@/hooks/useRole";
 import { useVirtualKeyboard } from "@/hooks/useVirtualKeyboard";
 import { cn } from "@/lib/utils";
-import type { UserRole } from "@/types/auth";
-
-// ---------------------------------------------------------------------------
-// Tab configuration per role
-// ---------------------------------------------------------------------------
-
-type TabItem = Readonly<{
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-}>;
-
-const TAB_CONFIG: Record<UserRole, TabItem[]> = {
-  homebuyer: [
-    { label: "Search", href: "/search", icon: Search },
-    { label: "Saved", href: "/dashboard/homebuyer/saved", icon: Heart },
-    { label: "Viewings", href: "/dashboard/homebuyer/viewings", icon: Calendar },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-  renter: [
-    { label: "Search", href: "/search", icon: Search },
-    { label: "Saved", href: "/dashboard/renter/saved", icon: Heart },
-    { label: "Applications", href: "/dashboard/renter/applications", icon: FileText },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-  seller: [
-    { label: "Listings", href: "/dashboard/seller/listings", icon: Home },
-    { label: "Viewings", href: "/dashboard/seller/viewings", icon: Calendar },
-    { label: "Offers", href: "/dashboard/seller/offers", icon: FileText },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-  landlord: [
-    { label: "Portfolio", href: "/dashboard/landlord/properties", icon: Building2 },
-    { label: "Tenants", href: "/dashboard/landlord/tenants", icon: Users },
-    { label: "Maintenance", href: "/dashboard/landlord/maintenance", icon: Wrench },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-  agent: [
-    { label: "Listings", href: "/dashboard/agent/listings", icon: Home },
-    { label: "Leads", href: "/dashboard/agent/leads", icon: Users },
-    { label: "Viewings", href: "/dashboard/agent/viewings", icon: Calendar },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-  service_provider: [
-    { label: "Jobs", href: "/dashboard/provider/jobs", icon: Briefcase },
-    { label: "Quotes", href: "/dashboard/provider/quotes", icon: ClipboardList },
-    { label: "Calendar", href: "/dashboard/provider/calendar", icon: Calendar },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-  mortgage_broker: [
-    { label: "Cases", href: "/dashboard/mortgage_broker/cases", icon: Briefcase },
-    { label: "Clients", href: "/dashboard/mortgage_broker/clients", icon: Users },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
-    { label: "Profile", href: "/profile", icon: User },
-  ],
-};
+import { TAB_CONFIG } from "@/config/navigation";
 
 // ---------------------------------------------------------------------------
 // Component
@@ -109,16 +34,18 @@ export function BottomTabBar() {
             ? pathname === tab.href
             : pathname.startsWith(tab.href);
         const Icon = tab.icon;
+        const isMessages = tab.label === "Messages";
 
         return (
           <Link
             key={tab.href}
             href={tab.href}
-            className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs font-medium transition-colors ${
+            className={cn(
+              "relative flex flex-1 flex-col items-center justify-center gap-0.5 min-h-12 py-2 text-xs font-medium transition-colors",
               isActive
                 ? "text-brand-primary"
-                : "text-neutral-500 hover:text-neutral-900"
-            }`}
+                : "text-neutral-500 hover:text-neutral-900",
+            )}
             aria-current={isActive ? "page" : undefined}
           >
             <Icon
@@ -126,6 +53,13 @@ export function BottomTabBar() {
               className={isActive ? "text-brand-primary" : "text-neutral-400"}
             />
             <span>{tab.label}</span>
+            {isMessages && (
+              <span
+                data-badge="messages"
+                className="absolute top-1.5 right-1/4 hidden size-2 rounded-full bg-red-500"
+                aria-label="Unread messages"
+              />
+            )}
           </Link>
         );
       })}
