@@ -254,3 +254,11 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* === Touch Target Accessibility (WCAG 2.5.8) === */
+@media (pointer: coarse) {
+  [data-slot="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
