@@ -15,8 +15,8 @@ const PROPERTIES_LINKS = [
 
 const SERVICES_LINKS = [
   { href: "/marketplace", label: "Find Tradespeople" },
-  { href: "/services/agents", label: "Estate Agents" },
-  { href: "/services/mortgage", label: "Mortgage Brokers" },
+  { href: "/agents", label: "Estate Agents" },
+  { href: "/services/mortgage-brokers", label: "Mortgage Brokers" },
   { href: "/valuation", label: "Valuations" },
 ] as const;
 
@@ -28,7 +28,6 @@ const COMPANY_LINKS = [
   { href: "/blog", label: "Blog" },
   { href: "/help", label: "Help" },
 ] as const;
-
 
 const AREA_GUIDE_LINKS = [
   { href: "/areas/london", label: "London" },

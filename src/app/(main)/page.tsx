@@ -110,42 +110,42 @@ const SERVICE_CATEGORIES = [
   {
     icon: Wrench,
     title: "Plumbers",
-    slug: "plumbers",
+    href: "/services/tradespeople?category=plumber",
     count: 142,
     description: "Emergency repairs, installations, and maintenance.",
   },
   {
     icon: Zap,
     title: "Electricians",
-    slug: "electricians",
+    href: "/services/tradespeople?category=electrician",
     count: 98,
     description: "Rewiring, inspections, and smart home setups.",
   },
   {
     icon: HardHat,
     title: "Builders",
-    slug: "builders",
+    href: "/services/tradespeople?category=builder",
     count: 210,
     description: "Renovations, extensions, and new builds.",
   },
   {
     icon: Building2,
     title: "Estate Agents",
-    slug: "estate-agents",
+    href: "/agents",
     count: 354,
     description: "Local experts for buying, selling, and letting.",
   },
   {
     icon: Calculator,
     title: "Mortgage Brokers",
-    slug: "mortgage-brokers",
+    href: "/services/mortgage-brokers",
     count: 156,
     description: "Find the best rates and tailored financial advice.",
   },
   {
     icon: Ruler,
     title: "Surveyors",
-    slug: "surveyors",
+    href: "/services/surveyors",
     count: 87,
     description: "RICS valuations, homebuyer reports, and audits.",
   },
@@ -423,7 +423,7 @@ export default function HomePage() {
             {SERVICE_CATEGORIES.map((service) => (
               <Link
                 key={service.title}
-                href={`/services/${service.slug}`}
+                href={service.href}
                 className="group flex flex-col justify-between gap-6 p-6 rounded-2xl bg-brand-primary-lighter transition-all hover:-translate-y-1 hover:shadow-lg h-full"
               >
                 <div>
