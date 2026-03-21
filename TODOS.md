@@ -185,3 +185,57 @@ _From engineering plan review, 2026-03-19. 14 decisions locked._
 **Why:** Event-driven architecture decouples services, enables retry/replay, and makes the system observable. Currently 4 functions (rfq-notify, price-drop, webhook-dlq, jwt-monitor).
 **Effort:** L (total) | **Priority:** P1 (incremental)
 **Where to start:** `src/inngest/functions/` — start with cache-invalidation-on-mutation and stale-listing-cleanup as they have the most immediate value.
+
+## Launch Readiness — Deferred TODOs
+
+### Analytics event taxonomy document
+**What:** Map all business-critical events to PostHog event names with required properties.
+**Why:** Prevents event name drift across developers. Without this, analytics data is inconsistent.
+**Effort:** S | **Priority:** P1
+**Where to start:** Create `docs/analytics-event-taxonomy.md` with event name, properties, trigger location.
+
+### Sentry error capture verification
+**What:** Confirm Sentry DSN is configured, errors are captured, source maps uploaded.
+**Why:** Sentry is installed but unverified. Errors may be silently lost.
+**Effort:** S | **Priority:** P2
+**Where to start:** Throw a test error, check Sentry dashboard. Verify `SENTRY_DSN` in env.
+
+### Operational runbooks
+**What:** Runbooks for Redis outage, Supabase outage, PostHog outage.
+**Why:** First incident response will be faster with documented procedures.
+**Effort:** S | **Priority:** P2
+**Where to start:** Create `docs/runbooks/` with one markdown file per scenario.
+
+### Performance budget enforcement
+**What:** Set Lighthouse CI budgets per route (LCP < 2.5s, CLS < 0.1, INP < 200ms).
+**Why:** Prevents performance regressions from slipping in via PRs.
+**Effort:** M | **Priority:** P2
+**Depends on:** Wave 5 client→server conversion (need post-conversion baseline).
+
+### WCAG 2.2 AA formal audit
+**What:** Full axe-core + manual audit, update accessibility statement page.
+**Why:** Legal compliance under Equality Act 2010. Self-assessment is insufficient.
+**Effort:** M | **Priority:** P2
+**Depends on:** All a11y fixes from Wave 2.
+
+### SEO preview cards in admin
+**What:** Live preview of Google/social card appearance when editing pages.
+**Why:** Content creators can't see how their pages appear in search results.
+**Effort:** S | **Priority:** P3 (vision)
+
+### Accessibility badge in footer
+**What:** "Built to WCAG 2.2 AA" badge linking to accessibility statement.
+**Why:** Trust signal for accessibility-conscious users.
+**Effort:** S | **Priority:** P3 (vision)
+**Depends on:** Formal a11y audit passing.
+
+### Visual regression testing
+**What:** Playwright screenshot comparison on PRs for key pages.
+**Why:** Catches unintended visual changes from CSS/component refactors.
+**Effort:** M | **Priority:** P2
+**Depends on:** Stable visual baseline after all fixes.
+
+### Error page polish verification
+**What:** Verify Phase 21 error pages meet launch quality bar.
+**Why:** Error pages are brand touchpoints — should feel crafted.
+**Effort:** S | **Priority:** P3
