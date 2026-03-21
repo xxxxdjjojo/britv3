@@ -93,7 +93,7 @@ export function MegaMenu() {
           className={cn(
             navLinkClasses(),
             "flex items-center gap-1 rounded-lg px-3 py-2 cursor-pointer",
-            item.isCta && "text-amber-600 hover:text-amber-700 font-semibold",
+            item.isCta && "text-yellow-700 hover:text-yellow-800 font-semibold",
             openIndex === index && "text-brand-primary",
           )}
           aria-expanded={openIndex === index}
@@ -117,7 +117,7 @@ export function MegaMenu() {
         <div
           data-testid="mega-menu-panel"
           className={cn(
-            "absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[min(90vw,64rem)]",
+            "absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[min(90vw,64rem)] z-50",
             "rounded-xl border border-neutral-200 bg-white p-6 shadow-lg",
             "animate-in fade-in slide-in-from-top-2 duration-200",
           )}

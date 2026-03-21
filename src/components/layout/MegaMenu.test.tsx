@@ -35,7 +35,7 @@ describe("MegaMenu", () => {
   it("'List / Sell' item has distinct CTA styling", () => {
     render(<MegaMenu />);
     const ctaButton = screen.getByRole("button", { name: /List \/ Sell/i });
-    expect(ctaButton.className).toMatch(/brand-secondary|text-amber/);
+    expect(ctaButton.className).toMatch(/brand-secondary|text-amber|text-yellow/);
   });
 
   it("opens dropdown on click and shows section headings", () => {
