@@ -10,6 +10,17 @@ import {
   footerLinkClasses,
 } from "./navigation";
 
+// Shared constant used across multiple describe blocks
+const ALL_ROLES = [
+  "homebuyer",
+  "renter",
+  "seller",
+  "landlord",
+  "agent",
+  "service_provider",
+  "mortgage_broker",
+] as const;
+
 // ---------------------------------------------------------------------------
 // NAV_ITEMS
 // ---------------------------------------------------------------------------
@@ -93,6 +104,13 @@ describe("FOOTER_LINKS", () => {
     expect(brand?.tagline).toBeTruthy();
     expect(brand?.socialLinks?.length).toBeGreaterThanOrEqual(4);
   });
+
+  it("brand social links start with https://", () => {
+    const brand = FOOTER_LINKS.find((col) => col.heading === "Brand");
+    for (const link of brand?.socialLinks ?? []) {
+      expect(link.href).toMatch(/^https:\/\//);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -117,16 +135,6 @@ describe("BREADCRUMB_MAP", () => {
 // ---------------------------------------------------------------------------
 
 describe("ROLE_NAV_ITEMS", () => {
-  const ALL_ROLES = [
-    "homebuyer",
-    "renter",
-    "seller",
-    "landlord",
-    "agent",
-    "service_provider",
-    "mortgage_broker",
-  ] as const;
-
   it("has entries for all 7 roles", () => {
     for (const role of ALL_ROLES) {
       expect(ROLE_NAV_ITEMS[role]).toBeDefined();
@@ -150,16 +158,6 @@ describe("ROLE_NAV_ITEMS", () => {
 // ---------------------------------------------------------------------------
 
 describe("TAB_CONFIG", () => {
-  const ALL_ROLES = [
-    "homebuyer",
-    "renter",
-    "seller",
-    "landlord",
-    "agent",
-    "service_provider",
-    "mortgage_broker",
-  ] as const;
-
   it("has entries for all 7 roles", () => {
     for (const role of ALL_ROLES) {
       expect(TAB_CONFIG[role]).toBeDefined();

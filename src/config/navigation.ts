@@ -359,6 +359,10 @@ export const FOOTER_LINKS: FooterColumn[] = [
 
 // ---------------------------------------------------------------------------
 // BREADCRUMB_MAP — Route pattern → breadcrumb trail
+//
+// Keys use exact query string matching (e.g. "/search?type=buy").
+// The Breadcrumbs component must handle partial matches for routes
+// whose query parameters may differ at runtime.
 // ---------------------------------------------------------------------------
 
 export const BREADCRUMB_MAP: Record<string, BreadcrumbEntry[]> = {
@@ -581,9 +585,9 @@ export const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Profile", href: "/profile", icon: User },
   ],
   service_provider: [
-    { label: "Jobs", href: "/dashboard/provider/jobs", icon: Briefcase },
-    { label: "Quotes", href: "/dashboard/provider/quotes", icon: ClipboardList },
-    { label: "Calendar", href: "/dashboard/provider/calendar", icon: Calendar },
+    { label: "Jobs", href: "/dashboard/service_provider/jobs", icon: Briefcase },
+    { label: "Quotes", href: "/dashboard/service_provider/quotes", icon: ClipboardList },
+    { label: "Calendar", href: "/dashboard/service_provider/calendar", icon: Calendar },
     { label: "Messages", href: "/messages", icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
@@ -768,5 +772,5 @@ export function navLinkClasses(options?: {
 // ---------------------------------------------------------------------------
 
 export function footerLinkClasses(): string {
-  return cn("text-base text-neutral-400 hover:text-white transition-colors");
+  return navLinkClasses({ variant: "footer" });
 }
