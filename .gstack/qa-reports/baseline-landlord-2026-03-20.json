@@ -1,0 +1,114 @@
+{
+  "date": "2026-03-20",
+  "url": "http://localhost:3000/dashboard/landlord",
+  "scope": "Landlord dashboard - all 39 pages",
+  "healthScore": 58,
+  "categoryScores": {
+    "console": 40,
+    "links": 85,
+    "visual": 75,
+    "functional": 50,
+    "ux": 60,
+    "performance": 55,
+    "content": 80,
+    "accessibility": 65
+  },
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "title": "Nested button-in-button hydration error on all pages",
+      "severity": "critical",
+      "category": "console"
+    },
+    {
+      "id": "ISSUE-002",
+      "title": "Legal Notices page shows 'This feature is not available'",
+      "severity": "critical",
+      "category": "functional"
+    },
+    {
+      "id": "ISSUE-003",
+      "title": "Add Property page timeout (>15s load)",
+      "severity": "critical",
+      "category": "performance"
+    },
+    {
+      "id": "ISSUE-004",
+      "title": "Compliance Alerts page redirects to registration",
+      "severity": "high",
+      "category": "functional"
+    },
+    {
+      "id": "ISSUE-005",
+      "title": "Insurance page redirects to login",
+      "severity": "high",
+      "category": "functional"
+    },
+    {
+      "id": "ISSUE-006",
+      "title": "400 errors on resource loading across all pages",
+      "severity": "high",
+      "category": "console"
+    },
+    {
+      "id": "ISSUE-007",
+      "title": "Compliance Upload page renders blank",
+      "severity": "high",
+      "category": "functional"
+    },
+    {
+      "id": "ISSUE-008",
+      "title": "No onboarding flow for first-time landlords",
+      "severity": "medium",
+      "category": "ux"
+    },
+    {
+      "id": "ISSUE-009",
+      "title": "Tenant pipeline has no contextual help for empty state",
+      "severity": "medium",
+      "category": "ux"
+    },
+    {
+      "id": "ISSUE-010",
+      "title": "Finance report has no UK tax year preset",
+      "severity": "medium",
+      "category": "functional"
+    },
+    {
+      "id": "ISSUE-011",
+      "title": "Tax Summary - positive finding, well implemented",
+      "severity": "low",
+      "category": "content"
+    },
+    {
+      "id": "ISSUE-012",
+      "title": "Yield Calculator doesn't pre-fill from portfolio data",
+      "severity": "medium",
+      "category": "ux"
+    },
+    {
+      "id": "ISSUE-013",
+      "title": "Find Agent page skeleton loading / timeout",
+      "severity": "medium",
+      "category": "performance"
+    },
+    {
+      "id": "ISSUE-014",
+      "title": "Find Tradespeople skeleton loading cards",
+      "severity": "low",
+      "category": "performance"
+    },
+    {
+      "id": "ISSUE-015",
+      "title": "Mobile viewport loses auth session",
+      "severity": "low",
+      "category": "functional"
+    }
+  ],
+  "pagesWorking": 15,
+  "pagesWithIssues": 4,
+  "pagesNotTested": 20,
+  "totalPages": 39,
+  "scenariosTestable": 0,
+  "scenariosBlocked": 10
+}
