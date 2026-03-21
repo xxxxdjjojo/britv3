@@ -123,7 +123,7 @@ BEGIN
       'admin@demo.britestate.co.uk',
       v_password,
       v_now,
-      jsonb_build_object('display_name', 'Admin User', 'role', 'agent'),
+      jsonb_build_object('display_name', 'Admin User', 'role', 'admin'),
       v_now, v_now, '', ''
     )
   ON CONFLICT (id) DO NOTHING;
