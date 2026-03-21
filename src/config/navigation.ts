@@ -351,7 +351,6 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Manchester", href: "/areas/manchester" },
       { label: "Birmingham", href: "/areas/birmingham" },
       { label: "Bristol", href: "/areas/bristol" },
-      { label: "Leeds", href: "/areas/leeds" },
       { label: "Edinburgh", href: "/areas/edinburgh" },
     ],
   },
