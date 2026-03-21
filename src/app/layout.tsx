@@ -4,6 +4,8 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { BreakpointProvider } from "@/contexts/BreakpointContext";
+import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
+import { CommandPaletteLazy } from "@/components/layout/CommandPaletteLazy";
 import { DevBreakpointIndicator } from "@/components/responsive/DevBreakpointIndicator";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/organization-jsonld";
 import "./globals.css";
@@ -60,7 +62,10 @@ export default function RootLayout({
         <CookieConsentProvider>
           <PostHogProvider>
             <BreakpointProvider>
-              <NuqsAdapter>{children}</NuqsAdapter>
+              <CommandPaletteProvider>
+                <NuqsAdapter>{children}</NuqsAdapter>
+                <CommandPaletteLazy />
+              </CommandPaletteProvider>
               <DevBreakpointIndicator />
             </BreakpointProvider>
           </PostHogProvider>
