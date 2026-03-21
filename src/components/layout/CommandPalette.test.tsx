@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { CommandPalette } from "./CommandPalette";
-import {
-  CommandPaletteProvider,
-  useCommandPalette,
-} from "@/contexts/CommandPaletteContext";
+import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
 
 // Mock next/navigation
 const mockPush = vi.fn();
@@ -12,24 +9,9 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-// Helper that renders palette already open (bypasses Dialog portal timing)
-function OpenButton() {
-  const { setOpen } = useCommandPalette();
-  return <button data-testid="open-btn" onClick={() => setOpen(true)}>Open</button>;
-}
-
 function renderPalette() {
   return render(
     <CommandPaletteProvider>
-      <CommandPalette />
-    </CommandPaletteProvider>,
-  );
-}
-
-function renderPaletteWithOpenButton() {
-  return render(
-    <CommandPaletteProvider>
-      <OpenButton />
       <CommandPalette />
     </CommandPaletteProvider>,
   );

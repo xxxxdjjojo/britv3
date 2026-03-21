@@ -96,7 +96,6 @@ describe("Sidebar", () => {
 
   it("does not define ROLE_NAV_ITEMS inline — imports from navigation config", async () => {
     // Verify the component source does not contain the inline definition
-    const source = await import("./Sidebar?raw");
     // This test validates architecture: ROLE_NAV_ITEMS comes from @/config/navigation
     // We verify by checking that the imported ROLE_NAV_ITEMS works correctly
     render(<Sidebar />);
