@@ -273,7 +273,7 @@ BEGIN
     (
       v_offer1,
       v_buyer_id, v_listing1, v_agent_id,
-      195000000, -- £1,950,000 in pence
+      120000000, -- £1,200,000 in pence (matches agent_offers record)
       'Subject to survey and satisfactory searches. Mortgage agreed in principle with Barclays.',
       'Rebecca Hart', 'r.hart@hartandsons.co.uk',
       'solicitors_instructed',

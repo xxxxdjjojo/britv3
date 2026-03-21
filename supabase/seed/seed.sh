@@ -7,6 +7,21 @@ set -euo pipefail
 
 SEED_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Safety gate: prevent accidental production seeding
+if [ "${DEMO_MODE_ENABLED:-}" != "true" ]; then
+  echo "ERROR: DEMO_MODE_ENABLED is not set to 'true'."
+  echo "This prevents accidental seeding of production databases."
+  echo ""
+  echo "To run: DEMO_MODE_ENABLED=true ./supabase/seed/seed.sh"
+  exit 1
+fi
+
+# Check psql is available
+if ! command -v psql &> /dev/null; then
+  echo "ERROR: psql is not installed or not in PATH."
+  exit 1
+fi
+
 echo "========================================="
 echo "  Britestate Demo Data Seeder"
 echo "========================================="
@@ -31,7 +46,7 @@ SEED_FILES=(
 
 for file in "${SEED_FILES[@]}"; do
   echo "→ Seeding: $file"
-  psql "$DB_URL" -f "$SEED_DIR/$file" 2>&1 | grep -E "NOTICE|ERROR" || true
+  psql "$DB_URL" -f "$SEED_DIR/$file" 2>&1 | grep -E "NOTICE|WARNING|ERROR" || true
   echo ""
 done
 

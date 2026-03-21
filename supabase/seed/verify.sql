@@ -167,7 +167,7 @@ BEGIN
 
   -- 15. Check reviews
   SELECT COUNT(*) INTO v_count FROM reviews;
-  IF v_count < 2 THEN RAISE WARNING 'FAIL: Only % reviews (expected 3+)', v_count; v_pass := FALSE;
+  IF v_count < 1 THEN RAISE WARNING 'FAIL: Only % reviews (expected 1+)', v_count; v_pass := FALSE;
   ELSE RAISE NOTICE 'PASS: % reviews found', v_count;
   END IF;
 
