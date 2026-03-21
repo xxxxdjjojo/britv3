@@ -5,6 +5,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { trackEvent } from "@/lib/analytics/track-event";
 import type { Viewing } from "@/services/viewings/viewings-service";
 
 const QUERY_KEY = ["viewings"];
@@ -57,7 +58,7 @@ export function useBookViewing() {
         });
       }
 
-      // TODO: posthog.capture("viewing.booked", { viewingId: data.viewingId })
+      trackEvent("viewing.booked", { viewingId: data.viewingId });
 
       return data;
     },
@@ -85,7 +86,7 @@ export function useCancelViewing() {
         throw new Error(data.error ?? "Failed to cancel viewing");
       }
 
-      // TODO: posthog.capture("viewing.cancelled", { viewingId })
+      trackEvent("viewing.cancelled", { viewingId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
@@ -116,7 +117,7 @@ export function useRescheduleViewing() {
         });
       }
 
-      // TODO: posthog.capture("viewing.rescheduled", { viewingId, newSlotId })
+      trackEvent("viewing.rescheduled", { viewingId, newSlotId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });

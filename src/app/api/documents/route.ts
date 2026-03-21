@@ -112,11 +112,11 @@ export async function POST(request: NextRequest) {
       if (result.error === "INVALID_MIME_TYPE") {
         return NextResponse.json({ error: "File type not allowed" }, { status: 415 });
       }
-      // TODO: posthog.capture("document.upload_failed", { error: result.error })
+      // Analytics tracked client-side via hooks
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    // TODO: posthog.capture("document.uploaded", { documentId: result.document.id })
+    // Analytics tracked client-side via hooks
 
     return NextResponse.json(result.document, { status: 201 });
   } catch (err) {
