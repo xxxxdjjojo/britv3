@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   /* --- Static pages --- */
@@ -63,18 +63,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/reviews`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  /*
-   * TODO: Add dynamic pages from database in future:
-   * - /properties/[slug] — individual property listings
-   * - /areas/[city] and /areas/[city]/[area] — area guide pages
-   * - /agents/[slug] — agent profile pages
-   * - /blog/[slug] — blog post pages
-   * - /services/tradespeople/[category]/[location] — tradesperson directory pages
-   *
-   * These require Supabase queries at build time. For now, static pages
-   * ensure core site structure is indexed. Dynamic routes are discovered
-   * via crawling from these seed URLs.
-   */
+  /* --- Dynamic pages from database --- */
+  let propertyPages: MetadataRoute.Sitemap = [];
+  let agentPages: MetadataRoute.Sitemap = [];
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const { data: properties } = await supabase
+      .from("properties")
+      .select("slug, updated_at")
+      .eq("status", "active")
+      .limit(5000);
+
+    if (properties) {
+      propertyPages = properties.map((p) => ({
+        url: `${BASE_URL}/properties/${p.slug}`,
+        lastModified: new Date(p.updated_at),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+    }
+
+    const { data: agents } = await supabase
+      .from("agent_profiles")
+      .select("slug, updated_at")
+      .eq("verified", true)
+      .limit(2000);
+
+    if (agents) {
+      agentPages = agents.map((a) => ({
+        url: `${BASE_URL}/agents/${a.slug}`,
+        lastModified: new Date(a.updated_at),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    }
+  } catch (err) {
+    console.error("[sitemap] DB query failed, using static-only:", err);
+  }
 
   return [
     ...staticPages,
@@ -82,5 +108,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...servicePages,
     ...toolPages,
     ...marketplacePages,
+    ...propertyPages,
+    ...agentPages,
   ];
 }

@@ -4,6 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { BreakpointProvider } from "@/contexts/BreakpointContext";
 import { DevBreakpointIndicator } from "@/components/responsive/DevBreakpointIndicator";
+import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/organization-jsonld";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -27,12 +28,22 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"),
   title: {
     template: "%s | Britestate",
     default: "Britestate | UK Property Portal",
   },
   description:
     "Find your perfect UK property. Search, compare, and transact with AI-powered matching, verified agents, and trusted tradespeople.",
+  openGraph: {
+    type: "website",
+    siteName: "Britestate",
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@britestate",
+  },
 };
 
 export default function RootLayout({
@@ -51,6 +62,8 @@ export default function RootLayout({
             <DevBreakpointIndicator />
           </BreakpointProvider>
         </PostHogProvider>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }} />
       </body>
     </html>
   );
