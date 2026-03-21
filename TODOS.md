@@ -239,3 +239,46 @@ _From engineering plan review, 2026-03-19. 14 decisions locked._
 **What:** Verify Phase 21 error pages meet launch quality bar.
 **Why:** Error pages are brand touchpoints — should feel crafted.
 **Effort:** S | **Priority:** P3
+
+## Services Hub — Deferred TODOs
+
+### Shared service categories constant (DRY)
+**What:** Extract category data (label, href, icon, description, count) into `src/lib/providers/service-categories.ts` shared by homepage, `/services`, and search pages.
+**Why:** Currently duplicated in 3 places — homepage `SERVICE_CATEGORIES`, services page `POPULAR_CATEGORIES`, tradespeople page `TRADESPERSON_CATEGORIES`.
+**Effort:** S | **Priority:** P2
+**Where to start:** Create shared constant, update 3 consumers.
+
+### Reusable HowItWorks component
+**What:** Extract the 3-step "How It Works" pattern into a shared `<HowItWorksSection steps={[...]} />` component.
+**Why:** Homepage and services page both have 3-step flows with identical layout. Currently duplicated markup.
+**Effort:** S | **Priority:** P2
+**Where to start:** Create `src/components/shared/HowItWorksSection.tsx`, update both pages.
+
+### Live search autocomplete on services search bar
+**What:** Add typeahead/autocomplete to the services search bar — suggest categories and locations as user types.
+**Why:** Reduces friction, prevents "0 results" dead ends from typos.
+**Effort:** M | **Priority:** P2
+**Depends on:** Services hub page being built (done).
+**Where to start:** Add combobox with static category list, later add Supabase full-text search for locations.
+
+### Dynamic category ordering by click popularity
+**What:** Use PostHog event data to reorder category cards — most-clicked categories appear first.
+**Why:** Self-optimizing UX, seasonal adaptation (boiler repair rises in winter).
+**Effort:** M | **Priority:** P3
+**Depends on:** PostHog events collecting sufficient data.
+
+### Seasonal category badge
+**What:** "Popular this month" chip on top 2 most-requested categories.
+**Why:** Social proof + urgency signal.
+**Effort:** S | **Priority:** P3
+
+### Scroll-snap carousel with dot indicators
+**What:** Add dot position indicators to the mobile pro carousel + scroll-snap physics.
+**Why:** Better touch UX — users know how many cards exist and where they are.
+**Effort:** S | **Priority:** P3
+
+### Provider availability indicator
+**What:** "Open now" green dot on providers currently accepting quotes.
+**Why:** Real-time signal reduces friction — users know the provider is responsive.
+**Effort:** M | **Priority:** P3
+**Depends on:** Provider availability/status feature being built.
