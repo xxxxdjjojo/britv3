@@ -11,7 +11,7 @@ export default function MainLayout(props: Readonly<{ children: ReactNode }>) {
       <CookieConsentProvider>
         <div className="flex min-h-screen flex-col">
           <Header />
-          <main className="flex-1">{props.children}</main>
+          <main id="main-content" className="flex-1">{props.children}</main>
           <Footer />
           <CookieConsentBanner />
         </div>

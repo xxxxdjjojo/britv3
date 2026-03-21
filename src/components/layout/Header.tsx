@@ -49,6 +49,13 @@ export function Header({ transparent = false }: HeaderProps) {
   const isTransparent = transparent && !scrolled;
 
   return (
+    <>
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-brand-primary focus:px-4 focus:py-2 focus:text-white focus:shadow-lg"
+    >
+      Skip to main content
+    </a>
     <header
       className={cn(
         "sticky top-0 z-40 w-full transition-all duration-200",
@@ -58,7 +65,7 @@ export function Header({ transparent = false }: HeaderProps) {
         scrolled ? "shadow-sm" : "shadow-none",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 md:h-16 h-14">
+      <div className="mx-auto flex h-14 md:h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Logo size="md" />
 
@@ -112,7 +119,7 @@ export function Header({ transparent = false }: HeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="md:hidden min-w-11 min-h-11"
           onClick={() => setMobileOpen((prev) => !prev)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
@@ -132,5 +139,6 @@ export function Header({ transparent = false }: HeaderProps) {
         links={NAV_LINKS}
       />
     </header>
+    </>
   );
 }
