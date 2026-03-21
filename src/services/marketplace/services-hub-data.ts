@@ -69,7 +69,7 @@ export async function fetchCategoryCounts(
 // Fallback data (used when DB is unavailable or during SSG)
 // ---------------------------------------------------------------------------
 
-const now = new Date().toISOString();
+const FALLBACK_TIMESTAMP = "2026-01-01T00:00:00Z";
 
 function makeFallbackProvider(
   id: string,
@@ -95,8 +95,8 @@ function makeFallbackProvider(
     years_experience: null,
     qualifications: null,
     insurance_verified: true,
-    created_at: now,
-    updated_at: now,
+    created_at: FALLBACK_TIMESTAMP,
+    updated_at: FALLBACK_TIMESTAMP,
     profiles: {
       id: `fallback-user-${id}`,
       avatar_url: null,

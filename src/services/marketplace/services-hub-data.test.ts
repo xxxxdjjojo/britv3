@@ -95,6 +95,10 @@ describe("services-hub-data", () => {
         "verified"
       );
       expect(chainable.limit).toHaveBeenCalledWith(6);
+      expect(chainable.order).toHaveBeenCalledWith(
+        "avg_rating",
+        { referencedTable: "provider_rating_stats", ascending: false }
+      );
     });
 
     it("returns empty array on error", async () => {
@@ -125,6 +129,7 @@ describe("services-hub-data", () => {
         { services: ["plumber", "handyman"] },
         { services: ["plumber"] },
         { services: ["electrician", "handyman"] },
+        { services: null },
       ];
 
       const chainable = {
