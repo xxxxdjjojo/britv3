@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -69,7 +70,7 @@ function SidebarContent({ userName, avatarUrl }: Props) {
       <div className="px-4 py-4 border-t border-white/10">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10">
           {avatarUrl ? (
-            <img src={avatarUrl} alt={userName} className="h-9 w-9 rounded-full object-cover" />
+            <Image src={avatarUrl} alt={userName} width={36} height={36} className="rounded-full object-cover" />
           ) : (
             <div className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
               {userName.charAt(0).toUpperCase()}

@@ -21,6 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import imageCompression from "browser-image-compression";
+import Image from "next/image";
 import { GripVertical, X, Upload } from "lucide-react";
 import { WizardShell } from "./WizardShell";
 import type { SellerListing, ListingPhoto } from "@/types/seller";
@@ -39,8 +40,7 @@ function SortablePhoto({ photo, onRemove }: SortablePhotoProps) {
 
   return (
     <div ref={setNodeRef} style={style} className="relative group rounded-xl overflow-hidden bg-slate-100 aspect-square">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={photo.url} alt="" className="w-full h-full object-cover" />
+      <Image src={photo.url} alt="" fill className="object-cover" sizes="(max-width: 640px) 33vw, 25vw" />
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
       <button
         type="button"

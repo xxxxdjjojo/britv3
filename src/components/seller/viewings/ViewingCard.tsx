@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Calendar, Clock, User, MapPin, Video } from "lucide-react";
 import type { SellerViewing, ViewingStatus } from "@/types/seller";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,9 @@ export function ViewingCard({ viewing, onUpdated }: Props) {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-shadow duration-200">
         <div className="flex items-start gap-4">
           {listingThumb ? (
-            <img src={listingThumb} alt={address} className="h-16 w-24 rounded-xl object-cover flex-shrink-0" />
+            <div className="relative h-16 w-24 rounded-xl overflow-hidden flex-shrink-0">
+              <Image src={listingThumb} alt={address} fill className="object-cover" sizes="96px" />
+            </div>
           ) : (
             <div className="h-16 w-24 rounded-xl bg-slate-100 flex-shrink-0 flex items-center justify-center">
               <MapPin size={18} className="text-slate-300" />

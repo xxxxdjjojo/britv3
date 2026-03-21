@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { WizardShell } from "./WizardShell";
 import type { SellerListing } from "@/types/seller";
@@ -86,8 +87,9 @@ export function Step7Review({ listing, listingId }: Props) {
         {/* Listing preview card */}
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           {thumb ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={thumb} alt="Listing cover" className="w-full h-56 object-cover" />
+            <div className="relative w-full h-56">
+              <Image src={thumb} alt="Listing cover" fill className="object-cover" sizes="(max-width: 768px) 100vw, 700px" />
+            </div>
           ) : (
             <div className="w-full h-56 bg-slate-100 flex items-center justify-center text-slate-300 text-sm">No cover photo</div>
           )}

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Star, MapPin, Mail } from "lucide-react";
 import type { AgentProfile } from "@/types/seller";
@@ -50,8 +51,7 @@ export default async function AgentProfilePage({ params }: Props) {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
         <div className="flex items-start gap-6">
           {agent.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={agent.avatar_url} alt={agent.full_name} className="h-20 w-20 rounded-2xl object-cover flex-shrink-0" />
+            <Image src={agent.avatar_url} alt={agent.full_name} width={80} height={80} className="rounded-2xl object-cover flex-shrink-0" />
           ) : (
             <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#1B4D3E]/20 to-[#D4A853]/20 flex items-center justify-center text-[#1B4D3E] font-bold text-3xl flex-shrink-0">
               {agent.full_name.charAt(0)}

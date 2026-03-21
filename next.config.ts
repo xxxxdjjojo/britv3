@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 import { mkdirSync, writeFileSync, existsSync } from "fs";
 import { resolve } from "path";
 
@@ -29,6 +30,19 @@ const nextConfig: NextConfig = {
       config.plugins.push(new EnsureBrowserCssPlugin() as any);
     }
     return config;
+  },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/**" },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "recharts",
+      "posthog-js",
+    ],
   },
   async redirects() {
     return [
@@ -62,4 +76,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const config = process.env.ANALYZE === "true" ? withBundleAnalyzer({ enabled: true })(nextConfig) : nextConfig;
+
+export default config;
