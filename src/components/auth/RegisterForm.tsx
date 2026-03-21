@@ -65,8 +65,9 @@ export function RegisterForm() {
   });
 
   // Bug 4: Read ?professional= param on mount and pre-set role intent
+  // Also reads ?role= as a fallback (used by the pricing page)
   useEffect(() => {
-    const professional = searchParams.get("professional");
+    const professional = searchParams.get("professional") ?? searchParams.get("role");
     if (professional) {
       const mappedRole = PROFESSIONAL_ROLE_MAP[professional.toLowerCase()];
       if (mappedRole) {
