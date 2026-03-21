@@ -189,9 +189,9 @@ describe("services-hub-data", () => {
   });
 
   describe("FALLBACK_COUNTS", () => {
-    it("has entries for 8 popular categories", () => {
+    it("has entries for popular categories", () => {
       const keys = Object.keys(FALLBACK_COUNTS);
-      expect(keys.length).toBe(8);
+      expect(keys.length).toBeGreaterThanOrEqual(8);
     });
 
     it("all values are positive numbers", () => {

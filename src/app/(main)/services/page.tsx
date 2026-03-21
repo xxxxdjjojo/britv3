@@ -73,8 +73,8 @@ export default async function ServicesPage() {
     fetchCategoryCounts(supabase).catch(() => null),
   ]);
 
-  const providers = topProviders ?? FALLBACK_PROVIDERS;
-  const counts = categoryCounts ?? FALLBACK_COUNTS;
+  const providers = topProviders && topProviders.length > 0 ? topProviders : FALLBACK_PROVIDERS;
+  const counts = categoryCounts && Object.keys(categoryCounts).length > 0 ? categoryCounts : FALLBACK_COUNTS;
 
   return (
     <div className="min-h-screen bg-white">
