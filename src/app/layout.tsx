@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { BreakpointProvider } from "@/contexts/BreakpointContext";
 import { DevBreakpointIndicator } from "@/components/responsive/DevBreakpointIndicator";
@@ -56,12 +57,14 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${inter.variable} antialiased`}
       >
-        <PostHogProvider>
-          <BreakpointProvider>
-            <NuqsAdapter>{children}</NuqsAdapter>
-            <DevBreakpointIndicator />
-          </BreakpointProvider>
-        </PostHogProvider>
+        <CookieConsentProvider>
+          <PostHogProvider>
+            <BreakpointProvider>
+              <NuqsAdapter>{children}</NuqsAdapter>
+              <DevBreakpointIndicator />
+            </BreakpointProvider>
+          </PostHogProvider>
+        </CookieConsentProvider>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }} />
       </body>
