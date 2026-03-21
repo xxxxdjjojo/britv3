@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import type { SellerOffer } from "@/types/seller";
 
@@ -21,6 +21,14 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
   const [counterMessage, setCounterMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -57,16 +65,16 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 z-10 max-h-[90vh] overflow-y-auto">
+      <div role="dialog" aria-modal="true" aria-labelledby="offer-action-title" className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 z-10 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 font-['Plus_Jakarta_Sans']">
+            <h3 id="offer-action-title" className="text-lg font-bold text-slate-900 font-['Plus_Jakarta_Sans']">
               {action === "accept" ? "Accept Offer" : action === "counter" ? "Counter Offer" : "Reject Offer"}
             </h3>
             <p className="text-2xl font-black text-slate-900 mt-1">£{(offer.amount / 100).toLocaleString("en-GB")}</p>
             <p className="text-sm text-slate-500">from {offer.buyer_name}</p>
           </div>
-          <button type="button" onClick={onClose} className="p-2 rounded-lg text-slate-400 hover:bg-slate-50">
+          <button type="button" onClick={onClose} aria-label="Close dialog" className="p-2 rounded-lg text-slate-400 hover:bg-slate-50">
             <X size={18} />
           </button>
         </div>
