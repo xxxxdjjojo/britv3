@@ -5,6 +5,7 @@ import { priceDropAlerts } from "@/inngest/functions/price-drop-alerts";
 import { stripeWebhookDlq } from "@/inngest/functions/stripe-webhook-dlq";
 import { jwtHookMonitor } from "@/inngest/functions/jwt-hook-monitor";
 import { chainRiskMonitor } from "@/inngest/functions/chain-risk-monitor";
+import { quoteAcceptedToBooking } from "@/inngest/functions/quote-accepted-to-booking";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -14,5 +15,6 @@ export const { GET, POST, PUT } = serve({
     stripeWebhookDlq,
     jwtHookMonitor,
     chainRiskMonitor,
+    quoteAcceptedToBooking,
   ],
 });
