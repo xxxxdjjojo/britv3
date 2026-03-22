@@ -16,6 +16,7 @@ import {
   BarChart3,
   Handshake,
   Shield,
+  Grid3X3,
   Menu,
 } from "lucide-react";
 import React from "react";
@@ -39,6 +40,7 @@ const BASE_NAV_ITEMS: NavItem[] = [
   { label: "Tenants", href: "/dashboard/landlord/tenants", icon: Users },
   { label: "Rent", href: "/dashboard/landlord/rent", icon: Banknote },
   { label: "Compliance", href: "/dashboard/landlord/compliance", icon: ShieldCheck },
+  { label: "Compliance Matrix", href: "/dashboard/landlord/compliance/matrix", icon: Grid3X3 },
   { label: "Maintenance", href: "/dashboard/landlord/maintenance", icon: Wrench },
   { label: "Finance", href: "/dashboard/landlord/finance/expenses", icon: TrendingUp },
   { label: "Documents", href: "/dashboard/landlord/deposits", icon: FolderOpen },
@@ -53,7 +55,7 @@ const LEGAL_NAV_ITEM: NavItem = { label: "Legal", href: "/dashboard/landlord/leg
 // Note: NEXT_PUBLIC_* vars are inlined by the bundler at build time.
 // Toggling this flag requires a full redeploy to take effect.
 const NAV_ITEMS: NavItem[] = process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED === "true"
-  ? [...BASE_NAV_ITEMS.slice(0, 8), LEGAL_NAV_ITEM, ...BASE_NAV_ITEMS.slice(8)]
+  ? [...BASE_NAV_ITEMS.slice(0, 9), LEGAL_NAV_ITEM, ...BASE_NAV_ITEMS.slice(9)]
   : BASE_NAV_ITEMS;
 
 function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
