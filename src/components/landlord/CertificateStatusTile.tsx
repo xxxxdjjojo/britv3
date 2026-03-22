@@ -1,52 +1,18 @@
 
 import Link from "next/link";
-import { FlameKindling, Zap, Leaf, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getCategoryMeta, type ComplianceCategoryKey } from "@/lib/compliance-constants";
 
 // -- Types -------------------------------------------------------------------
 
-export type CertificateCategory =
-  | "gas_safety"
-  | "electrical_eicr"
-  | "epc"
-  | "deposit_protection";
-
 type CertificateStatusTileProps = Readonly<{
-  category: CertificateCategory;
+  category: ComplianceCategoryKey;
   totalProperties: number;
   expired: number;
   expiringSoon: number;
   valid: number;
 }>;
-
-// -- Category metadata -------------------------------------------------------
-
-const CATEGORY_META: Record<
-  CertificateCategory,
-  { label: string; icon: React.ElementType; description: string }
-> = {
-  gas_safety: {
-    label: "Gas Safety",
-    icon: FlameKindling,
-    description: "Annual CP12 certificate",
-  },
-  electrical_eicr: {
-    label: "Electrical (EICR)",
-    icon: Zap,
-    description: "Every 5 years or on tenancy change",
-  },
-  epc: {
-    label: "Energy Performance",
-    icon: Leaf,
-    description: "10-year cert, minimum E rating",
-  },
-  deposit_protection: {
-    label: "Deposit Protection",
-    icon: Shield,
-    description: "Must register within 30 days",
-  },
-};
 
 // -- Component ---------------------------------------------------------------
 
@@ -57,7 +23,8 @@ export default function CertificateStatusTile({
   expiringSoon,
   valid,
 }: CertificateStatusTileProps) {
-  const meta = CATEGORY_META[category];
+  const meta = getCategoryMeta(category);
+  if (!meta) return null;
   const Icon = meta.icon;
 
   const hasExpired = expired > 0;
