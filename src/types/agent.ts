@@ -221,6 +221,69 @@ export type AgentSaleProgression = Readonly<{
   updated_at: string;
 }>;
 
+// ============================================================================
+// Chain risk types
+// ============================================================================
+
+export const CHAIN_RISK_LEVELS = ["low", "medium", "high", "critical"] as const;
+export type ChainRiskLevel = (typeof CHAIN_RISK_LEVELS)[number];
+
+export type ChainLink = Readonly<{
+  id: string;
+  upstream_progression_id: string;
+  downstream_progression_id: string;
+  position_in_chain: number;
+  chain_group_id: string;
+  created_at: string;
+  updated_at: string;
+}>;
+
+export type ChainRiskFactor = Readonly<{
+  factor: string;
+  weight: number;
+  detail: string;
+}>;
+
+export type ChainRiskScore = Readonly<{
+  id: string;
+  progression_id: string;
+  chain_group_id: string;
+  risk_level: ChainRiskLevel;
+  risk_score: number;
+  chain_length: number;
+  chain_position: number;
+  slowest_link_id: string | null;
+  slowest_link_days: number;
+  factors: ChainRiskFactor[];
+  computed_at: string;
+  created_at: string;
+  updated_at: string;
+}>;
+
+export type AgentSaleProgressionWithRisk = AgentSaleProgression & {
+  chain_risk?: ChainRiskScore | null;
+};
+
+export type ChainMember = Readonly<{
+  progression_id: string;
+  property_id: string;
+  stage: SaleStage;
+  updated_at: string;
+  days_in_stage: number;
+  position: number;
+  agent_id: string;
+  is_own: boolean;
+}>;
+
+export type ChainDetail = Readonly<{
+  chain_group_id: string;
+  members: ChainMember[];
+  total_length: number;
+  risk_level: ChainRiskLevel;
+  risk_score: number;
+  slowest_member: ChainMember | null;
+}>;
+
 export type AgentCommission = Readonly<{
   id: string;
   agent_id: string;
@@ -346,6 +409,32 @@ export type AgentDashboardKpis = Readonly<{
   viewings_this_week_count: number;
   pending_offers_count: number;
   performance_score: number;
+}>;
+
+export type ActivityFeedItem = Readonly<{
+  id: string;
+  type: string;
+  description: string | null;
+  actor_id: string;
+  created_at: string;
+  metadata: Record<string, unknown> | null;
+}>;
+
+export type DiaryViewingSlot = Readonly<{
+  id: string;
+  property_id: string;
+  start_time: string;
+  end_time: string;
+  is_booked: boolean;
+  booked_by: string | null;
+  notes: string | null;
+}>;
+
+export type AgentLettingsKpis = Readonly<{
+  managed_properties_count: number;
+  compliance_alerts_count: number;
+  arrears_count: number;
+  maintenance_queue_count: number;
 }>;
 
 // ============================================================================
