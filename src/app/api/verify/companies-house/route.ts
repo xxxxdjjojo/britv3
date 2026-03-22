@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { validateCompaniesHouseNumber, normalizeCompaniesHouseNumber } from "@/lib/validators/uk";
 
 const CH_API_BASE = "https://api.company-information.service.gov.uk";
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
     const { company_number } = await request.json();
 
     if (!company_number || !validateCompaniesHouseNumber(company_number)) {

@@ -50,18 +50,25 @@ export function ProfessionalBodyStep(
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Save each membership as a provider_verification
-      for (const body of selected) {
-        await supabase.from("provider_verifications").upsert(
-          {
-            user_id: user.id,
-            stage: "qualifications",
-            status: "submitted",
-            document_url: `${body.id}:${body.membershipNumber}`,
-          },
-          { onConflict: "user_id,stage" },
-        );
-      }
+      // Delete existing qualifications and re-insert all selected
+      await supabase
+        .from("provider_verifications")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("stage", "qualifications");
+
+      const rows = selected.map((body) => ({
+        user_id: user.id,
+        stage: "qualifications" as const,
+        status: "submitted" as const,
+        document_url: `${body.id}:${body.membershipNumber}`,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("provider_verifications")
+        .insert(rows);
+      if (insertError) throw new Error(insertError.message);
+
       return selected;
     });
 
