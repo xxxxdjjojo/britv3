@@ -20,14 +20,16 @@ export function QuotePreview({
   validUntil,
   quoteRef,
 }: QuotePreviewProps) {
-  // Compute totals
+  // Compute totals (skip section header rows)
   const subtotalPence = lineItems.reduce((sum, item) => {
+    if (item.isSectionHeader) return sum;
     const qty = Number(item.qty) || 0;
     const price = Math.round((Number(item.unitPrice) || 0) * 100);
     return sum + qty * price;
   }, 0);
 
   const vatPence = lineItems.reduce((sum, item) => {
+    if (item.isSectionHeader) return sum;
     const qty = Number(item.qty) || 0;
     const price = Math.round((Number(item.unitPrice) || 0) * 100);
     const vatRate = Number(item.vatRate) / 100;
@@ -131,6 +133,18 @@ export function QuotePreview({
               </tr>
             ) : (
               lineItems.map((item, i) => {
+                if (item.isSectionHeader) {
+                  return (
+                    <tr key={i} className="border-b border-border bg-muted/30">
+                      <td
+                        colSpan={5}
+                        className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-foreground"
+                      >
+                        {item.sectionTitle || "Section"}
+                      </td>
+                    </tr>
+                  );
+                }
                 const qty = Number(item.qty) || 0;
                 const unitPence = Math.round((Number(item.unitPrice) || 0) * 100);
                 const linePence = qty * unitPence;
