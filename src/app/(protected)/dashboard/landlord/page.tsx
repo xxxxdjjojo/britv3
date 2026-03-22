@@ -16,6 +16,7 @@ import { ActionItemsCard } from "@/components/landlord/ActionItemsCard";
 import { KeyDatesTicker } from "@/components/landlord/KeyDatesTicker";
 import type { KeyDate } from "@/components/landlord/KeyDatesTicker";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardAnalytics } from "@/components/landlord/DashboardAnalytics";
 
 export const metadata = {
   title: "Dashboard | Landlord | Britestate",
@@ -241,6 +242,13 @@ async function DashboardContent() {
           ))}
         </div>
       </section>
+
+      {/* PostHog analytics */}
+      <DashboardAnalytics
+        propertyCount={kpis.total_properties}
+        actionItemCount={actionItems.length}
+        isAllClear={allClear}
+      />
     </div>
   );
 }
