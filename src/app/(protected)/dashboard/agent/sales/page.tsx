@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentSaleProgressions } from "@/services/agent/agent-sale-service";
 import { SaleProgressionKanban } from "@/components/dashboard/agent/sales/SaleProgressionKanban";
-import type { SaleStage, AgentSaleProgression } from "@/types/agent";
+import { getRiskScoresForAgent } from "@/services/agent/chain-risk-service";
+import type { SaleStage, AgentSaleProgression, AgentSaleProgressionWithRisk, ChainRiskScore } from "@/types/agent";
 import { SALE_STAGES } from "@/types/agent";
 
 export default async function SalesPage() {
@@ -25,10 +26,19 @@ export default async function SalesPage() {
     // Render with empty state on error
   }
 
-  // Group progressions by stage
-  const grouped: Partial<Record<SaleStage, AgentSaleProgression[]>> = {};
+  let riskMap = new Map<string, ChainRiskScore>();
+  try {
+    riskMap = await getRiskScoresForAgent(supabase, user.id);
+  } catch {
+    // Chain risk tables may not exist yet — fail gracefully
+  }
+
+  // Group progressions by stage with risk data
+  const grouped: Partial<Record<SaleStage, AgentSaleProgressionWithRisk[]>> = {};
   for (const stage of SALE_STAGES) {
-    grouped[stage] = progressions.filter((p) => p.stage === stage);
+    grouped[stage] = progressions
+      .filter((p) => p.stage === stage)
+      .map((p) => ({ ...p, chain_risk: riskMap.get(p.id) ?? null }));
   }
 
   return (
