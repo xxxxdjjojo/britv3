@@ -207,8 +207,12 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/register/role-select",
   "/register/onboarding",
   // Content/marketing pages
+  "/advice",
+  "/areas-advice",
   "/blog",
+  "/how-it-works",
   "/legal",
+  "/tools",
   "/valuation",
   "/areas",
   "/contact",
