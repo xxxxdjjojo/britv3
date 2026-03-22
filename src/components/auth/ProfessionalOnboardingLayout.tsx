@@ -41,7 +41,7 @@ export function ProfessionalOnboardingLayout(
   }
 
   return (
-    <div className="flex min-h-screen bg-neutral-50">
+    <div className="fixed inset-0 z-50 flex bg-neutral-50">
       {/* Sidebar — desktop only */}
       <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-neutral-200 bg-white py-10 md:flex">
         {/* Brand */}
