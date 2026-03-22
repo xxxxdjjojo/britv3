@@ -4,7 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getComplianceSummary } from "@/services/landlord/document-service";
 import { getPortfolioProperties } from "@/services/landlord/portfolio-service";
 import CertificateStatusTile from "@/components/landlord/CertificateStatusTile";
-import type { CertificateCategory } from "@/components/landlord/CertificateStatusTile";
+import type { ComplianceCategoryKey } from "@/lib/compliance-constants";
+import { CATEGORY_LABELS } from "@/lib/compliance-constants";
+import { getDaysUntil } from "@/lib/date-utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,27 +30,12 @@ import type { ComplianceDocument } from "@/types/landlord";
 
 // -- Helpers -----------------------------------------------------------------
 
-const CATEGORY_LABELS: Record<string, string> = {
-  gas_safety: "Gas Safety",
-  electrical_eicr: "EICR",
-  epc: "EPC",
-  deposit_protection: "Deposit Protection",
-};
-
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
-}
-
-function getDaysUntil(dateStr: string): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const expiry = new Date(dateStr);
-  expiry.setHours(0, 0, 0, 0);
-  return Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 // -- Tile data builder -------------------------------------------------------
@@ -201,19 +188,19 @@ export default async function CompliancePage() {
       <Suspense fallback={<ComplianceSkeleton />}>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CertificateStatusTile
-            category={"gas_safety" as CertificateCategory}
+            category={"gas_safety" as ComplianceCategoryKey}
             {...gasSafetyCounts}
           />
           <CertificateStatusTile
-            category={"electrical_eicr" as CertificateCategory}
+            category={"electrical_eicr" as ComplianceCategoryKey}
             {...eicCounts}
           />
           <CertificateStatusTile
-            category={"epc" as CertificateCategory}
+            category={"epc" as ComplianceCategoryKey}
             {...epcCounts}
           />
           <CertificateStatusTile
-            category={"deposit_protection" as CertificateCategory}
+            category={"deposit_protection" as ComplianceCategoryKey}
             {...depositCounts}
           />
         </div>
