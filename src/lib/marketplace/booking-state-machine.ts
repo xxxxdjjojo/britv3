@@ -2,6 +2,7 @@ export type BookingStatus =
   | "pending_confirmation"
   | "confirmed"
   | "in_progress"
+  | "completing"
   | "completed"
   | "cancelled"
   | "declined";
@@ -16,7 +17,7 @@ type Transition = Readonly<{
 }>;
 
 /**
- * All 9 valid booking status transitions per epic spec S06.
+ * All 12 valid booking status transitions per epic spec S06.
  */
 export const VALID_TRANSITIONS: readonly Transition[] = [
   // Provider confirms or declines pending booking
@@ -43,6 +44,15 @@ export const VALID_TRANSITIONS: readonly Transition[] = [
 
   // Provider cancels in-progress booking (requires reason)
   { from: "in_progress", to: "cancelled", actors: ["provider"], requiresReason: true },
+
+  // Provider initiates job completion (orchestrator sets intermediate state)
+  { from: "in_progress", to: "completing", actors: ["provider"], requiresReason: false },
+
+  // System completes the job after orchestrator succeeds
+  { from: "completing", to: "completed", actors: ["system"], requiresReason: false },
+
+  // System rolls back on orchestrator failure
+  { from: "completing", to: "in_progress", actors: ["system"], requiresReason: true },
 ] as const;
 
 /**
