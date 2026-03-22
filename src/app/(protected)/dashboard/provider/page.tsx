@@ -7,10 +7,12 @@ import {
   getUpcomingJobs,
 } from "@/services/provider/provider-dashboard-service";
 import { getCashPosition } from "@/services/provider/provider-cash-position-service";
+import { getSmartActions } from "@/services/provider/provider-smart-actions-service";
 import { KPICard } from "@/components/dashboard/provider/KPICard";
 import { ActivityFeed } from "@/components/dashboard/provider/ActivityFeed";
 import { UpcomingJobsList } from "@/components/dashboard/provider/UpcomingJobsList";
 import { CashPositionWidget } from "@/components/dashboard/provider/CashPositionWidget";
+import { SmartActionsCard } from "@/components/dashboard/provider/SmartActionsCard";
 import { Button } from "@/components/ui/button";
 import {
   Inbox,
@@ -28,11 +30,12 @@ export default async function ProviderDashboardPage() {
   const { providerId, businessName } = await resolveProviderId(supabase);
 
   // Fetch dashboard data in parallel
-  const [stats, activity, upcomingJobs, cashPosition] = await Promise.all([
+  const [stats, activity, upcomingJobs, cashPosition, smartActions] = await Promise.all([
     getProviderDashboardStats(providerId, supabase),
     getRecentActivity(providerId, 8, supabase),
     getUpcomingJobs(providerId, 5, supabase),
     getCashPosition(providerId, supabase),
+    getSmartActions(providerId, supabase),
   ]);
 
   const isVerified = stats.verificationStatus === "verified";
@@ -94,6 +97,9 @@ export default async function ProviderDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* ── Smart Action Suggestions ─────────────────────────────────────────── */}
+      <SmartActionsCard actions={smartActions} />
 
       {/* ── 4 KPI Cards ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
