@@ -98,7 +98,7 @@ export function ArrearsLetterPDF({ data }: ArrearsLetterPDFProps) {
   if (!validation.success) {
     return (
       <p className="text-sm text-red-500">
-        Cannot generate letter: {validation.error.errors[0].message}
+        Cannot generate letter: {validation.error.issues[0].message}
       </p>
     );
   }
