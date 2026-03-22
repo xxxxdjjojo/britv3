@@ -60,6 +60,18 @@ export const ROLES: readonly RoleDefinition[] = [
   },
 ] as const;
 
+// -- Entity Types -----------------------------------------------------------
+
+export type EntityTypeDefinition = Readonly<{
+  value: "ltd_company" | "sole_trader";
+  label: string;
+}>;
+
+export const ENTITY_TYPES = [
+  { value: "ltd_company", label: "Limited Company" },
+  { value: "sole_trader", label: "Sole Trader" },
+] as const;
+
 /** Professional roles shown on "I am a professional" path */
 export const PROFESSIONAL_ROLES: readonly RoleDefinition[] = ROLES.filter(
   (r) =>
@@ -150,6 +162,30 @@ export const VERIFICATION_STAGES: readonly VerificationStageDefinition[] = [
     label: "Admin Review",
     description: "Final review by the Britestate team",
     order: 6,
+  },
+  {
+    value: "companies_house",
+    label: "Companies House",
+    description: "Verify company registration",
+    order: 7,
+  },
+  {
+    value: "hmrc_aml",
+    label: "HMRC AML",
+    description: "Anti-Money Laundering registration",
+    order: 8,
+  },
+  {
+    value: "professional_body",
+    label: "Professional Body",
+    description: "Membership verification",
+    order: 9,
+  },
+  {
+    value: "kyc",
+    label: "Identity (KYC)",
+    description: "Know Your Customer verification",
+    order: 10,
   },
 ] as const;
 

@@ -8,7 +8,16 @@ import { ProfilePreviewCard } from "@/components/ui/ProfilePreviewCard";
 import { cn } from "@/lib/utils";
 import { Check, Rocket } from "lucide-react";
 
-const PLANS = [
+type Plan = {
+  readonly id: string;
+  readonly name: string;
+  readonly price: string;
+  readonly period: string;
+  readonly features: readonly string[];
+  readonly popular?: boolean;
+};
+
+const PLANS: readonly Plan[] = [
   {
     id: "free",
     name: "Free",
@@ -31,7 +40,7 @@ const PLANS = [
     period: "",
     features: ["Everything in Pro", "Multi-branch support", "API access", "Dedicated account manager", "Custom integrations"],
   },
-] as const;
+];
 
 export function PlanGoLiveStep(
   props: Readonly<{

@@ -35,6 +35,10 @@ const stageActions: Record<VerificationStage, { label: string; icon: typeof Uplo
   insurance: { label: "Upload Insurance", icon: Upload },
   qualifications: { label: "Upload Certifications", icon: Upload },
   admin_review: { label: "Waiting for Admin", icon: Clock },
+  companies_house: { label: "Verify Company", icon: Upload },
+  hmrc_aml: { label: "Submit AML Registration", icon: Upload },
+  professional_body: { label: "Verify Membership", icon: Upload },
+  kyc: { label: "Complete Identity Check", icon: Upload },
 };
 
 const stateStyles: Record<StageState, { dot: string; border: string; text: string }> = {

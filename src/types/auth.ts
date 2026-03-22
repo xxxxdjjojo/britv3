@@ -26,7 +26,13 @@ export type VerificationStage =
   | "identity"
   | "insurance"
   | "qualifications"
-  | "admin_review";
+  | "admin_review"
+  | "companies_house"
+  | "hmrc_aml"
+  | "professional_body"
+  | "kyc";
+
+export type EntityType = "ltd_company" | "sole_trader";
 
 export type VerificationStatus =
   | "pending"
