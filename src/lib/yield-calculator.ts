@@ -52,3 +52,31 @@ export function calculateYield(inputs: YieldInputs): YieldResult {
 
   return { grossYield, netYield, annualRent, annualCosts, annualNet };
 }
+
+// -- Portfolio analytics extensions -------------------------------------------
+
+/** Safe division — returns null if divisor is 0 or inputs are NaN */
+export function safeDivide(numerator: number, denominator: number): number | null {
+  if (denominator === 0 || !Number.isFinite(numerator) || !Number.isFinite(denominator)) {
+    return null;
+  }
+  return numerator / denominator;
+}
+
+/** Monthly cashflow = income - expenses */
+export function calcCashflow(monthlyIncome: number, monthlyExpenses: number): number {
+  return monthlyIncome - monthlyExpenses;
+}
+
+/** Occupancy rate as percentage */
+export function calcOccupancyRate(occupied: number, total: number): number {
+  if (total === 0) return 0;
+  const result = safeDivide(occupied, total);
+  return result !== null ? Math.round(result * 100 * 10) / 10 : 0;
+}
+
+/** Format a number or null as a display string */
+export function formatMetric(value: number | null, suffix = "%"): string {
+  if (value === null) return "\u2014";
+  return `${value}${suffix}`;
+}
