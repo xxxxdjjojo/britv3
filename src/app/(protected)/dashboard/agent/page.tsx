@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getAgentDashboardKpis, getAgentActivityFeed } from "@/services/agent/agent-dashboard-service";
+import { getAgentDashboardKpis, getAgentActivityFeed, getTodaysDiary } from "@/services/agent/agent-dashboard-service";
 import { AgentDashboardHome } from "@/components/dashboard/agent/AgentDashboardHome";
+import type { DiaryViewingSlot } from "@/types/agent";
 
 export default async function AgentDashboardPage() {
   const supabase = await createClient();
@@ -24,6 +25,7 @@ export default async function AgentDashboardPage() {
   };
 
   let activityFeed: Awaited<ReturnType<typeof getAgentActivityFeed>> = [];
+  let todaysDiary: DiaryViewingSlot[] = [];
 
   try {
     kpis = await getAgentDashboardKpis(supabase, user.id);
@@ -37,11 +39,18 @@ export default async function AgentDashboardPage() {
     // Activity feed table may be empty — fail gracefully
   }
 
+  try {
+    todaysDiary = await getTodaysDiary(supabase, user.id);
+  } catch {
+    // Viewing slots may be empty — fail gracefully
+  }
+
   return (
     <AgentDashboardHome
       kpis={kpis}
       activityFeed={activityFeed}
       agentName={user.email ?? "Agent"}
+      todaysDiary={todaysDiary}
     />
   );
 }
