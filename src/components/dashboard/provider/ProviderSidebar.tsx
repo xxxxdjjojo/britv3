@@ -155,6 +155,8 @@ function SidebarInner(props: Readonly<{ pathname: string }>) {
 
 export function ProviderSidebar() {
   const pathname = usePathname();
+  const isFieldView = pathname.startsWith("/dashboard/provider/field");
+  if (isFieldView) return null;
 
   return (
     <>
