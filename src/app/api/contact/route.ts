@@ -99,13 +99,25 @@ export async function POST(request: Request): Promise<NextResponse> {
 // HTML email template
 // ---------------------------------------------------------------------------
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function buildEmailHtml(data: {
   name: string;
   email: string;
   subject: string;
   message: string;
 }): string {
-  const safeMessage = data.message.replace(/\n/g, "<br>");
+  const safeName = escapeHtml(data.name);
+  const safeEmail = escapeHtml(data.email);
+  const safeSubject = escapeHtml(data.subject);
+  const safeMessage = escapeHtml(data.message).replace(/\n/g, "<br>");
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -114,15 +126,15 @@ function buildEmailHtml(data: {
   <table style="border-collapse:collapse;width:100%;max-width:600px;">
     <tr>
       <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Name:</td>
-      <td style="padding:8px 0;">${data.name}</td>
+      <td style="padding:8px 0;">${safeName}</td>
     </tr>
     <tr>
       <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Email:</td>
-      <td style="padding:8px 0;"><a href="mailto:${data.email}">${data.email}</a></td>
+      <td style="padding:8px 0;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
     </tr>
     <tr>
       <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Subject:</td>
-      <td style="padding:8px 0;">${data.subject}</td>
+      <td style="padding:8px 0;">${safeSubject}</td>
     </tr>
   </table>
   <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
