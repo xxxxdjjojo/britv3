@@ -1,34 +1,23 @@
 {
-  "date": "2026-03-20",
-  "url": "http://localhost:3000",
-  "healthScore": 28,
+  "date": "2026-03-23",
+  "url": "http://localhost:3000/dashboard/provider",
+  "healthScore": 95,
   "issues": [
-    { "id": "ISSUE-001", "title": "All 6 Dashboard Routes Crash with Error Boundary", "severity": "P0", "category": "Functional" },
-    { "id": "ISSUE-002", "title": "Homebuyer Redirected to Landlord Dashboard", "severity": "P0", "category": "Functional" },
-    { "id": "ISSUE-003", "title": "Property Detail Pages Show Property Not Found", "severity": "P0", "category": "Functional" },
-    { "id": "ISSUE-004", "title": "Login/Register/Forgot-Password Crash When Authenticated", "severity": "P0", "category": "Functional" },
-    { "id": "ISSUE-005", "title": "Admin Login Fails Silently", "severity": "P1", "category": "UX" },
-    { "id": "ISSUE-006", "title": "Map View Renders Blank", "severity": "P1", "category": "Functional" },
-    { "id": "ISSUE-007", "title": "Nested button Hydration Error", "severity": "P1", "category": "Console" },
-    { "id": "ISSUE-008", "title": "Settings Profile Link Returns 404", "severity": "P1", "category": "Links" },
-    { "id": "ISSUE-009", "title": "Rent Search Shows Chain Free Filter", "severity": "P1", "category": "UX" },
-    { "id": "ISSUE-010", "title": "Search Only Shows London Properties", "severity": "P2", "category": "Functional" },
-    { "id": "ISSUE-011", "title": "No Pagination on Search Results", "severity": "P2", "category": "UX" },
-    { "id": "ISSUE-012", "title": "Settings Account Link Missing from Sidebar", "severity": "P2", "category": "UX" },
-    { "id": "ISSUE-013", "title": "Dashboard Header Link Points to Crashing Route", "severity": "P2", "category": "Links" },
-    { "id": "ISSUE-014", "title": "LCP Image Not Set to loading eager", "severity": "P2", "category": "Performance" },
-    { "id": "ISSUE-015", "title": "Cookie Consent Banner Overlaps Footer", "severity": "P3", "category": "Visual" },
-    { "id": "ISSUE-016", "title": "scroll-behavior smooth Warning on All Pages", "severity": "P3", "category": "Console" },
-    { "id": "ISSUE-017", "title": "404 Page Loses Auth State", "severity": "P3", "category": "UX" }
+    {
+      "id": "ISSUE-005",
+      "title": "Auth token refresh 400 errors",
+      "severity": "low",
+      "category": "console"
+    }
   ],
   "categoryScores": {
-    "console": 10,
-    "links": 70,
-    "visual": 70,
-    "functional": 10,
-    "ux": 25,
-    "performance": 60,
-    "content": 85,
-    "accessibility": 40
+    "console": 70,
+    "links": 100,
+    "visual": 100,
+    "functional": 100,
+    "ux": 100,
+    "performance": 95,
+    "content": 100,
+    "accessibility": 95
   }
 }

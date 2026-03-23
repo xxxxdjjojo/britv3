@@ -414,3 +414,98 @@ _From CEO plan review, 2026-03-21. 7 items._
 **Effort:** S | **Priority:** P3
 **Where to start:** Create `NavDebugOverlay` component that reads all `<a>` tags and overlays their href. Mount conditionally on `?debug=nav`.
 **Depends on:** Nothing.
+
+## Agent Dashboard Enhancements — CEO Review TODOs
+
+_From CEO plan review, 2026-03-22. EXPANSION mode. 12 items (10 TODOs + 2 build-now)._
+
+### Extract shared compliance service from landlord module
+**What:** Move `compliance-service.ts` from `src/services/landlord/` to `src/services/shared/compliance-service.ts`. Update landlord imports. Add agent-compatible interface.
+**Why:** Bridge model (agent_managed_properties) means agents need compliance data. Currently landlord-only. DRY violation if duplicated.
+**Effort:** M | **Priority:** P1
+**Depends on:** Nothing.
+**Where to start:** Copy service, update imports in landlord dashboard, add SupabaseClient parameter pattern matching existing agent services.
+
+### Extract shared maintenance service from landlord module
+**What:** Move `maintenance-service.ts` from `src/services/landlord/` to `src/services/shared/maintenance-service.ts`. Same pattern as compliance extraction.
+**Why:** Agents managing lettings need maintenance workflows. Same service, different RLS context.
+**Effort:** M | **Priority:** P1
+**Depends on:** Nothing.
+**Where to start:** Same pattern as compliance extraction. Both can be done in one PR.
+
+### Extract AI description service to shared
+**What:** Move `ai-description-service.ts` from `src/services/seller/` to `src/services/shared/ai-description-service.ts`. Add agent-specific tone options.
+**Why:** Research: 'AI descriptions save 20-30 min per listing, perceived as magic.' Currently seller-only. Agents create more listings than sellers.
+**Effort:** S | **Priority:** P2
+**Depends on:** Nothing.
+**Where to start:** Move file, update seller imports, add `tone: 'professional' | 'luxury' | 'friendly'` parameter for agent use.
+
+### Build agent_managed_properties bridge table migration
+**What:** Create Supabase migration for `agent_managed_properties` table (agent_id, property_id, landlord_id, management_type, fee_percentage, started_at, ended_at). Add agent-aware RLS policies to `compliance_certificates`, `rent_payments`, `maintenance_requests`, `tenancies` — OR clauses allowing agents with active management agreements to read/write.
+**Why:** Foundation for ALL lettings features. Bridge model chosen over separate tables to maintain single source of truth. CRITICAL: without agent-aware RLS, compliance queries return empty results silently (Section 2 GAP 1).
+**Effort:** M | **Priority:** P1
+**Depends on:** Nothing. This is the FIRST migration to write.
+**Where to start:** `supabase/migrations/YYYYMMDD_agent_managed_properties.sql`. Schema: agent_id FK → agent_profiles, property_id FK → properties, landlord_id FK → landlord_profiles, management_type ENUM ('full', 'lettings_only', 'rent_collect'), fee_percentage DECIMAL. RLS: landlord-only write on management_type.
+
+### Build AI suggestions engine (Inngest + Claude)
+**What:** Create `src/services/agent/agent-ai-service.ts`, `agent_ai_suggestions` table, and Inngest `ai-suggestions-compute` function. Hybrid compute: nightly batch + event-triggered recompute on critical events (new offer, chain break, arrears > 7 days). Claude Haiku for cost efficiency (~$0.02/agent/day). Validate all entity IDs against DB before writing suggestions.
+**Why:** The "3 things to do now" is the #1 differentiator from research. All 3 personas ranked AI-prioritised actions as Critical or High. Pre-computed for sub-100ms dashboard reads.
+**Effort:** L | **Priority:** P1
+**Depends on:** Bridge table (lettings suggestions need arrears/compliance data), Inngest setup.
+**Where to start:** Design prompt template that takes agent's leads, listings, sales, compliance alerts, and arrears as context. Output: JSON array of 3 suggestions with action_type, entity_id, urgency, message. Store in `agent_ai_suggestions` with `computed_at` timestamp.
+
+### Build comms timeline (V1 — manual logging)
+**What:** Create `comms_timeline` table + `src/services/agent/agent-comms-service.ts` + unified timeline UI on contact/property detail pages. V1: manual logging — agent taps 'Log call', 'Log WhatsApp', 'Log email' and records metadata (timestamp, channel, direction, contact_id, subject) + optional body (opt-in per message for GDPR compliance).
+**Why:** Centralised comms was called "the holy grail" by Marcus. Foundation for WhatsApp Business API V2. Even manual logging gives agents one timeline per contact — currently scattered across WhatsApp, Outlook, and phone notes.
+**Effort:** M | **Priority:** P1
+**Depends on:** Nothing.
+**Where to start:** Migration: `comms_timeline` table with columns: id, agent_id, contact_id, property_id (nullable), channel ENUM ('phone', 'whatsapp', 'email', 'sms', 'in_person'), direction ENUM ('inbound', 'outbound'), subject, body (nullable), created_at. RLS: agent_id = auth.uid().
+
+### Smart viewing diary clustering / route optimization
+**What:** Add route optimization layer to `ViewingCalendar.tsx`. Use MapTiler geocoding (already in stack) to get lat/lng per viewing property, cluster by proximity using haversine distance, generate optimized route order, show Google Maps link with waypoints.
+**Why:** Jade: "AI schedules viewings based on location clustering so I'm not driving back and forth." Saves fuel and time. Feels genuinely futuristic.
+**Effort:** M | **Priority:** P2
+**Depends on:** Property geocoding data (lat/lng on properties table — check if exists).
+**Where to start:** `src/services/agent/agent-viewing-service.ts` — add `optimizeViewingRoute(viewingIds: string[])` that geocodes, sorts by nearest-neighbor, returns ordered list + Maps URL.
+
+### Listing health scoring (Inngest daily function)
+**What:** Build `listing-health-scorer` Inngest function that computes daily health scores per listing (green/amber/red) based on views vs comparable properties, days on market, enquiry rate. Store scores in `listing_health_scores` table. Surface as traffic-light indicators on ActiveListings page and dashboard home.
+**Why:** Jade: "traffic-light indicators for each active listing: green (performing well), amber (needs attention), red (stale)." Proactive stock management instead of reactive.
+**Effort:** M | **Priority:** P2
+**Depends on:** Listing analytics data (partially exists in ListingAnalyticsCharts).
+**Where to start:** Define thresholds: green = views above area median, amber = 20-50% below, red = 50%+ below or 21+ days with no viewings.
+
+### Morning briefing email (delight)
+**What:** 7am Inngest cron → Resend email with: today's 3 AI priorities, today's diary summary, weather for outdoor viewings (OpenWeatherMap API — free tier), motivational stat. React Email template.
+**Why:** Makes agents feel the CRM is working FOR them before they even open it. Low effort, high perceived value.
+**Effort:** S | **Priority:** P3 (vision/delight)
+**Depends on:** AI suggestions engine, Resend integration.
+**Where to start:** Inngest cron at 7am UK time. Query agent_ai_suggestions + today's viewings. Render React Email template. Send via Resend.
+
+### Hot lead "Ready to offer" badges (delight)
+**What:** On LeadPipelineKanban, show flame badge + "Ready to offer" label when applicant has 3+ viewings with interest_level >= 4. Pure frontend conditional rendering on LeadCard.tsx.
+**Why:** Makes the Kanban feel alive. Agents instantly see which leads are closest to converting.
+**Effort:** S | **Priority:** P3 (vision/delight)
+**Depends on:** Viewing feedback data linked to leads.
+**Where to start:** `src/components/dashboard/agent/leads/LeadCard.tsx` — add conditional Badge.
+
+### Stale listing amber glow (delight)
+**What:** Listing cards get amber border-glow CSS + tooltip when views decline 40%+ week-over-week. Tooltip suggests: "Refresh photos, reduce price, or boost on portal."
+**Why:** Visual nudge for underperforming stock. Agents often miss declining listings until it's too late.
+**Effort:** S | **Priority:** P3 (vision/delight)
+**Depends on:** Listing health scoring (TODO above).
+**Where to start:** `src/components/dashboard/agent/listings/ActiveListings.tsx` — conditional className + Tooltip.
+
+### Voice-to-CRM viewing notes (delight)
+**What:** Mic icon on ViewingFeedbackForm. Agent records 30-second voice note. Web Speech API transcribes. Claude extracts structured fields (interest_level, price_opinion, notes) and pre-fills form.
+**Why:** Jade: "I take notes on my phone during a viewing, then re-type them into Alto when I get home." Eliminates the phone-to-laptop context switch.
+**Effort:** M | **Priority:** P3 (vision/delight)
+**Depends on:** AI service, ViewingFeedbackForm (already built).
+**Where to start:** Add `useVoiceRecorder()` hook with Web Speech API. Send transcript to Claude for structured extraction. Pre-fill form fields.
+
+### One-click "confirm all tomorrow's viewings" (delight)
+**What:** Button on dashboard home that batch-sends confirmation emails to all viewers for next day's viewings. Query tomorrow's viewings, iterate, send via Resend with property details + time + address.
+**Why:** All 3 research personas identified this as a desired one-click action. Currently agents send confirmations individually.
+**Effort:** S | **Priority:** P3 (vision/delight)
+**Depends on:** Viewing data, Resend email templates.
+**Where to start:** Add button to AgentDashboardHome. API route `/api/agent/confirm-viewings` that queries tomorrow's viewings and batch-sends.
