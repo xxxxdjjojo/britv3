@@ -509,3 +509,47 @@ _From CEO plan review, 2026-03-22. EXPANSION mode. 12 items (10 TODOs + 2 build-
 **Effort:** S | **Priority:** P3 (vision/delight)
 **Depends on:** Viewing data, Resend email templates.
 **Where to start:** Add button to AgentDashboardHome. API route `/api/agent/confirm-viewings` that queries tomorrow's viewings and batch-sends.
+
+## Security — CSO Audit Findings (2026-03-23)
+
+### Inngest webhook endpoint lacks signing key
+**What:** Set `INNGEST_SIGNING_KEY` env var and pass `signingKey` to the Inngest client constructor.
+**Why:** Without signing key verification, anyone can POST crafted events to `/api/inngest` and trigger functions (price drop alerts, RFQ notifications, Stripe webhook DLQ retries).
+**Effort:** S | **Priority:** P1
+**Where to start:** `src/inngest/client.ts` — add `signingKey: process.env.INNGEST_SIGNING_KEY` to constructor.
+
+### Analytics event endpoint: no auth or rate limiting
+**What:** Add Upstash rate limiting to `POST /api/analytics/event`. Consider requiring a visitor fingerprint.
+**Why:** Unauthenticated endpoint accepts arbitrary listing_id values. Attacker can inflate analytics for any listing.
+**Effort:** S | **Priority:** P2
+**Where to start:** `src/app/api/analytics/event/route.ts` — add Upstash rate limiter.
+
+### Subscription check fails open in middleware
+**What:** Change middleware subscription check from fail-open to fail-closed (deny access on DB error).
+**Why:** Any Supabase outage bypasses the paywall, allowing unpaid access to all gated dashboard features.
+**Effort:** S | **Priority:** P2
+**Where to start:** `src/middleware.ts:297-317` — return redirect to "try again" page on query error.
+
+### Agent description endpoint bypasses callClaude wrapper
+**What:** Replace raw `fetch()` to Anthropic API with the centralized `callClaude` wrapper.
+**Why:** Endpoint has no server-side rate limit, no spend cap, no input sanitization. User-supplied fields interpolated directly into prompt.
+**Effort:** M | **Priority:** P1
+**Where to start:** `src/app/api/agent/listings/generate-description/route.ts` — use `callClaude()` from `src/services/ai/ai-service.ts`.
+
+### AI match prompt injection via unsanitized fields
+**What:** Apply `sanitizeForPrompt()` to `location` and `must_haves` fields in AI match service.
+**Why:** These fields are interpolated into Claude prompt without sanitization (other fields already use sanitizeForPrompt).
+**Effort:** S | **Priority:** P2
+**Where to start:** `src/services/ai/ai-match-service.ts:280-283`.
+
+### No CODEOWNERS file
+**What:** Create `.github/CODEOWNERS` with ownership for security-sensitive paths.
+**Why:** Without CODEOWNERS, no mandatory domain-expert review for admin routes, middleware, migrations, or webhooks.
+**Effort:** S | **Priority:** P2
+**Where to start:** Create `.github/CODEOWNERS` covering `/src/app/api/webhooks/`, `/src/middleware.ts`, `/supabase/migrations/`.
+
+### GitHub Actions not pinned to commit SHA
+**What:** Pin `actions/checkout` and `supabase/setup-cli` to immutable commit SHAs.
+**Why:** Mutable major version tags (v4, v1) could be updated by a compromised upstream.
+**Effort:** S | **Priority:** P3
+**Where to start:** `.github/workflows/migrate.yml` — replace `@v4`/`@v1` with full SHA.
