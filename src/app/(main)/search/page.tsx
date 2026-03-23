@@ -760,7 +760,7 @@ function SearchPageInner() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-neutral-50">
       {/* ------------------------------------------------------------------ */}
       {/* Top sticky bar                                                       */}
       {/* ------------------------------------------------------------------ */}
