@@ -1,88 +1,192 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ClipboardList, Clock, Home, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Clock, Home, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { listMyApplications, listApplications } from "@/services/landlord/tenant-application-service";
+import type { TenantApplication, TenantApplicationStatus } from "@/types/landlord";
 
-const applications = [
-    { id: 1, property: "1 Bed Flat, Angel", landlord: "Mrs. Thompson", rent: "£2,200/mo", applied: "8 Mar 2026", moveIn: "1 Apr 2026", status: "Under Review" },
-    { id: 2, property: "2 Bed Flat, Brixton", landlord: "Mr. Okafor", rent: "£1,650/mo", applied: "5 Mar 2026", moveIn: "15 Mar 2026", status: "Accepted" },
-    { id: 3, property: "Studio, Bermondsey", landlord: "Capital Lettings", rent: "£1,450/mo", applied: "1 Mar 2026", moveIn: "1 Apr 2026", status: "Rejected" },
-    { id: 4, property: "2 Bed Flat, Stratford", landlord: "Mr. & Mrs. Chen", rent: "£1,750/mo", applied: "25 Feb 2026", moveIn: "1 Mar 2026", status: "Accepted" },
-    { id: 5, property: "1 Bed Flat, Peckham", landlord: "Peckham Homes Ltd", rent: "£1,350/mo", applied: "20 Feb 2026", moveIn: "15 Mar 2026", status: "Under Review" },
-];
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-const statusIcon = (status: string) => {
-    switch (status) {
-        case "Accepted": return <CheckCircle2 className="size-4 text-green-600" />;
-        case "Rejected": return <XCircle className="size-4 text-red-600" />;
-        default: return <AlertCircle className="size-4 text-amber-600" />;
+function statusLabel(status: TenantApplicationStatus): string {
+  switch (status) {
+    case "received": return "Under Review";
+    case "shortlisted": return "Shortlisted";
+    case "referencing": return "Referencing";
+    case "approved": return "Accepted";
+    case "rejected": return "Rejected";
+    case "withdrawn": return "Withdrawn";
+    default: return status;
+  }
+}
+
+function statusVariant(status: TenantApplicationStatus): "default" | "destructive" | "secondary" {
+  switch (status) {
+    case "approved": return "default";
+    case "rejected":
+    case "withdrawn": return "destructive";
+    default: return "secondary";
+  }
+}
+
+function StatusIcon({ status }: Readonly<{ status: TenantApplicationStatus }>) {
+  switch (status) {
+    case "approved":
+      return <CheckCircle2 className="size-4 text-green-600" />;
+    case "rejected":
+    case "withdrawn":
+      return <XCircle className="size-4 text-red-600" />;
+    default:
+      return <AlertCircle className="size-4 text-amber-600" />;
+  }
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+export default async function ApplicationsPage({
+  params,
+}: {
+  params: Promise<{ role: string }>;
+}) {
+  const { role } = await params;
+  const supabase = await createClient();
+
+  let applications: TenantApplication[] = [];
+
+  try {
+    if (role === "landlord") {
+      applications = await listApplications(supabase);
+    } else {
+      applications = await listMyApplications(supabase);
     }
-};
+  } catch {
+    // User may not be authenticated or table may not exist yet — show empty state
+    applications = [];
+  }
 
-export default function ApplicationsPage() {
-    return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Rental Applications</h1>
-                    <p className="text-muted-foreground">Track your rental application status</p>
-                </div>
-            </div>
+  const totalCount = applications.length;
+  const acceptedCount = applications.filter((a) => a.status === "approved").length;
+  const pendingCount = applications.filter((a) =>
+    a.status === "received" || a.status === "shortlisted" || a.status === "referencing",
+  ).length;
+  const rejectedCount = applications.filter((a) => a.status === "rejected").length;
 
-            <div className="grid gap-4 md:grid-cols-4">
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Total Applied</CardDescription><CardTitle className="text-3xl">5</CardTitle></CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Accepted</CardDescription><CardTitle className="text-3xl text-green-600">2</CardTitle></CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Under Review</CardDescription><CardTitle className="text-3xl text-amber-600">2</CardTitle></CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader className="pb-2"><CardDescription>Rejected</CardDescription><CardTitle className="text-3xl text-red-600">1</CardTitle></CardHeader>
-                </Card>
-            </div>
-
-            <Card>
-                <CardHeader><CardTitle>All Applications</CardTitle></CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Property</TableHead>
-                                <TableHead>Landlord</TableHead>
-                                <TableHead>Rent</TableHead>
-                                <TableHead>Applied</TableHead>
-                                <TableHead>Move-in Date</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {applications.map((app) => (
-                                <TableRow key={app.id}>
-                                    <TableCell><div className="flex items-center gap-2"><Home className="size-4 text-muted-foreground" /><span className="font-medium">{app.property}</span></div></TableCell>
-                                    <TableCell>{app.landlord}</TableCell>
-                                    <TableCell className="font-medium">{app.rent}</TableCell>
-                                    <TableCell><div className="flex items-center gap-1 text-sm"><Clock className="size-3" />{app.applied}</div></TableCell>
-                                    <TableCell>{app.moveIn}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={app.status === "Accepted" ? "default" : app.status === "Rejected" ? "destructive" : "secondary"}>
-                                            {statusIcon(app.status)}<span className="ml-1">{app.status}</span>
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="outline" size="sm">{app.status === "Accepted" ? "View Offer" : "View Details"}</Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Rental Applications</h1>
+          <p className="text-muted-foreground">
+            {role === "landlord"
+              ? "Review and manage tenant applications"
+              : "Track your rental application status"}
+          </p>
         </div>
-    );
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Applied</CardDescription>
+            <CardTitle className="text-3xl">{totalCount}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Accepted</CardDescription>
+            <CardTitle className="text-3xl text-green-600">{acceptedCount}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Under Review</CardDescription>
+            <CardTitle className="text-3xl text-amber-600">{pendingCount}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Rejected</CardDescription>
+            <CardTitle className="text-3xl text-red-600">{rejectedCount}</CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Applications</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          {applications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+              <Home className="size-10 text-muted-foreground/40 mb-3" />
+              <p className="text-sm text-muted-foreground">
+                {role === "landlord"
+                  ? "No tenant applications yet. Applications will appear here when renters apply to your properties."
+                  : "You haven't submitted any rental applications yet. Browse properties and apply to get started."}
+              </p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{role === "landlord" ? "Applicant" : "Property"}</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Employment</TableHead>
+                  <TableHead>Applied</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {applications.map((app) => (
+                  <TableRow key={app.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Home className="size-4 text-muted-foreground" />
+                        <span className="font-medium">{app.applicant_name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">{app.applicant_email}</TableCell>
+                    <TableCell className="text-sm capitalize">
+                      {(app.employment_status ?? "N/A").replace(/_/g, " ")}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Clock className="size-3" />
+                        {formatDate(app.created_at)}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={statusVariant(app.status)}>
+                        <StatusIcon status={app.status} />
+                        <span className="ml-1">{statusLabel(app.status)}</span>
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm">
+                        {app.status === "approved" ? "View Offer" : "View Details"}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

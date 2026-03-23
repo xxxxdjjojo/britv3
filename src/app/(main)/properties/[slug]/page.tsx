@@ -649,6 +649,23 @@ export default async function PropertyPage({
               <AgentCardSidebar agentId={agentId} propertyId={property.id} />
             </Suspense>
 
+            {/* Apply to Rent — visible only for rental listings */}
+            {listing.listingType === "rent" && listing.status === "active" && (
+              <div className="rounded-xl border bg-card p-4">
+                <h3 className="text-sm font-semibold mb-2">Interested in renting?</h3>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Submit a rental application to the landlord directly.
+                </p>
+                <Link
+                  href={`/dashboard/renter/applications/apply/${property.id}`}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium h-10 px-4 transition-colors hover:bg-primary/90"
+                >
+                  <FileText className="size-4" />
+                  Apply to Rent
+                </Link>
+              </div>
+            )}
+
             {/* Book Viewing (Wave 5) — gated on listing status */}
             {canBookViewing && (
               <BookViewingModal
