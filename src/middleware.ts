@@ -272,6 +272,49 @@ export async function middleware(request: NextRequest) {
         }
       }
     }
+
+    // ── Professional verification gate ────────────────────────────────────
+    // Providers and agents must be verified before accessing most dashboard
+    // pages. Exempt: overview, billing, verification, and referrals pages.
+    // JWT path: fail open — verification status isn't in JWT claims yet.
+    const VERIFICATION_GATED_PREFIXES = [
+      "/dashboard/agent",
+      "/dashboard/provider",
+    ] as const;
+
+    const isVerificationGatedRoute = VERIFICATION_GATED_PREFIXES.some(
+      (prefix) => pathname.startsWith(prefix),
+    );
+
+    if (isVerificationGatedRoute && !hasClaims) {
+      const isVerificationExempt =
+        VERIFICATION_GATED_PREFIXES.some((prefix) => pathname === prefix) || // overview exact match
+        pathname.includes("/billing") ||
+        pathname.includes("/verification") ||
+        pathname.includes("/referrals");
+
+      if (!isVerificationExempt) {
+        const isProvider = pathname.startsWith("/dashboard/provider");
+        const isAgent = pathname.startsWith("/dashboard/agent");
+
+        const providerVerified =
+          profileData?.provider_verification_status === "approved";
+        const agentVerified =
+          profileData?.verification_level === "professional";
+
+        if (
+          (isProvider && !providerVerified) ||
+          (isAgent && !agentVerified)
+        ) {
+          const role = isProvider ? "provider" : "agent";
+          return redirectWithHeaders(
+            `/dashboard/${role}/verification`,
+            nonce,
+            request,
+          );
+        }
+      }
+    }
   }
 
   // Feature gate: subscription check for billing-gated routes
