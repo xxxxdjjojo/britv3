@@ -11,9 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, ArrowLeft, Loader2, Send } from "lucide-react";
+import { AlertCircle, ArrowLeft, Info, Loader2, Send } from "lucide-react";
 import Link from "next/link";
 import { submitApplicationAction } from "../../actions";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+import { useAuth } from "@/hooks/useAuth";
 
 // ---------------------------------------------------------------------------
 // Zod schema
@@ -47,6 +49,16 @@ const EMPLOYMENT_OPTIONS = [
 // Page component
 // ---------------------------------------------------------------------------
 
+// Default shape used both for initial values and for the persistence hook.
+const DEFAULT_FORM_VALUES: ApplicationFormData = {
+  applicant_name: "",
+  applicant_email: "",
+  employment_status: "",
+  annual_income: undefined as unknown as number,
+  move_in_date: "",
+  notes: "",
+};
+
 export default function ApplyPage() {
   const rawParams = useParams<{ role: string; listingId: string }>();
   const role = rawParams.role as string;
@@ -55,6 +67,17 @@ export default function ApplyPage() {
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
 
+  // Auth — used to scope the persistence key to this user.
+  const { user } = useAuth();
+
+  // Session-resilient form persistence.
+  const { values: persistedValues, setValues: setPersisted, clearSaved, wasRecovered } =
+    useFormPersistence({
+      formName: `rental_application_${listingId}`,
+      userId: user?.id,
+      initialValues: DEFAULT_FORM_VALUES as unknown as Record<string, unknown>,
+    });
+
   const {
     register,
     handleSubmit,
@@ -62,14 +85,8 @@ export default function ApplyPage() {
     formState: { errors },
   } = useForm<ApplicationFormData>({
     resolver: zodResolver(applicationSchema) as Resolver<ApplicationFormData>,
-    defaultValues: {
-      applicant_name: "",
-      applicant_email: "",
-      employment_status: "",
-      annual_income: undefined,
-      move_in_date: "",
-      notes: "",
-    },
+    // Hydrate from persisted draft if one exists; otherwise use blanks.
+    defaultValues: persistedValues as ApplicationFormData,
   });
 
   function onSubmit(data: ApplicationFormData) {
@@ -85,11 +102,18 @@ export default function ApplyPage() {
       });
 
       if (result.success) {
+        // Remove the saved draft now that the application was submitted.
+        clearSaved();
         router.push(`/dashboard/${role}/applications`);
       } else {
         setServerError(result.error ?? "Failed to submit application");
       }
     });
+  }
+
+  // Keep persisted state in sync as the user types.
+  function handleFieldChange(field: keyof ApplicationFormData, value: unknown) {
+    setPersisted((prev) => ({ ...(prev as ApplicationFormData), [field]: value }));
   }
 
   return (
@@ -112,6 +136,14 @@ export default function ApplyPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Draft recovered banner */}
+          {wasRecovered && (
+            <div className="mb-6 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+              <Info className="size-4 mt-0.5 shrink-0" />
+              <p>Draft recovered from your last session</p>
+            </div>
+          )}
+
           {serverError && (
             <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
               <AlertCircle className="size-4 mt-0.5 shrink-0" />
@@ -126,7 +158,10 @@ export default function ApplyPage() {
               <Input
                 id="applicant_name"
                 placeholder="Jane Smith"
-                {...register("applicant_name")}
+                {...register("applicant_name", {
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleFieldChange("applicant_name", e.target.value),
+                })}
               />
               {errors.applicant_name && (
                 <p className="text-sm text-destructive">{errors.applicant_name.message}</p>
@@ -140,7 +175,10 @@ export default function ApplyPage() {
                 id="applicant_email"
                 type="email"
                 placeholder="jane@example.com"
-                {...register("applicant_email")}
+                {...register("applicant_email", {
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleFieldChange("applicant_email", e.target.value),
+                })}
               />
               {errors.applicant_email && (
                 <p className="text-sm text-destructive">{errors.applicant_email.message}</p>
@@ -151,7 +189,11 @@ export default function ApplyPage() {
             <div className="space-y-2">
               <Label htmlFor="employment_status">Employment status *</Label>
               <Select
-                onValueChange={(val) => setValue("employment_status", val as string, { shouldValidate: true })}
+                defaultValue={(persistedValues as ApplicationFormData).employment_status || undefined}
+                onValueChange={(val) => {
+                  setValue("employment_status", val as string, { shouldValidate: true });
+                  handleFieldChange("employment_status", val);
+                }}
               >
                 <SelectTrigger id="employment_status">
                   <SelectValue placeholder="Select employment status" />
@@ -176,7 +218,10 @@ export default function ApplyPage() {
                 id="annual_income"
                 type="number"
                 placeholder="35000"
-                {...register("annual_income")}
+                {...register("annual_income", {
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleFieldChange("annual_income", e.target.valueAsNumber),
+                })}
               />
               {errors.annual_income && (
                 <p className="text-sm text-destructive">{errors.annual_income.message}</p>
@@ -189,7 +234,10 @@ export default function ApplyPage() {
               <Input
                 id="move_in_date"
                 type="date"
-                {...register("move_in_date")}
+                {...register("move_in_date", {
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleFieldChange("move_in_date", e.target.value),
+                })}
               />
               {errors.move_in_date && (
                 <p className="text-sm text-destructive">{errors.move_in_date.message}</p>
@@ -203,7 +251,10 @@ export default function ApplyPage() {
                 id="notes"
                 rows={4}
                 placeholder="Tell the landlord about yourself, why you're interested in this property, and any other relevant information..."
-                {...register("notes")}
+                {...register("notes", {
+                  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    handleFieldChange("notes", e.target.value),
+                })}
               />
               {errors.notes && (
                 <p className="text-sm text-destructive">{errors.notes.message}</p>
