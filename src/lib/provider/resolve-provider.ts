@@ -25,7 +25,7 @@ export async function resolveProviderId(
 
   const { data: profile, error } = await supabase
     .from("service_provider_details")
-    .select("id, business_name")
+    .select("user_id, business_name")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -34,7 +34,7 @@ export async function resolveProviderId(
   }
 
   return {
-    providerId: profile.id as string,
+    providerId: profile.user_id as string,
     userId: user.id,
     businessName: (profile.business_name as string | null) ?? "",
   };

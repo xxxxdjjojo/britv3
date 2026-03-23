@@ -29,7 +29,7 @@ describe("resolveProviderId", () => {
   it("returns provider id and business name from service_provider_details", async () => {
     const supabase = mockSupabase(
       { id: "user-1" },
-      { id: "provider-1", business_name: "Steve's Plumbing" },
+      { user_id: "provider-1", business_name: "Steve's Plumbing" },
     );
     const result = await resolveProviderId(supabase as any);
     expect(result.providerId).toBe("provider-1");
@@ -40,7 +40,7 @@ describe("resolveProviderId", () => {
   it("returns empty string for null business_name", async () => {
     const supabase = mockSupabase(
       { id: "user-1" },
-      { id: "provider-1", business_name: null },
+      { user_id: "provider-1", business_name: null },
     );
     const result = await resolveProviderId(supabase as any);
     expect(result.businessName).toBe("");
