@@ -11,7 +11,64 @@ import type {
   InboxFilters,
   Message,
 } from "@/types/messaging";
+import type { UserRole } from "@/types/auth";
 import { sanitizeText } from "@/lib/validation/sanitize";
+
+// ---------------------------------------------------------------------------
+// Role-relationship validation for messaging (BUG-5)
+// ---------------------------------------------------------------------------
+
+/** Allowed messaging pairs — sorted alphabetically so lookup is direction-agnostic. */
+const ALLOWED_MESSAGING_PAIRS = new Set<string>([
+  "agent:homebuyer",
+  "agent:renter",
+  "agent:seller",
+  "landlord:renter",
+  "landlord:service_provider",
+]);
+
+/**
+ * Validate that two users are allowed to message each other based on their
+ * active roles. Throws if the pair is not in the allowed list, if either user
+ * has no active_role, or if the role lookup fails.
+ */
+async function validateMessagingRoles(
+  supabase: SupabaseClient,
+  userId: string,
+  recipientId: string,
+): Promise<void> {
+  let profiles: Array<{ id: string; active_role: UserRole | null }>;
+
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, active_role")
+      .in("id", [userId, recipientId]);
+
+    if (error) throw error;
+    profiles = data ?? [];
+  } catch (err) {
+    throw new Error(
+      `Failed to look up user roles: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  const senderProfile = profiles.find((p) => p.id === userId);
+  const recipientProfile = profiles.find((p) => p.id === recipientId);
+
+  const senderRole = senderProfile?.active_role;
+  const recipientRole = recipientProfile?.active_role;
+
+  if (!senderRole || !recipientRole) {
+    throw new Error("You cannot message this user type");
+  }
+
+  const pairKey = [senderRole, recipientRole].sort().join(":");
+
+  if (!ALLOWED_MESSAGING_PAIRS.has(pairKey)) {
+    throw new Error("You cannot message this user type");
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -233,6 +290,9 @@ export async function getOrCreateConversation(
   contextType: ContextType,
   contextId?: string,
 ): Promise<{ id: string }> {
+  // Validate role pairing before any DB lookup (BUG-5)
+  await validateMessagingRoles(supabase, userId, recipientId);
+
   // Check for existing conversation (either direction)
   let query = supabase
     .from("conversations")
