@@ -44,7 +44,7 @@ BEGIN
   latest_docs AS (
     SELECT DISTINCT ON (pd.property_id, pd.category)
       pd.property_id,
-      pd.category,
+      pd.category::TEXT AS category,
       pd.id AS doc_id,
       pd.expiry_date
     FROM property_documents pd
