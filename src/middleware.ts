@@ -4,6 +4,14 @@ import type { NextRequest } from "next/server";
 import { PUBLIC_ROUTES, AUTH_ROUTES, ROUTE_TO_ROLE, ROLE_TO_ROUTE } from "@/lib/constants";
 import { isFeatureEnabled } from "@/lib/features";
 
+/** Profile columns fetched by the consolidated middleware query. */
+type MiddlewareProfileData = {
+  active_role: string | null;
+  is_admin: boolean;
+  provider_verification_status: string | null;
+  verification_level: string | null;
+};
+
 /**
  * Generate a base64-encoded nonce for CSP Level 3.
  */
@@ -203,14 +211,10 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith("/admin");
   const isDashboardRoute = isAuthenticated && pathname.startsWith("/dashboard");
 
-  // Only query the DB when we actually need profile data and don't have JWT claims
-  type ProfileData = {
-    active_role: string | null;
-    is_admin: boolean;
-    provider_verification_status: string | null;
-    verification_level: string | null;
-  };
-  let profileData: ProfileData | null = null;
+  // Only query the DB when we actually need profile data and don't have JWT claims.
+  // Fetches provider_verification_status + verification_level for the verification
+  // gate (Wave 1.2) so we avoid a second round-trip.
+  let profileData: MiddlewareProfileData | null = null;
 
   if (isAuthenticated && !hasClaims && (isAdminRoute || isDashboardRoute)) {
     try {
@@ -220,7 +224,7 @@ export async function middleware(request: NextRequest) {
         .eq("id", user!.id)
         .single();
 
-      profileData = profile as ProfileData | null;
+      profileData = profile as MiddlewareProfileData | null;
     } catch (error) {
       console.error("[middleware] Profile query failed:", error);
       return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
