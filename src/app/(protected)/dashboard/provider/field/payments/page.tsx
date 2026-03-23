@@ -49,7 +49,13 @@ export default async function FieldPaymentsPage() {
       .limit(10),
   ]);
 
-  const sentInvoices: SentInvoiceRow[] = (invoicesResult.data ?? []) as SentInvoiceRow[];
+  const sentInvoices: SentInvoiceRow[] = (invoicesResult.data ?? []).map((row) => ({
+    id: row.id as string,
+    total_amount: row.total_amount as number,
+    client_id: row.client_id as string,
+    invoice_number: row.invoice_number as string | null,
+    profiles: Array.isArray(row.profiles) ? (row.profiles[0] as { full_name: string | null } | undefined) ?? null : row.profiles as { full_name: string | null } | null,
+  }));
 
   return (
     <div className="space-y-6">

@@ -28,7 +28,7 @@ type CertificateTypeValue = (typeof CERTIFICATE_TYPES)[number];
 const certificateSchema = z
   .object({
     certificateType: z.enum(CERTIFICATE_TYPES, {
-      required_error: "Certificate type is required",
+      message: "Certificate type is required",
     }),
     certificateNumber: z.string().optional(),
     issuedAt: z.string().min(1, "Issue date is required"),
