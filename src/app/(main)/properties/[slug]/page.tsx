@@ -650,8 +650,7 @@ export default async function PropertyPage({
             </Suspense>
 
             {/* Apply to Rent — visible only for rental listings.
-                Uses /login?redirectTo so unauthenticated users sign in first.
-                Authenticated non-renters will be redirected by middleware role enforcement. */}
+                Authenticated users get a direct link; unauthenticated route through /login. */}
             {listing.listingType === "rent" && listing.status === "active" && (
               <div className="rounded-xl border bg-card p-4">
                 <h3 className="text-sm font-semibold mb-2">Interested in renting?</h3>
@@ -659,7 +658,9 @@ export default async function PropertyPage({
                   Submit a rental application to the landlord directly.
                 </p>
                 <Link
-                  href={`/login?redirectTo=${encodeURIComponent(`/dashboard/renter/applications/apply/${property.id}`)}`}
+                  href={currentUserId
+                    ? `/dashboard/renter/applications/apply/${property.id}`
+                    : `/login?redirectTo=${encodeURIComponent(`/dashboard/renter/applications/apply/${property.id}`)}`}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium h-10 px-4 transition-colors hover:bg-primary/90"
                 >
                   <FileText className="size-4" />
