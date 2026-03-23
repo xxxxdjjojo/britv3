@@ -92,13 +92,29 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
                 </span>
               </div>
               <p className="mt-1 text-sm text-neutral-500">{step.description}</p>
+              {/* Rejection reason */}
+              {step.status === "rejected" && step.rejectionReason && (
+                <div className="mt-2 rounded-md bg-red-50 border border-red-200 p-2 text-xs text-red-700">
+                  <span className="font-medium">Reason:</span> {step.rejectionReason}
+                </div>
+              )}
               {step.status !== "approved" && (
-                <Link
-                  href={href}
-                  className="mt-2 inline-block text-xs font-semibold text-[#1B4D3E] hover:underline"
-                >
-                  {step.status === "not_started" ? "Get started" : "Continue"} &rarr;
-                </Link>
+                <div className="mt-2 flex items-center gap-3">
+                  <Link
+                    href={href}
+                    className="inline-block text-xs font-semibold text-[#1B4D3E] hover:underline"
+                  >
+                    {step.status === "rejected" ? "Re-apply" : step.status === "not_started" ? "Get started" : "Continue"} &rarr;
+                  </Link>
+                  {step.status === "rejected" && (
+                    <Link
+                      href="/help?topic=verification"
+                      className="text-xs text-neutral-500 underline underline-offset-2 hover:text-neutral-700"
+                    >
+                      Contact Support
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
           </li>

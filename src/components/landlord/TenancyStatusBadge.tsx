@@ -1,6 +1,8 @@
 import type { TenancyStatus } from "@/types/landlord";
 
-const STATUS_STYLES: Record<TenancyStatus, { bg: string; text: string; label: string }> = {
+type DisplayStatus = TenancyStatus | "expired";
+
+const STATUS_STYLES: Record<DisplayStatus, { bg: string; text: string; label: string }> = {
   active: {
     bg: "bg-green-100 dark:bg-green-900/30",
     text: "text-green-800 dark:text-green-300",
@@ -21,12 +23,33 @@ const STATUS_STYLES: Record<TenancyStatus, { bg: string; text: string; label: st
     text: "text-red-800 dark:text-red-300",
     label: "Terminated",
   },
+  expired: {
+    bg: "bg-red-100 dark:bg-red-900/30",
+    text: "text-red-800 dark:text-red-300",
+    label: "Expired",
+  },
 };
 
+/**
+ * Determine if the tenancy is expired based on its end date.
+ * A tenancy is expired when the lease_end_date is in the past
+ * and the status is still "active" or "ending_soon".
+ */
+export function isTenancyExpired(
+  status: TenancyStatus,
+  leaseEndDate: string | null | undefined,
+): boolean {
+  if (!leaseEndDate) return false;
+  if (status !== "active" && status !== "ending_soon") return false;
+  return new Date(leaseEndDate) < new Date();
+}
+
 export function TenancyStatusBadge(
-  props: Readonly<{ status: TenancyStatus }>,
+  props: Readonly<{ status: TenancyStatus; leaseEndDate?: string | null }>,
 ) {
-  const style = STATUS_STYLES[props.status] ?? STATUS_STYLES.ended;
+  const expired = isTenancyExpired(props.status, props.leaseEndDate);
+  const displayStatus: DisplayStatus = expired ? "expired" : props.status;
+  const style = STATUS_STYLES[displayStatus] ?? STATUS_STYLES.ended;
 
   return (
     <span

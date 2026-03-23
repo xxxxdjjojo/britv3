@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -142,19 +143,29 @@ export function VerificationStageCard(
 
           {/* Action buttons */}
           {(state === "pending" || state === "rejected") && stage !== "admin_review" && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={handleSubmit}
-              disabled={submitting}
-            >
-              {submitting ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <action.icon className="size-3.5" />
+            <div className="flex items-center gap-3">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleSubmit}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <action.icon className="size-3.5" />
+                )}
+                {state === "rejected" ? "Re-apply" : action.label}
+              </Button>
+              {state === "rejected" && (
+                <Link
+                  href="/help?topic=verification"
+                  className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                >
+                  Contact Support
+                </Link>
               )}
-              {state === "rejected" ? "Resubmit" : action.label}
-            </Button>
+            </div>
           )}
 
           {/* Admin review waiting state */}

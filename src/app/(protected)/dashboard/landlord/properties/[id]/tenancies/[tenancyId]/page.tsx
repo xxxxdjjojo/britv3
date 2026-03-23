@@ -5,10 +5,11 @@ import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 
 import type { Tenancy, TenancyStatus } from "@/types/landlord";
-import { TenancyStatusBadge } from "@/components/landlord/TenancyStatusBadge";
+import { TenancyStatusBadge, isTenancyExpired } from "@/components/landlord/TenancyStatusBadge";
 import { TenancyForm } from "@/components/landlord/TenancyForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 export default function TenancyDetailPage() {
   const router = useRouter();
@@ -116,6 +117,10 @@ export default function TenancyDetailPage() {
   }
 
   const isActive = tenancy.status === "active" || tenancy.status === "ending_soon";
+  const expired = isTenancyExpired(
+    tenancy.status as TenancyStatus,
+    tenancy.lease_end_date,
+  );
 
   return (
     <div className="space-y-6">
@@ -124,10 +129,27 @@ export default function TenancyDetailPage() {
           <h1 className="text-2xl font-bold tracking-tight">
             {tenancy.tenant_name}
           </h1>
-          <TenancyStatusBadge status={tenancy.status as TenancyStatus} />
+          <TenancyStatusBadge
+            status={tenancy.status as TenancyStatus}
+            leaseEndDate={tenancy.lease_end_date}
+          />
         </div>
         <div className="flex gap-2">
-          {isActive && (
+          {expired && (
+            <>
+              <Button variant="outline" onClick={() => setEditing(true)}>
+                Renew
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleEndTenancy}
+                disabled={ending}
+              >
+                {ending ? "Ending..." : "End Tenancy"}
+              </Button>
+            </>
+          )}
+          {isActive && !expired && (
             <>
               <Button variant="outline" onClick={() => setEditing(true)}>
                 Edit
@@ -143,6 +165,23 @@ export default function TenancyDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Expired tenancy warning banner */}
+      {expired && tenancy.lease_end_date && (
+        <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" />
+          <div>
+            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+              Tenancy expired on{" "}
+              {new Date(tenancy.lease_end_date).toLocaleDateString("en-GB")}
+            </p>
+            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+              This tenancy has passed its end date. Please renew the lease or
+              formally end the tenancy to keep your records up to date.
+            </p>
+          </div>
+        </div>
+      )}
 
       <Card>
         <CardHeader>

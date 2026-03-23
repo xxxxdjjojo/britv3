@@ -15,7 +15,8 @@ export type EventType =
   | "milestone_updated"
   | "offer_received"
   | "viewing_scheduled"
-  | "review_posted";
+  | "review_posted"
+  | "maintenance_request_created";
 
 /** Entity types that events can reference */
 export type EntityType =
@@ -23,7 +24,8 @@ export type EntityType =
   | "booking"
   | "listing"
   | "rfq"
-  | "transaction";
+  | "transaction"
+  | "maintenance_request";
 
 /** Email priority for notification routing */
 export type EmailPriority = "critical" | "digest";
@@ -84,6 +86,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
     offer_received: { in_app: true, email: true, push: false, sms: false },
     viewing_scheduled: { in_app: true, email: true, push: false, sms: false },
     review_posted: { in_app: true, email: false, push: false, sms: false },
+    maintenance_request_created: { in_app: true, email: true, push: false, sms: false },
   },
   quiet_hours: {
     enabled: false,

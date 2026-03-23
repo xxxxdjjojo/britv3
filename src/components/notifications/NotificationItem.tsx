@@ -14,6 +14,7 @@ import {
   Eye,
   Package,
   Bell,
+  Wrench,
 } from "lucide-react";
 import type { PlatformEvent, EventType } from "@/types/notifications";
 
@@ -36,6 +37,7 @@ const EVENT_ICONS: Record<EventType, typeof Bell> = {
   offer_received: Package,
   viewing_scheduled: Eye,
   review_posted: Star,
+  maintenance_request_created: Wrench,
 };
 
 // ---------------------------------------------------------------------------
@@ -64,6 +66,8 @@ function getActionDescription(event: PlatformEvent): string {
       return `${actor} scheduled a viewing`;
     case "review_posted":
       return `${actor} posted a review`;
+    case "maintenance_request_created":
+      return `${actor} submitted a maintenance request`;
     default:
       return `${actor} performed an action`;
   }
@@ -85,6 +89,8 @@ function getNotificationUrl(event: PlatformEvent): string {
       return `/quotes/${event.entity_id}`;
     case "transaction":
       return `/transactions/${event.entity_id}`;
+    case "maintenance_request":
+      return `/dashboard/landlord/maintenance`;
     default:
       return "/notifications";
   }

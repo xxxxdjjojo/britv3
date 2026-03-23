@@ -88,6 +88,8 @@ export type VerificationStep = Readonly<{
   updatedAt: string | null;
   /** Step order (1-indexed) */
   step_number: number;
+  /** Reason for rejection (only set when status is 'rejected') */
+  rejectionReason: string | null;
 }>;
 
 export type SendReferenceResult =
@@ -135,7 +137,7 @@ export async function getVerificationSteps(
     const [docsResult, refsResult] = await Promise.allSettled([
       supabase
         .from("provider_documents")
-        .select("document_type, status, updated_at")
+        .select("document_type, status, updated_at, rejection_reason")
         .eq("provider_id", providerId),
 
       supabase
@@ -144,7 +146,7 @@ export async function getVerificationSteps(
         .eq("provider_id", providerId),
     ]);
 
-    const docs: Array<{ document_type: string; status: string; updated_at: string | null }> =
+    const docs: Array<{ document_type: string; status: string; updated_at: string | null; rejection_reason?: string | null }> =
       docsResult.status === "fulfilled" && !docsResult.value.error
         ? (docsResult.value.data ?? [])
         : [];
@@ -157,6 +159,7 @@ export async function getVerificationSteps(
     return VERIFICATION_STEPS.map((step, idx): VerificationStep => {
       let status: VerificationStep["status"] = "not_started";
       let updatedAt: string | null = null;
+      let rejectionReason: string | null = null;
 
       if ("document_types" in step) {
         const matchingDocs = docs.filter((d) =>
@@ -169,7 +172,11 @@ export async function getVerificationSteps(
           const hasPending = matchingDocs.some((d) => d.status === "pending");
 
           if (hasApproved) status = "approved";
-          else if (hasRejected) status = "rejected";
+          else if (hasRejected) {
+            status = "rejected";
+            const rejectedDoc = matchingDocs.find((d) => d.status === "rejected");
+            rejectionReason = rejectedDoc?.rejection_reason ?? null;
+          }
           else if (hasPending) status = "submitted";
           else status = "in_progress";
 
@@ -209,6 +216,7 @@ export async function getVerificationSteps(
         required: step.required,
         updatedAt,
         step_number: idx + 1,
+        rejectionReason,
       };
     });
   } catch {
@@ -221,6 +229,7 @@ export async function getVerificationSteps(
         required: step.required,
         updatedAt: null,
         step_number: idx + 1,
+        rejectionReason: null,
       }),
     );
   }

@@ -28,6 +28,7 @@ const EVENT_TYPE_LABELS: Record<EventType, string> = {
   offer_received: "Offer Received",
   viewing_scheduled: "Viewing Scheduled",
   review_posted: "Review Posted",
+  maintenance_request_created: "Maintenance Request",
 };
 
 const ALL_EVENT_TYPES: EventType[] = Object.keys(EVENT_TYPE_LABELS) as EventType[];

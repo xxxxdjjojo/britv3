@@ -288,6 +288,11 @@ function getEventContent(event: PlatformEvent): {
         title: "New review posted",
         cta: { label: "View review", url: `${baseUrl}/reviews` },
       };
+    case "maintenance_request_created":
+      return {
+        title: "New maintenance request submitted",
+        cta: { label: "View request", url: `${baseUrl}/dashboard/landlord/maintenance` },
+      };
     default:
       return {
         title: "New notification",
