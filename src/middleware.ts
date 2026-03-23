@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { PUBLIC_ROUTES, AUTH_ROUTES } from "@/lib/constants";
+import { PUBLIC_ROUTES, AUTH_ROUTES, ROUTE_TO_ROLE, ROLE_TO_ROUTE } from "@/lib/constants";
 import { isFeatureEnabled } from "@/lib/features";
 
 /**
@@ -197,8 +197,37 @@ export async function middleware(request: NextRequest) {
     return redirectWithHeaders("/dashboard", nonce, request);
   }
 
-  // Admin route guard: require authentication and is_admin flag on profile
+  // ── Consolidated profile query ──────────────────────────────────────────
+  // Fetch profile data once for both admin guard and role-route enforcement.
+  // When JWT claims are available, skip the DB query entirely.
   const isAdminRoute = pathname.startsWith("/admin");
+  const isDashboardRoute = isAuthenticated && pathname.startsWith("/dashboard");
+
+  // Only query the DB when we actually need profile data and don't have JWT claims
+  type ProfileData = {
+    active_role: string | null;
+    is_admin: boolean;
+    provider_verification_status: string | null;
+    verification_level: string | null;
+  };
+  let profileData: ProfileData | null = null;
+
+  if (isAuthenticated && !hasClaims && (isAdminRoute || isDashboardRoute)) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("active_role, is_admin, provider_verification_status, verification_level")
+        .eq("id", user!.id)
+        .single();
+
+      profileData = profile as ProfileData | null;
+    } catch (error) {
+      console.error("[middleware] Profile query failed:", error);
+      return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
+    }
+  }
+
+  // ── Admin route guard ─────────────────────────────────────────────────
   if (isAdminRoute) {
     if (!isAuthenticated) {
       return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
@@ -209,43 +238,34 @@ export async function middleware(request: NextRequest) {
         return redirectWithHeaders("/forbidden", nonce, request);
       }
     } else {
-      try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("is_admin")
-          .eq("id", user!.id)
-          .single();
-
-        if (profile?.is_admin !== true) {
-          return redirectWithHeaders("/forbidden", nonce, request);
-        }
-      } catch (error) {
-        console.error("[middleware] Admin guard check failed:", error);
-        return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
+      if (profileData?.is_admin !== true) {
+        return redirectWithHeaders("/forbidden", nonce, request);
       }
     }
   }
 
-  // Role check: if user accesses dashboard with no active_role, redirect to role selection
-  if (isAuthenticated && pathname.startsWith("/dashboard")) {
-    if (hasClaims) {
-      if (!appMetadata?.role) {
-        return redirectWithHeaders("/register/role-select", nonce, request);
-      }
-    } else {
-      try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("active_role")
-          .eq("id", user!.id)
-          .single();
+  // ── Role check + role-route enforcement ───────────────────────────────
+  if (isDashboardRoute) {
+    // Determine the user's actual role from JWT claims or DB
+    const actualRole = hasClaims ? appMetadata?.role : profileData?.active_role;
 
-        if (profile && !profile.active_role) {
-          return redirectWithHeaders("/register/role-select", nonce, request);
+    // No active_role → send to role selection
+    if (!actualRole) {
+      return redirectWithHeaders("/register/role-select", nonce, request);
+    }
+
+    // Extract the role segment from the URL: /dashboard/{roleSegment}/...
+    const roleSegment = pathname.split("/")[2];
+    if (roleSegment) {
+      const expectedRole = ROUTE_TO_ROLE[roleSegment];
+
+      // If the URL role segment maps to a known role and it doesn't match the user's actual role,
+      // redirect to their correct dashboard
+      if (expectedRole && expectedRole !== actualRole) {
+        const correctRoute = ROLE_TO_ROUTE[actualRole as keyof typeof ROLE_TO_ROUTE];
+        if (correctRoute) {
+          return redirectWithHeaders(`/dashboard/${correctRoute}`, nonce, request);
         }
-      } catch (error) {
-        console.error("[middleware] Profile role check failed:", error);
-        return redirectWithHeaders("/login", nonce, request);
       }
     }
   }

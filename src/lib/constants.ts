@@ -244,3 +244,21 @@ export const PROTECTED_ROUTES: readonly string[] = [
   "/profile",
   "/milestones",
 ] as const;
+
+// -- Role ↔ Route Mappings (for middleware enforcement) ----------------------
+
+/** Map URL path segments to database UserRole values */
+export const ROUTE_TO_ROLE: Readonly<Record<string, UserRole>> = {
+  agent: "agent",
+  landlord: "landlord",
+  provider: "service_provider",
+  seller: "seller",
+  homebuyer: "homebuyer",
+  renter: "renter",
+  broker: "mortgage_broker",
+} as const;
+
+/** Reverse mapping: database UserRole → URL path segment */
+export const ROLE_TO_ROUTE: Readonly<Record<UserRole, string>> = Object.fromEntries(
+  Object.entries(ROUTE_TO_ROLE).map(([route, role]) => [role, route]),
+) as Record<UserRole, string>;
