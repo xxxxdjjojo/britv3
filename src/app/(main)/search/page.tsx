@@ -6,8 +6,8 @@
  * views, and a mobile bottom action bar.
  */
 
-import { useState, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -32,6 +32,8 @@ import MapPropertyCard from "@/components/search/MapPropertyCard";
 import MapProviderPin from "@/components/search/MapProviderPin";
 import type { MapProperty, MapProvider, MapBounds } from "@/components/search/SearchMap";
 import { cn } from "@/lib/utils";
+import { searchProperties } from "./actions";
+import type { SearchProperty, SearchFilters } from "./actions";
 
 // Lazy-load SearchMap — MapLibre cannot SSR
 const SearchMap = dynamic(() => import("@/components/search/SearchMap"), {
@@ -51,37 +53,7 @@ type ViewMode = "grid" | "list" | "map";
 type SortOption = "most_recent" | "price_asc" | "price_desc" | "most_popular";
 type ListingType = "all" | "sale" | "rent" | "new_build" | "commercial" | "land" | "auction";
 
-type MockProperty = {
-  id: string;
-  slug: string;
-  image: string | null;
-  price: number;
-  address: string;
-  city: string;
-  postcode: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-  type: string;
-  listing_type: ListingType;
-  lat: number;
-  lng: number;
-};
-
-// ---------------------------------------------------------------------------
-// Mock data (with real London coordinates)
-// ---------------------------------------------------------------------------
-
-const MOCK_PROPERTIES: MockProperty[] = [
-  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "Terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794 },
-  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "Semi-detached", listing_type: "sale", lat: 51.5392, lng: -0.1547 },
-  { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "Flat", listing_type: "rent", lat: 51.4998, lng: -0.0821 },
-  { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "Detached", listing_type: "sale", lat: 51.5555, lng: -0.0984 },
-  { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "Flat", listing_type: "rent", lat: 51.5054, lng: -0.0235 },
-  { id: "6", slug: "7-peckham-rye-lane-london-sale", image: "/images/properties/property-3.jpg", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "Terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691 },
-  { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "Detached", listing_type: "commercial", lat: 51.5095, lng: -0.1963 },
-  { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "Flat", listing_type: "sale", lat: 51.5055, lng: -0.0910 },
-];
+// SearchProperty type is imported from ./actions
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "most_recent", label: "Most Recent" },
@@ -121,8 +93,8 @@ function formatPrice(price: number, listingType?: ListingType): string {
   return `\u00A3${price.toLocaleString("en-GB")}`;
 }
 
-/** Convert a MockProperty to the MapProperty shape expected by SearchMap */
-function toMapProperty(p: MockProperty): MapProperty {
+/** Convert a SearchProperty to the MapProperty shape expected by SearchMap */
+function toMapProperty(p: SearchProperty): MapProperty {
   return {
     id: p.id,
     slug: p.slug,
@@ -133,7 +105,7 @@ function toMapProperty(p: MockProperty): MapProperty {
     baths: p.baths,
     sqft: p.sqft,
     address: `${p.address}, ${p.city} ${p.postcode}`,
-    thumbnailUrl: null,
+    thumbnailUrl: p.image,
     listing_type: p.listing_type,
   };
 }
@@ -182,7 +154,7 @@ function FilterSection({
 // Property card — grid variant
 // ---------------------------------------------------------------------------
 
-function MockPropertyCardGrid({ property }: Readonly<{ property: MockProperty }>) {
+function SearchPropertyCardGrid({ property }: Readonly<{ property: SearchProperty }>) {
   return (
     <Link
       href={`/properties/${property.slug}`}
@@ -234,7 +206,7 @@ function MockPropertyCardGrid({ property }: Readonly<{ property: MockProperty }>
 // Property card — list variant
 // ---------------------------------------------------------------------------
 
-function MockPropertyCardList({ property }: Readonly<{ property: MockProperty }>) {
+function SearchPropertyCardList({ property }: Readonly<{ property: SearchProperty }>) {
   return (
     <Link
       href={`/properties/${property.slug}`}
@@ -288,24 +260,41 @@ function MockPropertyCardList({ property }: Readonly<{ property: MockProperty }>
 
 function SearchPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
-  // Derive initial listing type from URL ?type= param
+  // ---------------------------------------------------------------------------
+  // Initialize filter state from URL search params
+  // ---------------------------------------------------------------------------
+
   const initialType = searchParams.get("type");
   const initialListingType: ListingType =
-    initialType === "rent" ? "rent" : initialType === "buy" ? "sale" : "all";
+    initialType === "rent" ? "rent" : initialType === "buy" ? "sale" :
+    (["all", "sale", "rent", "new_build", "commercial", "land", "auction"].includes(initialType ?? "") ? initialType as ListingType : "all");
 
   // View / sort state
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [sortOption, setSortOption] = useState<SortOption>("most_recent");
-
-  // Filter state
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedBedrooms, setSelectedBedrooms] = useState("Any");
-  const [mustHaves, setMustHaves] = useState<Record<string, boolean>>(
-    getDefaultMustHaves(initialListingType),
+  const [sortOption, setSortOption] = useState<SortOption>(
+    (searchParams.get("sort") as SortOption) || "most_recent",
   );
+
+  // Filter state — initialized from URL params
+  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") ?? "");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(
+    searchParams.get("propertyType")?.split(",").filter(Boolean) ?? [],
+  );
+  const [selectedBedrooms, setSelectedBedrooms] = useState(
+    searchParams.get("beds") ?? "Any",
+  );
+  const [mustHaves, setMustHaves] = useState<Record<string, boolean>>(() => {
+    const defaults = getDefaultMustHaves(initialListingType);
+    const urlMustHaves = searchParams.get("mustHaves")?.split(",").filter(Boolean) ?? [];
+    for (const key of urlMustHaves) {
+      if (key in defaults) defaults[key] = true;
+    }
+    return defaults;
+  });
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
 
   // Listing type filter
   const [listingType, setListingType] = useState<ListingType>(initialListingType);
@@ -313,11 +302,94 @@ function SearchPageInner() {
   // Mobile filters panel
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // Property results from server action
+  const [properties, setProperties] = useState<SearchProperty[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   // Map state
   const [selectedProperty, setSelectedProperty] = useState<MapProperty | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<MapProvider | null>(null);
   const [mapProperties, setMapProperties] = useState<MapProperty[]>([]);
   const [mapProviders, setMapProviders] = useState<MapProvider[]>([]);
+
+  // Debounce timer ref
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ---------------------------------------------------------------------------
+  // Sync filters to URL search params
+  // ---------------------------------------------------------------------------
+
+  const syncUrlParams = useCallback(
+    (overrides?: Partial<{
+      listingType: string;
+      minPrice: string;
+      maxPrice: string;
+      beds: string;
+      propertyType: string[];
+      mustHaves: Record<string, boolean>;
+      sort: string;
+      q: string;
+    }>) => {
+      const params = new URLSearchParams();
+      const lt = overrides?.listingType ?? listingType;
+      const min = overrides?.minPrice ?? minPrice;
+      const max = overrides?.maxPrice ?? maxPrice;
+      const beds = overrides?.beds ?? selectedBedrooms;
+      const pt = overrides?.propertyType ?? selectedTypes;
+      const mh = overrides?.mustHaves ?? mustHaves;
+      const sort = overrides?.sort ?? sortOption;
+      const q = overrides?.q ?? searchQuery;
+
+      if (lt !== "all") params.set("type", lt);
+      if (min) params.set("minPrice", min);
+      if (max) params.set("maxPrice", max);
+      if (beds !== "Any") params.set("beds", beds);
+      if (pt.length > 0) params.set("propertyType", pt.join(","));
+      const activeMustHaves = Object.entries(mh).filter(([, v]) => v).map(([k]) => k);
+      if (activeMustHaves.length > 0) params.set("mustHaves", activeMustHaves.join(","));
+      if (sort !== "most_recent") params.set("sort", sort);
+      if (q) params.set("q", q);
+
+      const qs = params.toString();
+      router.replace(qs ? `?${qs}` : "/search", { scroll: false });
+    },
+    [listingType, minPrice, maxPrice, selectedBedrooms, selectedTypes, mustHaves, sortOption, searchQuery, router],
+  );
+
+  // ---------------------------------------------------------------------------
+  // Fetch properties with 300ms debounce
+  // ---------------------------------------------------------------------------
+
+  const fetchProperties = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      const filters: SearchFilters = {
+        listingType,
+        minPrice: minPrice || undefined,
+        maxPrice: maxPrice || undefined,
+        beds: selectedBedrooms !== "Any" ? selectedBedrooms : undefined,
+        propertyType: selectedTypes.length > 0 ? selectedTypes : undefined,
+        mustHaves: Object.entries(mustHaves).filter(([, v]) => v).map(([k]) => k),
+        sort: sortOption,
+        q: searchQuery || undefined,
+      };
+
+      const result = await searchProperties(filters);
+      setProperties(result.data);
+      setIsLoading(false);
+    }, 300);
+  }, [listingType, minPrice, maxPrice, selectedBedrooms, selectedTypes, mustHaves, sortOption, searchQuery]);
+
+  // Trigger fetch + URL sync when filters change
+  useEffect(() => {
+    fetchProperties();
+    syncUrlParams();
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [fetchProperties, syncUrlParams]);
 
   // Derive active filter count for badges
   const activeFilterCount =
@@ -348,14 +420,11 @@ function SearchPageInner() {
     setSelectedTypes([]);
     setSelectedBedrooms("Any");
     setMustHaves(getDefaultMustHaves("all"));
+    setSearchQuery("");
   }
 
-  const filteredProperties =
-    listingType === "all"
-      ? MOCK_PROPERTIES
-      : MOCK_PROPERTIES.filter((p) => p.listing_type === listingType);
-
-  const showEmpty = filteredProperties.length === 0;
+  const filteredProperties = properties;
+  const showEmpty = !isLoading && filteredProperties.length === 0;
 
   // ---------------------------------------------------------------------------
   // Map callbacks
@@ -686,7 +755,8 @@ function SearchPageInner() {
               <Search className="size-4 shrink-0 text-neutral-400" />
               <input
                 type="text"
-                defaultValue="London"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="min-w-0 flex-1 bg-transparent text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none"
                 placeholder="Location\u2026"
               />
@@ -788,8 +858,8 @@ function SearchPageInner() {
         {viewMode !== "map" && (
           <div className="border-t border-neutral-100 px-4 py-2">
             <p className="text-sm text-neutral-500">
-              <span className="font-semibold text-neutral-900">847</span> properties for sale in{" "}
-              <span className="font-semibold text-neutral-900">London</span>
+              <span className="font-semibold text-neutral-900">{filteredProperties.length}</span> {filteredProperties.length === 1 ? "property" : "properties"}{listingType === "rent" ? " to rent" : listingType === "sale" ? " for sale" : ""} in{" "}
+              <span className="font-semibold text-neutral-900">{searchQuery || "London"}</span>
             </p>
           </div>
         )}
@@ -846,18 +916,23 @@ function SearchPageInner() {
 
           {/* Main content */}
           <main className="flex-1 p-4 pb-24 lg:pb-6">
-            {showEmpty ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="size-6 animate-spin rounded-full border-2 border-neutral-300 border-t-brand-primary" />
+                <span className="ml-3 text-sm text-neutral-500">Searching properties...</span>
+              </div>
+            ) : showEmpty ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {filteredProperties.map((property) => (
-                  <MockPropertyCardGrid key={property.id} property={property} />
+                  <SearchPropertyCardGrid key={property.id} property={property} />
                 ))}
               </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {filteredProperties.map((property) => (
-                  <MockPropertyCardList key={property.id} property={property} />
+                  <SearchPropertyCardList key={property.id} property={property} />
                 ))}
               </div>
             )}
