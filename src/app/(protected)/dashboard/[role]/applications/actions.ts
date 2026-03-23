@@ -15,6 +15,13 @@ export async function submitApplicationAction(
 ): Promise<ApplicationActionResult> {
   try {
     const supabase = await createClient();
+
+    // Verify auth at action boundary — server actions can bypass middleware
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: "Authentication required" };
+    }
+
     const application = await createApplication(supabase, input);
     return { success: true, applicationId: application.id };
   } catch (err) {

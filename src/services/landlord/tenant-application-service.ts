@@ -6,6 +6,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import type { TenantApplication, TenantApplicationStatus } from "@/types/landlord";
+import { escapeHtml } from "@/lib/escape-html";
 
 // -- State machine -----------------------------------------------------------
 
@@ -317,6 +318,7 @@ export async function rejectApplication(
 // -- Email templates ---------------------------------------------------------
 
 function renderAcceptanceEmail(name: string): string {
+  const safeName = escapeHtml(name);
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -326,7 +328,7 @@ function renderAcceptanceEmail(name: string): string {
     <h1 style="color:#fff;margin:0;font-size:20px;">Britestate</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 8px 8px;">
-    <p style="font-size:16px;color:#333;">Dear ${name},</p>
+    <p style="font-size:16px;color:#333;">Dear ${safeName},</p>
     <p style="font-size:15px;color:#555;">Congratulations! Your rental application has been approved. The landlord will be in touch shortly with next steps.</p>
     <p style="font-size:14px;color:#999;margin-top:32px;">The Britestate Team</p>
   </div>
@@ -336,6 +338,7 @@ function renderAcceptanceEmail(name: string): string {
 }
 
 function renderRejectionEmail(name: string): string {
+  const safeName = escapeHtml(name);
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -345,7 +348,7 @@ function renderRejectionEmail(name: string): string {
     <h1 style="color:#fff;margin:0;font-size:20px;">Britestate</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 8px 8px;">
-    <p style="font-size:16px;color:#333;">Dear ${name},</p>
+    <p style="font-size:16px;color:#333;">Dear ${safeName},</p>
     <p style="font-size:15px;color:#555;">Thank you for your interest. Unfortunately, your rental application was not successful on this occasion. We encourage you to continue searching for your ideal property on Britestate.</p>
     <p style="font-size:14px;color:#999;margin-top:32px;">The Britestate Team</p>
   </div>
