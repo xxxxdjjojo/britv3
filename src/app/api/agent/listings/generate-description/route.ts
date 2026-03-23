@@ -1,5 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 import { createClient } from "@/lib/supabase/server";
+
+// -- Per-user rate limiter (lazy-initialized, graceful degradation) ------------
+
+let rateLimiter: Ratelimit | null = null;
+
+function getRateLimiter(): Ratelimit | null {
+  if (rateLimiter) return rateLimiter;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  rateLimiter = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(10, "1 h"),
+    prefix: "ratelimit:ai-description",
+  });
+  return rateLimiter;
+}
 
 type GenerateDescriptionBody = {
   address?: string;
@@ -28,6 +47,18 @@ export async function POST(request: NextRequest) {
 
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Per-user rate limit: 10 AI descriptions per hour
+  const limiter = getRateLimiter();
+  if (limiter) {
+    const { success } = await limiter.limit(user.id);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Rate limit exceeded. Maximum 10 AI descriptions per hour." },
+        { status: 429 },
+      );
+    }
   }
 
   let body: GenerateDescriptionBody;

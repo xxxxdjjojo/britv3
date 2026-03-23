@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
 import { createRateLimiter } from "@/lib/cache/redis";
+import { escapeHtml } from "@/lib/escape-html";
 
 // ---------------------------------------------------------------------------
 // Validation schema
@@ -99,15 +100,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 // HTML email template
 // ---------------------------------------------------------------------------
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 function buildEmailHtml(data: {
   name: string;
   email: string;
@@ -130,7 +122,7 @@ function buildEmailHtml(data: {
     </tr>
     <tr>
       <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Email:</td>
-      <td style="padding:8px 0;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
+      <td style="padding:8px 0;"><a href="mailto:${encodeURIComponent(data.email)}">${safeEmail}</a></td>
     </tr>
     <tr>
       <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Subject:</td>
