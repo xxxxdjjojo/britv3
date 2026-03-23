@@ -22,7 +22,7 @@ BEGIN
     FROM properties p
     JOIN listings l ON l.property_id = p.id
     WHERE l.user_id = p_landlord_id
-      AND l.listing_type = 'rental'
+      AND l.listing_type = 'rent'
       AND l.deleted_at IS NULL
   ),
   categories AS (
