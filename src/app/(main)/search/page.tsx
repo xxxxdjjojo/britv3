@@ -93,6 +93,37 @@ function formatPrice(price: number, listingType?: ListingType): string {
   return `\u00A3${price.toLocaleString("en-GB")}`;
 }
 
+const EPC_COLOURS: Record<string, string> = {
+  A: "bg-green-700 text-white",
+  B: "bg-green-500 text-white",
+  C: "bg-lime-500 text-white",
+  D: "bg-yellow-500 text-neutral-900",
+  E: "bg-amber-500 text-neutral-900",
+  F: "bg-orange-500 text-white",
+  G: "bg-red-500 text-white",
+};
+
+function EpcBadge({ rating }: Readonly<{ rating: string | null }>) {
+  if (!rating || !EPC_COLOURS[rating]) {
+    return (
+      <span className="text-xs text-neutral-400">EPC: N/A</span>
+    );
+  }
+  return (
+    <span className={cn("inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold", EPC_COLOURS[rating])}>
+      EPC {rating}
+    </span>
+  );
+}
+
+function TenureLabel({ tenure }: Readonly<{ tenure: string | null }>) {
+  if (!tenure) return null;
+  const label = tenure.charAt(0).toUpperCase() + tenure.slice(1);
+  return (
+    <span className="text-xs text-neutral-500">{label}</span>
+  );
+}
+
 /** Convert a SearchProperty to the MapProperty shape expected by SearchMap */
 function toMapProperty(p: SearchProperty): MapProperty {
   return {
@@ -197,6 +228,10 @@ function SearchPropertyCardGrid({ property }: Readonly<{ property: SearchPropert
             {property.sqft.toLocaleString()} sq ft
           </span>
         </div>
+        <div className="mt-2 flex items-center gap-2">
+          <EpcBadge rating={property.epc_rating} />
+          <TenureLabel tenure={property.tenure} />
+        </div>
       </div>
     </Link>
   );
@@ -248,6 +283,10 @@ function SearchPropertyCardList({ property }: Readonly<{ property: SearchPropert
             <Square className="size-4" />
             {property.sqft.toLocaleString()} sq ft
           </span>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <EpcBadge rating={property.epc_rating} />
+          <TenureLabel tenure={property.tenure} />
         </div>
       </div>
     </Link>
