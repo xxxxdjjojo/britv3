@@ -29,6 +29,14 @@ import {
   MessageSquare,
   User,
   Building2,
+  Banknote,
+  ShieldCheck,
+  FolderOpen,
+  Scale,
+  Calculator,
+  BarChart3,
+  Handshake,
+  Grid3X3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/auth";
@@ -511,11 +519,19 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
   ],
   landlord: [
     { href: "/dashboard/landlord", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/landlord/properties", label: "Portfolio", icon: Building },
+    { href: "/dashboard/landlord/properties", label: "Properties", icon: Building2 },
     { href: "/dashboard/landlord/tenants", label: "Tenants", icon: Users },
+    { href: "/dashboard/landlord/rent", label: "Rent", icon: Banknote },
+    { href: "/dashboard/landlord/compliance", label: "Compliance", icon: ShieldCheck },
+    { href: "/dashboard/landlord/compliance/matrix", label: "Compliance Matrix", icon: Grid3X3 },
     { href: "/dashboard/landlord/maintenance", label: "Maintenance", icon: WrenchIcon },
-    { href: "/dashboard/landlord/finance/expenses", label: "Finances", icon: PoundSterling },
-    { href: "/dashboard/landlord/compliance", label: "Compliance", icon: Shield },
+    { href: "/dashboard/landlord/finance/expenses", label: "Finance", icon: TrendingUp },
+    { href: "/dashboard/landlord/deposits", label: "Documents", icon: FolderOpen },
+    { href: "/dashboard/landlord/legal/notices", label: "Legal", icon: Scale },
+    { href: "/dashboard/landlord/tools/yield-calculator", label: "Tools", icon: Calculator },
+    { href: "/dashboard/landlord/analytics", label: "Analytics", icon: BarChart3 },
+    { href: "/dashboard/landlord/insurance", label: "Insurance", icon: Shield },
+    { href: "/dashboard/landlord/find-agent", label: "Find Agent", icon: Handshake },
   ],
   agent: [
     { href: "/dashboard/agent", label: "Overview", icon: LayoutDashboard },
