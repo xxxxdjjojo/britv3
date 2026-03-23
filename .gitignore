@@ -47,3 +47,4 @@ e2e/.auth/
 
 # git worktrees
 .worktrees/
+.gstack/

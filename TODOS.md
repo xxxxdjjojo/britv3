@@ -512,6 +512,35 @@ _From CEO plan review, 2026-03-22. EXPANSION mode. 12 items (10 TODOs + 2 build-
 
 ## Security — CSO Audit Findings (2026-03-23)
 
+_From /cso daily audit. 4 findings, all VERIFIED. Report at `.gstack/security-reports/2026-03-23-154500.json`._
+
+### [CRITICAL] Rotate Supabase JWT tokens exposed in git history
+**What:** Initial commit (516749d) added `.env.example` with real Supabase anon + service_role JWT tokens. Service_role key bypasses ALL row-level security.
+**Why:** Anyone with repo access can extract the keys and read/write/delete all 266 database tables.
+**Fix:** Rotate keys in Supabase Dashboard > Settings > API > Regenerate. Update .env. Scrub history with BFG Repo-Cleaner.
+**Effort:** S | **Priority:** P0 (immediate)
+
+### [CRITICAL] HTML injection in contact form email template
+**What:** `src/app/api/contact/route.ts:102-132` interpolates user fields into email HTML without escaping.
+**Why:** Attacker injects `<script>` tags that execute in support team's email client.
+**Fix:** Add `escapeHtml()` to all user inputs before interpolation.
+**Effort:** S | **Priority:** P1
+**Where to start:** Create `src/lib/escape-html.ts`, apply in contact route.
+
+### [HIGH] Missing per-user rate limiting on AI description generation
+**What:** `/api/agent/listings/generate-description` has no per-user rate limit. Users create many listings to trigger unbounded Anthropic API spend.
+**Fix:** Add Upstash Ratelimit (already in stack) — 10 descriptions/hour/user.
+**Effort:** S | **Priority:** P1
+**Where to start:** `src/app/api/agent/listings/generate-description/route.ts`
+
+### [HIGH] Prompt injection in AI property description generation
+**What:** `src/services/seller/ai-description-service.ts:64-75` interpolates listing fields into Claude prompt without sanitization.
+**Fix:** Apply `sanitizeAiInput()` to all listing fields. Wrap user content in XML tags.
+**Effort:** S | **Priority:** P1
+**Where to start:** `src/services/seller/ai-description-service.ts` lines 64-75.
+
+## Security — CSO Audit Findings (2026-03-23)
+
 ### Inngest webhook endpoint lacks signing key
 **What:** Set `INNGEST_SIGNING_KEY` env var and pass `signingKey` to the Inngest client constructor.
 **Why:** Without signing key verification, anyone can POST crafted events to `/api/inngest` and trigger functions (price drop alerts, RFQ notifications, Stripe webhook DLQ retries).
