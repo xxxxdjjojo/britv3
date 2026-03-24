@@ -68,6 +68,12 @@ export async function fetchProviderBySlug(
     return null;
   }
 
+  // Defense-in-depth: ensure provider is publicly visible
+  const profile = data.profiles as { provider_verification_status?: string } | null;
+  if (profile?.provider_verification_status !== "verified") {
+    return null;
+  }
+
   return data as unknown as ServiceProviderPublicProfile;
 }
 

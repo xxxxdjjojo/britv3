@@ -21,6 +21,7 @@ import type {
   ProviderRatingStats,
 } from "@/types/marketplace";
 import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
+import { sanitizeUrl } from "@/lib/validation/sanitize";
 
 type ProviderData = {
   user_id: string;
@@ -203,25 +204,29 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
                   ) : null}
 
                   {/* Website / Contact */}
-                  {provider.website_url && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Website</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <a
-                          href={provider.website_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm text-brand-primary hover:underline"
-                        >
-                          <Globe className="size-3.5" />
-                          {provider.website_url.replace(/^https?:\/\//, "")}
-                          <ExternalLink className="size-3" />
-                        </a>
-                      </CardContent>
-                    </Card>
-                  )}
+                  {(() => {
+                    const safeUrl = sanitizeUrl(provider.website_url);
+                    if (!safeUrl) return null;
+                    return (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Website</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <a
+                            href={safeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-sm text-brand-primary hover:underline"
+                          >
+                            <Globe className="size-3.5" />
+                            {safeUrl.replace(/^https?:\/\//, "")}
+                            <ExternalLink className="size-3" />
+                          </a>
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
                 </div>
 
                 {/* Rating Distribution */}
