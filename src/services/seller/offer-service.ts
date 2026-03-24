@@ -33,7 +33,10 @@ export async function respondToOffer(
     counter_message?: string;
   }>,
 ): Promise<void> {
-  const { error } = await supabase
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  const { data, error } = await supabase
     .from("seller_offers")
     .update({
       status: response.status,
@@ -44,6 +47,14 @@ export async function respondToOffer(
       counter_message: response.counter_message ?? null,
       responded_at: new Date().toISOString(),
     })
-    .eq("id", offerId);
+    .eq("id", offerId)
+    .eq("seller_id", user.id)
+    .eq("status", "pending")
+    .select()
+    .single();
+
+  if (error?.code === "PGRST116") {
+    throw new Error("Offer not found, not owned by you, or already actioned");
+  }
   if (error) throw error;
 }

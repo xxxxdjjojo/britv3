@@ -36,6 +36,13 @@ export async function PATCH(
     });
     return NextResponse.json({ success: true });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg.includes("not owned by you")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (msg.includes("already actioned")) {
+      return NextResponse.json({ error: "Offer already actioned" }, { status: 409 });
+    }
     console.error("[api/seller/offers/id] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
