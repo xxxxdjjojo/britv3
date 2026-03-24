@@ -56,6 +56,7 @@ import { RecommendedTradespeople } from "@/components/properties/detail/Recommen
 import { SavePropertyButton } from "@/components/properties/detail/SavePropertyButton";
 import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
 import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
+import { extractFeatureItems } from "@/lib/properties/extract-features";
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
@@ -119,17 +120,6 @@ function formatTenure(raw: string | null): string {
   return formatPropertyType(raw);
 }
 
-function extractFeatureItems(features: Record<string, unknown>): string[] {
-  const items = features["items"];
-  if (Array.isArray(items)) {
-    return items.filter((x): x is string => typeof x === "string");
-  }
-  // Some entries store features as top-level string values keyed by name
-  return Object.entries(features)
-    .filter(([, v]) => typeof v === "string" || v === true)
-    .map(([k]) => k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()))
-    .slice(0, 10);
-}
 
 function formatPriceHistory(
   rows: PriceHistoryEntry[],
@@ -285,7 +275,7 @@ export default async function PropertyPage({
   const agentName = agent?.displayName || "Agent";
 
   // Whether booking a viewing makes sense for this listing status
-  const canBookViewing = !isInactiveStatus && listing.status !== "draft";
+  const canBookViewing = !isInactiveStatus && (listing.status as string) !== "draft";
 
   return (
     <div className="min-h-screen bg-background">
