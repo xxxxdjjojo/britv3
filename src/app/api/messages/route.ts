@@ -15,7 +15,11 @@ import {
   sendMessage,
   sendMessageSchema,
 } from "@/services/messaging/message-service";
+import { createRateLimiter } from "@/lib/cache/redis";
 import type { InboxFilters, ContextType } from "@/types/messaging";
+
+/** 10 messages per minute per user — shared across message endpoints. */
+const messageRateLimiter = createRateLimiter(10, "1 m");
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,6 +62,19 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 10 messages per minute per user
+    const { success, reset } = await messageRateLimiter.limit(user.id);
+    if (!success) {
+      const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: "Too many messages. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(retryAfter) },
+        },
+      );
     }
 
     const body = await request.json();
