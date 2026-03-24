@@ -6,6 +6,7 @@
 
 import { useRef, useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 import { useSendMessage } from "@/hooks/useMessages";
 import { createClient } from "@/lib/supabase/client";
 import { uploadAttachment } from "@/services/messaging/attachment-service";
@@ -57,6 +58,10 @@ export default function MessageComposer(
         const supabase = createClient();
         const messageId = crypto.randomUUID();
         const result = await uploadAttachment(supabase, selectedFile, conversationId, messageId);
+        posthog.capture("attachment_uploaded", {
+          file_type: result.type,
+          file_size_bytes: result.sizeBytes,
+        });
         attachmentPayload = {
           message_id: messageId,
           attachment_url: result.url,

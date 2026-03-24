@@ -125,9 +125,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Failed to unsubscribe";
     console.error("[POST /api/notifications/unsubscribe]", err);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to unsubscribe" }, { status: 500 });
   }
 }

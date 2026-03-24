@@ -11,6 +11,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 import type { Message } from "@/types/messaging";
 
 type MessagesPage = {
@@ -80,7 +81,12 @@ export function useSendMessage(conversationId: string) {
 
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      posthog.capture("message_sent", {
+        conversation_id: conversationId,
+        context_type: variables.context_type ?? "general",
+        has_attachment: Boolean(variables.attachment_url),
+      });
       void queryClient.invalidateQueries({
         queryKey: ["messages", conversationId],
       });

@@ -1,9 +1,20 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
-const SECRET =
-  process.env.UNSUBSCRIBE_TOKEN_SECRET ??
-  process.env.SUPABASE_SERVICE_ROLE_KEY ??
-  "dev-secret-not-for-production";
+let _secret: string | null = null;
+
+function getSecret(): string {
+  if (_secret) return _secret;
+  const secret =
+    process.env.UNSUBSCRIBE_TOKEN_SECRET ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "UNSUBSCRIBE_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set in production",
+    );
+  }
+  _secret = secret ?? "dev-secret-not-for-production";
+  return _secret;
+}
 
 const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -12,7 +23,7 @@ function b64(s: string): string {
 }
 
 function sign(userId: string, timestamp: number): string {
-  return createHmac("sha256", SECRET)
+  return createHmac("sha256", getSecret())
     .update(`${userId}.${timestamp}`)
     .digest("hex");
 }

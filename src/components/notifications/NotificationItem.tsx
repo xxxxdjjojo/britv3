@@ -16,6 +16,7 @@ import {
   Bell,
   Wrench,
 } from "lucide-react";
+import posthog from "posthog-js";
 import type { PlatformEvent, EventType } from "@/types/notifications";
 
 type NotificationItemProps = Readonly<{
@@ -123,13 +124,23 @@ export default function NotificationItem({
     ? new Date(event.created_at) > new Date(lastReadAt)
     : true;
   const url = getNotificationUrl(event);
+  const description = getActionDescription(event);
+  const time = timeAgo(new Date(event.created_at));
+  const ariaLabel = `${description}, ${time}${isUnread ? ", unread" : ""}`;
 
   return (
     <Link
       href={url}
+      aria-label={ariaLabel}
       className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50 ${
         isUnread ? "bg-primary/5" : ""
       }`}
+      onClick={() => {
+        posthog.capture("notification_clicked", {
+          event_type: event.event_type,
+          entity_type: event.entity_type,
+        });
+      }}
     >
       <div
         className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
@@ -144,10 +155,10 @@ export default function NotificationItem({
             isUnread ? "font-medium text-foreground" : "text-muted-foreground"
           }`}
         >
-          {getActionDescription(event)}
+          {description}
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          {timeAgo(new Date(event.created_at))}
+          {time}
         </p>
       </div>
       {isUnread && (

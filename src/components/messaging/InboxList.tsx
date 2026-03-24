@@ -4,7 +4,7 @@
  * InboxList -- Conversation list wired to real useInbox() hook.
  */
 
-import { useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInbox } from "@/hooks/useInbox";
 import { useAuth } from "@/hooks/useAuth";
+import posthog from "posthog-js";
 import type { Conversation } from "@/types/messaging";
 
 // ---------------------------------------------------------------------------
@@ -36,6 +37,81 @@ function relativeTime(date: Date): string {
 }
 
 // ---------------------------------------------------------------------------
+// SwipeableConversationRow — wraps ConversationRow with swipe-to-archive
+// ---------------------------------------------------------------------------
+
+const SWIPE_THRESHOLD = 80;
+
+function SwipeableConversationRow(
+  props: Readonly<{
+    children: React.ReactNode;
+    onArchive: () => void;
+  }>,
+) {
+  const { children, onArchive } = props;
+  const [offset, setOffset] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    setIsAnimating(false);
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const dx = e.touches[0].clientX - touchStartX.current;
+    // Only allow left swipe (negative direction)
+    if (dx < 0) {
+      // Cap at -SWIPE_THRESHOLD * 1.5 to prevent over-drag
+      setOffset(Math.max(dx, -SWIPE_THRESHOLD * 1.5));
+    }
+  }
+
+  function handleTouchEnd() {
+    setIsAnimating(true);
+    if (offset <= -SWIPE_THRESHOLD) {
+      // Snap to reveal position briefly, then call onArchive
+      setOffset(-SWIPE_THRESHOLD);
+      // Allow a moment to see the revealed action before snapping back
+      setTimeout(() => {
+        onArchive();
+        setOffset(0);
+      }, 200);
+    } else {
+      // Snap back
+      setOffset(0);
+    }
+    touchStartX.current = null;
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-lg">
+      {/* Archive action revealed behind the row */}
+      <div
+        className="absolute right-0 inset-y-0 flex items-center bg-destructive px-4 text-destructive-foreground text-sm font-medium"
+        aria-hidden="true"
+      >
+        Archive
+      </div>
+
+      {/* Swipeable row */}
+      <div
+        style={{
+          transform: `translateX(${offset}px)`,
+          transition: isAnimating ? "transform 0.2s ease" : "none",
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // ConversationRow
 // ---------------------------------------------------------------------------
 
@@ -45,9 +121,10 @@ function ConversationRow(
     isActive: boolean;
     currentUserId: string;
     onSelect: (id: string, recipientId: string) => void;
+    buttonRef: (el: HTMLButtonElement | null) => void;
   }>,
 ) {
-  const { conversation: conv, isActive, currentUserId, onSelect } = props;
+  const { conversation: conv, isActive, currentUserId, onSelect, buttonRef } = props;
 
   const otherUserId =
     conv.participant_1_id === currentUserId
@@ -63,10 +140,22 @@ function ConversationRow(
   const timestamp = relativeTime(conv.last_message_at);
   const hasUnread = conv.unread_count > 0;
 
+  const ariaLabel = `${name}, ${lastMessage}, ${timestamp}${hasUnread ? ", unread" : ""}`;
+
   return (
     <button
+      ref={buttonRef}
       type="button"
-      onClick={() => onSelect(conv.id, otherUserId)}
+      role="option"
+      aria-selected={isActive}
+      aria-label={ariaLabel}
+      onClick={() => {
+        posthog.capture("conversation_opened", {
+          conversation_id: conv.id,
+          has_unread: hasUnread,
+        });
+        onSelect(conv.id, otherUserId);
+      }}
       className={cn(
         "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
         isActive && "bg-muted border-l-2 border-primary",
@@ -135,12 +224,62 @@ export default function InboxList(
   const { user } = useAuth();
   const currentUserId = user?.id ?? "";
   const [search, setSearch] = useState("");
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const setItemRef = useCallback(
+    (index: number) => (el: HTMLButtonElement | null) => {
+      itemRefs.current[index] = el;
+    },
+    [],
+  );
+
+  function handleListKeyDown(e: React.KeyboardEvent) {
+    const items = itemRefs.current.filter(Boolean) as HTMLButtonElement[];
+    const currentIndex = items.findIndex((el) => el === document.activeElement);
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        items[Math.min(currentIndex + 1, items.length - 1)]?.focus();
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        items[Math.max(currentIndex - 1, 0)]?.focus();
+        break;
+      case "Home":
+        e.preventDefault();
+        items[0]?.focus();
+        break;
+      case "End":
+        e.preventDefault();
+        items[items.length - 1]?.focus();
+        break;
+    }
+  }
+
+  // Track inbox_searched after debounce — avoids firing on every keystroke
+  useEffect(() => {
+    if (!search) return;
+    const timer = setTimeout(() => {
+      posthog.capture("inbox_searched", {
+        query_length: search.length,
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const { data, isLoading, error } = useInbox({
     search: search || undefined,
   });
 
   const conversations = data?.conversations ?? [];
+
+  // TODO: Wire onArchive to a real archive/delete API endpoint once available.
+  // The API route and Supabase mutation for archiving conversations does not
+  // exist yet. For now the swipe gesture reveals the action visually only.
+  function handleArchive(conversationId: string) {
+    posthog.capture("conversation_archive_swiped", { conversation_id: conversationId });
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -160,7 +299,12 @@ export default function InboxList(
 
       {/* Conversation list */}
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-1">
+        <div
+          className="p-2 space-y-1"
+          role="listbox"
+          aria-label="Conversations"
+          onKeyDown={handleListKeyDown}
+        >
           {isLoading && (
             <>
               <SkeletonRow />
@@ -183,14 +327,19 @@ export default function InboxList(
 
           {!isLoading &&
             !error &&
-            conversations.map((conv) => (
-              <ConversationRow
+            conversations.map((conv, index) => (
+              <SwipeableConversationRow
                 key={conv.id}
-                conversation={conv}
-                isActive={conv.id === activeId}
-                currentUserId={currentUserId}
-                onSelect={onSelectConversation ?? (() => {})}
-              />
+                onArchive={() => handleArchive(conv.id)}
+              >
+                <ConversationRow
+                  conversation={conv}
+                  isActive={conv.id === activeId}
+                  currentUserId={currentUserId}
+                  onSelect={onSelectConversation ?? (() => {})}
+                  buttonRef={setItemRef(index)}
+                />
+              </SwipeableConversationRow>
             ))}
         </div>
       </ScrollArea>

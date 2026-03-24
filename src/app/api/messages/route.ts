@@ -15,7 +15,11 @@ import {
   sendMessage,
   sendMessageSchema,
 } from "@/services/messaging/message-service";
+import { createRateLimiter } from "@/lib/cache/redis";
 import type { InboxFilters, ContextType } from "@/types/messaging";
+
+/** 10 messages per minute per user — shared across message endpoints. */
+const messageRateLimiter = createRateLimiter(10, "1 m");
 
 export async function GET(request: NextRequest) {
   try {
@@ -46,8 +50,8 @@ export async function GET(request: NextRequest) {
     const conversations = await getConversations(supabase, user.id, filters);
     return NextResponse.json({ conversations });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load inbox";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[GET /api/messages]", err);
+    return NextResponse.json({ error: "Failed to load inbox" }, { status: 500 });
   }
 }
 
@@ -58,6 +62,19 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 10 messages per minute per user
+    const { success, reset } = await messageRateLimiter.limit(user.id);
+    if (!success) {
+      const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: "Too many messages. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(retryAfter) },
+        },
+      );
     }
 
     const body = await request.json();
@@ -73,7 +90,7 @@ export async function POST(request: NextRequest) {
     const msg = await sendMessage(supabase, user.id, parsed.data);
     return NextResponse.json({ message: msg }, { status: 201 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to send message";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[POST /api/messages]", err);
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   }
 }
