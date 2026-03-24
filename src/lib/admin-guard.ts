@@ -109,7 +109,12 @@ export async function adminWithPermission(
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const adminRole = (profile.admin_role ?? "super_admin") as AdminRole;
+  // Deny access if admin_role is not explicitly set — never default to super_admin.
+  // The migration backfills existing admins, so null means unmigrated or a bug.
+  if (!profile.admin_role) {
+    return Response.json({ error: "Admin role not configured" }, { status: 403 });
+  }
+  const adminRole = profile.admin_role as AdminRole;
 
   if (!hasPermission(adminRole, permission)) {
     return Response.json({ error: "Insufficient permissions" }, { status: 403 });

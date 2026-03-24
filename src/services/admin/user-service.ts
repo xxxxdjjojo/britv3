@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
+import type { AdminRole } from "@/lib/admin-permissions";
 
 export type UserSearchResult = {
   id: string;
@@ -179,7 +180,7 @@ export async function activateUser(
 export async function promoteToAdmin(
   supabase: SupabaseClient,
   userId: string,
-  adminRole: string = "moderation_admin",
+  adminRole: AdminRole = "moderation_admin",
 ): Promise<{ success: boolean }> {
   const { error } = await supabase
     .from("profiles")
@@ -194,7 +195,7 @@ export async function demoteFromAdmin(
 ): Promise<{ success: boolean }> {
   const { error } = await supabase
     .from("profiles")
-    .update({ is_admin: false })
+    .update({ is_admin: false, admin_role: null })
     .eq("id", userId);
   return { success: !error };
 }

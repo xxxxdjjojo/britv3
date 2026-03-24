@@ -28,12 +28,12 @@ export default async function TeamPage() {
     adminRole = (profile as { admin_role?: string | null } | null)?.admin_role ?? null;
   }
 
-  const isSuperAdmin = adminRole === "super_admin" || !adminRole;
+  const isSuperAdmin = adminRole === "super_admin";
 
   const { data } = await supabase
     .from("profiles")
     .select("id, full_name, email, created_at, is_suspended")
-    .eq("role", "admin")
+    .eq("is_admin", true)
     .order("created_at", { ascending: false });
 
   const members: TeamMember[] = (data ?? []).map((m) => ({

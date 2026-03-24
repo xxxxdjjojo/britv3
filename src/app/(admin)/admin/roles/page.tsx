@@ -35,7 +35,7 @@ export default async function RolesPage() {
     adminRole = (profile as { admin_role?: string | null } | null)?.admin_role ?? null;
   }
 
-  const isSuperAdmin = adminRole === "super_admin" || !adminRole;
+  const isSuperAdmin = adminRole === "super_admin";
 
   // Count users per role in parallel
   const counts: RoleCount[] = await Promise.all(

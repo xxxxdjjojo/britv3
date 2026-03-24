@@ -88,7 +88,7 @@ export async function DELETE(request: NextRequest) {
     const { data: profile } = await admin
       .from("profiles")
       .select("display_name")
-      .eq("user_id", user.id)
+      .eq("id", user.id)
       .single();
 
     void sendSecurityAlert({
