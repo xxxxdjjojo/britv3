@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ResponsiveSidebar } from "@/components/responsive/ResponsiveSidebar";
+import type { AdminRole } from "@/lib/admin-permissions";
+import { getAccessibleNavGroups } from "@/lib/admin-permissions";
 
 type NavItem = {
   label: string;
@@ -204,8 +206,9 @@ function CollapsibleGroup({
   );
 }
 
-function SidebarContent() {
+function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
   const pathname = usePathname();
+  const accessibleGroups = getAccessibleNavGroups(adminRole);
 
   return (
     <>
@@ -222,7 +225,7 @@ function SidebarContent() {
       </div>
 
       <nav className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
-        {NAV_GROUPS.map((group) => (
+        {NAV_GROUPS.filter((group) => accessibleGroups.includes(group.label)).map((group) => (
           <CollapsibleGroup
             key={group.label}
             group={group}
@@ -234,10 +237,10 @@ function SidebarContent() {
   );
 }
 
-export function AdminSidebar() {
+export function AdminSidebar({ adminRole }: Readonly<{ adminRole: AdminRole }>) {
   return (
     <ResponsiveSidebar className="border-neutral-200 bg-white">
-      <SidebarContent />
+      <SidebarContent adminRole={adminRole} />
     </ResponsiveSidebar>
   );
 }
