@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.1.0] - 2026-03-24
+
+### Added
+- Rate limiting on message POST endpoints (10 msgs/min/user via Upstash)
+- Loading skeleton pages for `/inbox` and `/notifications` routes
+- aria-live regions for real-time message and notification announcements
+- ARIA roles (listbox/option/log) and aria-labels across inbox and notifications
+- Keyboard navigation (Arrow/Home/End) for conversation list
+- PostHog analytics: message_sent, conversation_opened, notification_clicked, attachment_uploaded, inbox_searched
+- Swipe-to-archive gesture on mobile inbox conversations
+- Pull-to-refresh on mobile notification feed
+- Security email service stub for settings API routes
+
+### Fixed
+- Error message leaking: all 6 API catch blocks now return generic strings
+- Unsubscribe token secret lazily evaluated to prevent build-time crash
+- Production guard throws if token signing secrets are missing
+- Scoped aria-live on notification feed to only announce new items (not re-read entire list)
+- Build failure from missing security-email-service module
 ## [0.3.5] - 2026-03-23
 
 ### Added
