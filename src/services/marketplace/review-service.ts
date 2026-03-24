@@ -36,28 +36,52 @@ type ListProviderReviewsOptions = Readonly<{
 export async function createReview(
   supabase: SupabaseClient,
   userId: string,
-  data: ReviewCreateInput & { booking_id: string },
+  data: ReviewCreateInput & {
+    booking_id?: string;
+    verification_type?: string;
+    verification_source_id?: string;
+    provider_id?: string;
+  },
 ) {
   // Validate input
   const parsed = reviewCreateSchema.parse(data);
 
-  // Verify booking exists, is completed, and belongs to user
-  const { data: booking, error: bookingError } = await supabase
-    .from("bookings")
-    .select("id, user_id, provider_id, status")
-    .eq("id", data.booking_id)
-    .single();
+  const verificationType = data.verification_type ?? "booking";
+  let resolvedProviderId: string;
+  let resolvedBookingId: string | null = null;
 
-  if (bookingError || !booking) {
-    throw new Error("Booking not found");
-  }
+  if (verificationType === "booking") {
+    // Verify booking exists, is completed, and belongs to user
+    if (!data.booking_id) {
+      throw new Error("booking_id is required for booking-type reviews");
+    }
 
-  if (booking.status !== "completed") {
-    throw new Error("Can only review completed bookings");
-  }
+    const { data: booking, error: bookingError } = await supabase
+      .from("bookings")
+      .select("id, user_id, provider_id, status")
+      .eq("id", data.booking_id)
+      .single();
 
-  if (booking.user_id !== userId) {
-    throw new Error("You can only review your own bookings");
+    if (bookingError || !booking) {
+      throw new Error("Booking not found");
+    }
+
+    if (booking.status !== "completed") {
+      throw new Error("Can only review completed bookings");
+    }
+
+    if (booking.user_id !== userId) {
+      throw new Error("You can only review your own bookings");
+    }
+
+    resolvedProviderId = booking.provider_id as string;
+    resolvedBookingId = data.booking_id;
+  } else {
+    // Non-booking flows require explicit provider_id
+    if (!data.provider_id) {
+      throw new Error("provider_id is required for non-booking reviews");
+    }
+    resolvedProviderId = data.provider_id;
   }
 
   // PII redaction
@@ -92,8 +116,11 @@ export async function createReview(
   const { data: review, error: reviewError } = await supabase
     .from("reviews")
     .insert({
-      booking_id: data.booking_id,
-      provider_id: booking.provider_id,
+      booking_id: resolvedBookingId,
+      provider_id: resolvedProviderId,
+      verification_type: verificationType,
+      verification_source_id: data.verification_source_id ?? null,
+      verification_status: resolvedBookingId ? "verified" : "pending",
       reviewer_id: userId,
       overall_rating: parsed.overall_rating,
       punctuality_rating: parsed.punctuality_rating ?? null,
@@ -104,6 +131,7 @@ export async function createReview(
       review_text: sanitizedText,
       sentiment: sentimentResult.sentiment,
       spam_indicators: spamResult,
+      is_incentivised: data.is_incentivised ?? false,
       moderation_status: "pending",
       helpful_count: 0,
       not_helpful_count: 0,
@@ -432,9 +460,6 @@ export async function flagReview(
   if (error) {
     if (error.message.includes("Cannot flag your own review")) {
       throw new Error("Cannot flag your own review");
-    }
-    if (error.message.includes("Cannot flag reviews about your own services")) {
-      throw new Error("Cannot flag reviews about your own services");
     }
     if (error.message.includes("Review not found")) {
       throw new Error("Review not found");

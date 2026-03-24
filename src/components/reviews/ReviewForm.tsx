@@ -259,6 +259,13 @@ export function ReviewForm({
         </div>
       </div>
 
+      <p className="text-xs text-muted-foreground">
+        By submitting, you agree to our{" "}
+        <Link href="/legal/review-policy" className="underline hover:text-foreground">
+          Review Policy
+        </Link>.
+      </p>
+
       <Button type="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? "Submitting..." : "Submit Review"}
       </Button>

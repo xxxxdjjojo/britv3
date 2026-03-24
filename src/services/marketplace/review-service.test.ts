@@ -525,3 +525,161 @@ describe("listProviderReviews", () => {
     expect(result.reviews[1].reviewer_id).toBe("u2");
   });
 });
+
+describe("createReview — verification types", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("creates a booking-type review with verification_status = verified", async () => {
+    const bookingQuery = mockQuery({
+      data: { id: "b1", user_id: "u1", provider_id: "p1", status: "completed" },
+      error: null,
+    });
+
+    const insertChain = mockQuery({
+      data: {
+        id: "r1",
+        booking_id: "b1",
+        provider_id: "p1",
+        reviewer_id: "u1",
+        overall_rating: 5,
+        title: "Great service",
+        review_text: "The plumber was excellent and very professional",
+        verification_type: "booking",
+        verification_status: "verified",
+        sentiment: "very_positive",
+        spam_indicators: { spam_score: 0 },
+        moderation_status: "pending",
+        fake_review_probability: 0,
+        authenticity_score: 0,
+        is_incentivised: false,
+      },
+      error: null,
+    });
+
+    const moderationInsert = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(bookingQuery)
+      .mockReturnValueOnce(insertChain)
+      .mockReturnValueOnce(moderationInsert);
+
+    const result = await createReview(supabase, "u1", {
+      booking_id: "b1",
+      overall_rating: 5,
+      title: "Great service",
+      review_text: "The plumber was excellent and very professional",
+    });
+
+    expect(result.verification_type).toBe("booking");
+    expect(result.verification_status).toBe("verified");
+  });
+
+  it("creates a tenancy-type review without requiring booking_id", async () => {
+    const insertChain = mockQuery({
+      data: {
+        id: "r2",
+        booking_id: null,
+        provider_id: "landlord1",
+        reviewer_id: "u1",
+        overall_rating: 4,
+        title: "Good landlord",
+        review_text: "Responsive and fair with repairs and maintenance",
+        verification_type: "tenancy",
+        verification_source_id: "tenancy1",
+        verification_status: "pending",
+        sentiment: "positive",
+        spam_indicators: { spam_score: 0 },
+        moderation_status: "pending",
+        fake_review_probability: 0,
+        authenticity_score: 0,
+        is_incentivised: false,
+      },
+      error: null,
+    });
+
+    const moderationInsert = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(insertChain)
+      .mockReturnValueOnce(moderationInsert);
+
+    const result = await createReview(supabase, "u1", {
+      verification_type: "tenancy",
+      verification_source_id: "tenancy1",
+      provider_id: "landlord1",
+      overall_rating: 4,
+      title: "Good landlord",
+      review_text: "Responsive and fair with repairs and maintenance",
+    });
+
+    expect(result.verification_type).toBe("tenancy");
+    expect(result.booking_id).toBeNull();
+  });
+
+  it("rejects non-booking reviews without provider_id", async () => {
+    const supabase = createMockSupabase();
+
+    await expect(
+      createReview(supabase, "u1", {
+        verification_type: "tenancy",
+        verification_source_id: "tenancy1",
+        overall_rating: 4,
+        title: "Good landlord",
+        review_text: "Responsive and fair with repairs and maintenance",
+      }),
+    ).rejects.toThrow("provider_id is required for non-booking reviews");
+  });
+
+  it("passes is_incentivised through to the insert", async () => {
+    const bookingQuery = mockQuery({
+      data: { id: "b1", user_id: "u1", provider_id: "p1", status: "completed" },
+      error: null,
+    });
+
+    const insertChain = mockQuery({
+      data: {
+        id: "r3",
+        booking_id: "b1",
+        provider_id: "p1",
+        reviewer_id: "u1",
+        overall_rating: 5,
+        title: "Great service",
+        review_text: "Offered a discount for leaving this review",
+        is_incentivised: true,
+        verification_type: "booking",
+        verification_status: "verified",
+        sentiment: "positive",
+        spam_indicators: { spam_score: 0 },
+        moderation_status: "pending",
+        fake_review_probability: 0,
+        authenticity_score: 0,
+      },
+      error: null,
+    });
+
+    const moderationInsert = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(bookingQuery)
+      .mockReturnValueOnce(insertChain)
+      .mockReturnValueOnce(moderationInsert);
+
+    const result = await createReview(supabase, "u1", {
+      booking_id: "b1",
+      overall_rating: 5,
+      title: "Great service",
+      review_text: "Offered a discount for leaving this review",
+      is_incentivised: true,
+    });
+
+    expect(result.is_incentivised).toBe(true);
+  });
+});

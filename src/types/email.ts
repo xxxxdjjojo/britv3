@@ -105,6 +105,33 @@ export type ReviewReceivedEmailProps = {
   reviewUrl: string;
 };
 
+export type ReviewPublishedEmailProps = {
+  recipientFirstName: string;
+  reviewTitle: string;
+  providerName: string;
+  reviewUrl: string;
+};
+
+export type ReviewRemovedEmailProps = {
+  recipientFirstName: string;
+  reviewTitle: string;
+  providerName: string;
+  reason: string;
+};
+
+export type ReviewResponseEmailProps = {
+  recipientFirstName: string;
+  providerName: string;
+  responsePreview: string;
+  reviewUrl: string;
+};
+
+export type FlagOutcomeEmailProps = {
+  recipientFirstName: string;
+  outcome: "removed" | "kept";
+  reviewTitle: string;
+};
+
 export type ComplianceWarningEmailProps = {
   firstName: string;
   documentName: string;
@@ -217,6 +244,10 @@ export type AnyEmailProps =
   | OfferStatusEmailProps
   | NewEnquiryEmailProps
   | ReviewReceivedEmailProps
+  | ReviewPublishedEmailProps
+  | ReviewRemovedEmailProps
+  | ReviewResponseEmailProps
+  | FlagOutcomeEmailProps
   | ComplianceWarningEmailProps
   | PaymentConfirmationEmailProps
   | PaymentFailedEmailProps
@@ -240,6 +271,10 @@ export type TemplateName =
   | "offer-status"
   | "new-enquiry"
   | "review-received"
+  | "review-published"
+  | "review-removed"
+  | "review-response"
+  | "flag-outcome"
   | "compliance-warning"
   | "payment-confirmation"
   | "payment-failed"

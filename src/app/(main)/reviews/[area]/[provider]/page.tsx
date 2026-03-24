@@ -23,7 +23,7 @@ type RawReviewRow = Omit<PublicReview, "body"> & {
 function toReview(r: RawReviewRow): Review {
   return {
     id: r.id,
-    booking_id: "",
+    booking_id: null,
     provider_id: r.provider_id,
     reviewer_id: r.reviewer_id,
     overall_rating: r.overall_rating,
@@ -48,7 +48,12 @@ function toReview(r: RawReviewRow): Review {
     edited_at: null,
     original_text: null,
     edit_count: 0,
+    is_incentivised: false,
     edit_history: [],
+    verification_type: "booking",
+    verification_source_id: null,
+    verification_status: "verified",
+    verified_at: new Date(r.created_at),
     created_at: new Date(r.created_at),
     updated_at: new Date(r.created_at),
     deleted_at: r.deleted_at ? new Date(r.deleted_at) : null,
@@ -143,6 +148,25 @@ export default async function ProviderReviewsPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": providerData.business_name,
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": avgRating.toFixed(1),
+              "reviewCount": statsTotal,
+              "bestRating": "5",
+              "worstRating": "1",
+            },
+          }),
+        }}
+      />
+
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="mb-6">
         <ol className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
