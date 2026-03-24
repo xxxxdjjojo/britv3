@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, Info, Calculator, PiggyBank } from "lucide-react";
+import { ChevronRight, Info, Calculator } from "lucide-react";
 import { SdltCalculator } from "@/components/calculators/SdltCalculator";
+import { SdltRelatedTools } from "@/components/calculators/SdltRelatedTools";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
@@ -157,32 +158,7 @@ export default function StampDutyCalculatorPage() {
                 <h3 className="font-bold text-neutral-900 dark:text-white">
                   Related Tools
                 </h3>
-                <Link
-                  href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                >
-                  <PiggyBank className="h-5 w-5 text-brand-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">Mortgage Calculator</p>
-                    <p className="text-xs text-neutral-500">
-                      Estimate your monthly repayments
-                    </p>
-                  </div>
-                </Link>
-                <Link
-                  href="/tools/affordability-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                >
-                  <Calculator className="h-5 w-5 text-brand-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">
-                      Affordability Calculator
-                    </p>
-                    <p className="text-xs text-neutral-500">
-                      See how much you can borrow
-                    </p>
-                  </div>
-                </Link>
+                <SdltRelatedTools />
               </CardContent>
             </Card>
 

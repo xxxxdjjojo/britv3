@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -48,14 +48,32 @@ const LTV_TIERS = [
   { label: "85–90%+ LTV", description: "Limited options, higher rates", color: "text-red-600", max: Infinity },
 ];
 
+function getUrlParam(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
 export default function RemortgageCalculatorPage() {
-  const [propertyValue, setPropertyValue] = useState(350000);
-  const [currentBalance, setCurrentBalance] = useState(220000);
-  const [currentRate, setCurrentRate] = useState(5.5);
+  const [propertyValue, setPropertyValue] = useState(() => getUrlParam("value", 350000));
+  const [currentBalance, setCurrentBalance] = useState(() => getUrlParam("balance", 220000));
+  const [currentRate, setCurrentRate] = useState(() => getUrlParam("currentRate", 5.5));
   const [currentTermRemaining, setCurrentTermRemaining] = useState(20);
-  const [newRate, setNewRate] = useState(4.2);
+  const [newRate, setNewRate] = useState(() => getUrlParam("newRate", 4.2));
   const [newTerm, setNewTerm] = useState(25);
   const [erc, setErc] = useState(0);
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (propertyValue !== 350000) params.set("value", String(propertyValue));
+    if (currentBalance !== 220000) params.set("balance", String(currentBalance));
+    if (currentRate !== 5.5) params.set("currentRate", String(currentRate));
+    if (newRate !== 4.2) params.set("newRate", String(newRate));
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [propertyValue, currentBalance, currentRate, newRate]);
 
   const handleNumberInput =
     (setter: (v: number) => void, min = 0) =>

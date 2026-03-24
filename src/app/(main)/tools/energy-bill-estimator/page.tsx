@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -127,13 +127,40 @@ function getPotentialRating(current: string): string | null {
   return null;
 }
 
+function getUrlStr(key: string, defaultValue: string, allowed?: string[]): string {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  if (val === null) return defaultValue;
+  if (allowed && !allowed.includes(val)) return defaultValue;
+  return val;
+}
+
+function getUrlNum(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
 export default function EnergyBillEstimatorPage() {
-  const [propertyType, setPropertyType] = useState("flat");
-  const [bedrooms, setBedrooms] = useState(1);
+  const [propertyType, setPropertyType] = useState(() => getUrlStr("type", "flat", ["flat", "terraced", "semi", "detached"]));
+  const [bedrooms, setBedrooms] = useState(() => getUrlNum("beds", 1));
   const [occupants, setOccupants] = useState(2);
-  const [epcRating, setEpcRating] = useState("C");
-  const [heatingType, setHeatingType] = useState("gas");
+  const [epcRating, setEpcRating] = useState(() => getUrlStr("epc", "C", ["A", "B", "C", "D", "E", "F", "G"]));
+  const [heatingType, setHeatingType] = useState(() => getUrlStr("heating", "gas", ["gas", "electric", "heatPump", "oil"]));
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (propertyType !== "flat") params.set("type", propertyType);
+    if (bedrooms !== 1) params.set("beds", String(bedrooms));
+    if (epcRating !== "C") params.set("epc", epcRating);
+    if (heatingType !== "gas") params.set("heating", heatingType);
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [propertyType, bedrooms, epcRating, heatingType]);
 
   const estimate = useMemo(() => {
     const key = `${propertyType}-${bedrooms}`;

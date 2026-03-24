@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -49,15 +49,31 @@ function formatInputValue(value: number): string {
   return new Intl.NumberFormat("en-GB").format(value);
 }
 
+function getUrlParam(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
 export default function RentalYieldCalculatorPage() {
-  const [purchasePrice, setPurchasePrice] = useState(300000);
-  const [monthlyRent, setMonthlyRent] = useState(1560);
+  const [purchasePrice, setPurchasePrice] = useState(() => getUrlParam("price", 300000));
+  const [monthlyRent, setMonthlyRent] = useState(() => getUrlParam("rent", 1560));
   const [maintenance, setMaintenance] = useState(1200);
   const [managementFeePercent, setManagementFeePercent] = useState(10);
   const [insurance, setInsurance] = useState(650);
   const [voidWeeks, setVoidWeeks] = useState(4);
   const [depositPercent, setDepositPercent] = useState(25);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (purchasePrice !== 300000) params.set("price", String(purchasePrice));
+    if (monthlyRent !== 1560) params.set("rent", String(monthlyRent));
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [purchasePrice, monthlyRent]);
 
   const results = useMemo(() => {
     if (purchasePrice <= 0) {

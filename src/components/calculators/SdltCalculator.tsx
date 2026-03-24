@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -51,10 +51,34 @@ const FOOTER_TEXT: Record<Country, string> = {
   wales: "LTT rates per Welsh Revenue Authority. Wales.",
 };
 
+function getUrlParam(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
+function getUrlString<T extends string>(key: string, defaultValue: T, allowed: T[]): T {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key) as T;
+  return val !== null && allowed.includes(val) ? val : defaultValue;
+}
+
 export function SdltCalculator() {
-  const [country, setCountry] = useState<Country>("england");
-  const [buyerType, setBuyerType] = useState<BuyerType>("standard");
-  const [propertyPrice, setPropertyPrice] = useState(300000);
+  const [country, setCountry] = useState<Country>(() => getUrlString("country", "england", ["england", "scotland", "wales"]));
+  const [buyerType, setBuyerType] = useState<BuyerType>(() => getUrlString("buyer", "standard", ["standard", "first_time", "additional"]));
+  const [propertyPrice, setPropertyPrice] = useState(() => getUrlParam("price", 300000));
+
+  // Sync state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (propertyPrice !== 300000) params.set("price", String(propertyPrice));
+    if (country !== "england") params.set("country", country);
+    if (buyerType !== "standard") params.set("buyer", buyerType);
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [propertyPrice, country, buyerType]);
 
   // Reset buyer type if switching away from England with "additional" selected
   const effectiveBuyerType = country !== "england" && buyerType === "additional"

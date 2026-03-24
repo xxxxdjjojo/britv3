@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   User,
@@ -37,9 +37,15 @@ function parseNum(value: string): number {
   return isNaN(n) ? 0 : n;
 }
 
+function getUrlStr(key: string, defaultValue: string): string {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  return params.get(key) ?? defaultValue;
+}
+
 export default function AffordabilityCalculatorPage() {
   // Applicant 1
-  const [app1Salary, setApp1Salary] = useState("");
+  const [app1Salary, setApp1Salary] = useState(() => getUrlStr("salary", ""));
   const [app1Bonus, setApp1Bonus] = useState("");
   const [app1Other, setApp1Other] = useState("");
 
@@ -52,7 +58,16 @@ export default function AffordabilityCalculatorPage() {
   // Outgoings & Deposit
   const [monthlyDebt, setMonthlyDebt] = useState("");
   const [monthlyLiving, setMonthlyLiving] = useState("");
-  const [deposit, setDeposit] = useState("");
+  const [deposit, setDeposit] = useState(() => getUrlStr("deposit", ""));
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (app1Salary) params.set("salary", app1Salary);
+    if (deposit) params.set("deposit", deposit);
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [app1Salary, deposit]);
 
   // Mortgage assumptions
   const interestRate = 0.055; // 5.5% representative rate
@@ -541,14 +556,14 @@ export default function AffordabilityCalculatorPage() {
         <h3 className="mb-6 text-lg font-bold">Related Tools</h3>
         <div className="flex flex-wrap gap-4">
           <Link
-            href="/tools/mortgage-calculator"
+            href={`/tools/mortgage-calculator${results.maxPropertyPrice > 0 ? `?price=${Math.round(results.maxPropertyPrice)}` : ""}`}
             className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-700 transition-colors hover:border-brand-primary hover:text-brand-primary dark:border-neutral-700 dark:bg-neutral-900"
           >
             <Calculator className="h-4 w-4" />
             Mortgage Calculator
           </Link>
           <Link
-            href="/tools/stamp-duty-calculator"
+            href={`/tools/stamp-duty-calculator${results.maxPropertyPrice > 0 ? `?price=${Math.round(results.maxPropertyPrice)}` : ""}`}
             className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-700 transition-colors hover:border-brand-primary hover:text-brand-primary dark:border-neutral-700 dark:bg-neutral-900"
           >
             <FileText className="h-4 w-4" />
