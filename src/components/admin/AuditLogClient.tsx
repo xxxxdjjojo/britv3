@@ -16,7 +16,7 @@ type Props = Readonly<{
   limit: number;
 }>;
 
-function exportToCsv(entries: AuditLogEntry[]) {
+function exportToCsvLocal(entries: AuditLogEntry[]) {
   const headers = ["id", "admin_id", "action", "target_type", "target_id", "ip_address", "created_at"];
   const rows = entries.map((e) => [
     e.id,
@@ -75,6 +75,30 @@ export function AuditLogClient({
     });
   }
 
+  async function handleExport() {
+    const params = new URLSearchParams();
+    if (actionFilter) params.set("action", actionFilter);
+    if (adminIdFilter) params.set("adminId", adminIdFilter);
+
+    try {
+      const res = await fetch(`/api/admin/audit-log/export?${params.toString()}`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Export failed");
+      const { csv } = (await res.json()) as { csv: string; count: number };
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      exportToCsvLocal(entries);
+    }
+  }
+
   const hasFilters = !!actionFilter || !!adminIdFilter;
 
   return (
@@ -105,7 +129,7 @@ export function AuditLogClient({
           size="sm"
           variant="outline"
           className="h-8 ml-auto flex items-center gap-1.5"
-          onClick={() => exportToCsv(entries)}
+          onClick={handleExport}
           disabled={entries.length === 0}
         >
           <Download className="h-3.5 w-3.5" />
