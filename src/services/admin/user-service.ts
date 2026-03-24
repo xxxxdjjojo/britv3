@@ -179,10 +179,11 @@ export async function activateUser(
 export async function promoteToAdmin(
   supabase: SupabaseClient,
   userId: string,
+  adminRole: string = "moderation_admin",
 ): Promise<{ success: boolean }> {
   const { error } = await supabase
     .from("profiles")
-    .update({ is_admin: true })
+    .update({ is_admin: true, admin_role: adminRole })
     .eq("id", userId);
   return { success: !error };
 }

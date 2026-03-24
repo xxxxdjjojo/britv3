@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { cancelSubscription } from "@/services/admin/subscription-service";
 
 export async function POST(
@@ -7,11 +7,12 @@ export async function POST(
 ) {
   const { id } = await params;
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "subscription.cancel",
     "subscription",
     id,
+    "manage_subscriptions",
     async ({ supabase }) => {
       const result = await cancelSubscription(supabase, id);
       if (!result.success) throw new Error("Failed to cancel subscription");

@@ -86,6 +86,23 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "No valid fields provided" }, { status: 400 });
   }
 
+  const BOOLEAN_KEYS = [
+    "search_indexing",
+    "anonymous_analytics",
+    "third_party_marketing",
+    "active_status",
+    "last_viewed_visible",
+  ] as const;
+
+  for (const key of BOOLEAN_KEYS) {
+    if (key in updates && typeof updates[key] !== "boolean") {
+      return NextResponse.json(
+        { error: `${key} must be a boolean` },
+        { status: 400 },
+      );
+    }
+  }
+
   // Fetch existing privacy_settings to merge
   const { data: profile, error: fetchError } = await supabase
     .from("profiles")

@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { sanitizeCmsHtml } from "@/lib/validation/sanitize-cms";
 import { sanitizeText } from "@/lib/validation/sanitize";
 
@@ -27,11 +27,12 @@ export async function POST(
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "cms.upsert",
     "cms_article",
     id,
+    "manage_cms",
     async ({ supabase }) => {
 
       const isNew = id === "new";

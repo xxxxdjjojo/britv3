@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 
 type SeoPayload = {
   seo_title?: string;
@@ -18,11 +18,12 @@ export async function PATCH(
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "cms.seo_update",
     "cms_article",
     id,
+    "manage_seo",
     async ({ supabase }) => {
 
       const { error } = await supabase

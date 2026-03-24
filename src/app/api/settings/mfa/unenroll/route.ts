@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyReauthToken } from "@/lib/auth/reauth-token";
+import { sendSecurityAlert } from "@/services/email/security-email-service";
 
 export async function DELETE(request: NextRequest) {
   const supabase = await createClient();
@@ -80,6 +81,24 @@ export async function DELETE(request: NextRequest) {
       `[mfa:unenroll] Failed to delete backup codes for user ${user.id}:`,
       deleteError.message,
     );
+  }
+
+  // Send security notification email (fire-and-forget)
+  try {
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("display_name")
+      .eq("user_id", user.id)
+      .single();
+
+    void sendSecurityAlert({
+      userId: user.id,
+      email: user.email!,
+      firstName: profile?.display_name?.split(" ")[0] ?? "",
+      eventType: "mfa_disabled",
+    });
+  } catch {
+    // Non-critical — never block the response
   }
 
   console.log(

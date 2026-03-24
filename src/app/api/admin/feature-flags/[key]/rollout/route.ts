@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { setRollout } from "@/services/admin/feature-flag-service";
 
 export async function POST(
@@ -6,11 +6,12 @@ export async function POST(
   { params }: { params: Promise<{ key: string }> },
 ) {
   const { key } = await params;
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "feature_flag.rollout",
     "feature_flag",
     key,
+    "manage_feature_flags",
     async ({ supabase, user }) => {
       const body = await req.json().catch(() => ({})) as { pct?: number };
       if (typeof body.pct !== "number") {

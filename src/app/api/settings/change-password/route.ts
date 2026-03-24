@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyReauthToken } from "@/lib/auth/reauth-token";
+import { sendSecurityAlert } from "@/services/email/security-email-service";
 
 export async function POST(request: NextRequest) {
   // 1. Authenticate the caller
@@ -88,6 +89,24 @@ export async function POST(request: NextRequest) {
     console.warn("Failed to write audit log for password change");
   }
 
-  // 8. Success
+  // 8. Send security notification email (fire-and-forget)
+  try {
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("display_name")
+      .eq("user_id", user.id)
+      .single();
+
+    void sendSecurityAlert({
+      userId: user.id,
+      email: user.email!,
+      firstName: profile?.display_name?.split(" ")[0] ?? "",
+      eventType: "password_changed",
+    });
+  } catch {
+    // Non-critical — never block the response
+  }
+
+  // 9. Success
   return NextResponse.json({ success: true });
 }

@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 
 type CampaignPayload = {
   name: string;
@@ -16,11 +16,12 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "campaign.create",
     "email_campaign",
     "new",
+    "send_campaigns",
     async ({ supabase }) => {
 
       if (!body.name?.trim()) throw new Error("Campaign name is required");

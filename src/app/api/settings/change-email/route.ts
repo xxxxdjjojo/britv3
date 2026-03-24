@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyReauthToken } from "@/lib/auth/reauth-token";
+import { sendSecurityAlert } from "@/services/email/security-email-service";
 
 export async function POST(request: Request) {
   try {
@@ -61,6 +63,25 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("[change-email]", error.message);
+    }
+
+    // Send security notification to the OLD email (fire-and-forget)
+    try {
+      const admin = createAdminClient();
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+
+      void sendSecurityAlert({
+        userId: user.id,
+        email: user.email!,
+        firstName: profile?.display_name?.split(" ")[0] ?? "",
+        eventType: "email_change_requested",
+      });
+    } catch {
+      // Non-critical — never block the response
     }
 
     // Always return the same success message regardless of whether the email

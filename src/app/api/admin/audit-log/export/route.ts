@@ -13,6 +13,11 @@ export async function POST(req: Request) {
       const rawAction = url.searchParams.get("action") ?? undefined;
       const adminId = url.searchParams.get("adminId") ?? undefined;
 
+      const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (adminId && !UUID_RE.test(adminId)) {
+        throw new Error("Invalid adminId format");
+      }
+
       const action = rawAction ? sanitizePostgrestInput(rawAction) : undefined;
 
       let query = supabase
@@ -27,9 +32,17 @@ export async function POST(req: Request) {
       const { data, error } = await query;
       if (error) throw new Error(error.message);
 
+      // Sanitize CSV cell values to prevent formula injection in Excel
+      function csvSafe(val: unknown): string {
+        const s = String(val ?? "").replace(/"/g, '""');
+        // Prefix formula-triggering characters with a single quote
+        if (/^[=+\-@\t\r]/.test(s)) return `"'${s}"`;
+        return `"${s}"`;
+      }
+
       const headers = ["id", "admin_id", "action", "target_type", "target_id", "ip_address", "success", "error_message", "created_at"];
       const rows = (data ?? []).map((e: Record<string, unknown>) =>
-        headers.map((h) => `"${String(e[h] ?? "").replace(/"/g, '""')}"`)
+        headers.map((h) => csvSafe(e[h]))
       );
       const csv = [headers.join(","), ...rows.map((r: string[]) => r.join(","))].join("\n");
 

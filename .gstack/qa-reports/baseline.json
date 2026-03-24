@@ -1,23 +1,14 @@
 {
-  "date": "2026-03-23",
-  "url": "http://localhost:3000/dashboard/provider",
-  "healthScore": 95,
+  "date": "2026-03-24",
+  "url": "http://localhost:3000",
+  "branch": "feature/admin-ship-ready-compliance",
+  "healthScore": 92,
   "issues": [
-    {
-      "id": "ISSUE-005",
-      "title": "Auth token refresh 400 errors",
-      "severity": "low",
-      "category": "console"
-    }
+    { "id": "ISSUE-001", "title": "CSP blocks JSON-LD inline scripts on tools pages", "severity": "medium", "category": "console", "status": "deferred" },
+    { "id": "ISSUE-002", "title": "React state update warning on remortgage calculator", "severity": "low", "category": "console", "status": "deferred" }
   ],
   "categoryScores": {
-    "console": 70,
-    "links": 100,
-    "visual": 100,
-    "functional": 100,
-    "ux": 100,
-    "performance": 95,
-    "content": 100,
-    "accessibility": 95
+    "console": 85, "links": 100, "visual": 100, "functional": 100,
+    "ux": 95, "performance": 80, "content": 90, "accessibility": 90
   }
 }

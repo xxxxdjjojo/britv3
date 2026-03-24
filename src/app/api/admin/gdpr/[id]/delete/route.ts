@@ -28,6 +28,19 @@ export async function POST(
         return { error: "Already fulfilled", alreadyFulfilled: true };
       }
 
+      // Atomic claim: prevent double-execution via optimistic lock
+      const { data: claimed, error: claimError } = await supabase
+        .from("gdpr_requests")
+        .update({ status: "in_progress" })
+        .eq("id", id)
+        .eq("status", "pending")
+        .select("id")
+        .single();
+
+      if (claimError || !claimed) {
+        return { error: "Request already being processed", alreadyFulfilled: true };
+      }
+
       const result = await deleteUserData(gdprRequest.user_id);
 
       const newStatus = result.deleted ? "fulfilled" : "failed";

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sanitizeText } from "@/lib/validation/sanitize";
 
 const TEXT_ONLY_REGEX = /^[a-zA-Z\s\-']+$/;
 const UK_PHONE_REGEX = /^(\+44|0)[1-9]\d{8,9}$/;
@@ -98,9 +99,12 @@ export async function PATCH(request: NextRequest) {
     if (typeof phone !== "string") {
       return NextResponse.json({ error: "phone must be a string" }, { status: 400 });
     }
-    if (!UK_PHONE_REGEX.test(phone)) {
+    const normalizedPhone = (phone as string).replace(/\s/g, "");
+    if (!UK_PHONE_REGEX.test(normalizedPhone)) {
       return NextResponse.json({ error: "phone must be a valid UK phone number" }, { status: 400 });
     }
+    // Reassign to normalised value so updates object stores the clean version
+    (body as Record<string, unknown>).phone = normalizedPhone;
   }
 
   // Validate postcode (optional)
@@ -120,10 +124,11 @@ export async function PATCH(request: NextRequest) {
   };
 
   if (bio !== undefined) {
-    updates.bio = (bio as string | null) ?? null;
+    updates.bio = bio !== null ? sanitizeText(bio as string) : null;
   }
   if (phone !== undefined) {
-    updates.phone = (phone as string | null) ?? null;
+    // Use normalised phone (spaces stripped) stored back to body above
+    updates.phone = (body.phone as string | null) ?? null;
   }
   if (postcode !== undefined) {
     updates.postcode = (postcode as string | null) ?? null;

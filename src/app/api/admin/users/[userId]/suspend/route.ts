@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { suspendUser, type SuspendDuration } from "@/services/admin/user-service";
 
 const VALID_DURATIONS: SuspendDuration[] = ["24h", "7d", "30d", "indefinite"];
@@ -13,7 +13,7 @@ export async function POST(
     ? (body.duration as SuspendDuration)
     : "indefinite";
 
-  return auditedAdminAction(req, "user.suspend", "user", userId, async ({ supabase }) => {
+  return auditedAdminActionWithPermission(req, "user.suspend", "user", userId, "suspend_users", async ({ supabase }) => {
     const result = await suspendUser(supabase, userId, duration);
     if (!result.success) throw new Error("Failed to suspend user");
     return { success: true, duration };
