@@ -254,7 +254,11 @@ export async function middleware(request: NextRequest) {
   // ── Admin role permission gate ────────────────────────────────────
   if (isAdminRoute && pathname !== "/admin") {
     const adminRole = (hasClaims ? appMetadata?.admin_role : profileData?.admin_role) as AdminRole | undefined;
-    const role = adminRole ?? "super_admin"; // backwards compat: null = super_admin
+    // Deny access if admin_role is not set — never default to highest privilege
+    if (!adminRole) {
+      return redirectWithHeaders("/forbidden", nonce, request);
+    }
+    const role = adminRole;
 
     // Find the matching route permission
     const matchedRoute = Object.keys(ADMIN_ROUTE_PERMISSIONS)

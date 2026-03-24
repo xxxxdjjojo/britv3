@@ -32,7 +32,10 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  const adminRole = ((profile as Record<string, unknown>).admin_role ?? "super_admin") as AdminRole;
+  const adminRole = (profile as Record<string, unknown>).admin_role as AdminRole | undefined;
+  if (!adminRole) {
+    redirect("/forbidden");
+  }
 
   return (
     <div className="flex min-h-screen bg-neutral-50">
