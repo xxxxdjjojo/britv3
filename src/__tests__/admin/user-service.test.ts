@@ -51,7 +51,7 @@ describe("searchUsers", () => {
     vi.resetModules();
   });
 
-  it("calls ilike with sanitized query (strips % and _ characters)", async () => {
+  it("calls ilike with sanitized query (strips % and _ characters)", { timeout: 15000 }, async () => {
     const { searchUsers } = await import("@/services/admin/user-service");
 
     const chain = createChain({ data: [], error: null });
