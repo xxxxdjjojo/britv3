@@ -35,6 +35,16 @@ const PROPERTY_TYPES = [
 
 const BEDROOM_OPTIONS = [1, 2, 3, 4, 5] as const;
 
+const OCCUPANT_OPTIONS = [1, 2, 3, 4, 5] as const;
+
+const OCCUPANCY_MULTIPLIER: Record<number, number> = {
+  1: 0.75,
+  2: 1.0,
+  3: 1.15,
+  4: 1.25,
+  5: 1.4,
+};
+
 const EPC_RATINGS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 
 const HEATING_TYPES = [
@@ -61,6 +71,13 @@ const EPC_MULTIPLIER: Record<string, number> = {
 
 const HEATING_MULTIPLIER: Record<string, number> = {
   gas: 1.0, electric: 1.25, oil: 1.15, heatPump: 0.7,
+};
+
+const ENERGY_SPLIT: Record<string, { elec: number; other: number; otherLabel: string }> = {
+  gas:      { elec: 0.40, other: 0.60, otherLabel: "Gas" },
+  electric: { elec: 1.00, other: 0.00, otherLabel: "Gas" },
+  heatPump: { elec: 0.95, other: 0.05, otherLabel: "Gas" },
+  oil:      { elec: 0.30, other: 0.70, otherLabel: "Oil" },
 };
 
 const EPC_COLORS: Record<string, string> = {
@@ -113,6 +130,7 @@ function getPotentialRating(current: string): string | null {
 export default function EnergyBillEstimatorPage() {
   const [propertyType, setPropertyType] = useState("flat");
   const [bedrooms, setBedrooms] = useState(1);
+  const [occupants, setOccupants] = useState(2);
   const [epcRating, setEpcRating] = useState("C");
   const [heatingType, setHeatingType] = useState("gas");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -122,18 +140,24 @@ export default function EnergyBillEstimatorPage() {
     const baseCost = BASE_COSTS[key] ?? 120;
     const epcMul = EPC_MULTIPLIER[epcRating] ?? 1.0;
     const heatMul = HEATING_MULTIPLIER[heatingType] ?? 1.0;
-    const monthly = Math.round(baseCost * epcMul * heatMul);
+    const occMul = OCCUPANCY_MULTIPLIER[occupants] ?? 1.0;
+    const monthly = Math.round(baseCost * epcMul * heatMul * occMul);
     const annual = monthly * 12;
     const diff = monthly - AREA_AVERAGE;
     const diffPct = Math.abs(Math.round((diff / AREA_AVERAGE) * 100));
 
     const potentialRating = getPotentialRating(epcRating);
     const potentialMul = potentialRating ? (EPC_MULTIPLIER[potentialRating] ?? 1.0) : epcMul;
-    const potentialMonthly = Math.round(baseCost * potentialMul * heatMul);
+    const potentialMonthly = Math.round(baseCost * potentialMul * heatMul * occMul);
     const annualSaving = (monthly - potentialMonthly) * 12;
 
-    return { monthly, annual, diff, diffPct, potentialRating, annualSaving };
-  }, [propertyType, bedrooms, epcRating, heatingType]);
+    const split = ENERGY_SPLIT[heatingType] ?? ENERGY_SPLIT.gas;
+    const elecMonthly = Math.round(monthly * split.elec);
+    const otherMonthly = Math.round(monthly * split.other);
+    const otherLabel = split.otherLabel;
+
+    return { monthly, annual, diff, diffPct, potentialRating, annualSaving, elecMonthly, otherMonthly, otherLabel };
+  }, [propertyType, bedrooms, occupants, epcRating, heatingType]);
 
   const comparisonPct = Math.min(100, Math.round((estimate.monthly / (AREA_AVERAGE * 2)) * 100));
 
@@ -221,6 +245,29 @@ export default function EnergyBillEstimatorPage() {
                   </div>
                 </div>
 
+                {/* Occupants */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                    Number of Occupants
+                  </label>
+                  <div className="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg">
+                    {OCCUPANT_OPTIONS.map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setOccupants(num)}
+                        className={`flex-1 py-2 rounded-md text-sm transition-colors ${
+                          occupants === num
+                            ? "bg-white dark:bg-neutral-700 shadow-sm font-bold"
+                            : "hover:bg-white/50 dark:hover:bg-neutral-700/50"
+                        }`}
+                      >
+                        {num === 5 ? "5+" : num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Heating Type */}
                 <div className="space-y-3">
                   <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
@@ -293,7 +340,7 @@ export default function EnergyBillEstimatorPage() {
                 </div>
                 <p className="text-neutral-400 text-xs mt-1">
                   Based on current rates for a {bedrooms}-bed{" "}
-                  {PROPERTY_TYPES.find((t) => t.value === propertyType)?.label?.toLowerCase()}.
+                  {PROPERTY_TYPES.find((t) => t.value === propertyType)?.label?.toLowerCase()} with {occupants === 5 ? "5+" : occupants} occupant{occupants === 1 ? "" : "s"}.
                 </p>
               </div>
               {/* Abstract design element */}
@@ -334,6 +381,51 @@ export default function EnergyBillEstimatorPage() {
               </CardContent>
             </Card>
           </section>
+
+          {/* Electricity / Gas Split */}
+          <Card className="p-0">
+            <CardContent className="p-6 md:p-8">
+              <h3 className="font-bold text-lg mb-6 flex items-center gap-2 font-heading">
+                <Zap className="size-5 text-brand-primary" />
+                Estimated Cost Split
+              </h3>
+              <div className="space-y-4">
+                {/* Electricity */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-neutral-700 dark:text-neutral-300">Electricity</span>
+                    <span className="font-bold text-neutral-900 dark:text-white">&pound;{estimate.elecMonthly}/month</span>
+                  </div>
+                  <div className="h-3 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-yellow-400 rounded-full transition-all duration-500"
+                      style={{ width: `${estimate.monthly > 0 ? Math.round((estimate.elecMonthly / estimate.monthly) * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+                {/* Gas / Oil */}
+                {estimate.otherMonthly > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-neutral-700 dark:text-neutral-300">{estimate.otherLabel}</span>
+                      <span className="font-bold text-neutral-900 dark:text-white">&pound;{estimate.otherMonthly}/month</span>
+                    </div>
+                    <div className="h-3 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-blue-400 rounded-full transition-all duration-500"
+                        style={{ width: `${estimate.monthly > 0 ? Math.round((estimate.otherMonthly / estimate.monthly) * 100) : 0}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ofgem date stamp */}
+          <p className="mt-4 text-xs text-neutral-500 italic">
+            Estimates based on Ofgem price cap rates effective January 2025. Rates are updated quarterly — last reviewed March 2025.
+          </p>
 
           {/* EPC Visualiser */}
           <Card className="p-0">
