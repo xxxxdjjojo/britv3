@@ -37,6 +37,81 @@ function relativeTime(date: Date): string {
 }
 
 // ---------------------------------------------------------------------------
+// SwipeableConversationRow — wraps ConversationRow with swipe-to-archive
+// ---------------------------------------------------------------------------
+
+const SWIPE_THRESHOLD = 80;
+
+function SwipeableConversationRow(
+  props: Readonly<{
+    children: React.ReactNode;
+    onArchive: () => void;
+  }>,
+) {
+  const { children, onArchive } = props;
+  const [offset, setOffset] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    setIsAnimating(false);
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const dx = e.touches[0].clientX - touchStartX.current;
+    // Only allow left swipe (negative direction)
+    if (dx < 0) {
+      // Cap at -SWIPE_THRESHOLD * 1.5 to prevent over-drag
+      setOffset(Math.max(dx, -SWIPE_THRESHOLD * 1.5));
+    }
+  }
+
+  function handleTouchEnd() {
+    setIsAnimating(true);
+    if (offset <= -SWIPE_THRESHOLD) {
+      // Snap to reveal position briefly, then call onArchive
+      setOffset(-SWIPE_THRESHOLD);
+      // Allow a moment to see the revealed action before snapping back
+      setTimeout(() => {
+        onArchive();
+        setOffset(0);
+      }, 200);
+    } else {
+      // Snap back
+      setOffset(0);
+    }
+    touchStartX.current = null;
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-lg">
+      {/* Archive action revealed behind the row */}
+      <div
+        className="absolute right-0 inset-y-0 flex items-center bg-destructive px-4 text-destructive-foreground text-sm font-medium"
+        aria-hidden="true"
+      >
+        Archive
+      </div>
+
+      {/* Swipeable row */}
+      <div
+        style={{
+          transform: `translateX(${offset}px)`,
+          transition: isAnimating ? "transform 0.2s ease" : "none",
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // ConversationRow
 // ---------------------------------------------------------------------------
 
@@ -199,6 +274,13 @@ export default function InboxList(
 
   const conversations = data?.conversations ?? [];
 
+  // TODO: Wire onArchive to a real archive/delete API endpoint once available.
+  // The API route and Supabase mutation for archiving conversations does not
+  // exist yet. For now the swipe gesture reveals the action visually only.
+  function handleArchive(conversationId: string) {
+    posthog.capture("conversation_archive_swiped", { conversation_id: conversationId });
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -246,14 +328,18 @@ export default function InboxList(
           {!isLoading &&
             !error &&
             conversations.map((conv, index) => (
-              <ConversationRow
+              <SwipeableConversationRow
                 key={conv.id}
-                conversation={conv}
-                isActive={conv.id === activeId}
-                currentUserId={currentUserId}
-                onSelect={onSelectConversation ?? (() => {})}
-                buttonRef={setItemRef(index)}
-              />
+                onArchive={() => handleArchive(conv.id)}
+              >
+                <ConversationRow
+                  conversation={conv}
+                  isActive={conv.id === activeId}
+                  currentUserId={currentUserId}
+                  onSelect={onSelectConversation ?? (() => {})}
+                  buttonRef={setItemRef(index)}
+                />
+              </SwipeableConversationRow>
             ))}
         </div>
       </ScrollArea>

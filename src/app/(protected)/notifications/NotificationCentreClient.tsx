@@ -5,7 +5,7 @@
  * Mark-all-read action. Cursor-based load-more pagination.
  */
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Bell,
   Home,
@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   MessageSquare,
   Star,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -158,11 +159,23 @@ function NotificationCard({ notification, isUnread }: NotificationCardProps) {
 // Main component
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Pull-to-refresh constants
+// ---------------------------------------------------------------------------
+
+const PULL_THRESHOLD = 60;
+
 export default function NotificationCentreClient() {
   const [activeTab, setActiveTab] = useState<TabId>("all");
   const [cursor, setCursor] = useState<string | undefined>(undefined);
 
-  const { data, isLoading } = useNotifications(cursor);
+  // Pull-to-refresh state
+  const [pullOffset, setPullOffset] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const pullStartY = useRef<number | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  const { data, isLoading, refetch } = useNotifications(cursor);
   const { data: countData } = useNotificationCount();
   const markAllRead = useMarkAllRead();
 
@@ -192,6 +205,44 @@ export default function NotificationCentreClient() {
   function handleMarkAllRead() {
     markAllRead.mutate();
   }
+
+  // Pull-to-refresh handlers — only activate when the list is scrolled to top
+  function handlePullTouchStart(e: React.TouchEvent) {
+    const el = listRef.current;
+    if (!el) return;
+    const scrollParent = el.closest("[data-scroll-container]") ?? el;
+    if ((scrollParent as HTMLElement).scrollTop === 0) {
+      pullStartY.current = e.touches[0].clientY;
+    }
+  }
+
+  function handlePullTouchMove(e: React.TouchEvent) {
+    if (pullStartY.current === null || isRefreshing) return;
+    const dy = e.touches[0].clientY - pullStartY.current;
+    if (dy > 0) {
+      // Dampen the offset so it feels resistant — sqrt gives a natural feel
+      const dampened = Math.min(Math.sqrt(dy) * 4, PULL_THRESHOLD * 1.5);
+      setPullOffset(dampened);
+    }
+  }
+
+  async function handlePullTouchEnd() {
+    if (pullOffset >= PULL_THRESHOLD && !isRefreshing) {
+      setIsRefreshing(true);
+      setPullOffset(PULL_THRESHOLD);
+      try {
+        await refetch();
+      } finally {
+        setIsRefreshing(false);
+        setPullOffset(0);
+      }
+    } else {
+      setPullOffset(0);
+    }
+    pullStartY.current = null;
+  }
+
+  const showPullIndicator = pullOffset > 0 || isRefreshing;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
@@ -232,36 +283,65 @@ export default function NotificationCentreClient() {
         ))}
       </div>
 
-      {/* Notification list */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="animate-pulse rounded-xl border p-4">
-              <div className="flex gap-3">
-                <div className="h-10 w-10 rounded-full bg-muted" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-3/4 rounded bg-muted" />
-                  <div className="h-3 w-1/2 rounded bg-muted" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : filteredNotifications.length === 0 ? (
-        <div className="py-16 text-center text-muted-foreground">
-          <p className="text-sm">No notifications here</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredNotifications.map((notification) => (
-            <NotificationCard
-              key={notification.id}
-              notification={notification}
-              isUnread={isUnread(notification)}
-            />
-          ))}
+      {/* Pull-to-refresh indicator */}
+      {showPullIndicator && (
+        <div
+          className="flex items-center justify-center py-2 text-muted-foreground text-sm gap-2 overflow-hidden transition-all"
+          style={{ height: `${Math.min(pullOffset, PULL_THRESHOLD)}px` }}
+          aria-live="polite"
+          aria-label={isRefreshing ? "Refreshing notifications" : "Pull to refresh"}
+        >
+          <RefreshCw
+            className={cn(
+              "h-4 w-4",
+              isRefreshing && "animate-spin",
+            )}
+          />
+          <span>{isRefreshing ? "Refreshing…" : "Release to refresh"}</span>
         </div>
       )}
+
+      {/* Notification list */}
+      <div
+        ref={listRef}
+        onTouchStart={handlePullTouchStart}
+        onTouchMove={handlePullTouchMove}
+        onTouchEnd={handlePullTouchEnd}
+        style={{
+          transform: `translateY(${Math.min(pullOffset, PULL_THRESHOLD)}px)`,
+          transition: pullStartY.current === null ? "transform 0.2s ease" : "none",
+        }}
+      >
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="animate-pulse rounded-xl border p-4">
+                <div className="flex gap-3">
+                  <div className="h-10 w-10 rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-3/4 rounded bg-muted" />
+                    <div className="h-3 w-1/2 rounded bg-muted" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredNotifications.length === 0 ? (
+          <div className="py-16 text-center text-muted-foreground">
+            <p className="text-sm">No notifications here</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredNotifications.map((notification) => (
+              <NotificationCard
+                key={notification.id}
+                notification={notification}
+                isUnread={isUnread(notification)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Load more */}
       {nextCursor && (
