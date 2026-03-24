@@ -66,14 +66,17 @@ function SlaBadge({ createdAt, status }: { createdAt: string; status: string }) 
   );
 }
 
-function FulfilButton({ requestId }: { requestId: string }) {
+function FulfilButton({ requestId, requestType }: { requestId: string; requestType: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   function handleFulfil() {
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/admin/gdpr/${requestId}/fulfil`, {
+        const endpoint = requestType === "deletion"
+          ? `/api/admin/gdpr/${requestId}/delete`
+          : `/api/admin/gdpr/${requestId}/export`;
+        const res = await fetch(endpoint, {
           method: "POST",
         });
         if (res.status === 409) {
@@ -86,7 +89,11 @@ function FulfilButton({ requestId }: { requestId: string }) {
           };
           throw new Error(body.error ?? "Failed to fulfil request");
         }
-        toast.success("GDPR request accepted — processing started");
+        toast.success(
+          requestType === "deletion"
+            ? "User data deletion completed"
+            : "Data export generated and ready for delivery",
+        );
         router.refresh();
       } catch (e) {
         toast.error(
@@ -104,7 +111,7 @@ function FulfilButton({ requestId }: { requestId: string }) {
       disabled={pending}
       className="text-xs"
     >
-      {pending ? "Processing…" : "Fulfil"}
+      {pending ? "Processing..." : requestType === "deletion" ? "Delete Data" : "Export Data"}
     </Button>
   );
 }
@@ -222,7 +229,7 @@ export function GdprQueueClient({ requests, allRequests, statusFilter }: Props) 
                 </td>
                 <td className="px-4 py-3 text-right">
                   {req.status === "pending" && (
-                    <FulfilButton requestId={req.id} />
+                    <FulfilButton requestId={req.id} requestType={req.request_type} />
                   )}
                 </td>
               </tr>
