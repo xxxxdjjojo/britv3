@@ -39,8 +39,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const messages = await getMessages(supabase, conversationId, cursor, limit);
     return NextResponse.json({ messages });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to load messages";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[GET /api/messages/conversationId]", err);
+    return NextResponse.json({ error: "Failed to load messages" }, { status: 500 });
   }
 }
 
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const msg = await sendMessage(supabase, user.id, parsed.data);
     return NextResponse.json({ message: msg }, { status: 201 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to send message";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[POST /api/messages/conversationId]", err);
+    return NextResponse.json({ error: "Failed to send message" }, { status: 500 });
   }
 }

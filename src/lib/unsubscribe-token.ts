@@ -1,9 +1,16 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
-const SECRET =
-  process.env.UNSUBSCRIBE_TOKEN_SECRET ??
-  process.env.SUPABASE_SERVICE_ROLE_KEY ??
-  "dev-secret-not-for-production";
+const SECRET = (() => {
+  const secret =
+    process.env.UNSUBSCRIBE_TOKEN_SECRET ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "UNSUBSCRIBE_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set in production",
+    );
+  }
+  return secret ?? "dev-secret-not-for-production";
+})();
 
 const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 

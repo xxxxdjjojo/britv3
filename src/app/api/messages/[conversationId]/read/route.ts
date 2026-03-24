@@ -22,7 +22,7 @@ export async function POST(_request: Request, { params }: RouteParams) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Failed to mark as read";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[POST /api/messages/conversationId/read]", err);
+    return NextResponse.json({ error: "Failed to mark as read" }, { status: 500 });
   }
 }
