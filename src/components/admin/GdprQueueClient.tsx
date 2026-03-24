@@ -28,6 +28,44 @@ const STATUS_OPTIONS = [
   { value: "failed", label: "Failed" },
 ];
 
+function getDaysRemaining(createdAt: string): number {
+  const created = new Date(createdAt);
+  const deadline = new Date(created.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  return Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function SlaBadge({ createdAt, status }: { createdAt: string; status: string }) {
+  if (status === "fulfilled") return <span className="text-xs text-green-600 font-medium">Complete</span>;
+
+  const days = getDaysRemaining(createdAt);
+
+  if (days < 0) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 text-red-700 px-2.5 py-0.5 text-xs font-semibold">
+        OVERDUE ({Math.abs(days)}d)
+      </span>
+    );
+  }
+  if (days <= 3) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 text-red-700 px-2.5 py-0.5 text-xs font-medium">
+        {days}d remaining
+      </span>
+    );
+  }
+  if (days <= 7) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-700 px-2.5 py-0.5 text-xs font-medium">
+        {days}d remaining
+      </span>
+    );
+  }
+  return (
+    <span className="text-xs text-neutral-500">{days}d remaining</span>
+  );
+}
+
 function FulfilButton({ requestId }: { requestId: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -143,6 +181,9 @@ export function GdprQueueClient({ requests, allRequests, statusFilter }: Props) 
                 Submitted
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
+                SLA
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                 Fulfilled At
               </th>
               <th className="px-4 py-3" />
@@ -166,6 +207,9 @@ export function GdprQueueClient({ requests, allRequests, statusFilter }: Props) 
                     month: "short",
                     year: "numeric",
                   })}
+                </td>
+                <td className="px-4 py-3">
+                  <SlaBadge createdAt={req.created_at} status={req.status} />
                 </td>
                 <td className="px-4 py-3 text-neutral-500">
                   {req.fulfilled_at
