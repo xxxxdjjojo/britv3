@@ -41,10 +41,9 @@ export async function GET() {
         service_provider_details!inner (business_name)
       `)
       .eq("user_id", user.id)
-      .eq("status", "completed")
-      .not("id", "in", `(SELECT booking_id FROM reviews WHERE reviewer_id = '${user.id}' AND booking_id IS NOT NULL AND deleted_at IS NULL)`);
+      .eq("status", "completed");
 
-    // Fallback: if the subquery doesn't work with PostgREST, filter client-side
+    // Filter out bookings already reviewed (client-side dedup)
     if (bookings && bookings.length > 0) {
       const { data: existingBookingReviews } = await supabase
         .from("reviews")
