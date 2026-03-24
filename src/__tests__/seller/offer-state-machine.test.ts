@@ -1,7 +1,7 @@
-// Covers: BUG-1 (ownership verification) + BUG-2 (optimistic status lock)
-// Tests the respondToOffer service function and PATCH route error handling
+// Covers: BUG-1 (ownership verification) + BUG-2 (optimistic status lock) + BUG-4 (atomic accept cascade)
+// Tests the respondToOffer and acceptOffer service functions and PATCH route error handling
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { respondToOffer } from "@/services/seller/offer-service";
+import { respondToOffer, acceptOffer } from "@/services/seller/offer-service";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers — lightweight Supabase mock                                */
@@ -122,6 +122,113 @@ describe("Offer State Machine", () => {
       await expect(
         respondToOffer(supabase, "offer-1", baseResponse),
       ).rejects.toEqual(dbError);
+    });
+  });
+
+  describe("acceptOffer — atomic cascade (BUG-4)", () => {
+    function createRpcMockSupabase(overrides: {
+      user?: { id: string } | null;
+      rpcResult?: { data: unknown; error: unknown };
+    } = {}) {
+      const userId = overrides.user === null ? null : (overrides.user?.id ?? "seller-1");
+      const rpcResult = overrides.rpcResult ?? {
+        data: { progression_id: "prog-1", rejected_count: 2, listing_id: "listing-1" },
+        error: null,
+      };
+
+      return {
+        auth: {
+          getUser: vi.fn().mockResolvedValue({
+            data: { user: userId ? { id: userId } : null },
+          }),
+        },
+        rpc: vi.fn().mockResolvedValue(rpcResult),
+      } as unknown as ReturnType<typeof import("@supabase/supabase-js").createClient>;
+    }
+
+    it("throws Unauthenticated when no user session exists", async () => {
+      const supabase = createRpcMockSupabase({ user: null });
+      await expect(
+        acceptOffer(supabase, "offer-1"),
+      ).rejects.toThrow("Unauthenticated");
+    });
+
+    it("calls accept_offer_cascade RPC with correct params", async () => {
+      const supabase = createRpcMockSupabase({ user: { id: "seller-42" } });
+      await acceptOffer(supabase, "offer-1", {
+        name: "Jane Smith",
+        email: "jane@example.com",
+        phone: "07700900000",
+      });
+
+      expect((supabase as unknown as { rpc: ReturnType<typeof vi.fn> }).rpc).toHaveBeenCalledWith(
+        "accept_offer_cascade",
+        {
+          p_offer_id: "offer-1",
+          p_seller_id: "seller-42",
+          p_solicitor_name: "Jane Smith",
+          p_solicitor_email: "jane@example.com",
+          p_solicitor_phone: "07700900000",
+        },
+      );
+    });
+
+    it("returns progressionId, rejectedCount, and listingId on success", async () => {
+      const supabase = createRpcMockSupabase();
+      const result = await acceptOffer(supabase, "offer-1");
+      expect(result).toEqual({
+        progressionId: "prog-1",
+        rejectedCount: 2,
+        listingId: "listing-1",
+      });
+    });
+
+    it("throws descriptive error when offer is not owned by user", async () => {
+      const supabase = createRpcMockSupabase({
+        rpcResult: {
+          data: null,
+          error: { message: "Offer not found or not owned by you" },
+        },
+      });
+      await expect(
+        acceptOffer(supabase, "offer-1"),
+      ).rejects.toThrow("Offer not found or not owned by you");
+    });
+
+    it("throws descriptive error when offer has already been actioned", async () => {
+      const supabase = createRpcMockSupabase({
+        rpcResult: {
+          data: null,
+          error: { message: "Offer has already been actioned" },
+        },
+      });
+      await expect(
+        acceptOffer(supabase, "offer-1"),
+      ).rejects.toThrow("Offer has already been actioned");
+    });
+
+    it("propagates unknown RPC errors as-is", async () => {
+      const rpcError = { message: "connection timeout", code: "TIMEOUT" };
+      const supabase = createRpcMockSupabase({
+        rpcResult: { data: null, error: rpcError },
+      });
+      await expect(
+        acceptOffer(supabase, "offer-1"),
+      ).rejects.toEqual(rpcError);
+    });
+
+    it("defaults solicitor fields to null when not provided", async () => {
+      const supabase = createRpcMockSupabase({ user: { id: "seller-1" } });
+      await acceptOffer(supabase, "offer-1");
+
+      expect((supabase as unknown as { rpc: ReturnType<typeof vi.fn> }).rpc).toHaveBeenCalledWith(
+        "accept_offer_cascade",
+        expect.objectContaining({
+          p_solicitor_name: null,
+          p_solicitor_email: null,
+          p_solicitor_phone: null,
+        }),
+      );
     });
   });
 

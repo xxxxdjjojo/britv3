@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { respondToOffer } from "@/services/seller/offer-service";
+import { respondToOffer, acceptOffer } from "@/services/seller/offer-service";
 import type { OfferStatus } from "@/types/seller";
 
 export async function PATCH(
@@ -24,6 +24,23 @@ export async function PATCH(
   const statusMap: Record<string, OfferStatus> = { accept: "accepted", counter: "countered", reject: "rejected" };
   const status = statusMap[body.action];
   if (!status) return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+
+  if (body.action === "accept") {
+    try {
+      const result = await acceptOffer(supabase, id, {
+        name: body.solicitor_name,
+        email: body.solicitor_email,
+        phone: body.solicitor_phone,
+      });
+      return NextResponse.json({ success: true, ...result });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("not owned")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      if (msg.includes("already been actioned")) return NextResponse.json({ error: "Offer already actioned" }, { status: 409 });
+      console.error("[api/seller/offers/id] accept error:", err);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+  }
 
   try {
     await respondToOffer(supabase, id, {
