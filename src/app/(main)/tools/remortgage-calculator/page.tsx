@@ -41,6 +41,13 @@ const gbpExact = (value: number) =>
 // Component
 // ---------------------------------------------------------------------------
 
+const LTV_TIERS = [
+  { label: "< 60% LTV", description: "Best rates available", color: "text-green-600", max: 60 },
+  { label: "60–75% LTV", description: "Good rates", color: "text-emerald-600", max: 75 },
+  { label: "75–85% LTV", description: "Standard rates", color: "text-amber-600", max: 85 },
+  { label: "85–90%+ LTV", description: "Limited options, higher rates", color: "text-red-600", max: Infinity },
+];
+
 export default function RemortgageCalculatorPage() {
   const [propertyValue, setPropertyValue] = useState(350000);
   const [currentBalance, setCurrentBalance] = useState(220000);
@@ -48,6 +55,7 @@ export default function RemortgageCalculatorPage() {
   const [currentTermRemaining, setCurrentTermRemaining] = useState(20);
   const [newRate, setNewRate] = useState(4.2);
   const [newTerm, setNewTerm] = useState(25);
+  const [erc, setErc] = useState(0);
 
   const handleNumberInput =
     (setter: (v: number) => void, min = 0) =>
@@ -78,6 +86,13 @@ export default function RemortgageCalculatorPage() {
     propertyValue > 0
       ? (((propertyValue - currentBalance) / propertyValue) * 100).toFixed(1)
       : "0.0";
+
+  // ERC break-even
+  const breakEvenMonths = monthlySaving > 0 ? Math.ceil(erc / monthlySaving) : null;
+
+  // LTV
+  const ltv = propertyValue > 0 ? (currentBalance / propertyValue) * 100 : 0;
+  const currentTierIndex = LTV_TIERS.findIndex((t) => ltv < t.max);
 
   return (
     <>
@@ -198,6 +213,23 @@ export default function RemortgageCalculatorPage() {
                       )}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="erc">
+                    Early Repayment Charge (ERC)
+                  </Label>
+                  <Input
+                    id="erc"
+                    type="number"
+                    min={0}
+                    step={100}
+                    value={erc}
+                    onChange={handleNumberInput(setErc)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Enter £0 if you have no ERC or are outside your deal period.
+                  </p>
                 </div>
 
                 <div className="border-t pt-6">
@@ -331,7 +363,7 @@ export default function RemortgageCalculatorPage() {
               }
             >
               <CardContent className="p-6">
-                <div className="grid gap-6 sm:grid-cols-3 text-center">
+                <div className="grid gap-6 sm:grid-cols-4 text-center">
                   <div>
                     <p className="text-sm text-muted-foreground">
                       Monthly Saving
@@ -374,7 +406,59 @@ export default function RemortgageCalculatorPage() {
                       {equityPercent}%
                     </p>
                   </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">ERC / Break-even</p>
+                    <p className="text-2xl font-bold tabular-nums">
+                      {gbp(erc)}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {breakEvenMonths !== null
+                        ? `Savings exceed ERC after ${breakEvenMonths} month${breakEvenMonths === 1 ? "" : "s"}`
+                        : "N/A"}
+                    </p>
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* LTV Rate Tiers */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Your LTV &amp; Rate Tiers</CardTitle>
+                <CardDescription>
+                  Your current loan-to-value is{" "}
+                  <strong>{ltv.toFixed(1)}%</strong>. Lenders price deals based
+                  on LTV bands — lower LTV typically means better rates.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {LTV_TIERS.map((tier, i) => {
+                    const isActive = i === currentTierIndex;
+                    return (
+                      <li
+                        key={tier.label}
+                        className={`flex items-center justify-between rounded-lg px-4 py-2.5 text-sm ${
+                          isActive
+                            ? "bg-neutral-100 ring-1 ring-neutral-300 dark:bg-neutral-800 dark:ring-neutral-600"
+                            : ""
+                        }`}
+                      >
+                        <span className={`font-semibold ${tier.color}`}>
+                          {tier.label}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {tier.description}
+                          {isActive && (
+                            <span className="ml-2 inline-flex items-center rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-medium text-brand-primary">
+                              You are here
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
               </CardContent>
             </Card>
 

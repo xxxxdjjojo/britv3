@@ -100,6 +100,17 @@ export default function AffordabilityCalculatorPage() {
         (Math.pow(1 + monthlyRate, termMonths) - 1);
     }
 
+    // Stress test at 7%
+    const stressRate = 0.07;
+    const stressMonthlyRate = stressRate / 12;
+    let stressMonthlyPayment = 0;
+    if (maxBorrowing > 0) {
+      stressMonthlyPayment =
+        (maxBorrowing *
+          (stressMonthlyRate * Math.pow(1 + stressMonthlyRate, termMonths))) /
+        (Math.pow(1 + stressMonthlyRate, termMonths) - 1);
+    }
+
     return {
       incomeMultiplier,
       totalIncome,
@@ -108,6 +119,7 @@ export default function AffordabilityCalculatorPage() {
       maxBorrowing,
       maxPropertyPrice,
       monthlyPayment,
+      stressMonthlyPayment,
       depositAmount,
     };
   }, [
@@ -417,6 +429,16 @@ export default function AffordabilityCalculatorPage() {
                         at {(interestRate * 100).toFixed(1)}% over {termYears}{" "}
                         years
                       </p>
+                      <div className="mt-2 rounded-lg bg-amber-500/10 p-3">
+                        <p className="text-xs text-amber-400">
+                          Stress test at 7%:{" "}
+                          {formatGBPFull.format(results.stressMonthlyPayment)}/mo
+                        </p>
+                        <p className="mt-1 text-[10px] text-neutral-500">
+                          Lenders test affordability at higher rates to ensure
+                          you can still pay if rates rise
+                        </p>
+                      </div>
                     </div>
                   )}
                   <Link
