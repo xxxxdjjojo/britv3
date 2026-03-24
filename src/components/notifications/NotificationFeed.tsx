@@ -5,7 +5,7 @@
  * full page mode with cursor-based "Load more".
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,22 @@ export default function NotificationFeed({
   const notifications = data?.notifications ?? [];
   const displayItems = compact ? notifications.slice(0, 5) : notifications;
 
+  // Track new notifications for screen reader announcement
+  const prevCountRef = useRef(displayItems.length);
+  const [liveAnnouncement, setLiveAnnouncement] = useState("");
+
+  useEffect(() => {
+    const newCount = displayItems.length - prevCountRef.current;
+    if (newCount > 0) {
+      setLiveAnnouncement(
+        newCount === 1
+          ? "1 new notification"
+          : `${newCount} new notifications`,
+      );
+    }
+    prevCountRef.current = displayItems.length;
+  }, [displayItems.length]);
+
   if (displayItems.length === 0) {
     return (
       <div className="px-4 py-8 text-center text-sm text-muted-foreground">
@@ -60,7 +76,7 @@ export default function NotificationFeed({
 
   return (
     <div>
-      <div className="divide-y" aria-live="polite">
+      <div className="divide-y">
         {displayItems.map((event) => (
           <NotificationItem
             key={event.id}
@@ -68,6 +84,10 @@ export default function NotificationFeed({
             lastReadAt={data?.lastReadAt ?? null}
           />
         ))}
+      </div>
+      {/* Announce only NEW notifications to screen readers */}
+      <div aria-live="polite" className="sr-only">
+        {liveAnnouncement}
       </div>
 
       {/* Load more for full page mode */}
