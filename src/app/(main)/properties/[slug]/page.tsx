@@ -745,12 +745,12 @@ export default async function PropertyPage({
 
             {/* Mortgage Calculator (Wave 6) */}
             <div className="rounded-xl border bg-card p-4">
-              <MortgageCalculator />
+              <MortgageCalculator initialPrice={listing.price} />
             </div>
 
             {/* SDLT Calculator (Wave 6) */}
             <div className="rounded-xl border bg-card p-4">
-              <SdltCalculator />
+              <SdltCalculator initialPrice={listing.price} />
             </div>
 
             {/* Similar Properties in sidebar for desktop visibility */}
