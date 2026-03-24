@@ -181,6 +181,8 @@ export default async function PropertyPage({
     notFound();
   }
 
+  const isInactiveStatus = ["sold", "sold_stc", "let", "withdrawn"].includes(listing.status);
+
   const priceHistory = await getPriceHistory(listing.id);
 
   // ---------------------------------------------------------------------------
@@ -275,13 +277,17 @@ export default async function PropertyPage({
   const agentName = agent?.displayName || "Agent";
 
   // Whether booking a viewing makes sense for this listing status
-  const canBookViewing =
-    listing.status !== "sold" &&
-    (listing.status as string) !== "archived" &&
-    (listing.status as string) !== "draft";
+  const canBookViewing = !isInactiveStatus && listing.status !== "draft";
 
   return (
     <div className="min-h-screen bg-background">
+      {isInactiveStatus && (
+        <div className="mx-auto max-w-7xl px-4 pt-4">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+            This property is marked as <strong>{listing.status.replace(/_/g, " ")}</strong> and is no longer available for viewings.
+          </div>
+        </div>
+      )}
       {/* Breadcrumbs */}
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-2">
         <nav className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
