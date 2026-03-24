@@ -373,14 +373,13 @@ export default async function PropertyPage({
               />
               {/* Mobile book button */}
               {canBookViewing && (
-                <button
+                <a
+                  href="#book-viewing"
                   className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 lg:hidden"
-                  aria-label="Book viewing (scroll to booking form)"
-                  onClick={undefined}
                 >
                   <CalendarIcon className="size-4" />
                   Book
-                </button>
+                </a>
               )}
             </div>
           </div>
@@ -671,11 +670,13 @@ export default async function PropertyPage({
 
             {/* Book Viewing (Wave 5) — gated on listing status */}
             {canBookViewing && (
-              <BookViewingModal
-                propertyId={property.id}
-                propertyStatus={listing.status}
-                existingViewingId={existingViewingId}
-              />
+              <div id="book-viewing">
+                <BookViewingModal
+                  propertyId={property.id}
+                  propertyStatus={listing.status}
+                  existingViewingId={existingViewingId}
+                />
+              </div>
             )}
 
             {/* Mortgage Calculator (Wave 6) */}
@@ -706,9 +707,8 @@ export default async function PropertyPage({
         </div>
         {canBookViewing && (
           <a
-            href="#roi-section"
+            href="#book-viewing"
             className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 transition-colors hover:bg-primary/90"
-            onClick={undefined}
           >
             <CalendarIcon className="size-4" />
             Book Viewing
