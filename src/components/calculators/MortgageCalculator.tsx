@@ -44,10 +44,14 @@ const formatCompact = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-export function MortgageCalculator() {
+type MortgageCalculatorProps = Readonly<{
+  initialPrice?: number;
+}>;
+
+export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {}) {
   const { saveParams, hasParams } = useMortgageParams();
 
-  const [propertyPrice, setPropertyPrice] = useState(() => getUrlParam("price", 300000));
+  const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 300000));
   const [deposit, setDeposit] = useState(() => getUrlParam("deposit", 30000));
   const [interestRate, setInterestRate] = useState(() => getUrlParam("rate", 4.5));
   const [termYears, setTermYears] = useState(() => getUrlParam("term", 25));

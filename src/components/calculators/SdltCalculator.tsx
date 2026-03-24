@@ -65,10 +65,14 @@ function getUrlString<T extends string>(key: string, defaultValue: T, allowed: T
   return val !== null && allowed.includes(val) ? val : defaultValue;
 }
 
-export function SdltCalculator() {
+type SdltCalculatorProps = Readonly<{
+  initialPrice?: number;
+}>;
+
+export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
   const [country, setCountry] = useState<Country>(() => getUrlString("country", "england", ["england", "scotland", "wales"]));
   const [buyerType, setBuyerType] = useState<BuyerType>(() => getUrlString("buyer", "standard", ["standard", "first_time", "additional"]));
-  const [propertyPrice, setPropertyPrice] = useState(() => getUrlParam("price", 300000));
+  const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 300000));
 
   // Sync state to URL
   useEffect(() => {

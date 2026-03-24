@@ -8,6 +8,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -85,43 +86,49 @@ export function Step3Photos({ listing, listingId }: Props) {
 
   const sensors = useSensors(
     useSensor(PointerSensor),
+    useSensor(TouchSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setUploading(true);
     setError("");
-    try {
-      const newPhotos: LocalPhoto[] = [];
-      for (const file of acceptedFiles.slice(0, 30 - photos.length)) {
+    let failCount = 0;
+    for (const file of acceptedFiles.slice(0, 30 - photos.length)) {
+      try {
         const compressed = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 2048 });
         const ext = file.name.split(".").pop() ?? "jpg";
         const path = `listings/${listingId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("listing-images")
           .upload(path, compressed, { contentType: file.type });
-        if (uploadError) throw uploadError;
+        if (uploadError) { failCount++; continue; }
         const { data: { publicUrl } } = supabase.storage
           .from("listing-images")
           .getPublicUrl(path);
-        newPhotos.push({
-          url: publicUrl,
-          order: photos.length + newPhotos.length,
-          localId: `new-${Date.now()}-${Math.random()}`,
-        });
+        setPhotos((prev) => [
+          ...prev,
+          { url: publicUrl, order: prev.length, localId: `new-${Date.now()}-${Math.random()}` },
+        ]);
+      } catch {
+        failCount++;
       }
-      setPhotos((prev) => [...prev, ...newPhotos]);
-    } catch {
-      setError("Upload failed. Check file format and try again.");
-    } finally {
-      setUploading(false);
     }
+    if (failCount > 0) {
+      setError(`${failCount} photo(s) failed to upload. Successfully uploaded photos were saved.`);
+    }
+    setUploading(false);
   }, [photos.length, listingId, supabase]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/jpeg": [], "image/png": [], "image/webp": [] },
+    onDropRejected: (rejections) => {
+      const tooBig = rejections.some((r) => r.errors.some((e) => e.code === "file-too-large"));
+      if (tooBig) setError("One or more files exceed the 20MB size limit.");
+    },
+    accept: { "image/jpeg": [], "image/png": [], "image/webp": [], "image/heic": [], "image/heif": [] },
     maxFiles: 30,
+    maxSize: 20 * 1024 * 1024,
     disabled: uploading || photos.length >= 30,
   });
 
@@ -181,7 +188,7 @@ export function Step3Photos({ listing, listingId }: Props) {
             <p className="text-sm font-medium">
               {uploading ? "Uploading..." : isDragActive ? "Drop here" : "Drop photos or click to upload"}
             </p>
-            <p className="text-xs text-slate-400">JPEG, PNG, WebP · Max 30 photos · {photos.length}/30 added</p>
+            <p className="text-xs text-slate-400">JPEG, PNG, WebP, HEIC · Max 20MB per file · {photos.length}/30 added</p>
           </div>
         </div>
 
