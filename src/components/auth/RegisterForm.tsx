@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -28,6 +29,8 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, "Must contain an uppercase letter")
     .regex(/[0-9]/, "Must contain a number"),
   intent: z.enum(["buy", "rent"]),
+  termsAccepted: z.literal(true, "You must accept the Terms of Service and Privacy Policy"),
+  marketingConsent: z.boolean().optional(),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -46,6 +49,7 @@ export function RegisterForm() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [professionalRole, setProfessionalRole] = useState<UserRole | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -61,6 +65,8 @@ export function RegisterForm() {
       email: "",
       password: "",
       intent: "buy",
+      termsAccepted: false as unknown as true,
+      marketingConsent: false,
     },
   });
 
@@ -124,6 +130,28 @@ export function RegisterForm() {
         console.warn("[referral] Failed to trigger attribution");
       }
 
+      // Persist marketing consent to consent_records (GDPR audit trail)
+      if (data.marketingConsent) {
+        try {
+          const supabase = createClient();
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+          if (currentUser) {
+            await supabase.from("consent_records").upsert(
+              {
+                user_id: currentUser.id,
+                consent_type: "marketing",
+                granted: true,
+                ip_address: null,
+                user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+              },
+              { onConflict: "user_id,consent_type" },
+            );
+          }
+        } catch {
+          // Non-blocking — consent can be managed in settings
+        }
+      }
+
       // Bug 3: Redirect to /verify-email instead of /dashboard
       router.push("/verify-email");
     } catch (err) {
@@ -185,6 +213,7 @@ export function RegisterForm() {
             type="text"
             placeholder="Jane"
             className="h-11"
+            autoComplete="given-name"
             aria-invalid={!!errors.firstName}
             {...register("firstName")}
           />
@@ -199,6 +228,7 @@ export function RegisterForm() {
             type="text"
             placeholder="Smith"
             className="h-11"
+            autoComplete="family-name"
             aria-invalid={!!errors.lastName}
             {...register("lastName")}
           />
@@ -216,6 +246,7 @@ export function RegisterForm() {
           type="email"
           placeholder="you@example.com"
           className="h-11"
+          autoComplete="email"
           aria-invalid={!!errors.email}
           {...register("email")}
         />
@@ -227,31 +258,68 @@ export function RegisterForm() {
       {/* Password */}
       <div className="space-y-2">
         <Label htmlFor="register-password">Password</Label>
-        <Input
-          id="register-password"
-          type="password"
-          placeholder="Create a password"
-          className="h-11"
-          aria-invalid={!!errors.password}
-          {...register("password")}
-        />
+        <div className="relative">
+          <Input
+            id="register-password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Create a password"
+            className="h-11 pr-10"
+            autoComplete="new-password"
+            aria-invalid={!!errors.password}
+            {...register("password")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
         {errors.password && (
           <p className="text-xs text-error">{errors.password.message}</p>
         )}
         <PasswordStrengthMeter password={password} />
       </div>
 
-      {/* Terms (inline) */}
-      <p className="text-xs text-neutral-500">
-        By creating an account, you agree to our{" "}
-        <Link href="/terms" className="text-brand-accent hover:underline" target="_blank">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy" className="text-brand-accent hover:underline" target="_blank">
-          Privacy Policy
-        </Link>
-      </p>
+      {/* GDPR-compliant consent — UK GDPR Article 7 */}
+      <div className="space-y-3">
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="terms-accepted"
+            checked={watch("termsAccepted") === true}
+            onCheckedChange={(checked) =>
+              setValue("termsAccepted", checked === true ? true : (false as unknown as true), { shouldValidate: true })
+            }
+            aria-invalid={!!errors.termsAccepted}
+            className="mt-0.5"
+          />
+          <label htmlFor="terms-accepted" className="text-xs text-neutral-600 leading-relaxed cursor-pointer">
+            I agree to the{" "}
+            <Link href="/terms" className="text-brand-accent hover:underline" target="_blank">Terms of Service</Link>
+            {" "}and{" "}
+            <Link href="/privacy" className="text-brand-accent hover:underline" target="_blank">Privacy Policy</Link>
+          </label>
+        </div>
+        {errors.termsAccepted && (
+          <p className="text-xs text-error">{errors.termsAccepted.message}</p>
+        )}
+
+        <div className="flex items-start gap-2">
+          <Checkbox
+            id="marketing-consent"
+            checked={watch("marketingConsent") === true}
+            onCheckedChange={(checked) =>
+              setValue("marketingConsent", checked === true)
+            }
+            className="mt-0.5"
+          />
+          <label htmlFor="marketing-consent" className="text-xs text-neutral-500 leading-relaxed cursor-pointer">
+            I&apos;d like to receive property alerts and promotional offers via email
+          </label>
+        </div>
+      </div>
 
       {/* Submit */}
       <Button

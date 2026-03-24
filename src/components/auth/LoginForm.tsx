@@ -26,7 +26,7 @@ function getOAuthErrorMessage(code: string | null): string | null {
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(1, "Password is required"),
   rememberMe: z.boolean().optional(),
 });
 
@@ -73,7 +73,12 @@ export function LoginForm() {
       setError(handleSupabaseError(authError).message);
       return;
     }
-    router.push("/dashboard");
+    const redirectTo = searchParams.get("redirectTo");
+    // Prevent open redirect — must be internal path
+    const destination = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+      ? redirectTo
+      : "/dashboard";
+    router.push(destination);
   }
 
   return (
@@ -99,6 +104,7 @@ export function LoginForm() {
             type="email"
             placeholder="you@example.com"
             className="h-10 pl-9"
+            autoComplete="email"
             aria-invalid={!!errors.email}
             {...register("email")}
           />
@@ -117,6 +123,7 @@ export function LoginForm() {
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             className="h-10 pr-10"
+            autoComplete="current-password"
             aria-invalid={!!errors.password}
             {...register("password")}
           />
