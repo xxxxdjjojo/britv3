@@ -449,8 +449,9 @@ export default function AffordabilityCalculatorPage() {
                   <Button
                     variant="outline"
                     className="w-full border-2 border-brand-primary py-3 font-bold text-brand-primary transition-all hover:bg-brand-primary hover:text-white"
+                    asChild
                   >
-                    Book Free Consultation
+                    <Link href="/marketplace?category=mortgage-broker">Book Free Consultation</Link>
                   </Button>
                 </CardContent>
               </Card>

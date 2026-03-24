@@ -56,8 +56,8 @@ export default function MortgageCalculatorPage() {
                 Ready to take the next step? Get free expert advice from our
                 trusted partner brokers.
               </p>
-              <Button className="w-full font-bold">
-                <Link href="/tools/find-broker">Connect Now</Link>
+              <Button className="w-full font-bold" asChild>
+                <Link href="/marketplace?category=mortgage-broker">Connect Now</Link>
               </Button>
             </CardContent>
           </Card>
@@ -89,7 +89,7 @@ export default function MortgageCalculatorPage() {
                 </li>
                 <li>
                   <Link
-                    href="/tools/yield-calculator"
+                    href="/tools/rental-yield-calculator"
                     className="flex items-center gap-3 text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary dark:text-neutral-400"
                   >
                     <TrendingUp className="h-5 w-5 text-neutral-300" />

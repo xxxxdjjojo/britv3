@@ -141,6 +141,13 @@ export default function RentalYieldCalculatorPage() {
                 variant="outline"
                 size="lg"
                 className="gap-2"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: "Rental Yield Calculator", url: window.location.href });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
               >
                 <Share2 className="size-4" /> Share
               </Button>
@@ -148,6 +155,7 @@ export default function RentalYieldCalculatorPage() {
                 variant="outline"
                 size="lg"
                 className="gap-2"
+                onClick={() => window.print()}
               >
                 <Download className="size-4" /> Download PDF
               </Button>
