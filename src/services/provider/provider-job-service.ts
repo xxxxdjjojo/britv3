@@ -662,3 +662,99 @@ export async function declineLead(
     declineReason: reason,
   };
 }
+
+// ---------------------------------------------------------------------------
+// getUpcomingJobs
+// ---------------------------------------------------------------------------
+
+export type UpcomingJobSummary = Readonly<{
+  /** Booking id */
+  id: string;
+  /** Client display name */
+  clientName: string;
+  /** Service type / category label */
+  serviceType: string;
+  /** ISO 8601 scheduled date-time (null if not set) */
+  scheduledDate: string | null;
+  /** Booking status: 'confirmed' | 'in_progress' */
+  status: string;
+  /** Job address (may be empty string) */
+  address: string;
+}>;
+
+/**
+ * Returns confirmed/in_progress bookings scheduled today or in the near future
+ * for the provider, ordered by scheduled_date ascending.
+ * Falls back to [] on any error.
+ */
+export async function getUpcomingJobs(
+  providerId: string,
+  limit: number,
+  supabase: SupabaseClient,
+): Promise<UpcomingJobSummary[]> {
+  try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const { data, error } = await supabase
+      .from("bookings")
+      .select(
+        `
+        id,
+        status,
+        scheduled_date,
+        service_requests (
+          category,
+          title
+        ),
+        profiles:client_id (
+          full_name
+        ),
+        properties (
+          address_line1,
+          city,
+          postcode
+        )
+      `,
+      )
+      .eq("provider_id", providerId)
+      .in("status", ["confirmed", "in_progress"])
+      .gte("scheduled_date", todayStart.toISOString())
+      .order("scheduled_date", { ascending: true })
+      .limit(limit);
+
+    if (error || !data) return [];
+
+    return (data as Array<Record<string, unknown>>).map((row): UpcomingJobSummary => {
+      const sr = Array.isArray(row["service_requests"])
+        ? (row["service_requests"][0] as Record<string, unknown> | undefined)
+        : (row["service_requests"] as Record<string, unknown> | undefined);
+      const profile = Array.isArray(row["profiles"])
+        ? (row["profiles"][0] as Record<string, unknown> | undefined)
+        : (row["profiles"] as Record<string, unknown> | undefined);
+      const property = Array.isArray(row["properties"])
+        ? (row["properties"][0] as Record<string, unknown> | undefined)
+        : (row["properties"] as Record<string, unknown> | undefined);
+
+      const line1 = (property?.["address_line1"] as string | null) ?? "";
+      const city = (property?.["city"] as string | null) ?? "";
+      const postcode = (property?.["postcode"] as string | null) ?? "";
+      const addressParts = [line1, city, postcode].filter(Boolean);
+      const address = addressParts.join(", ");
+
+      return {
+        id: row["id"] as string,
+        clientName: (profile?.["full_name"] as string | undefined) ?? "Client",
+        serviceType:
+          (sr?.["category"] as string | undefined) ??
+          (sr?.["title"] as string | undefined) ??
+          "Job",
+        scheduledDate: (row["scheduled_date"] as string | null) ?? null,
+        status: row["status"] as string,
+        address,
+      };
+    });
+  } catch {
+    return [];
+  }
+}

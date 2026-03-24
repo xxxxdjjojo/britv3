@@ -24,6 +24,7 @@ export type MapProperty = {
   sqft: number;
   address: string;
   thumbnailUrl: string | null;
+  listing_type?: string;
 };
 
 export type MapProvider = {
@@ -49,8 +50,9 @@ export type SearchMapProps = Readonly<{
 // Constants
 // ---------------------------------------------------------------------------
 
-const STREETS_STYLE = `https://api.maptiler.com/maps/streets-v2/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`;
-const SATELLITE_STYLE = `https://api.maptiler.com/maps/satellite/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY}`;
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? "";
+const STREETS_STYLE = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
+const SATELLITE_STYLE = `https://api.maptiler.com/maps/satellite/style.json?key=${MAPTILER_KEY}`;
 const UK_CENTER: [number, number] = [-2, 54.5];
 const DEFAULT_ZOOM = 6;
 
@@ -219,6 +221,18 @@ function SearchMap({
   // -----------------------------------------------------------------------
   // Render
   // -----------------------------------------------------------------------
+
+  // Guard: show fallback if MapTiler API key is not configured
+  if (!MAPTILER_KEY) {
+    return (
+      <div className={`flex h-full items-center justify-center rounded-lg bg-muted ${className ?? ""}`}>
+        <p className="text-sm text-muted-foreground">
+          Map unavailable — MapTiler API key not configured.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`relative w-full h-full ${className ?? ""}`}

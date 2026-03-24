@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/lib/supabase/client";
+import { ReauthDialog } from "@/components/settings/ReauthDialog";
 
 const MAX_BIO_LENGTH = 300;
 
@@ -19,9 +20,17 @@ type ProfileFormProps = Readonly<{
     bio: string | null;
     email: string;
   };
+  activeRole?: string;
+  roleData?: Record<string, unknown>;
 }>;
 
-export function ProfileForm({ initialData }: ProfileFormProps) {
+function toCommaSeparated(val: unknown): string {
+  if (Array.isArray(val)) return (val as string[]).join(", ");
+  return "";
+}
+
+export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormProps) {
+  const router = useRouter();
   const [firstName, setFirstName] = useState(initialData.first_name);
   const [lastName, setLastName] = useState(initialData.last_name);
   const [phone, setPhone] = useState(initialData.phone ?? "");
@@ -29,10 +38,41 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const [bio, setBio] = useState(initialData.bio ?? "");
   const [saving, setSaving] = useState(false);
 
+  // Agent role fields
+  const [agencyName, setAgencyName] = useState(
+    (roleData?.agency_name as string) ?? ""
+  );
+  const [specializations, setSpecializations] = useState(
+    toCommaSeparated(roleData?.specializations)
+  );
+  const [coverageAreas, setCoverageAreas] = useState(
+    toCommaSeparated(roleData?.coverage_areas)
+  );
+
+  // Provider role fields
+  const [businessName, setBusinessName] = useState(
+    (roleData?.business_name as string) ?? ""
+  );
+  const [tradingName, setTradingName] = useState(
+    (roleData?.trading_name as string) ?? ""
+  );
+  const [servicePostcodes, setServicePostcodes] = useState(
+    toCommaSeparated(roleData?.service_postcodes)
+  );
+
   // Email change state
   const [changingEmail, setChangingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [sendingEmailChange, setSendingEmailChange] = useState(false);
+  const [emailReauthOpen, setEmailReauthOpen] = useState(false);
+
+  // Initial role values for dirty checking
+  const initAgencyName = (roleData?.agency_name as string) ?? "";
+  const initSpecializations = toCommaSeparated(roleData?.specializations);
+  const initCoverageAreas = toCommaSeparated(roleData?.coverage_areas);
+  const initBusinessName = (roleData?.business_name as string) ?? "";
+  const initTradingName = (roleData?.trading_name as string) ?? "";
+  const initServicePostcodes = toCommaSeparated(roleData?.service_postcodes);
 
   function handleCancel() {
     setFirstName(initialData.first_name);
@@ -40,14 +80,34 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     setPhone(initialData.phone ?? "");
     setPostcode(initialData.postcode ?? "");
     setBio(initialData.bio ?? "");
+    // Reset agent fields
+    setAgencyName(initAgencyName);
+    setSpecializations(initSpecializations);
+    setCoverageAreas(initCoverageAreas);
+    // Reset provider fields
+    setBusinessName(initBusinessName);
+    setTradingName(initTradingName);
+    setServicePostcodes(initServicePostcodes);
   }
 
-  const isDirty =
+  const isBaseDirty =
     firstName !== initialData.first_name ||
     lastName !== initialData.last_name ||
     phone !== (initialData.phone ?? "") ||
     postcode !== (initialData.postcode ?? "") ||
     bio !== (initialData.bio ?? "");
+
+  const isRoleDirty =
+    (activeRole === "agent" &&
+      (agencyName !== initAgencyName ||
+        specializations !== initSpecializations ||
+        coverageAreas !== initCoverageAreas)) ||
+    (activeRole === "service_provider" &&
+      (businessName !== initBusinessName ||
+        tradingName !== initTradingName ||
+        servicePostcodes !== initServicePostcodes));
+
+  const isDirty = isBaseDirty || isRoleDirty;
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -85,7 +145,58 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         return;
       }
 
+      // Save role-specific data if dirty
+      if (isRoleDirty && (activeRole === "agent" || activeRole === "service_provider")) {
+        const rolePayload =
+          activeRole === "agent"
+            ? {
+                role: "agent" as const,
+                data: {
+                  agency_name: agencyName.trim(),
+                  specializations: specializations
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean),
+                  coverage_areas: coverageAreas
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean),
+                },
+              }
+            : {
+                role: "service_provider" as const,
+                data: {
+                  business_name: businessName.trim(),
+                  trading_name: tradingName.trim() || null,
+                  service_postcodes: servicePostcodes
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean),
+                },
+              };
+
+        const roleRes = await fetch("/api/settings/profile/role-data", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rolePayload),
+        });
+
+        if (!roleRes.ok) {
+          const roleErr: unknown = await roleRes.json();
+          const errMsg =
+            roleErr !== null &&
+            typeof roleErr === "object" &&
+            "error" in roleErr &&
+            typeof (roleErr as { error: unknown }).error === "string"
+              ? (roleErr as { error: string }).error
+              : "Failed to save role-specific details";
+          toast.error(errMsg);
+          return;
+        }
+      }
+
       toast.success("Profile saved");
+      router.refresh();
     } catch {
       toast.error("Failed to save profile");
     } finally {
@@ -93,19 +204,28 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     }
   }
 
-  async function handleEmailChange(e: React.FormEvent) {
-    e.preventDefault();
+  function handleEmailChange() {
     if (!newEmail.trim()) return;
+    setEmailReauthOpen(true);
+  }
 
+  async function handleEmailReauthSuccess(token: string) {
     setSendingEmailChange(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
-      if (error) {
-        toast.error(error.message ?? "Failed to update email");
-        return;
+      const res = await fetch("/api/settings/change-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reauth_token: token, email: newEmail.trim() }),
+      });
+
+      const data: unknown = await res.json();
+
+      if (res.ok && typeof data === "object" && data !== null && "message" in data) {
+        toast.success((data as { message: string }).message);
+      } else {
+        toast.error("Failed to update email");
       }
-      toast.success("Check your inbox — a confirmation link has been sent");
+
       setChangingEmail(false);
       setNewEmail("");
     } catch {
@@ -176,7 +296,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               <Button
                 type="button"
                 size="sm"
-                onClick={handleEmailChange}
+                onClick={() => handleEmailChange()}
                 disabled={sendingEmailChange || !newEmail.trim()}
               >
                 {sendingEmailChange && (
@@ -255,6 +375,89 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         </p>
       </div>
 
+      {/* Agent role fields */}
+      {activeRole === "agent" && (
+        <fieldset className="space-y-4 border-t border-neutral-100 pt-4">
+          <legend className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+            Agency Details
+          </legend>
+          <div className="space-y-1.5">
+            <Label htmlFor="agency-name">Agency Name</Label>
+            <Input
+              id="agency-name"
+              value={agencyName}
+              onChange={(e) => setAgencyName(e.target.value)}
+              placeholder="e.g. Foxtons"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="specializations">Specialisations</Label>
+            <Input
+              id="specializations"
+              value={specializations}
+              onChange={(e) => setSpecializations(e.target.value)}
+              placeholder="e.g. Residential Sales, Lettings"
+            />
+            <p className="font-body text-xs text-neutral-400">Comma-separated</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="coverage-areas">Coverage Areas</Label>
+            <Input
+              id="coverage-areas"
+              value={coverageAreas}
+              onChange={(e) => setCoverageAreas(e.target.value)}
+              placeholder="e.g. Camden, Islington, Hackney"
+            />
+            <p className="font-body text-xs text-neutral-400">Comma-separated</p>
+          </div>
+        </fieldset>
+      )}
+
+      {/* Provider role fields */}
+      {activeRole === "service_provider" && (
+        <fieldset className="space-y-4 border-t border-neutral-100 pt-4">
+          <legend className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+            Business Details
+          </legend>
+          <div className="space-y-1.5">
+            <Label htmlFor="business-name">Business Name</Label>
+            <Input
+              id="business-name"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              placeholder="e.g. Smith Plumbing Ltd"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="trading-name">
+              Trading Name{" "}
+              <span className="font-normal text-neutral-400">(optional)</span>
+            </Label>
+            <Input
+              id="trading-name"
+              value={tradingName}
+              onChange={(e) => setTradingName(e.target.value)}
+              placeholder="e.g. Smith&apos;s"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="service-postcodes">
+              Service Area Postcodes{" "}
+              <span className="font-normal text-neutral-400">(optional)</span>
+            </Label>
+            <Input
+              id="service-postcodes"
+              value={servicePostcodes}
+              onChange={(e) => setServicePostcodes(e.target.value)}
+              placeholder="e.g. SW1, EC1, N1"
+            />
+            <p className="font-body text-xs text-neutral-400">
+              Comma-separated postcode prefixes
+            </p>
+          </div>
+        </fieldset>
+      )}
+
       {/* Save / Cancel bar */}
       <div className="flex items-center justify-end gap-3 border-t border-neutral-100 pt-4">
         <Button
@@ -270,6 +473,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           Save Changes
         </Button>
       </div>
+      <ReauthDialog
+        open={emailReauthOpen}
+        onOpenChange={setEmailReauthOpen}
+        onSuccess={handleEmailReauthSuccess}
+        title="Confirm email change"
+        description="Enter your password to change your email address."
+      />
     </form>
   );
 }

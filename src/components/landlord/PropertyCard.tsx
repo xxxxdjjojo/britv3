@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { PortfolioProperty } from "@/services/landlord/portfolio-service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { isTenancyExpired } from "@/components/landlord/TenancyStatusBadge";
+import type { TenancyStatus } from "@/types/landlord";
 
 /**
  * Format a number as GBP currency.
@@ -20,6 +22,10 @@ export function PropertyCard(
   const p = props.property;
   const isOccupied = p.tenancy_status === "active" || p.tenancy_status === "ending_soon";
   const hasExpiringDocs = p.expiring_documents_count > 0;
+  const expired = isTenancyExpired(
+    (p.tenancy_status ?? "ended") as TenancyStatus,
+    p.lease_end_date,
+  );
 
   return (
     <Link href={`/dashboard/landlord/properties/${p.id}/overview`}>
@@ -29,17 +35,28 @@ export function PropertyCard(
             <span className="truncate">{p.address_line_1}</span>
             <span
               className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                isOccupied
-                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                  : "bg-gray-100 text-gray-600 dark:bg-gray-800/30 dark:text-gray-400"
+                expired
+                  ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                  : isOccupied
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                    : "bg-gray-100 text-gray-600 dark:bg-gray-800/30 dark:text-gray-400"
               }`}
             >
-              {isOccupied ? "Occupied" : "Vacant"}
+              {expired ? "Expired" : isOccupied ? "Occupied" : "Vacant"}
             </span>
           </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-2">
+          {/* Expired tenancy warning banner */}
+          {expired && p.lease_end_date && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
+              Tenancy expired on{" "}
+              {new Date(p.lease_end_date).toLocaleDateString("en-GB")}. Renew or
+              end this tenancy.
+            </div>
+          )}
+
           <p className="text-sm text-muted-foreground">
             {p.city}, {p.postcode}
           </p>

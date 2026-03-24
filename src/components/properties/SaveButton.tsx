@@ -14,6 +14,12 @@ import {
   useUnsaveProperty,
 } from "@/hooks/useSavedProperties";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { HeartIcon } from "lucide-react";
 
 type SaveButtonProps = Readonly<{
@@ -33,8 +39,8 @@ export function SaveButton({ listingId, size = "default" }: SaveButtonProps) {
 
       // Require auth
       if (!user) {
-        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-        window.location.href = `/login?returnTo=${returnUrl}`;
+        const currentPage = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login?redirectTo=${currentPage}`;
         return;
       }
 
@@ -49,7 +55,7 @@ export function SaveButton({ listingId, size = "default" }: SaveButtonProps) {
 
   const buttonSize = size === "sm" ? "icon-sm" : "icon";
 
-  return (
+  const button = (
     <Button
       variant="ghost"
       size={buttonSize}
@@ -64,4 +70,22 @@ export function SaveButton({ listingId, size = "default" }: SaveButtonProps) {
       />
     </Button>
   );
+
+  // Show tooltip hint for unauthenticated users
+  if (!user) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            {button}
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            Sign in to save properties
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return button;
 }

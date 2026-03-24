@@ -21,13 +21,33 @@ export default async function AccountSettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("first_name, last_name, phone, postcode, bio, avatar_url")
+    .select("first_name, last_name, phone, postcode, bio, avatar_url, active_role")
     .eq("id", user.id)
     .single();
 
   const firstName = profile?.first_name ?? "";
   const lastName = profile?.last_name ?? "";
   const email = user.email ?? "";
+  const activeRole = (profile?.active_role as string) ?? "";
+
+  // Fetch role-specific data
+  let roleData: Record<string, unknown> | undefined;
+
+  if (activeRole === "agent") {
+    const { data } = await supabase
+      .from("agent_agency_profiles")
+      .select("agency_name, specializations, coverage_areas, description, contact_email, contact_phone")
+      .eq("agent_id", user.id)
+      .single();
+    if (data) roleData = data as Record<string, unknown>;
+  } else if (activeRole === "service_provider") {
+    const { data } = await supabase
+      .from("service_provider_details")
+      .select("business_name, trading_name, years_in_business, qualifications, service_postcodes")
+      .eq("user_id", user.id)
+      .single();
+    if (data) roleData = data as Record<string, unknown>;
+  }
 
   return (
     <div className="space-y-8">
@@ -68,10 +88,11 @@ export default async function AccountSettingsPage() {
             bio: profile?.bio ?? null,
             email,
           }}
+          activeRole={activeRole}
+          roleData={roleData}
         />
       </section>
 
     </div>
   );
 }
-

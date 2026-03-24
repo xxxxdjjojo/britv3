@@ -39,10 +39,16 @@ export async function GET(request: Request) {
     );
   }
 
-  // Filter out stale/missing IDs — only return providers that were found
-  const providers: CompareProvider[] = (data ?? []).filter(
-    (row): row is CompareProvider => row !== null,
-  );
+  // Supabase returns joined relations as arrays — flatten to single objects
+  const providers: CompareProvider[] = (data ?? [])
+    .filter((row) => row !== null)
+    .map((row) => ({
+      ...row,
+      profiles: Array.isArray(row.profiles) ? row.profiles[0] : row.profiles,
+      provider_rating_stats: Array.isArray(row.provider_rating_stats)
+        ? row.provider_rating_stats[0] ?? null
+        : row.provider_rating_stats,
+    })) as CompareProvider[];
 
   return NextResponse.json({ data: providers });
 }

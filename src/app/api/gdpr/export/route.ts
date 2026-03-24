@@ -38,6 +38,9 @@ export async function GET() {
   }
 
   try {
+    // DEFENCE-IN-DEPTH: The only userId passed to exportUserData is from the
+    // authenticated session (user.id). Never accept userId from request params.
+    // The export service uses admin client to bypass RLS for complete data export.
     const exportData = await exportUserData(user.id);
     const jsonString = JSON.stringify(exportData, null, 2);
     const date = new Date().toISOString().split("T")[0];

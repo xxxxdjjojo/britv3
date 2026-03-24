@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -12,6 +13,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ResponsiveSidebar } from "@/components/responsive/ResponsiveSidebar";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard/seller", icon: LayoutDashboard },
@@ -27,11 +29,11 @@ type Props = Readonly<{
   avatarUrl: string | null;
 }>;
 
-export function SellerSidebar({ userName, avatarUrl }: Props) {
+function SidebarContent({ userName, avatarUrl }: Props) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-[#1B4D3E] flex flex-col z-40">
+    <>
       <div className="px-6 py-6 border-b border-white/10">
         <span className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-white tracking-tight">
           britestate
@@ -68,7 +70,7 @@ export function SellerSidebar({ userName, avatarUrl }: Props) {
       <div className="px-4 py-4 border-t border-white/10">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10">
           {avatarUrl ? (
-            <img src={avatarUrl} alt={userName} className="h-9 w-9 rounded-full object-cover" />
+            <Image src={avatarUrl} alt={userName} width={36} height={36} className="rounded-full object-cover" />
           ) : (
             <div className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
               {userName.charAt(0).toUpperCase()}
@@ -83,6 +85,14 @@ export function SellerSidebar({ userName, avatarUrl }: Props) {
           </Link>
         </div>
       </div>
-    </aside>
+    </>
+  );
+}
+
+export function SellerSidebar({ userName, avatarUrl }: Props) {
+  return (
+    <ResponsiveSidebar className="bg-[#1B4D3E] border-r-0">
+      <SidebarContent userName={userName} avatarUrl={avatarUrl} />
+    </ResponsiveSidebar>
   );
 }

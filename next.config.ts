@@ -1,13 +1,48 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
+import { mkdirSync, writeFileSync, existsSync } from "fs";
+import { resolve } from "path";
+
+/**
+ * Webpack plugin: after emit, ensure .next/browser/default-stylesheet.css exists.
+ * jsdom (bundled via @react-email or Sentry SSR) reads this file at runtime.
+ * Turbopack generates it automatically but webpack doesn't.
+ */
+class EnsureBrowserCssPlugin {
+  apply(compiler: { hooks: { afterEmit: { tap: (name: string, cb: () => void) => void } } }) {
+    compiler.hooks.afterEmit.tap("EnsureBrowserCssPlugin", () => {
+      const browserDir = resolve(process.cwd(), ".next", "browser");
+      if (!existsSync(resolve(browserDir, "default-stylesheet.css"))) {
+        mkdirSync(browserDir, { recursive: true });
+        writeFileSync(resolve(browserDir, "default-stylesheet.css"), "/* placeholder for jsdom */");
+      }
+    });
+  }
+}
 
 const nextConfig: NextConfig = {
   // @react-pdf/renderer uses Node.js APIs and cannot be bundled for SSR
   serverExternalPackages: ["@react-pdf/renderer"],
-  typescript: {
-    // Pre-existing TS errors in compliance/expense/listing pages don't affect
-    // runtime correctness. Ignored during build to unblock the build pipeline.
-    // TODO: Fix remaining pre-existing TS errors in subsequent plans.
-    ignoreBuildErrors: true,
+  webpack(config, { isServer }) {
+    if (isServer) {
+      config.plugins = config.plugins ?? [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      config.plugins.push(new EnsureBrowserCssPlugin() as any);
+    }
+    return config;
+  },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/**" },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "recharts",
+      "posthog-js",
+    ],
   },
   async redirects() {
     return [
@@ -41,4 +76,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const config = process.env.ANALYZE === "true" ? withBundleAnalyzer({ enabled: true })(nextConfig) : nextConfig;
+
+export default config;

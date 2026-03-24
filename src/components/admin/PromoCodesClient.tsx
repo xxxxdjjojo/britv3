@@ -155,7 +155,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
               <Select
                 value={form.discount_type}
                 onValueChange={(v) =>
-                  updateForm("discount_type", v)
+                  updateForm("discount_type", v ?? "")
                 }
               >
                 <SelectTrigger>

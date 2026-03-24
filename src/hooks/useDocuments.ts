@@ -5,6 +5,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { trackEvent } from "@/lib/analytics/track-event";
 import type { UserDocument, DocumentType } from "@/services/documents/documents-service";
 
 const QUERY_KEY = ["documents"];
@@ -60,7 +61,7 @@ export function useUploadDocument() {
         });
       }
 
-      // TODO: posthog.capture("document.uploaded", { documentId: data.id })
+      trackEvent("document.uploaded", { documentId: data.id });
 
       return data;
     },

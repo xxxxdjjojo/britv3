@@ -20,6 +20,23 @@ type RoleCount = {
 export default async function RolesPage() {
   const supabase = await createClient();
 
+  // Get current user and their admin_role for super-admin gating
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let adminRole: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("admin_role")
+      .eq("id", user.id)
+      .single();
+    adminRole = (profile as { admin_role?: string | null } | null)?.admin_role ?? null;
+  }
+
+  const isSuperAdmin = adminRole === "super_admin";
+
   // Count users per role in parallel
   const counts: RoleCount[] = await Promise.all(
     ALL_ROLES.map(async (role) => {
@@ -37,7 +54,7 @@ export default async function RolesPage() {
         title="Roles & Permissions"
         description="View user counts per role and manage admin promotions."
       />
-      <RolesClient roleCounts={counts} />
+      <RolesClient roleCounts={counts} isSuperAdmin={isSuperAdmin} />
     </div>
   );
 }

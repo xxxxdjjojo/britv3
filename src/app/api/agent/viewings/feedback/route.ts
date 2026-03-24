@@ -76,22 +76,22 @@ export async function POST(request: NextRequest) {
 
     const feedback = await submitViewingFeedback(supabase, user.id, {
       viewing_slot_id: body.viewing_slot_id,
-      buyer_name: typeof body.buyer_name === "string" ? body.buyer_name : null,
-      interest_level: typeof body.interest_level === "number" ? body.interest_level : null,
+      buyer_name: typeof body.buyer_name === "string" ? body.buyer_name : "",
+      interest_level: typeof body.interest_level === "number" ? body.interest_level : 0,
       price_opinion:
         body.price_opinion === "too_high" ||
         body.price_opinion === "about_right" ||
         body.price_opinion === "good_value"
           ? body.price_opinion
-          : null,
+          : "",
       likelihood_to_offer:
         body.likelihood_to_offer === "unlikely" ||
         body.likelihood_to_offer === "possible" ||
         body.likelihood_to_offer === "likely" ||
         body.likelihood_to_offer === "very_likely"
           ? body.likelihood_to_offer
-          : null,
-      comments: typeof body.comments === "string" ? body.comments : null,
+          : "",
+      comments: typeof body.comments === "string" ? body.comments : "",
     });
 
     return NextResponse.json({ feedback }, { status: 201 });

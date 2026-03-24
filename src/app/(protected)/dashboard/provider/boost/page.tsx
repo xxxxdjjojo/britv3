@@ -28,7 +28,7 @@ export default async function BoostPage() {
     redirect("/dashboard/provider");
   }
 
-  let activeBoosts = [];
+  let activeBoosts: Awaited<ReturnType<typeof getActiveBoosts>> = [];
   try {
     activeBoosts = await getActiveBoosts(supabase, providerProfile.id);
   } catch {

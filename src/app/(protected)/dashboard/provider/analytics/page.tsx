@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import { getProviderAnalytics } from "@/services/provider/provider-analytics-service";
 import { AnalyticsPageClient } from "@/components/dashboard/provider/AnalyticsPageClient";
 
@@ -21,21 +22,11 @@ type PageProps = Readonly<{
 export default async function ProviderAnalyticsPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data: providerProfile } = await supabase
-    .from("service_provider_details")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (!providerProfile) {
+  let providerId: string;
+  try {
+    const identity = await resolveProviderId(supabase);
+    providerId = identity.providerId;
+  } catch {
     redirect("/dashboard/provider");
   }
 
@@ -43,7 +34,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
   const rawPeriod = resolvedSearchParams["period"];
   const period = parsePeriod(Array.isArray(rawPeriod) ? rawPeriod[0] : rawPeriod);
 
-  const analytics = await getProviderAnalytics(supabase, providerProfile.id, period);
+  const analytics = await getProviderAnalytics(supabase, providerId, period);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">

@@ -7,6 +7,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioKPIs, getPortfolioProperties } from "@/services/landlord/portfolio-service";
 import { getFinancialEntries } from "@/services/landlord/financial-service";
+import { calculateYield } from "@/lib/yield-calculator";
 import PortfolioAnalyticsCharts from "@/components/landlord/PortfolioAnalyticsCharts";
 
 export default async function PortfolioAnalyticsPage() {
@@ -61,6 +62,32 @@ export default async function PortfolioAnalyticsPage() {
     // Graceful degradation — charts render with empty data
   }
 
+  // Compute portfolio KPI summary from financial entries
+  const totalIncome = entries
+    .filter(e => e.type === "income")
+    .reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const totalExpenses = entries
+    .filter(e => e.type === "expense")
+    .reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const netCashflow = totalIncome - totalExpenses;
+
+  // Compute average gross yield across portfolio using yield calculator
+  const avgYield = properties.length > 0 && kpis.total_monthly_rent > 0
+    ? calculateYield({
+        propertyValue: kpis.total_monthly_rent * 12 * 20, // Estimated portfolio value
+        monthlyRent: kpis.total_monthly_rent,
+        monthlyManagementFee: 0,
+        monthlyMaintenance: 0,
+        monthlyInsurance: 0,
+        monthlyMortgage: 0,
+      })
+    : null;
+
+  const formatGBP = (value: number) =>
+    new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(value);
+
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-6">
       <div>
@@ -68,6 +95,34 @@ export default async function PortfolioAnalyticsPage() {
         <p className="mt-1 text-sm text-gray-500">
           Charts and KPIs across your entire rental portfolio.
         </p>
+      </div>
+
+      {/* Portfolio KPI Summary */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Total Income</p>
+          <p className="mt-1 text-2xl font-bold text-green-700">{formatGBP(totalIncome)}</p>
+          <p className="text-xs text-gray-500">Last 12 months</p>
+        </div>
+        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Total Expenses</p>
+          <p className="mt-1 text-2xl font-bold text-red-600">{formatGBP(totalExpenses)}</p>
+          <p className="text-xs text-gray-500">Last 12 months</p>
+        </div>
+        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Net Cashflow</p>
+          <p className={`mt-1 text-2xl font-bold ${netCashflow >= 0 ? "text-green-700" : "text-red-600"}`}>
+            {formatGBP(netCashflow)}
+          </p>
+          <p className="text-xs text-gray-500">Income minus expenses</p>
+        </div>
+        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Avg Gross Yield</p>
+          <p className="mt-1 text-2xl font-bold text-[#1B4D3E]">
+            {avgYield ? `${avgYield.grossYield}%` : "\u2014"}
+          </p>
+          <p className="text-xs text-gray-500">Across portfolio</p>
+        </div>
       </div>
 
       <PortfolioAnalyticsCharts

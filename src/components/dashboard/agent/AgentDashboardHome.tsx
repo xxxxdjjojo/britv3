@@ -2,15 +2,6 @@
 
 import Link from "next/link";
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import {
   Building,
   UserPlus,
   Eye,
@@ -24,62 +15,31 @@ import {
   MessageSquare,
   Calendar,
   Star,
+  Sparkles,
+  Home,
+  BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import type { AgentDashboardKpis } from "@/types/agent";
+import type { AgentDashboardKpis, ActivityFeedItem, DiaryViewingSlot } from "@/types/agent";
 
 // ============================================================================
 // Types
 // ============================================================================
 
-type ActivityFeedItem = {
-  id: string;
-  type: string;
-  description: string | null;
-  actor_id: string;
-  created_at: string;
-  metadata: Record<string, unknown> | null;
-};
-
 type Props = Readonly<{
   kpis: AgentDashboardKpis;
   activityFeed: ActivityFeedItem[];
   agentName: string;
+  todaysDiary: DiaryViewingSlot[];
 }>;
 
 // ============================================================================
 // Helpers
 // ============================================================================
-
-/** Generate mock 30-day activity chart data seeded from KPIs */
-function generateChartData(kpis: AgentDashboardKpis) {
-  const today = new Date();
-  return Array.from({ length: 30 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - (29 - i));
-    const label = date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-    });
-    // Simulate realistic activity counts that trend toward current KPIs
-    const progress = (i + 1) / 30;
-    return {
-      date: label,
-      listings: Math.round(
-        (kpis.active_listings_count * 0.6 + Math.random() * 8) * progress,
-      ),
-      leads: Math.round(
-        (kpis.new_leads_count * 1.2 + Math.random() * 5) * progress,
-      ),
-      viewings: Math.round(
-        (kpis.viewings_this_week_count * 0.8 + Math.random() * 4) * progress,
-      ),
-    };
-  });
-}
 
 /** Map activity type to an icon and colour class */
 function activityIcon(type: string) {
@@ -170,11 +130,106 @@ function KpiCard({
 }
 
 // ============================================================================
+// Sub-components
+// ============================================================================
+
+function AiSuggestionsSection() {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center gap-2">
+        <Sparkles className="size-5 text-amber-500" />
+        <CardTitle className="text-base">AI Suggestions</CardTitle>
+        <Badge variant="secondary" className="ml-auto">Coming Soon</Badge>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-3 rounded-lg border p-4">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          AI-powered insights will appear here based on your pipeline activity.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TodaysDiarySection({ slots }: Readonly<{ slots: DiaryViewingSlot[] }>) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center gap-2">
+        <Calendar className="size-5 text-blue-500" />
+        <CardTitle className="text-base">Today&apos;s Diary</CardTitle>
+        {slots.length > 0 && (
+          <Badge variant="secondary" className="ml-auto">
+            {slots.length} viewing{slots.length !== 1 ? "s" : ""}
+          </Badge>
+        )}
+      </CardHeader>
+      <CardContent>
+        {slots.length === 0 ? (
+          <p className="py-4 text-center text-sm text-muted-foreground">
+            No viewings scheduled for today.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {slots.map((slot) => (
+              <div key={slot.id} className="flex items-center gap-4 rounded-lg border p-3">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">
+                    {new Date(slot.start_time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                    {" \u2014 "}
+                    {new Date(slot.end_time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Property: {slot.property_id.slice(0, 8)}&hellip;
+                  </span>
+                </div>
+                <Badge variant={slot.is_booked ? "default" : "outline"} className="ml-auto">
+                  {slot.is_booked ? "Booked" : "Available"}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function LettingsKpiSection() {
+  return (
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle className="text-base">Lettings</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center gap-3 py-6 text-center">
+          <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+            <Home className="size-5 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-muted-foreground">
+            Set up lettings to see data here
+          </p>
+          <p className="max-w-xs text-xs text-muted-foreground">
+            Track managed properties, compliance alerts, arrears, and maintenance queues.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
 // Main component
 // ============================================================================
 
-export function AgentDashboardHome({ kpis, activityFeed, agentName }: Props) {
-  const chartData = generateChartData(kpis);
+export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary }: Props) {
   const performancePct = Math.round(kpis.performance_score * 100);
 
   return (
@@ -204,188 +259,140 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName }: Props) {
         </div>
       </div>
 
-      {/* KPI cards — 5 stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <KpiCard
-          label="Active Listings"
-          value={kpis.active_listings_count}
-          icon={Building}
-          iconBg="bg-blue-100 dark:bg-blue-900/40"
-          iconColor="text-blue-600 dark:text-blue-400"
-          trend={kpis.active_listings_count > 0 ? "up" : "flat"}
-        />
-        <KpiCard
-          label="New Leads"
-          value={kpis.new_leads_count}
-          icon={UserPlus}
-          iconBg="bg-emerald-100 dark:bg-emerald-900/40"
-          iconColor="text-emerald-600 dark:text-emerald-400"
-          trend={kpis.new_leads_count > 0 ? "up" : "flat"}
-        />
-        <KpiCard
-          label="Viewings This Week"
-          value={kpis.viewings_this_week_count}
-          icon={Eye}
-          iconBg="bg-amber-100 dark:bg-amber-900/40"
-          iconColor="text-amber-600 dark:text-amber-400"
-          trend="flat"
-        />
-        <KpiCard
-          label="Pending Offers"
-          value={kpis.pending_offers_count}
-          icon={FileText}
-          iconBg="bg-purple-100 dark:bg-purple-900/40"
-          iconColor="text-purple-600 dark:text-purple-400"
-          trend={kpis.pending_offers_count > 0 ? "up" : "flat"}
-        />
-        <KpiCard
-          label="Performance Score"
-          value={`${performancePct}%`}
-          icon={TrendingUp}
-          iconBg="bg-rose-100 dark:bg-rose-900/40"
-          iconColor="text-rose-600 dark:text-rose-400"
-          trend={performancePct >= 50 ? "up" : performancePct > 0 ? "flat" : "down"}
-        />
-      </div>
+      {/* AI Suggestions */}
+      <AiSuggestionsSection />
 
-      {/* Main grid */}
+      {/* Today's Diary */}
+      <TodaysDiarySection slots={todaysDiary} />
+
+      {/* Sales + Lettings KPI split */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left column — chart */}
         <div className="lg:col-span-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-base">30-Day Activity</CardTitle>
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block size-2.5 rounded-full bg-blue-500" />
-                  Listings
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block size-2.5 rounded-full bg-emerald-500" />
-                  Leads
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block size-2.5 rounded-full bg-amber-500" />
-                  Viewings
-                </span>
-              </div>
+            <CardHeader>
+              <CardTitle className="text-base">Sales KPIs</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={240}>
-                <AreaChart
-                  data={chartData}
-                  margin={{ top: 4, right: 8, left: -20, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="gradListings" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="gradLeads" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="gradViewings" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fontSize: 10 }}
-                    interval={6}
-                    className="text-muted-foreground"
-                  />
-                  <YAxis tick={{ fontSize: 10 }} className="text-muted-foreground" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                      fontSize: "12px",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="listings"
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                    fill="url(#gradListings)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="leads"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    fill="url(#gradLeads)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="viewings"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    fill="url(#gradViewings)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <KpiCard
+                  label="Active Listings"
+                  value={kpis.active_listings_count}
+                  icon={Building}
+                  iconBg="bg-blue-100 dark:bg-blue-900/40"
+                  iconColor="text-blue-600 dark:text-blue-400"
+                  trend={kpis.active_listings_count > 0 ? "up" : "flat"}
+                />
+                <KpiCard
+                  label="New Leads"
+                  value={kpis.new_leads_count}
+                  icon={UserPlus}
+                  iconBg="bg-emerald-100 dark:bg-emerald-900/40"
+                  iconColor="text-emerald-600 dark:text-emerald-400"
+                  trend={kpis.new_leads_count > 0 ? "up" : "flat"}
+                />
+                <KpiCard
+                  label="Viewings This Week"
+                  value={kpis.viewings_this_week_count}
+                  icon={Eye}
+                  iconBg="bg-amber-100 dark:bg-amber-900/40"
+                  iconColor="text-amber-600 dark:text-amber-400"
+                  trend="flat"
+                />
+                <KpiCard
+                  label="Pending Offers"
+                  value={kpis.pending_offers_count}
+                  icon={FileText}
+                  iconBg="bg-purple-100 dark:bg-purple-900/40"
+                  iconColor="text-purple-600 dark:text-purple-400"
+                  trend={kpis.pending_offers_count > 0 ? "up" : "flat"}
+                />
+                <KpiCard
+                  label="Performance Score"
+                  value={`${performancePct}%`}
+                  icon={TrendingUp}
+                  iconBg="bg-rose-100 dark:bg-rose-900/40"
+                  iconColor="text-rose-600 dark:text-rose-400"
+                  trend={performancePct >= 50 ? "up" : performancePct > 0 ? "flat" : "down"}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Right column — performance score */}
         <div className="lg:col-span-4">
-          <Card className="h-full bg-brand-primary text-white">
-            <CardHeader>
-              <CardTitle className="text-base text-white">
-                Performance Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-4">
-              {/* Circular gauge */}
-              <svg width="140" height="140" className="-rotate-90">
-                <circle
-                  cx="70"
-                  cy="70"
-                  r="54"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="10"
-                  className="text-white/20"
-                />
-                <circle
-                  cx="70"
-                  cy="70"
-                  r="54"
-                  fill="none"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={2 * Math.PI * 54}
-                  strokeDashoffset={
-                    2 * Math.PI * 54 -
-                    (performancePct / 100) * 2 * Math.PI * 54
-                  }
-                  className="stroke-current text-white"
-                />
-              </svg>
-              <div className="-mt-[108px] mb-8 flex flex-col items-center">
-                <span className="text-3xl font-bold">{performancePct}</span>
-                <span className="text-xs text-white/70">/100</span>
-              </div>
-              <p className="text-sm font-semibold">
-                {performancePct >= 70
-                  ? "Excellent Performance"
-                  : performancePct >= 40
-                    ? "Good Performance"
-                    : "Getting Started"}
-              </p>
-              <p className="text-center text-xs text-white/70">
-                Based on closed leads vs. total leads in your pipeline.
-              </p>
-            </CardContent>
-          </Card>
+          <LettingsKpiSection />
         </div>
       </div>
+
+      {/* Activity overview placeholder */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base">Activity Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center gap-3 py-8 text-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-muted">
+              <BarChart3 className="size-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">
+              No activity data yet
+            </p>
+            <p className="max-w-xs text-xs text-muted-foreground">
+              Activity trends will appear here once you start tracking leads and viewings.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance score */}
+      <Card className="bg-brand-primary text-white">
+        <CardHeader>
+          <CardTitle className="text-base text-white">
+            Performance Score
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-4">
+          {/* Circular gauge */}
+          <svg width="140" height="140" className="-rotate-90">
+            <circle
+              cx="70"
+              cy="70"
+              r="54"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="10"
+              className="text-white/20"
+            />
+            <circle
+              cx="70"
+              cy="70"
+              r="54"
+              fill="none"
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * 54}
+              strokeDashoffset={
+                2 * Math.PI * 54 -
+                (performancePct / 100) * 2 * Math.PI * 54
+              }
+              className="stroke-current text-white"
+            />
+          </svg>
+          <div className="-mt-[108px] mb-8 flex flex-col items-center">
+            <span className="text-3xl font-bold">{performancePct}</span>
+            <span className="text-xs text-white/70">/100</span>
+          </div>
+          <p className="text-sm font-semibold">
+            {performancePct >= 70
+              ? "Excellent Performance"
+              : performancePct >= 40
+                ? "Good Performance"
+                : "Getting Started"}
+          </p>
+          <p className="text-center text-xs text-white/70">
+            Based on closed leads vs. total leads in your pipeline.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Recent Activity Feed */}
       <Card>

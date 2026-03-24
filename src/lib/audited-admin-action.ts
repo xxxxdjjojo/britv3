@@ -1,5 +1,6 @@
-import { adminOnly, type AdminContext } from "@/lib/admin-guard";
+import { adminOnly, type AdminContext, adminWithPermission, type AdminContextWithRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit";
+import type { AdminPermission } from "@/lib/admin-permissions";
 
 export class AdminActionError extends Error {
   constructor(
@@ -9,6 +10,16 @@ export class AdminActionError extends Error {
     super(message);
     this.name = "AdminActionError";
   }
+}
+
+function extractIp(request: Request): string | undefined {
+  const headers = request.headers;
+  return (
+    headers.get("cf-connecting-ip") ??
+    headers.get("x-real-ip") ??
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    undefined
+  );
 }
 
 export async function auditedAdminAction(
@@ -21,6 +32,7 @@ export async function auditedAdminAction(
   const ctx = await adminOnly(request);
   if (ctx instanceof Response) return ctx;
 
+  const ipAddress = extractIp(request);
   let result: unknown;
   let thrownError: unknown;
 
@@ -34,6 +46,54 @@ export async function auditedAdminAction(
       action,
       targetType,
       targetId,
+      ipAddress,
+      success: thrownError === undefined,
+      errorMessage:
+        thrownError instanceof Error ? thrownError.message : undefined,
+    });
+  }
+
+  if (thrownError !== undefined) {
+    if (thrownError instanceof AdminActionError) {
+      return Response.json(
+        { error: thrownError.message },
+        { status: thrownError.status },
+      );
+    }
+    const message =
+      thrownError instanceof Error ? thrownError.message : "Action failed";
+    return Response.json({ error: message }, { status: 500 });
+  }
+
+  return Response.json(result);
+}
+
+export async function auditedAdminActionWithPermission(
+  request: Request,
+  action: string,
+  targetType: string,
+  targetId: string,
+  requiredPermission: AdminPermission,
+  fn: (ctx: AdminContextWithRole) => Promise<unknown>,
+): Promise<Response> {
+  const ctx = await adminWithPermission(request, requiredPermission);
+  if (ctx instanceof Response) return ctx;
+
+  const ipAddress = extractIp(request);
+  let result: unknown;
+  let thrownError: unknown;
+
+  try {
+    result = await fn(ctx);
+  } catch (e) {
+    thrownError = e;
+  } finally {
+    await logAdminAction(ctx.supabase, {
+      adminId: ctx.user.id,
+      action,
+      targetType,
+      targetId,
+      ipAddress,
       success: thrownError === undefined,
       errorMessage:
         thrownError instanceof Error ? thrownError.message : undefined,

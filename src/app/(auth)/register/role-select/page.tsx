@@ -16,7 +16,6 @@ export default function RoleSelectPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function handleRolesSelected(roles: UserRole[]) {
-    setLoading(true);
     setError(null);
 
     const supabase = createClient();
@@ -28,6 +27,8 @@ export default function RoleSelectPage() {
       router.push(`/register?professional=${role}`);
       return;
     }
+
+    setLoading(true);
 
     const role = roles[0];
 

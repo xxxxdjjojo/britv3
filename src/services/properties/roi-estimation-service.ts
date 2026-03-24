@@ -28,7 +28,15 @@ import { getRenovationBenchmarks } from "./property-detail-service";
 import { callClaude } from "@/services/ai/claude-service";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Property } from "@/types/property";
-import type { RenovationBenchmark } from "@/types/property-detail";
+// Local type matching the fields used from renovation benchmarks
+type RenovationBenchmark = {
+  renovation_type: string;
+  cost_low_per_sqm: number | null;
+  cost_high_per_sqm: number | null;
+  value_uplift_pct_low: number | null;
+  value_uplift_pct_high: number | null;
+  [key: string]: unknown;
+};
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -220,13 +228,13 @@ export async function estimateROI(
 
     // 3. Fetch renovation benchmarks from DB
     const region = deriveRegionFromPostcode(property.postcode);
-    let benchmarks: RenovationBenchmark[] = await getRenovationBenchmarks(
+    let benchmarks = await getRenovationBenchmarks(
       supabase,
       region,
-    );
+    ) as unknown as RenovationBenchmark[];
     // If regional benchmarks are absent, try national
     if (benchmarks.length === 0 && region !== "national") {
-      benchmarks = await getRenovationBenchmarks(supabase, "national");
+      benchmarks = await getRenovationBenchmarks(supabase, "national") as unknown as RenovationBenchmark[];
     }
 
     // G2 guard: if both regional and national queries returned 0 rows,

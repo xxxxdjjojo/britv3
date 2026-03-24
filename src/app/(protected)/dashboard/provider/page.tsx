@@ -1,14 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { resolveProviderId } from "@/lib/provider/resolve-provider";
 import Link from "next/link";
 import {
   getProviderDashboardStats,
   getRecentActivity,
   getUpcomingJobs,
 } from "@/services/provider/provider-dashboard-service";
+import { getCashPosition } from "@/services/provider/provider-cash-position-service";
+import { getSmartActions } from "@/services/provider/provider-smart-actions-service";
 import { KPICard } from "@/components/dashboard/provider/KPICard";
 import { ActivityFeed } from "@/components/dashboard/provider/ActivityFeed";
 import { UpcomingJobsList } from "@/components/dashboard/provider/UpcomingJobsList";
+import { CashPositionWidget } from "@/components/dashboard/provider/CashPositionWidget";
+import { SmartActionsCard } from "@/components/dashboard/provider/SmartActionsCard";
 import { Button } from "@/components/ui/button";
 import {
   Inbox,
@@ -23,29 +27,15 @@ import {
 
 export default async function ProviderDashboardPage() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  // Fetch provider profile to get provider id
-  const { data: providerProfile } = await supabase
-    .from("service_provider_details")
-    .select("id, business_name")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const providerId = providerProfile?.id ?? user.id;
+  const { providerId, businessName } = await resolveProviderId(supabase);
 
   // Fetch dashboard data in parallel
-  const [stats, activity, upcomingJobs] = await Promise.all([
+  const [stats, activity, upcomingJobs, cashPosition, smartActions] = await Promise.all([
     getProviderDashboardStats(providerId, supabase),
     getRecentActivity(providerId, 8, supabase),
     getUpcomingJobs(providerId, 5, supabase),
+    getCashPosition(providerId, supabase),
+    getSmartActions(providerId, supabase),
   ]);
 
   const isVerified = stats.verificationStatus === "verified";
@@ -63,8 +53,8 @@ export default async function ProviderDashboardPage() {
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
       <div>
         <h1 className="text-2xl font-bold text-neutral-900">
-          {providerProfile?.business_name
-            ? `Welcome back, ${providerProfile.business_name}`
+          {businessName
+            ? `Welcome back, ${businessName}`
             : "Provider Dashboard"}
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
@@ -108,6 +98,9 @@ export default async function ProviderDashboardPage() {
         </div>
       )}
 
+      {/* ── Smart Action Suggestions ─────────────────────────────────────────── */}
+      <SmartActionsCard actions={smartActions} />
+
       {/* ── 4 KPI Cards ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KPICard
@@ -131,6 +124,9 @@ export default async function ProviderDashboardPage() {
           icon={PoundSterling}
         />
       </div>
+
+      {/* ── Cash Position Widget ─────────────────────────────────────────────── */}
+      <CashPositionWidget cashPosition={cashPosition} />
 
       {/* ── Two-Column Grid: Activity + Upcoming Jobs ────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">

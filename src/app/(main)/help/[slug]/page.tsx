@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { SafeHTML } from "@/components/ui/SafeHTML";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -75,12 +76,7 @@ export default async function HelpArticlePage({ params }: Props) {
         {article.title}
       </h1>
 
-      {/* TODO: Sanitise HTML content with DOMPurify before rendering.
-          Install isomorphic-dompurify and use: DOMPurify.sanitize(article.content) */}
-      <div
-        className="prose prose-neutral mt-8 max-w-none"
-        dangerouslySetInnerHTML={{ __html: article.content }}
-      />
+      <SafeHTML html={article.content} className="prose prose-neutral mt-8 max-w-none" />
     </div>
   );
 }

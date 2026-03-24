@@ -8,7 +8,10 @@ type MapPropertyCardProps = Readonly<{
   onClose: () => void;
 }>;
 
-function formatPrice(price: number): string {
+function formatPrice(price: number, listingType?: string): string {
+  if (listingType === "rent") {
+    return `£${price.toLocaleString("en-GB")}/mo`;
+  }
   return `£${price.toLocaleString("en-GB")}`;
 }
 
@@ -69,7 +72,7 @@ export default function MapPropertyCard({
       <div className="p-3">
         <p className="text-sm text-gray-600 truncate">{property.address}</p>
         <p className="text-base font-bold text-gray-900 mt-0.5">
-          {formatPrice(property.price)}
+          {formatPrice(property.price, property.listing_type)}
         </p>
         <p className="text-xs text-gray-500 mt-1">
           {property.beds} bed · {property.baths} bath · {property.sqft.toLocaleString("en-GB")} sq ft

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Pricing | Britestate",
   description:
-    "Free for homebuyers and renters. Professional plans for agents, landlords, and agencies starting at £29/month.",
+    "Free for homeowners. Tradespeople from £47/month. Estate agents pay nothing upfront — performance-based pricing.",
 };
 
 export default function PricingLayout({

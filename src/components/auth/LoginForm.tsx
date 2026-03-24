@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { signIn } from "@/services/auth/auth-service";
+import { handleSupabaseError } from "@/lib/supabase-error";
 import Link from "next/link";
 
 const OAUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -51,7 +52,25 @@ export function LoginForm() {
     setError(null);
     const { error: authError } = await signIn(data.email, data.password);
     if (authError) {
-      setError(authError.message);
+      // Detect account lockout / rate-limit: redirect rather than showing an
+      // inline error so the user gets a dedicated, informative page.
+      const errObj = authError as { status?: number; code?: string; message?: string };
+      const isLockout =
+        errObj.status === 429 ||
+        errObj.code === "over_request_rate_limit" ||
+        /too many/i.test(errObj.message ?? "");
+      const isBanned = errObj.code === "user_banned";
+
+      if (isLockout) {
+        router.push("/account-locked");
+        return;
+      }
+      if (isBanned) {
+        router.push("/account-suspended");
+        return;
+      }
+
+      setError(handleSupabaseError(authError).message);
       return;
     }
     router.push("/dashboard");

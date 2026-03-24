@@ -2,100 +2,147 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 
-const LAST_UPDATED = "13 March 2026";
+const LAST_UPDATED = "24 March 2026";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
 
 const SECTIONS = [
-  { id: "compliance-status", label: "1. Compliance Status" },
-  { id: "known-limitations", label: "2. Known Limitations" },
-  { id: "feedback-contact", label: "3. Feedback & Contact" },
-  { id: "enforcement", label: "4. Enforcement" },
-  { id: "technical-information", label: "5. Technical Information" },
-  { id: "preparation", label: "6. Preparation of Statement" },
+  { id: "our-commitment", label: "1. Our Commitment" },
+  { id: "conformance-status", label: "2. Conformance Status" },
+  { id: "known-issues", label: "3. Known Issues" },
+  { id: "testing", label: "4. Testing" },
+  { id: "feedback", label: "5. Feedback" },
+  { id: "enforcement", label: "6. Enforcement" },
 ];
 
 export const metadata: Metadata = {
   title: "Accessibility Statement | Britestate",
-  description: "Britestate's WCAG 2.1 AA compliance status and known accessibility limitations.",
+  description:
+    "Britestate&rsquo;s WCAG 2.1 AA conformance status, known accessibility limitations, and how to report accessibility barriers.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/accessibility` },
-  openGraph: { title: "Accessibility Statement | Britestate", description: "Britestate accessibility statement." },
+  openGraph: {
+    title: "Accessibility Statement | Britestate",
+    description: "Britestate accessibility statement and WCAG 2.1 AA conformance status.",
+  },
 };
 
 export default function AccessibilityPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
+      {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+        <Link href="/" className="hover:text-primary transition-colors">
+          Home
+        </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">Legal</Link>
+        <Link href="/legal" className="hover:text-primary transition-colors">
+          Legal
+        </Link>
         <span>/</span>
         <span className="text-neutral-900">Accessibility Statement</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Accessibility Statement</h1>
-      <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">
+        Accessibility Statement
+      </h1>
+      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+
+      {/* Yellow info callout */}
+      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+        We are committed to making Britestate accessible to everyone. If you encounter any
+        accessibility barrier, please contact us at{" "}
+        <a
+          href="mailto:accessibility@britestate.co.uk"
+          className="underline hover:no-underline"
+        >
+          accessibility@britestate.co.uk
+        </a>{" "}
+        and we will do our best to help.
+      </div>
 
       <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
-        <section id="compliance-status">
-          <h2 className="text-2xl font-bold font-heading">1. Compliance Status</h2>
+        <section id="our-commitment">
+          <h2 className="text-2xl font-bold font-heading">1. Our Commitment</h2>
           <p>
-            Britestate Ltd is committed to making its website accessible in accordance with the{" "}
-            <a href="https://www.legislation.gov.uk/uksi/2018/952/contents" target="_blank" rel="noopener noreferrer">
-              Public Sector Bodies (Websites and Mobile Applications) Accessibility Regulations 2018
-            </a>
-            . We aim to meet <strong>WCAG 2.1 Level AA</strong> compliance. {/* TODO: legal review */}
+            Britestate Ltd is committed to making our platform accessible to everyone, including
+            people with disabilities. We aim to conform to the Web Content Accessibility Guidelines
+            (WCAG) 2.1 at Level AA.
           </p>
         </section>
 
-        <section id="known-limitations">
-          <h2 className="text-2xl font-bold font-heading">2. Known Limitations</h2>
+        <section id="conformance-status">
+          <h2 className="text-2xl font-bold font-heading">2. Conformance Status</h2>
           <p>
-            While we strive for full WCAG 2.1 AA compliance, some limitations exist. These include: some older PDF
-            documents may not be fully accessible; interactive map components may have limited keyboard navigation.
-            We are actively working to resolve these issues. {/* TODO: legal review */}
+            We believe our platform <strong>partially conforms</strong> to WCAG 2.1 Level AA.
+            &ldquo;Partially conforms&rdquo; means that some parts of the content do not fully
+            conform to the accessibility standard. We are actively working to address known issues.
           </p>
         </section>
 
-        <section id="feedback-contact">
-          <h2 className="text-2xl font-bold font-heading">3. Feedback &amp; Contact</h2>
+        <section id="known-issues">
+          <h2 className="text-2xl font-bold font-heading">3. Known Issues</h2>
+          <p>The following areas have known accessibility limitations:</p>
+          <ul>
+            <li>
+              Some older property photos may lack alternative text descriptions. We are working with
+              agents to ensure all new listings include alt text.
+            </li>
+            <li>
+              Certain interactive map features (powered by MapLibre GL JS) may have limited keyboard
+              accessibility. We provide an alternative list view for property search results.
+            </li>
+            <li>
+              Some third-party embedded content (e.g., Stripe payment forms) may have accessibility
+              limitations outside our direct control.
+            </li>
+          </ul>
+        </section>
+
+        <section id="testing">
+          <h2 className="text-2xl font-bold font-heading">4. Testing</h2>
           <p>
-            If you experience accessibility barriers, please contact us at{" "}
-            <a href="mailto:accessibility@britestate.co.uk">accessibility@britestate.co.uk</a>.
-            We aim to respond within 5 business days. {/* TODO: legal review */}
+            We test accessibility using: automated scanning (axe-core); manual testing with screen
+            readers (NVDA, VoiceOver); keyboard-only navigation testing; and colour contrast
+            verification.
+          </p>
+        </section>
+
+        <section id="feedback">
+          <h2 className="text-2xl font-bold font-heading">5. Feedback</h2>
+          <p>
+            If you encounter accessibility barriers on Britestate, please contact us:
+          </p>
+          <p>
+            Email:{" "}
+            <a href="mailto:accessibility@britestate.co.uk">accessibility@britestate.co.uk</a>
+            <br />
+            Phone: [PHONE NUMBER]
+          </p>
+          <p>
+            We aim to respond within 5 working days and provide a resolution or workaround within
+            15 working days.
           </p>
         </section>
 
         <section id="enforcement">
-          <h2 className="text-2xl font-bold font-heading">4. Enforcement</h2>
+          <h2 className="text-2xl font-bold font-heading">6. Enforcement</h2>
           <p>
-            If you are not satisfied with our response, you may contact the Equality and Human Rights Commission
-            (EHRC). The EHRC is responsible for enforcing the accessibility regulations in England, Scotland, and
-            Wales. Contact them at{" "}
-            <a href="https://www.equalityhumanrights.com" target="_blank" rel="noopener noreferrer">
-              equalityhumanrights.com
+            If you are not satisfied with our response, you may contact the Equality Advisory
+            Support Service (EASS) at{" "}
+            <a
+              href="https://www.equalityadvisoryservice.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              equalityadvisoryservice.com
             </a>
-            . {/* TODO: legal review */}
-          </p>
-        </section>
-
-        <section id="technical-information">
-          <h2 className="text-2xl font-bold font-heading">5. Technical Information</h2>
-          <p>
-            Britestate is built using Next.js with semantic HTML5, ARIA attributes where appropriate, and keyboard
-            navigation support. We use sufficient colour contrast ratios and responsive design for all screen sizes. {/* TODO: legal review */}
-          </p>
-        </section>
-
-        <section id="preparation">
-          <h2 className="text-2xl font-bold font-heading">6. Preparation of Statement</h2>
-          <p>
-            This statement was prepared on {LAST_UPDATED}. It was last reviewed on {LAST_UPDATED}.
-            {/* TODO: legal review */}
+            . The Equality and Human Rights Commission (EHRC) is responsible for enforcing the
+            accessibility regulations in England, Scotland, and Wales.
           </p>
         </section>
       </div>
 
+      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

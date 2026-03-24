@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
+import { SafeHTML } from "@/components/ui/SafeHTML";
 
 export const metadata: Metadata = {
   title: "Partners | Britestate",
@@ -59,12 +60,7 @@ export default async function PartnersPage() {
         </div>
       ) : (
         <>
-          {/* TODO: Sanitise HTML content with DOMPurify before rendering.
-              Install isomorphic-dompurify and use: DOMPurify.sanitize(content.content) */}
-          <div
-            className="prose prose-neutral mt-12 max-w-none"
-            dangerouslySetInnerHTML={{ __html: content.content }}
-          />
+          <SafeHTML html={content.content} className="prose prose-neutral mt-12 max-w-none" />
         </>
       )}
     </div>

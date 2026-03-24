@@ -9,8 +9,8 @@ import {
 
 describe("booking-state-machine", () => {
   describe("VALID_TRANSITIONS", () => {
-    it("has exactly 9 valid transitions", () => {
-      expect(VALID_TRANSITIONS).toHaveLength(9);
+    it("has exactly 12 valid transitions", () => {
+      expect(VALID_TRANSITIONS).toHaveLength(12);
     });
   });
 
@@ -70,6 +70,29 @@ describe("booking-state-machine", () => {
     it("rejects wrong actor for a valid transition", () => {
       // Only provider can confirm, not user
       const result = canTransition("pending_confirmation", "confirmed", "user");
+      expect(result.allowed).toBe(false);
+    });
+
+    it("allows provider to transition in_progress to completing", () => {
+      const result = canTransition("in_progress", "completing", "provider");
+      expect(result.allowed).toBe(true);
+      expect(result.requiresReason).toBe(false);
+    });
+
+    it("allows system to complete from completing", () => {
+      const result = canTransition("completing", "completed", "system");
+      expect(result.allowed).toBe(true);
+      expect(result.requiresReason).toBe(false);
+    });
+
+    it("allows system to roll back completing to in_progress", () => {
+      const result = canTransition("completing", "in_progress", "system");
+      expect(result.allowed).toBe(true);
+      expect(result.requiresReason).toBe(true);
+    });
+
+    it("does not allow user to transition to completing", () => {
+      const result = canTransition("in_progress", "completing", "user");
       expect(result.allowed).toBe(false);
     });
   });

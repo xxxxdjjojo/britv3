@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.5] - 2026-03-23
+
+### Added
+- **Agent Dashboard: Chain Risk Monitoring** — Pre-computed chain risk scores for property chains via hourly Inngest cron. Chain risk badges on sale Kanban cards, chain detail dialog with vertical chain visualization, risk scoring engine with 4 factors (chain length, stall duration, stage velocity, position penalty)
+- **Agent Dashboard: Unified Home** — Redesigned agent dashboard with AI Suggestions placeholder, Today's Diary section, Sales/Lettings KPI split layout, and activity overview placeholder replacing mock chart data
+- **Landlord Dashboard Enhancements** — Compliance matrix page, arrears analysis with trend tracking, batch reminders API, action items card, key dates ticker, all-clear celebration banner, portfolio KPI summary on analytics page
+- **Provider Dashboard Enhancements** — Mobile-first field view (today/jobs/payments pages), smart action suggestions, quote builder with sections/templates/staged payments/PDF, quote-to-booking automation via Inngest, certificate issuance framework, cash position widget, on-site payment collection with Stripe PaymentIntent
+- **PostHog Analytics Events** — Dashboard v2 tracking events for all role dashboards
+- **Database Tables** — `chain_links`, `chain_risk_scores` with RLS policies; HMO columns on properties; compliance matrix and key dates RPCs; payment schedules and certificates tables
+
+### Fixed
+- **Security: Next.js CSRF bypass** — Upgraded Next.js 16.1.6 → 16.2.1 (GHSA-mq59-m269-xvcx)
+- **Security: jsPDF HTML injection** — Upgraded jsPDF 4.2.0 → 4.2.1 (GHSA-wfv2-pwc8-crg5)
+- **Security: Contact form stored XSS** — HTML-escape all user input in email builder
+- **Zod v4 API migration** — Fixed `.errors` → `.issues` and `required_error` → `message` across 4 files
+- Provider dashboard routing — Map `service_provider` role to `/provider` route in login redirect
+- Provider analytics — Use `resolveProviderId` instead of non-existent `id` column
+- Landlord dual sidebar removed — Use parent sidebar with full landlord nav items
+- Provider field view sidebar hidden via pathname detection
+
+### Changed
+- Extracted `ActivityFeedItem` type from duplicated local definitions to shared `types/agent.ts`
+- Added `DiaryViewingSlot`, `AgentLettingsKpis` types
+- Added shared `date-utils`, `format-money`, `compliance-constants` utility modules
+
 ## [0.3.4] - 2026-03-17
 
 ### Added

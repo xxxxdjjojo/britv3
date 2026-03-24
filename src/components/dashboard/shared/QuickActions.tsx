@@ -1,4 +1,3 @@
-"use client";
 
 /**
  * Quick action buttons grid for dashboards.

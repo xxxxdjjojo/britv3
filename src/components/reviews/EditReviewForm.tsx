@@ -185,7 +185,7 @@ export function EditReviewForm({ review, onSuccess, onCancel }: EditReviewFormPr
         onChange={(v) => setValue("overall_rating", v, { shouldValidate: true })}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StarRatingInput label="Punctuality" value={watch("punctuality_rating") ?? 0} onChange={(v) => setValue("punctuality_rating", v)} />
         <StarRatingInput label="Quality" value={watch("quality_rating") ?? 0} onChange={(v) => setValue("quality_rating", v)} />
         <StarRatingInput label="Value" value={watch("value_rating") ?? 0} onChange={(v) => setValue("value_rating", v)} />

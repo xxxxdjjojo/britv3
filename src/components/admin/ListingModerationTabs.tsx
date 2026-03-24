@@ -119,7 +119,7 @@ function ListingTable({
   isPending,
 }: {
   listings: AdminListing[];
-  emptyIcon: React.ComponentType<{ className?: string }>;
+  emptyIcon: import("lucide-react").LucideIcon;
   emptyTitle: string;
   emptyDescription: string;
   onApprove: (id: string) => void;

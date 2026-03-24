@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -79,7 +80,7 @@ function ListingCard({ listing, onRestored, onDeleted }: ListingCardProps) {
     <Card className="overflow-hidden">
       <div className="relative h-40 bg-muted">
         {imageUrl ? (
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+          <Image src={imageUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
             No image

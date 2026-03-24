@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { reviewVerification } from "@/services/admin/verification-service";
 
 export async function POST(req: Request) {
@@ -21,11 +21,12 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid decision value" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "verification.review",
     "user",
     body.userId,
+    "manage_verifications",
     async ({ supabase }) => {
       const result = await reviewVerification(
         supabase,

@@ -6,6 +6,17 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { DescriptionTone, SellerListing } from "@/types/seller";
+import { sanitizeAiInput } from "@/lib/ai/sanitize";
+
+const PROMPT_FIELD_MAX_LENGTH = 500;
+
+function sanitizeForPrompt(value: string): string {
+  // Strip control characters (reuses shared sanitizer)
+  let cleaned = sanitizeAiInput(value, { maxLength: PROMPT_FIELD_MAX_LENGTH });
+  // Collapse runs of 3+ newlines to prevent instruction injection via whitespace
+  cleaned = cleaned.replace(/\n{3,}/g, "\n\n");
+  return cleaned;
+}
 
 const MAX_ATTEMPTS = 3;
 
@@ -61,16 +72,23 @@ export async function generateDescription(
   const featuresText = listing.features?.join(", ") ?? "none specified";
   const sellingPoints = listing.key_selling_points?.join("; ") ?? "none specified";
 
+  const safeType = sanitizeForPrompt(listing.property_type ?? "");
+  const safeCity = sanitizeForPrompt(listing.city ?? "");
+  const safePostcode = sanitizeForPrompt(listing.postcode ?? "");
+  const safeFeatures = sanitizeForPrompt(featuresText);
+  const safeSellingPoints = sanitizeForPrompt(sellingPoints);
+
   const prompt = `${TONE_PROMPTS[tone]}
 
-Property details:
-- Type: ${listing.property_type}
+<property_details>
+- Type: ${safeType}
 - Bedrooms: ${listing.bedrooms ?? "unspecified"}
 - Bathrooms: ${listing.bathrooms ?? "unspecified"}
-- Location: ${listing.city}, ${listing.postcode}
+- Location: ${safeCity}, ${safePostcode}
 - Asking price: ${priceFormatted}
-- Features: ${featuresText}
-- Key selling points: ${sellingPoints}
+- Features: ${safeFeatures}
+- Key selling points: ${safeSellingPoints}
+</property_details>
 
 Write a compelling property description of approximately 150-200 words. Do not include the price. Do not include the full address.`;
 

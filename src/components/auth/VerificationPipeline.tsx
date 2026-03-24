@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { VerificationStageCard } from "@/components/auth/VerificationStageCard";
 import { VERIFICATION_STAGES, VERIFICATION_LEVELS } from "@/lib/constants";
@@ -80,8 +82,43 @@ export function VerificationPipeline(
   const completedCount = progress?.completedStages.length ?? 0;
   const totalStages = VERIFICATION_STAGES.length;
 
+  // Check for any rejected stages
+  const rejectedRecords = records.filter((r) => r.status === "rejected");
+
   return (
     <div className="space-y-6">
+      {/* Rejection banner */}
+      {rejectedRecords.length > 0 && (
+        <div className="rounded-lg border border-error/30 bg-error/10 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 size-5 shrink-0 text-error" />
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-error">
+                Verification Rejected
+              </h3>
+              {rejectedRecords.map((r) => (
+                <p key={r.stage} className="mt-1 text-sm text-error/80">
+                  <span className="font-medium capitalize">
+                    {r.stage.replace("_", " ")}
+                  </span>
+                  {r.rejection_reason ? `: ${r.rejection_reason}` : ""}
+                </p>
+              ))}
+              <p className="mt-2 text-xs text-error/70">
+                You can re-apply for any rejected stage below, or{" "}
+                <Link
+                  href="/help?topic=verification"
+                  className="font-medium underline underline-offset-2 hover:text-error"
+                >
+                  contact support
+                </Link>{" "}
+                if you believe this was an error.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Progress header */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">

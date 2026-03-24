@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    // TODO: posthog.capture("viewing.booked", { viewingId: result.viewingId })
+    // Analytics tracked client-side via hooks
 
     return NextResponse.json({ viewingId: result.viewingId }, { status: 201 });
   } catch (err) {

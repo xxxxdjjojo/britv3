@@ -249,7 +249,7 @@ export async function GET(
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: "Failed to render template", detail: message }, { status: 500 });
+    console.error("[api/emails/preview] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

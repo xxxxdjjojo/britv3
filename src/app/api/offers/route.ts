@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
-    // TODO: posthog.capture("offer.submitted", { offerId: result.offerId })
+    // Analytics tracked client-side via hooks
 
     return NextResponse.json({ offerId: result.offerId }, { status: 201 });
   } catch (err) {

@@ -40,6 +40,8 @@ const NAV_CATEGORIES: NavCategory[] = [
   {
     heading: "Platform",
     items: [
+      { href: "/legal/fee-transparency", label: "Fee Transparency" },
+      { href: "/legal/ai-transparency", label: "AI Transparency Notice" },
       { href: "/legal/accessibility", label: "Accessibility Statement" },
       { href: "/legal/complaints", label: "Complaints Procedure" },
       { href: "/legal/disclaimer", label: "Disclaimer" },

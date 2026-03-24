@@ -105,7 +105,7 @@ export async function getPortfolioMaintenanceRequests(
     .select(
       `
       *,
-      properties!inner(address_line_1, postcode),
+      properties!inner(address_line1, postcode),
       tenancies(tenant_name, status)
     `,
     )
@@ -122,9 +122,8 @@ export async function getPortfolioMaintenanceRequests(
   const { data, error } = await query;
 
   if (error) {
-    throw new Error(
-      `Failed to fetch portfolio maintenance requests: ${error.message}`,
-    );
+    console.error(`[maintenance-service] Failed to fetch portfolio maintenance requests: ${error.message}`);
+    return [];
   }
 
   return ((data ?? []) as unknown[]).map((row: unknown) => {
@@ -136,7 +135,7 @@ export async function getPortfolioMaintenanceRequests(
     return {
       ...(r as MaintenanceRequest),
       property_address: prop
-        ? String(prop.address_line_1)
+        ? String(prop.address_line1)
         : "Unknown address",
       property_postcode: prop ? String(prop.postcode) : "",
       tenant_name: activeTenancy
@@ -159,7 +158,7 @@ export async function getMaintenanceRequestById(
     .select(
       `
       *,
-      properties!inner(address_line_1, postcode),
+      properties!inner(address_line1, postcode),
       tenancies(tenant_name, tenant_email, tenant_phone, status)
     `,
     )
@@ -179,7 +178,7 @@ export async function getMaintenanceRequestById(
 
   return {
     ...(r as unknown as MaintenanceRequest),
-    property_address: prop ? String(prop.address_line_1) : "Unknown address",
+    property_address: prop ? String(prop.address_line1) : "Unknown address",
     property_postcode: prop ? String(prop.postcode) : "",
     tenant_name: activeTenancy ? String(activeTenancy.tenant_name) : null,
   } as MaintenanceRequestWithProperty;

@@ -133,8 +133,8 @@ export function ServiceAreaMapEditor({
             new TerraDrawCircleMode(),
             new TerraDrawSelectMode({
               flags: {
-                polygon: { feature: { draggable: true, deletable: true } },
-                circle: { feature: { draggable: true, deletable: true } },
+                polygon: { feature: { draggable: true } },
+                circle: { feature: { draggable: true } },
               },
             }),
           ],

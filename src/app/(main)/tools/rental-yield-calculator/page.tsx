@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -12,13 +12,16 @@ import {
   ArrowRight,
   ShieldCheck,
   ChevronDown,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { calculateSdlt } from "@/lib/calculators/sdlt";
 
 const LONDON_AVERAGE_YIELD = 4.1;
+const PURCHASE_COSTS_ESTIMATE = 3000;
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-GB", {
@@ -46,13 +49,31 @@ function formatInputValue(value: number): string {
   return new Intl.NumberFormat("en-GB").format(value);
 }
 
+function getUrlParam(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
 export default function RentalYieldCalculatorPage() {
-  const [purchasePrice, setPurchasePrice] = useState(300000);
-  const [monthlyRent, setMonthlyRent] = useState(1560);
+  const [purchasePrice, setPurchasePrice] = useState(() => getUrlParam("price", 300000));
+  const [monthlyRent, setMonthlyRent] = useState(() => getUrlParam("rent", 1560));
   const [maintenance, setMaintenance] = useState(1200);
   const [managementFeePercent, setManagementFeePercent] = useState(10);
   const [insurance, setInsurance] = useState(650);
+  const [voidWeeks, setVoidWeeks] = useState(4);
+  const [depositPercent, setDepositPercent] = useState(25);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (purchasePrice !== 300000) params.set("price", String(purchasePrice));
+    if (monthlyRent !== 1560) params.set("rent", String(monthlyRent));
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [purchasePrice, monthlyRent]);
 
   const results = useMemo(() => {
     if (purchasePrice <= 0) {
@@ -61,27 +82,47 @@ export default function RentalYieldCalculatorPage() {
         netYield: 0,
         annualProfit: 0,
         annualRent: 0,
+        effectiveAnnualRent: 0,
         managementFees: 0,
         annualCosts: 0,
+        voidLoss: 0,
+        cashOnCash: 0,
+        stampDuty: 0,
+        deposit: 0,
+        totalCashInvested: 0,
       };
     }
 
     const annualRent = monthlyRent * 12;
-    const managementFees = (annualRent * managementFeePercent) / 100;
+    const effectiveAnnualRent = annualRent * ((52 - voidWeeks) / 52);
+    const voidLoss = annualRent - effectiveAnnualRent;
+    const managementFees = (effectiveAnnualRent * managementFeePercent) / 100;
     const annualCosts = maintenance + insurance + managementFees;
-    const grossYield = (annualRent / purchasePrice) * 100;
-    const netYield = ((annualRent - annualCosts) / purchasePrice) * 100;
-    const annualProfit = annualRent - annualCosts;
+    const grossYield = (effectiveAnnualRent / purchasePrice) * 100;
+    const netYield = ((effectiveAnnualRent - annualCosts) / purchasePrice) * 100;
+    const annualProfit = effectiveAnnualRent - annualCosts;
+
+    // Cash-on-cash return
+    const stampDuty = calculateSdlt(purchasePrice, "additional").totalTax;
+    const deposit = (purchasePrice * depositPercent) / 100;
+    const totalCashInvested = deposit + stampDuty + PURCHASE_COSTS_ESTIMATE;
+    const cashOnCash = totalCashInvested > 0 ? (annualProfit / totalCashInvested) * 100 : 0;
 
     return {
       grossYield,
       netYield,
       annualProfit,
       annualRent,
+      effectiveAnnualRent,
       managementFees,
       annualCosts,
+      voidLoss,
+      cashOnCash,
+      stampDuty,
+      deposit,
+      totalCashInvested,
     };
-  }, [purchasePrice, monthlyRent, maintenance, managementFeePercent, insurance]);
+  }, [purchasePrice, monthlyRent, maintenance, managementFeePercent, insurance, voidWeeks, depositPercent]);
 
   const yieldDifference = results.grossYield - LONDON_AVERAGE_YIELD;
 
@@ -141,6 +182,13 @@ export default function RentalYieldCalculatorPage() {
                 variant="outline"
                 size="lg"
                 className="gap-2"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: "Rental Yield Calculator", url: window.location.href });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
               >
                 <Share2 className="size-4" /> Share
               </Button>
@@ -148,6 +196,7 @@ export default function RentalYieldCalculatorPage() {
                 variant="outline"
                 size="lg"
                 className="gap-2"
+                onClick={() => window.print()}
               >
                 <Download className="size-4" /> Download PDF
               </Button>
@@ -161,7 +210,7 @@ export default function RentalYieldCalculatorPage() {
           {/* Left Column: Inputs & Main Results (75%) */}
           <div className="space-y-8 lg:col-span-3">
             {/* Results Scorecards */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               {/* Gross Yield */}
               <Card className="relative overflow-hidden border-neutral-200 shadow-sm dark:border-neutral-800">
                 <CardContent className="p-6">
@@ -234,6 +283,30 @@ export default function RentalYieldCalculatorPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Cash-on-Cash Return */}
+              <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
+                <CardContent className="p-6">
+                  <div className="mb-4 flex items-start justify-between">
+                    <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                      Cash-on-Cash
+                    </span>
+                    <Info
+                      className="size-4 cursor-help text-neutral-400"
+                      aria-label="Annual profit divided by total cash invested (deposit + stamp duty + purchase costs)"
+                    />
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-neutral-900 dark:text-white">
+                      {formatPercent(results.cashOnCash)}%
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center text-xs font-medium text-neutral-500">
+                    <Banknote className="mr-1 size-3" />
+                    {formatCurrency(results.totalCashInvested)} invested
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Input Groups */}
@@ -246,7 +319,7 @@ export default function RentalYieldCalculatorPage() {
                   </span>
                   Property Details
                 </h3>
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                       Purchase Price (&pound;)
@@ -285,6 +358,28 @@ export default function RentalYieldCalculatorPage() {
                       />
                     </div>
                   </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                      Deposit (%)
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={depositPercent === 0 ? "" : String(depositPercent)}
+                        onChange={(e) =>
+                          setDepositPercent(parseNumericInput(e.target.value))
+                        }
+                        className="h-12 rounded-lg border-neutral-200 bg-neutral-50 pl-4 pr-8 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
+                        %
+                      </span>
+                    </div>
+                    <p className="text-[10px] italic text-neutral-400">
+                      {formatCurrency(results.deposit)} cash deposit
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -296,7 +391,7 @@ export default function RentalYieldCalculatorPage() {
                   </span>
                   Annual Operating Costs
                 </h3>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                       Maintenance (&pound;)
@@ -367,6 +462,28 @@ export default function RentalYieldCalculatorPage() {
                     </div>
                     <p className="text-[10px] italic text-neutral-400">
                       Building &amp; landlord cover
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                      Void Weeks / Year
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min={0}
+                        max={12}
+                        value={voidWeeks === 0 ? "" : String(voidWeeks)}
+                        onChange={(e) => {
+                          const val = Math.min(12, Math.max(0, Number(e.target.value) || 0));
+                          setVoidWeeks(val);
+                        }}
+                        className="rounded-lg border-neutral-200 bg-white pl-4 pr-4 text-sm dark:border-neutral-700 dark:bg-neutral-900"
+                      />
+                    </div>
+                    <p className="text-[10px] italic text-neutral-400">
+                      {voidWeeks > 0 ? `${formatCurrency(results.voidLoss)} lost rent` : "No void periods"}
                     </p>
                   </div>
                 </div>
@@ -460,6 +577,16 @@ export default function RentalYieldCalculatorPage() {
                         {formatCurrency(results.annualRent)}
                       </span>
                     </li>
+                    {voidWeeks > 0 && (
+                      <li className="flex justify-between text-sm">
+                        <span className="text-neutral-600 dark:text-neutral-400">
+                          Void Period Loss ({voidWeeks} weeks)
+                        </span>
+                        <span className="font-semibold text-red-500">
+                          - {formatCurrency(results.voidLoss)}
+                        </span>
+                      </li>
+                    )}
                     <li className="flex justify-between text-sm">
                       <span className="text-neutral-600 dark:text-neutral-400">
                         Management Fees ({managementFeePercent}%)
@@ -492,6 +619,69 @@ export default function RentalYieldCalculatorPage() {
                         className={`font-bold ${results.annualProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}
                       >
                         {formatCurrency(results.annualProfit)}
+                      </span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Cash-on-Cash Breakdown */}
+              <Card className="border-neutral-200 shadow-sm md:col-span-2 dark:border-neutral-800">
+                <CardContent className="p-8">
+                  <h4 className="mb-6 text-lg font-bold text-neutral-900 dark:text-white">
+                    Cash-on-Cash Return Breakdown
+                  </h4>
+                  <ul className="space-y-4">
+                    <li className="flex justify-between text-sm">
+                      <span className="text-neutral-600 dark:text-neutral-400">
+                        Deposit ({depositPercent}%)
+                      </span>
+                      <span className="font-semibold text-neutral-900 dark:text-white">
+                        {formatCurrency(results.deposit)}
+                      </span>
+                    </li>
+                    <li className="flex justify-between text-sm">
+                      <span className="text-neutral-600 dark:text-neutral-400">
+                        Stamp Duty (additional property rate)
+                      </span>
+                      <span className="font-semibold text-neutral-900 dark:text-white">
+                        {formatCurrency(results.stampDuty)}
+                      </span>
+                    </li>
+                    <li className="flex justify-between border-b border-neutral-100 pb-4 text-sm dark:border-neutral-800">
+                      <span className="text-neutral-600 dark:text-neutral-400">
+                        Purchase Costs (legal/survey est.)
+                      </span>
+                      <span className="font-semibold text-neutral-900 dark:text-white">
+                        {formatCurrency(PURCHASE_COSTS_ESTIMATE)}
+                      </span>
+                    </li>
+                    <li className="flex justify-between pt-2 text-sm">
+                      <span className="font-bold text-neutral-900 dark:text-white">
+                        Total Cash Invested
+                      </span>
+                      <span className="font-bold text-neutral-900 dark:text-white">
+                        {formatCurrency(results.totalCashInvested)}
+                      </span>
+                    </li>
+                    <li className="flex justify-between text-sm">
+                      <span className="text-neutral-600 dark:text-neutral-400">
+                        Annual Net Profit
+                      </span>
+                      <span
+                        className={`font-semibold ${results.annualProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}
+                      >
+                        {formatCurrency(results.annualProfit)}
+                      </span>
+                    </li>
+                    <li className="flex justify-between border-t border-neutral-100 pt-4 text-lg dark:border-neutral-800">
+                      <span className="font-bold text-neutral-900 dark:text-white">
+                        Cash-on-Cash Return
+                      </span>
+                      <span
+                        className={`font-bold ${results.cashOnCash >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}
+                      >
+                        {formatPercent(results.cashOnCash)}%
                       </span>
                     </li>
                   </ul>

@@ -29,8 +29,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { AgentSaleProgression, SaleStage } from "@/types/agent";
+import type { AgentSaleProgressionWithRisk, SaleStage } from "@/types/agent";
 import { SALE_STAGES } from "@/types/agent";
+import { ChainRiskBadge } from "@/components/dashboard/agent/sales/ChainRiskBadge";
+import { ChainDetailDialog } from "@/components/dashboard/agent/sales/ChainDetailDialog";
 
 // --------------------------------------------------------------------------
 // Stage metadata
@@ -80,8 +82,8 @@ function SortableCard({
   progression,
   onOpen,
 }: Readonly<{
-  progression: AgentSaleProgression;
-  onOpen: (p: AgentSaleProgression) => void;
+  progression: AgentSaleProgressionWithRisk;
+  onOpen: (p: AgentSaleProgressionWithRisk) => void;
 }>) {
   const {
     attributes,
@@ -125,6 +127,11 @@ function SortableCard({
           {days}d
         </span>
       </div>
+      {progression.chain_risk && (
+        <div className="mt-1.5">
+          <ChainRiskBadge risk={progression.chain_risk} />
+        </div>
+      )}
       {progression.expected_completion_date && (
         <p className="mt-1.5 text-[10px] text-muted-foreground">
           ETA:{" "}
@@ -147,8 +154,8 @@ function DroppableColumn({
   onOpen,
 }: Readonly<{
   stage: SaleStage;
-  progressions: AgentSaleProgression[];
-  onOpen: (p: AgentSaleProgression) => void;
+  progressions: AgentSaleProgressionWithRisk[];
+  onOpen: (p: AgentSaleProgressionWithRisk) => void;
 }>) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
   const meta = STAGE_LABELS[stage];
@@ -200,10 +207,12 @@ function ProgressionDialog({
   open,
   onClose,
 }: Readonly<{
-  progression: AgentSaleProgression | null;
+  progression: AgentSaleProgressionWithRisk | null;
   open: boolean;
   onClose: () => void;
 }>) {
+  const [chainDialogOpen, setChainDialogOpen] = useState(false);
+
   if (!progression) return null;
 
   return (
@@ -268,6 +277,19 @@ function ProgressionDialog({
               className="mt-1 resize-none text-sm"
             />
           </div>
+
+          {progression.chain_risk && (
+            <>
+              <Button variant="outline" size="sm" onClick={() => setChainDialogOpen(true)}>
+                View Chain ({progression.chain_risk.chain_length} links)
+              </Button>
+              <ChainDetailDialog
+                chainGroupId={progression.chain_risk.chain_group_id}
+                open={chainDialogOpen}
+                onClose={() => setChainDialogOpen(false)}
+              />
+            </>
+          )}
         </div>
 
         <div className="mt-2 flex justify-end">
@@ -284,7 +306,7 @@ function ProgressionDialog({
 // Main Kanban component
 // --------------------------------------------------------------------------
 
-type ProgressionsMap = Partial<Record<SaleStage, AgentSaleProgression[]>>;
+type ProgressionsMap = Partial<Record<SaleStage, AgentSaleProgressionWithRisk[]>>;
 
 export function SaleProgressionKanban({
   initialProgressions,
@@ -294,7 +316,7 @@ export function SaleProgressionKanban({
   const [progressions, setProgressions] =
     useState<ProgressionsMap>(initialProgressions);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [selected, setSelected] = useState<AgentSaleProgression | null>(null);
+  const [selected, setSelected] = useState<AgentSaleProgressionWithRisk | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const sensors = useSensors(
@@ -302,7 +324,7 @@ export function SaleProgressionKanban({
   );
 
   // Find a progression by id across all stages
-  function findProgression(id: string): AgentSaleProgression | undefined {
+  function findProgression(id: string): AgentSaleProgressionWithRisk | undefined {
     for (const stage of SALE_STAGES) {
       const found = progressions[stage]?.find((p) => p.id === id);
       if (found) return found;
@@ -369,7 +391,7 @@ export function SaleProgressionKanban({
     }
   }
 
-  function openDetail(p: AgentSaleProgression) {
+  function openDetail(p: AgentSaleProgressionWithRisk) {
     setSelected(p);
     setDialogOpen(true);
   }

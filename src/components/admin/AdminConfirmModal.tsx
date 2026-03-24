@@ -75,7 +75,7 @@ export function AdminConfirmModal({
             <Label htmlFor="reason">
               Reason <span className="text-red-500">*</span>
             </Label>
-            <Select value={reason} onValueChange={setReason}>
+            <Select value={reason} onValueChange={(v) => setReason(v ?? "")}>
               <SelectTrigger id="reason">
                 <SelectValue placeholder="Select a reason" />
               </SelectTrigger>

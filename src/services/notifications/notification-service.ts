@@ -17,6 +17,7 @@ export const CRITICAL_EVENTS: ReadonlySet<EventType> = new Set([
   "quote_received",
   "booking_confirmed",
   "offer_received",
+  "maintenance_request_created",
 ]);
 
 /** All non-critical events (batched into digest) */
@@ -246,32 +247,41 @@ async function dispatchCriticalEmail(
   event: PlatformEvent,
 ): Promise<void> {
   try {
-    // Find users associated with this entity (excluding the actor)
-    const { data: conversation } = await supabase
-      .from("conversations")
-      .select("participant_1_id, participant_2_id")
-      .eq("id", event.entity_id)
-      .single();
-
-    const participantIds: string[] = [];
-    if (conversation?.participant_1_id) {
-      participantIds.push(conversation.participant_1_id);
-    }
-    if (conversation?.participant_2_id) {
-      participantIds.push(conversation.participant_2_id);
-    }
-
-    const participants = participantIds.map((id) => ({ user_id: id }));
-
-    // For non-conversation entities, look up the owner
     const recipientIds: string[] = [];
 
-    if (participants?.length) {
-      recipientIds.push(
-        ...participants
-          .map((p) => p.user_id)
-          .filter((id: string) => id !== event.actor_id),
-      );
+    if (event.entity_type === "maintenance_request") {
+      // Look up the property owner (landlord) from maintenance_requests -> properties
+      const { data: request } = await supabase
+        .from("maintenance_requests")
+        .select("property_id")
+        .eq("id", event.entity_id)
+        .single();
+
+      if (request?.property_id) {
+        const { data: property } = await supabase
+          .from("properties")
+          .select("user_id")
+          .eq("id", request.property_id)
+          .single();
+
+        if (property?.user_id && property.user_id !== event.actor_id) {
+          recipientIds.push(property.user_id);
+        }
+      }
+    } else {
+      // Default: find users associated via conversations
+      const { data: conversation } = await supabase
+        .from("conversations")
+        .select("participant_1_id, participant_2_id")
+        .eq("id", event.entity_id)
+        .single();
+
+      if (conversation?.participant_1_id && conversation.participant_1_id !== event.actor_id) {
+        recipientIds.push(conversation.participant_1_id);
+      }
+      if (conversation?.participant_2_id && conversation.participant_2_id !== event.actor_id) {
+        recipientIds.push(conversation.participant_2_id);
+      }
     }
 
     // Dispatch email to each recipient
@@ -303,6 +313,8 @@ function getEmailSubject(event: PlatformEvent): string {
       return "Your booking has been confirmed - Britestate";
     case "offer_received":
       return `${actor} made an offer on your property - Britestate`;
+    case "maintenance_request_created":
+      return `${actor} submitted a maintenance request - Britestate`;
     default:
       return "New notification from Britestate";
   }

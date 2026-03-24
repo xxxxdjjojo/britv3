@@ -176,6 +176,26 @@ export default function NotificationsSettingsPage() {
         </p>
       </div>
 
+      {/* Security Alerts — always on, non-toggleable */}
+      <section className="space-y-4">
+        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          Security Alerts
+        </h3>
+        <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900">
+          <p className="font-body text-sm text-neutral-600 dark:text-neutral-400">
+            Security notifications are always enabled and cannot be turned off.
+            You will receive email alerts for:
+          </p>
+          <ul className="mt-2 list-inside list-disc space-y-1 font-body text-sm text-neutral-700 dark:text-neutral-300">
+            <li>Password changes</li>
+            <li>Two-factor authentication changes</li>
+            <li>New device logins</li>
+            <li>Email address changes</li>
+            <li>Connected account changes</li>
+          </ul>
+        </div>
+      </section>
+
       {/* 5×4 Notification Matrix */}
       <section className="space-y-4">
         <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">

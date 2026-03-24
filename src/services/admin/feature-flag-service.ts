@@ -46,7 +46,7 @@ export async function toggleFlag(
     })
     .eq("key", key);
 
-  if (!error) revalidateTag("feature-flags");
+  if (!error) revalidateTag("feature-flags", "max");
   return { success: !error };
 }
 
@@ -69,6 +69,6 @@ export async function setRollout(
     })
     .eq("key", key);
 
-  if (!error) revalidateTag("feature-flags");
+  if (!error) revalidateTag("feature-flags", "max");
   return { success: !error };
 }

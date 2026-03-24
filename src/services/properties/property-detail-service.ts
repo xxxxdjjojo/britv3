@@ -6,6 +6,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { isFeatureEnabled } from "@/lib/features";
 
 // -- Types -------------------------------------------------------------------
 
@@ -118,10 +119,107 @@ function parseCoordinates(
   return null;
 }
 
+// -- Mock data fallback (when search_live_data flag is off) ------------------
+
+type MockSearchProperty = {
+  id: string;
+  slug: string;
+  image: string | null;
+  price: number;
+  address: string;
+  city: string;
+  postcode: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  type: string;
+  listing_type: "sale" | "rent";
+  lat: number;
+  lng: number;
+  epc_rating: string | null;
+  tenure: string | null;
+};
+
+const MOCK_PROPERTIES: MockSearchProperty[] = [
+  { id: "1", slug: "12-kensington-gardens-london-sale", image: "/images/properties/property-1.jpg", price: 485000, address: "12 Kensington Gardens", city: "London", postcode: "W8 4PT", beds: 3, baths: 2, sqft: 1240, type: "terraced", listing_type: "sale", lat: 51.5014, lng: -0.1794, epc_rating: "C", tenure: "freehold" },
+  { id: "2", slug: "8-primrose-hill-road-london-sale", image: "/images/properties/property-2.jpg", price: 625000, address: "8 Primrose Hill Road", city: "London", postcode: "NW1 8YS", beds: 4, baths: 2, sqft: 1650, type: "semi_detached", listing_type: "sale", lat: 51.5392, lng: -0.1547, epc_rating: "B", tenure: "leasehold" },
+  { id: "3", slug: "45-bermondsey-street-london-rent", image: "/images/properties/property-3.jpg", price: 1850, address: "45 Bermondsey Street", city: "London", postcode: "SE1 3XF", beds: 2, baths: 1, sqft: 820, type: "flat", listing_type: "rent", lat: 51.4998, lng: -0.0821, epc_rating: "D", tenure: "leasehold" },
+  { id: "4", slug: "3-highbury-park-london-sale", image: "/images/properties/property-1.jpg", price: 875000, address: "3 Highbury Park", city: "London", postcode: "N5 1QJ", beds: 5, baths: 3, sqft: 2100, type: "detached", listing_type: "sale", lat: 51.5555, lng: -0.0984, epc_rating: "A", tenure: "freehold" },
+  { id: "5", slug: "22-canary-wharf-way-london-rent", image: "/images/properties/property-2.jpg", price: 2200, address: "22 Canary Wharf Way", city: "London", postcode: "E14 5AB", beds: 3, baths: 2, sqft: 1380, type: "flat", listing_type: "rent", lat: 51.5054, lng: -0.0235, epc_rating: null, tenure: "leasehold" },
+  { id: "6", slug: "7-peckham-rye-lane-london-sale", image: "/images/properties/property-3.jpg", price: 295000, address: "7 Peckham Rye Lane", city: "London", postcode: "SE15 4JU", beds: 2, baths: 1, sqft: 750, type: "terraced", listing_type: "sale", lat: 51.4691, lng: -0.0691, epc_rating: "E", tenure: "freehold" },
+  { id: "7", slug: "15-notting-hill-gate-london-commercial", image: "/images/properties/property-1.jpg", price: 1125000, address: "15 Notting Hill Gate", city: "London", postcode: "W11 3LQ", beds: 5, baths: 4, sqft: 2800, type: "detached", listing_type: "sale", lat: 51.5095, lng: -0.1963, epc_rating: "C", tenure: null },
+  { id: "8", slug: "31-borough-market-close-london-sale", image: "/images/properties/property-2.jpg", price: 410000, address: "31 Borough Market Close", city: "London", postcode: "SE1 9AF", beds: 2, baths: 1, sqft: 900, type: "flat", listing_type: "sale", lat: 51.5055, lng: -0.091, epc_rating: "F", tenure: "leasehold" },
+];
+
+function getMockPropertyBySlug(slug: string): PropertyDetail | null {
+  const mock = MOCK_PROPERTIES.find((p) => p.slug === slug);
+  if (!mock) return null;
+
+  return {
+    listing: {
+      id: `mock-listing-${mock.id}`,
+      slug: mock.slug,
+      listingType: mock.listing_type,
+      status: "active",
+      price: mock.price,
+      rentFrequency: mock.listing_type === "rent" ? "monthly" : null,
+      priceQualifier: null,
+      listedDate: "2026-01-15",
+      viewCount: Math.floor(Math.random() * 500) + 50,
+    },
+    property: {
+      id: `mock-property-${mock.id}`,
+      title: `${mock.beds} Bed ${mock.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} in ${mock.city}`,
+      description: `A stunning ${mock.beds}-bedroom ${mock.type.replace(/_/g, " ")} property located at ${mock.address}, ${mock.city} ${mock.postcode}. This property offers ${mock.sqft} sq ft of living space with ${mock.baths} bathroom${mock.baths > 1 ? "s" : ""}. Close to transport links and local amenities.`,
+      addressLine1: mock.address,
+      addressLine2: null,
+      city: mock.city,
+      county: null,
+      postcode: mock.postcode,
+      propertyType: mock.type,
+      bedrooms: mock.beds,
+      bathrooms: mock.baths,
+      receptionRooms: mock.beds > 2 ? 2 : 1,
+      squareFootage: mock.sqft,
+      features: { items: ["Central heating", "Double glazing", "Garden", "Parking"] },
+      epcRating: mock.epc_rating,
+      epcScore: mock.epc_rating ? { A: 95, B: 85, C: 72, D: 58, E: 42, F: 28, G: 12 }[mock.epc_rating] ?? null : null,
+      tenure: mock.tenure,
+      leaseRemainingYears: mock.tenure === "leasehold" ? 95 : null,
+      councilTaxBand: ["A", "B", "C", "D", "E"][Number(mock.id) % 5] ?? "C",
+      yearBuilt: 2000 + Number(mock.id),
+      newBuild: false,
+      coordinates: { lat: mock.lat, lng: mock.lng },
+    },
+    media: mock.image
+      ? [
+          {
+            id: `mock-media-${mock.id}`,
+            mediaType: "image" as const,
+            url: mock.image,
+            thumbnailUrl: mock.image,
+            caption: `${mock.address} exterior`,
+            altText: `${mock.address}, ${mock.city}`,
+            sortOrder: 0,
+          },
+        ]
+      : [],
+    agent: {
+      id: "mock-agent-1",
+      displayName: "Sarah Thompson",
+      agencyName: "London Premier Estates",
+      contactEmail: "sarah@londonpremier.co.uk",
+      contactPhone: "+44 20 7946 0958",
+      logoUrl: null,
+    },
+  };
+}
+
 // -- Public API --------------------------------------------------------------
 
 /**
  * Get a property and its listing by slug.
+ * When `search_live_data` flag is off, returns mock data for known slugs.
  * Returns only active or under_offer listings (so detail pages remain
  * accessible for under-offer properties).
  * Returns null if not found or in an inaccessible status.
@@ -129,6 +227,12 @@ function parseCoordinates(
 export async function getPropertyBySlug(
   slug: string,
 ): Promise<PropertyDetail | null> {
+  // Mock data fallback when search_live_data is off
+  if (!isFeatureEnabled("search_live_data")) {
+    const mock = getMockPropertyBySlug(slug);
+    if (mock) return mock;
+  }
+
   const supabase = await createClient();
 
   // Fetch listing + property in one query
@@ -181,7 +285,7 @@ export async function getPropertyBySlug(
     return null;
   }
 
-  const property = listingRow.properties as Record<string, unknown> | null;
+  const property = listingRow.properties as unknown as Record<string, unknown> | null;
   if (!property) {
     return null;
   }

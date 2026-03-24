@@ -4,16 +4,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AgentDashboardKpis } from "@/types/agent";
-
-type ActivityFeedItem = {
-  id: string;
-  type: string;
-  description: string | null;
-  actor_id: string;
-  created_at: string;
-  metadata: Record<string, unknown> | null;
-};
+import type { AgentDashboardKpis, ActivityFeedItem, DiaryViewingSlot } from "@/types/agent";
 
 /**
  * Calls the get_agent_dashboard_kpis RPC to retrieve all dashboard KPIs in
@@ -88,4 +79,28 @@ export async function getAgentPerformanceScore(
 
   const closed = leads.filter((l) => l.stage === "closed").length;
   return closed / leads.length;
+}
+
+/**
+ * Fetches today's viewing diary for the given agent.
+ */
+export async function getTodaysDiary(
+  supabase: SupabaseClient,
+  agentId: string,
+): Promise<DiaryViewingSlot[]> {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const { data, error } = await supabase
+    .from("agent_viewing_slots")
+    .select("id, property_id, start_time, end_time, is_booked, booked_by, notes")
+    .eq("agent_id", agentId)
+    .gte("start_time", todayStart.toISOString())
+    .lte("start_time", todayEnd.toISOString())
+    .order("start_time", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as DiaryViewingSlot[];
 }

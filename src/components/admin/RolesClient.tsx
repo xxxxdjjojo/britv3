@@ -16,7 +16,7 @@ import { Users } from "lucide-react";
 
 type RoleCount = { role: string; count: number };
 
-type Props = Readonly<{ roleCounts: RoleCount[] }>;
+type Props = Readonly<{ roleCounts: RoleCount[]; isSuperAdmin?: boolean }>;
 
 const ROLE_LABELS: Record<string, string> = {
   homebuyer: "Homebuyer",
@@ -92,7 +92,7 @@ function PromoteDemoteForm() {
           </SelectContent>
         </Select>
         {action === "demote" && (
-          <Select value={demoteTo} onValueChange={setDemoteTo}>
+          <Select value={demoteTo} onValueChange={(v) => setDemoteTo(v ?? "")}>
             <SelectTrigger className="w-44 h-8 text-sm">
               <SelectValue />
             </SelectTrigger>
@@ -113,12 +113,12 @@ function PromoteDemoteForm() {
   );
 }
 
-export function RolesClient({ roleCounts }: Props) {
+export function RolesClient({ roleCounts, isSuperAdmin = false }: Props) {
   const total = roleCounts.reduce((sum, r) => sum + r.count, 0);
 
   return (
     <div>
-      <PromoteDemoteForm />
+      {isSuperAdmin && <PromoteDemoteForm />}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {roleCounts.map(({ role, count }) => (

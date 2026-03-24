@@ -1,13 +1,22 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Building2, Percent, PoundSterling, Wrench, Plus, ShieldCheck } from "lucide-react";
+import { Building2, Calendar, Percent, PoundSterling, Wrench, Plus, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioKPIs, getHealthScore } from "@/services/landlord/portfolio-service";
 import { getComplianceSummary } from "@/services/landlord/document-service";
+import { getRentCollection } from "@/services/landlord/financial-service";
+import { scoreActionItems } from "@/services/landlord/action-items-service";
+import { isAllClear } from "@/lib/all-clear-check";
+import { getDaysUntil } from "@/lib/date-utils";
 import { KpiCard } from "@/components/landlord/KpiCard";
 import { HealthScoreCard } from "@/components/landlord/HealthScoreCard";
 import { ComplianceAlertBanner } from "@/components/landlord/ComplianceAlertBanner";
+import { AllClearBanner } from "@/components/landlord/AllClearBanner";
+import { ActionItemsCard } from "@/components/landlord/ActionItemsCard";
+import { KeyDatesTicker } from "@/components/landlord/KeyDatesTicker";
+import type { KeyDate } from "@/components/landlord/KeyDatesTicker";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardAnalytics } from "@/components/landlord/DashboardAnalytics";
 
 export const metadata = {
   title: "Dashboard | Landlord | Britestate",
@@ -16,11 +25,16 @@ export const metadata = {
 async function DashboardContent() {
   const supabase = await createClient();
 
-  const [kpis, complianceDocs, healthScore] = await Promise.all([
+  const [kpis, complianceDocs, healthScore, rentGroups, keyDatesResult] = await Promise.all([
     getPortfolioKPIs(supabase),
     getComplianceSummary(supabase),
     getHealthScore(supabase),
+    getRentCollection(supabase),
+    supabase.rpc("get_key_dates", { p_days_ahead: 60 }),
   ]);
+
+  // Key dates from RPC
+  const keyDates: KeyDate[] = (keyDatesResult.data ?? []) as KeyDate[];
 
   // Filter to only expired or expiring_soon documents
   const alerts = complianceDocs.filter(
@@ -32,6 +46,39 @@ async function DashboardContent() {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // Compute action items
+  const overdueRents = rentGroups.overdue.map((r) => ({
+    tenantName: r.tenant_name,
+    propertyAddress: r.property_address,
+    amount: r.entry.amount,
+    daysDue: Math.abs(getDaysUntil(r.entry.entry_date)),
+    propertyId: r.entry.property_id,
+  }));
+
+  const expiringCompliance = complianceDocs
+    .filter((d) => d.status === "expired" || d.status === "expiring_soon")
+    .map((d) => ({
+      category: d.category,
+      propertyAddress: `${d.property.address_line_1}, ${d.property.city}`,
+      daysUntilExpiry: getDaysUntil(d.expiry_date),
+      propertyId: "",
+    }));
+
+  const actionItems = scoreActionItems({
+    overdueRents,
+    expiringCompliance,
+    endingTenancies: [],
+    openMaintenance: [],
+  });
+
+  const allClear = isAllClear({
+    totalOverdueRent: rentGroups.overdue.length,
+    expiredCompliance: complianceDocs.filter((d) => d.status === "expired").length,
+    expiringSoonCompliance: complianceDocs.filter((d) => d.status === "expiring_soon").length,
+    openMaintenance: kpis.open_maintenance,
+    totalProperties: kpis.total_properties,
+  });
 
   return (
     <div className="space-y-8 p-8">
@@ -76,6 +123,17 @@ async function DashboardContent() {
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         <HealthScoreCard score={healthScore} />
       </section>
+
+      {/* All Clear Banner OR Action Items (mutually exclusive) */}
+      {allClear ? (
+        <section>
+          <AllClearBanner monthlyCashflow={kpis.total_monthly_rent} />
+        </section>
+      ) : actionItems.length > 0 ? (
+        <section>
+          <ActionItemsCard items={actionItems} />
+        </section>
+      ) : null}
 
       {/* KPI Cards */}
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -148,6 +206,15 @@ async function DashboardContent() {
         </section>
       )}
 
+      {/* Key Dates */}
+      <section className="space-y-4">
+        <h3 className="flex items-center gap-2 text-xl font-bold">
+          <Calendar className="size-5 text-[#1B4D3E]" />
+          Key Dates
+        </h3>
+        <KeyDatesTicker dates={keyDates} />
+      </section>
+
       {/* Quick Links */}
       <section className="space-y-4">
         <h3 className="text-xl font-bold">Quick Actions</h3>
@@ -175,6 +242,13 @@ async function DashboardContent() {
           ))}
         </div>
       </section>
+
+      {/* PostHog analytics */}
+      <DashboardAnalytics
+        propertyCount={kpis.total_properties}
+        actionItemCount={actionItems.length}
+        isAllClear={allClear}
+      />
     </div>
   );
 }

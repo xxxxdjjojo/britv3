@@ -79,6 +79,7 @@ export async function GET(request: Request) {
       based_on: comparables.length,
     });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/valuation] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

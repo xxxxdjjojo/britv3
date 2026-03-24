@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { AgentProfile } from "@/types/seller";
@@ -69,8 +70,7 @@ export default async function AgentComparisonPage({ searchParams }: Props) {
                 <th key={agent.id} className="text-left px-6 py-4">
                   <div className="flex items-center gap-3">
                     {agent.avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={agent.avatar_url} alt={agent.full_name} className="h-9 w-9 rounded-full object-cover" />
+                      <Image src={agent.avatar_url} alt={agent.full_name} width={36} height={36} className="rounded-full object-cover" />
                     ) : (
                       <div className="h-9 w-9 rounded-full bg-[#1B4D3E]/10 flex items-center justify-center text-[#1B4D3E] font-bold text-sm">
                         {agent.full_name.charAt(0)}

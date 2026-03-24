@@ -5,6 +5,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { trackEvent } from "@/lib/analytics/track-event";
 import type { BuyerOffer } from "@/services/offers/offers-service";
 
 const QUERY_KEY = ["offers"];
@@ -58,7 +59,7 @@ export function useSubmitOffer() {
         });
       }
 
-      // TODO: posthog.capture("offer.submitted", { offerId: data.offerId })
+      trackEvent("offer.submitted", { offerId: data.offerId });
 
       return data;
     },

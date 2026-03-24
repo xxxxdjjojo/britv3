@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "timestamp": "2026-03-21T08:32:41Z",
+  "score": {
+    "security": 100,
+    "seo": 100,
+    "a11y": 100,
+    "performance": 95,
+    "analytics": 100,
+    "mobile": 100,
+    "crossBrowser": 100
+  },
+  "checks": {
+    "SEC-1": {
+      "status": "pass",
+      "details": "23 usages of dangerouslySetInnerHTML — all use SafeHTML, JSON.stringify, or sanitizeHtml",
+      "severity": "critical"
+    },
+    "SEC-3": {
+      "status": "pass",
+      "details": "0 String(err) leaks in API routes",
+      "severity": "high"
+    },
+    "SEC-5": {
+      "status": "pass",
+      "details": "No hardcoded secure cookie flags gated on NODE_ENV",
+      "severity": "medium"
+    },
+    "SEO-1": {
+      "status": "pass",
+      "details": "src/app/robots.ts exists",
+      "severity": "high"
+    },
+    "SEO-2": {
+      "status": "pass",
+      "details": "src/app/sitemap.ts exists and uses async (dynamic)",
+      "severity": "high"
+    },
+    "SEO-4": {
+      "status": "pass",
+      "details": "Organization JSON-LD imported from @/lib/seo/organization-jsonld and rendered in layout.tsx",
+      "severity": "medium"
+    },
+    "SEO-6": {
+      "status": "pass",
+      "details": "Twitter card metadata present in layout.tsx metadata export",
+      "severity": "low"
+    },
+    "A11Y-2": {
+      "status": "pass",
+      "details": "@media (pointer: coarse) rule found in globals.css",
+      "severity": "medium"
+    },
+    "A11Y-5": {
+      "status": "pass",
+      "details": "Skip to main content link found in Header.tsx",
+      "severity": "medium"
+    },
+    "PERF-1": {
+      "status": "warn",
+      "details": "1 raw <img> tag found (excluding eslint-disable lines). Should use next/image.",
+      "severity": "low"
+    },
+    "PERF-10": {
+      "status": "pass",
+      "details": "optimizePackageImports configured in next.config.ts",
+      "severity": "medium"
+    },
+    "ANA-2": {
+      "status": "pass",
+      "details": "posthog.identify called in PostHogProvider.tsx (2 occurrences)",
+      "severity": "medium"
+    },
+    "ANA-6": {
+      "status": "pass",
+      "details": "opt_out_capturing/opt_in_capturing found in PostHogProvider.tsx (consent gating)",
+      "severity": "high"
+    }
+  },
+  "metrics": {
+    "useClientCount": 467,
+    "rawImgCount": 1,
+    "loadingTsxCount": 6,
+    "jsonLdPageCount": 19
+  }
+}

@@ -34,7 +34,7 @@ export default async function AdminUserDetailPage({
   return (
     <div>
       <AdminPageHeader
-        title={user.full_name ?? "Unknown User"}
+        title={user.display_name ?? "Unknown User"}
         description={user.email ?? undefined}
       />
 
@@ -51,7 +51,7 @@ export default async function AdminUserDetailPage({
               <div>
                 <dt className="text-xs text-neutral-500">Full Name</dt>
                 <dd className="mt-0.5 text-sm font-medium text-neutral-900">
-                  {user.full_name ?? "—"}
+                  {user.display_name ?? "—"}
                 </dd>
               </div>
               <div>
@@ -63,13 +63,13 @@ export default async function AdminUserDetailPage({
               <div>
                 <dt className="text-xs text-neutral-500">Role</dt>
                 <dd className="mt-0.5 text-sm font-medium text-neutral-900 capitalize">
-                  {user.role ?? "—"}
+                  {user.active_role ?? "—"}{user.is_admin ? " (Admin)" : ""}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-neutral-500">Verification Status</dt>
+                <dt className="text-xs text-neutral-500">Verification Level</dt>
                 <dd className="mt-0.5">
-                  <StatusBadge status={user.verification_status ?? "unverified"} />
+                  <StatusBadge status={user.verification_level ?? "basic"} />
                 </dd>
               </div>
               <div>

@@ -5,6 +5,7 @@
 
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
+import { createInMemoryRateLimiter } from "@/lib/rate-limit-memory";
 
 // ---------------------------------------------------------------------------
 // Client singleton
@@ -15,12 +16,12 @@ let _redis: Redis | null = null;
 function getRedisClient(): Redis | null {
   if (_redis) return _redis;
 
-  const url = process.env.UPSTASH_REDIS_URL;
-  const token = process.env.UPSTASH_REDIS_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
     console.warn(
-      "[redis] UPSTASH_REDIS_URL or UPSTASH_REDIS_TOKEN not set -- using no-op fallback",
+      "[redis] UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not set -- using no-op fallback",
     );
     return null;
   }
@@ -103,6 +104,10 @@ export async function invalidateCachePattern(pattern: string): Promise<void> {
 /**
  * Create a sliding-window rate limiter.
  * Default: 5 requests per hour (for email rate limiting).
+ *
+ * Fails OPEN: when Redis is unavailable all requests are allowed through.
+ * Use this for non-critical endpoints where availability > security.
+ * For auth endpoints use `createAuthRateLimiter` instead.
  */
 export function createRateLimiter(
   maxRequests = 5,
@@ -119,6 +124,42 @@ export function createRateLimiter(
         reset: Date.now() + 3_600_000,
       }),
     };
+  }
+
+  return new Ratelimit({
+    redis: client,
+    limiter: Ratelimit.slidingWindow(maxRequests, windowMs),
+    analytics: false,
+  });
+}
+
+/**
+ * Create a sliding-window rate limiter for auth endpoints.
+ * Default: 5 requests per hour.
+ *
+ * Fails CLOSED: when Redis is unavailable ALL requests are denied.
+ * This preserves brute-force protection on sensitive auth endpoints
+ * (login, signup, MFA verify, password reset) at the cost of
+ * availability during a Redis outage. Use `createRateLimiter` for
+ * non-auth endpoints where fail-open behaviour is acceptable.
+ */
+function parseWindowMs(w: string): number {
+  const match = w.match(/^(\d+)\s*(ms|s|m|h|d)$/);
+  if (!match) return 3_600_000;
+  const n = parseInt(match[1], 10);
+  const unit = match[2];
+  const multipliers: Record<string, number> = { ms: 1, s: 1000, m: 60_000, h: 3_600_000, d: 86_400_000 };
+  return n * (multipliers[unit] ?? 3_600_000);
+}
+
+export function createAuthRateLimiter(
+  maxRequests = 5,
+  windowMs: `${number} ms` | `${number} s` | `${number} m` | `${number} h` | `${number} d` = "1 h",
+) {
+  const client = getRedisClient();
+  if (!client) {
+    console.warn("[redis] Auth rate limiter falling back to in-memory — per-instance only");
+    return createInMemoryRateLimiter(maxRequests, parseWindowMs(windowMs));
   }
 
   return new Ratelimit({

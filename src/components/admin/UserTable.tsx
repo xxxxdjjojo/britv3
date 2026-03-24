@@ -35,10 +35,10 @@ export function UserTable({ users, onSuspend, onActivate, onViewDetails }: Props
           {users.map((user) => (
             <tr key={user.id} className="hover:bg-neutral-50">
               <td className="px-4 py-3 font-medium text-neutral-900">
-                {user.full_name ?? "—"}
+                {user.display_name ?? "—"}
               </td>
               <td className="px-4 py-3 text-neutral-600">{user.email ?? "—"}</td>
-              <td className="px-4 py-3 text-neutral-600">{user.role ?? "—"}</td>
+              <td className="px-4 py-3 text-neutral-600">{user.active_role ?? "—"}{user.is_admin ? " (Admin)" : ""}</td>
               <td className="px-4 py-3">
                 <span
                   className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${

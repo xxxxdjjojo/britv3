@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { resolveReport } from "@/services/admin/review-service";
 
 export async function POST(req: Request) {
@@ -21,11 +21,12 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid resolution value" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "report.resolve",
     "report",
     body.reportId,
+    "moderate_content",
     async ({ supabase, user }) => {
       const result = await resolveReport(
         supabase,

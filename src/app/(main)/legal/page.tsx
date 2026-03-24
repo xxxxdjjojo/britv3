@@ -12,6 +12,8 @@ import {
   Eye,
   MessageSquare,
   Info,
+  Coins,
+  BrainCircuit,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -102,6 +104,18 @@ const categories: Category[] = [
   {
     heading: "Platform",
     docs: [
+      {
+        href: "/legal/fee-transparency",
+        icon: Coins,
+        title: "Fee Transparency",
+        desc: "Clear breakdown of platform fees, commissions, and payment terms.",
+      },
+      {
+        href: "/legal/ai-transparency",
+        icon: BrainCircuit,
+        title: "AI Transparency Notice",
+        desc: "How we use artificial intelligence and automated decision-making.",
+      },
       {
         href: "/legal/accessibility",
         icon: Eye,

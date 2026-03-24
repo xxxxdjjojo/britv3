@@ -1,0 +1,84 @@
+{
+  "date": "2026-03-20",
+  "url": "http://localhost:3000",
+  "scope": "Group A: Discovery & Search Flows",
+  "healthScore": 76,
+  "issues": [
+    {
+      "id": "ISSUE-001",
+      "title": "/jobs requires authentication (should be public)",
+      "severity": "critical",
+      "category": "functional",
+      "page": "/jobs"
+    },
+    {
+      "id": "ISSUE-002",
+      "title": "Duplicate 'Britestate' in all page titles",
+      "severity": "high",
+      "category": "content",
+      "page": "all /services/*, /agents, /marketplace, /post-a-job, /jobs"
+    },
+    {
+      "id": "ISSUE-003",
+      "title": "Marketplace category links use inconsistent routes",
+      "severity": "high",
+      "category": "links",
+      "page": "/marketplace"
+    },
+    {
+      "id": "ISSUE-004",
+      "title": "Architects search page missing RIBA/ARB specialist badge",
+      "severity": "high",
+      "category": "functional",
+      "page": "/services/architects"
+    },
+    {
+      "id": "ISSUE-005",
+      "title": "SEO location page maps builders/painters/carpenters to wrong enum",
+      "severity": "medium",
+      "category": "functional",
+      "page": "/services/tradespeople/[category]/[location]"
+    },
+    {
+      "id": "ISSUE-006",
+      "title": "No seeded/demo data for any provider search",
+      "severity": "medium",
+      "category": "ux",
+      "page": "all search pages"
+    },
+    {
+      "id": "ISSUE-007",
+      "title": "/compare page has no page-level title metadata",
+      "severity": "medium",
+      "category": "content",
+      "page": "/compare"
+    },
+    {
+      "id": "ISSUE-008",
+      "title": "/post-a-job uses callbackUrl but login expects redirectTo",
+      "severity": "low",
+      "category": "functional",
+      "page": "/post-a-job"
+    },
+    {
+      "id": "ISSUE-009",
+      "title": "/services page title has triple brand mention",
+      "severity": "low",
+      "category": "content",
+      "page": "/services"
+    }
+  ],
+  "categoryScores": {
+    "console": 100,
+    "links": 85,
+    "visual": 90,
+    "functional": 70,
+    "ux": 75,
+    "performance": 40,
+    "content": 70,
+    "accessibility": 85
+  },
+  "pagesChecked": 13,
+  "allPagesReturn200": false,
+  "failingPages": ["/jobs (307 redirect to /login)"]
+}

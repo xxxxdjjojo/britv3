@@ -66,9 +66,10 @@ function formatPropertyType(type: string): string {
 
 type PropertyCardProps = Readonly<{
   listing: SearchListingRow;
+  priority?: boolean;
 }>;
 
-export function PropertyCard({ listing }: PropertyCardProps) {
+export function PropertyCard({ listing, priority }: PropertyCardProps) {
   const href = listing.slug ? `/properties/${listing.slug}` : "#";
 
   return (
@@ -81,6 +82,7 @@ export function PropertyCard({ listing }: PropertyCardProps) {
               src={listing.thumbnail_url}
               alt={listing.title || "Property image"}
               fill
+              priority={priority}
               className="object-cover transition-transform group-hover:scale-105"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />

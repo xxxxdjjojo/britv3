@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { ClientRedirect } from "./ClientRedirect";
 
 type PageParams = {
   params: Promise<{ slug: string }>;
@@ -41,5 +42,7 @@ export default async function ProviderProfileRedirect({ params }: PageParams) {
   }
 
   const category = provider.services?.[0] ?? "other";
-  redirect(`/services/${category}/${slug}`);
+  const targetPath = `/services/${category}/${slug}`;
+
+  return <ClientRedirect targetPath={targetPath} />;
 }

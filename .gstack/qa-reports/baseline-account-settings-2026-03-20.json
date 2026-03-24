@@ -1,0 +1,25 @@
+{
+  "date": "2026-03-20",
+  "url": "http://localhost:3000/settings",
+  "healthScore": 74,
+  "issues": [
+    { "id": "BUG-001", "title": "Settings sidebar tab links fail to navigate", "severity": "P1", "category": "Functional" },
+    { "id": "BUG-002", "title": "Privacy & Preferences pages stuck on skeleton loading (mobile)", "severity": "P1", "category": "Functional" },
+    { "id": "BUG-003", "title": "Account & Preferences tabs hidden on mobile without scroll indicator", "severity": "P2", "category": "UX" },
+    { "id": "BUG-004", "title": "Ghost preset doesn't disable Anonymous Analytics", "severity": "P2", "category": "Functional" },
+    { "id": "BUG-005", "title": "Login error banner text not clearly visible", "severity": "P2", "category": "UX" },
+    { "id": "BUG-006", "title": "Password New Password field matched multiple elements", "severity": "P3", "category": "Functional" },
+    { "id": "BUG-007", "title": "Login History shows not available for active account", "severity": "P3", "category": "Functional" },
+    { "id": "BUG-008", "title": "Preferences page skeleton loading 5s on desktop", "severity": "P3", "category": "Performance" }
+  ],
+  "categoryScores": {
+    "console": 70,
+    "links": 85,
+    "visual": 75,
+    "functional": 70,
+    "ux": 70,
+    "performance": 65,
+    "content": 90,
+    "accessibility": 80
+  }
+}

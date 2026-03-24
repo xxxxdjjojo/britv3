@@ -14,6 +14,7 @@ export async function GET(request: Request) {
     const viewings = await getSellerViewings(supabase, filter ?? undefined);
     return NextResponse.json(viewings);
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    console.error("[api/seller/viewings] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

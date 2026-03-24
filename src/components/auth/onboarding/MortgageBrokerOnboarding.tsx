@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Your Firm", "Specialisms", "Coverage"];
@@ -53,9 +54,9 @@ export function MortgageBrokerOnboarding(
         await supabase.from("mortgage_broker_profiles").upsert(
           {
             user_id: user.id,
-            firm_name: firmName,
-            fca_reference: fcaNumber,
-            office_address: officeAddress,
+            firm_name: sanitize(firmName),
+            fca_reference: sanitize(fcaNumber),
+            office_address: sanitize(officeAddress),
             specialisms,
             coverage_regions: coverageRegions,
             work_style: workStyle,
@@ -99,7 +100,7 @@ export function MortgageBrokerOnboarding(
 
       {step === 1 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {SPECIALISMS.map((s) => (
               <button key={s.value} type="button" onClick={() => toggleItem(specialisms, s.value, setSpecialisms)} className={cn("rounded-lg border-2 px-3 py-3 text-sm font-medium transition-colors text-left", specialisms.includes(s.value) ? "border-brand-primary bg-brand-primary/5 text-brand-primary" : "border-neutral-200 text-neutral-700 hover:border-neutral-300")}>
                 {s.label}

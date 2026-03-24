@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 
-const LAST_UPDATED = "13 March 2026";
+const LAST_UPDATED = "24 March 2026";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
 
 const SECTIONS = [
@@ -10,13 +10,15 @@ const SECTIONS = [
   { id: "permitted-uses", label: "2. Permitted Uses" },
   { id: "prohibited-conduct", label: "3. Prohibited Conduct" },
   { id: "content-standards", label: "4. Content Standards" },
-  { id: "enforcement", label: "5. Enforcement & Suspension" },
-  { id: "appeals", label: "6. Appeals Process" },
+  { id: "enforcement", label: "5. Enforcement" },
+  { id: "reporting-violations", label: "6. Reporting Violations" },
+  { id: "appeals", label: "7. Appeals" },
 ];
 
 export const metadata: Metadata = {
   title: "Acceptable Use Policy | Britestate",
-  description: "Conduct standards and prohibited activities on the Britestate platform.",
+  description:
+    "Standards of conduct and prohibited activities on the Britestate platform, informed by the Fraud Act 2006, Computer Misuse Act 1990, Online Safety Act 2023, and Equality Act 2010.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/acceptable-use` },
 };
@@ -38,67 +40,175 @@ export default function AcceptableUsePage() {
 
       <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
         This policy supplements our{" "}
-        <Link href="/legal/terms" className="underline">Terms of Service</Link>.
-        Violations may result in account suspension. {/* TODO: legal review */}
+        <Link href="/legal/terms" className="underline">Terms of Service</Link>{" "}
+        and applies to all Users of the Britestate platform. Violations may result in account suspension or termination.
       </div>
 
       <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
         <section id="introduction">
           <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
           <p>
-            This Acceptable Use Policy governs your conduct on the Britestate platform. It supplements the Terms of
-            Service and applies to all users. Relevant legislation includes the Fraud Act 2006, the Computer Misuse
-            Act 1990, and the Online Safety Act 2023. {/* TODO: legal review */}
+            1.1. This Acceptable Use Policy (&ldquo;AUP&rdquo;) supplements the Terms of Service and applies to all
+            Users of the Britestate platform. It sets out the standards of conduct we expect and the behaviours we
+            prohibit.
+          </p>
+          <p>
+            1.2. This policy is informed by the Fraud Act 2006, the Computer Misuse Act 1990, the Online Safety Act
+            2023, the Equality Act 2010, and the Consumer Protection from Unfair Trading Regulations 2008.
           </p>
         </section>
 
         <section id="permitted-uses">
           <h2 className="text-2xl font-bold font-heading">2. Permitted Uses</h2>
           <p>
-            You may use Britestate to search for, list, and transact on residential and commercial property; to engage
-            licensed estate agents and service providers; and to communicate with other users in connection with
-            genuine property transactions. {/* TODO: legal review */}
+            2.1. You may use Britestate to: search for and view property listings; list properties for sale or rent
+            (where you have lawful authority); contact and communicate with other Users in connection with genuine
+            property enquiries; engage estate agents and service providers; leave honest reviews based on genuine
+            experience; and access AI-powered property tools and recommendations.
           </p>
         </section>
 
         <section id="prohibited-conduct">
           <h2 className="text-2xl font-bold font-heading">3. Prohibited Conduct</h2>
-          <p>You must not use Britestate to:</p>
+          <p>You must not:</p>
+
+          <h3 className="text-xl font-semibold font-heading">3.1. Fraudulent and Misleading Activity</h3>
           <ul>
-            <li>Post fraudulent, misleading, or duplicate property listings;</li>
-            <li>Impersonate any person or entity;</li>
-            <li>Scrape, crawl, or harvest data without written permission;</li>
-            <li>Transmit malware, viruses, or other harmful code (Computer Misuse Act 1990);</li>
-            <li>Commit fraud or money laundering (Fraud Act 2006, Proceeds of Crime Act 2002);</li>
-            <li>Harass, threaten, or abuse other users;</li>
-            <li>Circumvent security or access controls;</li>
-            <li>Post illegal content as defined by the Online Safety Act 2023.</li>
+            <li>
+              Post fraudulent, fictitious, or phantom listings (listings for properties you do not have authority to
+              market);
+            </li>
+            <li>
+              Provide false or misleading information about a property&rsquo;s condition, price, tenure, or
+              availability;
+            </li>
+            <li>
+              Manipulate photos, floor plans, or virtual tours to misrepresent a property (including undisclosed
+              AI-generated imagery);
+            </li>
+            <li>
+              Engage in gazumping facilitation, gazundering, or other practices intended to unfairly manipulate
+              transactions;
+            </li>
+            <li>Post fake, incentivised, or misleading reviews or ratings.</li>
           </ul>
-          {/* TODO: legal review */}
+
+          <h3 className="text-xl font-semibold font-heading">3.2. Discrimination</h3>
+          <ul>
+            <li>
+              Refuse to sell, let, or provide services to any person on grounds of race, sex, disability, gender
+              reassignment, marriage/civil partnership, pregnancy/maternity, religion or belief, sexual orientation,
+              or age, contrary to the Equality Act 2010;
+            </li>
+            <li>
+              Include discriminatory criteria in property listings (e.g., &ldquo;no DSS&rdquo;,
+              &ldquo;professionals only&rdquo; where used as a proxy for discrimination).
+            </li>
+          </ul>
+
+          <h3 className="text-xl font-semibold font-heading">3.3. Money Laundering and Financial Crime</h3>
+          <ul>
+            <li>
+              Use the Platform to facilitate money laundering, terrorist financing, sanctions evasion, or tax evasion
+              (Proceeds of Crime Act 2002, Terrorism Act 2000, Criminal Finances Act 2017);
+            </li>
+            <li>Provide false identity documents or source-of-funds information.</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold font-heading">3.4. Technical Abuse</h3>
+          <ul>
+            <li>Scrape, crawl, spider, or data-mine the Platform without our prior written consent;</li>
+            <li>
+              Attempt to gain unauthorised access to any part of the Platform, other Users&rsquo; accounts, or our
+              systems (Computer Misuse Act 1990);
+            </li>
+            <li>Transmit viruses, malware, or any code designed to disrupt or damage the Platform;</li>
+            <li>Use automated tools (bots) to interact with the Platform without authorisation;</li>
+            <li>Circumvent rate limits, access controls, or security features.</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold font-heading">3.5. Harassment and Harmful Content</h3>
+          <ul>
+            <li>Harass, threaten, bully, or intimidate other Users;</li>
+            <li>Post defamatory, obscene, or illegal content;</li>
+            <li>Send spam or unsolicited commercial communications;</li>
+            <li>Post content that constitutes a priority offence under the Online Safety Act 2023.</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold font-heading">3.6. Intellectual Property</h3>
+          <ul>
+            <li>
+              Upload content that infringes the copyright, trade mark, or other intellectual property rights of any
+              third party;
+            </li>
+            <li>Copy or redistribute listings, photos, or content from the Platform without permission.</li>
+          </ul>
         </section>
 
         <section id="content-standards">
           <h2 className="text-2xl font-bold font-heading">4. Content Standards</h2>
           <p>
-            All content you post must be accurate, lawful, and not defamatory. Property photos must represent the
-            actual property. Listing details must match the marketed property. Agent credentials must be genuine. {/* TODO: legal review */}
+            4.1. <strong>Listing Accuracy.</strong> All listings must truthfully represent the property. Photos must be
+            of the actual property and taken within the past 12 months (or clearly marked as historical). Material
+            facts must be disclosed. Floor plans must be to a reasonable scale with a disclaimer that they are for
+            illustrative purposes.
+          </p>
+          <p>
+            4.2. <strong>Review Authenticity.</strong> Reviews must reflect genuine personal experience. You must
+            disclose any material connection to the subject of your review (e.g., if you are a family member of the
+            agent). Businesses must not offer incentives for positive reviews.
+          </p>
+          <p>
+            4.3. <strong>AI-Generated Content.</strong> If you use AI tools to generate listing descriptions or other
+            content, you must review the output for accuracy before publishing. Britestate is not responsible for
+            inaccuracies in AI-generated content you publish.
           </p>
         </section>
 
         <section id="enforcement">
-          <h2 className="text-2xl font-bold font-heading">5. Enforcement &amp; Suspension</h2>
+          <h2 className="text-2xl font-bold font-heading">5. Enforcement</h2>
           <p>
-            We reserve the right to remove content, suspend, or terminate accounts that breach this policy without
-            prior notice. We may refer serious violations to law enforcement. {/* TODO: legal review */}
+            5.1. We monitor the Platform for breaches of this AUP using a combination of automated tools, user
+            reports, and manual review.
+          </p>
+          <p>5.2. <strong>Consequences.</strong> Depending on the severity and nature of the breach:</p>
+          <ul>
+            <li>First offence (minor): Warning and content removal;</li>
+            <li>Repeated or moderate offence: Temporary account suspension (7&ndash;30 days);</li>
+            <li>
+              Serious offence (fraud, discrimination, criminal activity): Immediate permanent account termination and
+              referral to law enforcement or relevant regulator.
+            </li>
+          </ul>
+          <p>
+            5.3. We reserve the right to remove any content and suspend or terminate any account at any time where we
+            reasonably believe a breach has occurred, without prior notice where urgency requires.
+          </p>
+        </section>
+
+        <section id="reporting-violations">
+          <h2 className="text-2xl font-bold font-heading">6. Reporting Violations</h2>
+          <p>
+            6.1. If you believe a User has breached this AUP, please report it using the &ldquo;Report&rdquo; button
+            on the relevant listing, review, or profile, or email{" "}
+            <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a>.
+          </p>
+          <p>
+            6.2. We investigate all reports and aim to respond within 5 working days. We will not disclose your
+            identity to the reported User without your consent (except where required by law).
           </p>
         </section>
 
         <section id="appeals">
-          <h2 className="text-2xl font-bold font-heading">6. Appeals Process</h2>
+          <h2 className="text-2xl font-bold font-heading">7. Appeals</h2>
           <p>
-            If your account is suspended, you may appeal within 14 days by contacting{" "}
-            <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a>.
-            We will review and respond within 10 business days. {/* TODO: legal review */}
+            7.1. If your account is suspended or content is removed, you may appeal within 14 days by emailing{" "}
+            <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a> with the subject line
+            &ldquo;AUP Appeal &mdash; [Your Account Email].&rdquo;
+          </p>
+          <p>
+            7.2. Appeals are reviewed by a senior team member who was not involved in the original decision. We aim
+            to resolve appeals within 10 working days.
           </p>
         </section>
       </div>

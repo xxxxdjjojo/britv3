@@ -1,17 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   createDeletionRequest,
   hasPendingDeletion,
 } from "@/services/gdpr/consent-service";
 import { sendAccountDeletion } from "@/services/email/email-service";
+import { verifyReauthToken } from "@/lib/auth/reauth-token";
+import { createAuthRateLimiter } from "@/lib/cache/redis";
+
+const deletionLimiter = createAuthRateLimiter(3, "1 h");
 
 /**
  * POST /api/gdpr/delete
  * Creates a deletion request with 30-day grace period.
+ * Requires a valid reauth token and enforces rate limiting.
  * Prevents duplicate pending requests.
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,6 +27,25 @@ export async function POST() {
     return NextResponse.json(
       { error: "Not authenticated" },
       { status: 401 },
+    );
+  }
+
+  const { reauth_token } = (await request.json().catch(() => ({}))) as {
+    reauth_token?: unknown;
+  };
+
+  const { success } = await deletionLimiter.limit(`gdpr-delete:${user.id}`);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
+  if (typeof reauth_token !== "string" || !verifyReauthToken(reauth_token, user.id)) {
+    return NextResponse.json(
+      { error: "Re-authentication required" },
+      { status: 403 },
     );
   }
 

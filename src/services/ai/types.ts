@@ -3,18 +3,21 @@
  * Shared across the AI service layer, API routes, and components.
  */
 
+import type { ZodSchema } from "zod";
+
 /** Supported AI features -- extend this union as new features are added */
-export type AiFeature = "property_description" | "quote_draft" | "agent_proposal" | "quote_suggest" | "roi_estimate";
+export type AiFeature = "property_description" | "quote_draft" | "agent_proposal" | "quote_suggest" | "roi_estimate" | "ai_match";
 
 /** Result from a successful Claude API call */
-export type AiCallResult = Readonly<{
+export type AiCallResult<T = unknown> = Readonly<{
   text: string;
   inputTokens: number;
   outputTokens: number;
+  parsed?: T;
 }>;
 
 /** Options passed to the callClaude wrapper */
-export type AiCallOptions = Readonly<{
+export type AiCallOptions<T = unknown> = Readonly<{
   feature: AiFeature;
   userId: string;
   systemPrompt: string;
@@ -22,6 +25,8 @@ export type AiCallOptions = Readonly<{
   maxTokens?: number;
   timeoutMs?: number;
   model?: string;
+  /** Zod schema to validate and parse LLM JSON output */
+  outputSchema?: ZodSchema<T>;
 }>;
 
 /** Shape of the ai_usage_log table row */

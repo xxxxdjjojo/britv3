@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { updatePassword } from "@/services/auth/auth-service";
+import { handleSupabaseError } from "@/lib/supabase-error";
 
 const resetPasswordSchema = z
   .object({
@@ -52,7 +53,7 @@ export function ResetPasswordForm() {
     setError(null);
     const { error: authError } = await updatePassword(data.password);
     if (authError) {
-      setError(authError.message);
+      setError(handleSupabaseError(authError).message);
       return;
     }
     router.push("/login?message=password-updated");

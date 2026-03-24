@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { toast } from "sonner";
-import { Plus, Trash2, Sparkles, X } from "lucide-react";
+import { Plus, Trash2, Sparkles, X, Save, FolderOpen, AlignLeft } from "lucide-react";
 import { QuotePreview } from "./QuotePreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,13 @@ export type LineItemRow = {
   qty: number;
   unitPrice: number;
   vatRate: 0 | 5 | 20;
+  isSectionHeader?: boolean;
+  sectionTitle?: string;
+};
+
+type MilestoneRow = {
+  label: string;
+  amountPence: number;
 };
 
 type QuoteFormValues = {
@@ -40,6 +47,8 @@ type QuoteFormValues = {
   lineItems: LineItemRow[];
   notes: string;
   validUntil: string;
+  stagedPaymentsEnabled: boolean;
+  milestones: MilestoneRow[];
 };
 
 type LineItemSuggestion = {
@@ -48,6 +57,13 @@ type LineItemSuggestion = {
   unit_price_gbp: number;
   vat_rate: 0 | 5 | 20;
 };
+
+type QuoteTemplate = {
+  name: string;
+  items: LineItemRow[];
+};
+
+const TEMPLATES_KEY = "britestate-quote-templates";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -68,6 +84,26 @@ function fmtGbp(pence: number): string {
     style: "currency",
     currency: "GBP",
   });
+}
+
+function loadTemplates(): QuoteTemplate[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(TEMPLATES_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as QuoteTemplate[];
+  } catch {
+    return [];
+  }
+}
+
+function saveTemplates(templates: QuoteTemplate[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+  } catch {
+    // ignore
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -100,6 +136,10 @@ export function QuoteBuilderForm({
   const [showRestoreBanner, setShowRestoreBanner] = useState(false);
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [templates, setTemplates] = useState<QuoteTemplate[]>([]);
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState("");
+  const [showLoadTemplate, setShowLoadTemplate] = useState(false);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const defaultValues: QuoteFormValues = {
@@ -109,14 +149,25 @@ export function QuoteBuilderForm({
     lineItems: [{ description: "", qty: 1, unitPrice: 0, vatRate: 20 }],
     notes: "",
     validUntil: defaultValidUntil(),
+    stagedPaymentsEnabled: false,
+    milestones: [],
   };
 
   const form = useForm<QuoteFormValues>({ defaultValues });
-  const { register, control, handleSubmit, setValue, reset, formState } = form;
+  const { register, control, handleSubmit, setValue, reset, formState, watch } = form;
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "lineItems",
+  });
+
+  const {
+    fields: milestoneFields,
+    append: appendMilestone,
+    remove: removeMilestone,
+  } = useFieldArray({
+    control,
+    name: "milestones",
   });
 
   const watchedValues = useWatch({ control });
@@ -126,17 +177,28 @@ export function QuoteBuilderForm({
   const watchedClientName = (watchedValues.clientName ?? "") as string;
   const watchedNotes = (watchedValues.notes ?? "") as string;
   const watchedValidUntil = (watchedValues.validUntil ?? "") as string;
+  const stagedPaymentsEnabled = watch("stagedPaymentsEnabled");
+  const watchedMilestones = (watchedValues.milestones ?? []) as MilestoneRow[];
 
-  // Computed totals
-  const subtotalPence = watchedItems.reduce(
-    (s, item) => s + calcLinePence(item.qty, item.unitPrice),
-    0,
-  );
+  // Computed totals (skip section headers in calculation)
+  const subtotalPence = watchedItems.reduce((s, item) => {
+    if (item.isSectionHeader) return s;
+    return s + calcLinePence(item.qty, item.unitPrice);
+  }, 0);
   const vatPence = watchedItems.reduce((s, item) => {
+    if (item.isSectionHeader) return s;
     const linePence = calcLinePence(item.qty, item.unitPrice);
     return s + Math.round(linePence * (Number(item.vatRate) / 100));
   }, 0);
   const totalPence = subtotalPence + vatPence;
+
+  // Milestone allocation validation
+  const milestoneTotalPence = watchedMilestones.reduce(
+    (s, m) => s + (Math.round((Number(m.amountPence) || 0) * 100)),
+    0,
+  );
+  const milestoneRemainingPence = totalPence - milestoneTotalPence;
+  const milestonesValid = Math.abs(milestoneRemainingPence) <= 1; // within £0.01
 
   // ---- localStorage restore on mount ----------------------------------------
   useEffect(() => {
@@ -149,6 +211,7 @@ export function QuoteBuilderForm({
     } catch {
       // ignore
     }
+    setTemplates(loadTemplates());
   }, [DRAFT_KEY]);
 
   // ---- Auto-save every 30s --------------------------------------------------
@@ -188,6 +251,49 @@ export function QuoteBuilderForm({
     setShowRestoreBanner(false);
   }
 
+  function handleAddSectionHeader() {
+    append({
+      description: "",
+      qty: 1,
+      unitPrice: 0,
+      vatRate: 0,
+      isSectionHeader: true,
+      sectionTitle: "New Section",
+    });
+  }
+
+  function handleSaveTemplateClick() {
+    setTemplateName("");
+    setShowSaveTemplate(true);
+  }
+
+  function handleConfirmSaveTemplate() {
+    const name = templateName.trim();
+    if (!name) {
+      toast.error("Please enter a template name.");
+      return;
+    }
+    const currentItems = form.getValues("lineItems");
+    const updated = [...templates, { name, items: currentItems }];
+    saveTemplates(updated);
+    setTemplates(updated);
+    setShowSaveTemplate(false);
+    setTemplateName("");
+    toast.success(`Template "${name}" saved.`);
+  }
+
+  function handleLoadTemplate(tpl: QuoteTemplate) {
+    setValue("lineItems", tpl.items);
+    setShowLoadTemplate(false);
+    toast.success(`Template "${tpl.name}" loaded.`);
+  }
+
+  function handleDeleteTemplate(idx: number) {
+    const updated = templates.filter((_, i) => i !== idx);
+    saveTemplates(updated);
+    setTemplates(updated);
+  }
+
   async function handleSuggestItems() {
     if (!watchedJobTitle.trim()) return;
     setSuggestLoading(true);
@@ -224,14 +330,23 @@ export function QuoteBuilderForm({
   }
 
   async function submitQuote(values: QuoteFormValues, mode: "draft" | "send") {
+    // Validate staged payments if enabled
+    if (values.stagedPaymentsEnabled && values.milestones.length > 0 && !milestonesValid) {
+      toast.error("Milestone amounts must sum to the quote total before sending.");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const lineItems = values.lineItems.map((item) => ({
-        name: item.description || "Item",
-        quantity: Number(item.qty),
-        unit_price_pence: Math.round((Number(item.unitPrice) || 0) * 100),
-        total_pence: calcLinePence(item.qty, item.unitPrice),
-      }));
+      // Filter out section header rows for the API payload
+      const lineItems = values.lineItems
+        .filter((item) => !item.isSectionHeader)
+        .map((item) => ({
+          name: item.description || "Item",
+          quantity: Number(item.qty),
+          unit_price_pence: Math.round((Number(item.unitPrice) || 0) * 100),
+          total_pence: calcLinePence(item.qty, item.unitPrice),
+        }));
 
       const today = new Date();
       const validUntilDate = values.validUntil
@@ -243,6 +358,15 @@ export function QuoteBuilderForm({
         Math.round(diffMs / 86_400_000),
       );
 
+      // Build milestones payload
+      const milestonesPayload =
+        values.stagedPaymentsEnabled && values.milestones.length > 0
+          ? values.milestones.map((m) => ({
+              label: m.label,
+              amount_pence: Math.round((Number(m.amountPence) || 0) * 100),
+            }))
+          : undefined;
+
       // 1. Create quote (draft)
       const createRes = await fetch("/api/provider/quotes", {
         method: "POST",
@@ -252,6 +376,7 @@ export function QuoteBuilderForm({
           line_items: lineItems,
           notes: values.notes || undefined,
           valid_until_days: validUntilDays,
+          milestones: milestonesPayload,
         }),
       });
 
@@ -419,10 +544,99 @@ export function QuoteBuilderForm({
 
         {/* Line items */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-base">Line Items</CardTitle>
+            <div className="flex items-center gap-2">
+              {/* Template actions */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleSaveTemplateClick}
+                className="gap-1.5 text-xs"
+                title="Save current items as a template"
+              >
+                <Save className="size-3.5" />
+                Save template
+              </Button>
+              {templates.length > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowLoadTemplate((v) => !v)}
+                  className="gap-1.5 text-xs"
+                  title="Load a saved template"
+                >
+                  <FolderOpen className="size-3.5" />
+                  Load template
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
+            {/* Save template inline dialog */}
+            {showSaveTemplate && (
+              <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+                <Input
+                  autoFocus
+                  placeholder="Template name…"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleConfirmSaveTemplate();
+                    if (e.key === "Escape") setShowSaveTemplate(false);
+                  }}
+                  className="h-8 text-sm"
+                />
+                <Button size="sm" onClick={handleConfirmSaveTemplate}>Save</Button>
+                <button
+                  type="button"
+                  onClick={() => setShowSaveTemplate(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Cancel"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Load template list */}
+            {showLoadTemplate && templates.length > 0 && (
+              <div className="rounded-lg border border-border bg-background shadow-sm">
+                <p className="border-b border-border px-3 py-2 text-xs font-semibold text-muted-foreground">
+                  Saved Templates
+                </p>
+                <ul className="max-h-48 overflow-y-auto">
+                  {templates.map((tpl, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center justify-between px-3 py-2 hover:bg-muted/50"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleLoadTemplate(tpl)}
+                        className="flex-1 text-left text-sm font-medium hover:text-primary"
+                      >
+                        {tpl.name}
+                        <span className="ml-2 text-xs font-normal text-muted-foreground">
+                          ({tpl.items.filter((i) => !i.isSectionHeader).length} items)
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTemplate(idx)}
+                        aria-label="Delete template"
+                        className="ml-2 text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Column headers */}
             <div className="hidden grid-cols-[1fr_56px_88px_72px_80px_32px] gap-2 text-xs font-medium text-muted-foreground sm:grid">
               <span>Description</span>
@@ -434,6 +648,32 @@ export function QuoteBuilderForm({
             </div>
 
             {fields.map((field, index) => {
+              const isSectionHeader = field.isSectionHeader === true;
+
+              if (isSectionHeader) {
+                return (
+                  <div
+                    key={field.id}
+                    className="flex items-center gap-2 border-b border-border pb-1 pt-2"
+                  >
+                    <AlignLeft className="size-4 shrink-0 text-muted-foreground" />
+                    <Input
+                      placeholder="Section title…"
+                      {...register(`lineItems.${index}.sectionTitle`)}
+                      className="h-8 flex-1 border-0 bg-transparent p-0 text-sm font-semibold focus-visible:ring-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      aria-label="Remove section"
+                      className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                );
+              }
+
               const qty = Number(watchedItems[index]?.qty) || 0;
               const unitPrice = Number(watchedItems[index]?.unitPrice) || 0;
               const vatRate = Number(watchedItems[index]?.vatRate) || 0;
@@ -510,18 +750,30 @@ export function QuoteBuilderForm({
               );
             })}
 
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                append({ description: "", qty: 1, unitPrice: 0, vatRate: 20 })
-              }
-              className="gap-2"
-            >
-              <Plus className="size-4" />
-              Add Row
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  append({ description: "", qty: 1, unitPrice: 0, vatRate: 20 })
+                }
+                className="gap-2"
+              >
+                <Plus className="size-4" />
+                Add Row
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleAddSectionHeader}
+                className="gap-2 text-muted-foreground"
+              >
+                <AlignLeft className="size-4" />
+                Add Section
+              </Button>
+            </div>
 
             {/* Totals summary */}
             <dl className="ml-auto w-44 space-y-1 border-t border-border pt-3 text-sm">
@@ -540,6 +792,98 @@ export function QuoteBuilderForm({
                 </dd>
               </div>
             </dl>
+
+            {/* ---------------------------------------------------------------- */}
+            {/* Staged Payments Toggle                                           */}
+            {/* ---------------------------------------------------------------- */}
+            <div className="border-t border-border pt-4">
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  {...register("stagedPaymentsEnabled")}
+                  className="size-4 rounded border-border accent-primary"
+                />
+                <span className="text-sm font-medium text-foreground">
+                  Enable staged payments
+                </span>
+              </label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Split the total into payment milestones that the client pays over time.
+              </p>
+            </div>
+
+            {stagedPaymentsEnabled && (
+              <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  Payment Milestones
+                </p>
+
+                {milestoneFields.map((mField, mIdx) => (
+                  <div key={mField.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Milestone label (e.g. Deposit)"
+                      {...register(`milestones.${mIdx}.label`)}
+                      className="flex-1"
+                    />
+                    <div className="relative w-32">
+                      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground text-sm">
+                        £
+                      </span>
+                      <Input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        placeholder="0.00"
+                        className="pl-7 text-right"
+                        {...register(`milestones.${mIdx}.amountPence`, {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeMilestone(mIdx)}
+                      aria-label="Remove milestone"
+                      className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => appendMilestone({ label: "", amountPence: 0 })}
+                  className="gap-2"
+                >
+                  <Plus className="size-4" />
+                  Add Milestone
+                </Button>
+
+                {/* Allocation indicator */}
+                {milestoneFields.length > 0 && (
+                  <div
+                    className={`mt-2 rounded-md px-3 py-2 text-sm ${
+                      milestonesValid
+                        ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
+                        : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                    }`}
+                  >
+                    {milestonesValid ? (
+                      <span>Milestones fully allocated — {fmtGbp(totalPence)}</span>
+                    ) : (
+                      <span>
+                        {milestoneRemainingPence > 0
+                          ? `${fmtGbp(milestoneRemainingPence)} remaining to allocate`
+                          : `Over-allocated by ${fmtGbp(Math.abs(milestoneRemainingPence))}`}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 

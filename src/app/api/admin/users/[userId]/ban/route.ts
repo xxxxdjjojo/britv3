@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { banUser } from "@/services/admin/user-service";
 
 export async function POST(
@@ -16,7 +16,7 @@ export async function POST(
     return Response.json({ error: "reason is required" }, { status: 400 });
   }
 
-  return auditedAdminAction(req, "user.ban", "user", userId, async ({ supabase }) => {
+  return auditedAdminActionWithPermission(req, "user.ban", "user", userId, "ban_users", async ({ supabase }) => {
     const result = await banUser(supabase, userId, body.reason);
     if (!result.success) throw new Error("Failed to ban user");
     return { success: true };

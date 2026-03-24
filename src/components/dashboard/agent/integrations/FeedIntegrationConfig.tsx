@@ -506,11 +506,11 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-4">
-              {activeErrorLogIntegration.error_log.length === 0 ? (
+              {(activeErrorLogIntegration.error_log ?? []).length === 0 ? (
                 <p className="text-sm text-gray-500 dark:text-gray-400">No errors recorded.</p>
               ) : (
                 <div className="space-y-3">
-                  {activeErrorLogIntegration.error_log.slice(-10).map((entry, idx) => {
+                  {(activeErrorLogIntegration.error_log ?? []).slice(-10).map((entry, idx) => {
                     const e = entry as ErrorLogEntry;
                     return (
                       <div
@@ -593,10 +593,10 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                       ? new Date(integration.last_sync_at).toLocaleString("en-GB")
                       : "Never"}
                   </div>
-                  {integration.error_log.length > 0 && (
+                  {(integration.error_log ?? []).length > 0 && (
                     <div className="text-red-500 dark:text-red-400">
-                      {integration.error_log.length} error
-                      {integration.error_log.length !== 1 ? "s" : ""} recorded
+                      {(integration.error_log ?? []).length} error
+                      {(integration.error_log ?? []).length !== 1 ? "s" : ""} recorded
                     </div>
                   )}
                 </div>
@@ -618,7 +618,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                   >
                     Edit
                   </button>
-                  {integration.error_log.length > 0 && (
+                  {(integration.error_log ?? []).length > 0 && (
                     <button
                       type="button"
                       onClick={() =>

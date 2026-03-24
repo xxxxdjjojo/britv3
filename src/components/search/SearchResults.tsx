@@ -88,8 +88,8 @@ export function SearchResults({
             : "flex flex-col gap-4"
         }
       >
-        {listings.map((listing) => (
-          <PropertyCard key={listing.listing_id} listing={listing} />
+        {listings.map((listing, index) => (
+          <PropertyCard key={listing.listing_id} listing={listing} priority={index === 0} />
         ))}
       </div>
 

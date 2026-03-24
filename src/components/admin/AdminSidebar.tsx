@@ -33,8 +33,12 @@ import {
   Mail,
   UserCheck,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ResponsiveSidebar } from "@/components/responsive/ResponsiveSidebar";
+import type { AdminRole } from "@/lib/admin-permissions";
+import { getAccessibleNavGroups } from "@/lib/admin-permissions";
 
 type NavItem = {
   label: string;
@@ -203,11 +207,12 @@ function CollapsibleGroup({
   );
 }
 
-export function AdminSidebar() {
+function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
   const pathname = usePathname();
+  const accessibleGroups = getAccessibleNavGroups(adminRole);
 
   return (
-    <aside className="fixed inset-y-0 left-0 flex w-64 flex-col border-r border-neutral-200 bg-white overflow-y-auto">
+    <>
       <div
         className="flex h-16 shrink-0 items-center px-4"
         style={{ backgroundColor: "#1B4D3E" }}
@@ -220,8 +225,8 @@ export function AdminSidebar() {
         </span>
       </div>
 
-      <nav className="flex flex-col gap-1 p-3 flex-1">
-        {NAV_GROUPS.map((group) => (
+      <nav className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
+        {NAV_GROUPS.filter((group) => accessibleGroups.includes(group.label)).map((group) => (
           <CollapsibleGroup
             key={group.label}
             group={group}
@@ -229,6 +234,24 @@ export function AdminSidebar() {
           />
         ))}
       </nav>
-    </aside>
+
+      <div className="border-t border-neutral-200 p-3">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 transition-colors"
+        >
+          <LogOut className="h-3.5 w-3.5 shrink-0" />
+          Back to Platform
+        </Link>
+      </div>
+    </>
+  );
+}
+
+export function AdminSidebar({ adminRole }: Readonly<{ adminRole: AdminRole }>) {
+  return (
+    <ResponsiveSidebar className="border-neutral-200 bg-white">
+      <SidebarContent adminRole={adminRole} />
+    </ResponsiveSidebar>
   );
 }

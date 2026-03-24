@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { roleToRoute } from "./role-route-map";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -22,5 +23,5 @@ export default async function DashboardPage() {
   }
 
   // Redirect to role-specific dashboard
-  redirect(`/dashboard/${profile.active_role}`);
+  redirect(`/dashboard/${roleToRoute(profile.active_role)}`);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import type { SellerViewing } from "@/types/seller";
 
@@ -25,6 +25,14 @@ export function ViewingActionModal({ viewing, action, onClose, onSuccess }: Prop
   const [newDatetime, setNewDatetime] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   const handleSubmit = async () => {
     if (action === "reschedule" && !newDatetime) {
@@ -57,13 +65,13 @@ export function ViewingActionModal({ viewing, action, onClose, onSuccess }: Prop
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
+      <div role="dialog" aria-modal="true" aria-labelledby="viewing-action-title" className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 font-['Plus_Jakarta_Sans']">{config.title}</h3>
+            <h3 id="viewing-action-title" className="text-lg font-bold text-slate-900 font-['Plus_Jakarta_Sans']">{config.title}</h3>
             <p className="text-sm text-slate-500 mt-1">{config.description}</p>
           </div>
-          <button type="button" onClick={onClose} className="p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors flex-shrink-0">
+          <button type="button" onClick={onClose} aria-label="Close dialog" className="p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors flex-shrink-0">
             <X size={18} />
           </button>
         </div>

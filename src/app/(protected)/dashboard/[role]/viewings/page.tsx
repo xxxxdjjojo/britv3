@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,8 +68,8 @@ const PAST_STATUSES = new Set<Viewing["status"]>(["completed", "cancelled"]);
 
 export default function ViewingsPage({
   params,
-}: Readonly<{ params: { role: string } }>) {
-  const { role } = params;
+}: Readonly<{ params: Promise<{ role: string }> }>) {
+  const { role } = use(params);
   const { data: viewings, isLoading, error } = useViewings();
   const cancelViewing = useCancelViewing();
 

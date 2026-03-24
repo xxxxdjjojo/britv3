@@ -14,11 +14,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { signUp } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
+import { handleSupabaseError } from "@/lib/supabase-error";
+import { sanitize } from "@/lib/sanitize";
 import type { UserRole } from "@/types/auth";
 
 const registerSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  firstName: z.string().min(1, "First name is required").max(50, "First name must be 50 characters or fewer"),
+  lastName: z.string().min(1, "Last name is required").max(50, "Last name must be 50 characters or fewer"),
   email: z.string().email("Please enter a valid email address"),
   password: z
     .string()
@@ -63,8 +65,9 @@ export function RegisterForm() {
   });
 
   // Bug 4: Read ?professional= param on mount and pre-set role intent
+  // Also reads ?role= as a fallback (used by the pricing page)
   useEffect(() => {
-    const professional = searchParams.get("professional");
+    const professional = searchParams.get("professional") ?? searchParams.get("role");
     if (professional) {
       const mappedRole = PROFESSIONAL_ROLE_MAP[professional.toLowerCase()];
       if (mappedRole) {
@@ -80,27 +83,18 @@ export function RegisterForm() {
     // Bug 9: Wrap entire onSubmit in try/catch with specific error handling
     try {
       setError(null);
-      const displayName = `${data.firstName} ${data.lastName}`.trim();
+      const displayName = sanitize(`${data.firstName} ${data.lastName}`.trim());
       const { error: authError } = await signUp(
         data.email,
         data.password,
         displayName,
       );
       if (authError) {
-        const msg = authError.message ?? "";
-        if (
-          (authError as { status?: number }).status === 429 ||
-          msg.includes("429") ||
-          /rate/i.test(msg)
-        ) {
-          setError("Too many attempts. Please wait a moment.");
-        } else {
-          setError(msg || "An unexpected error occurred. Please try again.");
-        }
+        setError(handleSupabaseError(authError).message);
         return;
       }
 
-      // Assign role inline (avoids importing server-only role-service)
+      // Assign role atomically via RPC (avoids importing server-only role-service)
       try {
         const supabase = createClient();
         const {
@@ -112,31 +106,28 @@ export function RegisterForm() {
             : data.intent === "rent"
               ? "renter"
               : "homebuyer";
-          await supabase
-            .from("user_roles")
-            .upsert({ user_id: user.id, role }, { onConflict: "user_id,role" });
-          await supabase
-            .from("profiles")
-            .update({ active_role: role })
-            .eq("id", user.id);
+          await supabase.rpc("assign_role_atomic", {
+            p_user_id: user.id,
+            p_role: role,
+          });
         }
       } catch {
-        // Non-blocking: role can be set later
+        // Non-blocking: role can be set later via callback
+      }
+
+      // Trigger referral attribution.
+      // The API reads the httpOnly britestate_ref cookie server-side (eng review 6A).
+      try {
+        await fetch("/api/referrals/v2/attribute", { method: "POST" });
+      } catch {
+        // Non-critical — don't block signup
+        console.warn("[referral] Failed to trigger attribution");
       }
 
       // Bug 3: Redirect to /verify-email instead of /dashboard
       router.push("/verify-email");
     } catch (err) {
-      if (err instanceof TypeError) {
-        setError("No internet connection. Please try again.");
-      } else if (
-        err instanceof Error &&
-        (err.message.includes("429") || /rate/i.test(err.message))
-      ) {
-        setError("Too many attempts. Please wait a moment.");
-      } else {
-        setError("An unexpected error occurred. Please try again.");
-      }
+      setError(handleSupabaseError(err).message);
     }
   }
 
@@ -186,7 +177,7 @@ export function RegisterForm() {
       )}
 
       {/* Name fields — side by side */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label htmlFor="firstName">First name</Label>
           <Input

@@ -61,7 +61,7 @@ export function RoleSelector(
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {roles.map((role) => {
           const Icon = ICON_MAP[role.icon];
           const isSelected = selectedRoles.has(role.value);
@@ -72,42 +72,43 @@ export function RoleSelector(
               type="button"
               onClick={() => toggleRole(role.value)}
               className={cn(
-                "relative flex flex-col items-center gap-3 rounded-xl border-2 p-6 text-center transition-all",
+                "relative flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border-2 p-4 text-center transition-all",
                 isSelected
-                  ? "border-brand-primary bg-brand-primary/5"
-                  : "border-neutral-200 bg-white hover:border-neutral-300",
+                  ? "border-brand-primary bg-brand-primary/5 shadow-sm"
+                  : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm",
               )}
             >
               {isSelected && (
-                <div className="absolute top-3 right-3 flex size-6 items-center justify-center rounded-full bg-brand-primary">
-                  <Check className="size-4 text-white" />
+                <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-brand-primary">
+                  <Check className="size-3 text-white" />
                 </div>
               )}
               {Icon && (
                 <Icon
                   className={cn(
-                    "size-8",
+                    "size-7",
                     isSelected ? "text-brand-primary" : "text-neutral-400",
                   )}
                 />
               )}
               <div>
-                <p className="font-medium text-neutral-900">{role.label}</p>
-                <p className="mt-1 text-sm text-neutral-500">{role.description}</p>
+                <p className="text-sm font-medium text-neutral-900">{role.label}</p>
+                <p className="mt-0.5 text-xs leading-tight text-neutral-500 line-clamp-2">{role.description}</p>
               </div>
             </button>
           );
         })}
       </div>
 
-      <Button
+      <button
+        type="button"
         onClick={handleSubmit}
         disabled={selectedRoles.size === 0 || props.loading}
-        className="w-full"
-        size="lg"
+        className="w-full rounded-lg px-6 py-3 text-base font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ backgroundColor: selectedRoles.size > 0 ? '#1b4d3e' : '#94a3b8' }}
       >
         {props.loading ? "Setting up..." : "Continue"}
-      </Button>
+      </button>
     </div>
   );
 }

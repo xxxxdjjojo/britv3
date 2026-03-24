@@ -209,7 +209,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
-        <Select value={filter.branch} onValueChange={(v) => setFilter((f) => ({ ...f, branch: v }))}>
+        <Select value={filter.branch} onValueChange={(v) => setFilter((f) => ({ ...f, branch: v ?? "" }))}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All Branches" />
           </SelectTrigger>
@@ -221,7 +221,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filter.role} onValueChange={(v) => setFilter((f) => ({ ...f, role: v }))}>
+        <Select value={filter.role} onValueChange={(v) => setFilter((f) => ({ ...f, role: v ?? "" }))}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All Roles" />
           </SelectTrigger>
@@ -233,7 +233,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filter.status} onValueChange={(v) => setFilter((f) => ({ ...f, status: v }))}>
+        <Select value={filter.status} onValueChange={(v) => setFilter((f) => ({ ...f, status: v ?? "" }))}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
@@ -369,7 +369,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium">Branch (optional)</label>
-              <Select value={inviteBranch} onValueChange={setInviteBranch}>
+              <Select value={inviteBranch} onValueChange={(v) => setInviteBranch(v ?? "")}>
                 <SelectTrigger>
                   <SelectValue placeholder="No branch" />
                 </SelectTrigger>
@@ -397,7 +397,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           <DialogHeader>
             <DialogTitle>Change Role — {roleDialogMember?.name}</DialogTitle>
           </DialogHeader>
-          <Select value={newRole} onValueChange={(v) => setNewRole(v as TeamRole)}>
+          <Select value={newRole} onValueChange={(v) => setNewRole((v ?? "") as TeamRole)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -422,7 +422,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           <DialogHeader>
             <DialogTitle>Assign Branch — {branchDialogMember?.name}</DialogTitle>
           </DialogHeader>
-          <Select value={newBranchId} onValueChange={setNewBranchId}>
+          <Select value={newBranchId} onValueChange={(v) => setNewBranchId(v ?? "")}>
             <SelectTrigger>
               <SelectValue placeholder="No branch" />
             </SelectTrigger>

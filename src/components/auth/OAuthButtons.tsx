@@ -41,13 +41,19 @@ function OAuthButtonsInner() {
 
       sessionStorage.setItem("brite_return_url", window.location.pathname);
 
+      // Persist professional role intent in a cookie so the OAuth callback
+      // can assign the correct role after the cross-domain redirect.
+      // sessionStorage and URL params are lost during OAuth redirects.
+      if (professionalRole) {
+        document.cookie = `britestate_professional_role=${encodeURIComponent(professionalRole)};path=/;max-age=600;SameSite=Lax`;
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           queryParams: {
             access_type: "offline",
             prompt: "consent",
-            state: professionalRole ? `role:${professionalRole}` : "",
           },
           redirectTo: `${origin}/auth/callback?next=/dashboard`,
         },

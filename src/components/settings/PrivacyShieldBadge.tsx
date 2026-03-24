@@ -1,4 +1,3 @@
-"use client";
 
 import { ShieldCheck, ShieldAlert } from "lucide-react";
 

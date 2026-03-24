@@ -1,4 +1,3 @@
-"use client";
 
 import { KPICard } from "@/components/dashboard/provider/KPICard";
 import {

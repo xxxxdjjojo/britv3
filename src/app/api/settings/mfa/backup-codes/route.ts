@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHash, randomBytes } from "crypto";
+import { randomBytes } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
+import { hashBackupCode } from "@/lib/auth/backup-codes";
 
 // 3 regenerations per 24 hours per user (fixed window)
 function getBackupCodesRateLimiter() {
-  const url = process.env.UPSTASH_REDIS_URL;
-  const token = process.env.UPSTASH_REDIS_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
     // Degrade gracefully — always allow when Redis is not configured
@@ -32,10 +33,6 @@ function getBackupCodesRateLimiter() {
 
 function generateBackupCode(): string {
   return randomBytes(5).toString("hex").toUpperCase();
-}
-
-function hashBackupCode(code: string): string {
-  return createHash("sha256").update(code).digest("hex");
 }
 
 export async function POST(request: NextRequest) {

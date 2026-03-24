@@ -10,7 +10,6 @@ import {
   getPaymentMethods,
   detachPaymentMethod,
   setDefaultPaymentMethod,
-  getSubscription,
 } from "@/services/billing/billing-service";
 
 export async function GET() {
@@ -74,27 +73,12 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    // Safety: block deletion if this is the only card and there's an active subscription
-    const [methods, subscription] = await Promise.all([
-      getPaymentMethods(supabase, user.id),
-      getSubscription(supabase, user.id),
-    ]);
-
-    const hasActiveSubscription =
-      subscription && (subscription.status === "active" || subscription.status === "trialing");
-    const isLastMethod = methods.length === 1 && methods[0].id === pmId;
-
-    if (hasActiveSubscription && isLastMethod) {
-      return NextResponse.json(
-        { error: "Cannot remove your only payment method while a subscription is active." },
-        { status: 422 },
-      );
-    }
-
-    await detachPaymentMethod(pmId);
+    await detachPaymentMethod(supabase, user.id, pmId);
     return NextResponse.json({ success: true });
   } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to remove payment method";
+    const isGuardError = message.startsWith("Cannot remove your only payment method");
     console.error("[billing/methods] Failed to detach payment method:", err);
-    return NextResponse.json({ error: "Failed to remove payment method" }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: isGuardError ? 422 : 500 });
   }
 }

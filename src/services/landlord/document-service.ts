@@ -14,29 +14,9 @@ type DocumentFilters = Readonly<{
   category?: DocumentCategory;
 }>;
 
-// -- Expiry status helper -----------------------------------------------------
+// -- Expiry status helper (re-exported from shared utils) --------------------
 
-export type ExpiryStatus = "valid" | "expiring" | "expired" | "none";
-
-/**
- * Compute expiry status from an expiry_date string.
- * green = valid (>30 days), amber = expiring (<=30 days), red = expired, none = no date.
- */
-export function getExpiryStatus(expiryDate: string | null): ExpiryStatus {
-  if (!expiryDate) return "none";
-
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const expiry = new Date(expiryDate);
-  expiry.setHours(0, 0, 0, 0);
-
-  const diffMs = expiry.getTime() - now.getTime();
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays <= 0) return "expired";
-  if (diffDays <= 30) return "expiring";
-  return "valid";
-}
+export { getExpiryStatus, type ExpiryStatus } from "@/lib/date-utils";
 
 // -- Service functions --------------------------------------------------------
 

@@ -1,4 +1,3 @@
-"use client";
 
 import Link from "next/link";
 import { KPICard } from "@/components/dashboard/provider/KPICard";
@@ -55,7 +54,7 @@ export default function BrokerDashboardPage() {
         />
         <KPICard
           title="Revenue This Month"
-          value="\u00A312,450"
+          value="£12,450"
           icon={PoundSterling}
           trend={{ value: 15, direction: "up" }}
         />

@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { vi, afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 // Skip env validation during tests
 process.env.SKIP_ENV_VALIDATION = "true";
@@ -22,5 +23,6 @@ vi.mock("@supabase/supabase-js", () => ({
 // ---------------------------------------------------------------------------
 
 afterEach(() => {
+  cleanup();
   vi.restoreAllMocks();
 });

@@ -20,7 +20,7 @@ export type QuoteLineItem = Readonly<{
   total_pence: number;
 }>;
 
-export type QuoteStatus = "draft" | "sent" | "accepted" | "rejected" | "expired";
+export type QuoteStatus = "draft" | "sent" | "viewed" | "accepted" | "declined" | "rejected" | "expired" | "withdrawn";
 
 export type Quote = Readonly<{
   id: string;
@@ -343,4 +343,100 @@ export async function getQuotesByProvider(
         : null,
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// acceptQuote
+// ---------------------------------------------------------------------------
+
+/**
+ * Accepts a quote on behalf of the service-request owner (the client/homeowner).
+ *
+ * Rules:
+ *  - The quote must be in 'sent' or 'viewed' status.
+ *  - The caller (userId) must be the owner of the linked service_request.
+ *
+ * Side effects:
+ *  - Updates quotes.status → 'accepted'
+ *  - Updates service_requests.status → 'awarded'
+ *
+ * Returns the updated Quote.
+ */
+export async function acceptQuote(
+  supabase: SupabaseClient,
+  quoteId: string,
+  userId: string,
+): Promise<Quote> {
+  // 1. Fetch the quote
+  const { data: quoteRow, error: quoteFetchError } = await supabase
+    .from("quotes")
+    .select("*")
+    .eq("id", quoteId)
+    .maybeSingle();
+
+  if (quoteFetchError) {
+    throw new Error(`Failed to fetch quote: ${quoteFetchError.message}`);
+  }
+  if (!quoteRow) {
+    throw new Error("Quote not found");
+  }
+
+  const quote = quoteRow as Quote;
+
+  // 2. Validate status allows acceptance
+  if (quote.status !== "sent" && quote.status !== "viewed") {
+    throw new Error(
+      `Quote cannot be accepted: current status is '${quote.status}'. Only sent or viewed quotes can be accepted.`,
+    );
+  }
+
+  // 3. Verify the caller owns the service_request linked to this quote
+  if (!quote.request_id) {
+    throw new Error("Quote is not linked to a service request and cannot be accepted.");
+  }
+
+  const { data: serviceRequest, error: srFetchError } = await supabase
+    .from("service_requests")
+    .select("id, user_id")
+    .eq("id", quote.request_id)
+    .maybeSingle();
+
+  if (srFetchError) {
+    throw new Error(`Failed to fetch service request: ${srFetchError.message}`);
+  }
+  if (!serviceRequest) {
+    throw new Error("Service request not found");
+  }
+
+  const sr = serviceRequest as { id: string; user_id: string };
+
+  if (sr.user_id !== userId) {
+    throw new Error("Only the service request owner can accept this quote.");
+  }
+
+  // 4. Update quote status to 'accepted'
+  const now = new Date().toISOString();
+
+  const { data: updatedQuote, error: quoteUpdateError } = await supabase
+    .from("quotes")
+    .update({ status: "accepted", updated_at: now })
+    .eq("id", quoteId)
+    .select("*")
+    .single();
+
+  if (quoteUpdateError) {
+    throw new Error(`Failed to accept quote: ${quoteUpdateError.message}`);
+  }
+
+  // 5. Update service_request status to 'awarded'
+  const { error: srUpdateError } = await supabase
+    .from("service_requests")
+    .update({ status: "awarded", updated_at: now })
+    .eq("id", quote.request_id);
+
+  if (srUpdateError) {
+    throw new Error(`Failed to update service request status: ${srUpdateError.message}`);
+  }
+
+  return updatedQuote as Quote;
 }

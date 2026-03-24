@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   SlidersHorizontal,
@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { calculateSdlt } from "@/lib/calculators/sdlt";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-GB", {
@@ -47,7 +48,7 @@ const FAQ_ITEMS = [
   {
     question: "What assumptions does this calculator make?",
     answer:
-      "This calculator assumes a repayment mortgage over 25 years, annual maintenance costs of 1% of property value, no stamp duty or legal fees (for simplicity), and that rent increases at the specified inflation rate. Investment returns on the deposit alternative are compounded annually.",
+      "This calculator assumes a repayment mortgage over 25 years, annual maintenance costs of 1% of the appreciated property value (cumulative), stamp duty (SDLT) at standard residential rates, and that rent increases at the specified inflation rate. Legal fees and survey costs are excluded for simplicity. Investment returns on the deposit alternative are compounded annually.",
   },
   {
     question: "Should I use this calculator as financial advice?",
@@ -61,15 +62,32 @@ const FAQ_ITEMS = [
   },
 ];
 
+function getUrlParam(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
 export default function BuyVsRentCalculatorPage() {
-  const [propertyPrice, setPropertyPrice] = useState(450000);
-  const [monthlyRent, setMonthlyRent] = useState(1850);
-  const [growthRate, setGrowthRate] = useState(3.5);
+  const [propertyPrice, setPropertyPrice] = useState(() => getUrlParam("price", 450000));
+  const [monthlyRent, setMonthlyRent] = useState(() => getUrlParam("rent", 1850));
+  const [growthRate, setGrowthRate] = useState(() => getUrlParam("growth", 3.5));
   const [depositPercent, setDepositPercent] = useState(15);
   const [mortgageRate, setMortgageRate] = useState(4.2);
   const [rentInflation, setRentInflation] = useState(2.5);
   const [investmentReturn, setInvestmentReturn] = useState(5.0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (propertyPrice !== 450000) params.set("price", String(propertyPrice));
+    if (monthlyRent !== 1850) params.set("rent", String(monthlyRent));
+    if (growthRate !== 3.5) params.set("growth", String(growthRate));
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [propertyPrice, monthlyRent, growthRate]);
 
   const deposit = (propertyPrice * depositPercent) / 100;
   const loanAmount = propertyPrice - deposit;
@@ -84,11 +102,15 @@ export default function BuyVsRentCalculatorPage() {
           (Math.pow(1 + monthlyRate, totalPayments) - 1)
         : loanAmount / totalPayments;
 
+    const stampDuty = calculateSdlt(propertyPrice, "standard").totalTax;
+
     const yearData: YearData[] = [];
     let breakEvenYear: number | null = null;
+    let cumulativeMaintenance = 0;
 
     for (let year = 1; year <= 25; year++) {
       const propertyValue = propertyPrice * Math.pow(1 + growthRate / 100, year);
+      cumulativeMaintenance += maintenanceRate * propertyValue;
 
       // Remaining mortgage balance after `year` years of payments
       const paymentsMade = year * 12;
@@ -102,7 +124,7 @@ export default function BuyVsRentCalculatorPage() {
       const totalMortgagePaid = monthlyMortgage * 12 * year;
       const equity = propertyValue - Math.max(0, remainingBalance);
       const buyingCost =
-        deposit + totalMortgagePaid + maintenanceRate * propertyPrice * year - equity;
+        deposit + stampDuty + totalMortgagePaid + cumulativeMaintenance - equity;
 
       // Rent with inflation
       let totalRentPaid = 0;
@@ -618,7 +640,7 @@ export default function BuyVsRentCalculatorPage() {
                   </p>
                 </div>
                 <Link
-                  href="/tools/mortgage-calculator"
+                  href={`/tools/mortgage-calculator?price=${propertyPrice}`}
                   className="w-full text-sm font-bold text-brand-primary flex items-center justify-center gap-2 hover:translate-x-1 transition-transform"
                 >
                   See Mortgage Rates{" "}
@@ -635,7 +657,7 @@ export default function BuyVsRentCalculatorPage() {
                 </h3>
                 <div className="space-y-4">
                   <Link
-                    href="/tools/mortgage-calculator"
+                    href={`/tools/mortgage-calculator?price=${propertyPrice}`}
                     className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                   >
                     <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
@@ -651,7 +673,7 @@ export default function BuyVsRentCalculatorPage() {
                     </div>
                   </Link>
                   <Link
-                    href="/tools/stamp-duty-calculator"
+                    href={`/tools/stamp-duty-calculator?price=${propertyPrice}`}
                     className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                   >
                     <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">

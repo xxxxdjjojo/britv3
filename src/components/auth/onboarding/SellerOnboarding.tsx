@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
+import { sanitize } from "@/lib/sanitize";
 import { cn } from "@/lib/utils";
 
 const STEPS = ["Your Property", "Property Details", "Selling Intent"];
@@ -61,7 +62,7 @@ export function SellerOnboarding(
           .from("properties")
           .insert({
             owner_id: user.id,
-            address_line1: address,
+            address_line1: sanitize(address),
             property_type: propertyType,
             bedrooms,
             bathrooms,
@@ -165,7 +166,7 @@ export function SellerOnboarding(
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Bedrooms</Label>
               <div className="flex items-center gap-2">
@@ -273,7 +274,7 @@ export function SellerOnboarding(
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Timeline</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {TIMELINES.map((t) => (
                 <button
                   key={t.value}

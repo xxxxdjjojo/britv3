@@ -1,4 +1,3 @@
-"use client";
 
 import { CheckCircle, Loader2 } from "lucide-react";
 import type { SaleProgressionStage, SaleStageNumber } from "@/types/seller";

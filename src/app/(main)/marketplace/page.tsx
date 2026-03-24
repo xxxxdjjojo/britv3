@@ -16,6 +16,7 @@ import {
   MapPin,
   ShieldCheck,
 } from "lucide-react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -250,12 +251,12 @@ export default async function MarketplaceLandingPage() {
             Join 10,000+ verified providers on Britestate and grow your
             business with quality leads.
           </p>
-          <a
-            href="/dashboard/provider"
+          <Link
+            href="/register?professional=service_provider"
             className="inline-block px-8 py-3.5 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
           >
             List Your Business
-          </a>
+          </Link>
         </div>
       </section>
     </div>

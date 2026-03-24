@@ -29,6 +29,13 @@ vi.mock("@upstash/redis", () => ({
   }),
 }));
 
+const mockGetCached = vi.fn();
+const mockSetCache = vi.fn();
+vi.mock("@/lib/cache/redis", () => ({
+  getCached: (...args: unknown[]) => mockGetCached(...args),
+  setCache: (...args: unknown[]) => mockSetCache(...args),
+}));
+
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: vi.fn(() => ({
     from: mockSupabaseFrom,
@@ -41,7 +48,11 @@ function setupMocks() {
   // Default: rate limits pass
   mockRatelimitLimit.mockResolvedValue({ success: true });
 
-  // Default: no daily spend
+  // Default: no daily spend (Redis cached spend = 0)
+  mockGetCached.mockResolvedValue(null);
+  mockSetCache.mockResolvedValue(undefined);
+
+  // Default: Supabase from (for logUsage insert)
   mockSupabaseFrom.mockImplementation((table: string) => {
     if (table === "ai_usage_log") {
       return {
@@ -100,21 +111,8 @@ describe("callClaude", () => {
   });
 
   it("returns null when daily spend limit is exceeded", async () => {
-    // Override the daily spend query to return high usage
-    mockSupabaseFrom.mockImplementation((table: string) => {
-      if (table === "ai_usage_log") {
-        return {
-          select: vi.fn().mockReturnValue({
-            gte: vi.fn().mockResolvedValue({
-              data: [{ input_tokens: 10_000_000, output_tokens: 0 }],
-              error: null,
-            }),
-          }),
-          insert: mockInsert.mockResolvedValue({ error: null }),
-        };
-      }
-      return { select: vi.fn(), insert: vi.fn() };
-    });
+    // Override Redis cached spend to exceed limit
+    mockGetCached.mockResolvedValue(100); // $100 > $10 limit
 
     const { callClaude } = await import("./claude-service");
     const result = await callClaude(defaultOptions);

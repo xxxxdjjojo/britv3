@@ -1,4 +1,3 @@
-"use client";
 
 import Link from "next/link";
 import { Calendar, Clock, CheckCircle2, XCircle, ArrowUpRight } from "lucide-react";
