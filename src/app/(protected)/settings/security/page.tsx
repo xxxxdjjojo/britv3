@@ -268,6 +268,34 @@ export default function SecuritySettingsPage() {
         setChangingPassword(false);
         setPendingAction(null);
       }
+    } else if (pendingAction === "mfa-disable") {
+      setDisabling(true);
+      try {
+        const res = await fetch("/api/settings/mfa/unenroll", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ factor_id: factorId, reauth_token: token }),
+        });
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+        };
+
+        if (!res.ok) {
+          toast.error(data.error ?? "Failed to disable 2FA");
+          return;
+        }
+
+        setMfaState("DISABLED");
+        setFactorId(null);
+        setBackupCodes(null);
+        toast.success("Two-factor authentication disabled");
+      } catch {
+        toast.error("Failed to disable 2FA");
+      } finally {
+        setDisabling(false);
+        setPendingAction(null);
+      }
     }
   }
 
@@ -337,31 +365,10 @@ export default function SecuritySettingsPage() {
     }
   }
 
-  async function handleDisable() {
+  function handleDisable() {
     if (!factorId) return;
-    setDisabling(true);
-    try {
-      const res = await fetch("/api/settings/mfa/unenroll", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ factor_id: factorId }),
-      });
-      const body = (await res.json()) as { success?: boolean; error?: string };
-
-      if (!res.ok) {
-        toast.error(body.error ?? "Failed to disable 2FA");
-        return;
-      }
-
-      setMfaState("DISABLED");
-      setFactorId(null);
-      setBackupCodes(null);
-      toast.success("Two-factor authentication disabled");
-    } catch {
-      toast.error("Failed to disable 2FA");
-    } finally {
-      setDisabling(false);
-    }
+    setPendingAction("mfa-disable");
+    setReauthOpen(true);
   }
 
   async function handleRegenerateBackupCodes() {
