@@ -16,6 +16,7 @@ import {
   Package,
   Bell,
 } from "lucide-react";
+import posthog from "posthog-js";
 import type { PlatformEvent, EventType } from "@/types/notifications";
 
 type NotificationItemProps = Readonly<{
@@ -129,6 +130,12 @@ export default function NotificationItem({
       className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50 ${
         isUnread ? "bg-primary/5" : ""
       }`}
+      onClick={() => {
+        posthog.capture("notification_clicked", {
+          event_type: event.event_type,
+          entity_type: event.entity_type,
+        });
+      }}
     >
       <div
         className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${

@@ -4,7 +4,7 @@
  * InboxList -- Conversation list wired to real useInbox() hook.
  */
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInbox } from "@/hooks/useInbox";
 import { useAuth } from "@/hooks/useAuth";
+import posthog from "posthog-js";
 import type { Conversation } from "@/types/messaging";
 
 // ---------------------------------------------------------------------------
@@ -73,7 +74,13 @@ function ConversationRow(
       role="option"
       aria-selected={isActive}
       aria-label={ariaLabel}
-      onClick={() => onSelect(conv.id, otherUserId)}
+      onClick={() => {
+        posthog.capture("conversation_opened", {
+          conversation_id: conv.id,
+          has_unread: hasUnread,
+        });
+        onSelect(conv.id, otherUserId);
+      }}
       className={cn(
         "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
         isActive && "bg-muted border-l-2 border-primary",
@@ -174,6 +181,17 @@ export default function InboxList(
         break;
     }
   }
+
+  // Track inbox_searched after debounce — avoids firing on every keystroke
+  useEffect(() => {
+    if (!search) return;
+    const timer = setTimeout(() => {
+      posthog.capture("inbox_searched", {
+        query_length: search.length,
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const { data, isLoading, error } = useInbox({
     search: search || undefined,
