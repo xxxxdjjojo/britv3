@@ -9,13 +9,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { createClient } from "@/lib/supabase/client";
 
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 5;
 const CODE_TTL_SECONDS = 30;
 
 export function TwoFactorForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/dashboard";
+  const next = searchParams.get("next") ?? searchParams.get("redirectTo") ?? "/dashboard";
 
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
