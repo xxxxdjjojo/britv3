@@ -70,7 +70,23 @@ export default function AffordabilityCalculatorPage() {
         : 0);
 
     const depositAmount = parseNum(deposit);
-    const maxBorrowing = totalIncome * incomeMultiplier;
+    const debtAmount = parseNum(monthlyDebt);
+    const livingAmount = parseNum(monthlyLiving);
+
+    // Base borrowing from income multiplier
+    const baseBorrowing = totalIncome * incomeMultiplier;
+
+    // Debt repayments reduce borrowing capacity: each £1/month of debt
+    // reduces max borrowing by the annual equivalent × multiplier, reflecting
+    // that lenders treat committed debt as a direct reduction in serviceable income.
+    const debtReduction = debtAmount * 12 * incomeMultiplier;
+
+    // Living costs apply a softer 50% weighting — lenders account for essential
+    // outgoings but don't penalise them as heavily as formal debt commitments.
+    const livingReduction = livingAmount * 12 * incomeMultiplier * 0.5;
+
+    const commitmentReduction = debtReduction + livingReduction;
+    const maxBorrowing = Math.max(0, baseBorrowing - commitmentReduction);
     const maxPropertyPrice = maxBorrowing + depositAmount;
 
     // Monthly payment calculation
@@ -87,6 +103,8 @@ export default function AffordabilityCalculatorPage() {
     return {
       incomeMultiplier,
       totalIncome,
+      baseBorrowing,
+      commitmentReduction,
       maxBorrowing,
       maxPropertyPrice,
       monthlyPayment,
@@ -101,6 +119,8 @@ export default function AffordabilityCalculatorPage() {
     app2Bonus,
     app2Other,
     deposit,
+    monthlyDebt,
+    monthlyLiving,
   ]);
 
   return (
@@ -408,6 +428,9 @@ export default function AffordabilityCalculatorPage() {
                   <p className="mt-4 text-center text-[10px] font-medium uppercase text-neutral-500">
                     Results are estimates based on{" "}
                     {results.incomeMultiplier}x income
+                    {results.commitmentReduction > 0
+                      ? `, reduced for commitments (−${formatGBP.format(results.commitmentReduction)})`
+                      : ""}
                   </p>
                 </div>
               </div>
