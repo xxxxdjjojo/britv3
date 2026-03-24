@@ -1,6 +1,6 @@
 /**
- * Tests for admin user management functions in src/services/admin-service.ts
- * Covers: searchUsers sanitization, suspendUser auth ban + rollback.
+ * Tests for admin user management functions in src/services/admin/user-service.ts
+ * Covers: searchUsers sanitization, suspendUser auth ban + rollback, activateUser.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -25,9 +25,9 @@ vi.mock("@/lib/supabase/admin", () => ({
 // Helper: chainable query builder
 // ---------------------------------------------------------------------------
 
-function createChain(terminalResult: { data: unknown; error: unknown }) {
+function createChain(terminalResult: { data: unknown; error: unknown; count?: number | null }) {
   const chain: Record<string, unknown> = {};
-  const methods = ["select", "update", "eq", "range", "order", "or"];
+  const methods = ["select", "update", "eq", "ilike", "range", "order", "or"];
   for (const method of methods) {
     chain[method] = vi.fn().mockReturnValue(chain);
   }
@@ -35,7 +35,7 @@ function createChain(terminalResult: { data: unknown; error: unknown }) {
   chain.then = (
     resolve: (v: { data: unknown; error: unknown; count: number | null }) => void,
   ) => {
-    resolve({ ...terminalResult, count: 0 });
+    resolve({ ...terminalResult, count: terminalResult.count ?? 0 });
     return { catch: vi.fn() };
   };
   return chain;
@@ -51,57 +51,42 @@ describe("searchUsers", () => {
     vi.resetModules();
   });
 
-  it("strips % characters from query to prevent ILIKE injection", async () => {
-    const { searchUsers } = await import("@/services/admin-service");
+  it("calls ilike with sanitized query (strips % and _ characters)", async () => {
+    const { searchUsers } = await import("@/services/admin/user-service");
 
     const chain = createChain({ data: [], error: null });
-    const orSpy = chain.or as ReturnType<typeof vi.fn>;
+    const ilikeSpy = chain.ilike as ReturnType<typeof vi.fn>;
     const supabase = { from: vi.fn().mockReturnValue(chain) };
 
-    await searchUsers(supabase as never, "foo%bar", 0, 10);
+    await searchUsers(supabase as never, "foo%bar_baz", 0, 10);
 
-    expect(orSpy).toHaveBeenCalledOnce();
-    const orArg = orSpy.mock.calls[0][0] as string;
-    expect(orArg).not.toContain("%bar");
-    // sanitized should be 'foobar' — no % at all in the injected part
-    expect(orArg).toContain("foobar");
-  });
-
-  it("strips _ characters from query", async () => {
-    const { searchUsers } = await import("@/services/admin-service");
-
-    const chain = createChain({ data: [], error: null });
-    const orSpy = chain.or as ReturnType<typeof vi.fn>;
-    const supabase = { from: vi.fn().mockReturnValue(chain) };
-
-    await searchUsers(supabase as never, "foo_bar", 0, 10);
-
-    const orArg = orSpy.mock.calls[0][0] as string;
-    // _ removed → foobar
-    expect(orArg).toContain("foobar");
-    expect(orArg).not.toContain("foo_bar");
+    expect(ilikeSpy).toHaveBeenCalledOnce();
+    const [col, pattern] = ilikeSpy.mock.calls[0] as [string, string];
+    expect(col).toBe("display_name");
+    // sanitizePostgrestInput strips % and _ characters
+    expect(pattern).not.toContain("%bar");
+    expect(pattern).not.toContain("_baz");
+    expect(pattern).toContain("foobarbaz");
   });
 
   it("truncates query longer than 100 characters", async () => {
-    const { searchUsers } = await import("@/services/admin-service");
+    const { searchUsers } = await import("@/services/admin/user-service");
 
     const longQuery = "a".repeat(200);
     const chain = createChain({ data: [], error: null });
-    const orSpy = chain.or as ReturnType<typeof vi.fn>;
+    const ilikeSpy = chain.ilike as ReturnType<typeof vi.fn>;
     const supabase = { from: vi.fn().mockReturnValue(chain) };
 
     await searchUsers(supabase as never, longQuery, 0, 10);
 
-    const orArg = orSpy.mock.calls[0][0] as string;
-    // The sanitized param embedded in the ilike pattern should be <= 100 chars
-    // Pattern is: full_name.ilike.%{sanitized}%,... so extract the sanitized part
-    const match = orArg.match(/ilike\.%(.+?)%,/);
-    const embedded = match?.[1] ?? "";
-    expect(embedded.length).toBeLessThanOrEqual(100);
+    const [, pattern] = ilikeSpy.mock.calls[0] as [string, string];
+    // Pattern is %{sanitized}% so sanitized part <= 100 chars
+    const inner = pattern.slice(1, -1); // strip leading/trailing %
+    expect(inner.length).toBeLessThanOrEqual(100);
   });
 
   it("returns empty array on DB error", async () => {
-    const { searchUsers } = await import("@/services/admin-service");
+    const { searchUsers } = await import("@/services/admin/user-service");
 
     const chain = createChain({ data: null, error: { message: "DB error" } });
     const supabase = { from: vi.fn().mockReturnValue(chain) };
@@ -134,17 +119,19 @@ describe("suspendUser", () => {
     };
   }
 
-  it("sets is_suspended=true in profiles table", async () => {
-    const { suspendUser } = await import("@/services/admin-service");
+  it("sets suspended_until in profiles table", async () => {
+    const { suspendUser } = await import("@/services/admin/user-service");
     const { supabase, chain } = createSuspendSupabase();
 
     await suspendUser(supabase as never, "user-001");
 
-    expect(chain.update).toHaveBeenCalledWith({ is_suspended: true });
+    const updateArg = (chain.update as ReturnType<typeof vi.fn>).mock.calls[0][0] as Record<string, unknown>;
+    expect(updateArg).toHaveProperty("suspended_until");
+    expect(typeof updateArg.suspended_until).toBe("string");
   });
 
   it("calls auth.admin.updateUserById with ban_duration to block login", async () => {
-    const { suspendUser } = await import("@/services/admin-service");
+    const { suspendUser } = await import("@/services/admin/user-service");
     const { supabase } = createSuspendSupabase();
 
     const result = await suspendUser(supabase as never, "user-001");
@@ -155,14 +142,24 @@ describe("suspendUser", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rolls back is_suspended=false if auth ban fails", async () => {
+  it("accepts duration parameter and uses correct ban_duration", async () => {
+    const { suspendUser } = await import("@/services/admin/user-service");
+    const { supabase } = createSuspendSupabase();
+
+    await suspendUser(supabase as never, "user-001", "24h");
+
+    expect(mockAuthAdmin.updateUserById).toHaveBeenCalledWith("user-001", {
+      ban_duration: "24h",
+    });
+  });
+
+  it("rolls back suspended_until if auth ban fails", async () => {
     mockAuthAdmin.updateUserById.mockResolvedValue({
       error: { message: "Auth service unavailable" },
     });
 
-    const { suspendUser } = await import("@/services/admin-service");
+    const { suspendUser } = await import("@/services/admin/user-service");
 
-    // Track calls to supabase.from() and update().eq()
     const updateCalls: Array<Record<string, unknown>> = [];
     const eqMock = vi.fn().mockResolvedValue({ error: null });
     const updateMock = vi.fn().mockImplementation((payload) => {
@@ -176,13 +173,13 @@ describe("suspendUser", () => {
     const result = await suspendUser(supabase as never, "user-001");
 
     expect(result.success).toBe(false);
-    // First call suspends, second call rolls back
-    expect(updateCalls[0]).toEqual({ is_suspended: true });
-    expect(updateCalls[1]).toEqual({ is_suspended: false });
+    // First call sets suspended_until, second call rolls back to null
+    expect(updateCalls[0]).toHaveProperty("suspended_until");
+    expect(updateCalls[1]).toEqual({ suspended_until: null });
   });
 
   it("returns success=false immediately if DB update fails (no auth call)", async () => {
-    const { suspendUser } = await import("@/services/admin-service");
+    const { suspendUser } = await import("@/services/admin/user-service");
 
     const eqMock = vi.fn().mockResolvedValue({
       error: { message: "DB constraint" },
@@ -212,7 +209,7 @@ describe("activateUser", () => {
   });
 
   it("calls auth.admin.updateUserById with ban_duration=none to unban", async () => {
-    const { activateUser } = await import("@/services/admin-service");
+    const { activateUser } = await import("@/services/admin/user-service");
 
     const eqMock = vi.fn().mockResolvedValue({ error: null });
     const supabase = {
@@ -229,12 +226,12 @@ describe("activateUser", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rolls back is_suspended=true if auth unban fails", async () => {
+  it("rolls back suspended_until if auth unban fails", async () => {
     mockAuthAdmin.updateUserById.mockResolvedValue({
       error: { message: "Auth service unavailable" },
     });
 
-    const { activateUser } = await import("@/services/admin-service");
+    const { activateUser } = await import("@/services/admin/user-service");
 
     const updateCalls: Array<Record<string, unknown>> = [];
     const eqMock = vi.fn().mockResolvedValue({ error: null });
@@ -249,7 +246,8 @@ describe("activateUser", () => {
     const result = await activateUser(supabase as never, "user-001");
 
     expect(result.success).toBe(false);
-    expect(updateCalls[0]).toEqual({ is_suspended: false });
-    expect(updateCalls[1]).toEqual({ is_suspended: true });
+    // First call clears suspension, second rolls back
+    expect(updateCalls[0]).toHaveProperty("suspended_until", null);
+    expect(updateCalls[1]).toHaveProperty("suspended_until");
   });
 });
