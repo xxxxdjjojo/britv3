@@ -4,7 +4,7 @@
  * InboxList -- Conversation list wired to real useInbox() hook.
  */
 
-import { useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -45,9 +45,10 @@ function ConversationRow(
     isActive: boolean;
     currentUserId: string;
     onSelect: (id: string, recipientId: string) => void;
+    buttonRef: (el: HTMLButtonElement | null) => void;
   }>,
 ) {
-  const { conversation: conv, isActive, currentUserId, onSelect } = props;
+  const { conversation: conv, isActive, currentUserId, onSelect, buttonRef } = props;
 
   const otherUserId =
     conv.participant_1_id === currentUserId
@@ -63,9 +64,15 @@ function ConversationRow(
   const timestamp = relativeTime(conv.last_message_at);
   const hasUnread = conv.unread_count > 0;
 
+  const ariaLabel = `${name}, ${lastMessage}, ${timestamp}${hasUnread ? ", unread" : ""}`;
+
   return (
     <button
+      ref={buttonRef}
       type="button"
+      role="option"
+      aria-selected={isActive}
+      aria-label={ariaLabel}
       onClick={() => onSelect(conv.id, otherUserId)}
       className={cn(
         "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
@@ -135,6 +142,38 @@ export default function InboxList(
   const { user } = useAuth();
   const currentUserId = user?.id ?? "";
   const [search, setSearch] = useState("");
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const setItemRef = useCallback(
+    (index: number) => (el: HTMLButtonElement | null) => {
+      itemRefs.current[index] = el;
+    },
+    [],
+  );
+
+  function handleListKeyDown(e: React.KeyboardEvent) {
+    const items = itemRefs.current.filter(Boolean) as HTMLButtonElement[];
+    const currentIndex = items.findIndex((el) => el === document.activeElement);
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        items[Math.min(currentIndex + 1, items.length - 1)]?.focus();
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        items[Math.max(currentIndex - 1, 0)]?.focus();
+        break;
+      case "Home":
+        e.preventDefault();
+        items[0]?.focus();
+        break;
+      case "End":
+        e.preventDefault();
+        items[items.length - 1]?.focus();
+        break;
+    }
+  }
 
   const { data, isLoading, error } = useInbox({
     search: search || undefined,
@@ -160,7 +199,12 @@ export default function InboxList(
 
       {/* Conversation list */}
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-1">
+        <div
+          className="p-2 space-y-1"
+          role="listbox"
+          aria-label="Conversations"
+          onKeyDown={handleListKeyDown}
+        >
           {isLoading && (
             <>
               <SkeletonRow />
@@ -183,13 +227,14 @@ export default function InboxList(
 
           {!isLoading &&
             !error &&
-            conversations.map((conv) => (
+            conversations.map((conv, index) => (
               <ConversationRow
                 key={conv.id}
                 conversation={conv}
                 isActive={conv.id === activeId}
                 currentUserId={currentUserId}
                 onSelect={onSelectConversation ?? (() => {})}
+                buttonRef={setItemRef(index)}
               />
             ))}
         </div>

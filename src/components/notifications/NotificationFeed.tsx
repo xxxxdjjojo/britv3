@@ -60,7 +60,7 @@ export default function NotificationFeed({
 
   return (
     <div>
-      <div className="divide-y">
+      <div className="divide-y" aria-live="polite">
         {displayItems.map((event) => (
           <NotificationItem
             key={event.id}

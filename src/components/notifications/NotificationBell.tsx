@@ -31,7 +31,7 @@ export default function NotificationBell() {
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
-        <span className="sr-only">
+        <span className="sr-only" aria-live="polite">
           {unreadCount > 0
             ? `${unreadCount} unread notifications`
             : "Notifications"}

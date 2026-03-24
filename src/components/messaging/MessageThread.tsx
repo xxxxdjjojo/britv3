@@ -220,6 +220,9 @@ export default function MessageThread(
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Aria-live region for announcing new incoming messages
+  const [liveMessage, setLiveMessage] = useState("");
+
   // Flatten pages into a sorted array — pages are newest-first, so reverse for display
   const messages = data?.pages.flatMap((p) => p.messages).reverse() ?? [];
 
@@ -260,6 +263,11 @@ export default function MessageThread(
               // Dedup: skip if already in cache
               const allMsgs = old.pages.flatMap((p) => p.messages);
               if (allMsgs.some((m) => m.id === newMsg.id)) return old;
+              // Announce incoming messages from others to screen readers
+              if (newMsg.sender_id !== user?.id) {
+                const sender = newMsg.sender_name ?? "Someone";
+                setLiveMessage(`${sender}: ${newMsg.content}`);
+              }
               // Add to first page (newest first)
               const newPages = [...old.pages];
               newPages[0] = {
@@ -323,7 +331,7 @@ export default function MessageThread(
 
       {/* Message feed */}
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-3" role="log" aria-label="Message history">
           {/* Load earlier messages */}
           {hasNextPage && (
             <div className="flex justify-center py-2">
@@ -347,6 +355,11 @@ export default function MessageThread(
               isOwn={msg.sender_id === user?.id}
             />
           ))}
+
+          {/* Screen reader announcement for new messages */}
+          <div aria-live="polite" className="sr-only">
+            {liveMessage}
+          </div>
 
           {/* Scroll anchor */}
           <div ref={bottomRef} />

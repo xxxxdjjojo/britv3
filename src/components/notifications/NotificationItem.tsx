@@ -118,10 +118,14 @@ export default function NotificationItem({
     ? new Date(event.created_at) > new Date(lastReadAt)
     : true;
   const url = getNotificationUrl(event);
+  const description = getActionDescription(event);
+  const time = timeAgo(new Date(event.created_at));
+  const ariaLabel = `${description}, ${time}${isUnread ? ", unread" : ""}`;
 
   return (
     <Link
       href={url}
+      aria-label={ariaLabel}
       className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50 ${
         isUnread ? "bg-primary/5" : ""
       }`}
@@ -139,10 +143,10 @@ export default function NotificationItem({
             isUnread ? "font-medium text-foreground" : "text-muted-foreground"
           }`}
         >
-          {getActionDescription(event)}
+          {description}
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          {timeAgo(new Date(event.created_at))}
+          {time}
         </p>
       </div>
       {isUnread && (
