@@ -475,6 +475,21 @@ export default async function PropertyPage({
                     label: "Bathrooms",
                     value: String(property.bathrooms),
                   },
+                  ...(property.receptionRooms != null ? [{
+                    icon: <Home className="size-4" />,
+                    label: "Receptions",
+                    value: String(property.receptionRooms),
+                  }] : []),
+                  {
+                    icon: <CalendarIcon className="size-4" />,
+                    label: "Listed",
+                    value: new Date(listing.listedDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+                  },
+                  ...(property.tenure === "leasehold" && property.leaseRemainingYears != null ? [{
+                    icon: <FileText className="size-4" />,
+                    label: "Lease Remaining",
+                    value: `${property.leaseRemainingYears} years`,
+                  }] : []),
                 ].map((item) => (
                   <div
                     key={item.label}
