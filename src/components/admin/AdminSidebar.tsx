@@ -33,6 +33,7 @@ import {
   Mail,
   UserCheck,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ResponsiveSidebar } from "@/components/responsive/ResponsiveSidebar";
@@ -233,6 +234,16 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
           />
         ))}
       </nav>
+
+      <div className="border-t border-neutral-200 p-3">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 transition-colors"
+        >
+          <LogOut className="h-3.5 w-3.5 shrink-0" />
+          Back to Platform
+        </Link>
+      </div>
     </>
   );
 }
