@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/lib/supabase/client";
+import { ReauthDialog } from "@/components/settings/ReauthDialog";
 
 const MAX_BIO_LENGTH = 300;
 
@@ -33,6 +33,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const [changingEmail, setChangingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [sendingEmailChange, setSendingEmailChange] = useState(false);
+  const [emailReauthOpen, setEmailReauthOpen] = useState(false);
 
   function handleCancel() {
     setFirstName(initialData.first_name);
@@ -93,19 +94,28 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
     }
   }
 
-  async function handleEmailChange(e: React.FormEvent) {
-    e.preventDefault();
+  function handleEmailChange() {
     if (!newEmail.trim()) return;
+    setEmailReauthOpen(true);
+  }
 
+  async function handleEmailReauthSuccess(token: string) {
     setSendingEmailChange(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
-      if (error) {
-        toast.error(error.message ?? "Failed to update email");
-        return;
+      const res = await fetch("/api/settings/change-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reauth_token: token, email: newEmail.trim() }),
+      });
+
+      const data: unknown = await res.json();
+
+      if (res.ok && typeof data === "object" && data !== null && "message" in data) {
+        toast.success((data as { message: string }).message);
+      } else {
+        toast.error("Failed to update email");
       }
-      toast.success("Check your inbox — a confirmation link has been sent");
+
       setChangingEmail(false);
       setNewEmail("");
     } catch {
@@ -176,7 +186,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
               <Button
                 type="button"
                 size="sm"
-                onClick={handleEmailChange}
+                onClick={() => handleEmailChange()}
                 disabled={sendingEmailChange || !newEmail.trim()}
               >
                 {sendingEmailChange && (
@@ -270,6 +280,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           Save Changes
         </Button>
       </div>
+      <ReauthDialog
+        open={emailReauthOpen}
+        onOpenChange={setEmailReauthOpen}
+        onSuccess={handleEmailReauthSuccess}
+        title="Confirm email change"
+        description="Enter your password to change your email address."
+      />
     </form>
   );
 }

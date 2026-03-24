@@ -6,6 +6,14 @@ import { useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +43,7 @@ export function FraudDetectionClient({ signals }: Props) {
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [suspending, startSuspend] = useTransition();
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false);
 
   function toggleSelect(userId: string) {
     setSelected((prev) => {
@@ -53,9 +62,14 @@ export function FraudDetectionClient({ signals }: Props) {
     }
   }
 
-  function handleBulkSuspend() {
+  function promptBulkSuspend() {
     if (selected.size === 0) return;
+    setShowBulkConfirm(true);
+  }
+
+  function executeBulkSuspend() {
     const ids = [...selected];
+    setShowBulkConfirm(false);
     startSuspend(async () => {
       try {
         const results = await Promise.allSettled(
@@ -66,9 +80,7 @@ export function FraudDetectionClient({ signals }: Props) {
         const succeeded = results.filter((r) => r.status === "fulfilled" && (r as PromiseFulfilledResult<Response>).value.ok).length;
         const failed = ids.length - succeeded;
         if (succeeded > 0) {
-          toast.success(
-            `${succeeded} user${succeeded !== 1 ? "s" : ""} suspended`,
-          );
+          toast.success(`${succeeded} user${succeeded !== 1 ? "s" : ""} suspended`);
         }
         if (failed > 0) {
           toast.error(`${failed} suspension${failed !== 1 ? "s" : ""} failed`);
@@ -96,7 +108,7 @@ export function FraudDetectionClient({ signals }: Props) {
         <Button
           size="sm"
           variant="destructive"
-          onClick={handleBulkSuspend}
+          onClick={promptBulkSuspend}
           disabled={selected.size === 0 || suspending}
           className="text-xs"
         >
@@ -105,6 +117,24 @@ export function FraudDetectionClient({ signals }: Props) {
             : `Suspend selected (${selected.size})`}
         </Button>
       </div>
+
+      <Dialog open={showBulkConfirm} onOpenChange={setShowBulkConfirm}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Confirm Bulk Suspension</DialogTitle>
+            <DialogDescription>
+              You are about to suspend {selected.size} user{selected.size !== 1 ? "s" : ""}.
+              Their sessions will be immediately invalidated.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkConfirm(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={executeBulkSuspend}>
+              Suspend {selected.size} user{selected.size !== 1 ? "s" : ""}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Table */}
       <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">

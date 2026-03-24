@@ -1,12 +1,13 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(req: Request) {
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "team.invite",
     "user",
     "invite",
+    "manage_team",
     async () => {
       const body = await req.json().catch(() => ({})) as { email?: string };
       if (!body.email || typeof body.email !== "string") {

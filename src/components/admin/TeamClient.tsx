@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Mail, UserCheck } from "lucide-react";
 
-type Props = Readonly<{ members: TeamMember[] }>;
+type Props = Readonly<{ members: TeamMember[]; isSuperAdmin?: boolean }>;
 
 function InviteForm() {
   const router = useRouter();
@@ -67,10 +67,10 @@ function InviteForm() {
   );
 }
 
-export function TeamClient({ members }: Props) {
+export function TeamClient({ members, isSuperAdmin = false }: Props) {
   return (
     <div>
-      <InviteForm />
+      {isSuperAdmin && <InviteForm />}
 
       <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
         <table className="w-full text-sm">

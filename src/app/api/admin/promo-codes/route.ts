@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 
 type PromoCodePayload = {
   code: string;
@@ -18,11 +18,12 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "promo_code.create",
     "promo_code",
     "new",
+    "manage_promo_codes",
     async ({ supabase }) => {
 
       if (!body.code?.trim()) throw new Error("Code is required");

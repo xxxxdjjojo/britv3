@@ -56,6 +56,34 @@ export default async function AgentsPage({ searchParams }: Props) {
       console.error("Agent search error:", error);
     } else {
       agents = (data as unknown as AgentPublicProfile[]) ?? [];
+
+      // Fetch rating data for returned agents
+      if (agents.length > 0) {
+        const agentIds = agents.map((a) => (a as unknown as { user_id?: string }).user_id ?? a.id).filter(Boolean);
+        const { data: reviewData } = await supabase
+          .from("reviews")
+          .select("provider_id, overall_rating")
+          .in("provider_id", agentIds)
+          .eq("moderation_status", "approved");
+
+        if (reviewData && reviewData.length > 0) {
+          const ratingMap = new Map<string, { sum: number; count: number }>();
+          for (const r of reviewData) {
+            const existing = ratingMap.get(r.provider_id) ?? { sum: 0, count: 0 };
+            existing.sum += r.overall_rating;
+            existing.count += 1;
+            ratingMap.set(r.provider_id, existing);
+          }
+
+          agents = agents.map((a) => {
+            const key = (a as unknown as { user_id?: string }).user_id ?? a.id;
+            const stats = ratingMap.get(key);
+            return Object.assign({}, a, {
+              avg_rating: stats ? stats.sum / stats.count : null,
+            });
+          });
+        }
+      }
     }
   } catch (err) {
     console.error("Agent search error:", err);

@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 
 export async function DELETE(
   req: Request,
@@ -6,11 +6,12 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "promo_code.delete",
     "promo_code",
     id,
+    "manage_promo_codes",
     async ({ supabase }) => {
       const { error } = await supabase
         .from("promo_codes")

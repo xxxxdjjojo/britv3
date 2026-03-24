@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { PUBLIC_ROUTES, AUTH_ROUTES, ROUTE_TO_ROLE, ROLE_TO_ROUTE } from "@/lib/constants";
 import { isFeatureEnabled } from "@/lib/features";
+import { ADMIN_ROUTE_PERMISSIONS, hasPermission, type AdminRole } from "@/lib/admin-permissions";
 
 /** Profile columns fetched by the consolidated middleware query. */
 type MiddlewareProfileData = {
   active_role: string | null;
   is_admin: boolean;
+  admin_role: string | null;
   provider_verification_status: string | null;
   verification_level: string | null;
 };
@@ -179,6 +181,7 @@ export async function middleware(request: NextRequest) {
     role?: string;
     plan?: string;
     is_admin?: boolean;
+    admin_role?: string;
   } | undefined;
   const hasClaims = useJwtClaims && appMetadata?.role !== undefined && appMetadata?.role !== "";
 
@@ -220,7 +223,7 @@ export async function middleware(request: NextRequest) {
     try {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("active_role, is_admin, provider_verification_status, verification_level")
+        .select("active_role, is_admin, admin_role, provider_verification_status, verification_level")
         .eq("id", user!.id)
         .single();
 
@@ -243,6 +246,24 @@ export async function middleware(request: NextRequest) {
       }
     } else {
       if (profileData?.is_admin !== true) {
+        return redirectWithHeaders("/forbidden", nonce, request);
+      }
+    }
+  }
+
+  // ── Admin role permission gate ────────────────────────────────────
+  if (isAdminRoute && pathname !== "/admin") {
+    const adminRole = (hasClaims ? appMetadata?.admin_role : profileData?.admin_role) as AdminRole | undefined;
+    const role = adminRole ?? "super_admin"; // backwards compat: null = super_admin
+
+    // Find the matching route permission
+    const matchedRoute = Object.keys(ADMIN_ROUTE_PERMISSIONS)
+      .filter((route) => pathname.startsWith(route))
+      .sort((a, b) => b.length - a.length)[0]; // longest match wins
+
+    if (matchedRoute) {
+      const requiredPermission = ADMIN_ROUTE_PERMISSIONS[matchedRoute];
+      if (!hasPermission(role, requiredPermission)) {
         return redirectWithHeaders("/forbidden", nonce, request);
       }
     }

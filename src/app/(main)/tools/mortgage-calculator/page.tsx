@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Calculator, PiggyBank, TrendingUp, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
+import { MortgageRelatedTools } from "@/components/calculators/MortgageRelatedTools";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -56,8 +57,8 @@ export default function MortgageCalculatorPage() {
                 Ready to take the next step? Get free expert advice from our
                 trusted partner brokers.
               </p>
-              <Button className="w-full font-bold">
-                <Link href="/tools/find-broker">Connect Now</Link>
+              <Button className="w-full font-bold" asChild>
+                <Link href="/marketplace?category=mortgage-broker">Connect Now</Link>
               </Button>
             </CardContent>
           </Card>
@@ -68,35 +69,7 @@ export default function MortgageCalculatorPage() {
               <h3 className="mb-4 font-bold text-neutral-900 dark:text-white">
                 Other Tools
               </h3>
-              <ul className="space-y-4">
-                <li>
-                  <Link
-                    href="/tools/stamp-duty-calculator"
-                    className="flex items-center gap-3 text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary dark:text-neutral-400"
-                  >
-                    <Calculator className="h-5 w-5 text-neutral-300" />
-                    Stamp Duty Calculator
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/tools/affordability-calculator"
-                    className="flex items-center gap-3 text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary dark:text-neutral-400"
-                  >
-                    <PiggyBank className="h-5 w-5 text-neutral-300" />
-                    How much can I borrow?
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/tools/yield-calculator"
-                    className="flex items-center gap-3 text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary dark:text-neutral-400"
-                  >
-                    <TrendingUp className="h-5 w-5 text-neutral-300" />
-                    Buy-to-Let Yield Tool
-                  </Link>
-                </li>
-              </ul>
+              <MortgageRelatedTools />
             </CardContent>
           </Card>
         </aside>

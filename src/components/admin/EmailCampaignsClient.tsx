@@ -6,6 +6,14 @@ import { TIPTAP_EXTENSIONS } from "@/lib/tiptap-extensions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { useAdminAction } from "@/hooks/useAdminAction";
@@ -57,6 +65,8 @@ export function EmailCampaignsClient({ campaigns }: Props) {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState<CreateForm>(EMPTY_FORM);
   const [creating, setCreating] = useState(false);
+  const [sendConfirmId, setSendConfirmId] = useState<string | null>(null);
+  const [sendConfirmText, setSendConfirmText] = useState("");
 
   const editor = useEditor({
     extensions: TIPTAP_EXTENSIONS,
@@ -120,12 +130,19 @@ export function EmailCampaignsClient({ campaigns }: Props) {
     }
   }
 
-  async function handleSend(id: string) {
-    if (!confirm("Send this campaign now? This cannot be undone.")) return;
-    const ok = await execute(`/api/admin/campaigns/${id}/send`, {
+  function promptSend(id: string) {
+    setSendConfirmId(id);
+    setSendConfirmText("");
+  }
+
+  async function handleSend() {
+    if (!sendConfirmId || sendConfirmText !== "SEND") return;
+    const ok = await execute(`/api/admin/campaigns/${sendConfirmId}/send`, {
       method: "POST",
     });
-    if (ok) toast.success("Campaign marked as sent");
+    if (ok) toast.success("Campaign queued for sending");
+    setSendConfirmId(null);
+    setSendConfirmText("");
   }
 
   return (
@@ -347,7 +364,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleSend(campaign.id)}
+                        onClick={() => promptSend(campaign.id)}
                         disabled={isPending}
                         style={{ borderColor: "#1B4D3E", color: "#1B4D3E" }}
                         className="hover:opacity-80"
@@ -362,6 +379,39 @@ export function EmailCampaignsClient({ campaigns }: Props) {
             </tbody>
           </table>
         </div>
+      )}
+
+      {sendConfirmId && (
+        <Dialog open onOpenChange={() => setSendConfirmId(null)}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Confirm Campaign Send</DialogTitle>
+              <DialogDescription>
+                This will send emails to all targeted recipients. This cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <Label htmlFor="confirm-send">Type SEND to confirm:</Label>
+              <Input
+                id="confirm-send"
+                value={sendConfirmText}
+                onChange={(e) => setSendConfirmText(e.target.value)}
+                placeholder="SEND"
+                className="font-mono"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSendConfirmId(null)}>Cancel</Button>
+              <Button
+                variant="destructive"
+                onClick={handleSend}
+                disabled={sendConfirmText !== "SEND" || isPending}
+              >
+                {isPending ? "Sending..." : "Confirm Send"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

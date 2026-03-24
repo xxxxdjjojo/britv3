@@ -23,18 +23,18 @@ function createQueryChain(singleResult: { data: unknown; error: unknown }) {
 function createMockClient(opts: {
   user?: { id: string } | null;
   authError?: { message: string } | null;
-  profileRole?: string | null;
+  isAdmin?: boolean | null;
   profileError?: { message: string } | null;
 }) {
   const {
     user = null,
     authError = null,
-    profileRole = null,
+    isAdmin = null,
     profileError = null,
   } = opts;
 
   const profileChain = createQueryChain({
-    data: profileRole !== null ? { role: profileRole } : null,
+    data: isAdmin !== null ? { is_admin: isAdmin } : null,
     error: profileError,
   });
 
@@ -83,11 +83,11 @@ describe("adminOnly", () => {
     expect(body).toEqual({ error: "Unauthorized" });
   });
 
-  it("returns 403 when user's profile role is not admin", async () => {
+  it("returns 403 when user is not admin", async () => {
     const { createClient } = await import("@/lib/supabase/server");
     const mockClient = createMockClient({
       user: { id: "user-123" },
-      profileRole: "homebuyer",
+      isAdmin: false,
     });
     vi.mocked(createClient).mockResolvedValue(mockClient as never);
 
@@ -102,11 +102,11 @@ describe("adminOnly", () => {
     expect(body).toEqual({ error: "Forbidden" });
   });
 
-  it("returns 403 when user's profile role is null", async () => {
+  it("returns 403 when profile has no is_admin flag", async () => {
     const { createClient } = await import("@/lib/supabase/server");
     const mockClient = createMockClient({
       user: { id: "user-123" },
-      profileRole: null,
+      isAdmin: null,
     });
     vi.mocked(createClient).mockResolvedValue(mockClient as never);
 
@@ -118,11 +118,11 @@ describe("adminOnly", () => {
     expect(response.status).toBe(403);
   });
 
-  it("returns AdminContext with user and supabase when role is admin", async () => {
+  it("returns AdminContext with user and supabase when is_admin is true", async () => {
     const { createClient } = await import("@/lib/supabase/server");
     const mockClient = createMockClient({
       user: { id: "admin-456" },
-      profileRole: "admin",
+      isAdmin: true,
     });
     vi.mocked(createClient).mockResolvedValue(mockClient as never);
 

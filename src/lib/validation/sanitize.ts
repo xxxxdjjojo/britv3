@@ -50,3 +50,20 @@ export function sanitizePostgrestInput(dirty: string): string {
   if (typeof dirty !== "string") return "";
   return dirty.replace(/[,().\\%_]/g, "");
 }
+
+/**
+ * Validate and sanitize a URL string, allowing only http: and https: protocols.
+ * Returns null for invalid or dangerous URLs (javascript:, data:, etc.).
+ */
+export function sanitizeUrl(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.href;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}

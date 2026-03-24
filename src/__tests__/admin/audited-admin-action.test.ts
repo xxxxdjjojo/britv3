@@ -136,12 +136,13 @@ describe("auditedAdminAction", () => {
 
     expect(logAdminAction).toHaveBeenCalledWith(
       mockCtx.supabase,
-      {
+      expect.objectContaining({
         adminId: "admin-456",
         action: "user.suspend",
         targetType: "user",
         targetId: "user-789",
-      },
+        success: true,
+      }),
     );
   });
 });

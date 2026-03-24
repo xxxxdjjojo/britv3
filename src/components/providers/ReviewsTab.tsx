@@ -252,14 +252,11 @@ export function ReviewsTab({
         </div>
       )}
 
-      {/* Write a Review CTA */}
+      {/* Review eligibility note */}
       <div className="pt-2">
-        <a
-          href={`/reviews/new?provider=${providerId}`}
-          className="text-[#2563EB] font-semibold text-sm hover:underline"
-        >
-          Write a Review &rarr;
-        </a>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Reviews can be submitted after completing a booking with {providerName}.
+        </p>
       </div>
     </div>
   );

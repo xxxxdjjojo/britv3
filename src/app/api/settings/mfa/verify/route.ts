@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHash, randomBytes } from "crypto";
+import { randomBytes } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createAuthRateLimiter } from "@/lib/cache/redis";
+import { hashBackupCode } from "@/lib/auth/backup-codes";
+import { sendSecurityAlert } from "@/services/email/security-email-service";
 
 // 5 attempts per minute per user for TOTP verification — fail-closed
 const verifyRateLimiter = createAuthRateLimiter(5, "1 m");
 
 function generateBackupCode(): string {
   return randomBytes(5).toString("hex").toUpperCase();
-}
-
-function hashBackupCode(code: string): string {
-  return createHash("sha256").update(code).digest("hex");
 }
 
 export async function POST(request: NextRequest) {
@@ -112,6 +110,24 @@ export async function POST(request: NextRequest) {
       { error: "Failed to store backup codes" },
       { status: 500 },
     );
+  }
+
+  // Send security notification email (fire-and-forget)
+  try {
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("display_name")
+      .eq("user_id", user.id)
+      .single();
+
+    void sendSecurityAlert({
+      userId: user.id,
+      email: user.email!,
+      firstName: profile?.display_name?.split(" ")[0] ?? "",
+      eventType: "mfa_enabled",
+    });
+  } catch {
+    // Non-critical — never block the response
   }
 
   // Return plaintext codes — shown once, never accessible again

@@ -1,4 +1,4 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
 import { rejectListing } from "@/services/admin/listing-service";
 
 export async function POST(
@@ -15,11 +15,12 @@ export async function POST(
     // reason is optional — continue without it
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "listing.reject",
     "listing",
     listingId,
+    "moderate_listings",
     async ({ supabase }) => {
       const result = await rejectListing(supabase, listingId, reason);
       if (!result.success) throw new Error("Failed to reject listing");

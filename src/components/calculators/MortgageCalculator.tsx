@@ -1,17 +1,32 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { FileEdit, Save } from "lucide-react";
 import {
   calculateMonthlyPayment,
   calculateTotalRepayable,
 } from "@/lib/calculators/mortgage";
 import { useMortgageParams } from "@/hooks/useMortgageParams";
+
+function getUrlParam(key: string, defaultValue: number): number {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null && !isNaN(Number(val)) ? Number(val) : defaultValue;
+}
+
+function getUrlBool(key: string, defaultValue: boolean): boolean {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  const val = params.get(key);
+  return val !== null ? val === "1" || val === "true" : defaultValue;
+}
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-GB", {
@@ -32,10 +47,23 @@ const formatCompact = (value: number) =>
 export function MortgageCalculator() {
   const { saveParams, hasParams } = useMortgageParams();
 
-  const [propertyPrice, setPropertyPrice] = useState(300000);
-  const [deposit, setDeposit] = useState(30000);
-  const [interestRate, setInterestRate] = useState(4.5);
-  const [termYears, setTermYears] = useState(25);
+  const [propertyPrice, setPropertyPrice] = useState(() => getUrlParam("price", 300000));
+  const [deposit, setDeposit] = useState(() => getUrlParam("deposit", 30000));
+  const [interestRate, setInterestRate] = useState(() => getUrlParam("rate", 4.5));
+  const [termYears, setTermYears] = useState(() => getUrlParam("term", 25));
+  const [interestOnly, setInterestOnly] = useState(() => getUrlBool("io", false));
+
+  // Sync state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (propertyPrice !== 300000) params.set("price", String(propertyPrice));
+    if (deposit !== 30000) params.set("deposit", String(deposit));
+    if (interestRate !== 4.5) params.set("rate", String(interestRate));
+    if (termYears !== 25) params.set("term", String(termYears));
+    if (interestOnly) params.set("io", "1");
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [propertyPrice, deposit, interestRate, termYears, interestOnly]);
 
   const depositPercent = useMemo(() => {
     if (propertyPrice <= 0) return 0;
@@ -48,20 +76,25 @@ export function MortgageCalculator() {
   );
 
   const results = useMemo(() => {
-    const monthlyPayment = calculateMonthlyPayment(
-      loanAmount,
-      interestRate,
-      termYears,
-    );
-    const { totalRepayable, totalInterest } = calculateTotalRepayable(
-      loanAmount,
-      interestRate,
-      termYears,
-    );
+    const monthlyPayment = interestOnly
+      ? Math.round(loanAmount * (interestRate / 100 / 12) * 100) / 100
+      : calculateMonthlyPayment(loanAmount, interestRate, termYears);
+
+    let totalRepayable: number;
+    let totalInterest: number;
+    if (interestOnly) {
+      totalInterest = monthlyPayment * termYears * 12;
+      totalRepayable = totalInterest + loanAmount;
+    } else {
+      const result = calculateTotalRepayable(loanAmount, interestRate, termYears);
+      totalRepayable = result.totalRepayable;
+      totalInterest = result.totalInterest;
+    }
+
     const ltv = propertyPrice > 0 ? (loanAmount / propertyPrice) * 100 : 0;
 
     return { monthlyPayment, totalRepayable, totalInterest, ltv };
-  }, [loanAmount, interestRate, termYears, propertyPrice]);
+  }, [loanAmount, interestRate, termYears, propertyPrice, interestOnly]);
 
   const handleSaveParams = () => {
     saveParams({ deposit, interestRate, termYears });
@@ -140,10 +173,16 @@ export function MortgageCalculator() {
               />
             </div>
 
+            {/* Interest Only Toggle */}
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-semibold">Interest Only</Label>
+              <Switch checked={interestOnly} onCheckedChange={setInterestOnly} />
+            </div>
+
             {/* Interest Rate */}
             <div className="space-y-2">
               <Label htmlFor="interest-rate" className="text-sm font-semibold">
-                Interest Rate
+                Interest Rate <span className="font-normal text-neutral-400">(illustrative)</span>
               </Label>
               <div className="relative">
                 <Input

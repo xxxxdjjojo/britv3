@@ -582,3 +582,35 @@ _From /cso daily audit. 4 findings, all VERIFIED. Report at `.gstack/security-re
 **Why:** Mutable major version tags (v4, v1) could be updated by a compromised upstream.
 **Effort:** S | **Priority:** P3
 **Where to start:** `.github/workflows/migrate.yml` — replace `@v4`/`@v1` with full SHA.
+
+## Legal Pages — Post-Implementation TODOs
+
+### Solicitor review of all legal pages (P0)
+**What:** All 13 legal pages contain research-based copy with [PLACEHOLDER] values. A qualified UK solicitor must review all content, fill placeholders, and sign off before go-live.
+**Pages:** All pages under /legal/*
+**Placeholders to fill:** [COMPANY NUMBER], [REGISTERED ADDRESS], [ICO REGISTRATION NUMBER], [HMRC REFERENCE], [PHONE NUMBER], various [DATE]/[NAME]/[TITLE] in modern slavery statement
+**Priority:** P0 — blocks production launch
+
+### GDPR form Art. 22 automated decision-making option (P1)
+**What:** Add Art. 22 right (not to be subject to automated decision-making) as a request type in the GDPR subject rights form.
+**Where:** `src/components/legal/GdprRequestForm.tsx`
+**Why:** The GDPR rights page documents this right but the form doesn't offer it as an option.
+
+### PostHog consent verification (P1)
+**What:** Verify PostHog analytics respects cookie consent preferences. Ensure PostHog only fires after user grants analytics consent via the cookie banner.
+**Where:** PostHog initialization code + `CookieConsentContext`
+**Why:** PECR compliance — analytics cookies require consent under current UK law.
+
+### Placeholder value completion (P1)
+**What:** Fill all [SQUARE BRACKET] placeholder values across legal pages with actual company details.
+**Depends on:** Solicitor review (P0) — solicitor may change the surrounding text.
+
+### DUAA Legitimate Interest Assessment for analytics cookies (P1)
+**What:** Conduct a Legitimate Interest Assessment (LIA) to determine if Britestate qualifies for the DUAA 2025 analytics cookie exemption (opt-out rather than opt-in).
+**Why:** If LIA passes, can switch cookie banner from opt-in to opt-out for analytics/statistical cookies, improving analytics coverage.
+**Where:** Legal/compliance team decision, then update `CookieConsentContext` behavior.
+
+### Terms of Service re-acceptance banner (P2)
+**What:** Build a UI banner that prompts existing users to re-accept updated Terms when material changes are published.
+**Where:** Global layout or middleware + user profile `terms_accepted_at` timestamp
+**Why:** Updated ToS section 17 promises 14-day notice + continued use = acceptance, but a re-acceptance banner is stronger evidence of informed consent.

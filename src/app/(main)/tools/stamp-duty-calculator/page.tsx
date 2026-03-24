@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, Info, Calculator, PiggyBank } from "lucide-react";
+import { ChevronRight, Info, Calculator } from "lucide-react";
 import { SdltCalculator } from "@/components/calculators/SdltCalculator";
+import { SdltRelatedTools } from "@/components/calculators/SdltRelatedTools";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Stamp Duty Calculator | Britestate",
   description:
-    "Calculate your Stamp Duty Land Tax (SDLT) for residential property purchases in England and Northern Ireland. Supports first-time buyer relief and additional property surcharge.",
+    "Calculate Stamp Duty (SDLT), Scottish LBTT, or Welsh LTT for residential property purchases across the UK. Supports first-time buyer relief and additional property surcharge.",
 };
 
 export default function StampDutyCalculatorPage() {
@@ -32,11 +33,11 @@ export default function StampDutyCalculatorPage() {
       <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="mb-4 font-heading text-4xl font-bold text-neutral-900 dark:text-white">
-            Stamp Duty (SDLT) Calculator
+            Stamp Duty Calculator
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-            Calculate how much Stamp Duty Land Tax (SDLT) you&apos;ll pay on your
-            next property purchase in England and Northern Ireland.
+            Calculate SDLT (England &amp; NI), LBTT (Scotland), or LTT (Wales)
+            for your next residential property purchase.
           </p>
         </div>
       </header>
@@ -104,7 +105,7 @@ export default function StampDutyCalculatorPage() {
                 },
                 {
                   q: "Does stamp duty apply in Scotland and Wales?",
-                  a: "No. Scotland uses Land and Buildings Transaction Tax (LBTT) and Wales uses Land Transaction Tax (LTT). This calculator covers England and Northern Ireland only.",
+                  a: "Scotland uses Land and Buildings Transaction Tax (LBTT) and Wales uses Land Transaction Tax (LTT). Use the country selector above to calculate LBTT or LTT alongside SDLT.",
                 },
                 {
                   q: "Can I add stamp duty to my mortgage?",
@@ -157,32 +158,7 @@ export default function StampDutyCalculatorPage() {
                 <h3 className="font-bold text-neutral-900 dark:text-white">
                   Related Tools
                 </h3>
-                <Link
-                  href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                >
-                  <PiggyBank className="h-5 w-5 text-brand-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">Mortgage Calculator</p>
-                    <p className="text-xs text-neutral-500">
-                      Estimate your monthly repayments
-                    </p>
-                  </div>
-                </Link>
-                <Link
-                  href="/tools/affordability-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                >
-                  <Calculator className="h-5 w-5 text-brand-primary" />
-                  <div>
-                    <p className="text-sm font-semibold">
-                      Affordability Calculator
-                    </p>
-                    <p className="text-xs text-neutral-500">
-                      See how much you can borrow
-                    </p>
-                  </div>
-                </Link>
+                <SdltRelatedTools />
               </CardContent>
             </Card>
 

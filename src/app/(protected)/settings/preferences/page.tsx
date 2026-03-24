@@ -44,9 +44,7 @@ const DEFAULTS: PrefsState = {
 
 const LOCALE_OPTIONS = [
   { value: "en-GB", label: "English (UK)" },
-  { value: "en-US", label: "English (US)" },
-  { value: "cy-GB", label: "Cymraeg (Welsh)" },
-  { value: "gd-GB", label: "Gaidhlig (Scottish Gaelic)" },
+  // TODO: Re-enable cy-GB (Welsh) and gd-GB (Gaelic) when i18n translations are ready
 ] as const;
 
 const DATE_FORMAT_OPTIONS = [
@@ -56,15 +54,17 @@ const DATE_FORMAT_OPTIONS = [
 ] as const;
 
 const CURRENCY_OPTIONS = [
-  { value: "GBP", label: "GBP (\u00a3)" },
-  { value: "EUR", label: "EUR (\u20ac)" },
-  { value: "USD", label: "USD ($)" },
+  { value: "GBP", label: "GBP (£)" },
 ] as const;
 
 const TIMEZONE_OPTIONS = [
   { value: "Europe/London", label: "London (GMT/BST)" },
   { value: "Europe/Dublin", label: "Dublin (IST)" },
-  { value: "Europe/Edinburgh", label: "Edinburgh (GMT/BST)" },
+  { value: "Europe/Paris", label: "Paris (CET)" },
+  { value: "Europe/Berlin", label: "Berlin (CET)" },
+  { value: "Europe/Madrid", label: "Madrid (CET)" },
+  { value: "America/New_York", label: "New York (EST)" },
+  { value: "Asia/Dubai", label: "Dubai (GST)" },
 ] as const;
 
 const FONT_SIZE_OPTIONS = [

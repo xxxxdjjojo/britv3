@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { calculateSdlt } from "@/lib/calculators/sdlt";
+import { calculateLbtt } from "@/lib/calculators/lbtt";
+import { calculateLtt } from "@/lib/calculators/ltt";
 import type { BuyerType } from "@/types/calculators";
 
 // ---------------------------------------------------------------------------
@@ -40,63 +42,7 @@ const gbp = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-// ---------------------------------------------------------------------------
-// Scotland LBTT bands
-// ---------------------------------------------------------------------------
-
-function calculateLbtt(price: number, firstTime: boolean): number {
-  if (price <= 0) return 0;
-  const bands = firstTime
-    ? [
-        { threshold: 175000, rate: 0 },
-        { threshold: 250000, rate: 0.02 },
-        { threshold: 325000, rate: 0.05 },
-        { threshold: 750000, rate: 0.1 },
-        { threshold: Infinity, rate: 0.12 },
-      ]
-    : [
-        { threshold: 145000, rate: 0 },
-        { threshold: 250000, rate: 0.02 },
-        { threshold: 325000, rate: 0.05 },
-        { threshold: 750000, rate: 0.1 },
-        { threshold: Infinity, rate: 0.12 },
-      ];
-
-  let tax = 0;
-  let prev = 0;
-  for (const band of bands) {
-    if (price <= prev) break;
-    const taxable = Math.min(price, band.threshold) - prev;
-    tax += taxable * band.rate;
-    prev = band.threshold;
-  }
-  return Math.round(tax);
-}
-
-// ---------------------------------------------------------------------------
-// Wales LTT bands
-// ---------------------------------------------------------------------------
-
-function calculateLtt(price: number): number {
-  if (price <= 0) return 0;
-  const bands = [
-    { threshold: 225000, rate: 0 },
-    { threshold: 400000, rate: 0.06 },
-    { threshold: 750000, rate: 0.075 },
-    { threshold: 1500000, rate: 0.1 },
-    { threshold: Infinity, rate: 0.12 },
-  ];
-
-  let tax = 0;
-  let prev = 0;
-  for (const band of bands) {
-    if (price <= prev) break;
-    const taxable = Math.min(price, band.threshold) - prev;
-    tax += taxable * band.rate;
-    prev = band.threshold;
-  }
-  return Math.round(tax);
-}
+// LBTT and LTT calculations imported from @/lib/calculators/
 
 // ---------------------------------------------------------------------------
 // Cost ranges
@@ -124,10 +70,10 @@ function getCostBreakdown(
       stampDuty = calculateSdlt(propertyPrice, buyerType).totalTax;
       break;
     case "scotland":
-      stampDuty = calculateLbtt(propertyPrice, firstTimeBuyer);
+      stampDuty = calculateLbtt(propertyPrice, firstTimeBuyer).totalTax;
       break;
     case "wales":
-      stampDuty = calculateLtt(propertyPrice);
+      stampDuty = calculateLtt(propertyPrice).totalTax;
       break;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { updatePassword } from "@/services/auth/auth-service";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import { TotpEnrollmentCard } from "@/components/settings/TotpEnrollmentCard";
 import { ActiveSessionsList } from "@/components/settings/ActiveSessionsList";
 import { ConnectedAccountsCard } from "@/components/settings/ConnectedAccountsCard";
 import { LoginHistoryTable } from "@/components/settings/LoginHistoryTable";
+import { ReauthDialog } from "@/components/settings/ReauthDialog";
 import type { UserIdentity } from "@supabase/supabase-js";
 import type { LoginHistoryEntry } from "@/components/settings/LoginHistoryTable";
 
@@ -44,6 +45,12 @@ export default function SecuritySettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
 
+  // ---- Reauth state ----
+  const [reauthOpen, setReauthOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<
+    "password" | "mfa-disable" | null
+  >(null);
+
   // ---- MFA state ----
   const [mfaState, setMfaState] = useState<MfaState>("DISABLED");
   const [mfaLoading, setMfaLoading] = useState(true);
@@ -74,6 +81,12 @@ export default function SecuritySettingsPage() {
   const [loginHistory, setLoginHistory] = useState<LoginHistoryEntry[]>([]);
   const [loginHistoryLoading, setLoginHistoryLoading] = useState(true);
   const [loginHistoryFallback, setLoginHistoryFallback] = useState(false);
+
+  // ---- Derived: does the user have a password (email identity)? ----
+  const hasPassword = useMemo(
+    () => identities.some((id) => id.provider === "email"),
+    [identities],
+  );
 
   // ---------------------------------------------------------------------------
   // On mount: check MFA status
@@ -195,19 +208,94 @@ export default function SecuritySettingsPage() {
       return;
     }
 
+    if (hasPassword) {
+      // User has an existing password — require reauth before changing
+      setPendingAction("password");
+      setReauthOpen(true);
+      return;
+    }
+
+    // SSO-only user setting their first password — no reauth needed
     setChangingPassword(true);
     try {
       const { error } = await updatePassword(newPassword);
       if (error) {
-        toast.error(error.message ?? "Failed to update password");
+        toast.error(error.message ?? "Failed to set password");
       } else {
-        toast.success("Password updated successfully");
-        setCurrentPassword("");
+        toast.success("Password set successfully");
         setNewPassword("");
         setConfirmPassword("");
+        // Reload identities so hasPassword updates
+        void loadIdentities();
       }
     } finally {
       setChangingPassword(false);
+    }
+  }
+
+  async function handleReauthSuccess(token: string) {
+    if (pendingAction === "password") {
+      setChangingPassword(true);
+      try {
+        const res = await fetch("/api/settings/change-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reauth_token: token,
+            new_password: newPassword,
+          }),
+        });
+
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+        };
+
+        if (!res.ok) {
+          toast.error(data.error ?? "Failed to update password");
+          return;
+        }
+
+        toast.success(
+          "Password updated successfully. Other sessions have been signed out.",
+        );
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } catch {
+        toast.error("Network error. Please try again.");
+      } finally {
+        setChangingPassword(false);
+        setPendingAction(null);
+      }
+    } else if (pendingAction === "mfa-disable") {
+      setDisabling(true);
+      try {
+        const res = await fetch("/api/settings/mfa/unenroll", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ factor_id: factorId, reauth_token: token }),
+        });
+        const data = (await res.json()) as {
+          success?: boolean;
+          error?: string;
+        };
+
+        if (!res.ok) {
+          toast.error(data.error ?? "Failed to disable 2FA");
+          return;
+        }
+
+        setMfaState("DISABLED");
+        setFactorId(null);
+        setBackupCodes(null);
+        toast.success("Two-factor authentication disabled");
+      } catch {
+        toast.error("Failed to disable 2FA");
+      } finally {
+        setDisabling(false);
+        setPendingAction(null);
+      }
     }
   }
 
@@ -277,31 +365,10 @@ export default function SecuritySettingsPage() {
     }
   }
 
-  async function handleDisable() {
+  function handleDisable() {
     if (!factorId) return;
-    setDisabling(true);
-    try {
-      const res = await fetch("/api/settings/mfa/unenroll", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ factor_id: factorId }),
-      });
-      const body = (await res.json()) as { success?: boolean; error?: string };
-
-      if (!res.ok) {
-        toast.error(body.error ?? "Failed to disable 2FA");
-        return;
-      }
-
-      setMfaState("DISABLED");
-      setFactorId(null);
-      setBackupCodes(null);
-      toast.success("Two-factor authentication disabled");
-    } catch {
-      toast.error("Failed to disable 2FA");
-    } finally {
-      setDisabling(false);
-    }
+    setPendingAction("mfa-disable");
+    setReauthOpen(true);
   }
 
   async function handleRegenerateBackupCodes() {
@@ -457,10 +524,15 @@ export default function SecuritySettingsPage() {
         newPassword={newPassword}
         confirmPassword={confirmPassword}
         changingPassword={changingPassword}
+        hasPassword={hasPassword}
         onCurrentPasswordChange={setCurrentPassword}
         onNewPasswordChange={setNewPassword}
         onConfirmPasswordChange={setConfirmPassword}
         onSubmit={handlePasswordChange}
+        onReauthRequired={() => {
+          setPendingAction("password");
+          setReauthOpen(true);
+        }}
       />
 
       <TotpEnrollmentCard
@@ -505,6 +577,12 @@ export default function SecuritySettingsPage() {
         entries={loginHistory}
         loading={loginHistoryLoading}
         fallback={loginHistoryFallback}
+      />
+
+      <ReauthDialog
+        open={reauthOpen}
+        onOpenChange={setReauthOpen}
+        onSuccess={handleReauthSuccess}
       />
     </div>
   );

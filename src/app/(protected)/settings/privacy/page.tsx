@@ -22,6 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { ConsentForm } from "@/components/gdpr/ConsentForm";
 import { DataExportButton } from "@/components/gdpr/DataExportButton";
+import { ReauthDialog } from "@/components/settings/ReauthDialog";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -115,6 +116,7 @@ export default function PrivacySettingsPage() {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteReauthOpen, setDeleteReauthOpen] = useState(false);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -187,10 +189,19 @@ export default function PrivacySettingsPage() {
 
   async function handleDeleteAccount() {
     if (deleteConfirmation !== "DELETE") return;
+    setDialogOpen(false);
+    setDeleteConfirmation("");
+    setDeleteReauthOpen(true);
+  }
 
+  async function handleDeleteReauthSuccess(token: string) {
     setDeleting(true);
     try {
-      const response = await fetch("/api/gdpr/delete", { method: "POST" });
+      const response = await fetch("/api/gdpr/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reauth_token: token }),
+      });
 
       if (!response.ok) {
         const errorData = (await response.json()) as { error?: string };
@@ -209,8 +220,6 @@ export default function PrivacySettingsPage() {
       );
     } finally {
       setDeleting(false);
-      setDialogOpen(false);
-      setDeleteConfirmation("");
     }
   }
 
@@ -512,6 +521,14 @@ export default function PrivacySettingsPage() {
           <DataExportButton />
         </div>
       </section>
+
+      <ReauthDialog
+        open={deleteReauthOpen}
+        onOpenChange={setDeleteReauthOpen}
+        onSuccess={handleDeleteReauthSuccess}
+        title="Confirm account deletion"
+        description="Enter your password to permanently delete your account."
+      />
 
       {/* Section 6: Delete Account */}
       <section className="space-y-4">

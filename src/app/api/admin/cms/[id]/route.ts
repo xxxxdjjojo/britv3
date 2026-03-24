@@ -1,4 +1,6 @@
-import { auditedAdminAction } from "@/lib/audited-admin-action";
+import { auditedAdminActionWithPermission } from "@/lib/audited-admin-action";
+import { sanitizeCmsHtml } from "@/lib/validation/sanitize-cms";
+import { sanitizeText } from "@/lib/validation/sanitize";
 
 type CmsPayload = {
   title?: string;
@@ -25,11 +27,12 @@ export async function POST(
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  return auditedAdminAction(
+  return auditedAdminActionWithPermission(
     req,
     "cms.upsert",
     "cms_article",
     id,
+    "manage_cms",
     async ({ supabase }) => {
 
       const isNew = id === "new";
@@ -37,10 +40,10 @@ export async function POST(
       const payload: Record<string, unknown> = {
         title: body.title,
         slug: body.slug,
-        excerpt: body.excerpt ?? null,
-        content: body.content ?? "",
-        seo_title: body.seo_title ?? null,
-        seo_description: body.seo_description ?? null,
+        excerpt: body.excerpt ? sanitizeText(body.excerpt) : null,
+        content: sanitizeCmsHtml(body.content ?? ""),
+        seo_title: body.seo_title ? sanitizeText(body.seo_title) : null,
+        seo_description: body.seo_description ? sanitizeText(body.seo_description) : null,
         og_image_url: body.og_image_url ?? null,
         status: body.status ?? "draft",
         article_type: body.article_type,

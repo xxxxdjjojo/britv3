@@ -119,16 +119,33 @@ export async function searchUsers(
   return { users, total: count ?? 0 };
 }
 
+export type SuspendDuration = "24h" | "7d" | "30d" | "indefinite";
+
+const DURATION_MS: Record<SuspendDuration, number> = {
+  "24h": 24 * 60 * 60 * 1000,
+  "7d": 7 * 24 * 60 * 60 * 1000,
+  "30d": 30 * 24 * 60 * 60 * 1000,
+  "indefinite": 100 * 365 * 24 * 60 * 60 * 1000,
+};
+
+const DURATION_HOURS: Record<SuspendDuration, string> = {
+  "24h": "24h",
+  "7d": "168h",
+  "30d": "720h",
+  "indefinite": "876600h",
+};
+
 export async function suspendUser(
   supabase: SupabaseClient,
   userId: string,
+  duration: SuspendDuration = "indefinite",
 ): Promise<{ success: boolean }> {
   return withAuthSync(
     supabase,
     userId,
-    { suspended_until: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString() },
+    { suspended_until: new Date(Date.now() + DURATION_MS[duration]).toISOString() },
     { suspended_until: null },
-    "876600h",
+    DURATION_HOURS[duration],
   );
 }
 
@@ -162,10 +179,11 @@ export async function activateUser(
 export async function promoteToAdmin(
   supabase: SupabaseClient,
   userId: string,
+  adminRole: string = "moderation_admin",
 ): Promise<{ success: boolean }> {
   const { error } = await supabase
     .from("profiles")
-    .update({ is_admin: true })
+    .update({ is_admin: true, admin_role: adminRole })
     .eq("id", userId);
   return { success: !error };
 }

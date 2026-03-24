@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   User,
@@ -37,9 +37,15 @@ function parseNum(value: string): number {
   return isNaN(n) ? 0 : n;
 }
 
+function getUrlStr(key: string, defaultValue: string): string {
+  if (typeof window === "undefined") return defaultValue;
+  const params = new URLSearchParams(window.location.search);
+  return params.get(key) ?? defaultValue;
+}
+
 export default function AffordabilityCalculatorPage() {
   // Applicant 1
-  const [app1Salary, setApp1Salary] = useState("");
+  const [app1Salary, setApp1Salary] = useState(() => getUrlStr("salary", ""));
   const [app1Bonus, setApp1Bonus] = useState("");
   const [app1Other, setApp1Other] = useState("");
 
@@ -52,7 +58,16 @@ export default function AffordabilityCalculatorPage() {
   // Outgoings & Deposit
   const [monthlyDebt, setMonthlyDebt] = useState("");
   const [monthlyLiving, setMonthlyLiving] = useState("");
-  const [deposit, setDeposit] = useState("");
+  const [deposit, setDeposit] = useState(() => getUrlStr("deposit", ""));
+
+  // Sync key state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (app1Salary) params.set("salary", app1Salary);
+    if (deposit) params.set("deposit", deposit);
+    const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", url);
+  }, [app1Salary, deposit]);
 
   // Mortgage assumptions
   const interestRate = 0.055; // 5.5% representative rate
@@ -70,7 +85,23 @@ export default function AffordabilityCalculatorPage() {
         : 0);
 
     const depositAmount = parseNum(deposit);
-    const maxBorrowing = totalIncome * incomeMultiplier;
+    const debtAmount = parseNum(monthlyDebt);
+    const livingAmount = parseNum(monthlyLiving);
+
+    // Base borrowing from income multiplier
+    const baseBorrowing = totalIncome * incomeMultiplier;
+
+    // Debt repayments reduce borrowing capacity: each £1/month of debt
+    // reduces max borrowing by the annual equivalent × multiplier, reflecting
+    // that lenders treat committed debt as a direct reduction in serviceable income.
+    const debtReduction = debtAmount * 12 * incomeMultiplier;
+
+    // Living costs apply a softer 50% weighting — lenders account for essential
+    // outgoings but don't penalise them as heavily as formal debt commitments.
+    const livingReduction = livingAmount * 12 * incomeMultiplier * 0.5;
+
+    const commitmentReduction = debtReduction + livingReduction;
+    const maxBorrowing = Math.max(0, baseBorrowing - commitmentReduction);
     const maxPropertyPrice = maxBorrowing + depositAmount;
 
     // Monthly payment calculation
@@ -84,12 +115,26 @@ export default function AffordabilityCalculatorPage() {
         (Math.pow(1 + monthlyRate, termMonths) - 1);
     }
 
+    // Stress test at 7%
+    const stressRate = 0.07;
+    const stressMonthlyRate = stressRate / 12;
+    let stressMonthlyPayment = 0;
+    if (maxBorrowing > 0) {
+      stressMonthlyPayment =
+        (maxBorrowing *
+          (stressMonthlyRate * Math.pow(1 + stressMonthlyRate, termMonths))) /
+        (Math.pow(1 + stressMonthlyRate, termMonths) - 1);
+    }
+
     return {
       incomeMultiplier,
       totalIncome,
+      baseBorrowing,
+      commitmentReduction,
       maxBorrowing,
       maxPropertyPrice,
       monthlyPayment,
+      stressMonthlyPayment,
       depositAmount,
     };
   }, [
@@ -101,6 +146,8 @@ export default function AffordabilityCalculatorPage() {
     app2Bonus,
     app2Other,
     deposit,
+    monthlyDebt,
+    monthlyLiving,
   ]);
 
   return (
@@ -397,6 +444,16 @@ export default function AffordabilityCalculatorPage() {
                         at {(interestRate * 100).toFixed(1)}% over {termYears}{" "}
                         years
                       </p>
+                      <div className="mt-2 rounded-lg bg-amber-500/10 p-3">
+                        <p className="text-xs text-amber-400">
+                          Stress test at 7%:{" "}
+                          {formatGBPFull.format(results.stressMonthlyPayment)}/mo
+                        </p>
+                        <p className="mt-1 text-[10px] text-neutral-500">
+                          Lenders test affordability at higher rates to ensure
+                          you can still pay if rates rise
+                        </p>
+                      </div>
                     </div>
                   )}
                   <Link
@@ -408,6 +465,9 @@ export default function AffordabilityCalculatorPage() {
                   <p className="mt-4 text-center text-[10px] font-medium uppercase text-neutral-500">
                     Results are estimates based on{" "}
                     {results.incomeMultiplier}x income
+                    {results.commitmentReduction > 0
+                      ? `, reduced for commitments (−${formatGBP.format(results.commitmentReduction)})`
+                      : ""}
                   </p>
                 </div>
               </div>
@@ -426,8 +486,9 @@ export default function AffordabilityCalculatorPage() {
                   <Button
                     variant="outline"
                     className="w-full border-2 border-brand-primary py-3 font-bold text-brand-primary transition-all hover:bg-brand-primary hover:text-white"
+                    asChild
                   >
-                    Book Free Consultation
+                    <Link href="/marketplace?category=mortgage-broker">Book Free Consultation</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -495,14 +556,14 @@ export default function AffordabilityCalculatorPage() {
         <h3 className="mb-6 text-lg font-bold">Related Tools</h3>
         <div className="flex flex-wrap gap-4">
           <Link
-            href="/tools/mortgage-calculator"
+            href={`/tools/mortgage-calculator${results.maxPropertyPrice > 0 ? `?price=${Math.round(results.maxPropertyPrice)}` : ""}`}
             className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-700 transition-colors hover:border-brand-primary hover:text-brand-primary dark:border-neutral-700 dark:bg-neutral-900"
           >
             <Calculator className="h-4 w-4" />
             Mortgage Calculator
           </Link>
           <Link
-            href="/tools/stamp-duty-calculator"
+            href={`/tools/stamp-duty-calculator${results.maxPropertyPrice > 0 ? `?price=${Math.round(results.maxPropertyPrice)}` : ""}`}
             className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-3 text-sm font-medium text-neutral-700 transition-colors hover:border-brand-primary hover:text-brand-primary dark:border-neutral-700 dark:bg-neutral-900"
           >
             <FileText className="h-4 w-4" />
