@@ -27,7 +27,8 @@ export function ReviewCardEnhanced({
   const [votePending, setVotePending] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
-  const isOwnReview = currentUserId === review.reviewer_id;
+  const isOwnReview = review.reviewer_id !== null && currentUserId === review.reviewer_id;
+  const isAnonymised = review.reviewer_id === null;
   const canEdit =
     isOwnReview &&
     review.edit_count < 2 &&
@@ -109,6 +110,11 @@ export function ReviewCardEnhanced({
               <Badge variant="outline" className="border-green-200 bg-green-50 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-400">
                 <CheckCircle className="mr-1 size-3" />
                 Verified
+              </Badge>
+            )}
+            {isAnonymised && (
+              <Badge variant="outline" className="text-xs">
+                A Britestate user
               </Badge>
             )}
             <span className="shrink-0 text-xs text-muted-foreground">{dateStr}</span>

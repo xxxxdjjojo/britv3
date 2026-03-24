@@ -433,6 +433,9 @@ export async function flagReview(
     if (error.message.includes("Cannot flag your own review")) {
       throw new Error("Cannot flag your own review");
     }
+    if (error.message.includes("Cannot flag reviews about your own services")) {
+      throw new Error("Cannot flag reviews about your own services");
+    }
     if (error.message.includes("Review not found")) {
       throw new Error("Review not found");
     }

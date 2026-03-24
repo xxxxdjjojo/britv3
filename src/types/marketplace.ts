@@ -261,7 +261,8 @@ export type Review = Readonly<{
   id: string;
   booking_id: string;
   provider_id: string;
-  reviewer_id: string;
+  /** null when the reviewer's account has been deleted (ON DELETE SET NULL) */
+  reviewer_id: string | null;
   overall_rating: number;
   punctuality_rating: number | null;
   quality_rating: number | null;

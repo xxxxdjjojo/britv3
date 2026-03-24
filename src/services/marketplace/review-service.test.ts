@@ -141,30 +141,12 @@ describe("createReview", () => {
 
 describe("voteHelpfulness", () => {
   it("inserts a new vote when user has not voted before", async () => {
-    // First call: check existing vote (none found)
-    const existingQuery = mockQuery({ data: null, error: null });
-    // Second call: insert new vote
-    const insertQuery = mockQuery({ data: { id: "vh1" }, error: null });
-    // Third call: read review counts for increment
-    const reviewReadQuery = mockQuery({
-      data: { helpful_count: 0, not_helpful_count: 0 },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: { helpful_count: 1, not_helpful_count: 0 },
+        error: null,
+      }),
     });
-    // Fourth call: update review counts
-    const reviewUpdateChain = mockQuery({ data: null, error: null });
-    // Fifth call: get updated counts
-    const updatedQuery = mockQuery({
-      data: { helpful_count: 1, not_helpful_count: 0 },
-      error: null,
-    });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(insertQuery)
-      .mockReturnValueOnce(reviewReadQuery)
-      .mockReturnValueOnce(reviewUpdateChain)
-      .mockReturnValueOnce(updatedQuery);
 
     const result = await voteHelpfulness(supabase, "u1", "r1", true);
 
@@ -173,33 +155,12 @@ describe("voteHelpfulness", () => {
   });
 
   it("updates existing vote when user changes their vote", async () => {
-    // First call: find existing vote
-    const existingQuery = mockQuery({
-      data: { id: "vh1", is_helpful: true },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: { helpful_count: 0, not_helpful_count: 1 },
+        error: null,
+      }),
     });
-    // Second call: update vote
-    const updateQuery = mockQuery({ data: null, error: null });
-    // Third call: read review counts
-    const reviewReadQuery = mockQuery({
-      data: { helpful_count: 1, not_helpful_count: 0 },
-      error: null,
-    });
-    // Fourth call: update review counts
-    const reviewUpdateChain = mockQuery({ data: null, error: null });
-    // Fifth call: get updated counts
-    const updatedQuery = mockQuery({
-      data: { helpful_count: 0, not_helpful_count: 1 },
-      error: null,
-    });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(updateQuery)
-      .mockReturnValueOnce(reviewReadQuery)
-      .mockReturnValueOnce(reviewUpdateChain)
-      .mockReturnValueOnce(updatedQuery);
 
     const result = await voteHelpfulness(supabase, "u1", "r1", false);
 
@@ -268,41 +229,42 @@ describe("respondToReview", () => {
 
 describe("flagReview", () => {
   it("prevents user from flagging their own review", async () => {
-    const reviewQuery = mockQuery({
-      data: { id: "r1", reviewer_id: "u1", flag_count: 0 },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "Cannot flag your own review", code: "P0001" },
+      }),
     });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(reviewQuery);
 
     await expect(
       flagReview(supabase, "u1", "r1", { reason: "spam" }),
     ).rejects.toThrow("Cannot flag your own review");
   });
 
+  it("propagates provider self-flag error from RPC", async () => {
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "Cannot flag reviews about your own services", code: "P0001" },
+      }),
+    });
+
+    await expect(
+      flagReview(supabase, "provider1", "r1", { reason: "fake" }),
+    ).rejects.toThrow("Cannot flag reviews about your own services");
+  });
+
   it("successfully flags another user's review", async () => {
-    const reviewQuery = mockQuery({
-      data: { id: "r1", reviewer_id: "other-user", flag_count: 0 },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: { flag_id: "f1", flag_count: 1 },
+        error: null,
+      }),
     });
-
-    const flagInsert = mockQuery({
-      data: { id: "f1", review_id: "r1", user_id: "u1", reason: "spam" },
-      error: null,
-    });
-
-    const reviewUpdate = mockQuery({ data: null, error: null });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>)
-      .mockReturnValueOnce(reviewQuery)
-      .mockReturnValueOnce(flagInsert)
-      .mockReturnValueOnce(reviewUpdate);
 
     const result = await flagReview(supabase, "u1", "r1", { reason: "spam" });
 
-    expect(result.reason).toBe("spam");
+    expect(result.flag_count).toBe(1);
   });
 });
 
@@ -517,5 +479,49 @@ describe("listProviderReviews", () => {
     expect(result.reviews).toHaveLength(1);
     // Verify order was called with helpful_count
     expect(chain["order"]).toHaveBeenCalledWith("helpful_count", { ascending: false });
+  });
+
+  it("handles reviews with null reviewer_id (deleted account) gracefully", async () => {
+    const mockData = {
+      data: [
+        {
+          id: "r1",
+          overall_rating: 5,
+          title: "Great work",
+          reviewer_id: null,
+          moderation_status: "approved",
+        },
+        {
+          id: "r2",
+          overall_rating: 4,
+          title: "Good service",
+          reviewer_id: "u2",
+          moderation_status: "approved",
+        },
+      ],
+      error: null,
+      count: 2,
+    };
+
+    const chain: Record<string, unknown> = {};
+    const methods = [
+      "select", "eq", "is", "gte", "lte", "order", "range", "textSearch",
+    ];
+    for (const method of methods) {
+      chain[method] = vi.fn().mockReturnValue(chain);
+    }
+    chain["then"] = (resolve: (v: unknown) => void) => {
+      resolve(mockData);
+      return { catch: () => ({}) };
+    };
+
+    const supabase = createMockSupabase();
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(chain);
+
+    const result = await listProviderReviews(supabase, "p1", {});
+
+    expect(result.reviews).toHaveLength(2);
+    expect(result.reviews[0].reviewer_id).toBeNull();
+    expect(result.reviews[1].reviewer_id).toBe("u2");
   });
 });
