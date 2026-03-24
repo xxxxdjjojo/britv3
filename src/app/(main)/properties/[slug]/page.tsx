@@ -198,7 +198,10 @@ export default async function PropertyPage({
     .filter(Boolean)
     .join(", ");
 
-  const priceFormatted = `£${listing.price.toLocaleString("en-GB")}`;
+  const rentSuffix = listing.listingType === "rent"
+    ? ` ${listing.rentFrequency === "weekly" ? "pw" : "pcm"}`
+    : "";
+  const priceFormatted = `£${listing.price.toLocaleString("en-GB")}${rentSuffix}`;
   const sqft = property.squareFootage ?? 0;
   const propertyTypeLabel = formatPropertyType(property.propertyType);
   const tenureLabel = formatTenure(property.tenure ?? null);
@@ -219,6 +222,11 @@ export default async function PropertyPage({
   const priceHistoryFormatted = formatPriceHistory(
     [...priceHistory].reverse(),
   );
+
+  const priceReduced = priceHistoryFormatted.length > 1 &&
+    priceHistoryFormatted[priceHistoryFormatted.length - 1].price <
+    priceHistoryFormatted[0].price;
+  const originalPrice = priceReduced ? priceHistoryFormatted[0].price : null;
 
   // Floor plan URL for WhatIfFloorPlan (first floor plan media, if any)
   const floorPlanUrl = floors.length > 0 ? (floors[0]?.imageUrl ?? null) : null;
@@ -335,6 +343,11 @@ export default async function PropertyPage({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
+              {priceReduced && originalPrice != null && (
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                  Reduced from £{originalPrice.toLocaleString("en-GB")}
+                </Badge>
+              )}
               <p className="text-sm text-muted-foreground mt-0.5 truncate max-w-xs">
                 {address}
               </p>
@@ -532,6 +545,11 @@ export default async function PropertyPage({
                   <p className="text-xs text-muted-foreground mt-3">
                     Rating {epc} — Energy efficiency certificate
                   </p>
+                  {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
+                    <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                      <strong>MEES Notice:</strong> Rental properties in England and Wales may require a minimum EPC rating of C under upcoming regulations. This property currently holds a rating of {epc}.
+                    </p>
+                  )}
                 </div>
               </section>
             )}
