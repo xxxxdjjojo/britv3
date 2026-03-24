@@ -11,6 +11,16 @@ export class AdminActionError extends Error {
   }
 }
 
+function extractIp(request: Request): string | undefined {
+  const headers = request.headers;
+  return (
+    headers.get("cf-connecting-ip") ??
+    headers.get("x-real-ip") ??
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    undefined
+  );
+}
+
 export async function auditedAdminAction(
   request: Request,
   action: string,
@@ -21,6 +31,7 @@ export async function auditedAdminAction(
   const ctx = await adminOnly(request);
   if (ctx instanceof Response) return ctx;
 
+  const ipAddress = extractIp(request);
   let result: unknown;
   let thrownError: unknown;
 
@@ -34,6 +45,7 @@ export async function auditedAdminAction(
       action,
       targetType,
       targetId,
+      ipAddress,
       success: thrownError === undefined,
       errorMessage:
         thrownError instanceof Error ? thrownError.message : undefined,
