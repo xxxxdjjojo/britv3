@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +48,15 @@ export function TradespersonOnboarding(
   function toggle<T extends string>(items: T[], item: T, setter: (v: T[]) => void) {
     setter(items.includes(item) ? items.filter((i) => i !== item) : [...items, item]);
   }
+
+  const requiresGasSafe = tradeCategories.includes("Gas Engineer");
+
+  // Auto-select Gas Safe when Gas Engineer trade is chosen
+  useEffect(() => {
+    if (tradeCategories.includes("Gas Engineer") && !accreditations.includes("Gas Safe")) {
+      setAccreditations((prev) => [...prev, "Gas Safe"]);
+    }
+  }, [tradeCategories, accreditations]);
 
   async function handleComplete() {
     setSaving(true);
@@ -134,16 +143,44 @@ export function TradespersonOnboarding(
           <div className="space-y-2">
             <Label>Accreditations</Label>
             <div className="flex flex-wrap gap-1.5">
-              {ACCREDITATIONS.map((acc) => (
-                <button key={acc} type="button" onClick={() => toggle(accreditations, acc, setAccreditations)} className={cn("rounded-full border px-2.5 py-1 text-xs font-medium transition-colors", accreditations.includes(acc) ? "border-brand-primary bg-brand-primary text-white" : "border-neutral-300 text-neutral-600 hover:border-brand-primary")}>
-                  {acc}
-                </button>
-              ))}
+              {ACCREDITATIONS.map((acc) => {
+                const isRequired = requiresGasSafe && acc === "Gas Safe";
+                return (
+                  <button
+                    key={acc}
+                    type="button"
+                    onClick={() => {
+                      if (isRequired) return; // Prevent deselecting mandatory accreditation
+                      toggle(accreditations, acc, setAccreditations);
+                    }}
+                    className={cn(
+                      "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                      accreditations.includes(acc)
+                        ? "border-brand-primary bg-brand-primary text-white"
+                        : "border-neutral-300 text-neutral-600 hover:border-brand-primary",
+                      isRequired && "cursor-not-allowed"
+                    )}
+                  >
+                    {acc}{isRequired ? " (required)" : ""}
+                  </button>
+                );
+              })}
             </div>
           </div>
+          {requiresGasSafe && !accreditations.includes("Gas Safe") && (
+            <p className="text-xs text-error">
+              Gas Safe registration is legally required for Gas Engineers
+            </p>
+          )}
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep(1)} className="flex-1">Back</Button>
-            <Button onClick={() => setStep(3)} className="flex-1">Continue</Button>
+            <Button
+              onClick={() => setStep(3)}
+              className="flex-1"
+              disabled={requiresGasSafe && !accreditations.includes("Gas Safe")}
+            >
+              Continue
+            </Button>
           </div>
           <SkipLink />
         </div>
