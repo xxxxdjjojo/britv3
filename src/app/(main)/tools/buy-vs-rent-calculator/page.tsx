@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { calculateSdlt } from "@/lib/calculators/sdlt";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-GB", {
@@ -47,7 +48,7 @@ const FAQ_ITEMS = [
   {
     question: "What assumptions does this calculator make?",
     answer:
-      "This calculator assumes a repayment mortgage over 25 years, annual maintenance costs of 1% of property value, no stamp duty or legal fees (for simplicity), and that rent increases at the specified inflation rate. Investment returns on the deposit alternative are compounded annually.",
+      "This calculator assumes a repayment mortgage over 25 years, annual maintenance costs of 1% of the appreciated property value (cumulative), stamp duty (SDLT) at standard residential rates, and that rent increases at the specified inflation rate. Legal fees and survey costs are excluded for simplicity. Investment returns on the deposit alternative are compounded annually.",
   },
   {
     question: "Should I use this calculator as financial advice?",
@@ -84,11 +85,15 @@ export default function BuyVsRentCalculatorPage() {
           (Math.pow(1 + monthlyRate, totalPayments) - 1)
         : loanAmount / totalPayments;
 
+    const stampDuty = calculateSdlt(propertyPrice, "standard").totalTax;
+
     const yearData: YearData[] = [];
     let breakEvenYear: number | null = null;
+    let cumulativeMaintenance = 0;
 
     for (let year = 1; year <= 25; year++) {
       const propertyValue = propertyPrice * Math.pow(1 + growthRate / 100, year);
+      cumulativeMaintenance += maintenanceRate * propertyValue;
 
       // Remaining mortgage balance after `year` years of payments
       const paymentsMade = year * 12;
@@ -102,7 +107,7 @@ export default function BuyVsRentCalculatorPage() {
       const totalMortgagePaid = monthlyMortgage * 12 * year;
       const equity = propertyValue - Math.max(0, remainingBalance);
       const buyingCost =
-        deposit + totalMortgagePaid + maintenanceRate * propertyPrice * year - equity;
+        deposit + stampDuty + totalMortgagePaid + cumulativeMaintenance - equity;
 
       // Rent with inflation
       let totalRentPaid = 0;
