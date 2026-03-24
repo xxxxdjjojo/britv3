@@ -15,6 +15,7 @@ export type ListingStatus =
   | "active"
   | "under_offer"
   | "sold"
+  | "sold_stc"
   | "let"
   | "withdrawn"
   | "archived";
@@ -278,7 +279,7 @@ export async function getPropertyBySlug(
     `,
     )
     .eq("slug", slug)
-    .in("status", ["active", "under_offer"])
+    .in("status", ["active", "under_offer", "sold", "sold_stc", "let", "withdrawn"])
     .single();
 
   if (listingError || !listingRow) {
