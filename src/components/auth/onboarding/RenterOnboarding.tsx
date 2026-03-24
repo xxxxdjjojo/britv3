@@ -11,12 +11,12 @@ import { cn } from "@/lib/utils";
 
 const STEPS = ["Location", "Budget", "Property Type", "Alerts"];
 
-const PROPERTY_TYPES = ["Flat", "House", "Bungalow", "New Build"];
-const MUST_HAVES = ["Garden", "Parking", "EPC A-C", "No chain"];
+const PROPERTY_TYPES = ["Studio", "Flat", "House", "House Share"];
+const MUST_HAVES = ["Furnished", "Pet-friendly", "Bills included", "Parking", "Garden"];
 const ALERT_FREQUENCIES = ["Instant", "Daily", "Weekly"] as const;
 type AlertFrequency = (typeof ALERT_FREQUENCIES)[number];
 
-export function BuyerOnboarding(
+export function RenterOnboarding(
   props: Readonly<{
     onComplete: () => void;
     onSkip: () => void;
@@ -24,7 +24,7 @@ export function BuyerOnboarding(
 ) {
   const [step, setStep] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("buyer_onboarding_step");
+      const saved = localStorage.getItem("renter_onboarding_step");
       return saved ? parseInt(saved, 10) : 0;
     }
     return 0;
@@ -33,16 +33,16 @@ export function BuyerOnboarding(
 
   const updateStep = useCallback((newStep: number) => {
     setStep(newStep);
-    localStorage.setItem("buyer_onboarding_step", String(newStep));
+    localStorage.setItem("renter_onboarding_step", String(newStep));
   }, []);
 
   // Step 1 — Location
   const [locationInput, setLocationInput] = useState("");
   const [locations, setLocations] = useState<string[]>([]);
 
-  // Step 2 — Budget
-  const [minBudget, setMinBudget] = useState(100000);
-  const [maxBudget, setMaxBudget] = useState(500000);
+  // Step 2 — Monthly rent budget
+  const [minRent, setMinRent] = useState(500);
+  const [maxRent, setMaxRent] = useState(2000);
 
   // Step 3 — Property
   const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
@@ -70,12 +70,12 @@ export function BuyerOnboarding(
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from("buyer_preferences").upsert(
+        await supabase.from("renter_preferences").upsert(
           {
             user_id: user.id,
             preferred_locations: locations,
-            min_budget: minBudget,
-            max_budget: maxBudget,
+            min_monthly_rent: minRent,
+            max_monthly_rent: maxRent,
             property_types: propertyTypes,
             min_bedrooms: minBeds,
             requirements: mustHaves,
@@ -89,7 +89,7 @@ export function BuyerOnboarding(
     } finally {
       setSaving(false);
     }
-    localStorage.removeItem("buyer_onboarding_step");
+    localStorage.removeItem("renter_onboarding_step");
     props.onComplete();
   }
 
@@ -108,14 +108,14 @@ export function BuyerOnboarding(
       steps={STEPS}
       currentStep={step}
       title={
-        step === 0 ? "Where are you looking?" :
-        step === 1 ? "What's your budget?" :
+        step === 0 ? "Where are you looking to rent?" :
+        step === 1 ? "What's your monthly budget?" :
         step === 2 ? "What type of property?" :
         "How often should we alert you?"
       }
-      subtitle="This helps us personalise your search. You can update these anytime."
+      subtitle="This helps us find the right rentals for you. You can update these anytime."
     >
-      {/* Step 0: Location */}
+      {/* Step 0: Location — identical to BuyerOnboarding */}
       {step === 0 && (
         <div className="space-y-4">
           <div className="flex gap-2">
@@ -146,40 +146,40 @@ export function BuyerOnboarding(
             </div>
           )}
           <p className="text-xs text-neutral-400">Add up to 5 areas</p>
-          <div className="flex gap-3">
-            <Button onClick={() => updateStep(1)} className="flex-1" disabled={locations.length === 0}>
-              Continue
-            </Button>
-          </div>
+          <Button onClick={() => updateStep(1)} className="w-full" disabled={locations.length === 0}>
+            Continue
+          </Button>
           <SkipLink />
         </div>
       )}
 
-      {/* Step 1: Budget */}
+      {/* Step 1: Monthly rent budget */}
       {step === 1 && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Minimum</Label>
+              <Label>Minimum / month</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">£</span>
                 <Input
                   type="number"
-                  value={minBudget}
-                  onChange={(e) => setMinBudget(Number(e.target.value))}
+                  value={minRent}
+                  onChange={(e) => setMinRent(Number(e.target.value))}
                   className="h-11 pl-7"
+                  min={0}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Maximum</Label>
+              <Label>Maximum / month</Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">£</span>
                 <Input
                   type="number"
-                  value={maxBudget}
-                  onChange={(e) => setMaxBudget(Number(e.target.value))}
+                  value={maxRent}
+                  onChange={(e) => setMaxRent(Number(e.target.value))}
                   className="h-11 pl-7"
+                  min={0}
                 />
               </div>
             </div>

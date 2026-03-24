@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { AgentOnboarding } from "./onboarding/AgentOnboarding";
 import { BuyerOnboarding } from "./onboarding/BuyerOnboarding";
 import { LandlordOnboarding } from "./onboarding/LandlordOnboarding";
+import { RenterOnboarding } from "./onboarding/RenterOnboarding";
 import { MortgageBrokerOnboarding } from "./onboarding/MortgageBrokerOnboarding";
 import { SellerOnboarding } from "./onboarding/SellerOnboarding";
 import { TradespersonOnboarding } from "./onboarding/TradespersonOnboarding";
@@ -12,7 +13,7 @@ type WizardProps = Readonly<{ onComplete: () => void; onSkip: () => void }>;
 
 const WIZARD_MAP: Record<string, React.ComponentType<WizardProps>> = {
   homebuyer: BuyerOnboarding,
-  renter: BuyerOnboarding,
+  renter: RenterOnboarding,
   seller: SellerOnboarding,
   landlord: LandlordOnboarding,
   agent: AgentOnboarding,
