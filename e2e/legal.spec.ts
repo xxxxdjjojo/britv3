@@ -7,6 +7,8 @@ const LEGAL_PAGES = [
   { path: "/legal/acceptable-use", heading: /acceptable use/i },
   { path: "/legal/gdpr-rights", heading: /gdpr|data subject/i },
   { path: "/legal/data-processing", heading: /data processing/i },
+  { path: "/legal/fee-transparency", heading: /fee transparency/i },
+  { path: "/legal/ai-transparency", heading: /ai transparency/i },
   { path: "/legal/accessibility", heading: /accessibility/i },
   { path: "/legal/complaints", heading: /complaints/i },
   { path: "/legal/aml-policy", heading: /anti.money|aml/i },
