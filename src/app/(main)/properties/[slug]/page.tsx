@@ -57,6 +57,9 @@ import { SavePropertyButton } from "@/components/properties/detail/SavePropertyB
 import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
 import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
 import { extractFeatureItems } from "@/lib/properties/extract-features";
+import { buildPropertyJsonLd } from "@/lib/seo/property-jsonld";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
+import { isFeatureEnabled } from "@/lib/features";
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
@@ -93,6 +96,9 @@ export async function generateMetadata({
   return {
     title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
     description: (property.description ?? "").slice(0, 160),
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/properties/${slug}`,
+    },
     openGraph: {
       title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
       description: (property.description ?? "").slice(0, 160),
@@ -279,6 +285,20 @@ export default async function PropertyPage({
 
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildPropertyJsonLd(detail)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: property.city, path: `/properties?location=${encodeURIComponent(property.city)}` },
+            { name: address, path: `/properties/${listing.slug ?? listing.id}` },
+          ])),
+        }}
+      />
       {isInactiveStatus && (
         <div className="mx-auto max-w-7xl px-4 pt-4">
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
@@ -288,19 +308,19 @@ export default async function PropertyPage({
       )}
       {/* Breadcrumbs */}
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-2">
-        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
           <Link href="/" className="hover:text-foreground transition-colors">
             Home
           </Link>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <Link
             href={`/properties?location=${encodeURIComponent(property.city)}`}
             className="hover:text-foreground transition-colors"
           >
             {property.city}
           </Link>
-          <span>/</span>
-          <span className="text-foreground truncate max-w-[200px]">
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-foreground truncate max-w-[200px]">
             {address}
           </span>
         </nav>
