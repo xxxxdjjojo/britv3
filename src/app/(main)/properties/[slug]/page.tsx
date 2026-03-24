@@ -555,6 +555,19 @@ export default async function PropertyPage({
                   <p className="text-xs text-muted-foreground mt-3">
                     Rating {epc} — Energy efficiency certificate
                   </p>
+                  {property.epcScore != null && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Score: {property.epcScore}/100
+                    </p>
+                  )}
+                  <a
+                    href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(property.postcode)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-brand-primary hover:underline mt-2"
+                  >
+                    View full EPC certificate <span aria-hidden="true">↗</span>
+                  </a>
                   {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
                     <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
                       <strong>MEES Notice:</strong> Rental properties in England and Wales may require a minimum EPC rating of C under upcoming regulations. This property currently holds a rating of {epc}.
@@ -565,34 +578,36 @@ export default async function PropertyPage({
             )}
 
             {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                Local Area Intelligence
-              </h2>
-              <Separator className="mb-4" />
-              <Suspense
-                fallback={
+            {isFeatureEnabled("local_area_intelligence") && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">
+                  Local Area Intelligence
+                </h2>
+                <Separator className="mb-4" />
+                <Suspense
+                  fallback={
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
+                      ))}
+                    </div>
+                  }
+                >
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
-                    ))}
+                    <TransportWidget nearbyStations={[]} />
+                    <SchoolCatchmentWidget schools={[]} />
+                    <BroadbandWidget
+                      downloadMbps={null}
+                      uploadMbps={null}
+                      provider={null}
+                      connectionType={null}
+                    />
+                    <FloodRiskWidget riskLevel={null} source={null} />
+                    <CrimeStatsChart stats={[]} boroughAvg={null} />
                   </div>
-                }
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <TransportWidget nearbyStations={[]} />
-                  <SchoolCatchmentWidget schools={[]} />
-                  <BroadbandWidget
-                    downloadMbps={null}
-                    uploadMbps={null}
-                    provider={null}
-                    connectionType={null}
-                  />
-                  <FloodRiskWidget riskLevel={null} source={null} />
-                  <CrimeStatsChart stats={[]} boroughAvg={null} />
-                </div>
-              </Suspense>
-            </section>
+                </Suspense>
+              </section>
+            )}
 
             {/* ── ROI SECTION (Wave 4) ── */}
             {listing.listingType === "sale" && (
