@@ -555,7 +555,7 @@ export default async function PropertyPage({
                     provider={null}
                     connectionType={null}
                   />
-                  <FloodRiskWidget riskLevel="Low" source="Environment Agency" />
+                  <FloodRiskWidget riskLevel={null} source={null} />
                   <CrimeStatsChart stats={[]} boroughAvg={null} />
                 </div>
               </Suspense>
