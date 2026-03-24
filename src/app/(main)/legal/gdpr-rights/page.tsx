@@ -3,28 +3,23 @@ import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { GdprRequestForm } from "@/components/legal/GdprRequestForm";
 
-const LAST_UPDATED = "13 March 2026";
+const LAST_UPDATED = "24 March 2026";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";
 
 const SECTIONS = [
-  { id: "introduction", label: "1. Introduction" },
-  { id: "right-to-access", label: "2.1 Right of Access" },
-  { id: "right-to-erasure", label: "2.2 Right to Erasure" },
-  { id: "right-to-portability", label: "2.3 Right to Portability" },
-  { id: "right-to-rectification", label: "2.4 Right to Rectification" },
-  { id: "right-to-restriction", label: "2.5 Right to Restriction" },
-  { id: "right-to-object", label: "2.6 Right to Object" },
-  { id: "withdraw-consent", label: "2.7 Withdraw Consent" },
-  { id: "lodge-complaint", label: "2.8 Lodge Complaint" },
-  { id: "submit-request", label: "3. Submit a Request" },
-  { id: "response-timelines", label: "4. Response Timelines" },
-  { id: "exemptions", label: "5. Exemptions" },
-  { id: "ico-complaint", label: "6. ICO Complaint" },
+  { id: "your-rights", label: "1. Your Rights" },
+  { id: "how-to-make-a-request", label: "2. How to Make a Request" },
+  { id: "identity-verification", label: "3. Identity Verification" },
+  { id: "response-timeframe", label: "4. Response Timeframe" },
+  { id: "fees", label: "5. Fees" },
+  { id: "exemptions", label: "6. Exemptions" },
+  { id: "complaints", label: "7. Complaints" },
 ];
 
 export const metadata: Metadata = {
   title: "GDPR Data Subject Rights | Britestate",
-  description: "Exercise your eight rights under UK GDPR — access, erasure, portability, and more.",
+  description:
+    "Exercise your rights under UK GDPR — access, rectification, erasure, portability, restriction, objection, automated decision-making, and withdrawal of consent.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${BASE_URL}/legal/gdpr-rights` },
 };
@@ -42,82 +37,129 @@ export default function GdprRightsPage() {
       </nav>
 
       <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">GDPR Data Subject Rights</h1>
-      <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+
+      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+        Under the UK General Data Protection Regulation, you have rights in relation to your personal data held by
+        Britestate Ltd. This page explains each right and how to exercise it. See also our{" "}
+        <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.
+      </div>
 
       <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
-        <section id="introduction">
-          <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
-          <p>
-            Under UK GDPR and the Data Protection Act 2018, you have eight rights in relation to your personal data
-            held by Britestate Ltd. This page explains each right and how to exercise it. {/* TODO: legal review */}
-          </p>
-        </section>
-
         <section id="your-rights">
-          <h2 className="text-2xl font-bold font-heading">2. Your Eight Rights</h2>
-
-          <section id="right-to-access">
-            <h3 className="text-xl font-semibold font-heading">2.1 Right of Access</h3>
-            <p>You may request a copy of the personal data we hold about you (a Subject Access Request). We will provide this within 30 days. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="right-to-erasure">
-            <h3 className="text-xl font-semibold font-heading">2.2 Right to Erasure</h3>
-            <p>You may request that we delete your personal data where it is no longer necessary, or where you withdraw consent. Some data must be retained for legal obligations. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="right-to-portability">
-            <h3 className="text-xl font-semibold font-heading">2.3 Right to Data Portability</h3>
-            <p>Where we process your data based on consent or contract, you may request a machine-readable export of your data. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="right-to-rectification">
-            <h3 className="text-xl font-semibold font-heading">2.4 Right to Rectification</h3>
-            <p>You may ask us to correct inaccurate personal data. You can update most data directly via your account settings. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="right-to-restriction">
-            <h3 className="text-xl font-semibold font-heading">2.5 Right to Restriction</h3>
-            <p>You may ask us to restrict processing of your data while a complaint is being resolved or accuracy is disputed. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="right-to-object">
-            <h3 className="text-xl font-semibold font-heading">2.6 Right to Object</h3>
-            <p>You may object to processing based on legitimate interests, including profiling for direct marketing. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="withdraw-consent">
-            <h3 className="text-xl font-semibold font-heading">2.7 Withdraw Consent</h3>
-            <p>Where processing is based on consent, you may withdraw it at any time via your account settings or by contacting us. Withdrawal does not affect the lawfulness of prior processing. {/* TODO: legal review */}</p>
-          </section>
-
-          <section id="lodge-complaint">
-            <h3 className="text-xl font-semibold font-heading">2.8 Lodge a Complaint</h3>
-            <p>You have the right to lodge a complaint with the ICO at <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">ico.org.uk</a>. {/* TODO: legal review */}</p>
-          </section>
-        </section>
-
-        <section id="submit-request">
-          <h2 className="text-2xl font-bold font-heading">3. Submit a Request</h2>
-          <p className="mb-6 text-neutral-600">
-            Complete the form below to exercise any of your data subject rights. We will respond within 30 calendar days.
+          <h2 className="text-2xl font-bold font-heading">1. Your Rights</h2>
+          <p>
+            Under the UK General Data Protection Regulation, you have the following rights in relation to your
+            personal data held by Britestate Ltd:
           </p>
-          <GdprRequestForm />
+
+          <p>
+            <strong>Right of Access (Art. 15):</strong> Request a copy of all personal data we hold about you,
+            together with information about how we process it.
+          </p>
+
+          <p>
+            <strong>Right to Rectification (Art. 16):</strong> Request correction of any inaccurate or incomplete
+            personal data.
+          </p>
+
+          <p>
+            <strong>Right to Erasure (Art. 17):</strong> Request deletion of your personal data, subject to our
+            legal obligations (e.g., AML record retention, tax records).
+          </p>
+
+          <p>
+            <strong>Right to Restrict Processing (Art. 18):</strong> Request that we temporarily stop processing your
+            data while a dispute about accuracy or our grounds for processing is resolved.
+          </p>
+
+          <p>
+            <strong>Right to Data Portability (Art. 20):</strong> Request a copy of your personal data in a
+            structured, commonly used, machine-readable format (JSON). This applies to data you have provided to us
+            that we process by automated means on the basis of consent or contract.
+          </p>
+
+          <p>
+            <strong>Right to Object (Art. 21):</strong> Object to processing based on legitimate interests, including
+            profiling for AI-powered property recommendations. We will stop processing unless we have compelling
+            legitimate grounds that override your interests.
+          </p>
+
+          <p>
+            <strong>Rights Related to Automated Decision-Making (Art. 22):</strong> Request human review of any
+            decision made solely by automated means that has a significant effect on you. Request meaningful
+            information about the logic involved.
+          </p>
+
+          <p>
+            <strong>Right to Withdraw Consent:</strong> Where we process your data based on consent (e.g., marketing
+            emails), you may withdraw consent at any time.
+          </p>
         </section>
 
-        <section id="response-timelines">
-          <h2 className="text-2xl font-bold font-heading">4. Response Timelines</h2>
-          <p>We aim to respond to all requests within <strong>30 calendar days</strong>. For complex requests, we may extend this by up to 2 months and will notify you within the initial 30 days. {/* TODO: legal review */}</p>
+        <section id="how-to-make-a-request">
+          <h2 className="text-2xl font-bold font-heading">2. How to Make a Request</h2>
+          <p>
+            Use the form below, or email{" "}
+            <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>, or write to: Data Protection
+            Officer, Britestate Ltd, [REGISTERED ADDRESS].
+          </p>
+          <p>
+            Please specify which right you wish to exercise and provide sufficient information for us to verify your
+            identity and locate your data.
+          </p>
+          <div className="mt-6">
+            <GdprRequestForm />
+          </div>
+        </section>
+
+        <section id="identity-verification">
+          <h2 className="text-2xl font-bold font-heading">3. Identity Verification</h2>
+          <p>
+            To protect your data, we must verify your identity before processing your request. We may ask you to
+            confirm your email address, provide a copy of photo ID, or answer security questions linked to your
+            account.
+          </p>
+        </section>
+
+        <section id="response-timeframe">
+          <h2 className="text-2xl font-bold font-heading">4. Response Timeframe</h2>
+          <p>
+            We will respond to your request within <strong>30 calendar days</strong> of receiving it (and verifying
+            your identity). If your request is complex or we receive a high volume of requests, we may extend this by
+            a further 60 days, in which case we will notify you within the first 30 days.
+          </p>
+        </section>
+
+        <section id="fees">
+          <h2 className="text-2xl font-bold font-heading">5. Fees</h2>
+          <p>
+            Requests are free of charge. However, we may charge a reasonable fee for manifestly unfounded or
+            excessive requests, or where you request additional copies of your data.
+          </p>
         </section>
 
         <section id="exemptions">
-          <h2 className="text-2xl font-bold font-heading">5. Exemptions</h2>
-          <p>Some exemptions apply under UK GDPR. For example, we may retain financial records for 7 years to comply with HMRC requirements, even if you request erasure. {/* TODO: legal review */}</p>
+          <h2 className="text-2xl font-bold font-heading">6. Exemptions</h2>
+          <p>
+            We may be unable to fully comply with your request where an exemption applies, including: ongoing legal
+            proceedings, regulatory obligations (e.g., AML record retention), or the rights and freedoms of others.
+            We will explain any exemption that applies.
+          </p>
         </section>
 
-        <section id="ico-complaint">
-          <h2 className="text-2xl font-bold font-heading">6. ICO Complaint</h2>
-          <p>If you are unsatisfied with our response, you may complain to the Information Commissioner&apos;s Office: <a href="https://ico.org.uk/make-a-complaint" target="_blank" rel="noopener noreferrer">ico.org.uk/make-a-complaint</a>. {/* TODO: legal review */}</p>
+        <section id="complaints">
+          <h2 className="text-2xl font-bold font-heading">7. Complaints</h2>
+          <p>
+            If you are not satisfied with our response, you have the right to lodge a complaint with the Information
+            Commissioner&rsquo;s Office:
+          </p>
+          <p>
+            ICO, Wycliffe House, Water Lane, Wilmslow, Cheshire, SK9 5AF<br />
+            Tel: 0303 123 1113<br />
+            Web:{" "}
+            <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">ico.org.uk</a>
+          </p>
         </section>
       </div>
 
