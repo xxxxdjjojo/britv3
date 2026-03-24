@@ -724,6 +724,264 @@ export async function sendReviewReceived(params: {
 }
 
 // ---------------------------------------------------------------------------
+// 10a. Review Published
+// ---------------------------------------------------------------------------
+
+export async function sendReviewPublished(params: {
+  userId: string;
+  email: string;
+  recipientFirstName: string;
+  reviewTitle: string;
+  providerName: string;
+  reviewUrl: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_reviews");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "review-published",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const { ReviewPublishedEmail } = await import("@/emails/review-published");
+    const { render } = await import("@react-email/components");
+    const name = params.recipientFirstName || "there";
+    const html = await render(
+      ReviewPublishedEmail({
+        recipientFirstName: name,
+        reviewTitle: params.reviewTitle,
+        providerName: params.providerName,
+        reviewUrl: params.reviewUrl,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: "Your review has been published",
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "review-published",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "review-published",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendReviewPublished failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10b. Review Removed
+// ---------------------------------------------------------------------------
+
+export async function sendReviewRemoved(params: {
+  userId: string;
+  email: string;
+  recipientFirstName: string;
+  reviewTitle: string;
+  providerName: string;
+  reason: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_reviews");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "review-removed",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const { ReviewRemovedEmail } = await import("@/emails/review-removed");
+    const { render } = await import("@react-email/components");
+    const name = params.recipientFirstName || "there";
+    const html = await render(
+      ReviewRemovedEmail({
+        recipientFirstName: name,
+        reviewTitle: params.reviewTitle,
+        providerName: params.providerName,
+        reason: params.reason,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: "Your review has been removed",
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "review-removed",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "review-removed",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendReviewRemoved failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10c. Review Response
+// ---------------------------------------------------------------------------
+
+export async function sendReviewResponse(params: {
+  userId: string;
+  email: string;
+  recipientFirstName: string;
+  providerName: string;
+  responsePreview: string;
+  reviewUrl: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_reviews");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "review-response",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const { ReviewResponseEmail } = await import("@/emails/review-response");
+    const { render } = await import("@react-email/components");
+    const name = params.recipientFirstName || "there";
+    const html = await render(
+      ReviewResponseEmail({
+        recipientFirstName: name,
+        providerName: params.providerName,
+        responsePreview: params.responsePreview,
+        reviewUrl: params.reviewUrl,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: `${params.providerName} responded to your review`,
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "review-response",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "review-response",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendReviewResponse failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10d. Flag Outcome
+// ---------------------------------------------------------------------------
+
+export async function sendFlagOutcome(params: {
+  userId: string;
+  email: string;
+  recipientFirstName: string;
+  outcome: "removed" | "kept";
+  reviewTitle: string;
+}): Promise<void> {
+  const enabled = await checkUserEmailPref(params.userId, "email_reviews");
+  if (!enabled) {
+    await logEmail({
+      userId: params.userId,
+      template: "flag-outcome",
+      recipient: params.email,
+      status: "suppressed",
+      suppressionReason: "pref_disabled",
+    });
+    return;
+  }
+
+  try {
+    const { FlagOutcomeEmail } = await import("@/emails/flag-outcome");
+    const { render } = await import("@react-email/components");
+    const name = params.recipientFirstName || "there";
+    const html = await render(
+      FlagOutcomeEmail({
+        recipientFirstName: name,
+        outcome: params.outcome,
+        reviewTitle: params.reviewTitle,
+      })
+    );
+
+    const { data, error } = await resendSend({
+      from: FROM,
+      to: params.email,
+      subject: "Update on your review report",
+      html,
+    });
+
+    if (error) throw error;
+    await logEmail({
+      userId: params.userId,
+      template: "flag-outcome",
+      recipient: params.email,
+      resendId: data?.id,
+      status: "sent",
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await logEmail({
+      userId: params.userId,
+      template: "flag-outcome",
+      recipient: params.email,
+      status: "failed",
+      errorMessage: message,
+    });
+    console.error("[email-service] sendFlagOutcome failed", message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // 11. Compliance Warning (always send — no pref check)
 // ---------------------------------------------------------------------------
 

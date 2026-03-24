@@ -15,6 +15,10 @@ source trigger events, and which are pending implementation of their upstream fe
 | `sendReviewReceived` | `src/app/api/reviews/create/route.ts` | After `createReview` — notifies the provider |
 | `sendAccountDeletion` | `src/app/api/gdpr/delete/route.ts` | After `createDeletionRequest` succeeds |
 | `sendViewingConfirmation` | `src/app/api/bookings/[id]/status/route.ts` PATCH | When booking status transitions to `confirmed` — notifies the customer |
+| `sendReviewPublished` | `src/app/api/reviews/moderation/[id]/route.ts` PATCH | After `moderateReview` with `decision=approve` — notifies the reviewer |
+| `sendReviewRemoved` | `src/app/api/reviews/moderation/[id]/route.ts` PATCH | After `moderateReview` with `decision=reject` — notifies the reviewer with reason |
+| `sendReviewResponse` | `src/app/api/reviews/[id]/respond/route.ts` POST | After `respondToReview` — notifies the reviewer with response preview (first 100 chars) |
+| `sendFlagOutcome` | `src/services/admin/review-service.ts` `resolveReport()` | After report resolution — notifies the reporter with outcome (removed/kept) |
 
 All sends are fire-and-forget (`void sendX(...)`). Errors are logged but never
 bubble up to the HTTP response.

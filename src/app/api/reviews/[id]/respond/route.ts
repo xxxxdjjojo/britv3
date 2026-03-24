@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { respondToReview } from "@/services/marketplace/review-service";
+import { sendReviewResponse } from "@/services/email/email-service";
 
 /**
  * POST /api/reviews/[id]/respond
@@ -35,6 +36,37 @@ export async function POST(
     }
 
     const review = await respondToReview(supabase, user.id, reviewId, body.response);
+
+    // Fire-and-forget: notify the reviewer that the provider responded
+    const reviewerId = (review as Record<string, unknown>)?.reviewer_id as string | undefined;
+    if (reviewerId) {
+      const { data: reviewer } = await supabase
+        .from("user_profiles")
+        .select("first_name, email")
+        .eq("user_id", reviewerId)
+        .single();
+
+      const { data: provider } = await supabase
+        .from("user_profiles")
+        .select("first_name, business_name")
+        .eq("user_id", user.id)
+        .single();
+
+      if (reviewer?.email) {
+        const providerName = (provider?.business_name ?? provider?.first_name ?? "the provider") as string;
+        const responsePreview = body.response.slice(0, 100);
+        const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/reviews/${reviewId}`;
+
+        void sendReviewResponse({
+          userId: reviewerId,
+          email: reviewer.email as string,
+          recipientFirstName: (reviewer.first_name as string) ?? "there",
+          providerName,
+          responsePreview,
+          reviewUrl,
+        });
+      }
+    }
 
     return NextResponse.json({ data: review });
   } catch (error) {

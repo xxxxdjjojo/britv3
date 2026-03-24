@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ThumbsUp, ThumbsDown, Flag, Pencil, CheckCircle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flag, Pencil, ShieldCheck, ShieldX } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -105,10 +105,21 @@ export function ReviewCardEnhanced({
                 Edited
               </Badge>
             )}
-            {review.moderation_status === "approved" && (
+            {review.is_incentivised && (
+              <Badge variant="outline" className="text-xs border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                Incentivised
+              </Badge>
+            )}
+            {review.verification_status === "verified" && (
               <Badge variant="outline" className="border-green-200 bg-green-50 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                <CheckCircle className="mr-1 size-3" />
+                <ShieldCheck className="mr-1 size-3" />
                 Verified
+              </Badge>
+            )}
+            {review.verification_status === "unverified" && (
+              <Badge variant="outline" className="text-xs text-muted-foreground">
+                <ShieldX className="mr-1 size-3" />
+                Unverified
               </Badge>
             )}
             <span className="shrink-0 text-xs text-muted-foreground">{dateStr}</span>

@@ -106,7 +106,20 @@ export type ReviewFlagReason =
   | "off_topic"
   | "contact_info"
   | "promotional"
-  | "duplicate";
+  | "duplicate"
+  | "defamation";
+
+export type VerificationType =
+  | "booking"
+  | "tenancy"
+  | "agent_transaction"
+  | "interaction"
+  | "unverified";
+
+export type VerificationStatus =
+  | "pending"
+  | "verified"
+  | "unverified";
 
 // -- JSONB sub-types --------------------------------------------------------
 
@@ -259,9 +272,10 @@ export type BookingStatusHistory = Readonly<{
 /** Mirrors public.reviews table */
 export type Review = Readonly<{
   id: string;
-  booking_id: string;
+  booking_id: string | null;
   provider_id: string;
-  reviewer_id: string;
+  /** null when the reviewer's account has been deleted (ON DELETE SET NULL) */
+  reviewer_id: string | null;
   overall_rating: number;
   punctuality_rating: number | null;
   quality_rating: number | null;
@@ -282,6 +296,11 @@ export type Review = Readonly<{
   edited_at: Date | null;
   original_text: string | null;
   edit_count: number;
+  is_incentivised: boolean;
+  verification_type: VerificationType;
+  verification_source_id: string | null;
+  verification_status: VerificationStatus;
+  verified_at: Date | null;
   edit_history: Array<{ text: string; title: string; edited_at: string }>;
   created_at: Date;
   updated_at: Date;

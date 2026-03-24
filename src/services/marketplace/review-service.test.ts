@@ -141,30 +141,12 @@ describe("createReview", () => {
 
 describe("voteHelpfulness", () => {
   it("inserts a new vote when user has not voted before", async () => {
-    // First call: check existing vote (none found)
-    const existingQuery = mockQuery({ data: null, error: null });
-    // Second call: insert new vote
-    const insertQuery = mockQuery({ data: { id: "vh1" }, error: null });
-    // Third call: read review counts for increment
-    const reviewReadQuery = mockQuery({
-      data: { helpful_count: 0, not_helpful_count: 0 },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: { helpful_count: 1, not_helpful_count: 0 },
+        error: null,
+      }),
     });
-    // Fourth call: update review counts
-    const reviewUpdateChain = mockQuery({ data: null, error: null });
-    // Fifth call: get updated counts
-    const updatedQuery = mockQuery({
-      data: { helpful_count: 1, not_helpful_count: 0 },
-      error: null,
-    });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(insertQuery)
-      .mockReturnValueOnce(reviewReadQuery)
-      .mockReturnValueOnce(reviewUpdateChain)
-      .mockReturnValueOnce(updatedQuery);
 
     const result = await voteHelpfulness(supabase, "u1", "r1", true);
 
@@ -173,33 +155,12 @@ describe("voteHelpfulness", () => {
   });
 
   it("updates existing vote when user changes their vote", async () => {
-    // First call: find existing vote
-    const existingQuery = mockQuery({
-      data: { id: "vh1", is_helpful: true },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: { helpful_count: 0, not_helpful_count: 1 },
+        error: null,
+      }),
     });
-    // Second call: update vote
-    const updateQuery = mockQuery({ data: null, error: null });
-    // Third call: read review counts
-    const reviewReadQuery = mockQuery({
-      data: { helpful_count: 1, not_helpful_count: 0 },
-      error: null,
-    });
-    // Fourth call: update review counts
-    const reviewUpdateChain = mockQuery({ data: null, error: null });
-    // Fifth call: get updated counts
-    const updatedQuery = mockQuery({
-      data: { helpful_count: 0, not_helpful_count: 1 },
-      error: null,
-    });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>)
-      .mockReturnValueOnce(existingQuery)
-      .mockReturnValueOnce(updateQuery)
-      .mockReturnValueOnce(reviewReadQuery)
-      .mockReturnValueOnce(reviewUpdateChain)
-      .mockReturnValueOnce(updatedQuery);
 
     const result = await voteHelpfulness(supabase, "u1", "r1", false);
 
@@ -268,41 +229,42 @@ describe("respondToReview", () => {
 
 describe("flagReview", () => {
   it("prevents user from flagging their own review", async () => {
-    const reviewQuery = mockQuery({
-      data: { id: "r1", reviewer_id: "u1", flag_count: 0 },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "Cannot flag your own review", code: "P0001" },
+      }),
     });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(reviewQuery);
 
     await expect(
       flagReview(supabase, "u1", "r1", { reason: "spam" }),
     ).rejects.toThrow("Cannot flag your own review");
   });
 
+  it("propagates provider self-flag error from RPC", async () => {
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: null,
+        error: { message: "Cannot flag reviews about your own services", code: "P0001" },
+      }),
+    });
+
+    await expect(
+      flagReview(supabase, "provider1", "r1", { reason: "fake" }),
+    ).rejects.toThrow("Cannot flag reviews about your own services");
+  });
+
   it("successfully flags another user's review", async () => {
-    const reviewQuery = mockQuery({
-      data: { id: "r1", reviewer_id: "other-user", flag_count: 0 },
-      error: null,
+    const supabase = createMockSupabase({
+      rpc: vi.fn().mockResolvedValue({
+        data: { flag_id: "f1", flag_count: 1 },
+        error: null,
+      }),
     });
-
-    const flagInsert = mockQuery({
-      data: { id: "f1", review_id: "r1", user_id: "u1", reason: "spam" },
-      error: null,
-    });
-
-    const reviewUpdate = mockQuery({ data: null, error: null });
-
-    const supabase = createMockSupabase();
-    (supabase.from as ReturnType<typeof vi.fn>)
-      .mockReturnValueOnce(reviewQuery)
-      .mockReturnValueOnce(flagInsert)
-      .mockReturnValueOnce(reviewUpdate);
 
     const result = await flagReview(supabase, "u1", "r1", { reason: "spam" });
 
-    expect(result.reason).toBe("spam");
+    expect(result.flag_count).toBe(1);
   });
 });
 
@@ -517,5 +479,207 @@ describe("listProviderReviews", () => {
     expect(result.reviews).toHaveLength(1);
     // Verify order was called with helpful_count
     expect(chain["order"]).toHaveBeenCalledWith("helpful_count", { ascending: false });
+  });
+
+  it("handles reviews with null reviewer_id (deleted account) gracefully", async () => {
+    const mockData = {
+      data: [
+        {
+          id: "r1",
+          overall_rating: 5,
+          title: "Great work",
+          reviewer_id: null,
+          moderation_status: "approved",
+        },
+        {
+          id: "r2",
+          overall_rating: 4,
+          title: "Good service",
+          reviewer_id: "u2",
+          moderation_status: "approved",
+        },
+      ],
+      error: null,
+      count: 2,
+    };
+
+    const chain: Record<string, unknown> = {};
+    const methods = [
+      "select", "eq", "is", "gte", "lte", "order", "range", "textSearch",
+    ];
+    for (const method of methods) {
+      chain[method] = vi.fn().mockReturnValue(chain);
+    }
+    chain["then"] = (resolve: (v: unknown) => void) => {
+      resolve(mockData);
+      return { catch: () => ({}) };
+    };
+
+    const supabase = createMockSupabase();
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValueOnce(chain);
+
+    const result = await listProviderReviews(supabase, "p1", {});
+
+    expect(result.reviews).toHaveLength(2);
+    expect(result.reviews[0].reviewer_id).toBeNull();
+    expect(result.reviews[1].reviewer_id).toBe("u2");
+  });
+});
+
+describe("createReview — verification types", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("creates a booking-type review with verification_status = verified", async () => {
+    const bookingQuery = mockQuery({
+      data: { id: "b1", user_id: "u1", provider_id: "p1", status: "completed" },
+      error: null,
+    });
+
+    const insertChain = mockQuery({
+      data: {
+        id: "r1",
+        booking_id: "b1",
+        provider_id: "p1",
+        reviewer_id: "u1",
+        overall_rating: 5,
+        title: "Great service",
+        review_text: "The plumber was excellent and very professional",
+        verification_type: "booking",
+        verification_status: "verified",
+        sentiment: "very_positive",
+        spam_indicators: { spam_score: 0 },
+        moderation_status: "pending",
+        fake_review_probability: 0,
+        authenticity_score: 0,
+        is_incentivised: false,
+      },
+      error: null,
+    });
+
+    const moderationInsert = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(bookingQuery)
+      .mockReturnValueOnce(insertChain)
+      .mockReturnValueOnce(moderationInsert);
+
+    const result = await createReview(supabase, "u1", {
+      booking_id: "b1",
+      overall_rating: 5,
+      title: "Great service",
+      review_text: "The plumber was excellent and very professional",
+    });
+
+    expect(result.verification_type).toBe("booking");
+    expect(result.verification_status).toBe("verified");
+  });
+
+  it("creates a tenancy-type review without requiring booking_id", async () => {
+    const insertChain = mockQuery({
+      data: {
+        id: "r2",
+        booking_id: null,
+        provider_id: "landlord1",
+        reviewer_id: "u1",
+        overall_rating: 4,
+        title: "Good landlord",
+        review_text: "Responsive and fair with repairs and maintenance",
+        verification_type: "tenancy",
+        verification_source_id: "tenancy1",
+        verification_status: "pending",
+        sentiment: "positive",
+        spam_indicators: { spam_score: 0 },
+        moderation_status: "pending",
+        fake_review_probability: 0,
+        authenticity_score: 0,
+        is_incentivised: false,
+      },
+      error: null,
+    });
+
+    const moderationInsert = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(insertChain)
+      .mockReturnValueOnce(moderationInsert);
+
+    const result = await createReview(supabase, "u1", {
+      verification_type: "tenancy",
+      verification_source_id: "tenancy1",
+      provider_id: "landlord1",
+      overall_rating: 4,
+      title: "Good landlord",
+      review_text: "Responsive and fair with repairs and maintenance",
+    });
+
+    expect(result.verification_type).toBe("tenancy");
+    expect(result.booking_id).toBeNull();
+  });
+
+  it("rejects non-booking reviews without provider_id", async () => {
+    const supabase = createMockSupabase();
+
+    await expect(
+      createReview(supabase, "u1", {
+        verification_type: "tenancy",
+        verification_source_id: "tenancy1",
+        overall_rating: 4,
+        title: "Good landlord",
+        review_text: "Responsive and fair with repairs and maintenance",
+      }),
+    ).rejects.toThrow("provider_id is required for non-booking reviews");
+  });
+
+  it("passes is_incentivised through to the insert", async () => {
+    const bookingQuery = mockQuery({
+      data: { id: "b1", user_id: "u1", provider_id: "p1", status: "completed" },
+      error: null,
+    });
+
+    const insertChain = mockQuery({
+      data: {
+        id: "r3",
+        booking_id: "b1",
+        provider_id: "p1",
+        reviewer_id: "u1",
+        overall_rating: 5,
+        title: "Great service",
+        review_text: "Offered a discount for leaving this review",
+        is_incentivised: true,
+        verification_type: "booking",
+        verification_status: "verified",
+        sentiment: "positive",
+        spam_indicators: { spam_score: 0 },
+        moderation_status: "pending",
+        fake_review_probability: 0,
+        authenticity_score: 0,
+      },
+      error: null,
+    });
+
+    const moderationInsert = mockQuery({ data: null, error: null });
+
+    const supabase = createMockSupabase();
+    const fromMock = supabase.from as ReturnType<typeof vi.fn>;
+    fromMock
+      .mockReturnValueOnce(bookingQuery)
+      .mockReturnValueOnce(insertChain)
+      .mockReturnValueOnce(moderationInsert);
+
+    const result = await createReview(supabase, "u1", {
+      booking_id: "b1",
+      overall_rating: 5,
+      title: "Great service",
+      review_text: "Offered a discount for leaving this review",
+      is_incentivised: true,
+    });
+
+    expect(result.is_incentivised).toBe(true);
   });
 });

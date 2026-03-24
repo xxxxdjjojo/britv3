@@ -47,6 +47,7 @@ const REVIEW_FLAG_REASONS = [
   "contact_info",
   "promotional",
   "duplicate",
+  "defamation",
 ] as const;
 
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$/i;
@@ -207,6 +208,7 @@ export const reviewCreateSchema = z.object({
     .string()
     .min(20, "Review must be at least 20 characters")
     .max(2000, "Review must be at most 2000 characters"),
+  is_incentivised: z.boolean().optional(),
 });
 
 export type ReviewCreateInput = z.infer<typeof reviewCreateSchema>;

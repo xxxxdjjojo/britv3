@@ -39,9 +39,18 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (!body.booking_id) {
+    const verificationType = body.verification_type ?? "booking";
+
+    if (verificationType === "booking" && !body.booking_id) {
       return NextResponse.json(
-        { error: "booking_id is required" },
+        { error: "booking_id is required for booking-type reviews" },
+        { status: 400 },
+      );
+    }
+
+    if (verificationType !== "booking" && !body.provider_id) {
+      return NextResponse.json(
+        { error: "provider_id is required for non-booking reviews" },
         { status: 400 },
       );
     }

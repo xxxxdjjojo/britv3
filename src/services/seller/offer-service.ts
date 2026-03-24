@@ -33,7 +33,10 @@ export async function respondToOffer(
     counter_message?: string;
   }>,
 ): Promise<void> {
-  const { error } = await supabase
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  const { data, error } = await supabase
     .from("seller_offers")
     .update({
       status: response.status,
@@ -44,6 +47,43 @@ export async function respondToOffer(
       counter_message: response.counter_message ?? null,
       responded_at: new Date().toISOString(),
     })
-    .eq("id", offerId);
+    .eq("id", offerId)
+    .eq("seller_id", user.id)
+    .eq("status", "pending")
+    .select()
+    .single();
+
+  if (error?.code === "PGRST116") {
+    throw new Error("Offer not found, not owned by you, or already actioned");
+  }
   if (error) throw error;
+}
+
+export async function acceptOffer(
+  supabase: SupabaseClient,
+  offerId: string,
+  solicitor?: { name?: string; email?: string; phone?: string },
+): Promise<{ progressionId: string; rejectedCount: number; listingId: string }> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthenticated");
+
+  const { data, error } = await supabase.rpc("accept_offer_cascade", {
+    p_offer_id: offerId,
+    p_seller_id: user.id,
+    p_solicitor_name: solicitor?.name ?? null,
+    p_solicitor_email: solicitor?.email ?? null,
+    p_solicitor_phone: solicitor?.phone ?? null,
+  });
+
+  if (error) {
+    if (error.message.includes("not owned by you")) throw new Error("Offer not found or not owned by you");
+    if (error.message.includes("already been actioned")) throw new Error("Offer has already been actioned");
+    throw error;
+  }
+
+  return {
+    progressionId: data.progression_id,
+    rejectedCount: data.rejected_count,
+    listingId: data.listing_id,
+  };
 }
