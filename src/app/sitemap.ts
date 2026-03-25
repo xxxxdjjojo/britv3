@@ -63,6 +63,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/reviews`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
+  /* --- Section 6: Area guide pages --- */
+  const { getAllCitySlugs } = await import("@/services/areas/area-data-service");
+  const { getNeighbourhoodsForCity } = await import("@/services/areas/mock-data/neighbourhoods");
+  const { getAreaSlugsWithSoldPrices } = await import("@/services/areas/mock-data/sold-prices");
+
+  const citySlugs = getAllCitySlugs();
+  const areaPages: MetadataRoute.Sitemap = [];
+
+  for (const city of citySlugs) {
+    areaPages.push({ url: `${BASE_URL}/areas/${city}`, lastModified: now, changeFrequency: "weekly", priority: 0.8 });
+    areaPages.push({ url: `${BASE_URL}/areas/${city}/stats`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
+    const neighbourhoods = getNeighbourhoodsForCity(city);
+    for (const n of neighbourhoods) {
+      areaPages.push({ url: `${BASE_URL}/areas/${city}/${n.slug}`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
+    }
+  }
+
+  // Sold prices area pages
+  for (const areaSlug of getAreaSlugsWithSoldPrices()) {
+    areaPages.push({ url: `${BASE_URL}/sold-prices/${areaSlug}`, lastModified: now, changeFrequency: "daily", priority: 0.7 });
+  }
+
+  // National market trends
+  areaPages.push({ url: `${BASE_URL}/market-trends/national`, lastModified: now, changeFrequency: "weekly", priority: 0.7 });
+
   /* --- Dynamic pages from database --- */
   let propertyPages: MetadataRoute.Sitemap = [];
   let agentPages: MetadataRoute.Sitemap = [];
@@ -108,6 +133,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...servicePages,
     ...toolPages,
     ...marketplacePages,
+    ...areaPages,
     ...propertyPages,
     ...agentPages,
   ];
