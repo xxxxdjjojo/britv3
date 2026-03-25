@@ -42,38 +42,93 @@ export const chainRiskMonitor = inngest.createFunction(
       const batchResult = await step.run(
         `process-batch-${Math.floor(i / BATCH_SIZE)}`,
         async () => {
-          let updated = 0;
+          // Batch 1: Fetch ALL chain links for ALL groups in this batch at once
+          const { data: allLinks, error: linksError } = await supabase
+            .from("chain_links")
+            .select("chain_group_id, upstream_progression_id, downstream_progression_id, position_in_chain")
+            .in("chain_group_id", batch);
+
+          if (linksError) {
+            console.error("[chain-risk-monitor] Failed to batch-fetch chain links:", linksError);
+            return 0;
+          }
+          if (!allLinks || allLinks.length === 0) return 0;
+
+          // Group links by chain_group_id
+          const linksByGroup = new Map<string, typeof allLinks>();
+          for (const link of allLinks) {
+            const gid = link.chain_group_id as string;
+            if (!linksByGroup.has(gid)) linksByGroup.set(gid, []);
+            linksByGroup.get(gid)!.push(link);
+          }
+
+          // Collect ALL unique progression IDs across all groups
+          const allProgressionIds = new Set<string>();
+          for (const link of allLinks) {
+            allProgressionIds.add(link.upstream_progression_id as string);
+            allProgressionIds.add(link.downstream_progression_id as string);
+          }
+
+          // Batch 2: Fetch ALL progressions at once
+          const { data: allProgressions, error: progressionsError } = await supabase
+            .from("agent_sale_progressions")
+            .select("id, stage, updated_at, agent_id, property_id")
+            .in("id", Array.from(allProgressionIds));
+
+          if (progressionsError) {
+            console.error("[chain-risk-monitor] Failed to batch-fetch progressions:", progressionsError);
+            return 0;
+          }
+          if (!allProgressions || allProgressions.length === 0) return 0;
+
+          // Index progressions by ID for fast lookup
+          const progressionById = new Map(
+            allProgressions.map((p) => [p.id as string, p]),
+          );
+
+          // Build upsert rows for all groups
+          const upsertRows: Array<{
+            progression_id: string;
+            chain_group_id: string;
+            risk_level: string;
+            risk_score: number;
+            chain_length: number;
+            chain_position: number;
+            slowest_link_id: string | null;
+            slowest_link_days: number;
+            factors: unknown;
+            computed_at: string;
+            updated_at: string;
+          }> = [];
+
+          const now = new Date().toISOString();
 
           for (const groupId of batch) {
-            // Fetch all links in this chain group
-            const { data: links } = await supabase
-              .from("chain_links")
-              .select("upstream_progression_id, downstream_progression_id, position_in_chain")
-              .eq("chain_group_id", groupId);
-
+            const links = linksByGroup.get(groupId);
             if (!links || links.length === 0) continue;
 
-            // Collect all unique progression IDs
-            const progressionIds = new Set<string>();
+            // Collect progression IDs for this group
+            const groupProgressionIds = new Set<string>();
             for (const link of links) {
-              progressionIds.add(link.upstream_progression_id as string);
-              progressionIds.add(link.downstream_progression_id as string);
+              groupProgressionIds.add(link.upstream_progression_id as string);
+              groupProgressionIds.add(link.downstream_progression_id as string);
             }
 
-            // Fetch progressions
-            const { data: progressions } = await supabase
-              .from("agent_sale_progressions")
-              .select("id, stage, updated_at, agent_id, property_id")
-              .in("id", [...progressionIds]);
+            // Build members for scoring from the pre-fetched progressions
+            const members: Array<{
+              id: string;
+              stage: SaleStage;
+              days_in_stage: number;
+              updated_at: string;
+              position: number;
+            }> = [];
 
-            if (!progressions || progressions.length === 0) continue;
-
-            // Build members for scoring
-            const members = progressions.map((p) => {
+            for (const pid of Array.from(groupProgressionIds)) {
+              const p = progressionById.get(pid);
+              if (!p) continue;
               const daysInStage = Math.floor(
                 (Date.now() - new Date(p.updated_at as string).getTime()) / (1000 * 60 * 60 * 24),
               );
-              // Find position from links
               let position = 1;
               for (const link of links) {
                 if (link.downstream_progression_id === p.id) {
@@ -83,43 +138,48 @@ export const chainRiskMonitor = inngest.createFunction(
                   position = Math.max(position, link.position_in_chain as number);
                 }
               }
-              return {
+              members.push({
                 id: p.id as string,
                 stage: p.stage as SaleStage,
                 days_in_stage: daysInStage,
                 updated_at: p.updated_at as string,
                 position,
-              };
-            });
+              });
+            }
 
-            // Compute and upsert risk scores for each member
+            if (members.length === 0) continue;
+
             for (const member of members) {
               const result = computeChainRiskScore(members, member.id, member.position);
-
-              const { error: upsertError } = await supabase
-                .from("chain_risk_scores")
-                .upsert(
-                  {
-                    progression_id: member.id,
-                    chain_group_id: groupId,
-                    risk_level: result.risk_level,
-                    risk_score: result.risk_score,
-                    chain_length: members.length,
-                    chain_position: member.position,
-                    slowest_link_id: result.slowest_link_id,
-                    slowest_link_days: result.slowest_link_days,
-                    factors: result.factors,
-                    computed_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  },
-                  { onConflict: "progression_id" },
-                );
-
-              if (!upsertError) updated++;
+              upsertRows.push({
+                progression_id: member.id,
+                chain_group_id: groupId,
+                risk_level: result.risk_level,
+                risk_score: result.risk_score,
+                chain_length: members.length,
+                chain_position: member.position,
+                slowest_link_id: result.slowest_link_id,
+                slowest_link_days: result.slowest_link_days,
+                factors: result.factors,
+                computed_at: now,
+                updated_at: now,
+              });
             }
           }
 
-          return updated;
+          if (upsertRows.length === 0) return 0;
+
+          // Batch 3: Single upsert for ALL risk scores
+          const { error: upsertError } = await supabase
+            .from("chain_risk_scores")
+            .upsert(upsertRows, { onConflict: "progression_id" });
+
+          if (upsertError) {
+            console.error("[chain-risk-monitor] Failed to batch-upsert risk scores:", upsertError);
+            return 0;
+          }
+
+          return upsertRows.length;
         },
       );
 

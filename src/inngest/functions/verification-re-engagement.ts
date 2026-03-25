@@ -27,28 +27,42 @@ export const verificationReEngagement = inngest.createFunction(
         .gt("trust_score", 0)
         .lt("trust_score", 100);
 
-      if (error || !providers) return [];
+      if (error || !providers || providers.length === 0) return [];
 
-      const stalled = [];
-      for (const p of providers) {
-        const { count: recentDocs } = await supabase
-          .from("provider_documents")
-          .select("id", { count: "exact", head: true })
-          .eq("provider_id", p.id)
-          .gte("created_at", sevenDaysAgo);
+      const providerIds = providers.map((p) => p.id as string);
 
-        const { count: recentRefs } = await supabase
-          .from("provider_references")
-          .select("id", { count: "exact", head: true })
-          .eq("provider_id", p.id)
-          .gte("requested_at", sevenDaysAgo);
+      // Batch query: all recent documents for all providers at once
+      const { data: recentDocs, error: docsError } = await supabase
+        .from("provider_documents")
+        .select("provider_id")
+        .in("provider_id", providerIds)
+        .gte("created_at", sevenDaysAgo);
 
-        if ((recentDocs ?? 0) === 0 && (recentRefs ?? 0) === 0) {
-          stalled.push(p);
-        }
+      if (docsError) {
+        console.error("[verification-re-engagement] Failed to batch-fetch provider_documents:", docsError);
+        return [];
       }
 
-      return stalled;
+      // Batch query: all recent references for all providers at once
+      const { data: recentRefs, error: refsError } = await supabase
+        .from("provider_references")
+        .select("provider_id")
+        .in("provider_id", providerIds)
+        .gte("requested_at", sevenDaysAgo);
+
+      if (refsError) {
+        console.error("[verification-re-engagement] Failed to batch-fetch provider_references:", refsError);
+        return [];
+      }
+
+      // Build sets of providers with recent activity
+      const hasRecentDoc = new Set((recentDocs ?? []).map((d) => d.provider_id as string));
+      const hasRecentRef = new Set((recentRefs ?? []).map((r) => r.provider_id as string));
+
+      // Filter to providers with NO recent activity
+      return providers.filter(
+        (p) => !hasRecentDoc.has(p.id as string) && !hasRecentRef.has(p.id as string),
+      );
     });
 
     let sent = 0;
