@@ -1,13 +1,18 @@
+import nextDynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Eye, Heart, MessageSquare, MousePointer } from "lucide-react";
 import { KpiCard } from "@/components/seller/KpiCard";
-import { ListingAnalyticsCharts } from "@/components/seller/analytics/ListingAnalyticsCharts";
 import { getListingById } from "@/services/seller/listing-service";
 import { getListingAnalyticsSummary } from "@/services/seller/analytics-service";
 
 export const dynamic = "force-dynamic";
+
+const ListingAnalyticsCharts = nextDynamic(
+  () => import("@/components/seller/analytics/ListingAnalyticsCharts").then((mod) => mod.ListingAnalyticsCharts),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 type Props = Readonly<{
   params: Promise<{ id: string }>;

@@ -1,7 +1,12 @@
+import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getListingAnalytics } from "@/services/agent/agent-listings-service";
-import { ListingAnalyticsCharts } from "@/components/dashboard/agent/listings/ListingAnalyticsCharts";
+
+const ListingAnalyticsCharts = dynamic(
+  () => import("@/components/dashboard/agent/listings/ListingAnalyticsCharts").then((mod) => mod.ListingAnalyticsCharts),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 export const metadata = {
   title: "Listing Analytics | Agent | Britestate",

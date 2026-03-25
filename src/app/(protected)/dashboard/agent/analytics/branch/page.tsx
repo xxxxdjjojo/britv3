@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -5,9 +6,13 @@ import {
   getBranchPerformanceReport,
 } from "@/services/agent/agent-analytics-service";
 import { getTeamMembers, getBranches } from "@/services/agent/agent-team-service";
-import { BranchPerformanceCharts } from "@/components/dashboard/agent/analytics/BranchPerformanceCharts";
 import type { PerformanceReport } from "@/services/agent/agent-analytics-service";
 import type { AgentBranch, AgentTeamMember } from "@/types/agent";
+
+const BranchPerformanceCharts = dynamic(
+  () => import("@/components/dashboard/agent/analytics/BranchPerformanceCharts").then((mod) => mod.BranchPerformanceCharts),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 export default async function BranchAnalyticsPage() {
   const supabase = await createClient();

@@ -1,11 +1,16 @@
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { getPlatformMetrics } from "@/services/admin/analytics-service";
 import { getAuditLog } from "@/services/admin/audit-service";
 import { CountCard } from "@/components/admin/CountCard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminDashboardCharts } from "@/components/admin/AdminDashboardCharts";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const AdminDashboardCharts = dynamic(
+  () => import("@/components/admin/AdminDashboardCharts").then((mod) => mod.AdminDashboardCharts),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 async function KpiCards() {
   const supabase = await createClient();

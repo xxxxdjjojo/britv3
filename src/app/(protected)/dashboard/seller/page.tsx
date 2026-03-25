@@ -1,13 +1,18 @@
+import nextDynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Home, Eye, MessageSquare, Calendar } from "lucide-react";
 import { KpiCard } from "@/components/seller/KpiCard";
-import { PerformanceChart } from "@/components/seller/PerformanceChart";
 import { getSellerKPIs } from "@/services/seller/listing-service";
 import { getListingAnalyticsSummary } from "@/services/seller/analytics-service";
 
 export const dynamic = "force-dynamic";
+
+const PerformanceChart = nextDynamic(
+  () => import("@/components/seller/PerformanceChart").then((mod) => mod.PerformanceChart),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 export default async function SellerDashboardHome() {
   const supabase = await createClient();

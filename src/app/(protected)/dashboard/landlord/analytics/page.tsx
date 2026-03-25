@@ -4,11 +4,16 @@
  * then passes data to PortfolioAnalyticsCharts (client component).
  */
 
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioKPIs, getPortfolioProperties } from "@/services/landlord/portfolio-service";
 import { getFinancialEntries } from "@/services/landlord/financial-service";
 import { calculateYield } from "@/lib/yield-calculator";
-import PortfolioAnalyticsCharts from "@/components/landlord/PortfolioAnalyticsCharts";
+
+const PortfolioAnalyticsCharts = dynamic(
+  () => import("@/components/landlord/PortfolioAnalyticsCharts"),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 export default async function PortfolioAnalyticsPage() {
   const supabase = await createClient();

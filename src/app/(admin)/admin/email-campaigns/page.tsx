@@ -1,6 +1,11 @@
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { EmailCampaignsClient } from "@/components/admin/EmailCampaignsClient";
+
+const EmailCampaignsClient = dynamic(
+  () => import("@/components/admin/EmailCampaignsClient").then((mod) => mod.EmailCampaignsClient),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 export default async function AdminEmailCampaignsPage() {
   const supabase = await createClient();

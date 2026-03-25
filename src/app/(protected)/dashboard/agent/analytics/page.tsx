@@ -1,7 +1,12 @@
+import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentPerformanceReport } from "@/services/agent/agent-analytics-service";
-import { AgentPerformanceCharts } from "@/components/dashboard/agent/analytics/AgentPerformanceCharts";
+
+const AgentPerformanceCharts = dynamic(
+  () => import("@/components/dashboard/agent/analytics/AgentPerformanceCharts").then((mod) => mod.AgentPerformanceCharts),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 export default async function AgentAnalyticsPage() {
   const supabase = await createClient();

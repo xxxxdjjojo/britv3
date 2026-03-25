@@ -1,7 +1,12 @@
+import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { CmsEditor } from "@/components/admin/CmsEditor";
 import { notFound } from "next/navigation";
+
+const CmsEditor = dynamic(
+  () => import("@/components/admin/CmsEditor").then((mod) => mod.CmsEditor),
+  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+);
 
 type Props = {
   params: Promise<{ id: string }>;
