@@ -21,6 +21,7 @@ class EnsureBrowserCssPlugin {
 }
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // @react-pdf/renderer uses Node.js APIs and cannot be bundled for SSR
   serverExternalPackages: ["@react-pdf/renderer"],
   webpack(config, { isServer }) {
@@ -32,6 +33,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/**" },
     ],
@@ -42,6 +44,8 @@ const nextConfig: NextConfig = {
       "date-fns",
       "recharts",
       "posthog-js",
+      "@tiptap/starter-kit",
+      "jspdf",
     ],
   },
   async redirects() {
