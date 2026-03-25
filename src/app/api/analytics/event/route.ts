@@ -5,6 +5,11 @@ import type { AnalyticsEventType } from "@/types/seller";
 export async function POST(request: Request) {
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await request.json() as {
       listing_id: string;
