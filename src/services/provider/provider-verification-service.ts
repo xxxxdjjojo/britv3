@@ -338,7 +338,23 @@ export async function sendReferenceRequest(
 
   if (error) return { success: false, error: error.message };
 
-  // TODO: trigger Inngest event 'provider/reference.requested' once Inngest is wired up
+  // Fire Inngest event to generate token + send referee email
+  try {
+    const { inngest } = await import("@/inngest/client");
+    await inngest.send({
+      name: "provider/reference.requested",
+      data: {
+        referenceId: (data as { id: string }).id,
+        providerId,
+        refereeName: referee_name,
+        refereeEmail: referee_email,
+        referenceType: reference_type,
+      },
+    });
+  } catch {
+    // Best-effort — reference row already created; email will be retried
+    console.error("[provider-verification] Failed to send reference.requested event");
+  }
 
   return { success: true, referenceRequestId: (data as { id: string }).id };
 }

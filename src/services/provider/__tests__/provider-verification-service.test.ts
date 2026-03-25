@@ -10,6 +10,9 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
+vi.mock("@/inngest/client", () => ({
+  inngest: { send: vi.fn().mockResolvedValue({ ids: [] }) },
+}));
 
 import {
   getVerificationSteps,
