@@ -1,24 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
 import { createClient } from "@/lib/supabase/server";
-
-// -- Per-user rate limiter (lazy-initialized, graceful degradation) ------------
-
-let rateLimiter: Ratelimit | null = null;
-
-function getRateLimiter(): Ratelimit | null {
-  if (rateLimiter) return rateLimiter;
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
-  rateLimiter = new Ratelimit({
-    redis: new Redis({ url, token }),
-    limiter: Ratelimit.slidingWindow(10, "1 h"),
-    prefix: "ratelimit:ai-description",
-  });
-  return rateLimiter;
-}
+import { callClaude } from "@/services/ai/claude-service";
 
 type GenerateDescriptionBody = {
   address?: string;
@@ -35,8 +17,8 @@ const TONE_INSTRUCTIONS: Record<string, string> = {
 
 /**
  * POST /api/agent/listings/generate-description
- * Generate an AI property description using Claude.
- * Limited to 3 calls per listing — enforced client-side in the wizard.
+ * Generate an AI property description using the centralized callClaude wrapper.
+ * Rate limiting, spend controls, and input sanitization handled by callClaude.
  */
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -49,18 +31,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Per-user rate limit: 10 AI descriptions per hour
-  const limiter = getRateLimiter();
-  if (limiter) {
-    const { success } = await limiter.limit(user.id);
-    if (!success) {
-      return NextResponse.json(
-        { error: "Rate limit exceeded. Maximum 10 AI descriptions per hour." },
-        { status: 429 },
-      );
-    }
-  }
-
   let body: GenerateDescriptionBody;
   try {
     body = (await request.json()) as GenerateDescriptionBody;
@@ -71,48 +41,24 @@ export async function POST(request: NextRequest) {
   const { address = "", property_type = "", bedrooms = 0, tone = "professional" } = body;
   const toneInstruction = TONE_INSTRUCTIONS[tone] ?? TONE_INSTRUCTIONS.professional;
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: "AI description unavailable" }, { status: 503 });
+  const systemPrompt = `You are an expert UK estate agent copywriter. ${toneInstruction} Write 2–3 paragraphs (150–250 words). Do not include the price. Start with a strong opening sentence.`;
+
+  const userMessage = `Property details:\n- Type: ${bedrooms} bedroom ${property_type}\n- Address: ${address}`;
+
+  const result = await callClaude({
+    feature: "property_description",
+    userId: user.id,
+    systemPrompt,
+    userMessage,
+    maxTokens: 512,
+  });
+
+  if (!result) {
+    return NextResponse.json(
+      { error: "AI description unavailable. Please try again later." },
+      { status: 503 },
+    );
   }
 
-  const prompt = `You are an expert UK estate agent copywriter. Write a compelling property description for the following:
-
-Property: ${bedrooms} bedroom ${property_type}
-Address: ${address}
-
-${toneInstruction}
-
-Write 2–3 paragraphs (150–250 words). Do not include the price. Start with a strong opening sentence.`;
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5",
-        max_tokens: 512,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Anthropic API error: ${response.status}`);
-    }
-
-    type AnthropicResponse = {
-      content: Array<{ type: string; text: string }>;
-    };
-    const data = (await response.json()) as AnthropicResponse;
-    const text = data.content.find((c) => c.type === "text")?.text ?? "";
-
-    return NextResponse.json({ description: text });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Generation failed";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+  return NextResponse.json({ description: result.text });
 }
