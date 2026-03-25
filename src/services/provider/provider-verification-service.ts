@@ -360,6 +360,108 @@ export async function sendReferenceRequest(
 }
 
 // ---------------------------------------------------------------------------
+// resendReferenceRequest
+// ---------------------------------------------------------------------------
+
+/**
+ * Resends a reference request email for a pending reference. Enforces a 24-hour
+ * cooldown between resend attempts, increments reminder_count, and fires the
+ * same Inngest event used for the initial request.
+ */
+export async function resendReferenceRequest(
+  referenceId: string,
+  providerId: string,
+  supabase: SupabaseClient,
+): Promise<{ success: true } | { success: false; error: string }> {
+  // 1. Fetch reference, verify it belongs to providerId and status = "pending" and cancelled_at IS NULL
+  const { data: ref, error } = await supabase
+    .from("provider_references")
+    .select("id, provider_id, status, cancelled_at, last_reminded_at, reminder_count, referee_name, referee_email, reference_type")
+    .eq("id", referenceId)
+    .single();
+
+  if (error || !ref) return { success: false, error: "Reference not found" };
+  if (ref.provider_id !== providerId) return { success: false, error: "Unauthorized" };
+  if (ref.status !== "pending") return { success: false, error: "Reference is no longer pending" };
+  if (ref.cancelled_at) return { success: false, error: "Reference has been cancelled" };
+
+  // 2. Check 24h cooldown
+  if (ref.last_reminded_at) {
+    const lastReminded = new Date(ref.last_reminded_at).getTime();
+    const hoursSince = (Date.now() - lastReminded) / (1000 * 60 * 60);
+    if (hoursSince < 24) {
+      return { success: false, error: "Please wait 24 hours between resend attempts" };
+    }
+  }
+
+  // 3. Update last_reminded_at and increment reminder_count
+  const { error: updateError } = await supabase
+    .from("provider_references")
+    .update({
+      last_reminded_at: new Date().toISOString(),
+      reminder_count: (ref.reminder_count ?? 0) + 1,
+    })
+    .eq("id", referenceId);
+
+  if (updateError) return { success: false, error: updateError.message };
+
+  // 4. Fire Inngest event to re-send email
+  try {
+    const { inngest } = await import("@/inngest/client");
+    await inngest.send({
+      name: "provider/reference.requested",
+      data: {
+        referenceId: ref.id,
+        providerId,
+        refereeName: ref.referee_name,
+        refereeEmail: ref.referee_email,
+        referenceType: ref.reference_type,
+      },
+    });
+  } catch {
+    console.error("[provider-verification] Failed to send reference.requested event for resend");
+  }
+
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// cancelReferenceRequest
+// ---------------------------------------------------------------------------
+
+/**
+ * Soft-cancels a pending reference request by setting cancelled_at. Only works
+ * for pending, non-cancelled references owned by the given provider.
+ */
+export async function cancelReferenceRequest(
+  referenceId: string,
+  providerId: string,
+  supabase: SupabaseClient,
+): Promise<{ success: true } | { success: false; error: string }> {
+  // 1. Fetch reference, verify ownership and status
+  const { data: ref, error } = await supabase
+    .from("provider_references")
+    .select("id, provider_id, status, cancelled_at")
+    .eq("id", referenceId)
+    .single();
+
+  if (error || !ref) return { success: false, error: "Reference not found" };
+  if (ref.provider_id !== providerId) return { success: false, error: "Unauthorized" };
+  if (ref.status !== "pending") return { success: false, error: "Only pending references can be cancelled" };
+  if (ref.cancelled_at) return { success: false, error: "Reference is already cancelled" };
+
+  // 2. Soft delete: set cancelled_at
+  const { error: updateError } = await supabase
+    .from("provider_references")
+    .update({ cancelled_at: new Date().toISOString() })
+    .eq("id", referenceId);
+
+  if (updateError) return { success: false, error: updateError.message };
+
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
 // getProviderBadges
 // ---------------------------------------------------------------------------
 

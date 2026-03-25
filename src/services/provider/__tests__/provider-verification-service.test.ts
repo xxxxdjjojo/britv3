@@ -17,6 +17,8 @@ vi.mock("@/inngest/client", () => ({
 import {
   getVerificationSteps,
   sendReferenceRequest,
+  resendReferenceRequest,
+  cancelReferenceRequest,
   updateBadgeStatus,
 } from "../provider-verification-service";
 
@@ -289,5 +291,195 @@ describe("updateBadgeStatus", () => {
     await expect(
       updateBadgeStatus("provider-uuid-1", "nonexistent_badge", "approved", client),
     ).rejects.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resendReferenceRequest
+// ---------------------------------------------------------------------------
+
+describe("resendReferenceRequest", () => {
+  /**
+   * Builds a Supabase mock for resend/cancel tests.
+   * - single() on select returns the given reference row.
+   * - update().eq() is chainable and resolves to { error: null }.
+   */
+  function makeResendClient(refRow: Record<string, unknown> | null, selectError: unknown = null) {
+    const updateChain: Record<string, unknown> = {};
+    for (const m of ["eq", "single"]) {
+      updateChain[m] = vi.fn(() => updateChain);
+    }
+    // Make the update chain thenable (resolves after .eq())
+    (updateChain as unknown as { then: Promise<unknown>["then"] }).then = Promise.resolve(
+      { error: null },
+    ).then.bind(Promise.resolve({ error: null }));
+
+    const selectChain: Record<string, unknown> = {};
+    for (const m of ["eq", "single"]) {
+      selectChain[m] = vi.fn(() => selectChain);
+    }
+    (selectChain["single"] as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: refRow,
+      error: selectError,
+    });
+
+    return {
+      from: vi.fn(() => ({
+        select: vi.fn(() => selectChain),
+        update: vi.fn(() => updateChain),
+      })),
+    } as unknown as ReturnType<typeof import("@supabase/supabase-js").createClient>;
+  }
+
+  it("returns success when reference is pending and no cooldown", async () => {
+    const client = makeResendClient({
+      id: "ref-1",
+      provider_id: "provider-1",
+      status: "pending",
+      cancelled_at: null,
+      last_reminded_at: null,
+      reminder_count: 0,
+      referee_name: "Jane",
+      referee_email: "jane@example.com",
+      reference_type: "client",
+    });
+
+    const result = await resendReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: true });
+  });
+
+  it("rejects when last_reminded_at is within 24 hours", async () => {
+    const recentDate = new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(); // 2 hours ago
+    const client = makeResendClient({
+      id: "ref-1",
+      provider_id: "provider-1",
+      status: "pending",
+      cancelled_at: null,
+      last_reminded_at: recentDate,
+      reminder_count: 1,
+      referee_name: "Jane",
+      referee_email: "jane@example.com",
+      reference_type: "client",
+    });
+
+    const result = await resendReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({
+      success: false,
+      error: "Please wait 24 hours between resend attempts",
+    });
+  });
+
+  it("rejects when provider_id does not match", async () => {
+    const client = makeResendClient({
+      id: "ref-1",
+      provider_id: "provider-other",
+      status: "pending",
+      cancelled_at: null,
+      last_reminded_at: null,
+      reminder_count: 0,
+      referee_name: "Jane",
+      referee_email: "jane@example.com",
+      reference_type: "client",
+    });
+
+    const result = await resendReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+  });
+
+  it("rejects when reference is not pending", async () => {
+    const client = makeResendClient({
+      id: "ref-1",
+      provider_id: "provider-1",
+      status: "submitted",
+      cancelled_at: null,
+      last_reminded_at: null,
+      reminder_count: 0,
+      referee_name: "Jane",
+      referee_email: "jane@example.com",
+      reference_type: "client",
+    });
+
+    const result = await resendReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: false, error: "Reference is no longer pending" });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// cancelReferenceRequest
+// ---------------------------------------------------------------------------
+
+describe("cancelReferenceRequest", () => {
+  function makeCancelClient(refRow: Record<string, unknown> | null, selectError: unknown = null) {
+    const updateChain: Record<string, unknown> = {};
+    for (const m of ["eq", "single"]) {
+      updateChain[m] = vi.fn(() => updateChain);
+    }
+    (updateChain as unknown as { then: Promise<unknown>["then"] }).then = Promise.resolve(
+      { error: null },
+    ).then.bind(Promise.resolve({ error: null }));
+
+    const selectChain: Record<string, unknown> = {};
+    for (const m of ["eq", "single"]) {
+      selectChain[m] = vi.fn(() => selectChain);
+    }
+    (selectChain["single"] as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: refRow,
+      error: selectError,
+    });
+
+    return {
+      from: vi.fn(() => ({
+        select: vi.fn(() => selectChain),
+        update: vi.fn(() => updateChain),
+      })),
+    } as unknown as ReturnType<typeof import("@supabase/supabase-js").createClient>;
+  }
+
+  it("returns success and soft-deletes a pending reference", async () => {
+    const client = makeCancelClient({
+      id: "ref-1",
+      provider_id: "provider-1",
+      status: "pending",
+      cancelled_at: null,
+    });
+
+    const result = await cancelReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: true });
+  });
+
+  it("rejects when provider_id does not match", async () => {
+    const client = makeCancelClient({
+      id: "ref-1",
+      provider_id: "provider-other",
+      status: "pending",
+      cancelled_at: null,
+    });
+
+    const result = await cancelReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: false, error: "Unauthorized" });
+  });
+
+  it("rejects when reference is not pending", async () => {
+    const client = makeCancelClient({
+      id: "ref-1",
+      provider_id: "provider-1",
+      status: "verified",
+      cancelled_at: null,
+    });
+
+    const result = await cancelReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: false, error: "Only pending references can be cancelled" });
+  });
+
+  it("rejects when reference is already cancelled", async () => {
+    const client = makeCancelClient({
+      id: "ref-1",
+      provider_id: "provider-1",
+      status: "pending",
+      cancelled_at: "2026-03-20T00:00:00.000Z",
+    });
+
+    const result = await cancelReferenceRequest("ref-1", "provider-1", client);
+    expect(result).toEqual({ success: false, error: "Reference is already cancelled" });
   });
 });
