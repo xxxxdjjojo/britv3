@@ -105,6 +105,11 @@ export function ReviewCardEnhanced({
                 Edited
               </Badge>
             )}
+            {review.is_incentivised && (
+              <Badge variant="outline" className="text-xs border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                Incentivised
+              </Badge>
+            )}
             {review.moderation_status === "approved" && (
               <Badge variant="outline" className="border-green-200 bg-green-50 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-400">
                 <CheckCircle className="mr-1 size-3" />

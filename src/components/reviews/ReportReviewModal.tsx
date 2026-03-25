@@ -23,6 +23,7 @@ const FLAG_REASONS = [
   { value: "contact_info", label: "Contains personal info", description: "Phone numbers, emails, or addresses" },
   { value: "promotional", label: "Promotional", description: "Advertising a product or service" },
   { value: "duplicate", label: "Duplicate", description: "Same review posted multiple times" },
+  { value: "defamation", label: "Defamatory", description: "Contains false statements that could harm someone's reputation" },
 ] as const;
 
 type ReportReviewModalProps = Readonly<{

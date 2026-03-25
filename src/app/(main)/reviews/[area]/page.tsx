@@ -42,6 +42,38 @@ export default async function AreaReviewsPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": `Service Providers in ${areaCode}`,
+            "description": `Reviews and ratings for service providers in the ${areaCode} area`,
+            "numberOfItems": totalProviders,
+          }),
+        }}
+      />
+
+      {/* Breadcrumbs */}
+      <nav aria-label="Breadcrumb" className="mb-6">
+        <ol className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+          <li>
+            <Link href="/" className="hover:text-foreground transition-colors">
+              Home
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li
+            className="font-medium text-foreground"
+            aria-current="page"
+          >
+            Reviews in {areaCode}
+          </li>
+        </ol>
+      </nav>
+
       <ReviewAggregateHero
         areaCode={areaCode}
         avgRating={weightedRating}
@@ -58,7 +90,7 @@ export default async function AreaReviewsPage({ params }: PageProps) {
           {areaStats.map((stat) => (
             <Link
               key={`${stat.area_code}-${stat.trade_category}`}
-              href={`/reviews/${area}/${stat.trade_category}`}
+              href={`/reviews/${area}/category/${stat.trade_category}`}
               className="group rounded-lg border border-border bg-white p-4 transition-shadow hover:shadow-md dark:bg-neutral-900"
             >
               <h3 className="font-medium capitalize text-foreground group-hover:text-brand-primary">

@@ -106,7 +106,8 @@ export type ReviewFlagReason =
   | "off_topic"
   | "contact_info"
   | "promotional"
-  | "duplicate";
+  | "duplicate"
+  | "defamation";
 
 // -- JSONB sub-types --------------------------------------------------------
 
@@ -282,6 +283,7 @@ export type Review = Readonly<{
   edited_at: Date | null;
   original_text: string | null;
   edit_count: number;
+  is_incentivised: boolean;
   edit_history: Array<{ text: string; title: string; edited_at: string }>;
   created_at: Date;
   updated_at: Date;

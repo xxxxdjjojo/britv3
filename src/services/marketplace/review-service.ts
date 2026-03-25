@@ -104,6 +104,7 @@ export async function createReview(
       review_text: sanitizedText,
       sentiment: sentimentResult.sentiment,
       spam_indicators: spamResult,
+      is_incentivised: data.is_incentivised ?? false,
       moderation_status: "pending",
       helpful_count: 0,
       not_helpful_count: 0,
