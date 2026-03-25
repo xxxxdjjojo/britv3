@@ -15,7 +15,12 @@ export async function POST(request: NextRequest) {
     .single();
   if (!provider) return NextResponse.json({ error: "Provider not found" }, { status: 404 });
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const { referee_name, referee_email, reference_type } = body as {
     referee_name: string;
     referee_email: string;
