@@ -1,0 +1,8 @@
+# Security-critical files require review
+.github/workflows/ @xxxxdjjojo
+src/middleware.ts @xxxxdjjojo
+src/services/auth/ @xxxxdjjojo
+src/lib/auth/ @xxxxdjjojo
+src/lib/admin-guard.ts @xxxxdjjojo
+src/lib/admin-permissions.ts @xxxxdjjojo
+supabase/migrations/ @xxxxdjjojo
