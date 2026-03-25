@@ -6,6 +6,7 @@ import {
   isServiceError,
 } from "@/services/documents/documents-service";
 import type { DocumentType } from "@/services/documents/documents-service";
+import { detectMimeType } from "@/lib/file-magic";
 
 const VALID_DOCUMENT_TYPES: DocumentType[] = [
   "id_proof",
@@ -103,7 +104,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await uploadDocument(supabase, user.id, file, documentType as DocumentType);
+    // Server-side magic byte validation
+    const buffer = await file.arrayBuffer();
+    const detectedMime = detectMimeType(buffer);
+    if (!detectedMime || !ALLOWED_MIME_TYPES.has(detectedMime)) {
+      return NextResponse.json(
+        { error: "File content does not match an allowed document type" },
+        { status: 415 },
+      );
+    }
+
+    // Pass buffer downstream to avoid re-reading
+    const validatedFile = new File([buffer], file.name, { type: detectedMime });
+    const result = await uploadDocument(supabase, user.id, validatedFile, documentType as DocumentType);
 
     if (isServiceError(result)) {
       if (result.error === "FILE_TOO_LARGE") {
