@@ -115,13 +115,30 @@ export async function POST(request: Request) {
     // Fetch property details from context_id if available
     let propertyDetails: Record<string, unknown> = {};
     if (parsed.data.context_id) {
+      const context_id = parsed.data.context_id;
+
       const { data: property } = await supabase
         .from("properties")
-        .select("*")
-        .eq("id", parsed.data.context_id)
+        .select("id, title, description, address_line1, city, postcode, property_type, bedrooms, bathrooms, square_footage, epc_rating, year_built")
+        .eq("id", context_id)
         .maybeSingle();
 
       if (property) {
+        // Verify the caller owns a listing for this property
+        const { data: ownershipCheck } = await supabase
+          .from("listings")
+          .select("id")
+          .eq("property_id", context_id)
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (!ownershipCheck) {
+          return NextResponse.json(
+            { error: "Property not found or not owned by you" },
+            { status: 403 },
+          );
+        }
+
         propertyDetails = property as Record<string, unknown>;
       }
     }
