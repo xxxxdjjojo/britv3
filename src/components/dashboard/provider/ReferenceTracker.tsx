@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { UserPlus, Clock, CheckCircle, Mail, Eye, Bell } from "lucide-react";
 import type { ProviderReference } from "@/types/provider-dashboard";
-import { createClient } from "@/lib/supabase/client";
-import { sendReferenceRequest } from "@/services/provider/provider-verification-service";
 import {
   Dialog,
   DialogContent,
@@ -88,18 +86,18 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
     setError(null);
     setSubmitting(true);
     try {
-      const supabase = createClient();
-      const result = await sendReferenceRequest(
-        providerId,
-        {
+      const res = await fetch("/api/provider/references/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           referee_name: form.referee_name,
           referee_email: form.referee_email,
           reference_type: referenceType,
-        },
-        supabase,
-      );
-      if (!result.success) {
-        setError(result.error);
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        setError(result.error || "Failed to send reference request");
         return;
       }
       // Optimistic local update
