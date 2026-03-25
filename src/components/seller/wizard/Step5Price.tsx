@@ -20,6 +20,12 @@ const PRICE_QUALIFIERS: Array<{ key: NonNullable<PriceQualifier>; label: string 
   { key: "poa", label: "Price on Application (POA)" },
 ];
 
+function formatWithCommas(raw: string): string {
+  const digits = raw.replace(/[^0-9]/g, "");
+  if (!digits) return "";
+  return parseInt(digits).toLocaleString("en-GB");
+}
+
 type Props = Readonly<{
   listing: Partial<SellerListing> | null;
   listingId: string;
@@ -74,9 +80,10 @@ export function Step5Price({ listing, listingId }: Props) {
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-lg">£</span>
             <input
               type="text"
-              value={priceStr}
-              onChange={(e) => setPriceStr(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="350000"
+              inputMode="numeric"
+              value={formatWithCommas(priceStr)}
+              onChange={(e) => setPriceStr(e.target.value.replace(/[^0-9,]/g, "").replace(/,/g, ""))}
+              placeholder="350,000"
               className="w-full pl-9 pr-4 py-4 rounded-xl border border-slate-200 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
             />
           </div>
