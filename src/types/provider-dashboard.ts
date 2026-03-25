@@ -70,6 +70,10 @@ export type ProviderReference = Readonly<{
   requested_at: string;
   submitted_at: string | null;
   verified_at: string | null;
+  submission_token_hash: string | null;
+  last_reminded_at: string | null;
+  reminder_count: number;
+  cancelled_at: string | null;
 }>;
 
 /** Mirrors provider_badges table */
