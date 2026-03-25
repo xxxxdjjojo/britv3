@@ -70,12 +70,19 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localRefs, setLocalRefs] = useState<ProviderReference[]>(references);
+  const [resending, setResending] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [cancelConfirmId, setCancelConfirmId] = useState<string | null>(null);
 
-  const submittedCount = localRefs.filter(
+  const activeRefs = localRefs.filter((r) => !r.cancelled_at);
+  const submittedCount = activeRefs.filter(
     (r) => r.status === "submitted" || r.status === "verified",
   ).length;
 
-  const slots = Array.from({ length: 3 }, (_, i) => localRefs[i] ?? null);
+  const slots = Array.from(
+    { length: Math.max(3, activeRefs.length + 1, 5) },
+    (_, i) => (i < activeRefs.length ? activeRefs[i] : null),
+  ).slice(0, 5);
 
   async function handleAddReference() {
     setError(null);
@@ -109,12 +116,48 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
         requested_at: new Date().toISOString(),
         submitted_at: null,
         verified_at: null,
+        submission_token_hash: null,
+        last_reminded_at: null,
+        reminder_count: 0,
+        cancelled_at: null,
       };
       setLocalRefs((prev) => [newRef, ...prev]);
       setForm(EMPTY_FORM);
       setDialogOpen(false);
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleResend(refId: string) {
+    setResending(refId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/provider/references/${refId}/resend`, { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to resend");
+      }
+    } finally {
+      setResending(null);
+    }
+  }
+
+  async function handleCancel(refId: string) {
+    setCancelling(refId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/provider/references/${refId}/cancel`, { method: "POST" });
+      if (res.ok) {
+        // Remove cancelled ref from local state
+        setLocalRefs((prev) => prev.filter((r) => r.id !== refId));
+      } else {
+        const data = await res.json();
+        setError(data.error || "Failed to cancel");
+      }
+    } finally {
+      setCancelling(null);
+      setCancelConfirmId(null);
     }
   }
 
@@ -172,13 +215,24 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
                 <StatusBadge status={ref.status} />
                 <div className="flex gap-2 mt-1">
                   {ref.status === "pending" && (
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
-                    >
-                      <Mail className="size-3" />
-                      Send Request
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleResend(ref.id)}
+                        disabled={resending === ref.id}
+                        className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
+                      >
+                        <Mail className="size-3" />
+                        {resending === ref.id ? "Sending\u2026" : "Resend"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setCancelConfirmId(ref.id)}
+                        className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                      >
+                        Cancel
+                      </button>
+                    </>
                   )}
                   {ref.status === "submitted" && (
                     <>
@@ -301,6 +355,37 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
               )}
             </div>
             <DialogFooter showCloseButton />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Cancel confirmation dialog */}
+      {cancelConfirmId && (
+        <Dialog open={!!cancelConfirmId} onOpenChange={() => setCancelConfirmId(null)}>
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Cancel Reference Request?</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-neutral-600">
+              This will cancel the reference request. You can add a new referee afterwards.
+            </p>
+            <DialogFooter>
+              <button
+                type="button"
+                onClick={() => setCancelConfirmId(null)}
+                className="rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+              >
+                Keep
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCancel(cancelConfirmId)}
+                disabled={cancelling === cancelConfirmId}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+              >
+                {cancelling === cancelConfirmId ? "Cancelling\u2026" : "Cancel Request"}
+              </button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
