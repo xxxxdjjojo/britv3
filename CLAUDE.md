@@ -66,7 +66,7 @@ pnpm test:e2e              # E2E tests (Playwright)
 | Components | `components/` | UI components (`ui/` for Shadcn, feature dirs for domain) |
 | Hooks | `hooks/` | Client-side stateful logic (`useAuth`, `usePropertySearch`) |
 | Contexts | `contexts/` | Global React state (auth, theme) |
-| Services | `services/` | Business logic by domain (`auth/`, `properties/`, `marketplace/`, `payments/`, `ai/`) |
+| Services | `services/` | Business logic by domain (`auth/`, `properties/`, `marketplace/`, `payments/`, `ai/`, `areas/`) |
 | Lib | `lib/` | Supabase client factories, shared utilities |
 | Types | `types/` | Shared TypeScript type definitions |
 
@@ -78,7 +78,7 @@ pnpm test:e2e              # E2E tests (Playwright)
 
 **Route groups:**
 - `(auth)/` — login, signup, password reset
-- `(main)/` — public pages (search, listings)
+- `(main)/` — public pages (search, listings, area guides, sold prices, market trends)
 - `(protected)/` — authenticated routes, guarded by middleware
 - `dashboard/[role]/` — role-specific dashboards (homebuyer, renter, seller, landlord, agent, provider)
 
