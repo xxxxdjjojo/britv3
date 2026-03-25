@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { WizardShell } from "./WizardShell";
 import type { SellerListing, PropertyType, Tenure } from "@/types/seller";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 const PROPERTY_TYPES: Array<{ key: PropertyType; label: string; icon: string }> = [
   { key: "detached", label: "Detached", icon: "🏡" },
@@ -183,7 +185,20 @@ export function Step1AddressType({ listing }: Props) {
 
         {/* Tenure */}
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-slate-700">Tenure</label>
+          <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+            Tenure
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="inline-flex cursor-help">
+                  <Info size={14} className="text-slate-400" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-xs"><strong>Freehold:</strong> You own the property and land outright, indefinitely.</p>
+                  <p className="text-xs mt-1"><strong>Leasehold:</strong> You own the property for a fixed period under a lease from the freeholder. Common for flats.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </label>
           <div className="flex gap-3">
             {(["freehold", "leasehold"] as Tenure[]).map((t) => (
               <button
@@ -203,18 +218,31 @@ export function Step1AddressType({ listing }: Props) {
           </div>
 
           {tenure === "leasehold" && (
-            <div className="bg-slate-100 rounded-xl p-4">
-              <label className="text-xs font-semibold text-slate-600">Years Remaining on Lease</label>
-              <input
-                type="number"
-                min={1}
-                max={999}
-                value={leaseholdYears}
-                onChange={(e) => setLeaseholdYears(e.target.value)}
-                placeholder="e.g. 125"
-                className="mt-2 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
-              />
-            </div>
+            <>
+              <div className="bg-slate-100 rounded-xl p-4">
+                <label className="text-xs font-semibold text-slate-600">Years Remaining on Lease</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={999}
+                  value={leaseholdYears}
+                  onChange={(e) => setLeaseholdYears(e.target.value)}
+                  placeholder="e.g. 125"
+                  className="mt-2 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                />
+              </div>
+              {leaseholdYears && parseInt(leaseholdYears) > 0 && parseInt(leaseholdYears) < 80 && (
+                <div className="mt-3 bg-amber-50 rounded-xl p-4 border border-amber-200">
+                  <p className="text-sm font-semibold text-amber-800">Short Lease Warning</p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    Leases under 80 years can be difficult to mortgage and significantly affect
+                    property value. The cost of lease extension increases substantially below 80
+                    years due to &quot;marriage value&quot; provisions. Consider extending the lease
+                    before selling, or set pricing expectations accordingly.
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

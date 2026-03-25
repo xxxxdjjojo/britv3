@@ -4,15 +4,25 @@ let _secret: string | null = null;
 
 function getSecret(): string {
   if (_secret) return _secret;
-  const secret =
-    process.env.UNSUBSCRIBE_TOKEN_SECRET ??
-    process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!secret && process.env.NODE_ENV === "production") {
+  const dedicated = process.env.UNSUBSCRIBE_TOKEN_SECRET;
+  if (dedicated) {
+    _secret = dedicated;
+    return _secret;
+  }
+  // Fail-closed in production — do not reuse the service role key
+  if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "UNSUBSCRIBE_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set in production",
+      "UNSUBSCRIBE_TOKEN_SECRET must be set in production. Generate with: openssl rand -hex 32",
     );
   }
-  _secret = secret ?? "dev-secret-not-for-production";
+  // Development fallback only
+  const fallback = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!fallback) {
+    throw new Error(
+      "UNSUBSCRIBE_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY must be configured",
+    );
+  }
+  _secret = fallback;
   return _secret;
 }
 

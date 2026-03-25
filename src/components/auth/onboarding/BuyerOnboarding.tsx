@@ -24,7 +24,7 @@ export function BuyerOnboarding(
 ) {
   const [step, setStep] = useState(() => {
     if (typeof window !== "undefined") {
-      const saved = sessionStorage.getItem("buyer_onboarding_step");
+      const saved = localStorage.getItem("buyer_onboarding_step");
       return saved ? parseInt(saved, 10) : 0;
     }
     return 0;
@@ -33,7 +33,7 @@ export function BuyerOnboarding(
 
   const updateStep = useCallback((newStep: number) => {
     setStep(newStep);
-    sessionStorage.setItem("buyer_onboarding_step", String(newStep));
+    localStorage.setItem("buyer_onboarding_step", String(newStep));
   }, []);
 
   // Step 1 — Location
@@ -89,7 +89,7 @@ export function BuyerOnboarding(
     } finally {
       setSaving(false);
     }
-    sessionStorage.removeItem("buyer_onboarding_step");
+    localStorage.removeItem("buyer_onboarding_step");
     props.onComplete();
   }
 

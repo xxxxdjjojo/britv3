@@ -21,10 +21,10 @@ export type SupabaseErrorResult = {
 const AUTH_CODE_MESSAGES: Record<string, string> = {
   // Auth error codes (supabase-js v2)
   invalid_credentials: "Incorrect email or password.",
-  user_not_found: "No account found with that email address.",
+  user_not_found: "Incorrect email or password.",
   email_not_confirmed: "Please verify your email before signing in.",
-  user_already_exists: "An account with this email already exists.",
-  email_exists: "An account with this email already exists.",
+  user_already_exists: "If this email is available, we'll send a verification link.",
+  email_exists: "If this email is available, we'll send a verification link.",
   weak_password: "Your password is too weak. Please choose a stronger one.",
   over_email_send_rate_limit:
     "Too many emails sent. Please wait a few minutes before trying again.",
@@ -50,7 +50,7 @@ const MESSAGE_PATTERNS: MessagePattern[] = [
   },
   {
     pattern: /user already registered/i,
-    message: "An account with this email already exists.",
+    message: "If this email is available, we'll send a verification link.",
     isRetryable: false,
   },
   {

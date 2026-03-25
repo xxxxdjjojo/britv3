@@ -30,6 +30,9 @@ export async function POST(request: Request) {
     return NextResponse.json(listing, { status: 201 });
   } catch (err) {
     console.error("[api/seller/listings] error:", err);
+    if (err instanceof Error && err.message.includes("already have an active listing")) {
+      return NextResponse.json({ error: err.message }, { status: 409 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

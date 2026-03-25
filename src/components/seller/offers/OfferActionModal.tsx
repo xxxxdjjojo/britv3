@@ -41,8 +41,13 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
         body.solicitor_phone = solicitorPhone;
       }
       if (action === "counter") {
-        if (!counterAmount) { setError("Please enter a counter offer amount."); setSubmitting(false); return; }
-        body.counter_amount = parseInt(counterAmount.replace(/,/g, ""));
+        const parsed = parseInt(counterAmount.replace(/,/g, ""));
+        if (!counterAmount || isNaN(parsed) || parsed <= 0) {
+          setError("Please enter a valid counter offer amount greater than £0.");
+          setSubmitting(false);
+          return;
+        }
+        body.counter_amount = parsed;
         body.counter_message = counterMessage;
       }
       const res = await fetch(`/api/seller/offers/${offer.id}`, {
@@ -80,6 +85,15 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
         </div>
         {action === "accept" && (
           <div className="space-y-4">
+            {!offer.is_verified && (
+              <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 mb-4">
+                <p className="text-sm font-semibold text-amber-800">Unverified Buyer</p>
+                <p className="text-xs text-amber-700 mt-1">
+                  This buyer has not completed identity or proof of funds verification.
+                  Accepting an unverified offer carries higher fall-through risk.
+                </p>
+              </div>
+            )}
             <p className="text-sm text-slate-500">Accepting this offer will begin the conveyancing process. Please provide your solicitor details.</p>
             {[
               { label: "Solicitor Name", value: solicitorName, onChange: setSolicitorName, type: "text", placeholder: "Smith & Associates" },

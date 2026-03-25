@@ -13,18 +13,9 @@
  * Logs emit only: property_id, cache_hit, success, error_type.
  *
  * ============================================================
- * pg_cron schedule — run once to register (requires pg_cron + pg_net):
- *
- * SELECT cron.schedule(
- *   'nightly-roi-precompute',
- *   '0 2 * * *',
- *   $$
- *   SELECT net.http_post(
- *     url := current_setting('app.supabase_functions_url') || '/nightly-roi-precompute',
- *     headers := jsonb_build_object('Authorization', 'Bearer ' || current_setting('app.service_role_key'))
- *   )
- *   $$
- * );
+ * To schedule this function with pg_cron, use the Supabase Dashboard
+ * or set SUPABASE_SERVICE_ROLE_KEY as a Vault secret (not a database setting).
+ * See: https://supabase.com/docs/guides/functions/schedule-functions
  * ============================================================
  */
 

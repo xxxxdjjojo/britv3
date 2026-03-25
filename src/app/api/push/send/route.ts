@@ -13,10 +13,13 @@ const sendSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const authHeader = request.headers.get("authorization");
+  const pushSecret = process.env.PUSH_SECRET;
+  if (!pushSecret) {
+    return NextResponse.json({ error: "Push service not configured" }, { status: 503 });
+  }
 
-  if (!authHeader || authHeader !== `Bearer ${serviceRoleKey}`) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || authHeader !== `Bearer ${pushSecret}`) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

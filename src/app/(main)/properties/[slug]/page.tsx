@@ -56,6 +56,10 @@ import { RecommendedTradespeople } from "@/components/properties/detail/Recommen
 import { SavePropertyButton } from "@/components/properties/detail/SavePropertyButton";
 import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
 import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
+import { extractFeatureItems } from "@/lib/properties/extract-features";
+import { buildPropertyJsonLd } from "@/lib/seo/property-jsonld";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
+import { isFeatureEnabled } from "@/lib/features";
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
@@ -92,6 +96,9 @@ export async function generateMetadata({
   return {
     title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
     description: (property.description ?? "").slice(0, 160),
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/properties/${slug}`,
+    },
     openGraph: {
       title: `${bedsLabel} ${typeLabel} in ${cityLabel} | Britestate`,
       description: (property.description ?? "").slice(0, 160),
@@ -119,17 +126,6 @@ function formatTenure(raw: string | null): string {
   return formatPropertyType(raw);
 }
 
-function extractFeatureItems(features: Record<string, unknown>): string[] {
-  const items = features["items"];
-  if (Array.isArray(items)) {
-    return items.filter((x): x is string => typeof x === "string");
-  }
-  // Some entries store features as top-level string values keyed by name
-  return Object.entries(features)
-    .filter(([, v]) => typeof v === "string" || v === true)
-    .map(([k]) => k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()))
-    .slice(0, 10);
-}
 
 function formatPriceHistory(
   rows: PriceHistoryEntry[],
@@ -181,6 +177,8 @@ export default async function PropertyPage({
     notFound();
   }
 
+  const isInactiveStatus = ["sold", "sold_stc", "let", "withdrawn"].includes(listing.status);
+
   const priceHistory = await getPriceHistory(listing.id);
 
   // ---------------------------------------------------------------------------
@@ -196,7 +194,10 @@ export default async function PropertyPage({
     .filter(Boolean)
     .join(", ");
 
-  const priceFormatted = `£${listing.price.toLocaleString("en-GB")}`;
+  const rentSuffix = listing.listingType === "rent"
+    ? ` ${listing.rentFrequency === "weekly" ? "pw" : "pcm"}`
+    : "";
+  const priceFormatted = `£${listing.price.toLocaleString("en-GB")}${rentSuffix}`;
   const sqft = property.squareFootage ?? 0;
   const propertyTypeLabel = formatPropertyType(property.propertyType);
   const tenureLabel = formatTenure(property.tenure ?? null);
@@ -217,6 +218,11 @@ export default async function PropertyPage({
   const priceHistoryFormatted = formatPriceHistory(
     [...priceHistory].reverse(),
   );
+
+  const priceReduced = priceHistoryFormatted.length > 1 &&
+    priceHistoryFormatted[priceHistoryFormatted.length - 1].price <
+    priceHistoryFormatted[0].price;
+  const originalPrice = priceReduced ? priceHistoryFormatted[0].price : null;
 
   // Floor plan URL for WhatIfFloorPlan (first floor plan media, if any)
   const floorPlanUrl = floors.length > 0 ? (floors[0]?.imageUrl ?? null) : null;
@@ -275,28 +281,46 @@ export default async function PropertyPage({
   const agentName = agent?.displayName || "Agent";
 
   // Whether booking a viewing makes sense for this listing status
-  const canBookViewing =
-    listing.status !== "sold" &&
-    (listing.status as string) !== "archived" &&
-    (listing.status as string) !== "draft";
+  const canBookViewing = !isInactiveStatus && (listing.status as string) !== "draft";
 
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildPropertyJsonLd(detail)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: property.city, path: `/properties?location=${encodeURIComponent(property.city)}` },
+            { name: address, path: `/properties/${listing.slug ?? listing.id}` },
+          ])),
+        }}
+      />
+      {isInactiveStatus && (
+        <div className="mx-auto max-w-7xl px-4 pt-4">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+            This property is marked as <strong>{listing.status.replace(/_/g, " ")}</strong> and is no longer available for viewings.
+          </div>
+        </div>
+      )}
       {/* Breadcrumbs */}
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-2">
-        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
           <Link href="/" className="hover:text-foreground transition-colors">
             Home
           </Link>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <Link
             href={`/properties?location=${encodeURIComponent(property.city)}`}
             className="hover:text-foreground transition-colors"
           >
             {property.city}
           </Link>
-          <span>/</span>
-          <span className="text-foreground truncate max-w-[200px]">
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-foreground truncate max-w-[200px]">
             {address}
           </span>
         </nav>
@@ -329,6 +353,11 @@ export default async function PropertyPage({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
+              {priceReduced && originalPrice != null && (
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                  Reduced from £{originalPrice.toLocaleString("en-GB")}
+                </Badge>
+              )}
               <p className="text-sm text-muted-foreground mt-0.5 truncate max-w-xs">
                 {address}
               </p>
@@ -373,14 +402,13 @@ export default async function PropertyPage({
               />
               {/* Mobile book button */}
               {canBookViewing && (
-                <button
+                <a
+                  href="#book-viewing"
                   className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 lg:hidden"
-                  aria-label="Book viewing (scroll to booking form)"
-                  onClick={undefined}
                 >
                   <CalendarIcon className="size-4" />
                   Book
-                </button>
+                </a>
               )}
             </div>
           </div>
@@ -447,6 +475,21 @@ export default async function PropertyPage({
                     label: "Bathrooms",
                     value: String(property.bathrooms),
                   },
+                  ...(property.receptionRooms != null ? [{
+                    icon: <Home className="size-4" />,
+                    label: "Receptions",
+                    value: String(property.receptionRooms),
+                  }] : []),
+                  {
+                    icon: <CalendarIcon className="size-4" />,
+                    label: "Listed",
+                    value: new Date(listing.listedDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+                  },
+                  ...(property.tenure === "leasehold" && property.leaseRemainingYears != null ? [{
+                    icon: <FileText className="size-4" />,
+                    label: "Lease Remaining",
+                    value: `${property.leaseRemainingYears} years`,
+                  }] : []),
                 ].map((item) => (
                   <div
                     key={item.label}
@@ -527,39 +570,59 @@ export default async function PropertyPage({
                   <p className="text-xs text-muted-foreground mt-3">
                     Rating {epc} — Energy efficiency certificate
                   </p>
+                  {property.epcScore != null && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Score: {property.epcScore}/100
+                    </p>
+                  )}
+                  <a
+                    href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(property.postcode)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-brand-primary hover:underline mt-2"
+                  >
+                    View full EPC certificate <span aria-hidden="true">↗</span>
+                  </a>
+                  {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
+                    <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                      <strong>MEES Notice:</strong> Rental properties in England and Wales may require a minimum EPC rating of C under upcoming regulations. This property currently holds a rating of {epc}.
+                    </p>
+                  )}
                 </div>
               </section>
             )}
 
             {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
-                Local Area Intelligence
-              </h2>
-              <Separator className="mb-4" />
-              <Suspense
-                fallback={
+            {isFeatureEnabled("local_area_intelligence") && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">
+                  Local Area Intelligence
+                </h2>
+                <Separator className="mb-4" />
+                <Suspense
+                  fallback={
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
+                      ))}
+                    </div>
+                  }
+                >
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
-                    ))}
+                    <TransportWidget nearbyStations={[]} />
+                    <SchoolCatchmentWidget schools={[]} />
+                    <BroadbandWidget
+                      downloadMbps={null}
+                      uploadMbps={null}
+                      provider={null}
+                      connectionType={null}
+                    />
+                    <FloodRiskWidget riskLevel={null} source={null} />
+                    <CrimeStatsChart stats={[]} boroughAvg={null} />
                   </div>
-                }
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <TransportWidget nearbyStations={[]} />
-                  <SchoolCatchmentWidget schools={[]} />
-                  <BroadbandWidget
-                    downloadMbps={null}
-                    uploadMbps={null}
-                    provider={null}
-                    connectionType={null}
-                  />
-                  <FloodRiskWidget riskLevel="Low" source="Environment Agency" />
-                  <CrimeStatsChart stats={[]} boroughAvg={null} />
-                </div>
-              </Suspense>
-            </section>
+                </Suspense>
+              </section>
+            )}
 
             {/* ── ROI SECTION (Wave 4) ── */}
             {listing.listingType === "sale" && (
@@ -671,21 +734,23 @@ export default async function PropertyPage({
 
             {/* Book Viewing (Wave 5) — gated on listing status */}
             {canBookViewing && (
-              <BookViewingModal
-                propertyId={property.id}
-                propertyStatus={listing.status}
-                existingViewingId={existingViewingId}
-              />
+              <div id="book-viewing">
+                <BookViewingModal
+                  propertyId={property.id}
+                  propertyStatus={listing.status}
+                  existingViewingId={existingViewingId}
+                />
+              </div>
             )}
 
             {/* Mortgage Calculator (Wave 6) */}
             <div className="rounded-xl border bg-card p-4">
-              <MortgageCalculator />
+              <MortgageCalculator initialPrice={listing.price} />
             </div>
 
             {/* SDLT Calculator (Wave 6) */}
             <div className="rounded-xl border bg-card p-4">
-              <SdltCalculator />
+              <SdltCalculator initialPrice={listing.price} />
             </div>
 
             {/* Similar Properties in sidebar for desktop visibility */}
@@ -706,9 +771,8 @@ export default async function PropertyPage({
         </div>
         {canBookViewing && (
           <a
-            href="#roi-section"
+            href="#book-viewing"
             className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 transition-colors hover:bg-primary/90"
-            onClick={undefined}
           >
             <CalendarIcon className="size-4" />
             Book Viewing

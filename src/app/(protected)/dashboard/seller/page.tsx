@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Home, Eye, MessageSquare, Calendar } from "lucide-react";
 import { KpiCard } from "@/components/seller/KpiCard";
 import { PerformanceChart } from "@/components/seller/PerformanceChart";
@@ -15,7 +16,7 @@ export default async function SellerDashboardHome() {
 
   const [kpis, listings, viewings] = await Promise.all([
     getSellerKPIs(supabase),
-    supabase.from("seller_listings").select("id").eq("seller_id", user.id).eq("status", "active").limit(1),
+    supabase.from("seller_listings").select("id").eq("seller_id", user.id).eq("status", "active"),
     supabase
       .from("seller_viewings")
       .select("id, buyer_name, viewing_datetime, viewing_type, listing_id")
@@ -28,8 +29,18 @@ export default async function SellerDashboardHome() {
 
   let chartData: Array<{ date: string; count: number }> = [];
   if (listings.data && listings.data.length > 0) {
-    const summary = await getListingAnalyticsSummary(supabase, listings.data[0].id, 30);
-    chartData = summary.daily_views;
+    const allSummaries = await Promise.all(
+      listings.data.map((l: { id: string }) => getListingAnalyticsSummary(supabase, l.id, 30)),
+    );
+    const merged: Record<string, number> = {};
+    for (const summary of allSummaries) {
+      for (const dv of summary.daily_views) {
+        merged[dv.date] = (merged[dv.date] ?? 0) + dv.count;
+      }
+    }
+    chartData = Object.entries(merged)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, count]) => ({ date, count }));
   }
 
   return (
@@ -39,37 +50,60 @@ export default async function SellerDashboardHome() {
         <p className="text-slate-500 mt-1">Track your listings and manage your sale</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        <KpiCard
-          label="Active Listings"
-          value={kpis.active_listings}
-          icon={Home}
-          iconBgClass="bg-emerald-100"
-          iconColorClass="text-emerald-600"
-        />
-        <KpiCard
-          label="Total Views"
-          value={kpis.total_views_30d.toLocaleString()}
-          changePct={kpis.views_change_pct}
-          icon={Eye}
-          iconBgClass="bg-blue-100"
-          iconColorClass="text-blue-600"
-        />
-        <KpiCard
-          label="Enquiries"
-          value={kpis.enquiries_30d}
-          changePct={kpis.enquiries_change_pct}
-          icon={MessageSquare}
-          iconBgClass="bg-orange-100"
-          iconColorClass="text-orange-600"
-        />
-        <KpiCard
-          label="Upcoming Viewings"
-          value={kpis.upcoming_viewings}
-          icon={Calendar}
-          iconBgClass="bg-purple-100"
-          iconColorClass="text-purple-600"
-        />
+        <Link href="/dashboard/seller/listings" className="block">
+          <KpiCard
+            label="Active Listings"
+            value={kpis.active_listings}
+            icon={Home}
+            iconBgClass="bg-emerald-100"
+            iconColorClass="text-emerald-600"
+          />
+        </Link>
+        <Link href="/dashboard/seller/analytics" className="block">
+          <KpiCard
+            label="Total Views"
+            value={kpis.total_views_30d.toLocaleString()}
+            changePct={kpis.views_change_pct}
+            icon={Eye}
+            iconBgClass="bg-blue-100"
+            iconColorClass="text-blue-600"
+          />
+        </Link>
+        <Link href="/dashboard/seller/analytics" className="block">
+          <KpiCard
+            label="Enquiries"
+            value={kpis.enquiries_30d}
+            changePct={kpis.enquiries_change_pct}
+            icon={MessageSquare}
+            iconBgClass="bg-orange-100"
+            iconColorClass="text-orange-600"
+          />
+        </Link>
+        <Link href="/dashboard/seller/viewings" className="block">
+          <KpiCard
+            label="Upcoming Viewings"
+            value={kpis.upcoming_viewings}
+            icon={Calendar}
+            iconBgClass="bg-purple-100"
+            iconColorClass="text-purple-600"
+          />
+        </Link>
       </div>
+      {kpis.active_listings === 0 && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
+          <div className="mx-auto h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
+            <Home className="h-8 w-8 text-emerald-600" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">No listings yet</h2>
+          <p className="text-slate-500 mt-2 max-w-md mx-auto">
+            Create your first listing to start tracking views, enquiries, and offers from buyers.
+          </p>
+          <a href="/dashboard/seller/listings/create?step=1"
+            className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors shadow-lg shadow-[#1B4D3E]/20">
+            Create Your First Listing
+          </a>
+        </div>
+      )}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>

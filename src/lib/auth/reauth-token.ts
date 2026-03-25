@@ -16,11 +16,10 @@ import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 function getSecret(): string {
-  const secret =
-    process.env.REAUTH_HMAC_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const secret = process.env.REAUTH_HMAC_SECRET;
   if (!secret) {
     throw new Error(
-      "reauth-token: REAUTH_HMAC_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set",
+      "REAUTH_HMAC_SECRET environment variable is required — do not use SUPABASE_SERVICE_ROLE_KEY as fallback",
     );
   }
   return secret;

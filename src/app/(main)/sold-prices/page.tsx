@@ -1,25 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Search, TrendingUp, MapPin, Sparkles } from "lucide-react";
+import { getAreaSlugsWithSoldPrices, getAreaSoldPriceSummary } from "@/services/areas/mock-data/sold-prices";
 
 export const metadata: Metadata = {
   title: "Sold Prices | Britestate",
   description:
-    "Browse property sold prices across the UK. View recent transactions, price trends, and market data by area — powered by Land Registry data.",
+    "Browse property sold prices across the UK. View recent transactions, price trends, and market data by area — powered by Land Registry records.",
 };
 
-const POPULAR_AREAS = [
-  { slug: "london", label: "London", avgPrice: "£523,000", transactions: "4,200" },
-  { slug: "manchester", label: "Manchester", avgPrice: "£245,000", transactions: "1,850" },
-  { slug: "birmingham", label: "Birmingham", avgPrice: "£218,000", transactions: "1,620" },
-  { slug: "bristol", label: "Bristol", avgPrice: "£345,000", transactions: "980" },
-  { slug: "leeds", label: "Leeds", avgPrice: "£212,000", transactions: "1,140" },
-  { slug: "edinburgh", label: "Edinburgh", avgPrice: "£298,000", transactions: "870" },
-  { slug: "oxford", label: "Oxford", avgPrice: "£485,000", transactions: "540" },
-  { slug: "cambridge", label: "Cambridge", avgPrice: "£465,000", transactions: "490" },
-] as const;
+function slugToLabel(slug: string): string {
+  return slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 export default function SoldPricesIndexPage() {
+  const areaSlugs = getAreaSlugsWithSoldPrices();
+  const popularAreas = areaSlugs.map((slug) => {
+    const summary = getAreaSoldPriceSummary(slug);
+    return {
+      slug,
+      label: slugToLabel(slug),
+      avgPrice: summary.avgPrice > 0 ? `£${summary.avgPrice.toLocaleString("en-GB")}` : "N/A",
+      transactions: summary.totalTransactions.toLocaleString("en-GB"),
+    };
+  });
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       {/* Page Header */}
@@ -67,7 +75,7 @@ export default function SoldPricesIndexPage() {
           Select an area to view recent sold prices and market trends.
         </p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {POPULAR_AREAS.map((area) => (
+          {popularAreas.map((area) => (
             <Link
               key={area.slug}
               href={`/sold-prices/${area.slug}`}

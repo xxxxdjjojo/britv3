@@ -1,4 +1,4 @@
-const KNOWN_FEATURES = ["ai_descriptions", "push_notifications", "offline_mode", "jwt_claims_middleware", "search_live_data"] as const;
+const KNOWN_FEATURES = ["ai_descriptions", "push_notifications", "offline_mode", "jwt_claims_middleware", "search_live_data", "local_area_intelligence"] as const;
 
 type KnownFeature = (typeof KNOWN_FEATURES)[number];
 

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { OnboardingFlow } from "@/components/auth/OnboardingFlow";
-import { VALID_ROLES, resolveRoleSlug } from "./slug-mapping";
+import { resolveRoleSlug } from "./slug-mapping";
 
 export default async function OnboardingPage(
   props: Readonly<{
@@ -10,8 +10,8 @@ export default async function OnboardingPage(
   const { role: rawRole } = await props.params;
   const resolvedRole = resolveRoleSlug(rawRole);
 
-  if (!VALID_ROLES.includes(resolvedRole)) {
-    redirect("/dashboard");
+  if (!resolvedRole) {
+    redirect("/register/role-select");
   }
 
   return (

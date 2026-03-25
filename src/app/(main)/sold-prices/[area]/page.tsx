@@ -16,57 +16,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getAreaSoldPrices, getSoldPriceStats } from "@/services/areas/sold-prices-service";
+import { soldPricesDatasetJsonLd } from "@/lib/seo/area-jsonld";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
+import { SoldPriceRow } from "@/components/areas/SoldPriceRow";
+import { DataAttribution } from "@/components/areas/DataAttribution";
+import { AreaSearchCTA } from "@/components/areas/AreaSearchCTA";
+import { InternalLinkCard } from "@/components/areas/InternalLinkCard";
 
 type SoldPricesPageProps = Readonly<{
   params: Promise<{ area: string }>;
 }>;
-
-function formatAreaName(slug: string): string {
-  return slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-export async function generateMetadata({
-  params,
-}: SoldPricesPageProps): Promise<Metadata> {
-  const { area } = await params;
-  const areaName = formatAreaName(area);
-  return {
-    title: `Sold Prices in ${areaName} | Britestate`,
-    description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by Britestate.`,
-  };
-}
-
-const MOCK_SALES = [
-  { address: "14 London Road", postcode: "TW7 5BJ", type: "Terraced", typeBg: "bg-blue-50 dark:bg-blue-900/20", typeText: "text-blue-600 dark:text-blue-400", beds: 3, price: "£485,000", date: "Dec 15, 2025", vsAsking: -1.8 },
-  { address: "3 Worton Gardens", postcode: "TW7 6EL", type: "Semi-detached", typeBg: "bg-amber-50 dark:bg-amber-900/20", typeText: "text-amber-600 dark:text-amber-400", beds: 4, price: "£672,000", date: "Nov 28, 2025", vsAsking: 1.2 },
-  { address: "Flat 8, Syon Lodge", postcode: "TW7 5QE", type: "Flat", typeBg: "bg-purple-50 dark:bg-purple-900/20", typeText: "text-purple-600 dark:text-purple-400", beds: 2, price: "£345,000", date: "Nov 10, 2025", vsAsking: -3.1 },
-  { address: "22 Shrewsbury Walk", postcode: "TW7 7AA", type: "Detached", typeBg: "bg-emerald-50 dark:bg-emerald-900/20", typeText: "text-emerald-600 dark:text-emerald-400", beds: 5, price: "£780,000", date: "Oct 22, 2025", vsAsking: 0.5 },
-  { address: "9 Linkfield Road", postcode: "TW7 6QG", type: "Terraced", typeBg: "bg-blue-50 dark:bg-blue-900/20", typeText: "text-blue-600 dark:text-blue-400", beds: 2, price: "£395,000", date: "Oct 05, 2025", vsAsking: -2.0 },
-  { address: "Flat 12, Thames Court", postcode: "TW7 6DA", type: "Flat", typeBg: "bg-purple-50 dark:bg-purple-900/20", typeText: "text-purple-600 dark:text-purple-400", beds: 1, price: "£320,000", date: "Sep 18, 2025", vsAsking: -4.5 },
-  { address: "47 St Johns Road", postcode: "TW7 6NL", type: "Semi-detached", typeBg: "bg-amber-50 dark:bg-amber-900/20", typeText: "text-amber-600 dark:text-amber-400", beds: 3, price: "£540,000", date: "Sep 02, 2025", vsAsking: 1.8 },
-  { address: "1 Busch Close", postcode: "TW7 6BN", type: "Detached", typeBg: "bg-emerald-50 dark:bg-emerald-900/20", typeText: "text-emerald-600 dark:text-emerald-400", beds: 4, price: "£725,000", date: "Aug 14, 2025", vsAsking: -0.7 },
-  { address: "Flat 3, Ivybridge House", postcode: "TW7 4EE", type: "Flat", typeBg: "bg-purple-50 dark:bg-purple-900/20", typeText: "text-purple-600 dark:text-purple-400", beds: 2, price: "£362,000", date: "Jul 29, 2025", vsAsking: -2.8 },
-  { address: "18 Twickenham Road", postcode: "TW7 6DA", type: "Terraced", typeBg: "bg-blue-50 dark:bg-blue-900/20", typeText: "text-blue-600 dark:text-blue-400", beds: 3, price: "£498,000", date: "Jul 11, 2025", vsAsking: 0.3 },
-  { address: "55 London Road", postcode: "TW7 5AG", type: "Semi-detached", typeBg: "bg-amber-50 dark:bg-amber-900/20", typeText: "text-amber-600 dark:text-amber-400", beds: 4, price: "£615,000", date: "Jun 23, 2025", vsAsking: 2.0 },
-  { address: "Flat 6, Nazareth House", postcode: "TW7 5BS", type: "Flat", typeBg: "bg-purple-50 dark:bg-purple-900/20", typeText: "text-purple-600 dark:text-purple-400", beds: 1, price: "£328,000", date: "Jun 05, 2025", vsAsking: -5.0 },
-  { address: "31 Swan Street", postcode: "TW7 6RJ", type: "Terraced", typeBg: "bg-blue-50 dark:bg-blue-900/20", typeText: "text-blue-600 dark:text-blue-400", beds: 2, price: "£410,000", date: "May 19, 2025", vsAsking: -1.1 },
-  { address: "8 Northumberland Place", postcode: "TW7 7QR", type: "Detached", typeBg: "bg-emerald-50 dark:bg-emerald-900/20", typeText: "text-emerald-600 dark:text-emerald-400", beds: 5, price: "£765,000", date: "Apr 30, 2025", vsAsking: 1.5 },
-  { address: "Flat 19, Brentside Park", postcode: "TW7 5DQ", type: "Flat", typeBg: "bg-purple-50 dark:bg-purple-900/20", typeText: "text-purple-600 dark:text-purple-400", beds: 2, price: "£355,000", date: "Mar 12, 2025", vsAsking: -3.7 },
-  { address: "26 Mill Plat", postcode: "TW7 6ES", type: "Terraced", typeBg: "bg-blue-50 dark:bg-blue-900/20", typeText: "text-blue-600 dark:text-blue-400", beds: 3, price: "£505,000", date: "Feb 22, 2025", vsAsking: 0.8 },
-  { address: "12 Park Road", postcode: "TW7 5AH", type: "Semi-detached", typeBg: "bg-amber-50 dark:bg-amber-900/20", typeText: "text-amber-600 dark:text-amber-400", beds: 3, price: "£555,000", date: "Jan 15, 2025", vsAsking: -0.4 },
-] as const;
-
-const QUARTERLY_TRENDS = [
-  { quarter: "Q1 2025", avgPrice: "£467,200", transactions: 68, change: -1.2 },
-  { quarter: "Q4 2024", avgPrice: "£472,900", transactions: 74, change: 2.8 },
-  { quarter: "Q3 2024", avgPrice: "£460,100", transactions: 81, change: 1.5 },
-  { quarter: "Q2 2024", avgPrice: "£453,300", transactions: 77, change: -0.6 },
-  { quarter: "Q1 2024", avgPrice: "£456,000", transactions: 64, change: 3.1 },
-  { quarter: "Q4 2023", avgPrice: "£442,300", transactions: 71, change: -2.1 },
-] as const;
 
 const CHART_BARS = [
   { year: "2015", height: "40%", label: "£340k" },
@@ -91,12 +51,53 @@ function VsAskingBadge({ value }: Readonly<{ value: number }>) {
   return <span className="font-medium text-neutral-400">0.0%</span>;
 }
 
+export async function generateMetadata({
+  params,
+}: SoldPricesPageProps): Promise<Metadata> {
+  const { area } = await params;
+  const areaName = area.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+  return {
+    title: `Sold Prices in ${areaName} | Britestate`,
+    description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by Britestate.`,
+    alternates: { canonical: `/sold-prices/${area}` },
+    openGraph: {
+      title: `Sold Prices in ${areaName} | Britestate`,
+      description: `View recent property sold prices, market trends, and transaction data in ${areaName}. Historical land registry data powered by Britestate.`,
+      url: `/sold-prices/${area}`,
+      type: "website",
+    },
+  };
+}
+
 export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
   const { area } = await params;
-  const areaName = formatAreaName(area);
+  const areaName = area.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+
+  const { records, total } = await getAreaSoldPrices(area);
+  const stats = await getSoldPriceStats(area);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(soldPricesDatasetJsonLd(areaName, area, total)),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Sold Prices", path: "/sold-prices" },
+              { name: areaName, path: `/sold-prices/${area}` },
+            ])
+          ),
+        }}
+      />
+
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="mb-4 flex text-sm text-neutral-500">
         <ol className="flex items-center space-x-2">
@@ -109,7 +110,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
             <ChevronRight className="size-4" />
           </li>
           <li>
-            <Link className="hover:text-brand-primary" href="/sold-prices/isleworth">
+            <Link className="hover:text-brand-primary" href="/sold-prices">
               Sold Prices
             </Link>
           </li>
@@ -136,7 +137,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                 className="w-full rounded-xl border border-neutral-200 bg-white py-4 pl-12 pr-4 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-brand-primary dark:border-neutral-700 dark:bg-neutral-900"
                 placeholder="Enter postcode, street or town..."
                 type="text"
-                defaultValue={`${areaName}, TW7`}
+                defaultValue={areaName}
                 readOnly
               />
             </div>
@@ -155,10 +156,12 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
               Average Sold Price
             </p>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold">£467,000</h3>
-              <span className="flex items-center text-sm font-medium text-green-500">
-                <TrendingUp className="size-3" /> 4.2%
-              </span>
+              <h3 className="text-2xl font-bold">{stats.avgPrice}</h3>
+              {stats.yoyChange !== undefined && (
+                <span className="flex items-center text-sm font-medium text-green-500">
+                  <TrendingUp className="size-3" /> {stats.yoyChange}
+                </span>
+              )}
             </div>
             <p className="mt-2 text-xs text-neutral-400">Past 12 months</p>
           </CardContent>
@@ -169,7 +172,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
             <p className="mb-1 text-sm font-medium text-neutral-500">
               Total Transactions
             </p>
-            <h3 className="text-2xl font-bold">284</h3>
+            <h3 className="text-2xl font-bold">{stats.totalTransactions}</h3>
             <p className="mt-2 text-xs text-neutral-400">
               Last 12 months volume
             </p>
@@ -182,7 +185,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
               Avg Price vs Asking
             </p>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-red-500">-2.3%</h3>
+              <h3 className="text-2xl font-bold text-red-500">{stats.avgVsAsking}</h3>
             </div>
             <p className="mt-2 text-xs text-neutral-400">
               Below asking on average
@@ -207,6 +210,13 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
           </CardContent>
         </Card>
       </div>
+
+      <DataAttribution
+        source="HM Land Registry Price Paid Data"
+        lastUpdated="March 2026"
+        methodology="Transactions registered in the last 2-3 months may not yet appear"
+        className="mb-8"
+      />
 
       {/* Main Content: Table + Map */}
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -244,46 +254,15 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                  {MOCK_SALES.map((sale, i) => (
-                    <tr
-                      key={`${sale.postcode}-${i}`}
-                      className="transition-colors even:bg-neutral-50 hover:bg-neutral-100 dark:even:bg-neutral-800/20 dark:hover:bg-neutral-800/30"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="font-medium">{sale.address}</div>
-                        <div className="text-xs uppercase text-neutral-400">
-                          {sale.postcode}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter ${sale.typeBg} ${sale.typeText}`}
-                          >
-                            {sale.type}
-                          </span>
-                          <span className="text-neutral-500">
-                            {sale.beds} Bed
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right text-neutral-500">
-                        {sale.date}
-                      </td>
-                      <td className="px-6 py-4 text-right font-bold">
-                        {sale.price}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <VsAskingBadge value={sale.vsAsking} />
-                      </td>
-                    </tr>
+                  {records.map((r) => (
+                    <SoldPriceRow key={r.id} record={r} />
                   ))}
                 </tbody>
               </table>
             </div>
             <div className="flex items-center justify-between border-t border-neutral-100 p-4 dark:border-neutral-800">
               <span className="text-xs text-neutral-500">
-                Showing 1-{MOCK_SALES.length} of 284 results
+                Showing 1-{records.length} of {total} results
               </span>
               <div className="flex gap-2">
                 <button
@@ -299,13 +278,15 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
             </div>
           </Card>
 
+          <AreaSearchCTA areaName={areaName} citySlug={area} />
+
           {/* Price Trend Chart */}
           <Card className="border-neutral-200 p-6 shadow-sm dark:border-neutral-700">
             <div className="mb-8 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold">Price Trend (10 Years)</h2>
                 <p className="text-sm text-neutral-500">
-                  Historical market performance in TW7
+                  Historical market performance in {areaName}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -365,7 +346,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                 </span>
               </div>
               <p className="text-sm text-neutral-500">
-                Viewing TW7 area markers
+                Viewing {areaName} area markers
               </p>
             </CardHeader>
             <div className="relative min-h-[500px] flex-1 bg-neutral-200 dark:bg-neutral-800">
@@ -386,54 +367,23 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
         </div>
       </div>
 
-      {/* Sold Prices Over Time - Quarterly Table */}
-      <Card className="border-neutral-200 shadow-sm dark:border-neutral-700">
-        <CardHeader className="border-b border-neutral-100 px-6 py-4 dark:border-neutral-800">
-          <CardTitle className="text-lg font-bold">
-            Sold Prices Over Time
-          </CardTitle>
-          <p className="text-sm text-neutral-500">
-            Quarterly average sold prices in {areaName}
-          </p>
-        </CardHeader>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 text-xs uppercase tracking-wider text-neutral-500 dark:bg-neutral-800/50">
-              <tr>
-                <th className="px-6 py-4 font-semibold">Quarter</th>
-                <th className="px-6 py-4 text-right font-semibold">
-                  Avg. Sold Price
-                </th>
-                <th className="px-6 py-4 text-right font-semibold">
-                  Transactions
-                </th>
-                <th className="px-6 py-4 text-right font-semibold">
-                  Change (QoQ)
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-              {QUARTERLY_TRENDS.map((row) => (
-                <tr
-                  key={row.quarter}
-                  className="transition-colors even:bg-neutral-50 hover:bg-neutral-100 dark:even:bg-neutral-800/20 dark:hover:bg-neutral-800/30"
-                >
-                  <td className="px-6 py-4 font-medium">{row.quarter}</td>
-                  <td className="px-6 py-4 text-right font-bold">
-                    {row.avgPrice}
-                  </td>
-                  <td className="px-6 py-4 text-right text-neutral-500">
-                    {row.transactions}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <VsAskingBadge value={row.change} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <InternalLinkCard
+          title={`Properties for sale in ${areaName}`}
+          description={`Browse current listings in ${areaName}`}
+          href={`/search?city=${area}&type=buy`}
+        />
+        <InternalLinkCard
+          title={`Properties to rent in ${areaName}`}
+          description={`Find rentals in ${areaName}`}
+          href={`/search?city=${area}&type=rent`}
+        />
+        <InternalLinkCard
+          title={`${areaName} Area Guide`}
+          description={`Schools, transport, and local insights`}
+          href={`/areas/${area}`}
+        />
+      </div>
     </main>
   );
 }

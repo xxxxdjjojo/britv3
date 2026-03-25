@@ -4,26 +4,28 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { WizardShell } from "./WizardShell";
-import type { SellerListing } from "@/types/seller";
+import type { SellerListing, ListingStep } from "@/types/seller";
 import { cn } from "@/lib/utils";
 
 type ChecklistItem = Readonly<{
   label: string;
   complete: boolean;
   required: boolean;
+  editStep: ListingStep;
 }>;
 
 function buildChecklist(listing: Partial<SellerListing>): ChecklistItem[] {
   return [
-    { label: "Property address", complete: !!listing.address_line_1, required: true },
-    { label: "Property type & tenure", complete: !!(listing.property_type && listing.tenure), required: true },
-    { label: "Property details (beds/baths)", complete: !!(listing.bedrooms !== undefined && listing.bedrooms !== null && listing.bathrooms !== undefined && listing.bathrooms !== null), required: true },
-    { label: "Photos added", complete: (listing.photos?.length ?? 0) >= 1, required: true },
-    { label: "Property description", complete: (listing.description?.length ?? 0) >= 50, required: true },
-    { label: "Asking price set", complete: !!(listing.asking_price && listing.asking_price > 0), required: true },
-    { label: "EPC certificate uploaded", complete: !!listing.epc_url, required: false },
-    { label: "Key selling points added", complete: (listing.key_selling_points?.length ?? 0) >= 1, required: false },
+    { label: "Property address", complete: !!listing.address_line_1, required: true, editStep: 1 as ListingStep },
+    { label: "Property type & tenure", complete: !!(listing.property_type && listing.tenure), required: true, editStep: 1 as ListingStep },
+    { label: "Property details (beds/baths)", complete: !!(listing.bedrooms !== undefined && listing.bedrooms !== null && listing.bathrooms !== undefined && listing.bathrooms !== null), required: true, editStep: 2 as ListingStep },
+    { label: "Photos added", complete: (listing.photos?.length ?? 0) >= 1, required: true, editStep: 3 as ListingStep },
+    { label: "Property description", complete: (listing.description?.length ?? 0) >= 50, required: true, editStep: 4 as ListingStep },
+    { label: "Asking price set", complete: !!(listing.asking_price && listing.asking_price > 0), required: true, editStep: 5 as ListingStep },
+    { label: "EPC certificate uploaded", complete: !!listing.epc_url, required: true, editStep: 6 as ListingStep },
+    { label: "Key selling points added", complete: (listing.key_selling_points?.length ?? 0) >= 1, required: false, editStep: 4 as ListingStep },
   ];
 }
 
@@ -35,6 +37,7 @@ type Props = Readonly<{
 export function Step7Review({ listing, listingId }: Props) {
   const router = useRouter();
   const [publishing, setPublishing] = useState(false);
+  const [cputrAccepted, setCputrAccepted] = useState(false);
   const [error, setError] = useState("");
 
   if (!listing) {
@@ -75,7 +78,7 @@ export function Step7Review({ listing, listingId }: Props) {
       listingId={listingId}
       onContinue={handlePublish}
       continueLabel={publishing ? "Publishing..." : "Publish Listing"}
-      continueDisabled={!requiredComplete}
+      continueDisabled={!requiredComplete || !cputrAccepted}
       isLoading={publishing}
     >
       <div className="space-y-8">
@@ -120,7 +123,18 @@ export function Step7Review({ listing, listingId }: Props) {
           </div>
           <ul className="space-y-3">
             {checklist.map((item) => (
-              <li key={item.label} className="flex items-center gap-3">
+              <li
+                key={item.label}
+                onClick={() => {
+                  if (!item.complete) {
+                    router.push(`/dashboard/seller/listings/create?step=${item.editStep}&id=${listingId}`);
+                  }
+                }}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-2 py-1.5 -mx-2",
+                  !item.complete && "cursor-pointer hover:bg-slate-50 transition-colors",
+                )}
+              >
                 {item.complete ? (
                   <CheckCircle size={18} className="text-emerald-500 flex-shrink-0" />
                 ) : item.required ? (
@@ -146,6 +160,23 @@ export function Step7Review({ listing, listingId }: Props) {
               </p>
             </div>
           )}
+        </div>
+
+        {/* CPUTR Declaration */}
+        <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <Checkbox
+              checked={cputrAccepted}
+              onCheckedChange={(v) => setCputrAccepted(v === true)}
+              className="mt-0.5"
+            />
+            <span className="text-sm text-slate-700 leading-relaxed">
+              I confirm that all material information about this property has been disclosed in
+              accordance with the Consumer Protection from Unfair Trading Regulations 2008 and
+              National Trading Standards guidance. I understand that withholding material
+              information may constitute a criminal offence.
+            </span>
+          </label>
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}

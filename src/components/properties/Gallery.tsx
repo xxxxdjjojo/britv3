@@ -64,6 +64,7 @@ export function Gallery({ images, className }: GalleryProps) {
               src={images[0].src}
               alt={images[0].alt}
               fill
+              priority
               className="object-cover hover:scale-105 transition-transform duration-300"
               sizes="(min-width: 768px) 50vw, 100vw"
             />

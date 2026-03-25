@@ -189,6 +189,34 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = matchesRoute(pathname, PUBLIC_ROUTES);
   const isAuthRoute = matchesRoute(pathname, AUTH_ROUTES);
 
+  // ── MFA enforcement ────────────────────────────────────────────────────
+  // If user has MFA factors enrolled, ensure they've completed aal2.
+  // Skip for: auth routes, public routes, API routes, 2FA pages, verify-email.
+  if (
+    isAuthenticated &&
+    !isPublicRoute &&
+    !isAuthRoute &&
+    !pathname.startsWith("/api/") &&
+    !pathname.startsWith("/two-factor")
+  ) {
+    try {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+        const redirectParam = pathname !== "/dashboard"
+          ? `?next=${encodeURIComponent(pathname)}`
+          : "";
+        return redirectWithHeaders(`/two-factor${redirectParam}`, nonce, request);
+      }
+    } catch {
+      // MFA check failed — fail closed for admin routes, open for others
+      console.warn("[middleware] MFA assurance check failed");
+      if (pathname.startsWith("/admin")) {
+        return redirectWithHeaders("/two-factor", nonce, request);
+      }
+      // Non-admin: fail open to avoid locking users out
+    }
+  }
+
   // Route protection logic
   if (!isAuthenticated && !isPublicRoute && !isAuthRoute) {
     // API routes: pass through — route handlers enforce their own auth

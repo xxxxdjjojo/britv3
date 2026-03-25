@@ -41,16 +41,21 @@ export async function auditedAdminAction(
   } catch (e) {
     thrownError = e;
   } finally {
-    await logAdminAction(ctx.supabase, {
-      adminId: ctx.user.id,
-      action,
-      targetType,
-      targetId,
-      ipAddress,
-      success: thrownError === undefined,
-      errorMessage:
-        thrownError instanceof Error ? thrownError.message : undefined,
-    });
+    try {
+      await logAdminAction(ctx.supabase, {
+        adminId: ctx.user.id,
+        action,
+        targetType,
+        targetId,
+        ipAddress,
+        success: thrownError === undefined,
+        errorMessage:
+          thrownError instanceof Error ? thrownError.message : undefined,
+      });
+    } catch (auditError) {
+      console.error("[SECURITY] Audit log write failed for action:", action, "target:", targetId, auditError);
+      // In production, this should alert ops (Sentry, PagerDuty, etc.)
+    }
   }
 
   if (thrownError !== undefined) {
@@ -88,16 +93,21 @@ export async function auditedAdminActionWithPermission(
   } catch (e) {
     thrownError = e;
   } finally {
-    await logAdminAction(ctx.supabase, {
-      adminId: ctx.user.id,
-      action,
-      targetType,
-      targetId,
-      ipAddress,
-      success: thrownError === undefined,
-      errorMessage:
-        thrownError instanceof Error ? thrownError.message : undefined,
-    });
+    try {
+      await logAdminAction(ctx.supabase, {
+        adminId: ctx.user.id,
+        action,
+        targetType,
+        targetId,
+        ipAddress,
+        success: thrownError === undefined,
+        errorMessage:
+          thrownError instanceof Error ? thrownError.message : undefined,
+      });
+    } catch (auditError) {
+      console.error("[SECURITY] Audit log write failed for action:", action, "target:", targetId, auditError);
+      // In production, this should alert ops (Sentry, PagerDuty, etc.)
+    }
   }
 
   if (thrownError !== undefined) {
