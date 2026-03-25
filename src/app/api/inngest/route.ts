@@ -6,6 +6,7 @@ import { stripeWebhookDlq } from "@/inngest/functions/stripe-webhook-dlq";
 import { jwtHookMonitor } from "@/inngest/functions/jwt-hook-monitor";
 import { chainRiskMonitor } from "@/inngest/functions/chain-risk-monitor";
 import { quoteAcceptedToBooking } from "@/inngest/functions/quote-accepted-to-booking";
+import { referenceRequested } from "@/inngest/functions/reference-requested";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -16,5 +17,6 @@ export const { GET, POST, PUT } = serve({
     jwtHookMonitor,
     chainRiskMonitor,
     quoteAcceptedToBooking,
+    referenceRequested,
   ],
 });
