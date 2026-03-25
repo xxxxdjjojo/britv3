@@ -74,15 +74,16 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
   const [buyerType, setBuyerType] = useState<BuyerType>(() => getUrlString("buyer", "standard", ["standard", "first_time", "additional"]));
   const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 300000));
 
-  // Sync state to URL
+  // Sync state to URL (disabled when embedded with initialPrice to avoid overwriting page URL)
   useEffect(() => {
+    if (initialPrice != null) return;
     const params = new URLSearchParams();
     if (propertyPrice !== 300000) params.set("price", String(propertyPrice));
     if (country !== "england") params.set("country", country);
     if (buyerType !== "standard") params.set("buyer", buyerType);
     const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
     window.history.replaceState({}, "", url);
-  }, [propertyPrice, country, buyerType]);
+  }, [propertyPrice, country, buyerType, initialPrice]);
 
   // Reset buyer type if switching away from England with "additional" selected
   const effectiveBuyerType = country !== "england" && buyerType === "additional"

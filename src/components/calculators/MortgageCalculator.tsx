@@ -57,8 +57,9 @@ export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {
   const [termYears, setTermYears] = useState(() => getUrlParam("term", 25));
   const [interestOnly, setInterestOnly] = useState(() => getUrlBool("io", false));
 
-  // Sync state to URL
+  // Sync state to URL (disabled when embedded with initialPrice to avoid overwriting page URL)
   useEffect(() => {
+    if (initialPrice != null) return;
     const params = new URLSearchParams();
     if (propertyPrice !== 300000) params.set("price", String(propertyPrice));
     if (deposit !== 30000) params.set("deposit", String(deposit));
@@ -67,7 +68,7 @@ export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {
     if (interestOnly) params.set("io", "1");
     const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
     window.history.replaceState({}, "", url);
-  }, [propertyPrice, deposit, interestRate, termYears, interestOnly]);
+  }, [propertyPrice, deposit, interestRate, termYears, interestOnly, initialPrice]);
 
   const depositPercent = useMemo(() => {
     if (propertyPrice <= 0) return 0;
