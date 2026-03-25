@@ -305,7 +305,7 @@ export default function ViewingsPage({
                               size="sm"
                               className="w-full"
                               onClick={() => handleCancel(v.id)}
-                              disabled={cancelViewing.isPending}
+                              disabled={cancelViewing.isPending || !ACTIVE_STATUSES.has(v.status)}
                             >
                               <X className="mr-1 size-3" />
                               Cancel

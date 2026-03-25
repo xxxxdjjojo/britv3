@@ -27,6 +27,7 @@ export function useViewingRealtime(userId: string | undefined) {
           event: "UPDATE",
           schema: "public",
           table: "viewings",
+          filter: `user_id=eq.${userId}`,
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ["viewings"] });

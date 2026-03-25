@@ -8,6 +8,7 @@
 
 import { useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -39,6 +40,7 @@ export default function BookViewingPage({
   const { role: roleParam } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const listingId = searchParams.get("listingId");
 
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -121,7 +123,7 @@ export default function BookViewingPage({
         });
         // Refresh slots
         setSelectedSlotId(null);
-        setSlots((prev) => prev?.filter((s) => s.id !== failedSlotId) ?? prev);
+        queryClient.invalidateQueries({ queryKey: ["viewing-slots", listingId] });
       } else {
         toast.error("Booking failed", {
           description: (err as Error).message,

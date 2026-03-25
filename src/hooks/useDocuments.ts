@@ -84,7 +84,16 @@ export function useUploadDocument() {
           reject(new Error("Network error during upload"));
         };
 
+        xhr.ontimeout = () => {
+          reject(new Error("Upload timed out"));
+        };
+
+        xhr.onabort = () => {
+          reject(new Error("Upload aborted"));
+        };
+
         xhr.open("POST", "/api/documents");
+        xhr.timeout = 300_000; // 5 minutes
         xhr.send(formData);
       });
     },
