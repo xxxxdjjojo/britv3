@@ -28,7 +28,12 @@ export type ChecklistPhase =
   | "under_offer"
   | "exchange"
   | "completion"
-  | "post_move";
+  | "post_move"
+  | "pre_application"
+  | "application_submitted"
+  | "references"
+  | "tenancy_agreement"
+  | "move_in";
 
 // ---------------------------------------------------------------------------
 // Default items
@@ -40,6 +45,111 @@ type DefaultItem = {
   offer_stage: string;
   sort_order: number;
 };
+
+const RENTER_DEFAULT_ITEMS: DefaultItem[] = [
+  // pre_application phase
+  {
+    title: "Set your rental budget",
+    description:
+      "Calculate max affordable rent (ideally ≤ 30% of take-home pay).",
+    offer_stage: "pre_application",
+    sort_order: 1,
+  },
+  {
+    title: "Gather reference documents",
+    description:
+      "Prepare proof of income, employer reference, previous landlord details, and photo ID.",
+    offer_stage: "pre_application",
+    sort_order: 2,
+  },
+
+  // application_submitted phase
+  {
+    title: "Submit rental application",
+    description:
+      "Complete the letting agent's application form with your details.",
+    offer_stage: "application_submitted",
+    sort_order: 10,
+  },
+  {
+    title: "Pay holding deposit",
+    description:
+      "Pay the holding deposit (max 1 week's rent under the Tenant Fees Act 2019).",
+    offer_stage: "application_submitted",
+    sort_order: 11,
+  },
+
+  // references phase
+  {
+    title: "Employer reference check",
+    description:
+      "Ensure your employer is ready to respond to the reference request.",
+    offer_stage: "references",
+    sort_order: 20,
+  },
+  {
+    title: "Previous landlord reference",
+    description:
+      "Notify your previous landlord that a reference request is coming.",
+    offer_stage: "references",
+    sort_order: 21,
+  },
+  {
+    title: "Credit check",
+    description:
+      "The agent will run a credit check — ensure your details are up to date.",
+    offer_stage: "references",
+    sort_order: 22,
+  },
+
+  // tenancy_agreement phase
+  {
+    title: "Review tenancy agreement",
+    description:
+      "Read every clause carefully. Check break clauses, notice periods, and restrictions.",
+    offer_stage: "tenancy_agreement",
+    sort_order: 30,
+  },
+  {
+    title: "Pay security deposit",
+    description:
+      "Pay the security deposit (max 5 weeks' rent). Confirm it will be protected in a TDP scheme.",
+    offer_stage: "tenancy_agreement",
+    sort_order: 31,
+  },
+
+  // move_in phase
+  {
+    title: "Check inventory and condition report",
+    description:
+      "Walk through the property with the inventory, note and photograph any existing damage.",
+    offer_stage: "move_in",
+    sort_order: 40,
+  },
+  {
+    title: "Collect keys and confirm meter readings",
+    description:
+      "Record gas, electric, and water meter readings on move-in day.",
+    offer_stage: "move_in",
+    sort_order: 41,
+  },
+
+  // post_move phase
+  {
+    title: "Set up utilities and council tax",
+    description:
+      "Contact energy, water, broadband providers, and register for council tax.",
+    offer_stage: "post_move",
+    sort_order: 50,
+  },
+  {
+    title: "Update your address",
+    description:
+      "Bank, DVLA, HMRC, electoral roll, NHS, and Royal Mail redirection.",
+    offer_stage: "post_move",
+    sort_order: 51,
+  },
+];
 
 const DEFAULT_ITEMS: DefaultItem[] = [
   // pre_offer phase
@@ -243,6 +353,7 @@ export async function createDefaultChecklist(
   supabase: SupabaseClient,
   userId: string,
   offerId?: string,
+  role: string = "homebuyer",
 ): Promise<ChecklistItem[]> {
   // Check for existing items
   let existingQuery = supabase
@@ -264,7 +375,8 @@ export async function createDefaultChecklist(
     return getChecklistItems(supabase, userId, offerId);
   }
 
-  const rows = DEFAULT_ITEMS.map((item) => ({
+  const sourceItems = role === "renter" ? RENTER_DEFAULT_ITEMS : DEFAULT_ITEMS;
+  const rows = sourceItems.map((item) => ({
     user_id: userId,
     offer_id: offerId ?? null,
     title: item.title,
@@ -287,4 +399,49 @@ export async function createDefaultChecklist(
   }
 
   return (data ?? []) as ChecklistItem[];
+}
+
+/**
+ * Add a single custom checklist item for a user.
+ * Sets sort_order to max existing + 1 so it appears at the end.
+ * Custom items have offer_stage = null.
+ */
+export async function addCustomItem(
+  supabase: SupabaseClient,
+  userId: string,
+  title: string,
+  description?: string | null,
+): Promise<ChecklistItem> {
+  // Get the current max sort_order
+  const { data: maxRow } = await supabase
+    .from("moving_checklist_items")
+    .select("sort_order")
+    .eq("user_id", userId)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .single();
+
+  const nextOrder = (maxRow?.sort_order ?? 0) + 1;
+
+  const { data, error } = await supabase
+    .from("moving_checklist_items")
+    .insert({
+      user_id: userId,
+      offer_id: null,
+      title,
+      description: description ?? null,
+      offer_stage: null,
+      sort_order: nextOrder,
+      is_completed: false,
+    })
+    .select(
+      "id, offer_id, title, description, offer_stage, is_completed, completed_at, sort_order, created_at",
+    )
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to add custom item: ${error.message}`);
+  }
+
+  return data as ChecklistItem;
 }

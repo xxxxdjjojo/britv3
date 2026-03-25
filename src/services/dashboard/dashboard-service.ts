@@ -102,17 +102,27 @@ async function buildHomebuyerDashboard(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<HomebuyerDashboard> {
-  const [savedCount, searchCount, viewings, activity] = await Promise.all([
-    safeCount(supabase, "saved_properties", "user_id", userId),
-    safeCount(supabase, "saved_searches", "user_id", userId),
-    safeViewingsQuery(supabase, { user_id: userId, status: "confirmed" }, 5),
-    getRecentActivity(supabase, userId, 5),
-  ]);
+  const [savedCount, searchCount, viewings, activity, profile, unreadCount] =
+    await Promise.all([
+      safeCount(supabase, "saved_properties", "user_id", userId),
+      safeCount(supabase, "saved_searches", "user_id", userId),
+      safeViewingsQuery(supabase, { user_id: userId, status: "confirmed" }, 5),
+      getRecentActivity(supabase, userId, 5),
+      safeQuerySingle<{ first_name: string | null }>(
+        supabase,
+        "profiles",
+        "first_name",
+        { id: userId },
+      ),
+      safeCount(supabase, "messages", "recipient_id", userId),
+    ]);
 
   return {
     role: "homebuyer",
+    user_name: profile?.first_name ?? null,
     saved_properties_count: savedCount,
     active_searches_count: searchCount,
+    unread_messages_count: unreadCount,
     upcoming_viewings: viewings.map((v) => ({
       id: v.id,
       property_address: v.property_address,

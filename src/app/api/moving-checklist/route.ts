@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   getChecklistItems,
   createDefaultChecklist,
+  addCustomItem,
 } from "@/services/moving/moving-checklist-service";
 
 /**
@@ -58,10 +59,27 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
+
+    // Custom item creation — differentiated by presence of `title` field
+    if (typeof body?.title === "string" && body.title.trim()) {
+      const description =
+        typeof body?.description === "string" ? body.description : undefined;
+      const item = await addCustomItem(
+        supabase,
+        user.id,
+        body.title.trim(),
+        description,
+      );
+      return NextResponse.json(item, { status: 201 });
+    }
+
+    // Default checklist creation
     const offerId =
       typeof body?.offer_id === "string" ? body.offer_id : undefined;
+    const role =
+      typeof body?.role === "string" ? body.role : undefined;
 
-    const items = await createDefaultChecklist(supabase, user.id, offerId);
+    const items = await createDefaultChecklist(supabase, user.id, offerId, role);
     return NextResponse.json(items, { status: 201 });
   } catch (error) {
     console.error("[moving-checklist] POST error:", error);

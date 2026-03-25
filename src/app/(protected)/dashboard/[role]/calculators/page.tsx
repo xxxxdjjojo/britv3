@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -380,32 +381,231 @@ function MortgageComparison() {
 }
 
 // ---------------------------------------------------------------------------
+// Tab 3: Rent Affordability Calculator (renter)
+// ---------------------------------------------------------------------------
+
+function RentAffordabilityCalculator() {
+  const [monthlyIncome, setMonthlyIncome] = useState(2500);
+  const [monthlyDebts, setMonthlyDebts] = useState(0);
+
+  const netIncome = monthlyIncome - monthlyDebts;
+  const maxRent = Math.max(0, Math.round(netIncome / 3));
+  const comfortableRent = Math.max(0, Math.round(netIncome * 0.25));
+  const stretchRent = Math.max(0, Math.round(netIncome * 0.35));
+
+  const handleNumberInput = (
+    setter: (v: number) => void,
+    min = 0,
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const parsed = parseFloat(e.target.value);
+    if (!isNaN(parsed) && parsed >= min) setter(parsed);
+    else if (e.target.value === "" || e.target.value === "-") setter(0);
+  };
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {/* Inputs */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Your Details</CardTitle>
+          <CardDescription>Enter your monthly income and debts to estimate affordable rent.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="monthly-income">Monthly Take-Home Income (£)</Label>
+            <Input
+              id="monthly-income"
+              type="number"
+              min={0}
+              step={100}
+              value={monthlyIncome}
+              onChange={handleNumberInput(setMonthlyIncome)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="monthly-debts">Existing Monthly Debts (£)</Label>
+            <Input
+              id="monthly-debts"
+              type="number"
+              min={0}
+              step={50}
+              value={monthlyDebts}
+              onChange={handleNumberInput(setMonthlyDebts)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Results */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Rent Affordability Results</CardTitle>
+          <CardDescription>Based on standard affordability ratios after debts.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResultRow label="Comfortable Rent (25%)" value={gbp(comfortableRent)} />
+          <ResultRow label="Recommended Max Rent (33%)" value={gbp(maxRent)} highlight />
+          <ResultRow label="Stretch Rent (35%)" value={gbp(stretchRent)} />
+          <div className="mt-4 pt-4 border-t">
+            <ResultRow label="Net Monthly Income" value={gbp(netIncome)} />
+            <ResultRow label="Remaining after Max Rent" value={gbp(netIncome - maxRent)} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tab 4: Deposit Budget Calculator (renter)
+// ---------------------------------------------------------------------------
+
+function DepositBudgetCalculator() {
+  const [monthlySavings, setMonthlySavings] = useState(500);
+  const [targetRent, setTargetRent] = useState(1200);
+
+  // Security deposit = 5 weeks of rent (Tenant Fees Act 2019 cap)
+  const weeklyRent = targetRent * 12 / 52;
+  const securityDeposit = Math.round(weeklyRent * 5);
+  const firstMonthRent = targetRent;
+  const totalNeeded = securityDeposit + firstMonthRent;
+  const monthsToSave = monthlySavings > 0 ? Math.ceil(totalNeeded / monthlySavings) : 0;
+
+  const handleNumberInput = (
+    setter: (v: number) => void,
+    min = 0,
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const parsed = parseFloat(e.target.value);
+    if (!isNaN(parsed) && parsed >= min) setter(parsed);
+    else if (e.target.value === "" || e.target.value === "-") setter(0);
+  };
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {/* Inputs */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Your Savings Details</CardTitle>
+          <CardDescription>Estimate how long it will take to save for your rental deposit.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="monthly-savings">Monthly Savings (£)</Label>
+            <Input
+              id="monthly-savings"
+              type="number"
+              min={0}
+              step={50}
+              value={monthlySavings}
+              onChange={handleNumberInput(setMonthlySavings)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="target-rent">Target Monthly Rent (£)</Label>
+            <Input
+              id="target-rent"
+              type="number"
+              min={0}
+              step={50}
+              value={targetRent}
+              onChange={handleNumberInput(setTargetRent)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Results */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Deposit Budget Breakdown</CardTitle>
+          <CardDescription>Based on the Tenant Fees Act 2019 deposit cap (5 weeks&apos; rent).</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResultRow label="Security Deposit (5 weeks)" value={gbp(securityDeposit)} />
+          <ResultRow label="First Month's Rent" value={gbp(firstMonthRent)} />
+          <div className="flex items-center justify-between py-3 mt-1 bg-muted/50 rounded-md px-2">
+            <span className="text-sm font-semibold">Total Needed</span>
+            <span className="text-sm font-bold tabular-nums">{gbp(totalNeeded)}</span>
+          </div>
+          <div className="mt-4 pt-4 border-t">
+            <ResultRow
+              label="Months to Save"
+              value={monthlySavings > 0 ? `${monthsToSave} month${monthsToSave !== 1 ? "s" : ""}` : "—"}
+              highlight
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
-export default function CalculatorsPage() {
+export default function CalculatorsPage(
+  props: Readonly<{ params: Promise<{ role: string }> }>,
+) {
+  const { role } = use(props.params);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const isRenter = role === "renter";
+  const defaultTab = isRenter ? "rent-affordability" : "affordability";
+  const tab = searchParams.get("tab") ?? defaultTab;
+
+  function handleTabChange(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", value);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }
+
   return (
     <div className="space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Calculators</h1>
         <p className="text-muted-foreground mt-1">
-          Estimate your affordability and compare indicative mortgage rates.
+          {isRenter
+            ? "Estimate your rent affordability and plan your deposit budget."
+            : "Estimate your affordability and compare indicative mortgage rates."}
         </p>
       </div>
 
-      <Tabs defaultValue="affordability" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="affordability">Affordability</TabsTrigger>
-          <TabsTrigger value="mortgage-rates">Mortgage Rates</TabsTrigger>
-        </TabsList>
+      <Tabs value={tab} onValueChange={handleTabChange} className="space-y-6">
+        {isRenter ? (
+          <>
+            <TabsList>
+              <TabsTrigger value="rent-affordability">Rent Affordability</TabsTrigger>
+              <TabsTrigger value="deposit-budget">Deposit Budget</TabsTrigger>
+            </TabsList>
 
-        <TabsContent value="affordability">
-          <AffordabilityCalculator />
-        </TabsContent>
+            <TabsContent value="rent-affordability">
+              <RentAffordabilityCalculator />
+            </TabsContent>
 
-        <TabsContent value="mortgage-rates">
-          <MortgageComparison />
-        </TabsContent>
+            <TabsContent value="deposit-budget">
+              <DepositBudgetCalculator />
+            </TabsContent>
+          </>
+        ) : (
+          <>
+            <TabsList>
+              <TabsTrigger value="affordability">Affordability</TabsTrigger>
+              <TabsTrigger value="mortgage-rates">Mortgage Rates</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="affordability">
+              <AffordabilityCalculator />
+            </TabsContent>
+
+            <TabsContent value="mortgage-rates">
+              <MortgageComparison />
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );

@@ -49,8 +49,10 @@ export type OfferSummary = Readonly<{
 /** Homebuyer dashboard: saved properties, active searches, upcoming viewings */
 export type HomebuyerDashboard = Readonly<{
   role: "homebuyer";
+  user_name: string | null;
   saved_properties_count: number;
   active_searches_count: number;
+  unread_messages_count: number;
   upcoming_viewings: ReadonlyArray<ViewingSummary>;
   recent_activity: ReadonlyArray<ActivityLogEntry>;
 }>;

@@ -82,8 +82,10 @@ export function createMockStatCards(role: UserRole): StatCardData[] {
 const DASHBOARD_DATA_BY_ROLE: Record<UserRole, DashboardData> = {
   homebuyer: {
     role: "homebuyer",
+    user_name: "James",
     saved_properties_count: 12,
     active_searches_count: 4,
+    unread_messages_count: 3,
     upcoming_viewings: [
       {
         id: "view-001",

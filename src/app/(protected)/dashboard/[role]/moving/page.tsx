@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { use, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CheckCircle2, Circle, ChevronDown, ChevronRight, PackageOpen } from "lucide-react";
+import { CheckCircle2, Circle, ChevronDown, ChevronRight, PackageOpen, PlusCircle } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import type { ChecklistItem, ChecklistPhase } from "@/services/moving/moving-checklist-service";
@@ -20,7 +21,7 @@ type PhaseConfig = {
   stages: string[];
 };
 
-const PHASES: PhaseConfig[] = [
+const BUYER_PHASES: PhaseConfig[] = [
   {
     id: "pre_offer",
     label: "Pre-Offer",
@@ -54,14 +55,47 @@ const PHASES: PhaseConfig[] = [
   },
 ];
 
-function getPhaseForItem(item: ChecklistItem): ChecklistPhase {
-  const stage = item.offer_stage ?? "pre_offer";
-  for (const phase of PHASES) {
+const RENTER_PHASES: PhaseConfig[] = [
+  {
+    id: "pre_application",
+    label: "Pre-Application",
+    stages: ["pre_application"],
+  },
+  {
+    id: "application_submitted",
+    label: "Application Submitted",
+    stages: ["application_submitted"],
+  },
+  {
+    id: "references",
+    label: "References & Checks",
+    stages: ["references"],
+  },
+  {
+    id: "tenancy_agreement",
+    label: "Tenancy Agreement",
+    stages: ["tenancy_agreement"],
+  },
+  {
+    id: "move_in",
+    label: "Move-In Day",
+    stages: ["move_in"],
+  },
+  {
+    id: "post_move",
+    label: "After Moving In",
+    stages: ["post_move"],
+  },
+];
+
+function getPhaseForItem(item: ChecklistItem, phases: PhaseConfig[]): ChecklistPhase {
+  const stage = item.offer_stage ?? phases[0]?.id ?? "pre_offer";
+  for (const phase of phases) {
     if (phase.stages.includes(stage)) {
       return phase.id;
     }
   }
-  return "pre_offer";
+  return phases[0]?.id ?? "pre_offer";
 }
 
 // ---------------------------------------------------------------------------
@@ -77,11 +111,11 @@ async function fetchItems(offerId?: string): Promise<ChecklistItem[]> {
   return res.json() as Promise<ChecklistItem[]>;
 }
 
-async function createChecklist(offerId?: string): Promise<ChecklistItem[]> {
+async function createChecklist(offerId?: string, role?: string): Promise<ChecklistItem[]> {
   const res = await fetch("/api/moving-checklist", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ offer_id: offerId }),
+    body: JSON.stringify({ offer_id: offerId, role }),
   });
   if (!res.ok) throw new Error("Failed to create checklist");
   return res.json() as Promise<ChecklistItem[]>;
@@ -94,6 +128,16 @@ async function toggleItem(id: string, isCompleted: boolean): Promise<ChecklistIt
     body: JSON.stringify({ is_completed: isCompleted }),
   });
   if (!res.ok) throw new Error("Failed to update item");
+  return res.json() as Promise<ChecklistItem>;
+}
+
+async function addCustomItem(title: string, description?: string): Promise<ChecklistItem> {
+  const res = await fetch("/api/moving-checklist", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, description: description || null, is_custom: true }),
+  });
+  if (!res.ok) throw new Error("Failed to add custom item");
   return res.json() as Promise<ChecklistItem>;
 }
 
@@ -133,17 +177,17 @@ function ChecklistSkeleton() {
 function ChecklistRow({
   item,
   onToggle,
-  isPending,
+  pendingIds,
 }: {
   item: ChecklistItem;
   onToggle: (id: string, completed: boolean) => void;
-  isPending: boolean;
+  pendingIds: Set<string>;
 }) {
   return (
     <button
       type="button"
       onClick={() => onToggle(item.id, !item.is_completed)}
-      disabled={isPending}
+      disabled={pendingIds.has(item.id)}
       className="flex w-full items-start gap-3 rounded-md px-2 py-2 text-left transition-colors hover:bg-muted/50 disabled:opacity-60"
     >
       {item.is_completed ? (
@@ -178,12 +222,12 @@ function PhaseGroup({
   phase,
   items,
   onToggle,
-  pendingId,
+  pendingIds,
 }: {
   phase: PhaseConfig;
   items: ChecklistItem[];
   onToggle: (id: string, completed: boolean) => void;
-  pendingId: string | null;
+  pendingIds: Set<string>;
 }) {
   const [open, setOpen] = useState(true);
   const completedCount = items.filter((i) => i.is_completed).length;
@@ -222,7 +266,7 @@ function PhaseGroup({
                 key={item.id}
                 item={item}
                 onToggle={onToggle}
-                isPending={pendingId === item.id}
+                pendingIds={pendingIds}
               />
             ))}
           </div>
@@ -236,9 +280,18 @@ function PhaseGroup({
 // Main page
 // ---------------------------------------------------------------------------
 
-export default function MovingChecklistPage() {
+export default function MovingChecklistPage(
+  props: Readonly<{ params: Promise<{ role: string }> }>,
+) {
+  const { role } = use(props.params);
+  const phases = role === "renter" ? RENTER_PHASES : BUYER_PHASES;
+  const journeyText =
+    role === "renter"
+      ? "Track every step of your tenancy journey"
+      : "Track every step of your buying journey";
+
   const queryClient = useQueryClient();
-  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
 
   const {
     data: items,
@@ -252,7 +305,7 @@ export default function MovingChecklistPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () => createChecklist(),
+    mutationFn: () => createChecklist(undefined, role),
     onSuccess: (newItems) => {
       queryClient.setQueryData(["moving-checklist"], newItems);
       toast.success("Moving checklist created");
@@ -265,7 +318,7 @@ export default function MovingChecklistPage() {
   const toggleMutation = useMutation({
     mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
       toggleItem(id, completed),
-    onMutate: ({ id }) => setPendingId(id),
+    onMutate: ({ id }) => setPendingIds((prev) => new Set(prev).add(id)),
     onSuccess: (updated) => {
       queryClient.setQueryData(
         ["moving-checklist"],
@@ -279,11 +332,40 @@ export default function MovingChecklistPage() {
     onError: () => {
       toast.error("Failed to update item. Please try again.");
     },
-    onSettled: () => setPendingId(null),
+    onSettled: (_data, _err, { id }) => setPendingIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    }),
+  });
+
+  const customTitleRef = useRef<HTMLInputElement>(null);
+  const customDescRef = useRef<HTMLInputElement>(null);
+
+  const addCustomMutation = useMutation({
+    mutationFn: ({ title, description }: { title: string; description?: string }) =>
+      addCustomItem(title, description),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["moving-checklist"] });
+      toast.success("Item added");
+      if (customTitleRef.current) customTitleRef.current.value = "";
+      if (customDescRef.current) customDescRef.current.value = "";
+    },
+    onError: () => {
+      toast.error("Failed to add item. Please try again.");
+    },
   });
 
   function handleToggle(id: string, completed: boolean) {
     toggleMutation.mutate({ id, completed });
+  }
+
+  function handleAddCustom(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const title = customTitleRef.current?.value.trim();
+    if (!title) return;
+    const description = customDescRef.current?.value.trim() || undefined;
+    addCustomMutation.mutate({ title, description });
   }
 
   // ---- Loading ----
@@ -292,7 +374,7 @@ export default function MovingChecklistPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Moving Checklist</h1>
-          <p className="text-muted-foreground">Track every step of your buying journey</p>
+          <p className="text-muted-foreground">{journeyText}</p>
         </div>
         <ChecklistSkeleton />
       </div>
@@ -305,7 +387,7 @@ export default function MovingChecklistPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Moving Checklist</h1>
-          <p className="text-muted-foreground">Track every step of your buying journey</p>
+          <p className="text-muted-foreground">{journeyText}</p>
         </div>
         <Card>
           <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
@@ -329,7 +411,7 @@ export default function MovingChecklistPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Moving Checklist</h1>
-          <p className="text-muted-foreground">Track every step of your buying journey</p>
+          <p className="text-muted-foreground">{journeyText}</p>
         </div>
         <Card>
           <CardContent className="flex flex-col items-center gap-6 p-10 text-center">
@@ -337,7 +419,9 @@ export default function MovingChecklistPage() {
             <div className="space-y-1">
               <p className="font-semibold">Start your moving journey</p>
               <p className="text-sm text-muted-foreground">
-                Generate your personalised step-by-step checklist for buying a home in the UK.
+                {role === "renter"
+                  ? "Generate your personalised step-by-step checklist for renting a home in the UK."
+                  : "Generate your personalised step-by-step checklist for buying a home in the UK."}
               </p>
             </div>
             <Button
@@ -359,11 +443,11 @@ export default function MovingChecklistPage() {
 
   // Group items by phase
   const grouped = new Map<ChecklistPhase, ChecklistItem[]>();
-  for (const phase of PHASES) {
+  for (const phase of phases) {
     grouped.set(phase.id, []);
   }
   for (const item of itemList) {
-    const phaseId = getPhaseForItem(item);
+    const phaseId = getPhaseForItem(item, phases);
     const arr = grouped.get(phaseId);
     if (arr) arr.push(item);
   }
@@ -392,7 +476,7 @@ export default function MovingChecklistPage() {
       </Card>
 
       {/* Phase groups */}
-      {PHASES.map((phase) => {
+      {phases.map((phase) => {
         const phaseItems = grouped.get(phase.id) ?? [];
         if (phaseItems.length === 0) return null;
         return (
@@ -401,10 +485,38 @@ export default function MovingChecklistPage() {
             phase={phase}
             items={phaseItems}
             onToggle={handleToggle}
-            pendingId={pendingId}
+            pendingIds={pendingIds}
           />
         );
       })}
+
+      {/* Add custom item */}
+      <Card>
+        <CardContent className="pt-6 pb-4">
+          <form onSubmit={handleAddCustom} className="space-y-3">
+            <p className="text-sm font-medium">Add custom item</p>
+            <Input
+              ref={customTitleRef}
+              placeholder="Item title"
+              required
+              maxLength={200}
+            />
+            <Input
+              ref={customDescRef}
+              placeholder="Description (optional)"
+              maxLength={500}
+            />
+            <Button
+              type="submit"
+              size="sm"
+              disabled={addCustomMutation.isPending}
+            >
+              <PlusCircle className="mr-1 size-4" />
+              {addCustomMutation.isPending ? "Adding..." : "Add"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

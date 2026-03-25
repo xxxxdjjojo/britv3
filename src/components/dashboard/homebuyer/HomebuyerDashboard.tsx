@@ -34,6 +34,28 @@ import {
 import type { HomebuyerDashboard as HomebuyerData } from "@/types/dashboard";
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function buildGreeting(data: HomebuyerData): string {
+  const parts: string[] = [];
+  const viewingCount = data.upcoming_viewings?.length ?? 0;
+  if (viewingCount > 0) {
+    parts.push(
+      `You have ${viewingCount} upcoming viewing${viewingCount > 1 ? "s" : ""}`,
+    );
+  }
+  if (data.saved_properties_count > 0) {
+    parts.push(
+      `${data.saved_properties_count} saved ${data.saved_properties_count === 1 ? "property" : "properties"}`,
+    );
+  }
+  return parts.length > 0
+    ? parts.join(" and ") + ". Let's find your dream home."
+    : "Let's find your dream home.";
+}
+
+// ---------------------------------------------------------------------------
 // Mock data
 // ---------------------------------------------------------------------------
 
@@ -142,7 +164,7 @@ const MOCK_SERVICES = [
 export function HomebuyerDashboard({
   data,
 }: Readonly<{ data: HomebuyerData }>) {
-  const userName = "James";
+  const userName = data.user_name ?? "there";
 
   return (
     <div className="flex flex-col gap-8">
@@ -150,7 +172,7 @@ export function HomebuyerDashboard({
       <DashboardWelcome
         name={userName}
         variant="hero"
-        message="You have 5 new property matches since your last visit. Let's find your dream home."
+        message={buildGreeting(data)}
         actions={[
           { label: "Resume Search", href: "/search", icon: Search },
           {
@@ -167,25 +189,22 @@ export function HomebuyerDashboard({
         <StatCard
           icon={<Heart className="size-5 text-brand-primary" />}
           label="Saved Properties"
-          value={data.saved_properties_count || 12}
-          sub="+2 this week"
+          value={data.saved_properties_count}
         />
         <StatCard
           icon={<Bell className="size-5 text-brand-primary" />}
           label="Active Alerts"
-          value={data.active_searches_count || 4}
+          value={data.active_searches_count}
         />
         <StatCard
           icon={<Calendar className="size-5 text-brand-primary" />}
           label="Viewings Scheduled"
-          value={data.upcoming_viewings.length || 3}
-          sub="Next: Tomorrow"
+          value={data.upcoming_viewings.length}
         />
         <StatCard
           icon={<Mail className="size-5 text-brand-primary" />}
           label="Agent Messages"
-          value={15}
-          sub="8 New"
+          value={data.unread_messages_count ?? 0}
         />
       </div>
 
