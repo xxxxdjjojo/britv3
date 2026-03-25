@@ -73,11 +73,12 @@ const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string
   attraction: GraduationCap,
 };
 
-function OfstedBadge({ rating }: Readonly<{ rating: "Outstanding" | "Good" | "Requires Improvement" }>) {
-  const classes = {
+function OfstedBadge({ rating }: Readonly<{ rating: "Outstanding" | "Good" | "Requires Improvement" | "Inadequate" }>) {
+  const classes: Record<string, string> = {
     Outstanding: "bg-emerald-100 text-emerald-800",
     Good: "bg-blue-100 text-blue-800",
     "Requires Improvement": "bg-amber-100 text-amber-800",
+    Inadequate: "bg-red-100 text-red-800",
   };
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${classes[rating]}`}>
