@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { ListingStep } from "@/types/seller";
@@ -39,6 +40,12 @@ export function WizardShell({
   const searchParams = useSearchParams();
   const totalSteps = 7;
   const pct = Math.round((step / totalSteps) * 100);
+
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, []);
 
   const goBack = () => {
     if (onBack) { onBack(); return; }

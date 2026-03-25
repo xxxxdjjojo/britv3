@@ -33,6 +33,26 @@ export default async function CreateListingPage({ searchParams }: Props) {
     listing = data;
   }
 
+  // Validate prior steps are complete before allowing access to later steps
+  if (listing && step > 1) {
+    const stepChecks: Record<number, (l: Partial<SellerListing>) => boolean> = {
+      2: (l) => !!(l.address_line_1 && l.property_type && l.tenure),
+      3: (l) => !!(l.bedrooms !== undefined && l.bedrooms !== null),
+      4: (l) => !!((l.photos?.length ?? 0) >= 1),
+      5: (l) => !!((l.description?.length ?? 0) >= 10),
+      6: (l) => !!(l.asking_price && l.asking_price > 0),
+      7: (l) => true,
+    };
+    let maxValid = 1;
+    for (let s = 2; s <= step; s++) {
+      if (!stepChecks[s]?.(listing)) break;
+      maxValid = s;
+    }
+    if (maxValid < step) {
+      redirect(`/dashboard/seller/listings/create?step=${maxValid}&id=${listingId}`);
+    }
+  }
+
   // Redirect to step 1 if no listing id and step > 1
   if (!listingId && step > 1) redirect("/dashboard/seller/listings/create?step=1");
   if (step > 1 && !listingId) redirect("/dashboard/seller/listings/create?step=1");
