@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2.0] - 2026-03-25
+
+### Added
+- GDPR-compliant terms acceptance + marketing consent checkboxes on registration (UK GDPR Article 7)
+- Password visibility toggle on registration form (parity with login)
+- Autocomplete attributes on all auth form inputs (given-name, family-name, email, new-password, current-password)
+- Renter-specific onboarding wizard with monthly rent budget, renter property types, and renter must-haves
+- Security alert emails via Resend for password changes, MFA enroll/unenroll, email changes
+- MFA enforcement in middleware (AAL2 check) — fail-closed for admin, fail-open for dashboard
+- Gas Safe registration enforcement for gas engineers (legally required accreditation)
+- Role-aware verify-email confirmed CTAs routing to role-specific onboarding
+- CODEOWNERS file protecting security-critical paths
+- REAUTH_HMAC_SECRET documented in .env.example
+- Area stats dashboard (6.4) with price breakdowns, trends, and stock levels
+- National market trends page (6.8) with historical chart
+- All section 6 pages added to dynamic sitemap
+- JSON-LD structured data for area and sold prices schemas
+
+### Fixed
+- Account enumeration prevention — uniform error messages for registration and login
+- Post-login redirect preservation (redirectTo param now consumed by LoginForm)
+- Open redirect prevention on OAuth callback and TwoFactorForm next params
+- XSS prevention in security alert email templates (HTML-escape firstName)
+- Role slug type coercion — validate against VALID_ROLES before casting
+- Admin audit log writes now catch and log errors (prevents silent audit trail gaps)
+- Login form no longer enforces password policy (min-length removed, server validates)
+- 2FA attempt limit increased from 3 to 5 (reduces false lockouts on mobile)
+- SHA-pinned GitHub Actions (actions/checkout, supabase/setup-cli)
+- Dedicated secrets required: REAUTH_HMAC_SECRET, STRIPE_SECRET_KEY, QUOTE_SIGNING_SECRET, PUSH_SECRET
+- Inngest webhook signing key configured for verification
+- Supabase .temp/ gitignored to prevent credential leaks
+
+### Changed
+- Onboarding step persistence upgraded from sessionStorage to localStorage
+- MFA enforcement: admin routes fail-closed, dashboard routes fail-open
+
 ## [0.0.1.0] - 2026-03-24
 
 ### Added
