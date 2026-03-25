@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2.1] - 2026-03-25
+
+### Added
+- Seller dashboard: CPUTR material information declaration checkbox — sellers must confirm legal compliance before publishing a listing
+- Seller dashboard: short lease warning when leasehold years < 80 — surfaces mortgage difficulty risk at listing creation
+- Seller dashboard: tenure, EPC band, and council tax band tooltips for first-time sellers
+- Seller dashboard: empty state with "Create Your First Listing" CTA on dashboard home
+- Seller dashboard: clickable KPI cards linking to relevant sections
+- Seller dashboard: review checklist items navigate to the relevant wizard step for editing
+- Seller dashboard: unverified buyer warning when accepting an offer without proof of funds
+- Atomic offer acceptance cascade via Supabase RPC — accepts offer, updates listing to "under_offer", creates sale progression record, rejects all other pending offers in one transaction
+
+### Fixed
+- **Security (CRITICAL):** Prompt injection in AI description generator — user-supplied address was interpolated directly into Claude prompt; now uses structured system/user messages via `callClaude()`
+- **Security (HIGH):** AI description route bypassed `callClaude()` spend limits and rate limiting — refactored to use centralized wrapper
+- **Security (HIGH):** Push notification endpoint used `SUPABASE_SERVICE_ROLE_KEY` as bearer token — replaced with dedicated `PUSH_SECRET` env var
+- **Security (HIGH):** Unsubscribe token utility had hardcoded `"dev-secret-not-for-production"` fallback — now throws if secret is missing
+- **Security (MEDIUM):** Updated `file-type` from 21.3.0 to 21.3.4 — patches ZIP decompression bomb (GHSA-j47w-4g3g-c36v) and ASF infinite loop (GHSA-5v7r-6r5c-r473)
+- **Security:** PostHog `us-assets.i.posthog.com` CDN added to CSP `script-src` and `connect-src` — analytics was silently blocked
+- Seller offer ownership verification — `respondToOffer()` now checks `seller_id` + `status = "pending"` (prevents unauthorized access and concurrent action conflicts)
+- Seller listing wizard: EPC certificate now required for publishing (was optional — violates UK Energy Performance of Buildings Regulations 2012)
+- Seller listing wizard: `beforeunload` warning prevents accidental data loss when closing browser mid-step
+- Seller listing wizard: step-skip prevention — direct URL navigation to later steps now validates prior step data exists
+- Seller listing wizard: photo upload saves each photo individually — partial batch failure no longer loses all successfully uploaded photos
+- Seller listing wizard: added `TouchSensor` for mobile photo drag-and-drop reordering
+- Seller listing wizard: 20MB file size limit enforced on photo upload
+- Seller listing wizard: HEIC/HEIF photo format support added (iPhone users)
+- Seller listing wizard: price input now formats with commas inline as you type
+- Seller dashboard: performance chart now aggregates views across all active listings (was showing only the first)
+- Seller dashboard: `getSellerListings()` N+1 query replaced with 2 batched queries (was 10 queries per listing)
+- Seller dashboard: duplicate listing detection — prevents creating a second listing at the same address
+- Seller offers: counter-offer of £0 or less now rejected with validation error
+
 ## [0.0.2.0] - 2026-03-25
 
 ### Added
