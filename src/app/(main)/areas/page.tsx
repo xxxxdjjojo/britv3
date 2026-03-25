@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin, TrendingUp, ArrowRight, Search } from "lucide-react";
+import { getMarketKPIs } from "@/services/areas/market-trends-service";
 
 export const metadata: Metadata = {
   title: "Browse UK Property Areas | Britestate",
@@ -132,7 +133,9 @@ const FEATURED_AREAS = [
   { slug: "edinburgh/leith", name: "Leith", city: "Edinburgh", avgPrice: "285,000", tag: "Regeneration" },
 ] as const;
 
-export default function AreasPage() {
+export default async function AreasPage() {
+  const kpis = await getMarketKPIs();
+
   return (
     <>
       {/* ── Hero ── */}
@@ -261,24 +264,27 @@ export default function AreasPage() {
             <p className="text-white/80 mb-6 leading-relaxed">
               National prices up 4.8% year-on-year. Northern cities outperforming London for capital growth. Rental demand at record highs.
             </p>
-            <Link
-              href="/tools"
-              className="inline-flex items-center gap-2 bg-white text-brand-primary px-6 py-3 rounded-xl font-bold hover:bg-neutral-100 transition-colors"
-            >
-              Explore Our Tools <ArrowRight className="size-4" />
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/market-trends"
+                className="inline-flex items-center gap-2 bg-white text-brand-primary px-6 py-3 rounded-xl font-bold hover:bg-neutral-100 transition-colors"
+              >
+                View Market Trends <ArrowRight className="size-4" />
+              </Link>
+              <Link
+                href="/sold-prices"
+                className="inline-flex items-center gap-2 bg-white/10 text-white border border-white/30 px-6 py-3 rounded-xl font-bold hover:bg-white/20 transition-colors"
+              >
+                Sold Prices <ArrowRight className="size-4" />
+              </Link>
+            </div>
           </div>
           <div className="relative z-10 grid grid-cols-2 gap-4">
-            {[
-              { label: "National Avg Price", value: "£298,600", sub: "+4.8% YoY" },
-              { label: "Monthly Transactions", value: "84,200", sub: "+2.1% vs last month" },
-              { label: "Avg Days to Sell", value: "42 days", sub: "-8% vs 2025" },
-              { label: "Rental Demand Index", value: "94 / 100", sub: "Record high" },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-white/10 rounded-xl p-4">
-                <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">{stat.label}</p>
-                <p className="text-white text-xl font-bold">{stat.value}</p>
-                <p className="text-white/70 text-xs mt-0.5">{stat.sub}</p>
+            {kpis.map((kpi) => (
+              <div key={kpi.label} className="bg-white/10 rounded-xl p-4">
+                <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">{kpi.label}</p>
+                <p className="text-white text-xl font-bold">{kpi.value}</p>
+                <p className="text-white/70 text-xs mt-0.5">{kpi.change}</p>
               </div>
             ))}
           </div>
