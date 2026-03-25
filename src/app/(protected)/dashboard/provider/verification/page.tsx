@@ -5,37 +5,13 @@ import {
   getVerificationSteps,
   getProviderBadges,
 } from "@/services/provider/provider-verification-service";
+import { computeTrustScore } from "@/services/provider/trust-score-service";
 import { VerificationStepper } from "@/components/dashboard/provider/VerificationStepper";
 import { TrustScoreGauge } from "@/components/dashboard/provider/TrustScoreGauge";
 
 export const metadata = {
   title: "Verification & Trust Centre | Provider Dashboard",
 };
-
-/** Derive a 0–100 trust score from the 5 verification steps. */
-function computeTrustScore(
-  steps: Awaited<ReturnType<typeof getVerificationSteps>>,
-): number {
-  // Required steps worth 25 pts each, optional steps worth 10 pts each
-  const weights: Record<string, number> = {
-    id_check: 25,
-    insurance: 25,
-    qualifications: 20,
-    client_references: 15,
-    peer_references: 15,
-  };
-
-  let earned = 0;
-  for (const step of steps) {
-    if (step.status === "approved") {
-      earned += weights[step.stepId] ?? 10;
-    } else if (step.status === "submitted") {
-      // Partial credit while under review
-      earned += Math.floor((weights[step.stepId] ?? 10) * 0.5);
-    }
-  }
-  return Math.min(100, earned);
-}
 
 export default async function VerificationOverviewPage() {
   const supabase = await createClient();
