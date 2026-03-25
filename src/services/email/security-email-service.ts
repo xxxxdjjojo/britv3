@@ -22,6 +22,10 @@ type SecurityAlertInput = {
   eventType: string;
 };
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 const EVENT_SUBJECTS: Record<string, string> = {
   password_changed: "Your password was changed",
   mfa_enrolled: "Two-factor authentication enabled",
@@ -56,7 +60,7 @@ export async function sendSecurityAlert(
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
           <h2 style="color: #1B4D3E; margin-bottom: 16px;">Security Alert</h2>
           <p style="color: #333; font-size: 15px; line-height: 1.6;">
-            Hi ${input.firstName || "there"},
+            Hi ${escapeHtml(input.firstName || "there")},
           </p>
           <p style="color: #333; font-size: 15px; line-height: 1.6;">
             ${description}

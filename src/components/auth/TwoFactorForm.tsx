@@ -15,7 +15,8 @@ const CODE_TTL_SECONDS = 30;
 export function TwoFactorForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? searchParams.get("redirectTo") ?? "/dashboard";
+  const rawNext = searchParams.get("next") ?? searchParams.get("redirectTo");
+  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
 
   const [code, setCode] = useState("");
   const [factorId, setFactorId] = useState<string | null>(null);
