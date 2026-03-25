@@ -277,10 +277,10 @@ export async function runMatchAnalysis(
 
   const userMessage = `
 Buyer preferences:
-- Location: ${prefs.location ?? "flexible"}
+- Location: ${sanitizeForPrompt(prefs.location ?? "flexible")}
 - Budget: £${penceToGBP(prefs.budget_min ?? 0).toLocaleString()} to £${penceToGBP(prefs.budget_max ?? 9999999).toLocaleString()}
 - Bedrooms: ${prefs.bedrooms_min ?? 1}–${prefs.bedrooms_max ?? 10}
-- Must haves: ${prefs.must_haves.join(", ") || "none specified"}
+- Must haves: ${prefs.must_haves.map((item) => sanitizeForPrompt(item)).join(", ") || "none specified"}
 - Lifestyle: ${Object.entries(sanitizedFactors).map(([k, v]) => `${k}: ${v}`).join("; ") || "none"}
 
 Properties to score:
