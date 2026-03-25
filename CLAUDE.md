@@ -132,13 +132,14 @@ Copy `britv3.0/.env.example` to `.env.local`. Key variables:
 | `REAUTH_HMAC_SECRET` | Server only | For reauth tokens |
 | `PUSH_SECRET` | Server only | For push notifications |
 | `QUOTE_SIGNING_SECRET` | Server only | For quote HMAC |
+| `INNGEST_SIGNING_KEY` | Server only | For Inngest webhook verification |
 | `NEXT_PUBLIC_MAPTILER_API_KEY` | Client | For maps |
 
 Client-side vars must be prefixed with `NEXT_PUBLIC_`.
 
 ## Specification Documents
 
-The v2.0 PRD and epic specs in `britv3.0/docs/` are the definitive feature specifications:
+The v2.0 PRD and epic specs in `docs/` are the definitive feature specifications:
 - `brit estate prd 2026.txt` — Master PRD
 - `claude epic [N].txt` / `epic[N].txt` — Individual epic specs (1-11)
 - `project memory 2026.txt` — Full architecture details, 266 database tables
