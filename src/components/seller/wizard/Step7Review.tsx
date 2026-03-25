@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { WizardShell } from "./WizardShell";
 import type { SellerListing, ListingStep } from "@/types/seller";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ type Props = Readonly<{
 export function Step7Review({ listing, listingId }: Props) {
   const router = useRouter();
   const [publishing, setPublishing] = useState(false);
+  const [cputrAccepted, setCputrAccepted] = useState(false);
   const [error, setError] = useState("");
 
   if (!listing) {
@@ -76,7 +78,7 @@ export function Step7Review({ listing, listingId }: Props) {
       listingId={listingId}
       onContinue={handlePublish}
       continueLabel={publishing ? "Publishing..." : "Publish Listing"}
-      continueDisabled={!requiredComplete}
+      continueDisabled={!requiredComplete || !cputrAccepted}
       isLoading={publishing}
     >
       <div className="space-y-8">
@@ -158,6 +160,23 @@ export function Step7Review({ listing, listingId }: Props) {
               </p>
             </div>
           )}
+        </div>
+
+        {/* CPUTR Declaration */}
+        <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <Checkbox
+              checked={cputrAccepted}
+              onCheckedChange={(v) => setCputrAccepted(v === true)}
+              className="mt-0.5"
+            />
+            <span className="text-sm text-slate-700 leading-relaxed">
+              I confirm that all material information about this property has been disclosed in
+              accordance with the Consumer Protection from Unfair Trading Regulations 2008 and
+              National Trading Standards guidance. I understand that withholding material
+              information may constitute a criminal offence.
+            </span>
+          </label>
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
