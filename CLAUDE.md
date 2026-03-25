@@ -128,6 +128,8 @@ Copy `britv3.0/.env.example` to `.env.local`. Key variables:
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | Yes |
 | `STRIPE_SECRET_KEY` | Server only | For payments |
 | `ANTHROPIC_API_KEY` | Server only | For AI features |
+| `RESEND_API_KEY` | Server only | For emails |
+| `REAUTH_HMAC_SECRET` | Server only | For reauth tokens |
 | `NEXT_PUBLIC_MAPTILER_API_KEY` | Client | For maps |
 
 Client-side vars must be prefixed with `NEXT_PUBLIC_`.
