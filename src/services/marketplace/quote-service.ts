@@ -66,7 +66,10 @@ export async function createQuote(
   );
 
   // Compute HMAC signature for quote integrity
-  const signingSecret = process.env.QUOTE_SIGNING_SECRET ?? "";
+  const QUOTE_SIGNING_SECRET = process.env.QUOTE_SIGNING_SECRET;
+  if (!QUOTE_SIGNING_SECRET) {
+    throw new Error("QUOTE_SIGNING_SECRET environment variable is required");
+  }
   const signature = signQuote(
     {
       service_request_id,
@@ -75,7 +78,7 @@ export async function createQuote(
       scope_of_work: parsed.scope_of_work,
       line_items: JSON.stringify(parsed.line_items),
     },
-    signingSecret,
+    QUOTE_SIGNING_SECRET,
   );
 
   const { data: quote, error } = await supabase
