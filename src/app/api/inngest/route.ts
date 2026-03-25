@@ -10,6 +10,8 @@ import { referenceRequested } from "@/inngest/functions/reference-requested";
 import { referenceSubmitted } from "@/inngest/functions/reference-submitted";
 import { verificationComplete } from "@/inngest/functions/verification-complete";
 import { referenceAutoReminders } from "@/inngest/functions/reference-auto-reminders";
+import { documentRejected } from "@/inngest/functions/document-rejected";
+import { verificationReEngagement } from "@/inngest/functions/verification-re-engagement";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -24,5 +26,7 @@ export const { GET, POST, PUT } = serve({
     referenceSubmitted,
     verificationComplete,
     referenceAutoReminders,
+    documentRejected,
+    verificationReEngagement,
   ],
 });
