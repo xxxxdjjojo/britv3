@@ -8,6 +8,7 @@ import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
 import { CommandPaletteLazy } from "@/components/layout/CommandPaletteLazy";
 import { DevBreakpointIndicator } from "@/components/responsive/DevBreakpointIndicator";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/organization-jsonld";
+import { safeJsonLd } from "@/lib/seo/safe-json-ld";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -70,8 +71,8 @@ export default function RootLayout({
             </BreakpointProvider>
           </PostHogProvider>
         </CookieConsentProvider>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(webSiteJsonLd) }} />
       </body>
     </html>
   );
