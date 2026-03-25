@@ -221,6 +221,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/sold-prices",
   "/market-trends",
   "/reviews",
+  "/reference",
   // System/error state pages — always publicly accessible
   "/forbidden",
   "/maintenance",
