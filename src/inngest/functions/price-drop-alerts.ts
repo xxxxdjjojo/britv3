@@ -43,11 +43,11 @@ export const priceDropAlerts = inngest.createFunction(
     });
 
     if (drops.length === 0) {
-      return { status: "no_drops", notificationsSent: 0 };
+      return { status: "no_drops", emailsSent: 0 };
     }
 
     const BATCH_SIZE = 50;
-    let totalNotifications = 0;
+    let totalEmailsSent = 0;
 
     for (let i = 0; i < drops.length; i += BATCH_SIZE) {
       const batch = drops.slice(i, i + BATCH_SIZE);
@@ -55,14 +55,18 @@ export const priceDropAlerts = inngest.createFunction(
       const batchResult = await step.run(
         `process-batch-${Math.floor(i / BATCH_SIZE)}`,
         async () => {
-          let batchNotifications = 0;
+          let emailsSent = 0;
 
           // 1. Batch query: saved_properties for all property_ids in this batch
           const propertyIds = batch.map((d) => d.property_id);
-          const { data: allSavedProps } = await supabase
+          const { data: allSavedProps, error: savedPropsError } = await supabase
             .from("saved_properties")
             .select("property_id, user_id")
             .in("property_id", propertyIds);
+
+          if (savedPropsError) {
+            console.error("[price-drop-alerts] Failed to fetch saved_properties:", savedPropsError);
+          }
 
           // Build Map<property_id, user_id[]>
           const savedPropsMap = new Map<string, string[]>();
@@ -77,10 +81,14 @@ export const priceDropAlerts = inngest.createFunction(
 
           // 2. Batch query: search_listings for all listing_ids
           const listingIds = batch.map((d) => d.listing_id);
-          const { data: allListings } = await supabase
+          const { data: allListings, error: listingsError } = await supabase
             .from("search_listings")
-            .select("listing_id, city, listing_type, bedrooms, price")
+            .select("listing_id, bedrooms")
             .in("listing_id", listingIds);
+
+          if (listingsError) {
+            console.error("[price-drop-alerts] Failed to fetch listings:", listingsError);
+          }
 
           // Build Map<listing_id, listing>
           const listingsMap = new Map<string, { bedrooms?: number }>();
@@ -97,10 +105,14 @@ export const priceDropAlerts = inngest.createFunction(
 
           const profilesMap = new Map<string, { email: string; first_name: string }>();
           if (allUserIds.size > 0) {
-            const { data: allProfiles } = await supabase
+            const { data: allProfiles, error: profilesError } = await supabase
               .from("profiles")
               .select("id, email, first_name")
               .in("id", [...allUserIds]);
+
+            if (profilesError) {
+              console.error("[price-drop-alerts] Failed to fetch profiles:", profilesError);
+            }
 
             for (const p of (allProfiles ?? []) as { id: string; email: string; first_name: string }[]) {
               profilesMap.set(p.id, { email: p.email, first_name: p.first_name });
@@ -181,23 +193,23 @@ export const priceDropAlerts = inngest.createFunction(
                 manageAlertsUrl: `${appUrl}/dashboard/settings/notifications`,
               });
 
-              batchNotifications++;
+              emailsSent++;
             } catch (err) {
               console.error(`[price-drop-alerts] Failed to notify user ${task.userId}:`, err);
             }
           }
 
-          return batchNotifications;
+          return emailsSent;
         },
       );
 
-      totalNotifications += batchResult;
+      totalEmailsSent += batchResult;
     }
 
     return {
       status: "completed",
       dropsFound: drops.length,
-      notificationsSent: totalNotifications,
+      emailsSent: totalEmailsSent,
     };
   },
 );
