@@ -9,7 +9,7 @@ import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
 import { DataAttribution } from "@/components/areas/DataAttribution";
 import { AreaSearchCTA } from "@/components/areas/AreaSearchCTA";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: re-generate every hour
 
 type SoldPriceSlugProps = Readonly<{
   params: Promise<{ area: string; slug: string }>;
