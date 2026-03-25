@@ -208,8 +208,12 @@ export async function middleware(request: NextRequest) {
         return redirectWithHeaders(`/two-factor${redirectParam}`, nonce, request);
       }
     } catch {
-      // MFA check failed — fail open to avoid locking users out
-      console.warn("[middleware] MFA assurance check failed, passing through");
+      // MFA check failed — fail closed for admin routes, open for others
+      console.warn("[middleware] MFA assurance check failed");
+      if (pathname.startsWith("/admin")) {
+        return redirectWithHeaders("/two-factor", nonce, request);
+      }
+      // Non-admin: fail open to avoid locking users out
     }
   }
 
