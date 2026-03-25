@@ -22,46 +22,58 @@ export async function getSellerListings(
 
   if (status) query = query.eq("status", status);
 
-  const { data, error } = await query;
+  const { data: listings, error } = await query;
   if (error) throw error;
+  if (!listings || listings.length === 0) return [];
 
-  const withStats = await Promise.all(
-    (data ?? []).map(async (listing) => {
-      const [viewsRes, savesRes, enquiriesRes] = await Promise.all([
-        supabase.from("listing_analytics_events").select("*", { count: "exact", head: true })
-          .eq("listing_id", listing.id).eq("event_type", "view"),
-        supabase.from("listing_analytics_events").select("*", { count: "exact", head: true })
-          .eq("listing_id", listing.id).eq("event_type", "save"),
-        supabase.from("listing_analytics_events").select("*", { count: "exact", head: true })
-          .eq("listing_id", listing.id).eq("event_type", "enquiry"),
-      ]);
+  const listingIds = listings.map((l) => l.id);
 
-      const days: number[] = [];
-      const now = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const day = new Date(now);
-        day.setDate(day.getDate() - i);
-        const dayStr = day.toISOString().split("T")[0];
-        const { count } = await supabase
-          .from("listing_analytics_events")
-          .select("*", { count: "exact", head: true })
-          .eq("listing_id", listing.id)
-          .eq("event_type", "view")
-          .gte("occurred_at", `${dayStr}T00:00:00Z`)
-          .lt("occurred_at", `${dayStr}T23:59:59Z`);
-        days.push(count ?? 0);
-      }
+  // Single batch query for all analytics counts
+  const { data: eventCounts } = await supabase
+    .from("listing_analytics_events")
+    .select("listing_id, event_type")
+    .in("listing_id", listingIds);
 
-      return {
-        ...listing,
-        views_count: viewsRes.count ?? 0,
-        saves_count: savesRes.count ?? 0,
-        enquiries_count: enquiriesRes.count ?? 0,
-        weekly_views: days,
-      } as ListingWithStats;
-    }),
-  );
-  return withStats;
+  // Aggregate counts per listing
+  const countsMap: Record<string, { views: number; saves: number; enquiries: number }> = {};
+  for (const evt of eventCounts ?? []) {
+    const key = evt.listing_id;
+    if (!countsMap[key]) countsMap[key] = { views: 0, saves: 0, enquiries: 0 };
+    if (evt.event_type === "view") countsMap[key].views++;
+    else if (evt.event_type === "save") countsMap[key].saves++;
+    else if (evt.event_type === "enquiry") countsMap[key].enquiries++;
+  }
+
+  // 7-day view counts (single query for all listings)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+  const { data: recentViews } = await supabase
+    .from("listing_analytics_events")
+    .select("listing_id, occurred_at")
+    .in("listing_id", listingIds)
+    .eq("event_type", "view")
+    .gte("occurred_at", sevenDaysAgo.toISOString());
+
+  const weeklyMap: Record<string, number[]> = {};
+  for (const id of listingIds) {
+    weeklyMap[id] = [0, 0, 0, 0, 0, 0, 0];
+  }
+  const now = new Date();
+  for (const evt of recentViews ?? []) {
+    const evtDate = new Date(evt.occurred_at);
+    const dayIndex = 6 - Math.floor((now.getTime() - evtDate.getTime()) / 86400000);
+    if (dayIndex >= 0 && dayIndex < 7) {
+      weeklyMap[evt.listing_id][dayIndex]++;
+    }
+  }
+
+  return listings.map((listing) => ({
+    ...listing,
+    views_count: countsMap[listing.id]?.views ?? 0,
+    saves_count: countsMap[listing.id]?.saves ?? 0,
+    enquiries_count: countsMap[listing.id]?.enquiries ?? 0,
+    weekly_views: weeklyMap[listing.id] ?? [0, 0, 0, 0, 0, 0, 0],
+  })) as ListingWithStats[];
 }
 
 /** Fetch a single listing by ID (seller must own it — RLS enforces) */
@@ -93,6 +105,20 @@ export async function createListing(
 ): Promise<SellerListing> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Unauthenticated");
+
+  // Check for existing active listing at same address
+  const { data: existing } = await supabase
+    .from("seller_listings")
+    .select("id")
+    .eq("seller_id", user.id)
+    .eq("postcode", input.postcode.toUpperCase())
+    .eq("address_line_1", input.address_line_1)
+    .in("status", ["draft", "active", "under_offer"])
+    .maybeSingle();
+
+  if (existing) {
+    throw new Error("You already have an active listing at this address");
+  }
 
   const { data, error } = await supabase
     .from("seller_listings")
