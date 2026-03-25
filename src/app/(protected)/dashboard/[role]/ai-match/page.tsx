@@ -22,6 +22,8 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { gbpToPence, penceToGBP } from "@/lib/currency";
+import { toast } from "sonner";
+import { X } from "lucide-react";
 import type { AiMatchPreferences, AiMatchResult } from "@/services/ai/ai-match-service";
 
 // ---------------------------------------------------------------------------
@@ -43,9 +45,9 @@ type LifestyleEntry = { key: string; value: string };
 const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5", "6+"] as const;
 
 function scoreColor(score: number): string {
-  if (score >= 0.8) return "bg-green-100 text-green-800 border-green-200";
-  if (score >= 0.6) return "bg-amber-100 text-amber-800 border-amber-200";
-  return "bg-red-100 text-red-800 border-red-200";
+  if (score >= 0.8) return "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800";
+  if (score >= 0.6) return "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800";
+  return "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800";
 }
 
 function formatGBP(pence: number): string {
@@ -189,12 +191,28 @@ export default function AiMatchPage() {
     }
   };
 
+  // ----- Dismiss a match --------------------------------------------------
+  const handleDismiss = async (listingId: string) => {
+    try {
+      const res = await fetch("/api/ai-match/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listing_id: listingId, feedback_type: "dismissed" }),
+      });
+      if (!res.ok) throw new Error("Failed to dismiss");
+      setResults((prev) => prev.filter((r) => r.listing_id !== listingId));
+      toast.success("Property dismissed");
+    } catch {
+      toast.error("Could not dismiss property. Please try again.");
+    }
+  };
+
   // ----- Render -----------------------------------------------------------
   return (
     <div className="space-y-8 p-6 max-w-3xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">AI Property Match</h1>
-        <p className="text-gray-500 mt-1 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">AI Property Match</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
           Tell us what you&apos;re looking for and our AI will score every active
           listing against your preferences.
         </p>
@@ -291,7 +309,7 @@ export default function AiMatchPage() {
           {/* Must haves */}
           <div className="space-y-2">
             <Label htmlFor="must-haves">Must haves</Label>
-            <p className="text-xs text-gray-500">One per line, e.g. &quot;south-facing garden&quot;</p>
+            <p className="text-xs text-muted-foreground">One per line, e.g. &quot;south-facing garden&quot;</p>
             <Textarea
               id="must-haves"
               rows={4}
@@ -304,7 +322,7 @@ export default function AiMatchPage() {
           {/* Lifestyle factors */}
           <div className="space-y-3">
             <Label>Lifestyle factors</Label>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Add up to 5 key/value pairs, e.g. &quot;commute&quot; / &quot;under 30 min to Canary Wharf&quot;
             </p>
             {lifestyle.map((entry, idx) => (
@@ -327,7 +345,7 @@ export default function AiMatchPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => removeLifestyleEntry(idx)}
-                    className="text-gray-400 hover:text-red-500 shrink-0"
+                    className="text-muted-foreground hover:text-red-500 shrink-0"
                   >
                     Remove
                   </Button>
@@ -397,7 +415,7 @@ export default function AiMatchPage() {
         <CardContent className="space-y-4">
           {/* Stale results banner */}
           {resultsExpired && (
-            <Alert className="border-amber-300 bg-amber-50 text-amber-800">
+            <Alert className="border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">
               <AlertDescription>
                 Your matches are from over 24 hours ago. Click &quot;Find My
                 Matches&quot; to refresh.
@@ -407,12 +425,12 @@ export default function AiMatchPage() {
 
           {/* Loading state */}
           {isLoading && (
-            <p className="text-sm text-gray-500">Loading matches...</p>
+            <p className="text-sm text-muted-foreground">Loading matches...</p>
           )}
 
           {/* Empty state */}
           {!isLoading && results.length === 0 && !resultsExpired && (
-            <p className="text-sm text-gray-500 py-6 text-center">
+            <p className="text-sm text-muted-foreground py-6 text-center">
               No matches yet — fill in your preferences and click &quot;Find My
               Matches&quot;.
             </p>
@@ -422,14 +440,21 @@ export default function AiMatchPage() {
           {results.map((result) => (
             <div
               key={result.id}
-              className="border rounded-lg p-4 space-y-3 bg-white shadow-sm"
+              className="border rounded-lg p-4 space-y-3 bg-card shadow-sm"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">
-                    {result.listing?.address ?? "Unknown address"}
-                  </p>
-                  <p className="text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-foreground truncate">
+                      {result.listing?.address ?? "Unknown address"}
+                    </p>
+                    {result.listing?.status === "under_offer" && (
+                      <Badge variant="secondary" className="shrink-0 text-xs bg-orange-100 text-orange-800 border-orange-200">
+                        Under Offer
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
                     {result.listing ? formatGBP(result.listing.price) : "—"}
                     {result.listing?.bedrooms !== null && result.listing?.bedrooms !== undefined
                       ? ` · ${result.listing.bedrooms} bed`
@@ -439,15 +464,27 @@ export default function AiMatchPage() {
                       : ""}
                   </p>
                 </div>
-                <Badge
-                  className={`shrink-0 text-sm font-semibold border ${scoreColor(result.match_score)}`}
-                >
-                  {Math.round(result.match_score * 100)}% match
-                </Badge>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Badge
+                    className={`text-sm font-semibold border ${scoreColor(result.match_score)}`}
+                  >
+                    {Math.round(result.match_score * 100)}% match
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-muted-foreground hover:text-destructive"
+                    onClick={() => handleDismiss(result.listing_id)}
+                    title="Not for me"
+                  >
+                    <X className="size-4" />
+                    <span className="sr-only">Dismiss</span>
+                  </Button>
+                </div>
               </div>
 
               {result.match_reasons.length > 0 && (
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                   {result.match_reasons.map((reason, i) => (
                     <li key={i}>{reason}</li>
                   ))}

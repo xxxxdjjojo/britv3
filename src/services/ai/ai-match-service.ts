@@ -40,6 +40,7 @@ export type AiMatchResult = {
     price: number;
     bedrooms: number | null;
     property_type: string | null;
+    status: string | null;
   };
 };
 
@@ -180,7 +181,8 @@ export async function getMatchResults(
         address,
         price,
         bedrooms,
-        property_type
+        property_type,
+        status
       )
     `,
     )
@@ -192,26 +194,33 @@ export async function getMatchResults(
     return [];
   }
 
-  return data.map((row) => {
-    const listing = Array.isArray(row.listing) ? row.listing[0] : row.listing;
-    return {
-      id: row.id as string,
-      listing_id: row.listing_id as string,
-      match_score: Number(row.match_score),
-      match_reasons: (row.match_reasons as string[]) ?? [],
-      computed_at: row.computed_at as string,
-      expires_at: row.expires_at as string,
-      listing: listing
-        ? {
-            id: listing.id as string,
-            address: listing.address as string,
-            price: Number(listing.price),
-            bedrooms: (listing.bedrooms as number | null) ?? null,
-            property_type: (listing.property_type as string | null) ?? null,
-          }
-        : undefined,
-    };
-  });
+  return data
+    .map((row) => {
+      const listing = Array.isArray(row.listing) ? row.listing[0] : row.listing;
+      return {
+        id: row.id as string,
+        listing_id: row.listing_id as string,
+        match_score: Number(row.match_score),
+        match_reasons: (row.match_reasons as string[]) ?? [],
+        computed_at: row.computed_at as string,
+        expires_at: row.expires_at as string,
+        listing: listing
+          ? {
+              id: listing.id as string,
+              address: listing.address as string,
+              price: Number(listing.price),
+              bedrooms: (listing.bedrooms as number | null) ?? null,
+              property_type: (listing.property_type as string | null) ?? null,
+              status: (listing.status as string | null) ?? null,
+            }
+          : undefined,
+      };
+    })
+    .filter((r) => {
+      // Filter out sold/withdrawn listings (BUG-14)
+      const status = r.listing?.status;
+      return status !== "sold" && status !== "withdrawn";
+    });
 }
 
 type RunMatchResult =

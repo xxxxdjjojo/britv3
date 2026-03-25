@@ -7,6 +7,15 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SavedProperty, Listing, Property } from "@/types/property";
 
+/** A price history entry for a listing */
+export type PriceHistoryEntry = {
+  id: string;
+  listing_id: string;
+  old_price: number;
+  new_price: number;
+  changed_at: string;
+};
+
 /** A saved property record with joined listing and property data */
 export type SavedPropertyWithDetails = {
   id: string;
@@ -16,6 +25,7 @@ export type SavedPropertyWithDetails = {
   created_at: string;
   listing: Listing;
   property: Property;
+  price_history: PriceHistoryEntry[];
 };
 
 /**
@@ -91,7 +101,7 @@ export async function getSavedProperties(
 ): Promise<SavedPropertyWithDetails[]> {
   const { data, error } = await supabase
     .from("saved_properties")
-    .select("*, listings(*, properties(*))")
+    .select("*, listings(*, properties(*), price_history(*))")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -99,15 +109,19 @@ export async function getSavedProperties(
     throw new Error(`Failed to get saved properties: ${error.message}`);
   }
 
-  return (data ?? []).map((row: Record<string, unknown>) => ({
-    id: row.id as string,
-    user_id: row.user_id as string,
-    listing_id: row.listing_id as string,
-    notes: row.notes as string | null,
-    created_at: row.created_at as string,
-    listing: (row.listings as Record<string, unknown>) as unknown as Listing,
-    property: ((row.listings as Record<string, unknown>)?.properties ?? {}) as unknown as Property,
-  }));
+  return (data ?? []).map((row: Record<string, unknown>) => {
+    const listingsData = row.listings as Record<string, unknown>;
+    return {
+      id: row.id as string,
+      user_id: row.user_id as string,
+      listing_id: row.listing_id as string,
+      notes: row.notes as string | null,
+      created_at: row.created_at as string,
+      listing: listingsData as unknown as Listing,
+      property: (listingsData?.properties ?? {}) as unknown as Property,
+      price_history: (listingsData?.price_history ?? []) as unknown as PriceHistoryEntry[],
+    };
+  });
 }
 
 /**

@@ -2,40 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { SavedSearch } from "@/types/property";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Search, Bell } from "lucide-react";
-import { SavedSearchActions } from "@/components/listings/SavedSearchActions";
-
-function formatFilters(filters: SavedSearch["filters"]): string {
-  const parts: string[] = [];
-
-  if (filters.listing_type) {
-    parts.push(filters.listing_type === "sale" ? "Sale" : "Rent");
-  }
-  if (filters.min_bedrooms) {
-    parts.push(`${filters.min_bedrooms}+ beds`);
-  }
-  if (filters.min_price || filters.max_price) {
-    const min = filters.min_price
-      ? `\u00A3${(filters.min_price / 1000).toFixed(0)}K`
-      : "";
-    const max = filters.max_price
-      ? `\u00A3${(filters.max_price / 1000).toFixed(0)}K`
-      : "";
-    if (min && max) {
-      parts.push(`${min}-${max}`);
-    } else if (min) {
-      parts.push(`${min}+`);
-    } else {
-      parts.push(`Up to ${max}`);
-    }
-  }
-  if (filters.property_type && filters.property_type.length > 0) {
-    parts.push(filters.property_type.join(", "));
-  }
-
-  return parts.length > 0 ? parts.join(", ") : "All properties";
-}
+import { Search } from "lucide-react";
+import { SavedSearchCard } from "@/components/listings/SavedSearchCard";
 
 export const metadata = {
   title: "Saved Searches - Britestate",
@@ -89,42 +57,7 @@ export default async function SavedSearchesPage() {
       ) : (
         <div className="space-y-3">
           {searches.map((search) => (
-            <Card key={search.id}>
-              <CardContent className="flex items-center justify-between gap-4 p-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="truncate font-medium text-neutral-900">
-                      {search.name}
-                    </h3>
-                    {search.new_results_count > 0 && (
-                      <Badge className="bg-brand-accent text-white">
-                        {search.new_results_count} new
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="mt-1 truncate text-sm text-neutral-500">
-                    {formatFilters(search.filters)}
-                  </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    {search.alerts_enabled ? (
-                      <Badge
-                        variant="outline"
-                        className="gap-1 text-xs text-green-600"
-                      >
-                        <Bell className="size-3" />
-                        {search.alert_frequency} alerts
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs text-neutral-400">
-                        Alerts off
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
-                <SavedSearchActions search={search} />
-              </CardContent>
-            </Card>
+            <SavedSearchCard key={search.id} search={search} />
           ))}
         </div>
       )}

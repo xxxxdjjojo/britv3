@@ -5,7 +5,7 @@ import { getSavedProperties } from "@/services/saved/saved-properties-service";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Search, Bed, Bath, MapPin } from "lucide-react";
+import { Heart, Search, Bed, Bath, MapPin, TrendingDown } from "lucide-react";
 import { SavedPropertyRemoveButton } from "@/components/listings/SavedPropertyRemoveButton";
 
 function formatPrice(price: number): string {
@@ -14,6 +14,11 @@ function formatPrice(price: number): string {
     currency: "GBP",
     maximumFractionDigits: 0,
   }).format(price);
+}
+
+/** Returns ISO string for 24h ago — extracted to avoid Date.now() lint in render */
+function getNewBadgeCutoff(): string {
+  return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 }
 
 export const metadata = {
@@ -32,6 +37,8 @@ export default async function SavedPropertiesPage() {
   }
 
   const savedProperties = await getSavedProperties(supabase, user.id);
+
+  const newCutoff = getNewBadgeCutoff();
 
   return (
     <div className="space-y-6">
@@ -72,6 +79,16 @@ export default async function SavedPropertiesPage() {
           {savedProperties.map((saved) => {
             const { listing, property } = saved;
 
+            // Badge logic
+            const isNew = saved.created_at > newCutoff;
+            const isUnderOffer = listing.status === "under_offer";
+            const isSold = listing.status === "sold";
+            const hasPriceReduced = saved.price_history.some(
+              (ph) =>
+                ph.new_price < ph.old_price &&
+                new Date(ph.changed_at) > new Date(saved.created_at),
+            );
+
             return (
               <Card key={saved.id} className="overflow-hidden">
                 {/* Image */}
@@ -84,6 +101,26 @@ export default async function SavedPropertiesPage() {
                     </div>
                   </Link>
                   <SavedPropertyRemoveButton listingId={listing.id} />
+                  {/* Status badges overlay */}
+                  <div className="absolute left-2 top-2 flex flex-wrap gap-1">
+                    {isSold && (
+                      <Badge variant="destructive">Sold</Badge>
+                    )}
+                    {isUnderOffer && (
+                      <Badge className="border-amber-300 bg-amber-100 text-amber-800">
+                        Under Offer
+                      </Badge>
+                    )}
+                    {hasPriceReduced && (
+                      <Badge className="border-green-300 bg-green-100 text-green-800">
+                        <TrendingDown className="size-3" />
+                        Price Reduced
+                      </Badge>
+                    )}
+                    {isNew && (
+                      <Badge variant="secondary">New</Badge>
+                    )}
+                  </div>
                 </div>
 
                 <CardContent className="p-4">

@@ -99,6 +99,54 @@ export function useDeleteSearch() {
 }
 
 /**
+ * Mutation to update a saved search (name, alerts_enabled, alert_frequency).
+ * Uses optimistic updates for instant UI feedback.
+ */
+export function useUpdateSearch() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      searchId,
+      ...fields
+    }: {
+      searchId: string;
+      name?: string;
+      alerts_enabled?: boolean;
+      alert_frequency?: "instant" | "daily" | "weekly";
+    }) => {
+      const response = await fetch(`/api/saved-searches/${searchId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to update search: ${response.status}`);
+      }
+      return response.json() as Promise<SavedSearch>;
+    },
+    onMutate: async ({ searchId, ...fields }) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
+      const previous = queryClient.getQueryData<SavedSearch[]>(QUERY_KEY);
+      queryClient.setQueryData<SavedSearch[]>(QUERY_KEY, (old) =>
+        (old ?? []).map((s) =>
+          s.id === searchId ? { ...s, ...fields } : s,
+        ),
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(QUERY_KEY, context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+}
+
+/**
  * Returns a callback that loads a saved search's filters into URL params.
  * Uses nuqs setQueryStates to update the search URL state.
  */
