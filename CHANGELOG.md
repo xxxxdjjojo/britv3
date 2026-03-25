@@ -15,10 +15,17 @@ All notable changes to this project will be documented in this file.
 - Role-aware verify-email confirmed CTAs routing to role-specific onboarding
 - CODEOWNERS file protecting security-critical paths
 - REAUTH_HMAC_SECRET documented in .env.example
+- Area hub, city, neighbourhood, sold prices, and market trends pages (Section 6)
 - Area stats dashboard (6.4) with price breakdowns, trends, and stock levels
 - National market trends page (6.8) with historical chart
 - All section 6 pages added to dynamic sitemap
 - JSON-LD structured data for area and sold prices schemas
+- `safeJsonLd()` utility for XSS-safe JSON-LD rendering across all 19 structured data usages
+- Property detail page: JSON-LD RealEstateListing schema + canonical URL for SEO
+- Property detail page: mortgage + SDLT calculators pre-populated with listing price
+- Property detail page: sold/withdrawn listings render with status banner instead of 404
+- Property detail page: MEES compliance warning for rental EPC D+ ratings
+- Property detail page: price reduction badge, expanded key facts grid (receptions, listed date, lease remaining)
 
 ### Fixed
 - Account enumeration prevention — uniform error messages for registration and login
@@ -33,10 +40,39 @@ All notable changes to this project will be documented in this file.
 - Dedicated secrets required: REAUTH_HMAC_SECRET, STRIPE_SECRET_KEY, QUOTE_SIGNING_SECRET, PUSH_SECRET
 - Inngest webhook signing key configured for verification
 - Supabase .temp/ gitignored to prevent credential leaks
+- Property detail page: removed hardcoded "Low" flood risk data (was showing fake data on every listing)
+- Property detail page: both mobile "Book Viewing" CTAs — dead onClick and wrong anchor
+- IDOR in AI quote-draft endpoint — added ownership check + explicit column selection
+- Analytics event endpoint now requires authentication
+- AI match prompt injection — sanitize all user-controlled fields
 
 ### Changed
 - Onboarding step persistence upgraded from sessionStorage to localStorage
 - MFA enforcement: admin routes fail-closed, dashboard routes fail-open
+
+## [0.0.1.1] - 2026-03-25
+
+### Added
+- Review verification system — reviews can now be verified via booking, tenancy, or agent transaction (not just bookings)
+- UK legal compliance for reviews: incentivised review labelling, defamation flag type with 48h acknowledgement SLA
+- Review policy page (`/legal/review-policy`) covering moderation, verification tiers, and defamation complaints
+- Area category pages (`/reviews/[area]/category/[category]`) with provider listings and aggregate stats
+- Review notification emails: published, removed, provider response, and flag outcome via Resend
+- Atomic offer acceptance cascade — accepts offer, updates listing to under_offer, creates sale progression, rejects other pending offers in one transaction
+- Reviewable interactions API (`GET /api/reviews/reviewable`) — surfaces all bookings, tenancies, and agent transactions eligible for review
+
+### Fixed
+- Review security: ON DELETE CASCADE changed to SET NULL (reviews survive account deletion as anonymised)
+- Review security: provider UPDATE RLS restricted to response columns only (providers can't edit review content)
+- Review security: providers blocked from flagging their own negative reviews
+- Review security: aggregate stats now recalculate on review removal (not just approval)
+- Review security: text length constraints enforced at DB level (20–2000 chars)
+- Seller offer ownership verification — respondToOffer now checks seller_id + pending status
+- Dead PostgREST subquery with string interpolation removed from reviewable endpoint
+
+### Changed
+- Review form links to review policy, defamation added to flag reasons
+- Verified/unverified badges replace generic "Approved" badge on review cards
 
 ## [0.0.1.0] - 2026-03-24
 

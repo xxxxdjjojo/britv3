@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Britestate is an all-in-one UK property portal serving 7 user roles (homebuyer, renter, seller, landlord, estate agent, service provider, admin). This is v3.0 — a ground-up rebuild using the v2.0 PRD as specification. The codebase is currently a fresh Next.js 16 scaffold; all feature code is yet to be built following the epic-by-epic roadmap in `.planning/ROADMAP.md`.
+Britestate is an all-in-one UK property portal serving 7 user roles (homebuyer, renter, seller, landlord, estate agent, service provider, admin). This is v3.0 — a ground-up rebuild using the v2.0 PRD as specification. The codebase has authentication, property search, property detail pages, area guides, marketplace (reviews & ratings), messaging, notifications, seller/landlord/agent/provider dashboards, admin back-office, and security hardening built. Development follows the epic-by-epic roadmap in `.planning/ROADMAP.md`.
 
 ## Repository Structure
 
@@ -37,15 +37,14 @@ pnpm start        # Start production server
 pnpm lint         # ESLint (flat config, ESLint 9)
 ```
 
-Testing frameworks (Vitest, Playwright) are planned but not yet installed. When added:
 ```bash
-pnpm test                  # Unit tests (Vitest)
+pnpm test                  # Unit tests (Vitest — 1400+ tests)
 pnpm test:e2e              # E2E tests (Playwright)
 ```
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.1.6, React 19.2.3, TypeScript 5
+- **Framework**: Next.js 16.2.1, React 19.2.3, TypeScript 5
 - **Styling**: Tailwind CSS v4 (via `@tailwindcss/postcss`), Shadcn UI + Radix (planned)
 - **Backend**: Supabase (Auth, PostgreSQL, Realtime, Storage) — no custom backend server
 - **Package Manager**: pnpm (workspace mode)
