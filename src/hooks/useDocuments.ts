@@ -4,6 +4,7 @@
  * Hooks for buyer documents — list, upload, delete.
  */
 
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { trackEvent } from "@/lib/analytics/track-event";
 import type { UserDocument, DocumentType } from "@/services/documents/documents-service";
@@ -40,35 +41,62 @@ export type UploadDocumentVars = {
 
 export function useUploadDocument() {
   const queryClient = useQueryClient();
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
-  return useMutation<UserDocument, Error, UploadDocumentVars>({
+  const mutation = useMutation<UserDocument, Error, UploadDocumentVars>({
     mutationFn: async ({ file, documentType }) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("documentType", documentType);
 
-      const response = await fetch("/api/documents", {
-        method: "POST",
-        body: formData,
+      return new Promise<UserDocument>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            setUploadProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        };
+
+        xhr.onload = () => {
+          let data: Record<string, unknown>;
+          try {
+            data = JSON.parse(xhr.responseText);
+          } catch {
+            reject(new Error("Failed to parse upload response"));
+            return;
+          }
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            trackEvent("document.uploaded", { documentId: (data as { id: string }).id });
+            resolve(data as unknown as UserDocument);
+          } else {
+            reject(
+              Object.assign(
+                new Error((data.error as string) ?? "Failed to upload document"),
+                { code: data.error, status: xhr.status },
+              ),
+            );
+          }
+        };
+
+        xhr.onerror = () => {
+          reject(new Error("Network error during upload"));
+        };
+
+        xhr.open("POST", "/api/documents");
+        xhr.send(formData);
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw Object.assign(new Error(data.error ?? "Failed to upload document"), {
-          code: data.error,
-          status: response.status,
-        });
-      }
-
-      trackEvent("document.uploaded", { documentId: data.id });
-
-      return data;
+    },
+    onSettled: () => {
+      setUploadProgress(0);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
   });
+
+  return { ...mutation, uploadProgress };
 }
 
 // ---------------------------------------------------------------------------

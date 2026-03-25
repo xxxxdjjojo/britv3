@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -100,7 +101,7 @@ export default function DocumentsPage() {
   const [isUploading, setIsUploading] = useState(false);
 
   const { data: documents, isLoading, error } = useDocuments();
-  const uploadDocument = useUploadDocument();
+  const { uploadProgress, ...uploadDocument } = useUploadDocument();
   const deleteDocument = useDeleteDocument();
 
   const allDocs = documents ?? [];
@@ -156,6 +157,21 @@ export default function DocumentsPage() {
     }
   };
 
+  const handleView = async (documentId: string) => {
+    try {
+      const res = await fetch(`/api/documents/${documentId}/url`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({ error: "Failed to load document" }));
+        toast.error("Could not open document", { description: body.error });
+        return;
+      }
+      const { url } = await res.json();
+      window.open(url, "_blank", "noopener");
+    } catch {
+      toast.error("Could not open document");
+    }
+  };
+
   const handleDelete = async (documentId: string, fileName: string) => {
     try {
       await deleteDocument.mutateAsync({ documentId });
@@ -193,7 +209,7 @@ export default function DocumentsPage() {
       </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" size="icon" aria-label="View document">
+          <Button variant="ghost" size="icon" aria-label="View document" onClick={() => handleView(doc.id)}>
             <Eye className="size-4" />
           </Button>
           <Button
@@ -226,12 +242,12 @@ export default function DocumentsPage() {
             Securely store and manage your property documents
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Select
             value={selectedDocumentType}
             onValueChange={(v) => setSelectedDocumentType(v as DocumentType)}
           >
-            <SelectTrigger className="w-44">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue placeholder="Document type" />
             </SelectTrigger>
             <SelectContent>
@@ -254,6 +270,14 @@ export default function DocumentsPage() {
           />
         </div>
       </div>
+
+      {/* Upload progress */}
+      {isUploading && (
+        <div className="space-y-1">
+          <Progress value={uploadProgress} className="h-2" />
+          <p className="text-xs text-muted-foreground text-center">{uploadProgress}%</p>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
