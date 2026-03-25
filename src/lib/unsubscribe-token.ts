@@ -7,12 +7,12 @@ function getSecret(): string {
   const secret =
     process.env.UNSUBSCRIBE_TOKEN_SECRET ??
     process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!secret && process.env.NODE_ENV === "production") {
+  if (!secret) {
     throw new Error(
-      "UNSUBSCRIBE_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set in production",
+      "UNSUBSCRIBE_TOKEN_SECRET or SUPABASE_SERVICE_ROLE_KEY must be configured",
     );
   }
-  _secret = secret ?? "dev-secret-not-for-production";
+  _secret = secret;
   return _secret;
 }
 
