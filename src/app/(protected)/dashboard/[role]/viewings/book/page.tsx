@@ -6,16 +6,20 @@
  * Query params: listingId (required)
  */
 
-import { useState, useEffect, use } from "react";
+import { useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, ArrowLeft, Video, MapPin } from "lucide-react";
+import { generateIcs, downloadIcs } from "@/lib/ics-generator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useBookViewing } from "@/hooks/useViewings";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useBookViewing, useViewings } from "@/hooks/useViewings";
+import { hasViewingConflict } from "@/lib/viewing-conflict";
 import type { ViewingSlot } from "@/services/viewings/viewings-service";
 
 function formatSlotTime(isoString: string): string {
@@ -37,38 +41,40 @@ export default function BookViewingPage({
   const searchParams = useSearchParams();
   const listingId = searchParams.get("listingId");
 
-  const [slots, setSlots] = useState<ViewingSlot[] | null>(null);
-  const [loadingSlots, setLoadingSlots] = useState(false);
-  const [slotsError, setSlotsError] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [conflictAcknowledged, setConflictAcknowledged] = useState(false);
+
+  const {
+    data: slots = null,
+    isLoading: loadingSlots,
+    error: slotsQueryError,
+  } = useQuery<ViewingSlot[]>({
+    queryKey: ["viewing-slots", listingId],
+    enabled: !!listingId,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const res = await fetch(`/api/viewings/slots?listingId=${encodeURIComponent(listingId!)}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? "Failed to load slots");
+      }
+      return res.json() as Promise<ViewingSlot[]>;
+    },
+  });
+  const slotsError = slotsQueryError instanceof Error ? slotsQueryError.message : null;
 
   const bookViewing = useBookViewing();
+  const { data: existingViewings } = useViewings();
 
-  useEffect(() => {
-    if (!listingId) return;
-
-    setLoadingSlots(true);
-    setSlotsError(null);
-
-    fetch(`/api/viewings/slots?listingId=${encodeURIComponent(listingId)}`)
-      .then(async (res) => {
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(body.error ?? "Failed to load slots");
-        }
-        return res.json() as Promise<ViewingSlot[]>;
-      })
-      .then((data) => {
-        setSlots(data);
-      })
-      .catch((err: Error) => {
-        setSlotsError(err.message);
-      })
-      .finally(() => {
-        setLoadingSlots(false);
-      });
-  }, [listingId]);
+  // Check for conflict whenever the selected slot changes
+  const selectedSlot = slots?.find((s) => s.id === selectedSlotId);
+  const conflictCheck = selectedSlot && existingViewings
+    ? hasViewingConflict(
+        existingViewings.map((v) => ({ start_time: v.scheduled_at, status: v.status })),
+        selectedSlot.start_time,
+      )
+    : { conflict: false };
 
   const handleBook = async () => {
     if (!selectedSlotId || !listingId || submitting) return;
@@ -89,6 +95,19 @@ export default function BookViewingPage({
 
       toast.success("Viewing booked!", {
         description: `Your viewing on ${formatSlotTime(slot.start_time)} is confirmed.`,
+        action: {
+          label: "Add to Calendar",
+          onClick: () => {
+            const ics = generateIcs({
+              title: "Property Viewing — Britestate",
+              location: slot.type === "virtual" ? "Virtual viewing" : "See listing for address",
+              description: `Viewing arranged via Britestate. Listing: ${listingId}`,
+              start: new Date(slot.start_time),
+              end: new Date(slot.end_time),
+            });
+            downloadIcs(ics, "britestate-viewing.ics");
+          },
+        },
       });
 
       setSubmitting(false);
@@ -183,7 +202,10 @@ export default function BookViewingPage({
               <button
                 key={slot.id}
                 type="button"
-                onClick={() => setSelectedSlotId(slot.id)}
+                onClick={() => {
+                  setSelectedSlotId(slot.id);
+                  setConflictAcknowledged(false);
+                }}
                 className={[
                   "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-colors",
                   selectedSlotId === slot.id
@@ -227,10 +249,36 @@ export default function BookViewingPage({
         </CardContent>
       </Card>
 
+      {conflictCheck.conflict && selectedSlot && (
+        <Alert className="border-amber-300 bg-amber-50 text-amber-800">
+          <AlertDescription className="space-y-2">
+            <p>
+              This slot is within 60 minutes of another viewing you have at{" "}
+              <strong>{formatSlotTime(conflictCheck.conflictWith!)}</strong>.
+              You may not have enough travel time between viewings.
+            </p>
+            {!conflictAcknowledged && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setConflictAcknowledged(true)}
+              >
+                I understand, proceed anyway
+              </Button>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex justify-end">
         <Button
           onClick={handleBook}
-          disabled={!selectedSlotId || submitting || loadingSlots}
+          disabled={
+            !selectedSlotId ||
+            submitting ||
+            loadingSlots ||
+            (conflictCheck.conflict && !conflictAcknowledged)
+          }
         >
           {submitting ? "Booking…" : "Confirm Booking"}
         </Button>

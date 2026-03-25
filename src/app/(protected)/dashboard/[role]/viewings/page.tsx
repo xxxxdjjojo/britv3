@@ -187,55 +187,115 @@ export default function ViewingsPage({
                   </p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Date &amp; Time</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Property</TableHead>
+                          <TableHead>Date &amp; Time</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {upcoming.map((v) => (
+                          <TableRow key={v.id}>
+                            <TableCell>
+                              <div className="font-medium">{v.property_address}</div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="size-3" />
+                                {formatDate(v.scheduled_at)}
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="size-3" />
+                                {formatTime(v.scheduled_at)}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {v.type === "virtual" ? (
+                                  <>
+                                    <Video className="mr-1 size-3" />
+                                    Virtual
+                                  </>
+                                ) : (
+                                  "In Person"
+                                )}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={statusVariant(v.status)}>
+                                {statusLabel(v.status)}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                <Link
+                                  href={`/dashboard/${role}/viewings/${v.id}/reschedule`}
+                                >
+                                  <Button variant="outline" size="sm">
+                                    <RotateCcw className="mr-1 size-3" />
+                                    Reschedule
+                                  </Button>
+                                </Link>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleCancel(v.id)}
+                                  disabled={cancelViewing.isPending || !ACTIVE_STATUSES.has(v.status)}
+                                >
+                                  <X className="mr-1 size-3" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile card view */}
+                  <div className="md:hidden space-y-3 p-4">
                     {upcoming.map((v) => (
-                      <TableRow key={v.id}>
-                        <TableCell>
+                      <Card key={v.id}>
+                        <CardContent className="p-4 space-y-3">
                           <div className="font-medium">{v.property_address}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="size-3" />
-                            {formatDate(v.scheduled_at)}
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="size-3" />
+                              {formatDate(v.scheduled_at)}
+                            </div>
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Clock className="size-3" />
+                              {formatTime(v.scheduled_at)}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="size-3" />
-                            {formatTime(v.scheduled_at)}
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {v.type === "virtual" ? (
+                                <>
+                                  <Video className="mr-1 size-3" />
+                                  Virtual
+                                </>
+                              ) : (
+                                "In Person"
+                              )}
+                            </Badge>
+                            <Badge variant={statusVariant(v.status)}>
+                              {statusLabel(v.status)}
+                            </Badge>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {v.type === "virtual" ? (
-                              <>
-                                <Video className="mr-1 size-3" />
-                                Virtual
-                              </>
-                            ) : (
-                              "In Person"
-                            )}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusVariant(v.status)}>
-                            {statusLabel(v.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+                          <div className="flex flex-col gap-2">
                             <Link
                               href={`/dashboard/${role}/viewings/${v.id}/reschedule`}
                             >
-                              <Button variant="outline" size="sm">
+                              <Button variant="outline" size="sm" className="w-full">
                                 <RotateCcw className="mr-1 size-3" />
                                 Reschedule
                               </Button>
@@ -243,6 +303,7 @@ export default function ViewingsPage({
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="w-full"
                               onClick={() => handleCancel(v.id)}
                               disabled={cancelViewing.isPending}
                             >
@@ -250,11 +311,11 @@ export default function ViewingsPage({
                               Cancel
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
+                        </CardContent>
+                      </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
@@ -274,36 +335,64 @@ export default function ViewingsPage({
                   <p className="text-base font-medium">No past viewings</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Property</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <>
+                  {/* Desktop table */}
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Property</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {past.map((v) => (
+                          <TableRow key={v.id}>
+                            <TableCell className="font-medium">
+                              {v.property_address}
+                            </TableCell>
+                            <TableCell>{formatDate(v.scheduled_at)}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {v.type === "virtual" ? "Virtual" : "In Person"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={statusVariant(v.status)}>
+                                {statusLabel(v.status)}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile card view */}
+                  <div className="md:hidden space-y-3 p-4">
                     {past.map((v) => (
-                      <TableRow key={v.id}>
-                        <TableCell className="font-medium">
-                          {v.property_address}
-                        </TableCell>
-                        <TableCell>{formatDate(v.scheduled_at)}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {v.type === "virtual" ? "Virtual" : "In Person"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={statusVariant(v.status)}>
-                            {statusLabel(v.status)}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
+                      <Card key={v.id}>
+                        <CardContent className="p-4 space-y-3">
+                          <div className="font-medium">{v.property_address}</div>
+                          <div className="flex items-center gap-1 text-sm">
+                            <Calendar className="size-3" />
+                            {formatDate(v.scheduled_at)}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {v.type === "virtual" ? "Virtual" : "In Person"}
+                            </Badge>
+                            <Badge variant={statusVariant(v.status)}>
+                              {statusLabel(v.status)}
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
