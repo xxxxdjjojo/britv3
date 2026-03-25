@@ -25,9 +25,10 @@ function generateNonce(): string {
  * Build Content-Security-Policy header value with nonce.
  */
 function buildCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === "development";
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://us-assets.i.posthog.com https://js.stripe.com`,
+    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://us-assets.i.posthog.com https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com",
     "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com",
