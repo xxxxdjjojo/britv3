@@ -7,6 +7,9 @@ import { jwtHookMonitor } from "@/inngest/functions/jwt-hook-monitor";
 import { chainRiskMonitor } from "@/inngest/functions/chain-risk-monitor";
 import { quoteAcceptedToBooking } from "@/inngest/functions/quote-accepted-to-booking";
 import { referenceRequested } from "@/inngest/functions/reference-requested";
+import { referenceSubmitted } from "@/inngest/functions/reference-submitted";
+import { verificationComplete } from "@/inngest/functions/verification-complete";
+import { referenceAutoReminders } from "@/inngest/functions/reference-auto-reminders";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -18,5 +21,8 @@ export const { GET, POST, PUT } = serve({
     chainRiskMonitor,
     quoteAcceptedToBooking,
     referenceRequested,
+    referenceSubmitted,
+    verificationComplete,
+    referenceAutoReminders,
   ],
 });
