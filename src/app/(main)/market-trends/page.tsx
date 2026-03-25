@@ -13,6 +13,7 @@ import {
   ArrowRight,
   ChevronRight,
   Download,
+  MapPin,
 } from "lucide-react";
 import {
   Card,
@@ -21,144 +22,89 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { getRegionalTrends, getMarketKPIs, HOT_MARKETS, COLD_MARKETS, YIELD_RANKINGS } from "@/services/areas/market-trends-service";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
+import { DataAttribution } from "@/components/areas/DataAttribution";
+import { InternalLinkCard } from "@/components/areas/InternalLinkCard";
 
 export const metadata: Metadata = {
   title: "UK Property Market Trends | Britestate",
   description:
     "Live UK property market data, regional price trends, and expert analysis. Track house prices, transaction volumes, and market indicators.",
+  openGraph: {
+    title: "UK Property Market Trends | Britestate",
+    description:
+      "Live UK property market data, regional price trends, and expert analysis. Track house prices, transaction volumes, and market indicators.",
+    url: "https://britestate.co.uk/market-trends",
+    siteName: "Britestate",
+    type: "website",
+  },
 };
 
-const regions = [
+const KPI_ICONS: Record<string, typeof PoundSterling> = {
+  "Avg. House Price": PoundSterling,
+  "Monthly Transactions": Receipt,
+  "Avg. Days to Sell": BarChart3,
+  "Asking vs Sold Gap": Home,
+};
+
+const REGION_SELECTOR_LABELS = [
   "London",
   "South East",
   "South West",
-  "East",
-  "Midlands",
+  "East of England",
+  "East Midlands",
+  "West Midlands",
+  "Yorkshire and the Humber",
   "North West",
   "North East",
-  "Yorkshire",
-  "Scotland",
   "Wales",
+  "Scotland",
   "Northern Ireland",
 ];
 
-const kpiCards: ReadonlyArray<{
-  label: string;
-  value: string;
-  change: string;
-  trend: "up" | "down" | "neutral";
-  icon: typeof PoundSterling;
-}> = [
-  {
-    label: "Avg. House Price",
-    value: "\u00a3298,000",
-    change: "+3.8% YoY",
-    trend: "up",
-    icon: PoundSterling,
-  },
-  {
-    label: "Monthly Transactions",
-    value: "92,400",
-    change: "+12% YoY",
-    trend: "up",
-    icon: Receipt,
-  },
-  {
-    label: "Avg. Days to Sell",
-    value: "28",
-    change: "-3 days",
-    trend: "up",
-    icon: BarChart3,
-  },
-  {
-    label: "Asking vs Sold Gap",
-    value: "-2.1%",
-    change: "Stable",
-    trend: "neutral",
-    icon: Home,
-  },
-];
+const REGION_CITY_LINKS: Record<string, { city: string; href: string }> = {
+  London: { city: "London", href: "/areas/london" },
+  "South East": { city: "Brighton", href: "/areas/brighton" },
+  "South West": { city: "Bristol", href: "/areas/bristol" },
+  "East of England": { city: "Cambridge", href: "/areas/cambridge" },
+  "East Midlands": { city: "Nottingham", href: "/areas/nottingham" },
+  "West Midlands": { city: "Birmingham", href: "/areas/birmingham" },
+  "Yorkshire and the Humber": { city: "Leeds", href: "/areas/leeds" },
+  "North West": { city: "Manchester", href: "/areas/manchester" },
+  "North East": { city: "Newcastle", href: "/areas/newcastle" },
+  Wales: { city: "Cardiff", href: "/areas/cardiff" },
+  Scotland: { city: "Edinburgh", href: "/areas/edinburgh" },
+  "Northern Ireland": { city: "Belfast", href: "/areas/belfast" },
+};
 
-const regionalPrices = [
-  { region: "London", avgPrice: "\u00a3532,000", yoyChange: "+2.4%" },
-  { region: "South East", avgPrice: "\u00a3395,000", yoyChange: "+3.1%" },
-  { region: "South West", avgPrice: "\u00a3320,000", yoyChange: "+4.2%" },
-  { region: "East of England", avgPrice: "\u00a3340,000", yoyChange: "+3.5%" },
-  { region: "Midlands", avgPrice: "\u00a3280,000", yoyChange: "+5.1%" },
-  { region: "North West", avgPrice: "\u00a3210,000", yoyChange: "+6.8%" },
-  { region: "North East", avgPrice: "\u00a3165,000", yoyChange: "+4.9%" },
-  { region: "Yorkshire", avgPrice: "\u00a3195,000", yoyChange: "+5.3%" },
-  { region: "Scotland", avgPrice: "\u00a3190,000", yoyChange: "+3.7%" },
-  { region: "Wales", avgPrice: "\u00a3230,000", yoyChange: "+4.5%" },
-  { region: "Northern Ireland", avgPrice: "\u00a3178,000", yoyChange: "+5.8%" },
-];
+export default async function MarketTrendsPage() {
+  const [regions, kpis] = await Promise.all([getRegionalTrends(), getMarketKPIs()]);
 
-const transactionVolumes = [
-  { month: "October 2025", volume: "88,200" },
-  { month: "November 2025", volume: "85,400" },
-  { month: "December 2025", volume: "72,100" },
-  { month: "January 2026", volume: "79,800" },
-  { month: "February 2026", volume: "87,600" },
-  { month: "March 2026", volume: "92,400" },
-];
+  // Build bar chart data from top 6 regions by price (descending)
+  const sortedByPrice = [...regions].sort((a, b) => b.avgPrice - a.avgPrice);
+  const top6 = sortedByPrice.slice(0, 6);
+  const maxPrice = top6[0]?.avgPrice ?? 1;
+  const barChartData = top6.map((r) => ({
+    region: r.region.replace("Yorkshire and the Humber", "Yorkshire").replace("East of England", "East Eng.").replace(" Midlands", " Mid."),
+    price: r.avgPriceFormatted,
+    height: `${Math.round((r.avgPrice / maxPrice) * 100)}%`,
+  }));
 
-const timeToSell = [
-  { region: "London", avgDays: "34" },
-  { region: "South East", avgDays: "30" },
-  { region: "South West", avgDays: "32" },
-  { region: "Midlands", avgDays: "26" },
-  { region: "North West", avgDays: "24" },
-  { region: "North East", avgDays: "28" },
-  { region: "Yorkshire", avgDays: "27" },
-  { region: "Scotland", avgDays: "22" },
-  { region: "Wales", avgDays: "29" },
-  { region: "Northern Ireland", avgDays: "31" },
-];
-
-const askingVsSoldGap = [
-  { region: "London", gap: "-3.2%" },
-  { region: "South East", gap: "-2.8%" },
-  { region: "South West", gap: "-2.5%" },
-  { region: "Midlands", gap: "-1.9%" },
-  { region: "North West", gap: "-1.4%" },
-  { region: "North East", gap: "-1.7%" },
-  { region: "Yorkshire", gap: "-1.6%" },
-  { region: "Scotland", gap: "-1.2%" },
-  { region: "Wales", gap: "-2.0%" },
-  { region: "Northern Ireland", gap: "-2.3%" },
-];
-
-const hotMarkets = [
-  { city: "Bristol", change: "+8.2%" },
-  { city: "Manchester", change: "+7.1%" },
-  { city: "Birmingham", change: "+6.5%" },
-];
-
-const coldMarkets = [
-  { city: "Aberdeen", change: "-2.1%" },
-  { city: "Middlesbrough", change: "-1.8%" },
-  { city: "Stoke-on-Trent", change: "-1.2%" },
-];
-
-const barChartData = [
-  { region: "London", price: "\u00a3532k", height: "100%" },
-  { region: "S. East", price: "\u00a3395k", height: "74%" },
-  { region: "Midlands", price: "\u00a3280k", height: "53%" },
-  { region: "N. West", price: "\u00a3210k", height: "39%" },
-  { region: "Wales", price: "\u00a3230k", height: "43%" },
-  { region: "Scotland", price: "\u00a3190k", height: "36%" },
-];
-
-const yieldRankings = [
-  { rank: "01", area: "Liverpool (City Centre)", detail: "Yield: 7.9% \u2022 L1 Postcode", barWidth: "90%" },
-  { rank: "02", area: "Middlesbrough", detail: "Yield: 7.6% \u2022 TS1 Postcode", barWidth: "85%" },
-  { rank: "03", area: "Sunderland", detail: "Yield: 7.4% \u2022 SR1 Postcode", barWidth: "82%" },
-  { rank: "04", area: "Glasgow (East End)", detail: "Yield: 7.1% \u2022 G40 Postcode", barWidth: "78%" },
-];
-
-export default function MarketTrendsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Market Trends", path: "/market-trends" },
+            ])
+          ),
+        }}
+      />
+
       {/* Header Section */}
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
@@ -179,7 +125,7 @@ export default function MarketTrendsPage() {
         <div className="flex items-center gap-4">
           <select className="appearance-none rounded-lg border border-neutral-200 bg-white px-4 py-2.5 pr-10 text-sm font-medium outline-none focus:ring-2 focus:ring-brand-primary">
             <option>United Kingdom (National)</option>
-            {regions.map((region) => (
+            {REGION_SELECTOR_LABELS.map((region) => (
               <option key={region}>{region}</option>
             ))}
           </select>
@@ -190,42 +136,63 @@ export default function MarketTrendsPage() {
         </div>
       </header>
 
-      {/* KPI Grid */}
-      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {kpiCards.map((kpi) => (
-          <Card key={kpi.label} className="border-neutral-200">
-            <CardContent>
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-sm font-medium uppercase tracking-wider text-neutral-500">
-                  {kpi.label}
-                </span>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
-                  <kpi.icon className="h-5 w-5" />
-                </div>
-              </div>
-              <div className="text-3xl font-bold text-neutral-900">{kpi.value}</div>
-              <div
-                className={`mt-2 flex items-center gap-1 text-sm font-semibold ${
-                  kpi.trend === "up"
-                    ? "text-green-600"
-                    : kpi.trend === "down"
-                      ? "text-red-600"
-                      : "text-neutral-400"
-                }`}
-              >
-                {kpi.trend === "up" && <TrendingUp className="h-4 w-4" />}
-                {kpi.trend === "down" && <TrendingDown className="h-4 w-4" />}
-                {kpi.trend === "neutral" && <Minus className="h-4 w-4" />}
-                <span>{kpi.change}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      {/* National Trends Link */}
+      <div className="mb-6">
+        <Link
+          href="/market-trends/national"
+          className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-lg px-4 py-2 font-medium hover:bg-primary/20 transition-colors"
+        >
+          View UK National Trends <ArrowRight className="size-4" />
+        </Link>
       </div>
+
+      {/* KPI Grid */}
+      <div className="mb-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {kpis.map((kpi) => {
+          const Icon = KPI_ICONS[kpi.label] ?? PoundSterling;
+          return (
+            <Card key={kpi.label} className="border-neutral-200">
+              <CardContent>
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-sm font-medium uppercase tracking-wider text-neutral-500">
+                    {kpi.label}
+                  </span>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-neutral-900">{kpi.value}</div>
+                <div
+                  className={`mt-2 flex items-center gap-1 text-sm font-semibold ${
+                    kpi.trend === "up"
+                      ? "text-green-600"
+                      : kpi.trend === "down"
+                        ? "text-red-600"
+                        : "text-neutral-400"
+                  }`}
+                >
+                  {kpi.trend === "up" && <TrendingUp className="h-4 w-4" />}
+                  {kpi.trend === "down" && <TrendingDown className="h-4 w-4" />}
+                  {kpi.trend === "neutral" && <Minus className="h-4 w-4" />}
+                  <span>{kpi.change}</span>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Data Attribution */}
+      <DataAttribution
+        source="HM Land Registry UK House Price Index, ONS"
+        lastUpdated="March 2026"
+        methodology="Median prices used for all averages"
+        className="mb-8"
+      />
 
       {/* Regional Selector Pills */}
       <div className="mb-8 flex flex-wrap gap-2">
-        {regions.map((region, i) => (
+        {REGION_SELECTOR_LABELS.map((region, i) => (
           <span
             key={region}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
@@ -258,7 +225,7 @@ export default function MarketTrendsPage() {
             <div className="flex h-64 items-end justify-between gap-4 px-4">
               {barChartData.map((bar) => (
                 <div key={bar.region} className="group flex flex-1 flex-col items-center gap-3">
-                  <div className="relative w-full rounded-t-md bg-neutral-100">
+                  <div className="relative w-full rounded-t-md bg-neutral-100" style={{ height: "100%" }}>
                     <div
                       className="absolute bottom-0 w-full rounded-t-md bg-brand-primary/40 transition-colors group-hover:bg-brand-primary"
                       style={{ height: bar.height }}
@@ -291,7 +258,7 @@ export default function MarketTrendsPage() {
                 <span className="text-xs font-medium text-neutral-400">Fastest Growth</span>
               </div>
               <div className="space-y-3">
-                {hotMarkets.map((market) => (
+                {HOT_MARKETS.slice(0, 3).map((market) => (
                   <div
                     key={market.city}
                     className="flex items-center justify-between rounded-lg bg-neutral-50 p-3"
@@ -314,7 +281,7 @@ export default function MarketTrendsPage() {
                 <span className="text-xs font-medium text-neutral-400">Stagnant</span>
               </div>
               <div className="space-y-3">
-                {coldMarkets.map((market) => (
+                {COLD_MARKETS.slice(0, 3).map((market) => (
                   <div
                     key={market.city}
                     className="flex items-center justify-between rounded-lg bg-neutral-50 p-3"
@@ -350,12 +317,12 @@ export default function MarketTrendsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {regionalPrices.map((row) => (
+                  {regions.map((row) => (
                     <tr key={row.region} className="border-b border-neutral-100 last:border-0">
                       <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
-                      <td className="py-2.5 text-right text-neutral-700">{row.avgPrice}</td>
+                      <td className="py-2.5 text-right text-neutral-700">{row.avgPriceFormatted}</td>
                       <td className="py-2.5 text-right font-semibold text-green-600">
-                        {row.yoyChange}
+                        {row.yoyChangeFormatted}
                       </td>
                     </tr>
                   ))}
@@ -369,22 +336,24 @@ export default function MarketTrendsPage() {
         <Card className="border-neutral-200">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Transaction Volumes</CardTitle>
-            <CardDescription>Monthly completed sales, last 6 months</CardDescription>
+            <CardDescription>Annual completed sales by region</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-neutral-200">
-                    <th className="pb-3 text-left font-semibold text-neutral-500">Month</th>
-                    <th className="pb-3 text-right font-semibold text-neutral-500">Volume</th>
+                    <th className="pb-3 text-left font-semibold text-neutral-500">Region</th>
+                    <th className="pb-3 text-right font-semibold text-neutral-500">Volume (12m)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {transactionVolumes.map((row) => (
-                    <tr key={row.month} className="border-b border-neutral-100 last:border-0">
-                      <td className="py-2.5 font-medium text-neutral-900">{row.month}</td>
-                      <td className="py-2.5 text-right text-neutral-700">{row.volume}</td>
+                  {regions.map((row) => (
+                    <tr key={row.region} className="border-b border-neutral-100 last:border-0">
+                      <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
+                      <td className="py-2.5 text-right text-neutral-700">
+                        {row.transactionsLast12m.toLocaleString("en-GB")}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -409,10 +378,10 @@ export default function MarketTrendsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {timeToSell.map((row) => (
+                  {regions.map((row) => (
                     <tr key={row.region} className="border-b border-neutral-100 last:border-0">
                       <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
-                      <td className="py-2.5 text-right text-neutral-700">{row.avgDays}</td>
+                      <td className="py-2.5 text-right text-neutral-700">{row.avgDaysToSell}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -437,10 +406,12 @@ export default function MarketTrendsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {askingVsSoldGap.map((row) => (
+                  {regions.map((row) => (
                     <tr key={row.region} className="border-b border-neutral-100 last:border-0">
                       <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
-                      <td className="py-2.5 text-right font-semibold text-red-600">{row.gap}</td>
+                      <td className="py-2.5 text-right font-semibold text-red-600">
+                        {row.askingVsSoldGapFormatted}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -552,7 +523,7 @@ export default function MarketTrendsPage() {
                 <p className="mt-1 text-xl font-bold text-neutral-900">+1.2%</p>
                 <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
                   <TrendingUp className="h-3 w-3" />
-                  <span>\u00a33,500</span>
+                  <span>£3,500</span>
                 </div>
               </div>
               <div className="rounded-lg bg-neutral-50 p-4 text-center">
@@ -595,7 +566,7 @@ export default function MarketTrendsPage() {
                 <p className="mt-1 text-xl font-bold text-neutral-900">+3.8%</p>
                 <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
                   <TrendingUp className="h-3 w-3" />
-                  <span>\u00a310,900</span>
+                  <span>£10,900</span>
                 </div>
               </div>
               <div className="rounded-lg bg-neutral-50 p-4 text-center">
@@ -649,24 +620,24 @@ export default function MarketTrendsPage() {
                   <p>
                     The UK property market enters spring 2026 in its strongest position in three
                     years. Average house prices have risen 3.8% year-on-year to reach
-                    {"\u00a0"}\u00a3298,000, driven by a combination of stabilised mortgage rates, pent-up
+                    {"\u00a0"}£298,000, driven by a combination of stabilised mortgage rates, pent-up
                     demand from first-time buyers, and limited new housing supply. Transaction
                     volumes are up 12% compared to March 2025, signalling renewed confidence
                     across most regions.
                   </p>
                   <p>
                     Regional disparities remain pronounced. London continues to lag behind the
-                    national average in price growth at just 2.4%, while cities such as Bristol
-                    (+8.2%), Manchester (+7.1%), and Birmingham (+6.5%) are outperforming. The
-                    Midlands and North West continue to offer the best value for buyers, with
-                    average days to sell falling below the national average of 28 days. Scotland
-                    stands out with the fastest average sale time of just 22 days, largely due to
-                    its distinct conveyancing process.
+                    national average in price growth at just 2.1%, while cities such as Manchester
+                    (+7.2%), Birmingham (+6.8%), and Leeds (+6.4%) are outperforming. The
+                    East and West Midlands continue to offer the best value for buyers, with
+                    average days to sell falling below the national average of 28 days. The North
+                    West stands out with the fastest average sale time of just 24 days, driven by
+                    strong demand in Manchester and Liverpool.
                   </p>
                   <p>
                     Looking ahead, the Bank of England&apos;s anticipated rate cut in Q2 2026 could
                     further stimulate demand. However, affordability remains a constraint in the
-                    South East, where the asking-to-sold price gap of -2.8% suggests buyers
+                    South East, where the asking-to-sold price gap of -2.1% suggests buyers
                     retain negotiating power. We expect continued moderate growth through H1 2026,
                     with the rental market also tightening as landlord supply continues to
                     contract in the face of higher regulatory requirements.
@@ -702,18 +673,24 @@ export default function MarketTrendsPage() {
                 </button>
               </div>
               <div className="space-y-4">
-                {yieldRankings.map((item) => (
-                  <div key={item.rank} className="flex items-center gap-4">
-                    <div className="w-6 text-lg font-bold text-neutral-300">{item.rank}</div>
-                    <div className="flex-1">
-                      <div className="text-sm font-bold text-neutral-900">{item.area}</div>
-                      <div className="text-xs text-neutral-500">{item.detail}</div>
+                {YIELD_RANKINGS.slice(0, 4).map((item) => {
+                  const barWidth = `${Math.round((item.yield / (YIELD_RANKINGS[0]?.yield ?? 10)) * 100)}%`;
+                  const rankLabel = item.rank.padStart(2, "0");
+                  return (
+                    <div key={item.rank} className="flex items-center gap-4">
+                      <div className="w-6 text-lg font-bold text-neutral-300">{rankLabel}</div>
+                      <div className="flex-1">
+                        <div className="text-sm font-bold text-neutral-900">{item.area}</div>
+                        <div className="text-xs text-neutral-500">
+                          Yield: {item.yield}% &bull; {item.detail}
+                        </div>
+                      </div>
+                      <div className="h-1.5 w-24 overflow-hidden rounded-full bg-neutral-100">
+                        <div className="h-full bg-green-500" style={{ width: barWidth }} />
+                      </div>
                     </div>
-                    <div className="h-1.5 w-24 overflow-hidden rounded-full bg-neutral-100">
-                      <div className="h-full bg-green-500" style={{ width: item.barWidth }} />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <Link
                 href="#"
@@ -724,6 +701,28 @@ export default function MarketTrendsPage() {
               </Link>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* Internal Region Links */}
+      <section className="mb-8">
+        <h2 className="mb-4 font-heading text-xl font-bold text-neutral-900">
+          Explore Area Guides by Region
+        </h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {regions.map((r) => {
+            const cityLink = REGION_CITY_LINKS[r.region];
+            if (!cityLink) return null;
+            return (
+              <InternalLinkCard
+                key={r.region}
+                title={`${r.region} Area Guide`}
+                description={`Avg price ${r.avgPriceFormatted} · ${r.yoyChangeFormatted} YoY · Major city: ${cityLink.city}`}
+                href={cityLink.href}
+                icon={<MapPin className="size-5" />}
+              />
+            );
+          })}
         </div>
       </section>
     </div>
