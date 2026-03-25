@@ -5,25 +5,26 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { WizardShell } from "./WizardShell";
-import type { SellerListing } from "@/types/seller";
+import type { SellerListing, ListingStep } from "@/types/seller";
 import { cn } from "@/lib/utils";
 
 type ChecklistItem = Readonly<{
   label: string;
   complete: boolean;
   required: boolean;
+  editStep: ListingStep;
 }>;
 
 function buildChecklist(listing: Partial<SellerListing>): ChecklistItem[] {
   return [
-    { label: "Property address", complete: !!listing.address_line_1, required: true },
-    { label: "Property type & tenure", complete: !!(listing.property_type && listing.tenure), required: true },
-    { label: "Property details (beds/baths)", complete: !!(listing.bedrooms !== undefined && listing.bedrooms !== null && listing.bathrooms !== undefined && listing.bathrooms !== null), required: true },
-    { label: "Photos added", complete: (listing.photos?.length ?? 0) >= 1, required: true },
-    { label: "Property description", complete: (listing.description?.length ?? 0) >= 50, required: true },
-    { label: "Asking price set", complete: !!(listing.asking_price && listing.asking_price > 0), required: true },
-    { label: "EPC certificate uploaded", complete: !!listing.epc_url, required: false },
-    { label: "Key selling points added", complete: (listing.key_selling_points?.length ?? 0) >= 1, required: false },
+    { label: "Property address", complete: !!listing.address_line_1, required: true, editStep: 1 as ListingStep },
+    { label: "Property type & tenure", complete: !!(listing.property_type && listing.tenure), required: true, editStep: 1 as ListingStep },
+    { label: "Property details (beds/baths)", complete: !!(listing.bedrooms !== undefined && listing.bedrooms !== null && listing.bathrooms !== undefined && listing.bathrooms !== null), required: true, editStep: 2 as ListingStep },
+    { label: "Photos added", complete: (listing.photos?.length ?? 0) >= 1, required: true, editStep: 3 as ListingStep },
+    { label: "Property description", complete: (listing.description?.length ?? 0) >= 50, required: true, editStep: 4 as ListingStep },
+    { label: "Asking price set", complete: !!(listing.asking_price && listing.asking_price > 0), required: true, editStep: 5 as ListingStep },
+    { label: "EPC certificate uploaded", complete: !!listing.epc_url, required: true, editStep: 6 as ListingStep },
+    { label: "Key selling points added", complete: (listing.key_selling_points?.length ?? 0) >= 1, required: false, editStep: 4 as ListingStep },
   ];
 }
 
@@ -120,7 +121,18 @@ export function Step7Review({ listing, listingId }: Props) {
           </div>
           <ul className="space-y-3">
             {checklist.map((item) => (
-              <li key={item.label} className="flex items-center gap-3">
+              <li
+                key={item.label}
+                onClick={() => {
+                  if (!item.complete) {
+                    router.push(`/dashboard/seller/listings/create?step=${item.editStep}&id=${listingId}`);
+                  }
+                }}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-2 py-1.5 -mx-2",
+                  !item.complete && "cursor-pointer hover:bg-slate-50 transition-colors",
+                )}
+              >
                 {item.complete ? (
                   <CheckCircle size={18} className="text-emerald-500 flex-shrink-0" />
                 ) : item.required ? (

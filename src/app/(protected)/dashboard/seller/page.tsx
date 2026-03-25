@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Home, Eye, MessageSquare, Calendar } from "lucide-react";
 import { KpiCard } from "@/components/seller/KpiCard";
 import { PerformanceChart } from "@/components/seller/PerformanceChart";
@@ -49,36 +50,44 @@ export default async function SellerDashboardHome() {
         <p className="text-slate-500 mt-1">Track your listings and manage your sale</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        <KpiCard
-          label="Active Listings"
-          value={kpis.active_listings}
-          icon={Home}
-          iconBgClass="bg-emerald-100"
-          iconColorClass="text-emerald-600"
-        />
-        <KpiCard
-          label="Total Views"
-          value={kpis.total_views_30d.toLocaleString()}
-          changePct={kpis.views_change_pct}
-          icon={Eye}
-          iconBgClass="bg-blue-100"
-          iconColorClass="text-blue-600"
-        />
-        <KpiCard
-          label="Enquiries"
-          value={kpis.enquiries_30d}
-          changePct={kpis.enquiries_change_pct}
-          icon={MessageSquare}
-          iconBgClass="bg-orange-100"
-          iconColorClass="text-orange-600"
-        />
-        <KpiCard
-          label="Upcoming Viewings"
-          value={kpis.upcoming_viewings}
-          icon={Calendar}
-          iconBgClass="bg-purple-100"
-          iconColorClass="text-purple-600"
-        />
+        <Link href="/dashboard/seller/listings" className="block">
+          <KpiCard
+            label="Active Listings"
+            value={kpis.active_listings}
+            icon={Home}
+            iconBgClass="bg-emerald-100"
+            iconColorClass="text-emerald-600"
+          />
+        </Link>
+        <Link href="/dashboard/seller/analytics" className="block">
+          <KpiCard
+            label="Total Views"
+            value={kpis.total_views_30d.toLocaleString()}
+            changePct={kpis.views_change_pct}
+            icon={Eye}
+            iconBgClass="bg-blue-100"
+            iconColorClass="text-blue-600"
+          />
+        </Link>
+        <Link href="/dashboard/seller/analytics" className="block">
+          <KpiCard
+            label="Enquiries"
+            value={kpis.enquiries_30d}
+            changePct={kpis.enquiries_change_pct}
+            icon={MessageSquare}
+            iconBgClass="bg-orange-100"
+            iconColorClass="text-orange-600"
+          />
+        </Link>
+        <Link href="/dashboard/seller/viewings" className="block">
+          <KpiCard
+            label="Upcoming Viewings"
+            value={kpis.upcoming_viewings}
+            icon={Calendar}
+            iconBgClass="bg-purple-100"
+            iconColorClass="text-purple-600"
+          />
+        </Link>
       </div>
       {kpis.active_listings === 0 && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
