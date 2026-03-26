@@ -91,37 +91,75 @@ export default async function PostAJobPage() {
             {isAuthenticated ? (
               <RFQCreateForm />
             ) : (
-              <div className="space-y-4 rounded-lg border border-border bg-card p-6 text-center">
-                <h2 className="text-lg font-semibold text-foreground">
-                  Sign in to post a job
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Create a free account to post jobs and receive quotes from
-                  verified tradespeople.
-                </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <a
-                    href="/login?callbackUrl=/post-a-job"
-                    className="rounded-lg bg-[#2563EB] px-6 py-2.5 font-semibold text-white hover:bg-[#1D4ED8]"
-                  >
-                    Sign In
-                  </a>
-                  <a
-                    href="/register?callbackUrl=/post-a-job"
-                    className="rounded-lg border border-slate-300 px-6 py-2.5 font-semibold hover:border-[#2563EB] hover:text-[#2563EB]"
-                  >
-                    Create Account
-                  </a>
+              <div className="relative">
+                {/* Blurred form preview */}
+                <div
+                  className="pointer-events-none select-none space-y-4 rounded-lg border border-border bg-card p-6 blur-[2px] opacity-60"
+                  aria-hidden="true"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Category</p>
+                    <div className="mt-1 h-10 rounded-md border border-border bg-muted" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Job Title</p>
+                    <div className="mt-1 h-10 rounded-md border border-border bg-muted" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Description</p>
+                    <div className="mt-1 h-24 rounded-md border border-border bg-muted" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Postcode</p>
+                      <div className="mt-1 h-10 rounded-md border border-border bg-muted" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Urgency</p>
+                      <div className="mt-1 h-10 rounded-md border border-border bg-muted" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Budget Range</p>
+                    <div className="mt-1 h-10 rounded-md border border-border bg-muted" />
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Already have an account?{" "}
-                  <a
-                    href="/login?callbackUrl=/post-a-job"
-                    className="text-[#2563EB] hover:underline"
-                  >
-                    Sign in here
-                  </a>
-                </p>
+
+                {/* Auth CTA overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="space-y-4 rounded-lg border border-border bg-card p-6 text-center shadow-xl">
+                    <h2 className="text-lg font-semibold text-foreground">
+                      Sign in to post a job
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      Create a free account to post jobs and receive quotes from
+                      verified tradespeople.
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <a
+                        href="/login?callbackUrl=/post-a-job"
+                        className="rounded-lg bg-[#2563EB] px-6 py-2.5 font-semibold text-white hover:bg-[#1D4ED8]"
+                      >
+                        Sign In
+                      </a>
+                      <a
+                        href="/register?callbackUrl=/post-a-job"
+                        className="rounded-lg border border-slate-300 px-6 py-2.5 font-semibold hover:border-[#2563EB] hover:text-[#2563EB]"
+                      >
+                        Create Account
+                      </a>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Already have an account?{" "}
+                      <a
+                        href="/login?callbackUrl=/post-a-job"
+                        className="text-[#2563EB] hover:underline"
+                      >
+                        Sign in here
+                      </a>
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

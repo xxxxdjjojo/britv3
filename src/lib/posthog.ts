@@ -10,5 +10,6 @@ export function initPostHog(): void {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
     person_profiles: "identified_only",
     capture_pageview: false,
+    advanced_disable_toolbar: true,
   });
 }
