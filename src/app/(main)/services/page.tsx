@@ -37,10 +37,10 @@ const POPULAR_CATEGORIES = [
   { key: "electrician", label: "Electricians", icon: Zap, href: "/services/tradespeople?category=electrician" },
   { key: "surveying", label: "Surveyors", icon: ClipboardCheck, href: "/services/surveyors" },
   { key: "carpenter", label: "Carpenters", icon: Hammer, href: "/services/tradespeople?category=carpenter" },
-  { key: "builder", label: "Roofers", icon: Home, href: "/services/tradespeople?category=builder" },
+  { key: "builder", label: "Builders", icon: Home, href: "/services/tradespeople?category=builder" },
   { key: "landscaping", label: "Landscapers", icon: Trees, href: "/services/tradespeople?category=landscaping" },
   { key: "painter", label: "Painters", icon: Paintbrush, href: "/services/tradespeople?category=painter" },
-  { key: "handyman", label: "HVAC", icon: Thermometer, href: "/services/tradespeople?category=handyman" },
+  { key: "handyman", label: "Handymen", icon: Thermometer, href: "/services/tradespeople?category=handyman" },
 ];
 
 const HOW_IT_WORKS = [
