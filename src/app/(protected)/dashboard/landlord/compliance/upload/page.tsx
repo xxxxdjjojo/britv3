@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioProperties } from "@/services/landlord/portfolio-service";
 import ComplianceUploadForm from "@/components/landlord/ComplianceUploadForm";
 import { ArrowLeft } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // -- Page props --------------------------------------------------------------
 
@@ -18,7 +20,18 @@ type UploadPageProps = {
 
 // -- Page --------------------------------------------------------------------
 
-export default async function ComplianceUploadPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   searchParams,
 }: UploadPageProps) {
   const params = await searchParams;
@@ -97,5 +110,13 @@ export default async function ComplianceUploadPage({
         />
       )}
     </div>
+  );
+}
+
+export default function ComplianceUploadPage({ searchParams,  }: UploadPageProps) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} ={} />
+    </Suspense>
   );
 }

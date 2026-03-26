@@ -1,14 +1,27 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getMaintenanceRequestById } from "@/services/landlord/maintenance-service";
 import { MaintenanceRequestDetailClient } from "./MaintenanceRequestDetailClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const dynamic = "force-dynamic";
 
 type Params = Promise<{ id: string }>;
 
-export default async function MaintenanceRequestPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   params,
 }: {
   params: Params;
@@ -82,5 +95,17 @@ export default async function MaintenanceRequestPage({
         assignedProvider={assignedProvider}
       />
     </div>
+  );
+}
+
+export default function MaintenanceRequestPage({
+  params,
+}: {
+  params: Params;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

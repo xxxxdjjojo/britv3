@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTenancies } from "@/services/landlord/tenancy-service";
@@ -5,12 +6,24 @@ import { TenancyStatusBadge } from "@/components/landlord/TenancyStatusBadge";
 import { TenancyForm } from "@/components/landlord/TenancyForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TenancyStatus } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
   title: "Tenancies | Britestate",
 };
 
-export default async function TenanciesPage(
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent(
   props: Readonly<{
     params: Promise<{ id: string }>;
     searchParams: Promise<{ new?: string }>;
@@ -126,5 +139,18 @@ export default async function TenanciesPage(
         </section>
       )}
     </div>
+  );
+}
+
+export default function TenanciesPage(
+  props: Readonly<{
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ new?: string }>;
+  }>,
+) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent {...props} />
+    </Suspense>
   );
 }

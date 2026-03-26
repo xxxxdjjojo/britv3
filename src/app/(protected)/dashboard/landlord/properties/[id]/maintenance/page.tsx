@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getMaintenanceRequests } from "@/services/landlord/maintenance-service";
 import { MaintenanceList } from "@/components/landlord/MaintenanceList";
@@ -5,8 +6,20 @@ import { MAINTENANCE_STATUSES, MAINTENANCE_PRIORITIES } from "@/types/landlord";
 import type { MaintenanceStatus, MaintenancePriority } from "@/types/landlord";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function MaintenanceListPage(
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent(
   props: Readonly<{
     params: Promise<{ id: string }>;
     searchParams: Promise<{ status?: string; priority?: string }>;
@@ -88,5 +101,18 @@ export default async function MaintenanceListPage(
 
       <MaintenanceList requests={requests} />
     </div>
+  );
+}
+
+export default function MaintenanceListPage(
+  props: Readonly<{
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ status?: string; priority?: string }>;
+  }>,
+) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent {...props} />
+    </Suspense>
   );
 }

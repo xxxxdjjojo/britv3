@@ -1,11 +1,24 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import LeasePreview from "@/components/landlord/LeasePreview";
 import type { Tenancy } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function LeasePage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   params,
 }: {
   params: Promise<{ id: string; tenancyId: string }>;
@@ -104,5 +117,17 @@ export default async function LeasePage({
         propertyId={propertyId}
       />
     </div>
+  );
+}
+
+export default function LeasePage({
+  params,
+}: {
+  params: Promise<{ id: string; tenancyId: string }>;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

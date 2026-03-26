@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -15,6 +16,7 @@ import type { TenantApplicationStatus, CreditCheckStatus } from "@/types/landlor
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApplicationDetailActions } from "@/components/landlord/ApplicationDetailActions";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // -- Status labels ------------------------------------------------------------
 
@@ -47,7 +49,18 @@ type Props = {
   params: Promise<{ applicationId: string }>;
 };
 
-export default async function ApplicationDetailPage({ params }: Props) {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params }: Props) {
   const { applicationId } = await params;
   const supabase = await createClient();
 
@@ -235,5 +248,13 @@ export default async function ApplicationDetailPage({ params }: Props) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ApplicationDetailPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

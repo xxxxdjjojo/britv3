@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getRentCollection } from "@/services/landlord/financial-service";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { PropertyRentClient } from "./PropertyRentClient";
 import type { RentCollectionEntry } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const gbpFormatter = new Intl.NumberFormat("en-GB", {
   style: "currency",
@@ -33,7 +35,18 @@ type PageProps = {
  * Fetches payment history + tenancy info server-side.
  * Passes entries to PropertyRentClient for optimistic Mark Paid mutations.
  */
-export default async function PropertyRentPage({ params }: PageProps) {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params }: PageProps) {
   const { propertyId } = await params;
   const supabase = await createClient();
 
@@ -176,5 +189,13 @@ export default async function PropertyRentPage({ params }: PageProps) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PropertyRentPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

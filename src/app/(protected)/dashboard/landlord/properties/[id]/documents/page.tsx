@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
@@ -8,8 +9,20 @@ import ComplianceAlert from "@/components/landlord/ComplianceAlert";
 import DocumentUpload from "@/components/landlord/DocumentUpload";
 import DocumentList from "@/components/landlord/DocumentList";
 import type { Tenancy } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function DocumentsPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -60,5 +73,17 @@ export default async function DocumentsPage({
       {/* Document list */}
       <DocumentList documents={documents} />
     </div>
+  );
+}
+
+export default function DocumentsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

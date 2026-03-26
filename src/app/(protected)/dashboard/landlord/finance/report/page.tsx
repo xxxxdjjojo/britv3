@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { IncomeExpenseReportClient } from "./IncomeExpenseReportClient";
 import type { FinancialEntry } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * 9.19 Income & Expense Report — Server Component
@@ -54,7 +56,18 @@ function formatCategory(cat: string) {
     .join(" ");
 }
 
-export default async function IncomeExpenseReportPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -265,5 +278,13 @@ export default async function IncomeExpenseReportPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function IncomeExpenseReportPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

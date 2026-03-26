@@ -4,18 +4,35 @@
  * then passes data to PortfolioAnalyticsCharts (client component).
  */
 
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioKPIs, getPortfolioProperties } from "@/services/landlord/portfolio-service";
 import { getFinancialEntries } from "@/services/landlord/financial-service";
 import { calculateYield } from "@/lib/yield-calculator";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PortfolioAnalyticsCharts = dynamic(
   () => import("@/components/landlord/PortfolioAnalyticsCharts"),
   { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
 );
 
-export default async function PortfolioAnalyticsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   // Fetch data in parallel
@@ -136,5 +153,13 @@ export default async function PortfolioAnalyticsPage() {
         properties={properties}
       />
     </div>
+  );
+}
+
+export default function PortfolioAnalyticsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

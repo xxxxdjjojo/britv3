@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getMaintenanceRequestById } from "@/services/landlord/maintenance-service";
 import { AssignTradesPersonClient } from "./AssignTradesPersonClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +34,18 @@ function mapMaintenanceCategoryToProviderCategory(
   return null; // return all categories
 }
 
-export default async function AssignTradesPersonPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   params,
 }: {
   params: Params;
@@ -154,5 +167,17 @@ export default async function AssignTradesPersonPage({
         providers={providers}
       />
     </div>
+  );
+}
+
+export default function AssignTradesPersonPage({
+  params,
+}: {
+  params: Params;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { listDeposits } from "@/services/landlord/deposit-service";
 import { DepositManagementClient } from "./DepositManagementClient";
 import type { DepositRegistration } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type DepositWithTenancy = DepositRegistration & {
   tenancy: {
@@ -21,7 +23,18 @@ type ActiveTenancy = {
  * Fetches deposits server-side, passes to client wrapper.
  * Client wrapper uses React Query with initialData for optimistic updates.
  */
-export default async function DepositsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   let deposits: DepositWithTenancy[] = [];
@@ -112,5 +125,13 @@ export default async function DepositsPage() {
         serverTimestamp={nowMs}
       />
     </div>
+  );
+}
+
+export default function DepositsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

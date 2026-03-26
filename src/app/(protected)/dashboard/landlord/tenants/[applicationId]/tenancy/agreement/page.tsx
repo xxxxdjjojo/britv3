@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
@@ -9,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { TenancyAgreementUpload } from "@/components/landlord/TenancyAgreementUpload";
 // Client wrapper with dynamic(ssr:false) — must be in a Client Component tree
 import { TenancyAgreementPDFWrapper } from "@/components/landlord/TenancyAgreementPDFWrapper";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // -- Page ---------------------------------------------------------------------
 
@@ -16,7 +18,18 @@ type Props = {
   params: Promise<{ applicationId: string }>;
 };
 
-export default async function TenancyAgreementPage({ params }: Props) {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params }: Props) {
   const { applicationId: tenancyId } = await params;
   const supabase = await createClient();
 
@@ -168,5 +181,13 @@ export default async function TenancyAgreementPage({ params }: Props) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function TenancyAgreementPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

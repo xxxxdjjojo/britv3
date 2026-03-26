@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getComplianceSummary } from "@/services/landlord/document-service";
@@ -7,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, XCircle, AlertTriangle, Upload, ArrowLeft } from "lucide-react";
 import { ComplianceExpiryCalendar } from "@/components/landlord/ComplianceExpiryCalendar";
 import type { ComplianceDocument } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // -- Helpers -----------------------------------------------------------------
 
@@ -48,7 +50,18 @@ type AlertsPageProps = {
 
 // -- Main page ---------------------------------------------------------------
 
-export default async function ComplianceAlertsPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   searchParams,
 }: AlertsPageProps) {
   const params = await searchParams;
@@ -231,5 +244,13 @@ export default async function ComplianceAlertsPage({
         </div>
       )}
     </div>
+  );
+}
+
+export default function ComplianceAlertsPage({ searchParams,  }: AlertsPageProps) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} ={} />
+    </Suspense>
   );
 }

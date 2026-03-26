@@ -1,9 +1,22 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { MaintenanceForm } from "@/components/landlord/MaintenanceForm";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function NewMaintenancePage(
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent(
   props: Readonly<{ params: Promise<{ id: string }> }>,
 ) {
   const supabase = await createClient();
@@ -30,5 +43,15 @@ export default async function NewMaintenancePage(
 
       <MaintenanceForm propertyId={propertyId} />
     </div>
+  );
+}
+
+export default function NewMaintenancePage(
+  props: Readonly<{ params: Promise<{ id: string }> }>,
+) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent {...props} />
+    </Suspense>
   );
 }

@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ExpenseTrackerClient } from "./ExpenseTrackerClient";
 import type { FinancialEntry } from "@/types/landlord";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * 9.18 Expense Tracker — Server Component
@@ -9,7 +11,18 @@ import type { FinancialEntry } from "@/types/landlord";
  * Fetches all financial_entries across the landlord's portfolio and passes
  * them to the client wrapper for filtering, add/edit/delete.
  */
-export default async function ExpenseTrackerPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -43,5 +56,13 @@ export default async function ExpenseTrackerPage() {
       initialEntries={(entries ?? []) as FinancialEntry[]}
       properties={properties ?? []}
     />
+  );
+}
+
+export default function ExpenseTrackerPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

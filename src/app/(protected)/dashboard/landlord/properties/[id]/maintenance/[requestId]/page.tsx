@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import { getMaintenanceRequest } from "@/services/landlord/maintenance-service";
@@ -6,8 +7,20 @@ import { MaintenanceStatusBadge } from "@/components/landlord/MaintenanceStatusB
 import { ProviderAssignment } from "@/components/landlord/ProviderAssignment";
 import { StatusUpdateForm } from "./StatusUpdateForm";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function MaintenanceDetailPage(
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent(
   props: Readonly<{
     params: Promise<{ id: string; requestId: string }>;
   }>,
@@ -143,5 +156,17 @@ export default async function MaintenanceDetailPage(
         />
       )}
     </div>
+  );
+}
+
+export default function MaintenanceDetailPage(
+  props: Readonly<{
+    params: Promise<{ id: string; requestId: string }>;
+  }>,
+) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent {...props} />
+    </Suspense>
   );
 }

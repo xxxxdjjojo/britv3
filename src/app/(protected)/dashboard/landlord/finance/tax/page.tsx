@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
@@ -22,6 +23,7 @@ import { getTaxSummary } from "@/services/landlord/financial-service";
 import { TaxYearSelector } from "./TaxYearSelector";
 import { TaxSummaryExportClient as TaxSummaryExport } from "./TaxSummaryExportClient";
 import { AlertTriangle, ExternalLink } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Current UK tax year calculation.
@@ -56,7 +58,18 @@ type Props = {
  * plus an informational estimated tax at basic rate (20%).
  * Exports via TaxSummaryExport (ssr:false).
  */
-export default async function TaxSummaryPage({ searchParams }: Props) {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ searchParams }: Props) {
   const supabase = await createClient();
 
   const {
@@ -350,5 +363,13 @@ export default async function TaxSummaryPage({ searchParams }: Props) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function TaxSummaryPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }
