@@ -178,16 +178,15 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Find Tradespeople",
         links: [
           { label: "Browse All Trades", href: "/marketplace" },
-          { label: "Plumbers", href: "/services/tradespeople/plumber" },
-          { label: "Electricians", href: "/services/tradespeople/electrician" },
-          { label: "Builders", href: "/services/tradespeople/builder" },
+          { label: "Plumbers", href: "/services/tradespeople?category=plumber" },
+          { label: "Electricians", href: "/services/tradespeople?category=electrician" },
+          { label: "Builders", href: "/services/tradespeople?category=builder" },
         ],
       },
       {
         heading: "Get Work Done",
         links: [
-          { label: "Post a Job", href: "/post-a-job" },
-          { label: "Get Quotes", href: "/dashboard/rfqs/create" },
+          { label: "Get Quotes", href: "/post-a-job" },
         ],
       },
       {
@@ -415,7 +414,7 @@ export const BREADCRUMB_MAP: Record<string, BreadcrumbEntry[]> = {
   "/compare": [
     { label: "Home", href: "/" },
     { label: "Tools" },
-    { label: "Compare Properties" },
+    { label: "Compare Service Providers" },
   ],
   "/help": [
     { label: "Home", href: "/" },

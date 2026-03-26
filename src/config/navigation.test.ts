@@ -78,6 +78,32 @@ describe("NAV_ITEMS", () => {
     const listSell = NAV_ITEMS.find((item) => item.label === "List / Sell");
     expect(listSell?.isCta).toBe(true);
   });
+
+  it("Services > Find Tradespeople links use query-param routes", () => {
+    const services = NAV_ITEMS.find((item) => item.label === "Services");
+    const tradeSection = services?.sections?.find((s) => s.heading === "Find Tradespeople");
+    const plumbers = tradeSection?.links.find((l) => l.label === "Plumbers");
+    const electricians = tradeSection?.links.find((l) => l.label === "Electricians");
+    const builders = tradeSection?.links.find((l) => l.label === "Builders");
+
+    expect(plumbers?.href).toBe("/services/tradespeople?category=plumber");
+    expect(electricians?.href).toBe("/services/tradespeople?category=electrician");
+    expect(builders?.href).toBe("/services/tradespeople?category=builder");
+  });
+
+  it("Services > Get Quotes links to /post-a-job (not auth-gated dashboard)", () => {
+    const services = NAV_ITEMS.find((item) => item.label === "Services");
+    const workSection = services?.sections?.find((s) => s.heading === "Get Work Done");
+    const getQuotes = workSection?.links.find((l) => l.label === "Get Quotes");
+    expect(getQuotes?.href).toBe("/post-a-job");
+  });
+
+  it("Services > Read Reviews links to /reviews (not undefined)", () => {
+    const services = NAV_ITEMS.find((item) => item.label === "Services");
+    const trustSection = services?.sections?.find((s) => s.heading === "Trust");
+    const reviews = trustSection?.links.find((l) => l.label === "Read Reviews");
+    expect(reviews?.href).toBe("/reviews");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -127,6 +153,13 @@ describe("BREADCRUMB_MAP", () => {
     const trail = BREADCRUMB_MAP["/search?type=buy"];
     expect(trail).toBeDefined();
     expect(trail[0].label).toBe("Home");
+  });
+
+  it("maps /compare to 'Compare Service Providers' (not Properties)", () => {
+    const trail = BREADCRUMB_MAP["/compare"];
+    expect(trail).toBeDefined();
+    const lastCrumb = trail![trail!.length - 1];
+    expect(lastCrumb.label).toBe("Compare Service Providers");
   });
 });
 
