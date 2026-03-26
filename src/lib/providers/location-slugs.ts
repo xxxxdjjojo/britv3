@@ -33,18 +33,5 @@ const UK_LOCATION_SLUGS = new Set([
  * (city, region, or London area), false if it looks like a provider slug.
  */
 export function isLocationSlug(segment: string): boolean {
-  const lower = segment.toLowerCase();
-
-  // Exact match against known UK locations
-  if (UK_LOCATION_SLUGS.has(lower)) return true;
-
-  // Heuristic: location slugs are short (≤ 25 chars) and contain 0-2 hyphens.
-  // Provider slugs are longer with business names (e.g. "smith-plumbing-and-heating-london").
-  const hyphenCount = (segment.match(/-/g) ?? []).length;
-  if (segment.length <= 25 && hyphenCount <= 2) {
-    // Looks like a place name: only letters and hyphens, no digits, 3-25 chars
-    return /^[a-z-]{3,25}$/.test(lower) && !/\d/.test(lower);
-  }
-
-  return false;
+  return UK_LOCATION_SLUGS.has(segment.toLowerCase());
 }
