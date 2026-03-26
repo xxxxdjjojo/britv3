@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getSellerListings } from "@/services/seller/listing-service";
 import { StatusTabs } from "@/components/seller/StatusTabs";
 import { ListingCard } from "@/components/seller/ListingCard";
@@ -21,7 +23,27 @@ type Props = Readonly<{
   searchParams: Promise<{ status?: string }>;
 }>;
 
-export default async function MyListingsPage({ searchParams }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-4 w-56 mt-2" />
+        </div>
+        <Skeleton className="h-10 w-44 rounded-xl" />
+      </div>
+      <Skeleton className="h-10 w-full rounded-lg" />
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-32 rounded-2xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function PageContent({ searchParams }: Props) {
   const { status } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -72,5 +94,13 @@ export default async function MyListingsPage({ searchParams }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MyListingsPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }

@@ -1,15 +1,30 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Star, MapPin, Mail } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AgentProfile } from "@/types/seller";
 
 type Props = Readonly<{
   params: Promise<{ id: string }>;
 }>;
 
-export default async function AgentProfilePage({ params }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="max-w-3xl space-y-6">
+      <div>
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-8 w-40 mt-2" />
+      </div>
+      <Skeleton className="h-64 rounded-2xl" />
+      <Skeleton className="h-48 rounded-2xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -136,5 +151,13 @@ export default async function AgentProfilePage({ params }: Props) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AgentProfilePage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

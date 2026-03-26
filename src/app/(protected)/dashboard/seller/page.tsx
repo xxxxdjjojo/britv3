@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Home, Eye, MessageSquare, Calendar } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "@/components/seller/KpiCard";
 import { getSellerKPIs } from "@/services/seller/listing-service";
 import { getListingAnalyticsSummary } from "@/services/seller/analytics-service";
@@ -14,7 +16,25 @@ const PerformanceChart = nextDynamic(
   { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
 );
 
-export default async function SellerDashboardHome() {
+function PageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-64 mt-2" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-2xl" />
+      <Skeleton className="h-48 rounded-2xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -147,5 +167,13 @@ export default async function SellerDashboardHome() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SellerDashboardHome() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

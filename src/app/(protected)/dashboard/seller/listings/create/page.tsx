@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Step1AddressType } from "@/components/seller/wizard/Step1AddressType";
 import { Step2Details } from "@/components/seller/wizard/Step2Details";
 import { Step3Photos } from "@/components/seller/wizard/Step3Photos";
@@ -13,7 +15,17 @@ type Props = Readonly<{
   searchParams: Promise<{ step?: string; id?: string }>;
 }>;
 
-export default async function CreateListingPage({ searchParams }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-2 w-full rounded-full" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ searchParams }: Props) {
   const { step: stepStr, id: listingId } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -68,4 +80,12 @@ export default async function CreateListingPage({ searchParams }: Props) {
   };
 
   return stepComponents[step];
+}
+
+export default function CreateListingPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
+  );
 }

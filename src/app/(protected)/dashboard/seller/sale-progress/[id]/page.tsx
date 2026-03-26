@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Share2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SaleProgressionStepper } from "@/components/seller/sale-progress/SaleProgressionStepper";
 import { SaleDocumentsList } from "@/components/seller/sale-progress/SaleDocumentsList";
 import { SaleContactsSidebar } from "@/components/seller/sale-progress/SaleContactsSidebar";
@@ -18,7 +20,24 @@ type ListingShape = {
   city: string | null;
 } | null;
 
-export default async function SaleProgressionPage({ params }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-8 w-48 mt-2" />
+        <Skeleton className="h-4 w-64 mt-2" />
+      </div>
+      <Skeleton className="h-24 rounded-2xl" />
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <Skeleton className="xl:col-span-2 h-64 rounded-2xl" />
+        <Skeleton className="h-48 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
+async function PageContent({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
   const {
@@ -82,5 +101,13 @@ export default async function SaleProgressionPage({ params }: Props) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SaleProgressionPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

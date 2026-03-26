@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Eye, Heart, MessageSquare, MousePointer } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "@/components/seller/KpiCard";
 import { getListingById } from "@/services/seller/listing-service";
 import { getListingAnalyticsSummary } from "@/services/seller/analytics-service";
@@ -18,7 +20,25 @@ type Props = Readonly<{
   params: Promise<{ id: string }>;
 }>;
 
-export default async function ListingAnalyticsPage({ params }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div>
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-8 w-32 mt-2" />
+        <Skeleton className="h-4 w-48 mt-2" />
+      </div>
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -51,5 +71,13 @@ export default async function ListingAnalyticsPage({ params }: Props) {
       </div>
       <ListingAnalyticsCharts listingId={id} initialSummary={summary} />
     </div>
+  );
+}
+
+export default function ListingAnalyticsPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

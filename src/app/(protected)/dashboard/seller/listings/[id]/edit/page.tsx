@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Step1AddressType } from "@/components/seller/wizard/Step1AddressType";
 import { Step2Details } from "@/components/seller/wizard/Step2Details";
 import { Step3Photos } from "@/components/seller/wizard/Step3Photos";
@@ -15,7 +17,17 @@ type Props = Readonly<{
   searchParams: Promise<{ step?: string }>;
 }>;
 
-export default async function EditListingPage({ params, searchParams }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-2 w-full rounded-full" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params, searchParams }: Props) {
   const { id } = await params;
   const { step: stepStr } = await searchParams;
 
@@ -45,4 +57,12 @@ export default async function EditListingPage({ params, searchParams }: Props) {
   };
 
   return stepComponents[step];
+}
+
+export default function EditListingPage({ params, searchParams }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
 }

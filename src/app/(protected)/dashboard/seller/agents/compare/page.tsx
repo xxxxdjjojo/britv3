@@ -1,15 +1,30 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AgentProfile } from "@/types/seller";
 
 type Props = Readonly<{
   searchParams: Promise<{ ids?: string }>;
 }>;
 
-export default async function AgentComparisonPage({ searchParams }: Props) {
+function PageSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-8 w-48 mt-2" />
+        <Skeleton className="h-4 w-32 mt-2" />
+      </div>
+      <Skeleton className="h-96 rounded-2xl" />
+    </div>
+  );
+}
+
+async function PageContent({ searchParams }: Props) {
   const { ids } = await searchParams;
   if (!ids) redirect("/dashboard/seller/agents");
 
@@ -113,5 +128,13 @@ export default async function AgentComparisonPage({ searchParams }: Props) {
         </table>
       </div>
     </div>
+  );
+}
+
+export default function AgentComparisonPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }
