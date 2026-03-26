@@ -541,12 +541,6 @@ _From /cso daily audit. 4 findings, all VERIFIED. Report at `.gstack/security-re
 
 ## Security — CSO Audit Findings (2026-03-23)
 
-### Inngest webhook endpoint lacks signing key
-**What:** Set `INNGEST_SIGNING_KEY` env var and pass `signingKey` to the Inngest client constructor.
-**Why:** Without signing key verification, anyone can POST crafted events to `/api/inngest` and trigger functions (price drop alerts, RFQ notifications, Stripe webhook DLQ retries).
-**Effort:** S | **Priority:** P1
-**Where to start:** `src/inngest/client.ts` — add `signingKey: process.env.INNGEST_SIGNING_KEY` to constructor.
-
 ### Analytics event endpoint: no auth or rate limiting
 **What:** Add Upstash rate limiting to `POST /api/analytics/event`. Consider requiring a visitor fingerprint.
 **Why:** Unauthenticated endpoint accepts arbitrary listing_id values. Attacker can inflate analytics for any listing.

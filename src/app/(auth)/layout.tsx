@@ -10,11 +10,21 @@ export default async function AuthLayout({
   children: ReactNode;
 }>) {
   // Server-side auth check: redirect authenticated users to dashboard
+  // Exception: users without an active_role need to access role-select/onboarding
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (user) {
-    redirect("/dashboard");
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("active_role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.active_role) {
+      redirect("/dashboard");
+    }
+    // No active_role — allow access to role-select/onboarding pages
   }
 
   return (
