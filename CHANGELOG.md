@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3.0] - 2026-03-26
+
+### Added
+- Loading skeleton screens for 11 dashboard, admin, and settings routes
+- Suspense boundaries on 86 server component pages (seller, agent, landlord, admin dashboards) enabling streaming SSR
+- Server-side rendering for /search page — initial results now SSR'd for faster TTFB and SEO
+- LeaseAgreementPDF component using @react-pdf/renderer (replaces jspdf)
+- React cache() wrappers (getCachedUser, getCachedProfile) for per-request deduplication
+- Lighthouse CI GitHub Actions workflow with performance budgets (LCP < 2.5s, CLS < 0.1, score > 80)
+- API route for provider reference requests (breaks Inngest client-bundle leak)
+
+### Changed
+- next.config.ts: AVIF/WebP image format support, expanded optimizePackageImports, removed poweredByHeader
+- Recharts import in chart.tsx: wildcard → named imports for tree-shaking (~200KB savings)
+- 11 chart and Tiptap components lazy-loaded via next/dynamic
+- Sold-prices detail page converted from force-dynamic to ISR (1-hour revalidation)
+- Auth callback and RegisterForm: sequential operations parallelized with Promise.all()
+- Button component: mobile touch targets expanded to 44px+ via pseudo-element (WCAG 2.1)
+- Font-mono CSS variable: replaced undefined Geist Mono reference with system monospace stack
+- Homepage hero and blog images: added responsive sizes props
+
+### Fixed
+- Build failure: Inngest node:async_hooks leaked into client bundle via ReferenceTracker.tsx
+- N+1 queries in price-drop-alerts cron (600+ → 3 queries per batch)
+- N+1 queries in chain-risk-monitor cron (140 → 3 queries per batch)
+- N+1 queries in verification-re-engagement cron (2N → 2 queries per run)
+
+### Removed
+- jspdf dependency (~450KB bundle reduction) — consolidated to @react-pdf/renderer
+
 ## [0.0.2.1] - 2026-03-25
 
 ### Added
