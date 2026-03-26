@@ -57,10 +57,12 @@ async function PageContent({
   );
 }
 
-export default function OfferDetailPage({ params,  }: Readonly) {
+export default function OfferDetailPage({
+  params,
+}: Readonly<{ params: Promise<{ id: string }> }>) {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <PageContent params={params} ={} />
+      <PageContent params={params} />
     </Suspense>
   );
 }

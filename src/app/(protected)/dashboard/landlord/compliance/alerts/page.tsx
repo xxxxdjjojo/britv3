@@ -250,7 +250,7 @@ async function PageContent({
 export default function ComplianceAlertsPage({ searchParams,  }: AlertsPageProps) {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <PageContent searchParams={searchParams} ={} />
+      <PageContent searchParams={searchParams} />
     </Suspense>
   );
 }

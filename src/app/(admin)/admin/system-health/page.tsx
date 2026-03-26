@@ -11,12 +11,12 @@ import {
 } from "lucide-react";
 import type { ServiceStatus } from "@/services/admin/health-service";
 import {
-import { Skeleton } from "@/components/ui/skeleton";
   pingSupabase,
   pingStripe,
   pingResend,
   pingPostHog,
 } from "@/services/admin/health-service";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function StatusIcon({ status }: { status: ServiceStatus["status"] }) {
   if (status === "up") return <CheckCircle className="h-5 w-5 text-green-500" />;

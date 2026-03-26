@@ -116,7 +116,7 @@ async function PageContent({
 export default function ComplianceUploadPage({ searchParams,  }: UploadPageProps) {
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <PageContent searchParams={searchParams} ={} />
+      <PageContent searchParams={searchParams} />
     </Suspense>
   );
 }
