@@ -220,6 +220,7 @@ export default function HomePage() {
               alt="Modern British home interior with large windows and natural light"
               fill
               priority
+              sizes="100vw"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
@@ -589,6 +590,7 @@ export default function HomePage() {
                       src={post.image}
                       alt={post.alt}
                       fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-brand-primary uppercase tracking-wider shadow-sm">
