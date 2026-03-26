@@ -19,13 +19,13 @@ describe("initPostHog", () => {
     expect(mockInit).not.toHaveBeenCalled();
   });
 
-  it("passes advanced_disable_toolbar: true to prevent config.js fetch", async () => {
+  it("passes disable_surveys: true to reduce unnecessary fetches", async () => {
     process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test_key";
     const { initPostHog } = await import("./posthog");
     initPostHog();
     expect(mockInit).toHaveBeenCalledWith(
       "phc_test_key",
-      expect.objectContaining({ advanced_disable_toolbar: true })
+      expect.objectContaining({ disable_surveys: true })
     );
   });
 });
