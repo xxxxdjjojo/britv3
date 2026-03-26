@@ -49,13 +49,10 @@ export async function GET(request: NextRequest) {
     if (!roles || roles.length === 0) {
       const role = intendedRole ?? "homebuyer";
 
-      await supabase
-        .from("user_roles")
-        .insert({ user_id: user.id, role });
-      await supabase
-        .from("profiles")
-        .update({ active_role: role })
-        .eq("id", user.id);
+      await Promise.all([
+        supabase.from("user_roles").insert({ user_id: user.id, role }),
+        supabase.from("profiles").update({ active_role: role }).eq("id", user.id),
+      ]);
 
       // Route to the correct onboarding flow
       if (intendedRole) {

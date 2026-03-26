@@ -100,57 +100,53 @@ export function RegisterForm() {
         return;
       }
 
-      // Assign role atomically via RPC (avoids importing server-only role-service)
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const role: UserRole = professionalRole
-            ? professionalRole
-            : data.intent === "rent"
-              ? "renter"
-              : "homebuyer";
-          await supabase.rpc("assign_role_atomic", {
-            p_user_id: user.id,
-            p_role: role,
-          });
-        }
-      } catch {
-        // Non-blocking: role can be set later via callback
-      }
+      // Run post-signup tasks in parallel (all non-blocking)
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      // Trigger referral attribution.
-      // The API reads the httpOnly britestate_ref cookie server-side (eng review 6A).
-      try {
-        await fetch("/api/referrals/v2/attribute", { method: "POST" });
-      } catch {
-        // Non-critical — don't block signup
-        console.warn("[referral] Failed to trigger attribution");
-      }
-
-      // Persist marketing consent to consent_records (GDPR audit trail)
-      if (data.marketingConsent) {
-        try {
-          const supabase = createClient();
-          const { data: { user: currentUser } } = await supabase.auth.getUser();
-          if (currentUser) {
-            await supabase.from("consent_records").upsert(
-              {
-                user_id: currentUser.id,
-                consent_type: "marketing",
-                granted: true,
-                ip_address: null,
-                user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
-              },
-              { onConflict: "user_id,consent_type" },
-            );
+      await Promise.all([
+        // Assign role atomically via RPC
+        (async () => {
+          try {
+            if (user) {
+              const role: UserRole = professionalRole
+                ? professionalRole
+                : data.intent === "rent"
+                  ? "renter"
+                  : "homebuyer";
+              await supabase.rpc("assign_role_atomic", {
+                p_user_id: user.id,
+                p_role: role,
+              });
+            }
+          } catch {
+            // Non-blocking: role can be set later via callback
           }
-        } catch {
-          // Non-blocking — consent can be managed in settings
-        }
-      }
+        })(),
+        // Trigger referral attribution (reads httpOnly britestate_ref cookie server-side)
+        fetch("/api/referrals/v2/attribute", { method: "POST" }).catch(() => {
+          console.warn("[referral] Failed to trigger attribution");
+        }),
+        // Persist marketing consent to consent_records (GDPR audit trail)
+        (async () => {
+          if (data.marketingConsent && user) {
+            try {
+              await supabase.from("consent_records").upsert(
+                {
+                  user_id: user.id,
+                  consent_type: "marketing",
+                  granted: true,
+                  ip_address: null,
+                  user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+                },
+                { onConflict: "user_id,consent_type" },
+              );
+            } catch {
+              // Non-blocking — consent can be managed in settings
+            }
+          }
+        })(),
+      ]);
 
       // Bug 3: Redirect to /verify-email instead of /dashboard
       router.push("/verify-email");
