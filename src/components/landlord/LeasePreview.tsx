@@ -1,10 +1,21 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Download, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import type { Tenancy } from "@/types/landlord";
+
+// Dynamic import of the self-contained PDF download component (ssr: false
+// because @react-pdf/renderer cannot run on the server).
+const LeaseAgreementPDFDownload = dynamic(
+  () =>
+    import("@/components/landlord/LeaseAgreementPDF").then(
+      (mod) => mod.LeaseAgreementPDFDownload,
+    ),
+  { ssr: false },
+);
 
 type LeasePreviewProps = Readonly<{
   tenancy: Tenancy;
@@ -40,209 +51,21 @@ export default function LeasePreview({
   propertyId,
 }: LeasePreviewProps) {
   const [customClauses, setCustomClauses] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  const generatePDF = useCallback(async () => {
-    const { jsPDF } = await import("jspdf");
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 20;
-    const maxWidth = pageWidth - margin * 2;
-    let y = 20;
-
-    function checkPageBreak(needed: number) {
-      if (y + needed > 270) {
-        doc.addPage();
-        y = 20;
-      }
-    }
-
-    function addSectionTitle(title: string) {
-      checkPageBreak(20);
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      doc.text(title, margin, y);
-      y += 8;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-    }
-
-    // Header
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("Assured Shorthold Tenancy Agreement", pageWidth / 2, y, {
-      align: "center",
-    });
-    y += 12;
-
-    // Disclaimer
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "italic");
-    doc.setTextColor(150, 0, 0);
-    doc.text(
-      "DISCLAIMER: This template is for guidance only. Seek legal advice before use.",
-      pageWidth / 2,
-      y,
-      { align: "center" },
-    );
-    doc.setTextColor(0);
-    doc.setFont("helvetica", "normal");
-    y += 12;
-
-    // Section 1: PARTIES
-    addSectionTitle("1. PARTIES");
-    doc.text(`Landlord: ${landlordName}`, margin + 5, y);
-    y += 6;
-    doc.text(`Tenant: ${tenancy.tenant_name}`, margin + 5, y);
-    y += 6;
-    const addressLines = doc.splitTextToSize(
-      `Property: ${propertyAddress}`,
-      maxWidth - 5,
-    );
-    doc.text(addressLines, margin + 5, y);
-    y += addressLines.length * 5 + 6;
-
-    // Section 2: TERM
-    addSectionTitle("2. TERM");
-    doc.text(`Start Date: ${tenancy.lease_start_date}`, margin + 5, y);
-    y += 6;
-    if (tenancy.lease_end_date) {
-      doc.text(`End Date: ${tenancy.lease_end_date}`, margin + 5, y);
-      y += 6;
-    } else {
-      doc.text("End Date: Periodic (rolling)", margin + 5, y);
-      y += 6;
-    }
-    y += 4;
-
-    // Section 3: RENT
-    addSectionTitle("3. RENT");
-    doc.text(
-      `Amount: GBP ${tenancy.rent_amount.toLocaleString("en-GB", { minimumFractionDigits: 2 })} per ${tenancy.rent_frequency === "monthly" ? "calendar month" : "week"}`,
-      margin + 5,
-      y,
-    );
-    y += 6;
-    doc.text("Payment Method: Bank transfer or standing order", margin + 5, y);
-    y += 10;
-
-    // Section 4: DEPOSIT
-    addSectionTitle("4. DEPOSIT");
-    if (tenancy.deposit_amount) {
-      doc.text(
-        `Amount: GBP ${tenancy.deposit_amount.toLocaleString("en-GB", { minimumFractionDigits: 2 })}`,
-        margin + 5,
-        y,
-      );
-      y += 6;
-      if (tenancy.deposit_scheme) {
-        doc.text(`Scheme: ${tenancy.deposit_scheme}`, margin + 5, y);
-        y += 6;
-      }
-    } else {
-      doc.text("No deposit required.", margin + 5, y);
-      y += 6;
-    }
-    y += 4;
-
-    // Section 5: OBLIGATIONS
-    addSectionTitle("5. OBLIGATIONS");
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Landlord's Obligations:", margin + 5, y);
-    y += 6;
-    doc.setFont("helvetica", "normal");
-    for (const obligation of LANDLORD_OBLIGATIONS) {
-      checkPageBreak(10);
-      const lines = doc.splitTextToSize(`- ${obligation}`, maxWidth - 10);
-      doc.text(lines, margin + 10, y);
-      y += lines.length * 5 + 2;
-    }
-    y += 4;
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Tenant's Obligations:", margin + 5, y);
-    y += 6;
-    doc.setFont("helvetica", "normal");
-    for (const obligation of TENANT_OBLIGATIONS) {
-      checkPageBreak(10);
-      const lines = doc.splitTextToSize(`- ${obligation}`, maxWidth - 10);
-      doc.text(lines, margin + 10, y);
-      y += lines.length * 5 + 2;
-    }
-    y += 4;
-
-    // Section 6: NOTICES
-    checkPageBreak(30);
-    addSectionTitle("6. NOTICES");
-    doc.text(
-      "The Landlord must give at least two months' notice to end the tenancy (Section 21).",
-      margin + 5,
-      y,
-    );
-    y += 6;
-    doc.text(
-      "The Tenant must give at least one month's notice to end the tenancy.",
-      margin + 5,
-      y,
-    );
-    y += 6;
-    doc.text(
-      "All notices must be in writing and served to the addresses stated in this agreement.",
-      margin + 5,
-      y,
-    );
-    y += 10;
-
-    // Section 7: ADDITIONAL CLAUSES
-    if (customClauses.trim()) {
-      checkPageBreak(20);
-      addSectionTitle("7. ADDITIONAL CLAUSES");
-      const clauseLines = doc.splitTextToSize(customClauses, maxWidth - 5);
-      checkPageBreak(clauseLines.length * 5 + 10);
-      doc.text(clauseLines, margin + 5, y);
-      y += clauseLines.length * 5 + 10;
-    }
-
-    // Signature lines
-    checkPageBreak(40);
-    y += 10;
-    doc.setFont("helvetica", "bold");
-    doc.text("SIGNATURES", margin, y);
-    y += 10;
-    doc.setFont("helvetica", "normal");
-    doc.text("Landlord: ____________________________", margin, y);
-    y += 6;
-    doc.text("Date: ____________________________", margin, y);
-    y += 10;
-    doc.text("Tenant: ____________________________", margin, y);
-    y += 6;
-    doc.text("Date: ____________________________", margin, y);
-
-    return doc;
-  }, [tenancy, propertyAddress, landlordName, customClauses]);
-
-  async function handleDownload() {
-    setIsGenerating(true);
-    try {
-      const doc = await generatePDF();
-      doc.save(`lease-${tenancy.id}.pdf`);
-      toast.success("Lease PDF downloaded.");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to generate PDF";
-      toast.error(message);
-    } finally {
-      setIsGenerating(false);
-    }
-  }
 
   async function handleSaveToDocuments() {
     setIsSaving(true);
     try {
-      const doc = await generatePDF();
-      const blob = doc.output("blob");
+      const { leaseAgreementToBlob } = await import(
+        "@/components/landlord/LeaseAgreementPDF"
+      );
+      const blob = await leaseAgreementToBlob({
+        tenancy,
+        propertyAddress,
+        landlordName,
+        customClauses,
+      });
+
       const file = new File([blob], `lease-${tenancy.id}.pdf`, {
         type: "application/pdf",
       });
@@ -429,18 +252,24 @@ export default function LeasePreview({
 
       {/* Actions */}
       <div className="flex gap-3">
-        <button
-          onClick={handleDownload}
-          disabled={isGenerating}
+        <LeaseAgreementPDFDownload
+          tenancy={tenancy}
+          propertyAddress={propertyAddress}
+          landlordName={landlordName}
+          customClauses={customClauses}
           className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
         >
-          {isGenerating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
+          {({ loading }) => (
+            <>
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              {loading ? "Generating..." : "Download PDF"}
+            </>
           )}
-          {isGenerating ? "Generating..." : "Download PDF"}
-        </button>
+        </LeaseAgreementPDFDownload>
 
         <button
           onClick={handleSaveToDocuments}

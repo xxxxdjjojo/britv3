@@ -45,7 +45,6 @@ const nextConfig: NextConfig = {
       "recharts",
       "posthog-js",
       "@tiptap/starter-kit",
-      "jspdf",
     ],
   },
   async redirects() {
