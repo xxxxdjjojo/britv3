@@ -252,7 +252,7 @@ export default function HomePage() {
                     Rent
                   </Link>
                   <Link
-                    href="/search?type=find-services"
+                    href="/services"
                     className="px-6 py-2 text-white hover:bg-white/10 text-sm font-medium rounded-md transition-colors"
                   >
                     Find Services
