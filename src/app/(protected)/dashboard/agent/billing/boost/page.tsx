@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentListings } from "@/services/agent/agent-listings-service";
@@ -5,6 +6,7 @@ import { FeaturedListingBoost } from "@/components/dashboard/agent/billing/Featu
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, CheckCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Listing = {
   id: string;
@@ -21,7 +23,18 @@ type Props = {
   searchParams: Promise<{ success?: string; listing_id?: string }>;
 };
 
-export default async function FeaturedBoostPage({ searchParams }: Props) {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ searchParams }: Props) {
   const supabase = await createClient();
 
   const {
@@ -91,5 +104,13 @@ export default async function FeaturedBoostPage({ searchParams }: Props) {
         />
       )}
     </div>
+  );
+}
+
+export default function FeaturedBoostPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }

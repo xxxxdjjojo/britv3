@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { VendorReportList } from "@/components/dashboard/agent/sales/VendorReportPDF";
 import type { AgentVendorReport } from "@/types/agent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Listing = {
   id: string;
@@ -9,7 +11,18 @@ type Listing = {
   address_line_1: string | null;
 };
 
-export default async function VendorReportsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -56,5 +69,13 @@ export default async function VendorReportsPage() {
         userId={user.id}
       />
     </div>
+  );
+}
+
+export default function VendorReportsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

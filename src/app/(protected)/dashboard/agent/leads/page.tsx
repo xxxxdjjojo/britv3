@@ -1,14 +1,27 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentLeads } from "@/services/agent/agent-lead-service";
 import { LeadPipelineKanban } from "@/components/dashboard/agent/leads/LeadPipelineKanban";
 import type { AgentLead, LeadStage } from "@/types/agent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
   title: "Leads & Pipeline | Agent | Britestate",
 };
 
-export default async function AgentLeadsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -47,5 +60,13 @@ export default async function AgentLeadsPage() {
         initialLeads={grouped as Partial<Record<LeadStage, AgentLead[]>>}
       />
     </div>
+  );
+}
+
+export default function AgentLeadsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

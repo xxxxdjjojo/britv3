@@ -1,9 +1,22 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFeedIntegrations } from "@/services/agent/agent-feed-service";
 import { FeedIntegrationConfig } from "@/components/dashboard/agent/integrations/FeedIntegrationConfig";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function AgentFeedsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -35,5 +48,13 @@ export default async function AgentFeedsPage() {
       </div>
       <FeedIntegrationConfig initialIntegrations={initialIntegrations} />
     </div>
+  );
+}
+
+export default function AgentFeedsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

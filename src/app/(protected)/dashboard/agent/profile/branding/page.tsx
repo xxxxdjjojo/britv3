@@ -1,9 +1,22 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AgencyBrandingForm } from "@/components/dashboard/agent/AgencyBrandingForm";
 import type { AgentAgencyProfile } from "@/types/agent";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function AgencyBrandingPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -33,5 +46,13 @@ export default async function AgencyBrandingPage() {
       </div>
       <AgencyBrandingForm profile={profile as AgentAgencyProfile | null} />
     </div>
+  );
+}
+
+export default function AgencyBrandingPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

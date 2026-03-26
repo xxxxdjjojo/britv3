@@ -1,13 +1,26 @@
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOfferById, getOfferHistory } from "@/services/agent/agent-offer-service";
 import { NegotiationThread } from "@/components/dashboard/agent/offers/NegotiationThread";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
   title: "Offer Negotiation - Agent Dashboard",
 };
 
-export default async function OfferDetailPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   params,
 }: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await params;
@@ -41,5 +54,13 @@ export default async function OfferDetailPage({
       </div>
       <NegotiationThread offer={offer} history={history} />
     </div>
+  );
+}
+
+export default function OfferDetailPage({ params,  }: Readonly) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} ={} />
+    </Suspense>
   );
 }

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentSaleProgressions } from "@/services/agent/agent-sale-service";
@@ -5,8 +6,20 @@ import { SaleProgressionKanban } from "@/components/dashboard/agent/sales/SalePr
 import { getRiskScoresForAgent } from "@/services/agent/chain-risk-service";
 import type { SaleStage, AgentSaleProgression, AgentSaleProgressionWithRisk, ChainRiskScore } from "@/types/agent";
 import { SALE_STAGES } from "@/types/agent";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function SalesPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -54,5 +67,13 @@ export default async function SalesPage() {
 
       <SaleProgressionKanban initialProgressions={grouped} />
     </div>
+  );
+}
+
+export default function SalesPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

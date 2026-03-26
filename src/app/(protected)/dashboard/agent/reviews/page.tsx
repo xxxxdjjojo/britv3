@@ -1,13 +1,26 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ReviewsDashboard } from "@/components/dashboard/agent/reviews/ReviewsDashboard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
   title: "Reviews - Britestate Agent",
   description: "Manage your agency reviews and ratings",
 };
 
-export default async function AgentReviewsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -47,4 +60,12 @@ export default async function AgentReviewsPage() {
   };
 
   return <ReviewsDashboard reviews={reviews} stats={stats} />;
+}
+
+export default function AgentReviewsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
+  );
 }

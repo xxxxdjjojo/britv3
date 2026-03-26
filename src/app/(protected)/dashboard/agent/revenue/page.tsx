@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { PoundSterling, TrendingUp, Home, BarChart3 } from "lucide-react";
 import { getAgentPerformanceReport } from "@/services/agent/agent-analytics-service";
 import type { AgentCommission } from "@/types/agent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function penceToGBP(pence: number): string {
   return new Intl.NumberFormat("en-GB", {
@@ -31,7 +33,18 @@ function formatDate(iso: string): string {
   });
 }
 
-export default async function RevenuePage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -197,5 +210,13 @@ export default async function RevenuePage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function RevenuePage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

@@ -1,16 +1,33 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCompetitorAnalysis } from "@/services/agent/agent-analytics-service";
 import { getAgentListings } from "@/services/agent/agent-listings-service";
 import { CompetitorAnalysis } from "@/components/dashboard/agent/analytics/CompetitorAnalysis";
 import type { CompetitorEntry } from "@/services/agent/agent-analytics-service";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type AreaPriceTrend = {
   month: string;
   avg_price: number;
 };
 
-export default async function CompetitorAnalyticsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const {
@@ -97,5 +114,13 @@ export default async function CompetitorAnalyticsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function CompetitorAnalyticsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }
