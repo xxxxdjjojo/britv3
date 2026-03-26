@@ -1,13 +1,26 @@
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const EmailCampaignsClient = dynamic(
   () => import("@/components/admin/EmailCampaignsClient").then((mod) => mod.EmailCampaignsClient),
   { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
 );
 
-export default async function AdminEmailCampaignsPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   const { data } = await supabase
@@ -27,5 +40,13 @@ export default async function AdminEmailCampaignsPage() {
       />
       <EmailCampaignsClient campaigns={campaigns} />
     </div>
+  );
+}
+
+export default function AdminEmailCampaignsPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

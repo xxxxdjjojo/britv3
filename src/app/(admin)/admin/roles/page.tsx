@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { RolesClient } from "@/components/admin/RolesClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ALL_ROLES = [
   "homebuyer",
@@ -17,7 +19,18 @@ type RoleCount = {
   count: number;
 };
 
-export default async function RolesPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   // Get current user and their admin_role for super-admin gating
@@ -56,5 +69,13 @@ export default async function RolesPage() {
       />
       <RolesClient roleCounts={counts} isSuperAdmin={isSuperAdmin} />
     </div>
+  );
+}
+
+export default function RolesPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

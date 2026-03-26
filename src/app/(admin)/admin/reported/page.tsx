@@ -1,11 +1,24 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getOpenReports } from "@/services/admin/report-service";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { ReportedContentClient } from "@/components/admin/ReportedContentClient";
 import { Flag } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function AdminReportedPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
   const reportList = await getOpenReports(supabase);
 
@@ -25,5 +38,13 @@ export default async function AdminReportedPage() {
         <ReportedContentClient reports={reportList} />
       )}
     </div>
+  );
+}
+
+export default function AdminReportedPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

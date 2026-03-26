@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { FraudDetectionClient } from "@/components/admin/FraudDetectionClient";
 import { ShieldAlert } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type FraudSignal = {
   userId: string;
@@ -40,7 +42,18 @@ function computeRiskScore(
   return Math.min(score, 100);
 }
 
-export default async function FraudDetectionPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const now = Date.now();
   const supabase = await createClient();
 
@@ -127,5 +140,13 @@ export default async function FraudDetectionPage() {
         <FraudDetectionClient signals={signals} />
       )}
     </div>
+  );
+}
+
+export default function FraudDetectionPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

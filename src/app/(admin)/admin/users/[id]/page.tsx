@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getUserDetail } from "@/services/admin/user-service";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -5,8 +6,20 @@ import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { UserDetailActions } from "@/components/admin/UserDetailActions";
 import { UserX } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function AdminUserDetailPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -125,5 +138,17 @@ export default async function AdminUserDetailPage({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminUserDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

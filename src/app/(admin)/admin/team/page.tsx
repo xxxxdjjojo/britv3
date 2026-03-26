@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { TeamClient } from "@/components/admin/TeamClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type TeamMember = {
   id: string;
@@ -10,7 +12,18 @@ export type TeamMember = {
   isSuspended: boolean | null;
 };
 
-export default async function TeamPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const supabase = await createClient();
 
   // Get current user and their admin_role for super-admin gating
@@ -53,5 +66,13 @@ export default async function TeamPage() {
 
       <TeamClient members={members} isSuperAdmin={isSuperAdmin} />
     </div>
+  );
+}
+
+export default function TeamPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

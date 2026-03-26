@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { notFound } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CmsEditor = dynamic(
   () => import("@/components/admin/CmsEditor").then((mod) => mod.CmsEditor),
@@ -12,7 +14,18 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-export default async function AdminHelpEditorPage({ params }: Props) {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-8 w-48 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({ params }: Props) {
   const { id } = await params;
   const isNew = id === "new";
 
@@ -55,5 +68,13 @@ export default async function AdminHelpEditorPage({ params }: Props) {
         backHref="/admin/cms/help"
       />
     </div>
+  );
+}
+
+export default function AdminHelpEditorPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent params={params} />
+    </Suspense>
   );
 }

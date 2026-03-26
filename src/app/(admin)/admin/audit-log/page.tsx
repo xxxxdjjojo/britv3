@@ -1,13 +1,26 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getAuditLog } from "@/services/admin/audit-service";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { AuditLogClient } from "@/components/admin/AuditLogClient";
 import { ClipboardList } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PAGE_LIMIT = 50;
 
-export default async function AuditLogPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -49,5 +62,17 @@ export default async function AuditLogPage({
         />
       )}
     </div>
+  );
+}
+
+export default function AuditLogPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }

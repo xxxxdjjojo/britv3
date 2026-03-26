@@ -1,11 +1,24 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getGdprQueue } from "@/services/admin/gdpr-service";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { GdprQueueClient } from "@/components/admin/GdprQueueClient";
 import { ShieldCheck } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function GdprQueuePage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -44,5 +57,17 @@ export default async function GdprQueuePage({
         />
       )}
     </div>
+  );
+}
+
+export default function GdprQueuePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }

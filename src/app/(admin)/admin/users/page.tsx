@@ -1,11 +1,24 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { searchUsers } from "@/services/admin/user-service";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { UserManagementClient } from "@/components/admin/UserManagementClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PAGE_LIMIT = 20;
 
-export default async function AdminUsersPage({
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -32,5 +45,17 @@ export default async function AdminUsersPage({
         query={query}
       />
     </div>
+  );
+}
+
+export default function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
   );
 }

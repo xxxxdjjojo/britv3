@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
 import { Activity } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type RedisStats = {
   available: false;
@@ -71,7 +73,18 @@ async function getRedisStats(): Promise<RedisStats> {
   }
 }
 
-export default async function ApiUsagePage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const stats = await getRedisStats();
 
   return (
@@ -170,5 +183,13 @@ export default async function ApiUsagePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ApiUsagePage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }

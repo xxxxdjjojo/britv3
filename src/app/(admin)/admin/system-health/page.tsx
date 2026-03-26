@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import {
   CheckCircle,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 import type { ServiceStatus } from "@/services/admin/health-service";
 import {
+import { Skeleton } from "@/components/ui/skeleton";
   pingSupabase,
   pingStripe,
   pingResend,
@@ -70,7 +72,18 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
   );
 }
 
-export default async function SystemHealthPage() {
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-64 mt-2" />
+      <Skeleton className="h-64 rounded-xl" />
+    </div>
+  );
+}
+
+async function PageContent() {
   const [supabase, stripe, resend, posthog] = await Promise.all([
     pingSupabase(),
     pingStripe(),
@@ -108,5 +121,13 @@ export default async function SystemHealthPage() {
         This page performs live pings on every load. Refresh to re-check.
       </p>
     </div>
+  );
+}
+
+export default function SystemHealthPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent />
+    </Suspense>
   );
 }
