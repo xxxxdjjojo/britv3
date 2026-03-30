@@ -20,7 +20,7 @@ export function StatusTabs({ tabs }: Props) {
   const active = searchParams.get("status") ?? "all";
 
   return (
-    <div className="flex items-center gap-2 border-b border-slate-200 pb-0">
+    <div className="flex items-center gap-1 bg-[--color-neutral-100] rounded-xl p-1">
       {tabs.map((tab) => (
         <button
           key={tab.key}
@@ -31,16 +31,18 @@ export function StatusTabs({ tabs }: Props) {
             router.push(`?${params.toString()}`);
           }}
           className={cn(
-            "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors duration-150",
+            "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150",
             active === tab.key
-              ? "border-[#1B4D3E] text-[#1B4D3E]"
-              : "border-transparent text-slate-500 hover:text-slate-700",
+              ? "bg-white text-[--color-brand-primary] shadow-sm"
+              : "text-[--color-neutral-500] hover:text-[--color-neutral-900]",
           )}
         >
           {tab.label}
           <span className={cn(
             "rounded-full px-2 py-0.5 text-xs font-semibold",
-            active === tab.key ? "bg-[#1B4D3E]/10 text-[#1B4D3E]" : "bg-slate-100 text-slate-500",
+            active === tab.key
+              ? "bg-[--color-brand-primary-lighter] text-[--color-brand-primary]"
+              : "bg-[--color-neutral-200] text-[--color-neutral-500]",
           )}>
             {tab.count}
           </span>

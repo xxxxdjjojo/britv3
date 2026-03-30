@@ -38,7 +38,7 @@ function SidebarContent({ userName, avatarUrl }: Props) {
         <span className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-white tracking-tight">
           britestate
         </span>
-        <p className="text-white/60 text-xs mt-0.5">Seller Portal</p>
+        <p className="text-white/60 text-xs mt-0.5 font-inter">Seller Portal</p>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
@@ -50,7 +50,7 @@ function SidebarContent({ userName, avatarUrl }: Props) {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 font-inter",
                 active
                   ? "bg-white/15 text-white"
                   : "text-white/70 hover:bg-white/10 hover:text-white",
@@ -60,7 +60,7 @@ function SidebarContent({ userName, avatarUrl }: Props) {
                 "flex h-8 w-8 items-center justify-center rounded-lg",
                 active ? "bg-white/20" : "bg-white/10",
               )}>
-                <Icon size={16} />
+                <Icon size={16} strokeWidth={1.25} />
               </span>
               {label}
             </Link>
@@ -72,16 +72,16 @@ function SidebarContent({ userName, avatarUrl }: Props) {
           {avatarUrl ? (
             <Image src={avatarUrl} alt={userName} width={36} height={36} className="rounded-full object-cover" />
           ) : (
-            <div className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
+            <div className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold font-['Plus_Jakarta_Sans']">
               {userName.charAt(0).toUpperCase()}
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-semibold truncate">{userName}</p>
-            <p className="text-white/50 text-xs">Premium Seller</p>
+            <p className="text-white text-sm font-semibold truncate font-inter">{userName}</p>
+            <p className="text-white/50 text-xs font-inter">Premium Seller</p>
           </div>
           <Link href="/logout" className="text-white/40 hover:text-white transition-colors" title="Sign out">
-            <LogOut size={14} />
+            <LogOut size={14} strokeWidth={1.25} />
           </Link>
         </div>
       </div>
@@ -91,7 +91,7 @@ function SidebarContent({ userName, avatarUrl }: Props) {
 
 export function SellerSidebar({ userName, avatarUrl }: Props) {
   return (
-    <ResponsiveSidebar className="bg-[#1B4D3E] border-r-0">
+    <ResponsiveSidebar className="bg-[--color-brand-primary] border-r-0">
       <SidebarContent userName={userName} avatarUrl={avatarUrl} />
     </ResponsiveSidebar>
   );

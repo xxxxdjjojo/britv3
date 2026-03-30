@@ -53,65 +53,138 @@ export function ListingAnalyticsCharts({ listingId, initialSummary }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Period Selector */}
       <div className="flex items-center gap-2">
-        <span className="text-sm text-slate-500 mr-2">Period:</span>
-        {DATE_RANGES.map(({ label, days: d }) => (
-          <button
-            key={d}
-            type="button"
-            onClick={() => handleRangeChange(d)}
-            className={cn(
-              "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150",
-              days === d
-                ? "bg-[#1B4D3E] text-white shadow-sm"
-                : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300",
-            )}
-          >
-            {label}
-          </button>
-        ))}
-        {loading && <div className="h-4 w-4 rounded-full border-2 border-[#1B4D3E]/30 border-t-[#1B4D3E] animate-spin ml-2" />}
+        <span className="text-sm text-[--color-neutral-500] mr-1 font-inter">Period:</span>
+        <div className="flex items-center gap-1 bg-[--color-neutral-100] rounded-xl p-1">
+          {DATE_RANGES.map(({ label, days: d }) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => handleRangeChange(d)}
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 font-inter",
+                days === d
+                  ? "bg-white text-[--color-brand-primary] shadow-sm"
+                  : "text-[--color-neutral-500] hover:text-[--color-neutral-900]",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {loading && (
+          <div className="h-4 w-4 rounded-full border-2 border-[--color-brand-primary]/30 border-t-[--color-brand-primary] animate-spin ml-1" />
+        )}
       </div>
 
-      <div className={cn("bg-white rounded-2xl shadow-sm border border-slate-200 p-6 transition-opacity duration-200", loading ? "opacity-50" : "opacity-100")}>
-        <h3 className="font-semibold text-slate-900 mb-6 font-['Plus_Jakarta_Sans']">Views Over Time</h3>
+      {/* Views Over Time Chart */}
+      <div className={cn(
+        "bg-white rounded-xl shadow-sm p-6 transition-opacity duration-200",
+        loading ? "opacity-50" : "opacity-100",
+      )}>
+        <h3 className="font-semibold text-[--color-neutral-900] mb-6 font-['Plus_Jakarta_Sans']">
+          Views Over Time
+        </h3>
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="analyticsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.15} />
+                  <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.12} />
                   <stop offset="95%" stopColor="#1B4D3E" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#94a3b8" }} tickLine={false} axisLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "12px" }} />
-              <Area type="monotone" dataKey="views" stroke="#1B4D3E" strokeWidth={2} fill="url(#analyticsGradient)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E2E8" vertical={false} />
+              <XAxis
+                dataKey="date"
+                tick={{ fontSize: 11, fill: "#7A7A88", fontFamily: "Inter, sans-serif" }}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "#7A7A88", fontFamily: "Inter, sans-serif" }}
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.03)",
+                  fontFamily: "Inter, sans-serif",
+                }}
+                labelStyle={{ color: "#171719", fontWeight: 600, fontSize: "12px" }}
+                itemStyle={{ color: "#1B4D3E", fontSize: "12px" }}
+              />
+              <Area
+                type="monotone"
+                dataKey="views"
+                stroke="#1B4D3E"
+                strokeWidth={2}
+                fill="url(#analyticsGradient)"
+                dot={false}
+                activeDot={{ r: 4, fill: "#1B4D3E", strokeWidth: 0 }}
+              />
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-64 flex items-center justify-center text-slate-400 text-sm">No views data for this period</div>
+          <div className="h-64 flex items-center justify-center text-[--color-neutral-400] text-sm font-inter">
+            No views data for this period
+          </div>
         )}
       </div>
 
-      <div className={cn("bg-white rounded-2xl shadow-sm border border-slate-200 p-6 transition-opacity duration-200", loading ? "opacity-50" : "opacity-100")}>
-        <h3 className="font-semibold text-slate-900 mb-6 font-['Plus_Jakarta_Sans']">Event Breakdown</h3>
+      {/* Event Breakdown */}
+      <div className={cn(
+        "bg-white rounded-xl shadow-sm p-6 transition-opacity duration-200",
+        loading ? "opacity-50" : "opacity-100",
+      )}>
+        <h3 className="font-semibold text-[--color-neutral-900] mb-6 font-['Plus_Jakarta_Sans']">
+          Engagement Breakdown
+        </h3>
         {pieData.length > 0 ? (
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" innerRadius={70} outerRadius={110} paddingAngle={3} dataKey="value">
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                innerRadius={70}
+                outerRadius={110}
+                paddingAngle={3}
+                dataKey="value"
+              >
                 {pieData.map((_, index) => (
                   <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "12px" }} />
-              <Legend iconType="circle" iconSize={10} formatter={(value) => <span style={{ fontSize: 12, color: "#64748b" }}>{value}</span>} />
+              <Tooltip
+                contentStyle={{
+                  background: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.03)",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              />
+              <Legend
+                iconType="circle"
+                iconSize={8}
+                formatter={(value) => (
+                  <span style={{ fontSize: 12, color: "#5E5E6A", fontFamily: "Inter, sans-serif" }}>
+                    {value}
+                  </span>
+                )}
+              />
             </PieChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-64 flex items-center justify-center text-slate-400 text-sm">No event data for this period</div>
+          <div className="h-64 flex items-center justify-center text-[--color-neutral-400] text-sm font-inter">
+            No event data for this period
+          </div>
         )}
       </div>
     </div>
