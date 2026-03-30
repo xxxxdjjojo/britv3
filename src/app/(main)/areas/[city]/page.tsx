@@ -89,38 +89,38 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
       />
 
       {/* ── Hero (70vh) ── */}
-      <header className="relative min-h-[70vh] flex flex-col justify-end overflow-hidden">
-        {/* Background image placeholder */}
-        <div className="absolute inset-0 bg-neutral-800" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent" />
+      <header className="relative min-h-[65vh] flex flex-col justify-end overflow-hidden bg-brand-primary">
+        {/* Decorative orbs */}
+        <div className="pointer-events-none absolute -top-32 -right-32 size-96 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute top-1/4 left-1/3 size-64 rounded-full bg-white/5" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-16">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 mb-6 text-sm text-white/80" aria-label="Breadcrumb">
-            <Link href="/areas" className="hover:text-white">Guides</Link>
+          <nav className="flex items-center gap-2 mb-8 text-sm text-white/60" aria-label="Breadcrumb">
+            <Link href="/areas" className="hover:text-white transition-colors">Guides</Link>
             <span>/</span>
-            <Link href="/areas" className="hover:text-white">United Kingdom</Link>
+            <Link href="/areas" className="hover:text-white transition-colors">United Kingdom</Link>
             <span>/</span>
-            <span className="text-white font-medium">{city_data.name}</span>
+            <span className="text-white font-semibold">{city_data.name}</span>
           </nav>
 
-          <h1 className="font-heading text-[60px] leading-none font-bold text-white mb-4 max-md:text-[40px]">
+          <h1 className="font-heading text-[56px] leading-none font-black text-white mb-5 max-md:text-[40px]" style={{ letterSpacing: "-0.02em" }}>
             {city_data.name}
           </h1>
-          <p className="text-lg text-white/90 mb-10 max-w-xl">{city_data.description}</p>
+          <p className="text-lg text-white/75 mb-10 max-w-xl leading-relaxed">{city_data.description}</p>
 
-          {/* Floating search bar */}
-          <div className="bg-white rounded-2xl shadow-xl px-6 py-4 flex items-center gap-4 max-w-2xl">
-            <MapPin className="size-5 text-neutral-400 flex-shrink-0" />
+          {/* Glassmorphism search bar */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 flex items-center gap-4 max-w-2xl shadow-xl">
+            <MapPin className="size-5 text-white/50 flex-shrink-0" />
             <input
               type="text"
               placeholder={`Search areas in ${city_data.name}...`}
-              className="flex-1 text-neutral-700 outline-none text-sm"
+              className="flex-1 text-white placeholder-white/40 bg-transparent outline-none text-sm"
               readOnly
             />
             <Link
               href={`/search?city=${city_data.slug}`}
-              className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors flex-shrink-0"
+              className="bg-white text-brand-primary px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-neutral-50 transition-colors flex-shrink-0"
             >
               Search
             </Link>
@@ -129,8 +129,8 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
       </header>
 
       {/* ── Stats Bar (3 cards) ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20 mb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             {
               label: "Avg Property Price",
@@ -151,32 +151,33 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               subIcon: false,
             },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl shadow-sm border border-primary/10 p-6">
-              <p className="text-sm text-neutral-500 mb-2">{stat.label}</p>
-              <p className="text-3xl font-bold text-primary font-heading">{stat.value}</p>
+            <div key={stat.label} className="bg-white rounded-2xl shadow-md p-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">{stat.label}</p>
+              <p className="text-3xl font-black text-brand-primary font-heading">{stat.value}</p>
               {stat.subIcon ? (
-                <p className="text-emerald-600 font-bold flex items-center gap-1 mt-1 text-sm">
+                <p className="text-emerald-600 font-bold flex items-center gap-1 mt-1.5 text-sm">
                   <TrendingUp className="size-4" /> {stat.sub} YoY
                 </p>
               ) : (
-                <p className="text-sm text-neutral-400 mt-1">{stat.sub}</p>
+                <p className="text-sm text-neutral-400 mt-1.5">{stat.sub}</p>
               )}
             </div>
           ))}
         </div>
-        <div className="mt-4">
+        <div className="mt-3">
           <DataAttribution source="HM Land Registry" lastUpdated="March 2026" methodology="Median prices" />
         </div>
       </section>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 pb-24">
+      <main className="bg-[#faf9f8] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 pb-28">
 
         {/* ── 5-Year Price Trend ── */}
         <section>
-          <div className="bg-white rounded-xl shadow-sm border border-primary/10 p-8">
+          <div className="bg-white rounded-2xl shadow-sm p-8">
             <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold font-heading text-neutral-900">5-Year Price Trend</h2>
+                <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-1">Price Trends</p>
+                <h2 className="text-xl font-black font-heading text-neutral-950" style={{ letterSpacing: "-0.02em" }}>5-Year Price Trend</h2>
                 <p className="text-sm text-neutral-500 mt-1">Average property prices in {city_data.name}</p>
               </div>
               {/* Property type toggle pills */}
@@ -184,10 +185,10 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
                 {["All", "Flat", "Terraced"].map((type, i) => (
                   <span
                     key={type}
-                    className={`px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer ${
+                    className={`px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer transition-colors ${
                       i === 0
-                        ? "bg-primary/10 text-primary"
-                        : "text-neutral-400 hover:text-primary"
+                        ? "bg-brand-primary/10 text-brand-primary"
+                        : "text-neutral-400 hover:text-brand-primary"
                     }`}
                   >
                     {type}
@@ -202,15 +203,18 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
         {/* ── Popular Boroughs (4-col grid) ── */}
         <section>
           <div className="flex items-end justify-between mb-8">
-            <h2 className="text-3xl font-bold font-heading">Popular Boroughs</h2>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-2">Explore Local Areas</p>
+              <h2 className="text-3xl font-black font-heading" style={{ letterSpacing: "-0.02em" }}>Popular Boroughs</h2>
+            </div>
             <Link
               href={`/areas/${city_data.slug}/all`}
-              className="text-primary font-bold flex items-center gap-1 hover:gap-2 transition-all text-sm"
+              className="text-brand-primary font-bold flex items-center gap-1 hover:gap-2 transition-all text-sm"
             >
               View all boroughs <ArrowRight className="size-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {(city_data.boroughs.length > 0 ? city_data.boroughs : neighbourhoods.slice(0, 4).map((n) => ({
               name: n.name,
               slug: n.slug,
@@ -220,12 +224,12 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               <Link
                 key={borough.name}
                 href={`/areas/${city_data.slug}/${borough.slug}`}
-                className="group border border-primary/10 bg-white rounded-xl p-4 hover:shadow-md transition-all"
+                className="group bg-white rounded-2xl p-4 hover:shadow-md transition-all"
               >
                 {/* Image placeholder */}
-                <div className="h-24 w-full rounded-lg overflow-hidden bg-neutral-200 mb-3 group-hover:scale-[1.02] transition-transform duration-300" />
-                <p className="font-bold text-neutral-900">{borough.name}</p>
-                <p className="text-sm text-neutral-500">Avg {borough.avgPrice}</p>
+                <div className="h-24 w-full rounded-xl overflow-hidden bg-[#f4f3f2] mb-3 group-hover:scale-[1.02] transition-transform duration-300" />
+                <p className="font-black text-neutral-950 font-heading">{borough.name}</p>
+                <p className="text-sm text-neutral-500 mt-0.5">Avg {borough.avgPrice}</p>
               </Link>
             ))}
           </div>
@@ -234,32 +238,35 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
         {/* ── Properties For Sale ── */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold font-heading">Properties For Sale</h2>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-2">Browse</p>
+              <h2 className="text-3xl font-black font-heading" style={{ letterSpacing: "-0.02em" }}>Properties For Sale</h2>
+            </div>
           </div>
           <AreaSearchCTA areaName={city_data.name} citySlug={city_data.slug} variant="hero" />
         </section>
 
         {/* ── Transport & Connectivity ── */}
-        <section className="bg-primary text-white p-8 lg:p-12 rounded-xl">
-          <div className="grid lg:grid-cols-2 gap-10">
+        <section className="bg-brand-primary text-white p-8 lg:p-12 rounded-3xl overflow-hidden relative">
+          <div className="pointer-events-none absolute top-0 right-0 size-72 rounded-full bg-white/5 -mr-36 -mt-36" />
+          <div className="pointer-events-none absolute bottom-0 left-0 size-48 rounded-full bg-white/5 -ml-24 -mb-24" />
+          <div className="relative z-10 grid lg:grid-cols-2 gap-10">
             <div>
-              <h2 className="text-2xl font-bold font-heading mb-4">Transport &amp; Connectivity</h2>
-              <p className="text-white/80 mb-8 leading-relaxed">
+              <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Getting Around</p>
+              <h2 className="text-2xl font-black font-heading mb-4" style={{ letterSpacing: "-0.02em" }}>Transport &amp; Connectivity</h2>
+              <p className="text-white/75 mb-8 leading-relaxed">
                 {city_data.name}&apos;s transport network provides outstanding connectivity across the region,
                 with multiple options for commuters and travellers.
               </p>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {city_data.transport.slice(0, 3).map((item) => (
                   <div key={item.name}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-white/80">{item.name}</span>
-                      <span className="font-bold">{item.detail}</span>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="text-white/75">{item.name}</span>
+                      <span className="font-bold text-white">{item.detail}</span>
                     </div>
-                    <div className="bg-white/10 rounded-full h-1">
-                      <div
-                        className="bg-white/60 h-1 rounded-full"
-                        style={{ width: "70%" }}
-                      />
+                    <div className="bg-white/10 rounded-full h-1.5">
+                      <div className="bg-white/50 h-1.5 rounded-full" style={{ width: "70%" }} />
                     </div>
                   </div>
                 ))}
@@ -267,13 +274,10 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
             </div>
             <div className="grid grid-cols-2 gap-4 content-start">
               {city_data.transport.slice(0, 4).map((item) => (
-                <div
-                  key={item.name}
-                  className="bg-white/10 border border-white/10 rounded-lg p-4"
-                >
-                  <Train className="size-5 mb-2 text-white/70" />
+                <div key={item.name} className="bg-white/10 border border-white/10 rounded-2xl p-5">
+                  <Train className="size-5 mb-3 text-white/60" />
                   <p className="font-bold text-sm">{item.name}</p>
-                  <p className="text-xs text-white/60">{item.detail}</p>
+                  <p className="text-xs text-white/50 mt-0.5">{item.detail}</p>
                 </div>
               ))}
             </div>
@@ -282,25 +286,26 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
 
         {/* ── Local Services (6-icon grid) ── */}
         <section>
-          <h2 className="text-3xl font-bold font-heading mb-8">Local Services</h2>
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-3">Amenities</p>
+          <h2 className="text-3xl font-black font-heading mb-8" style={{ letterSpacing: "-0.02em" }}>Local Services</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {LOCAL_SERVICES.map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="group bg-white rounded-xl p-6 shadow-sm border border-primary/10 hover:border-primary transition-all text-center"
+                className="group bg-white rounded-2xl p-6 hover:shadow-md transition-all text-center cursor-default"
               >
-                <div className="h-12 w-12 rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center justify-center mx-auto mb-3">
+                <div className="size-12 rounded-2xl bg-brand-primary/5 text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors flex items-center justify-center mx-auto mb-3">
                   <Icon className="size-5" />
                 </div>
-                <p className="text-sm font-bold text-neutral-800">{label}</p>
+                <p className="text-sm font-bold text-neutral-900">{label}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── Internal Links ── */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <h2 className="text-2xl font-bold mb-6">Explore More</h2>
+        <section>
+          <h2 className="text-2xl font-black font-heading mb-6" style={{ letterSpacing: "-0.02em" }}>Explore More</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InternalLinkCard
               title={`Sold Prices in ${city_data.name}`}
@@ -321,23 +326,24 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
         </section>
 
         {/* ── Newsletter CTA ── */}
-        <section className="rounded-3xl bg-primary text-white p-10 md:p-16 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24" />
+        <section className="rounded-3xl bg-brand-primary text-white p-10 md:p-14 text-center relative overflow-hidden">
+          <div className="pointer-events-none absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32" />
+          <div className="pointer-events-none absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24" />
           <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4">
+            <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Stay Informed</p>
+            <h2 className="text-3xl md:text-4xl font-black font-heading mb-4 leading-tight" style={{ letterSpacing: "-0.02em" }}>
               Stay ahead of the {city_data.name} market
             </h2>
-            <p className="text-white/80 mb-8">
+            <p className="text-white/75 mb-8 leading-relaxed">
               Weekly price alerts, off-market opportunities and investment insights.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-6 py-4 rounded-xl bg-white/10 text-white placeholder-white/50 border border-white/20 outline-none"
+                className="flex-1 px-6 py-4 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/15 outline-none"
               />
-              <button className="bg-white text-primary font-bold px-8 py-4 rounded-xl hover:bg-neutral-100 transition-colors">
+              <button className="bg-white text-brand-primary font-bold px-8 py-4 rounded-xl hover:bg-neutral-50 transition-colors">
                 Join the Waitlist
               </button>
             </div>
