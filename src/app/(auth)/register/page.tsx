@@ -10,31 +10,38 @@ export const metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
+      {/* Heading */}
       <div>
-        <h1 className="font-heading text-2xl font-bold text-neutral-900">
-          Create your account
+        <h1 className="font-heading text-3xl font-bold text-neutral-900 leading-tight">
+          Start your journey
         </h1>
-        <p className="mt-1 font-body text-sm text-neutral-500">
+        <p className="mt-1.5 font-body text-sm text-neutral-500">
           Find, buy, rent or sell — all in one place
         </p>
       </div>
 
+      {/* Social login */}
       <OAuthButtons />
 
+      {/* Divider */}
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-neutral-200" />
-        <span className="font-body text-xs text-neutral-500">or sign up with email</span>
+        <span className="font-body text-xs font-medium text-neutral-400 uppercase tracking-wide">
+          or
+        </span>
         <div className="h-px flex-1 bg-neutral-200" />
       </div>
 
+      {/* Email/password form */}
       <Suspense>
         <RegisterForm />
       </Suspense>
 
+      {/* Sign in link */}
       <p className="text-center font-body text-sm text-neutral-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-brand-accent hover:underline">
+        <Link href="/login" className="font-semibold text-brand-primary hover:underline underline-offset-2 transition-colors">
           Sign in
         </Link>
       </p>
