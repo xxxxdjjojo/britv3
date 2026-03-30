@@ -1,6 +1,7 @@
 "use client";
 
-import { ShieldCheck, Clock, MapPin, Star, Plus } from "lucide-react";
+import { ShieldCheck, Clock, MapPin, Star, Plus, X } from "lucide-react";
+import Link from "next/link";
 import { useCompare } from "@/components/compare/useCompare";
 import type { CompareProvider } from "@/types/providers";
 
@@ -12,33 +13,20 @@ function StarDisplay({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`w-4 h-4 ${
+          className={`w-3.5 h-3.5 ${
             star <= Math.round(rating)
-              ? "fill-amber-400 text-amber-400"
-              : "fill-slate-200 text-slate-200"
+              ? "fill-brand-secondary text-brand-secondary"
+              : "fill-neutral-200 text-neutral-200"
           }`}
         />
       ))}
-      <span className="ml-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
+      <span className="ml-1.5 text-sm font-semibold text-neutral-700">
         {rating.toFixed(1)}
       </span>
     </div>
   );
 }
 
-function EmptySlot() {
-  return (
-    <td className="p-8 text-center align-top">
-      <a
-        href="/services"
-        className="flex flex-col items-center gap-2 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 hover:border-[#2563EB] transition-colors text-slate-400 hover:text-[#2563EB]"
-      >
-        <Plus className="w-8 h-8" />
-        <span className="text-sm font-medium">Add a Provider</span>
-      </a>
-    </td>
-  );
-}
 
 export function CompareTable({ providers }: CompareTableProps) {
   const { remove } = useCompare();
@@ -56,12 +44,9 @@ export function CompareTable({ providers }: CompareTableProps) {
     const [, value] = entries[0];
     if (typeof value === "object" && value !== null) {
       const v = value as Record<string, unknown>;
-      if (v.type === "hourly" && v.amount)
-        return `From £${v.amount}/hr`;
-      if (v.type === "fixed" && v.amount)
-        return `Fixed £${v.amount}`;
-      if (v.type === "quote")
-        return "Quote on request";
+      if (v.type === "hourly" && v.amount) return `From £${v.amount}/hr`;
+      if (v.type === "fixed" && v.amount) return `Fixed £${v.amount}`;
+      if (v.type === "quote") return "Quote on request";
     }
     return "Contact for pricing";
   }
@@ -72,20 +57,23 @@ export function CompareTable({ providers }: CompareTableProps) {
     return postcodes.length > 3 ? `${shown} +${postcodes.length - 3} more` : shown;
   }
 
-  const rows: { label: string; render: (p: CompareProvider) => React.ReactNode }[] = [
+  const rows: {
+    label: string;
+    render: (p: CompareProvider) => React.ReactNode;
+  }[] = [
     {
       label: "Overall Rating",
       render: (p) =>
         p.provider_rating_stats ? (
           <StarDisplay rating={p.provider_rating_stats.average_rating} />
         ) : (
-          <span className="text-slate-400">No ratings yet</span>
+          <span className="text-neutral-400 text-sm">No ratings yet</span>
         ),
     },
     {
       label: "Reviews",
       render: (p) => (
-        <span className="text-slate-700 dark:text-slate-200 font-medium">
+        <span className="text-neutral-700 font-semibold text-sm">
           {p.provider_rating_stats?.total_reviews ?? 0} reviews
         </span>
       ),
@@ -94,38 +82,36 @@ export function CompareTable({ providers }: CompareTableProps) {
       label: "Verified",
       render: (p) =>
         p.profiles.provider_verification_status === "verified" ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-primary-lighter text-brand-primary text-xs font-semibold">
             <ShieldCheck className="w-3.5 h-3.5" /> Verified
           </span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-neutral-300 text-sm">—</span>
         ),
     },
     {
       label: "Response Time",
       render: (p) =>
         p.response_time_hours != null ? (
-          <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 text-sm">
-            <Clock className="w-4 h-4 text-slate-400" />
+          <span className="inline-flex items-center gap-1.5 text-neutral-600 text-sm">
+            <Clock className="w-4 h-4 text-neutral-400" />
             {p.response_time_hours}h typical
           </span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-neutral-300 text-sm">—</span>
         ),
     },
     {
       label: "Price Range",
       render: (p) => (
-        <span className="text-slate-700 dark:text-slate-200 text-sm">
-          {formatPricing(p.pricing)}
-        </span>
+        <span className="text-neutral-700 text-sm">{formatPricing(p.pricing)}</span>
       ),
     },
     {
       label: "Coverage Area",
       render: (p) => (
-        <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 text-sm">
-          <MapPin className="w-4 h-4 flex-shrink-0 text-slate-400" />
+        <span className="inline-flex items-center gap-1.5 text-neutral-600 text-sm">
+          <MapPin className="w-4 h-4 flex-shrink-0 text-neutral-400" />
           {p.city ? `${p.city} — ` : ""}
           {formatCoverage(p.service_postcodes)}
         </span>
@@ -139,124 +125,149 @@ export function CompareTable({ providers }: CompareTableProps) {
             {p.accreditations.map((acc, i) => (
               <span
                 key={i}
-                className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium"
+                className="px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium"
               >
                 {acc.type}
               </span>
             ))}
           </div>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-neutral-300 text-sm">—</span>
         ),
     },
   ];
 
   return (
-    <div className="relative overflow-hidden bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          {/* Header */}
-          <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 sticky top-0">
-            <tr>
-              <th className="w-1/4 p-6 text-left">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Comparison Criteria
+    <div className="mt-2">
+      {/* Horizontal scroll wrapper for mobile */}
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="min-w-[640px] sm:min-w-0">
+          {/* Provider header cards — sticky on scroll */}
+          <div className="sticky top-0 z-20 bg-[#faf9f8] pt-2 pb-0">
+            <div className="grid grid-cols-4 gap-0">
+              {/* Label column header */}
+              <div className="px-6 py-4 flex items-end">
+                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                  Criteria
                 </span>
-              </th>
+              </div>
+
+              {/* Provider columns */}
               {slots.map((provider, idx) =>
                 provider ? (
-                  <th key={provider.id} className="w-1/4 p-6 text-center">
-                    <div className="flex flex-col items-center gap-3">
+                  <div
+                    key={provider.id}
+                    className="px-4 py-4 bg-white rounded-t-2xl shadow-sm mx-1 relative"
+                  >
+                    {/* Remove button */}
+                    <button
+                      type="button"
+                      onClick={() => remove(provider.id)}
+                      className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-400 hover:text-neutral-700 transition-colors"
+                      aria-label={`Remove ${provider.profiles.full_name} from comparison`}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+
+                    <div className="flex flex-col items-center gap-3 text-center pr-4">
                       {/* Avatar */}
-                      <div className="w-24 h-24 rounded-full ring-2 ring-[#2563EB] ring-offset-2 bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full ring-2 ring-brand-primary ring-offset-2 bg-neutral-100 overflow-hidden flex items-center justify-center flex-shrink-0">
                         {provider.profiles.avatar_url ? (
                           <img
                             src={provider.profiles.avatar_url}
-                            alt={provider.profiles.full_name}
+                            alt={provider.profiles.full_name ?? "Provider"}
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-2xl font-bold text-slate-400">
+                          <span className="text-xl font-bold text-neutral-400">
                             {provider.profiles.full_name?.charAt(0) ?? "?"}
                           </span>
                         )}
                       </div>
+
                       <div>
-                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                        <h3
+                          className="font-heading font-semibold text-neutral-900 text-sm leading-tight"
+                          style={{ letterSpacing: "-0.01em" }}
+                        >
                           {provider.profiles.full_name}
                         </h3>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {provider.business_name}
-                        </p>
+                        <p className="text-xs text-neutral-400 mt-0.5">{provider.business_name}</p>
                       </div>
                     </div>
-                  </th>
+                  </div>
                 ) : (
-                  <th key={`empty-${idx}`} className="w-1/4 p-6" />
+                  <div key={`empty-header-${idx}`} className="px-4 py-4 mx-1" />
                 ),
               )}
-            </tr>
-          </thead>
+            </div>
+          </div>
 
-          {/* Body rows */}
-          <tbody>
+          {/* Comparison rows */}
+          <div className="rounded-b-2xl overflow-hidden">
             {rows.map((row, rowIdx) => (
-              <tr
+              <div
                 key={row.label}
-                className={
-                  rowIdx % 2 === 0
-                    ? "bg-white dark:bg-slate-900/30"
-                    : "bg-slate-50/50 dark:bg-slate-800/20"
-                }
+                className={`grid grid-cols-4 gap-0 ${
+                  rowIdx % 2 === 0 ? "bg-white" : "bg-[#f4f3f2]"
+                }`}
               >
-                <td className="p-6 text-sm font-semibold text-slate-600 dark:text-slate-300 border-r border-slate-100 dark:border-slate-800">
-                  {row.label}
-                </td>
+                {/* Label cell */}
+                <div className="px-6 py-5 flex items-center">
+                  <span className="text-sm font-semibold text-neutral-500">{row.label}</span>
+                </div>
+
+                {/* Provider data cells */}
                 {slots.map((provider, idx) =>
                   provider ? (
-                    <td
+                    <div
                       key={provider.id}
-                      className="p-6 text-center align-middle"
+                      className="px-6 py-5 flex items-center justify-center mx-1 bg-white"
                     >
                       {row.render(provider)}
-                    </td>
+                    </div>
                   ) : (
-                    <EmptySlot key={`empty-${idx}`} />
+                    <div key={`empty-${idx}`} className="px-6 py-5 mx-1" />
                   ),
                 )}
-              </tr>
+              </div>
             ))}
-          </tbody>
 
-          {/* Footer CTAs */}
-          <tfoot className="bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
-            <tr>
-              <td className="p-6" />
+            {/* Footer CTAs */}
+            <div className="grid grid-cols-4 gap-0 bg-[#f4f3f2] rounded-b-2xl">
+              <div className="px-6 py-6" />
               {slots.map((provider, idx) =>
                 provider ? (
-                  <td key={provider.id} className="p-6 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <a
-                        href={`/services/${provider.slug}`}
-                        className="w-full px-4 py-2.5 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 transition-colors text-center"
-                      >
-                        View Profile
-                      </a>
-                      <button
-                        onClick={() => remove(provider.id)}
-                        className="text-xs text-slate-400 hover:text-red-500 transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </td>
+                  <div key={provider.id} className="px-4 py-6 flex flex-col items-center gap-2 mx-1 bg-white">
+                    <Link
+                      href={`/services/${provider.slug}`}
+                      className="w-full px-4 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors text-center min-h-[44px] flex items-center justify-center"
+                    >
+                      View Profile
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => remove(provider.id)}
+                      className="text-xs text-neutral-400 hover:text-error transition-colors py-1"
+                      aria-label={`Remove ${provider.profiles.full_name} from comparison`}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 ) : (
-                  <td key={`empty-footer-${idx}`} className="p-6" />
+                  <div key={`empty-footer-${idx}`} className="px-4 py-6 mx-1">
+                    <Link
+                      href="/services"
+                      className="w-full px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-400 text-sm font-medium hover:bg-brand-primary-lighter hover:text-brand-primary transition-colors text-center min-h-[44px] flex items-center justify-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" /> Add Provider
+                    </Link>
+                  </div>
                 ),
               )}
-            </tr>
-          </tfoot>
-        </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

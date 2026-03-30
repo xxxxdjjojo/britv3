@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { X, Star, ArrowRight } from "lucide-react";
 import type { MapProvider } from "./SearchMap";
 
 type MapProviderPinProps = Readonly<{
@@ -13,44 +14,45 @@ export default function MapProviderPin({
   onClose,
 }: MapProviderPinProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md max-w-[220px] overflow-hidden border-l-4 border-blue-500 relative">
+    <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl max-w-[220px] overflow-hidden relative">
       {/* Close button */}
       <button
         type="button"
         onClick={onClose}
-        className="absolute top-1.5 right-1.5 w-5 h-5 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors text-xs"
-        aria-label="Close"
+        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-400 hover:text-neutral-700 transition-colors"
+        aria-label="Close provider card"
       >
-        ✕
+        <X className="w-3.5 h-3.5" />
       </button>
 
-      <div className="p-3 pr-7">
-        {/* Provider name */}
-        <p className="text-sm font-medium text-gray-900 truncate">
-          {provider.name}
-        </p>
-
-        {/* Category with colored dot */}
-        <div className="flex items-center gap-1.5 mt-1">
-          <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
-          <span className="text-xs text-gray-500 truncate">
+      <div className="p-4 pr-10">
+        {/* Category indicator strip */}
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="w-2 h-2 rounded-full bg-brand-primary shrink-0" />
+          <span className="text-xs text-neutral-400 font-medium truncate uppercase tracking-wide">
             {provider.category}
           </span>
         </div>
 
+        {/* Provider name */}
+        <p className="text-sm font-semibold text-neutral-900 truncate font-heading" style={{ letterSpacing: "-0.01em" }}>
+          {provider.name}
+        </p>
+
         {/* Star rating */}
         {provider.rating !== null && (
-          <p className="text-xs text-amber-600 font-medium mt-1">
-            ★ {provider.rating.toFixed(1)}
-          </p>
+          <div className="flex items-center gap-1 mt-1.5">
+            <Star className="w-3.5 h-3.5 fill-brand-secondary text-brand-secondary" />
+            <span className="text-xs font-semibold text-neutral-700">{provider.rating.toFixed(1)}</span>
+          </div>
         )}
 
         {/* View profile link */}
         <Link
           href={`/marketplace/${provider.slug}`}
-          className="inline-block mt-2 text-xs text-blue-600 font-medium hover:text-blue-700 hover:underline transition-colors"
+          className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-brand-primary hover:text-brand-primary-light transition-colors"
         >
-          View Profile →
+          View Profile <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
     </div>
