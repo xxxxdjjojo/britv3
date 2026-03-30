@@ -29,8 +29,10 @@ export default async function AgentCrmPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">CRM Clients</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-bold tracking-tight text-[#1a1c1c]">
+          CRM Clients
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Manage your client relationships and contact records
         </p>
       </div>
