@@ -82,26 +82,26 @@ export function MaintenanceInboxClient(
   ).length;
 
   return (
-    <div className="space-y-6 p-6 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl space-y-6">
       {/* Page header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
               Maintenance Requests
             </h1>
-            <span className="rounded-full bg-[#1B4D3E]/10 px-2.5 py-0.5 text-sm font-bold text-[#1B4D3E] dark:bg-[#1B4D3E]/30 dark:text-emerald-300">
+            <span className="rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-sm font-bold text-brand-primary">
               {props.initialData.length}
             </span>
           </div>
-          <p className="mt-1 text-slate-500 dark:text-slate-400">
-            Manage repairs and coordinate with verified professionals across your
-            portfolio.
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage repairs and coordinate with verified professionals across
+            your portfolio.
           </p>
         </div>
         <Link
           href="/dashboard/landlord/maintenance/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#1B4D3E] px-5 py-3 text-sm font-bold text-white shadow-md shadow-[#1B4D3E]/20 hover:bg-[#1B4D3E]/90 transition-colors"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary-light transition-colors"
         >
           <Plus className="size-4" />
           New Request
@@ -110,14 +110,15 @@ export function MaintenanceInboxClient(
 
       {/* Urgent alert */}
       {urgentCount > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-          <AlertTriangle className="size-5 shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
+        <div className="flex items-start gap-3 rounded-lg border border-error/30 bg-error-light p-4">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-error" />
           <div>
-            <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+            <p className="text-sm font-semibold text-error">
               {urgentCount} emergency{" "}
-              {urgentCount === 1 ? "request" : "requests"} need immediate action
+              {urgentCount === 1 ? "request" : "requests"} need immediate
+              action
             </p>
-            <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
+            <p className="mt-0.5 text-xs text-error/80">
               {inProgressCount} in progress across the portfolio
             </p>
           </div>
@@ -127,40 +128,38 @@ export function MaintenanceInboxClient(
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         {/* Priority filter */}
-        <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
-          {(
-            ["all", "emergency", "high", "medium", "low"] as const
-          ).map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => setPriorityFilter(p)}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                priorityFilter === p
-                  ? "bg-[#1B4D3E] text-white"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
-              }`}
-            >
-              {p === "all"
-                ? "All Priorities"
-                : p.charAt(0).toUpperCase() + p.slice(1)}
-            </button>
-          ))}
+        <div className="flex items-center gap-1 rounded-lg border bg-card p-1 shadow-sm">
+          {(["all", "emergency", "high", "medium", "low"] as const).map(
+            (p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPriorityFilter(p)}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  priorityFilter === p
+                    ? "bg-brand-primary text-white shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {p === "all"
+                  ? "All Priorities"
+                  : p.charAt(0).toUpperCase() + p.slice(1)}
+              </button>
+            ),
+          )}
         </div>
 
         {/* Status filter */}
-        <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
-          {(
-            ["all", "new", "in_progress", "resolved"] as const
-          ).map((s) => (
+        <div className="flex items-center gap-1 rounded-lg border bg-card p-1 shadow-sm">
+          {(["all", "new", "in_progress", "resolved"] as const).map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setStatusFilter(s)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 statusFilter === s
-                  ? "bg-[#1B4D3E] text-white"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                  ? "bg-brand-primary text-white shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {s === "all"
@@ -173,14 +172,14 @@ export function MaintenanceInboxClient(
 
       {/* Request list */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center dark:border-slate-800">
-          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-[#1B4D3E]/10">
-            <Wrench className="size-8 text-[#1B4D3E]" />
+        <div className="rounded-xl border-2 border-dashed border-border p-12 text-center">
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-brand-primary/10">
+            <Wrench className="size-8 text-brand-primary" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+          <h3 className="font-heading text-lg font-bold text-foreground">
             No requests found
           </h3>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             {props.initialData.length === 0
               ? "Your portfolio has no maintenance requests yet."
               : "No requests match the current filters."}
@@ -192,48 +191,43 @@ export function MaintenanceInboxClient(
             <Link
               key={request.id}
               href={`/dashboard/landlord/maintenance/${request.id}`}
-              className="group flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              className="group flex items-center gap-4 rounded-xl border bg-card p-5 shadow-sm transition-all hover:border-brand-primary/30 hover:shadow-md"
             >
               {/* Category icon */}
               <div
                 className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${
                   request.priority === "emergency"
-                    ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                    ? "bg-error-light text-error"
                     : request.priority === "high"
-                      ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
-                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      ? "bg-warning-light text-warning"
+                      : "bg-muted text-muted-foreground"
                 }`}
               >
-                <CategoryIcon
-                  category={request.title}
-                  className="size-6"
-                />
+                <CategoryIcon category={request.title} className="size-6" />
               </div>
 
               {/* Main content */}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-bold text-slate-900 group-hover:text-[#1B4D3E] transition-colors dark:text-white dark:group-hover:text-emerald-400">
+                  <h3 className="font-semibold text-foreground transition-colors group-hover:text-brand-primary">
                     {request.title}
                   </h3>
                   <MaintenancePriorityBadge priority={request.priority} />
                   <MaintenanceStatusBadge status={request.status} />
                 </div>
-                <p className="mt-0.5 truncate text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-0.5 truncate text-sm text-muted-foreground">
                   {request.description.slice(0, 80)}
                   {request.description.length > 80 ? "…" : ""}
                 </p>
-                <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <span>{request.property_address}</span>
                   {request.tenant_name && (
                     <>
-                      <span className="text-slate-200 dark:text-slate-700">
-                        •
-                      </span>
+                      <span className="text-border">•</span>
                       <span>{request.tenant_name}</span>
                     </>
                   )}
-                  <span className="text-slate-200 dark:text-slate-700">•</span>
+                  <span className="text-border">•</span>
                   <span>
                     {formatDistanceToNow(new Date(request.created_at), {
                       addSuffix: true,
@@ -241,19 +235,15 @@ export function MaintenanceInboxClient(
                   </span>
                   {request.assigned_provider_name ? (
                     <>
-                      <span className="text-slate-200 dark:text-slate-700">
-                        •
-                      </span>
-                      <span className="text-green-600 dark:text-green-400">
+                      <span className="text-border">•</span>
+                      <span className="text-success font-medium">
                         {request.assigned_provider_name}
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="text-slate-200 dark:text-slate-700">
-                        •
-                      </span>
-                      <span className="text-amber-600 dark:text-amber-400">
+                      <span className="text-border">•</span>
+                      <span className="text-warning font-medium">
                         Unassigned
                       </span>
                     </>
@@ -262,7 +252,7 @@ export function MaintenanceInboxClient(
               </div>
 
               {/* Chevron */}
-              <ChevronRight className="size-5 shrink-0 text-slate-300 transition-colors group-hover:text-slate-500 dark:text-slate-700 dark:group-hover:text-slate-400" />
+              <ChevronRight className="size-5 shrink-0 text-muted-foreground/40 transition-colors group-hover:text-brand-primary" />
             </Link>
           ))}
         </div>

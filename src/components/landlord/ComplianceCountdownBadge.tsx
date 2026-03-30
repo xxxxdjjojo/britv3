@@ -10,10 +10,10 @@ export function getCountdownVariant(daysUntilExpiry: number): CountdownVariant {
 }
 
 const VARIANT_STYLES: Record<CountdownVariant, string> = {
-  expired: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 animate-pulse",
-  critical: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  warning: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  safe: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  expired: "bg-error-light text-error animate-pulse",
+  critical: "bg-error-light text-error",
+  warning: "bg-warning-light text-warning",
+  safe: "bg-success-light text-success",
 };
 
 type Props = Readonly<{

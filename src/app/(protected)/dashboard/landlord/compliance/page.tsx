@@ -126,23 +126,24 @@ export default async function CompliancePage() {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">
-            Compliance Dashboard
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            Compliance Management
           </h1>
-          <p className="text-muted-foreground">
-            Track gas safety, EPC, EICR, and deposit protection across your portfolio
+          <p className="mt-1 text-sm text-muted-foreground">
+            Track gas safety, EPC, EICR, and deposit protection across your
+            portfolio
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/landlord/compliance/alerts">
               <Bell className="mr-2 size-4" />
               View Alerts
             </Link>
           </Button>
-          <Button size="sm" asChild>
+          <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-light text-white" asChild>
             <Link href="/dashboard/landlord/compliance/upload">
               <Upload className="mr-2 size-4" />
               Upload Certificate
@@ -156,8 +157,8 @@ export default async function CompliancePage() {
         <div
           className={`flex items-start gap-3 rounded-lg border p-4 ${
             totalExpired > 0
-              ? "border-error bg-error-light text-error"
-              : "border-warning bg-warning-light text-warning"
+              ? "border-error/30 bg-error-light text-error"
+              : "border-warning/30 bg-warning-light text-warning"
           }`}
         >
           {totalExpired > 0 ? (
@@ -166,17 +167,17 @@ export default async function CompliancePage() {
             <AlertTriangle className="mt-0.5 size-5 shrink-0" />
           )}
           <div className="flex-1">
-            <p className="font-medium">
+            <p className="text-sm font-semibold">
               {totalExpired > 0
                 ? `${totalExpired} certificate${totalExpired > 1 ? "s" : ""} expired — action required`
                 : `${totalExpiringSoon} certificate${totalExpiringSoon > 1 ? "s" : ""} expiring within 30 days`}
             </p>
-            <p className="mt-0.5 text-sm opacity-80">
-              Letting a property with expired safety certificates can lead to fines or
-              prosecution. Upload updated documents immediately.
+            <p className="mt-0.5 text-xs opacity-80">
+              Letting a property with expired safety certificates can lead to
+              fines or prosecution. Upload updated documents immediately.
             </p>
           </div>
-          <Button size="sm" variant="outline" asChild>
+          <Button size="sm" variant="outline" className="shrink-0" asChild>
             <Link href="/dashboard/landlord/compliance/alerts">
               View All Alerts
             </Link>
@@ -206,24 +207,47 @@ export default async function CompliancePage() {
         </div>
       </Suspense>
 
+      {/* Quick-link to compliance matrix */}
+      <div className="flex items-center justify-between rounded-lg border bg-card px-4 py-3 shadow-sm">
+        <div>
+          <p className="text-sm font-semibold text-foreground">
+            Property × Document Matrix
+          </p>
+          <p className="text-xs text-muted-foreground">
+            See compliance status for every property at a glance
+          </p>
+        </div>
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/dashboard/landlord/compliance/matrix">
+            View Matrix
+          </Link>
+        </Button>
+      </div>
+
       {/* All certificates table */}
-      <Card>
+      <Card className="shadow-sm">
         <CardContent className="p-0">
-          <div className="flex items-center justify-between border-b px-4 py-3">
-            <p className="font-semibold">All Certificates</p>
-            <p className="text-sm text-muted-foreground">
-              Sorted by urgency
+          <div className="flex items-center justify-between border-b px-5 py-4">
+            <p className="font-heading text-sm font-semibold text-foreground">
+              All Certificates
             </p>
+            <p className="text-xs text-muted-foreground">Sorted by urgency</p>
           </div>
 
           {allDocs.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
               <CheckCircle2 className="size-10 text-success" />
-              <p className="font-medium">No compliance documents yet</p>
+              <p className="font-medium text-foreground">
+                No compliance documents yet
+              </p>
               <p className="text-sm text-muted-foreground">
                 Upload your first compliance certificate to get started.
               </p>
-              <Button size="sm" asChild className="mt-2">
+              <Button
+                size="sm"
+                className="mt-2 bg-brand-primary hover:bg-brand-primary-light text-white"
+                asChild
+              >
                 <Link href="/dashboard/landlord/compliance/upload">
                   <Upload className="mr-2 size-4" />
                   Upload Certificate
@@ -234,12 +258,22 @@ export default async function CompliancePage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Expires</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                  <TableRow className="bg-muted/30">
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Property
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Category
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Expires
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Status
+                    </TableHead>
+                    <TableHead className="text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -253,31 +287,37 @@ export default async function CompliancePage() {
                       .join(", ");
 
                     return (
-                      <TableRow key={doc.id}>
-                        <TableCell className="font-medium">
+                      <TableRow
+                        key={doc.id}
+                        className="hover:bg-muted/20 transition-colors"
+                      >
+                        <TableCell className="font-medium text-foreground">
                           {address || "Unknown address"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs font-medium"
+                          >
                             {CATEGORY_LABELS[doc.category] ?? doc.category}
                           </Badge>
                         </TableCell>
-                        <TableCell className="tabular-nums">
+                        <TableCell className="tabular-nums text-sm text-muted-foreground">
                           {formatDate(doc.expiry_date)}
                         </TableCell>
                         <TableCell>
                           {doc.status === "expired" && (
-                            <Badge className="border-0 bg-error-light text-error">
+                            <Badge className="border-0 bg-error-light text-error text-xs">
                               Expired {Math.abs(days)}d ago
                             </Badge>
                           )}
                           {doc.status === "expiring_soon" && (
-                            <Badge className="border-0 bg-warning-light text-warning">
+                            <Badge className="border-0 bg-warning-light text-warning text-xs">
                               Expires in {days}d
                             </Badge>
                           )}
                           {doc.status === "valid" && (
-                            <Badge className="border-0 bg-success-light text-success">
+                            <Badge className="border-0 bg-success-light text-success text-xs">
                               Valid
                             </Badge>
                           )}

@@ -74,17 +74,17 @@ async function PageContent({
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl space-y-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link
           href="/dashboard/landlord/maintenance"
-          className="hover:text-[#1B4D3E] transition-colors"
+          className="hover:text-brand-primary transition-colors"
         >
           Maintenance
         </Link>
         <span>/</span>
-        <span className="text-slate-900 dark:text-white font-medium truncate max-w-xs">
+        <span className="max-w-xs truncate font-medium text-foreground">
           {request.title}
         </span>
       </nav>
