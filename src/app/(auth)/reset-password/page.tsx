@@ -7,12 +7,13 @@ export const metadata = {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="font-heading text-2xl font-bold text-neutral-900">
+    <div className="space-y-7">
+      {/* Heading */}
+      <div>
+        <h1 className="font-heading text-3xl font-bold text-neutral-900 leading-tight">
           Create a new password
-        </h2>
-        <p className="mt-1 font-body text-sm text-neutral-500">
+        </h1>
+        <p className="mt-1.5 font-body text-sm text-neutral-500">
           Choose a strong password to keep your account secure
         </p>
       </div>

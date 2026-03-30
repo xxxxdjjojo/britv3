@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,6 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-// Professional roles that can be pre-selected via ?professional= param
 const PROFESSIONAL_ROLE_MAP: Record<string, UserRole> = {
   agent: "agent",
   seller: "seller",
@@ -70,8 +69,6 @@ export function RegisterForm() {
     },
   });
 
-  // Bug 4: Read ?professional= param on mount and pre-set role intent
-  // Also reads ?role= as a fallback (used by the pricing page)
   useEffect(() => {
     const professional = searchParams.get("professional") ?? searchParams.get("role");
     if (professional) {
@@ -86,7 +83,6 @@ export function RegisterForm() {
   const intent = watch("intent");
 
   async function onSubmit(data: RegisterFormValues) {
-    // Bug 9: Wrap entire onSubmit in try/catch with specific error handling
     try {
       setError(null);
       const displayName = sanitize(`${data.firstName} ${data.lastName}`.trim());
@@ -125,7 +121,7 @@ export function RegisterForm() {
         })(),
         // Trigger referral attribution (reads httpOnly britestate_ref cookie server-side)
         fetch("/api/referrals/v2/attribute", { method: "POST" }).catch(() => {
-          console.warn("[referral] Failed to trigger attribution");
+          // Non-critical — don't block signup
         }),
         // Persist marketing consent to consent_records (GDPR audit trail)
         (async () => {
@@ -148,7 +144,6 @@ export function RegisterForm() {
         })(),
       ]);
 
-      // Bug 3: Redirect to /verify-email instead of /dashboard
       router.push("/verify-email");
     } catch (err) {
       setError(handleSupabaseError(err).message);
@@ -156,7 +151,7 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
@@ -172,16 +167,17 @@ export function RegisterForm() {
         </span>
       </div>
 
-      {/* Intent Toggle: Buy / Rent — hidden when professional role is pre-selected */}
+      {/* Intent Toggle — hidden when professional role is pre-selected */}
       {!professionalRole && (
-        <div className="flex rounded-lg border border-neutral-200 p-1">
+        <div className="flex rounded-xl border border-neutral-200 bg-neutral-50 p-1 gap-1">
           <button
             type="button"
             onClick={() => setValue("intent", "buy")}
-            className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition-colors ${
+            aria-label="I want to buy"
+            className={`flex-1 rounded-lg py-2 text-center text-sm font-medium transition-all duration-150 ${
               intent === "buy"
-                ? "bg-brand-primary text-white"
-                : "text-neutral-600 hover:text-neutral-900"
+                ? "bg-brand-primary text-white shadow-sm"
+                : "text-neutral-500 hover:text-neutral-800"
             }`}
           >
             I want to buy
@@ -189,10 +185,11 @@ export function RegisterForm() {
           <button
             type="button"
             onClick={() => setValue("intent", "rent")}
-            className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition-colors ${
+            aria-label="I want to rent"
+            className={`flex-1 rounded-lg py-2 text-center text-sm font-medium transition-all duration-150 ${
               intent === "rent"
-                ? "bg-brand-primary text-white"
-                : "text-neutral-600 hover:text-neutral-900"
+                ? "bg-brand-primary text-white shadow-sm"
+                : "text-neutral-500 hover:text-neutral-800"
             }`}
           >
             I want to rent
@@ -202,86 +199,108 @@ export function RegisterForm() {
 
       {/* Name fields — side by side */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">First name</Label>
-          <Input
-            id="firstName"
-            type="text"
-            placeholder="Jane"
-            className="h-11"
-            autoComplete="given-name"
-            aria-invalid={!!errors.firstName}
-            {...register("firstName")}
-          />
+        <div className="space-y-1.5">
+          <Label htmlFor="firstName" className="font-body text-sm font-medium text-neutral-700">
+            First name
+          </Label>
+          <div className="relative">
+            <User className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
+            <Input
+              id="firstName"
+              type="text"
+              placeholder="Jane"
+              className="h-11 pl-10 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
+              autoComplete="given-name"
+              aria-label="First name"
+              aria-invalid={!!errors.firstName}
+              {...register("firstName")}
+            />
+          </div>
           {errors.firstName && (
-            <p className="text-xs text-error">{errors.firstName.message}</p>
+            <p className="text-xs text-error" role="alert">{errors.firstName.message}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Last name</Label>
-          <Input
-            id="lastName"
-            type="text"
-            placeholder="Smith"
-            className="h-11"
-            autoComplete="family-name"
-            aria-invalid={!!errors.lastName}
-            {...register("lastName")}
-          />
+        <div className="space-y-1.5">
+          <Label htmlFor="lastName" className="font-body text-sm font-medium text-neutral-700">
+            Last name
+          </Label>
+          <div className="relative">
+            <User className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
+            <Input
+              id="lastName"
+              type="text"
+              placeholder="Smith"
+              className="h-11 pl-10 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
+              autoComplete="family-name"
+              aria-label="Last name"
+              aria-invalid={!!errors.lastName}
+              {...register("lastName")}
+            />
+          </div>
           {errors.lastName && (
-            <p className="text-xs text-error">{errors.lastName.message}</p>
+            <p className="text-xs text-error" role="alert">{errors.lastName.message}</p>
           )}
         </div>
       </div>
 
       {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor="register-email">Email address</Label>
-        <Input
-          id="register-email"
-          type="email"
-          placeholder="you@example.com"
-          className="h-11"
-          autoComplete="email"
-          aria-invalid={!!errors.email}
-          {...register("email")}
-        />
+      <div className="space-y-1.5">
+        <Label htmlFor="register-email" className="font-body text-sm font-medium text-neutral-700">
+          Email address
+        </Label>
+        <div className="relative">
+          <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
+          <Input
+            id="register-email"
+            type="email"
+            placeholder="you@example.com"
+            className="h-11 pl-10 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
+            autoComplete="email"
+            aria-label="Email address"
+            aria-invalid={!!errors.email}
+            {...register("email")}
+          />
+        </div>
         {errors.email && (
-          <p className="text-xs text-error">{errors.email.message}</p>
+          <p className="text-xs text-error" role="alert">{errors.email.message}</p>
         )}
       </div>
 
       {/* Password */}
-      <div className="space-y-2">
-        <Label htmlFor="register-password">Password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="register-password" className="font-body text-sm font-medium text-neutral-700">
+          Password
+        </Label>
         <div className="relative">
+          <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
           <Input
             id="register-password"
             type={showPassword ? "text" : "password"}
-            placeholder="Create a password"
-            className="h-11 pr-10"
+            placeholder="Create a strong password"
+            className="h-11 pl-10 pr-11 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
             autoComplete="new-password"
+            aria-label="Password"
             aria-invalid={!!errors.password}
             {...register("password")}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
         {errors.password && (
-          <p className="text-xs text-error">{errors.password.message}</p>
+          <p className="text-xs text-error" role="alert">{errors.password.message}</p>
         )}
         <PasswordStrengthMeter password={password} />
       </div>
 
-      {/* GDPR-compliant consent — UK GDPR Article 7 */}
-      <div className="space-y-3">
-        <div className="flex items-start gap-2">
+      {/* GDPR consent — UK GDPR Article 7 */}
+      <div className="space-y-3 rounded-xl border border-neutral-100 bg-neutral-50 p-4">
+        <div className="flex items-start gap-2.5">
           <Checkbox
             id="terms-accepted"
             checked={watch("termsAccepted") === true}
@@ -293,16 +312,20 @@ export function RegisterForm() {
           />
           <label htmlFor="terms-accepted" className="text-xs text-neutral-600 leading-relaxed cursor-pointer">
             I agree to the{" "}
-            <Link href="/terms" className="text-brand-accent hover:underline" target="_blank">Terms of Service</Link>
+            <Link href="/terms" className="font-medium text-brand-accent hover:underline" target="_blank">
+              Terms of Service
+            </Link>
             {" "}and{" "}
-            <Link href="/privacy" className="text-brand-accent hover:underline" target="_blank">Privacy Policy</Link>
+            <Link href="/privacy" className="font-medium text-brand-accent hover:underline" target="_blank">
+              Privacy Policy
+            </Link>
           </label>
         </div>
         {errors.termsAccepted && (
-          <p className="text-xs text-error">{errors.termsAccepted.message}</p>
+          <p className="text-xs text-error" role="alert">{errors.termsAccepted.message}</p>
         )}
 
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-2.5">
           <Checkbox
             id="marketing-consent"
             checked={watch("marketingConsent") === true}
@@ -312,7 +335,7 @@ export function RegisterForm() {
             className="mt-0.5"
           />
           <label htmlFor="marketing-consent" className="text-xs text-neutral-500 leading-relaxed cursor-pointer">
-            I&apos;d like to receive property alerts and promotional offers via email
+            Send me property alerts and offers (optional)
           </label>
         </div>
       </div>
@@ -321,16 +344,17 @@ export function RegisterForm() {
       <Button
         type="submit"
         size="lg"
-        className="w-full"
+        className="w-full h-11 rounded-lg bg-brand-primary font-semibold text-white hover:bg-brand-primary-light transition-colors shadow-sm"
         disabled={isSubmitting}
+        aria-label={isSubmitting ? "Creating account…" : "Create account"}
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="size-4 animate-spin" />
-            Creating account...
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            Creating account…
           </>
         ) : (
-          "Continue"
+          "Create Account"
         )}
       </Button>
 
@@ -338,9 +362,10 @@ export function RegisterForm() {
       <div className="text-center">
         <Link
           href="/register/role-select"
-          className="text-sm font-medium text-brand-accent hover:underline"
+          className="text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
+          aria-label="Sign up as a professional"
         >
-          I am a professional
+          I&apos;m a professional — see professional options
         </Link>
       </div>
     </form>
