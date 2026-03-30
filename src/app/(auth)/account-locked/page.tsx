@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ShieldOff, KeyRound, ArrowRight, Lock } from "lucide-react";
+import { ShieldCheck, ShieldOff, KeyRound, ArrowRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function AccountLockedContent() {
@@ -18,9 +18,17 @@ function AccountLockedContent() {
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
-    const t = setInterval(() => setSecondsLeft((prev) => Math.max(0, prev - 1)), 1000);
-    return () => clearInterval(t);
-  }, [secondsLeft]);
+    const id = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(id);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
@@ -72,7 +80,7 @@ function AccountLockedContent() {
 
       {/* Security badge */}
       <div className="flex items-center justify-center gap-2 rounded-lg bg-neutral-50 px-4 py-3">
-        <ShieldOff className="size-4 text-neutral-400" aria-hidden="true" />
+        <ShieldCheck className="size-4 text-neutral-400" aria-hidden="true" />
         <p className="text-xs text-neutral-500">
           Encrypted Session · Automatic security protection active
         </p>
