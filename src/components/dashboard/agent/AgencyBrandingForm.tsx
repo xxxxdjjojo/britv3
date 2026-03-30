@@ -7,8 +7,16 @@ import { z } from "zod";
 import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
-import { Upload, Building, Globe, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Upload,
+  Building,
+  Globe,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Palette,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AgentAgencyProfile } from "@/types/agent";
 
 // ============================================================================
-// Schema — only the branding fields
+// Schema
 // ============================================================================
 
 const brandingSchema = z.object({
@@ -43,6 +51,32 @@ type Props = Readonly<{
 }>;
 
 // ============================================================================
+// Section wrapper
+// ============================================================================
+
+function Section({
+  title,
+  description,
+  children,
+}: Readonly<{
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}>) {
+  return (
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="bg-neutral-50 px-6 py-4">
+        <p className="font-semibold text-neutral-900">{title}</p>
+        {description && (
+          <p className="mt-0.5 text-xs text-neutral-500">{description}</p>
+        )}
+      </div>
+      <div className="p-6">{children}</div>
+    </div>
+  );
+}
+
+// ============================================================================
 // Main component
 // ============================================================================
 
@@ -61,8 +95,8 @@ export function AgencyBrandingForm({ profile }: Props) {
   } = useForm<FormData>({
     resolver: zodResolver(brandingSchema),
     defaultValues: {
-      brand_primary_colour: profile?.brand_primary_colour ?? "#1a56db",
-      brand_secondary_colour: profile?.brand_secondary_colour ?? "#7e3af2",
+      brand_primary_colour: profile?.brand_primary_colour ?? "#1B4D3E",
+      brand_secondary_colour: profile?.brand_secondary_colour ?? "#7B5804",
       social_facebook: profile?.social_facebook ?? undefined,
       social_twitter: profile?.social_twitter ?? undefined,
       social_instagram: profile?.social_instagram ?? undefined,
@@ -72,8 +106,8 @@ export function AgencyBrandingForm({ profile }: Props) {
     },
   });
 
-  const primaryColour = watch("brand_primary_colour") ?? "#1a56db";
-  const secondaryColour = watch("brand_secondary_colour") ?? "#7e3af2";
+  const primaryColour = watch("brand_primary_colour") ?? "#1B4D3E";
+  const secondaryColour = watch("brand_secondary_colour") ?? "#7B5804";
   const agencyName = profile?.agency_name ?? "Your Agency";
   const descriptionValue = watch("description") ?? "";
 
@@ -137,16 +171,52 @@ export function AgencyBrandingForm({ profile }: Props) {
     }
   }
 
+  const socialLinks = [
+    {
+      id: "website_url" as const,
+      label: "Website",
+      icon: Globe,
+      placeholder: "https://www.youragency.co.uk",
+    },
+    {
+      id: "social_facebook" as const,
+      label: "Facebook",
+      icon: Facebook,
+      placeholder: "https://facebook.com/youragency",
+    },
+    {
+      id: "social_twitter" as const,
+      label: "X (Twitter)",
+      icon: Twitter,
+      placeholder: "https://twitter.com/youragency",
+    },
+    {
+      id: "social_instagram" as const,
+      label: "Instagram",
+      icon: Instagram,
+      placeholder: "https://instagram.com/youragency",
+    },
+    {
+      id: "social_linkedin" as const,
+      label: "LinkedIn",
+      icon: Linkedin,
+      placeholder: "https://linkedin.com/company/youragency",
+    },
+  ];
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {/* Live preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Preview</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="bg-neutral-50 px-6 py-4">
+          <p className="font-semibold text-neutral-900">Preview</p>
+          <p className="mt-0.5 text-xs text-neutral-500">
+            How your brand appears across the platform
+          </p>
+        </div>
+        <div className="p-6">
           <div
-            className="flex items-center gap-4 rounded-xl p-4"
+            className="flex items-center gap-5 rounded-2xl p-5"
             style={{ backgroundColor: primaryColour }}
           >
             {logoUrl ? (
@@ -154,210 +224,242 @@ export function AgencyBrandingForm({ profile }: Props) {
               <img
                 src={logoUrl}
                 alt="Agency logo"
-                className="size-14 rounded-lg object-cover"
+                className="size-16 rounded-xl object-cover shadow-sm"
               />
             ) : (
               <div
-                className="flex size-14 items-center justify-center rounded-lg"
+                className="flex size-16 items-center justify-center rounded-xl shadow-sm"
                 style={{ backgroundColor: secondaryColour }}
               >
-                <Building className="size-6 text-white" />
+                <Building className="size-7 text-white" />
               </div>
             )}
             <div>
-              <p className="font-bold text-white">{agencyName}</p>
-              <p className="text-xs text-white/80">Estate Agents</p>
+              <p className="font-heading text-lg font-bold tracking-tight text-white">
+                {agencyName}
+              </p>
+              <p className="text-sm text-white/70">Estate Agents</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Logo upload */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Logo</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
-            {logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={logoUrl}
-                alt="Current logo"
-                className="size-20 rounded-xl object-cover border"
-              />
-            ) : (
-              <div className="flex size-20 items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted">
-                <Building className="size-8 text-muted-foreground" />
-              </div>
-            )}
-            <div>
-              <Button
+      <Section
+        title="Agency Logo"
+        description="PNG, JPG or WebP up to 5 MB — compressed to 400px automatically"
+      >
+        <div className="flex items-center gap-5">
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt="Current logo"
+              className="size-24 rounded-2xl object-cover shadow-sm"
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex size-24 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-brand-primary/30 bg-brand-primary-lighter text-brand-primary transition-all hover:border-brand-primary hover:bg-brand-primary-lighter/70"
+            >
+              <Upload className="size-6" />
+              <span className="text-[10px] font-semibold">Upload</span>
+            </button>
+          )}
+          <div className="flex flex-col gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="mr-2 size-4" />
+              {uploading ? "Uploading…" : "Choose file"}
+            </Button>
+            {logoUrl && (
+              <button
                 type="button"
-                variant="outline"
-                disabled={uploading}
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => setLogoUrl(null)}
+                className="text-xs text-neutral-400 hover:text-error transition-colors"
               >
-                <Upload className="mr-2 size-4" />
-                {uploading ? "Uploading..." : "Upload logo"}
-              </Button>
-              <p className="mt-1 text-xs text-muted-foreground">
-                PNG, JPG up to 5 MB. Will be compressed to 400px.
-              </p>
-            </div>
+                Remove logo
+              </button>
+            )}
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            onChange={handleLogoChange}
-            className="sr-only"
-            aria-label="Upload logo file"
-          />
-        </CardContent>
-      </Card>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={handleLogoChange}
+          className="sr-only"
+          aria-label="Upload logo file"
+        />
+      </Section>
 
       {/* Brand colours */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Brand Colours</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+      <Section
+        title="Brand Colours"
+        description="Choose your primary and accent colours"
+      >
+        <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <Label htmlFor="brand_primary_colour">Primary colour</Label>
-            <div className="mt-1 flex items-center gap-2">
-              <input
-                id="brand_primary_colour"
-                type="color"
-                {...register("brand_primary_colour")}
-                className="size-10 cursor-pointer rounded border border-border"
-              />
-              <Input
-                value={primaryColour}
-                onChange={() => {}}
-                readOnly
-                className="w-28 font-mono text-sm"
-                aria-label="Primary colour hex value"
-              />
+            <Label
+              htmlFor="brand_primary_colour"
+              className="text-sm font-medium text-neutral-700"
+            >
+              Primary colour
+            </Label>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="relative">
+                <input
+                  id="brand_primary_colour"
+                  type="color"
+                  {...register("brand_primary_colour")}
+                  className="size-12 cursor-pointer rounded-xl border-0 p-0.5 shadow-sm"
+                />
+              </div>
+              <div className="flex-1">
+                <Input
+                  value={primaryColour}
+                  onChange={() => {}}
+                  readOnly
+                  className="rounded-lg bg-neutral-50 font-mono text-sm uppercase"
+                  aria-label="Primary colour hex value"
+                />
+              </div>
             </div>
             {errors.brand_primary_colour && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1.5 text-xs text-error">
                 {errors.brand_primary_colour.message}
               </p>
             )}
           </div>
           <div>
-            <Label htmlFor="brand_secondary_colour">Secondary colour</Label>
-            <div className="mt-1 flex items-center gap-2">
-              <input
-                id="brand_secondary_colour"
-                type="color"
-                {...register("brand_secondary_colour")}
-                className="size-10 cursor-pointer rounded border border-border"
-              />
-              <Input
-                value={secondaryColour}
-                onChange={() => {}}
-                readOnly
-                className="w-28 font-mono text-sm"
-                aria-label="Secondary colour hex value"
-              />
+            <Label
+              htmlFor="brand_secondary_colour"
+              className="text-sm font-medium text-neutral-700"
+            >
+              Secondary colour
+            </Label>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="relative">
+                <input
+                  id="brand_secondary_colour"
+                  type="color"
+                  {...register("brand_secondary_colour")}
+                  className="size-12 cursor-pointer rounded-xl border-0 p-0.5 shadow-sm"
+                />
+              </div>
+              <div className="flex-1">
+                <Input
+                  value={secondaryColour}
+                  onChange={() => {}}
+                  readOnly
+                  className="rounded-lg bg-neutral-50 font-mono text-sm uppercase"
+                  aria-label="Secondary colour hex value"
+                />
+              </div>
             </div>
             {errors.brand_secondary_colour && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1.5 text-xs text-error">
                 {errors.brand_secondary_colour.message}
               </p>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Colour swatches preview */}
+        <div className="mt-4 flex items-center gap-3">
+          <div
+            className="h-10 flex-1 rounded-xl shadow-inner"
+            style={{ backgroundColor: primaryColour }}
+          />
+          <div
+            className="h-10 flex-1 rounded-xl shadow-inner"
+            style={{ backgroundColor: secondaryColour }}
+          />
+          <div className="flex size-10 items-center justify-center rounded-xl bg-neutral-100">
+            <Palette className="size-5 text-neutral-400" />
+          </div>
+        </div>
+      </Section>
 
       {/* Agency description */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Agency Description</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            {...register("description")}
-            rows={4}
-            placeholder="A brief description shown on your public profile..."
-            className="resize-none"
-          />
-          <p className="mt-1 text-right text-xs text-muted-foreground">
+      <Section
+        title="Agency Description"
+        description="Shown on your public marketplace profile"
+      >
+        <Textarea
+          {...register("description")}
+          rows={4}
+          placeholder="A brief description shown on your public profile…"
+          className="resize-none rounded-lg bg-neutral-50"
+        />
+        <div className="mt-2 flex items-center justify-between">
+          <span />
+          <p
+            className={`text-xs ${
+              descriptionValue.length > 480
+                ? "text-error font-medium"
+                : "text-neutral-400"
+            }`}
+          >
             {descriptionValue.length}/500
           </p>
-          {errors.description && (
-            <p className="mt-1 text-xs text-red-500">
-              {errors.description.message}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+        {errors.description && (
+          <p className="mt-1 text-xs text-error">
+            {errors.description.message}
+          </p>
+        )}
+      </Section>
 
       {/* Social links */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Social &amp; Web Links</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {[
-            {
-              id: "website_url" as const,
-              label: "Website",
-              icon: Globe,
-              placeholder: "https://www.youragency.co.uk",
-            },
-            {
-              id: "social_facebook" as const,
-              label: "Facebook",
-              icon: Facebook,
-              placeholder: "https://facebook.com/youragency",
-            },
-            {
-              id: "social_twitter" as const,
-              label: "X (Twitter)",
-              icon: Twitter,
-              placeholder: "https://twitter.com/youragency",
-            },
-            {
-              id: "social_instagram" as const,
-              label: "Instagram",
-              icon: Instagram,
-              placeholder: "https://instagram.com/youragency",
-            },
-            {
-              id: "social_linkedin" as const,
-              label: "LinkedIn",
-              icon: Linkedin,
-              placeholder: "https://linkedin.com/company/youragency",
-            },
-          ].map(({ id, label, icon: Icon, placeholder }) => (
+      <Section
+        title="Social &amp; Web Links"
+        description="Connect your online presence"
+      >
+        <div className="space-y-4">
+          {socialLinks.map(({ id, label, icon: Icon, placeholder }) => (
             <div key={id}>
-              <Label htmlFor={id}>{label}</Label>
-              <div className="relative mt-1">
-                <Icon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Label
+                htmlFor={id}
+                className="text-sm font-medium text-neutral-700"
+              >
+                {label}
+              </Label>
+              <div className="relative mt-1.5">
+                <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                  <Icon className="size-4 text-neutral-400" />
+                </div>
                 <Input
                   id={id}
                   type="url"
                   {...register(id)}
                   placeholder={placeholder}
-                  className="pl-9"
+                  className="rounded-lg bg-neutral-50 pl-9"
                 />
               </div>
               {errors[id] && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1 text-xs text-error">
                   {errors[id]?.message}
                 </p>
               )}
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </Section>
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting || uploading}>
-          {isSubmitting ? "Saving..." : "Save branding"}
+      <div className="flex justify-end pt-1">
+        <Button
+          type="submit"
+          disabled={isSubmitting || uploading}
+          className="rounded-xl bg-brand-primary px-6 text-white hover:bg-brand-primary/90"
+        >
+          {isSubmitting ? "Saving…" : "Save branding"}
         </Button>
       </div>
     </form>

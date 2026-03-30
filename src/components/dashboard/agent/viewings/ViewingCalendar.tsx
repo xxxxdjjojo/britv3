@@ -12,11 +12,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Plus, Clock, Home } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Clock,
+  Home,
+  CalendarDays,
+} from "lucide-react";
 import type { AgentViewingSlot } from "@/types/agent";
 
 type ViewMode = "month" | "week" | "day";
@@ -48,16 +53,16 @@ function getWeekDays(date: Date): Date[] {
   });
 }
 
-function SlotBadge({ slot }: Readonly<{ slot: AgentViewingSlot }>) {
+function SlotPill({ slot }: Readonly<{ slot: AgentViewingSlot }>) {
   return (
     <div
-      className={`rounded-md px-2 py-1 text-xs ${
+      className={`rounded-lg px-2 py-1 text-[10px] font-semibold leading-tight ${
         slot.is_booked
-          ? "bg-blue-100 text-blue-800"
-          : "bg-green-100 text-green-800"
+          ? "bg-info-light text-info"
+          : "bg-success-light text-success"
       }`}
     >
-      <span className="font-medium">{formatTime(slot.start_time)}</span>
+      <span>{formatTime(slot.start_time)}</span>
       {" — "}
       <span className="truncate">
         {slot.is_booked ? (slot.booked_by ?? "Booked") : "Available"}
@@ -107,7 +112,9 @@ function PublishAvailabilityDialog() {
       setOpen(false);
       setForm({ property_id: "", date: "", start_time: "", end_time: "" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to publish slot");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to publish slot",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -116,18 +123,28 @@ function PublishAvailabilityDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="mr-1 size-4" />
+        <Button
+          size="sm"
+          className="rounded-xl bg-brand-primary text-white hover:bg-brand-primary/90"
+        >
+          <Plus className="mr-1.5 size-4" />
           Publish Availability
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Publish Viewing Availability</DialogTitle>
+          <DialogTitle className="font-heading text-lg font-semibold tracking-tight">
+            Publish Viewing Availability
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="property_id">Property ID</Label>
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="property_id"
+              className="text-sm font-medium text-neutral-700"
+            >
+              Property ID
+            </Label>
             <Input
               id="property_id"
               value={form.property_id}
@@ -135,10 +152,16 @@ function PublishAvailabilityDialog() {
                 setForm((f) => ({ ...f, property_id: e.target.value }))
               }
               placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
+              className="rounded-lg bg-neutral-50"
             />
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="slot_date">Date</Label>
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="slot_date"
+              className="text-sm font-medium text-neutral-700"
+            >
+              Date
+            </Label>
             <Input
               id="slot_date"
               type="date"
@@ -146,11 +169,17 @@ function PublishAvailabilityDialog() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, date: e.target.value }))
               }
+              className="rounded-lg bg-neutral-50"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label htmlFor="start_time">Start time</Label>
+            <div className="space-y-1.5">
+              <Label
+                htmlFor="start_time"
+                className="text-sm font-medium text-neutral-700"
+              >
+                Start time
+              </Label>
               <Input
                 id="start_time"
                 type="time"
@@ -158,10 +187,16 @@ function PublishAvailabilityDialog() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, start_time: e.target.value }))
                 }
+                className="rounded-lg bg-neutral-50"
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="end_time">End time</Label>
+            <div className="space-y-1.5">
+              <Label
+                htmlFor="end_time"
+                className="text-sm font-medium text-neutral-700"
+              >
+                End time
+              </Label>
               <Input
                 id="end_time"
                 type="time"
@@ -169,6 +204,7 @@ function PublishAvailabilityDialog() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, end_time: e.target.value }))
                 }
+                className="rounded-lg bg-neutral-50"
               />
             </div>
           </div>
@@ -176,12 +212,17 @@ function PublishAvailabilityDialog() {
             <Button
               type="button"
               variant="outline"
+              className="rounded-xl"
               onClick={() => setOpen(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
-              {submitting ? "Publishing..." : "Publish Slot"}
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="rounded-xl bg-brand-primary text-white hover:bg-brand-primary/90"
+            >
+              {submitting ? "Publishing…" : "Publish Slot"}
             </Button>
           </div>
         </form>
@@ -198,44 +239,52 @@ function DaySlotList({
 
   if (daySlots.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
-        No slots for this day.
-      </p>
+      <div className="flex flex-col items-center justify-center py-10 text-center">
+        <CalendarDays className="mb-3 size-8 text-neutral-300" />
+        <p className="text-sm text-neutral-400">No slots for this day.</p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {daySlots.map((slot) => (
         <div
           key={slot.id}
-          className="flex items-start gap-3 rounded-lg border p-3"
+          className={`flex items-start gap-3 rounded-xl p-3 transition-colors ${
+            slot.is_booked ? "bg-info-light/30" : "bg-success-light/30"
+          }`}
         >
-          <Clock className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+          <div
+            className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${
+              slot.is_booked ? "bg-info-light" : "bg-success-light"
+            }`}
+          >
+            <Clock
+              className={`size-4 ${slot.is_booked ? "text-info" : "text-success"}`}
+            />
+          </div>
           <div className="min-w-0 flex-1 space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-semibold text-neutral-800">
                 {formatTime(slot.start_time)} – {formatTime(slot.end_time)}
               </span>
-              <Badge
-                variant={slot.is_booked ? "default" : "outline"}
-                className={
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
                   slot.is_booked
-                    ? "bg-blue-100 text-blue-800 hover:bg-blue-100"
-                    : "bg-green-50 text-green-700"
-                }
+                    ? "bg-info-light text-info"
+                    : "bg-success-light text-success"
+                }`}
               >
                 {slot.is_booked ? "Booked" : "Available"}
-              </Badge>
+              </span>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-xs text-neutral-400">
               <Home className="size-3" />
               <span className="truncate">{slot.property_id}</span>
             </div>
             {slot.is_booked && slot.booked_by && (
-              <p className="text-xs text-muted-foreground">
-                Buyer: {slot.booked_by}
-              </p>
+              <p className="text-xs text-neutral-500">Buyer: {slot.booked_by}</p>
             )}
           </div>
         </div>
@@ -257,7 +306,7 @@ function WeekView({
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   return (
-    <div className="grid grid-cols-7 gap-2 overflow-x-auto">
+    <div className="grid grid-cols-7 gap-2">
       {weekDays.map((day, i) => {
         const daySlots = slots.filter((s) =>
           isSameDay(new Date(s.start_time), day),
@@ -268,18 +317,22 @@ function WeekView({
         return (
           <div
             key={day.toISOString()}
-            className={`min-h-24 cursor-pointer rounded-lg border p-2 transition-colors ${
+            className={`min-h-24 cursor-pointer rounded-xl p-2 transition-all ${
               isSelected
-                ? "border-brand-primary bg-brand-primary/5"
-                : "hover:bg-muted/50"
+                ? "bg-brand-primary-lighter ring-2 ring-brand-primary/40"
+                : "bg-neutral-50 hover:bg-neutral-100"
             }`}
             onClick={() => onSelectDate(day)}
           >
-            <div className="mb-1 text-center">
-              <p className="text-xs text-muted-foreground">{dayNames[i]}</p>
+            <div className="mb-2 text-center">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+                {dayNames[i]}
+              </p>
               <p
-                className={`text-sm font-medium ${
-                  isToday ? "text-brand-primary" : ""
+                className={`mt-0.5 text-sm font-bold ${
+                  isToday
+                    ? "flex size-6 items-center justify-center rounded-full bg-brand-primary text-white mx-auto"
+                    : "text-neutral-800"
                 }`}
               >
                 {day.getDate()}
@@ -287,7 +340,7 @@ function WeekView({
             </div>
             <div className="space-y-1">
               {daySlots.map((slot) => (
-                <SlotBadge key={slot.id} slot={slot} />
+                <SlotPill key={slot.id} slot={slot} />
               ))}
             </div>
           </div>
@@ -347,27 +400,37 @@ export function ViewingCalendar({
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={handlePrev}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 rounded-xl"
+            onClick={handlePrev}
+          >
             <ChevronLeft className="size-4" />
           </Button>
-          <span className="min-w-40 text-center text-sm font-medium">
+          <span className="min-w-44 text-center text-sm font-semibold text-neutral-800">
             {viewLabel}
           </span>
-          <Button variant="outline" size="icon" onClick={handleNext}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 rounded-xl"
+            onClick={handleNext}
+          >
             <ChevronRight className="size-4" />
           </Button>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex rounded-md border">
+          <div className="flex overflow-hidden rounded-xl bg-neutral-100">
             {(["month", "week", "day"] as ViewMode[]).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`px-3 py-1.5 text-sm capitalize transition-colors first:rounded-l-md last:rounded-r-md ${
+                className={`px-3 py-1.5 text-xs font-semibold capitalize transition-all ${
                   viewMode === mode
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
+                    ? "bg-brand-primary text-white"
+                    : "text-neutral-500 hover:text-neutral-800"
                 }`}
               >
                 {mode}
@@ -380,8 +443,8 @@ export function ViewingCalendar({
 
       {/* Calendar view */}
       {viewMode === "month" && (
-        <Card>
-          <CardContent className="flex flex-col items-center pt-4">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="flex flex-col items-center px-4 py-4">
             <DayPicker
               mode="single"
               selected={selectedDate}
@@ -399,50 +462,48 @@ export function ViewingCalendar({
               styles={{}}
             />
             {/* Legend */}
-            <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <span className="inline-block size-2.5 rounded-full bg-blue-500" />
+            <div className="mt-3 flex items-center gap-5 text-xs text-neutral-500">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block size-2.5 rounded-full bg-info" />
                 Booked
               </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block size-2.5 rounded-full bg-green-500" />
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block size-2.5 rounded-full bg-success" />
                 Available
               </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {viewMode === "week" && (
-        <Card>
-          <CardContent className="pt-4">
-            <WeekView
-              slots={slots}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-            />
-          </CardContent>
-        </Card>
+        <div className="overflow-hidden rounded-2xl bg-white p-4 shadow-sm">
+          <WeekView
+            slots={slots}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+          />
+        </div>
       )}
 
-      {/* Day view / slots list for selected date */}
+      {/* Day / selected-date slot list */}
       {(viewMode === "day" || viewMode === "month") && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="bg-neutral-50 px-5 py-4">
+            <p className="font-semibold text-neutral-900">
               {viewMode === "day"
-                ? "Slots for today"
+                ? "Today's slots"
                 : `Slots for ${selectedDate.toLocaleDateString("en-GB", {
                     weekday: "long",
                     day: "numeric",
                     month: "long",
                   })}`}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div className="p-4">
             <DaySlotList slots={slots} date={selectedDate} />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );

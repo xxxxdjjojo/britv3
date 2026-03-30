@@ -38,24 +38,27 @@ import { ChainDetailDialog } from "@/components/dashboard/agent/sales/ChainDetai
 // Stage metadata
 // --------------------------------------------------------------------------
 
-const STAGE_LABELS: Record<SaleStage, { label: string; desc: string }> = {
+const STAGE_LABELS: Record<SaleStage, { label: string; desc: string; emoji: string }> = {
   offer_accepted: {
     label: "Offer Accepted",
-    desc: "Offer accepted, memo of sale pending",
+    desc: "Memo of sale pending",
+    emoji: "🤝",
   },
   memorandum_of_sale: {
     label: "Memo of Sale",
-    desc: "Memorandum of sale issued",
+    desc: "Memorandum issued",
+    emoji: "📄",
   },
   solicitors_instructed: {
     label: "Solicitors",
-    desc: "Both parties solicitors instructed",
+    desc: "Both parties instructed",
+    emoji: "⚖️",
   },
-  searches: { label: "Searches", desc: "Local searches underway" },
-  survey: { label: "Survey", desc: "Property survey booked" },
-  mortgage: { label: "Mortgage", desc: "Mortgage offer received" },
-  exchange: { label: "Exchange", desc: "Contracts exchanged" },
-  completion: { label: "Completion", desc: "Completion day" },
+  searches: { label: "Searches", desc: "Local searches underway", emoji: "🔍" },
+  survey: { label: "Survey", desc: "Property survey booked", emoji: "🏗️" },
+  mortgage: { label: "Mortgage", desc: "Mortgage offer received", emoji: "🏦" },
+  exchange: { label: "Exchange", desc: "Contracts exchanged", emoji: "✍️" },
+  completion: { label: "Completion", desc: "Completion day", emoji: "🎉" },
 };
 
 // --------------------------------------------------------------------------
@@ -68,10 +71,12 @@ function getDaysInStage(updatedAt: string): number {
   );
 }
 
-function healthColour(days: number): string {
-  if (days <= 7) return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300";
-  if (days <= 14) return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
-  return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+function healthConfig(days: number): { pill: string; label: string } {
+  if (days <= 7)
+    return { pill: "bg-success-light text-success", label: `${days}d` };
+  if (days <= 14)
+    return { pill: "bg-warning-light text-warning", label: `${days}d` };
+  return { pill: "bg-error-light text-error", label: `${days}d` };
 }
 
 // --------------------------------------------------------------------------
@@ -97,10 +102,11 @@ function SortableCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
+    opacity: isDragging ? 0.35 : 1,
   };
 
   const days = getDaysInStage(progression.updated_at);
+  const health = healthConfig(days);
 
   return (
     <div
@@ -108,32 +114,32 @@ function SortableCard({
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab rounded-lg border bg-card p-3 shadow-sm active:cursor-grabbing"
+      className="cursor-grab rounded-xl bg-white p-3.5 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing"
       onClick={() => onOpen(progression)}
       onKeyDown={(e) => e.key === "Enter" && onOpen(progression)}
       role="button"
       tabIndex={0}
     >
-      <p className="truncate text-xs font-medium text-foreground">
+      <p className="truncate text-xs font-semibold text-neutral-800">
         {progression.property_id.substring(0, 8)}…
       </p>
-      <div className="mt-1.5 flex items-center justify-between gap-2">
-        <Badge variant="secondary" className="text-[10px]">
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-[10px] font-semibold text-brand-primary">
           {STAGE_LABELS[progression.stage].label}
-        </Badge>
+        </span>
         <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${healthColour(days)}`}
+          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${health.pill}`}
         >
-          {days}d
+          {health.label}
         </span>
       </div>
       {progression.chain_risk && (
-        <div className="mt-1.5">
+        <div className="mt-2">
           <ChainRiskBadge risk={progression.chain_risk} />
         </div>
       )}
       {progression.expected_completion_date && (
-        <p className="mt-1.5 text-[10px] text-muted-foreground">
+        <p className="mt-2 text-[10px] text-neutral-400">
           ETA:{" "}
           {new Date(progression.expected_completion_date).toLocaleDateString(
             "en-GB",
@@ -163,19 +169,24 @@ function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`flex min-w-[200px] max-w-[240px] flex-shrink-0 flex-col gap-2 rounded-xl border p-3 transition-colors ${
-        isOver ? "border-brand-primary bg-brand-primary/5" : "bg-muted/40"
+      className={`flex min-w-[210px] max-w-[240px] flex-shrink-0 flex-col gap-2 rounded-2xl p-3 transition-all ${
+        isOver
+          ? "bg-brand-primary-lighter shadow-md ring-2 ring-brand-primary/30"
+          : "bg-neutral-100"
       }`}
     >
       {/* Column header */}
-      <div className="mb-1">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-foreground">{meta.label}</p>
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+      <div className="mb-1 px-1">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm">{meta.emoji}</span>
+            <p className="text-xs font-semibold text-neutral-800">{meta.label}</p>
+          </div>
+          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-neutral-500 shadow-sm">
             {progressions.length}
           </span>
         </div>
-        <p className="mt-0.5 text-[10px] text-muted-foreground">{meta.desc}</p>
+        <p className="mt-0.5 text-[10px] text-neutral-400">{meta.desc}</p>
       </div>
 
       {/* Cards */}
@@ -188,8 +199,8 @@ function DroppableColumn({
             <SortableCard key={p.id} progression={p} onOpen={onOpen} />
           ))}
           {progressions.length === 0 && (
-            <div className="rounded-lg border-2 border-dashed border-muted py-6 text-center">
-              <p className="text-[10px] text-muted-foreground">No sales</p>
+            <div className="rounded-xl border-2 border-dashed border-neutral-200 py-8 text-center">
+              <p className="text-[10px] text-neutral-400">Drop here</p>
             </div>
           )}
         </div>
@@ -215,72 +226,99 @@ function ProgressionDialog({
 
   if (!progression) return null;
 
+  const days = getDaysInStage(progression.updated_at);
+  const health = healthConfig(days);
+
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Sale Details</DialogTitle>
+          <DialogTitle className="font-heading text-lg font-semibold tracking-tight">
+            Sale Details
+          </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p className="text-xs text-muted-foreground">Property ID</p>
-              <p className="font-mono text-xs">{progression.property_id}</p>
+          {/* Stage pill + health */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-brand-primary-lighter px-3 py-1 text-xs font-semibold text-brand-primary">
+              {STAGE_LABELS[progression.stage].emoji}{" "}
+              {STAGE_LABELS[progression.stage].label}
+            </span>
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${health.pill}`}
+            >
+              {days}d in stage
+            </span>
+          </div>
+
+          {/* IDs */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl bg-neutral-50 p-3">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+                Property ID
+              </p>
+              <p className="mt-1 font-mono text-xs text-neutral-700">
+                {progression.property_id}
+              </p>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Offer ID</p>
-              <p className="font-mono text-xs">{progression.offer_id}</p>
-            </div>
-            <div className="col-span-2">
-              <p className="text-xs text-muted-foreground">Stage</p>
-              <Badge variant="secondary">
-                {STAGE_LABELS[progression.stage].label}
-              </Badge>
+            <div className="rounded-xl bg-neutral-50 p-3">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+                Offer ID
+              </p>
+              <p className="mt-1 font-mono text-xs text-neutral-700">
+                {progression.offer_id}
+              </p>
             </div>
           </div>
 
+          {/* ETA */}
           <div>
-            <Label className="text-xs">Expected Completion Date</Label>
+            <Label className="text-xs font-medium text-neutral-500">
+              Expected Completion Date
+            </Label>
             <Input
               type="date"
               defaultValue={progression.expected_completion_date ?? ""}
               readOnly
-              className="mt-1 text-sm"
+              className="mt-1.5 rounded-lg bg-neutral-50 text-sm"
             />
           </div>
 
           {progression.solicitor_buyer && (
-            <div>
-              <p className="mb-1 text-xs font-medium text-muted-foreground">
+            <div className="rounded-xl bg-neutral-50 p-3">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
                 Buyer Solicitor
               </p>
-              <div className="rounded-md bg-muted p-2 text-xs font-mono">
-                {Object.entries(progression.solicitor_buyer).map(
-                  ([k, v]) => (
-                    <div key={k} className="flex gap-2">
-                      <span className="text-muted-foreground">{k}:</span>
-                      <span>{String(v)}</span>
-                    </div>
-                  ),
-                )}
+              <div className="space-y-1 font-mono text-xs text-neutral-700">
+                {Object.entries(progression.solicitor_buyer).map(([k, v]) => (
+                  <div key={k} className="flex gap-2">
+                    <span className="text-neutral-400">{k}:</span>
+                    <span>{String(v)}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
           <div>
-            <Label className="text-xs">Notes</Label>
+            <Label className="text-xs font-medium text-neutral-500">Notes</Label>
             <Textarea
               defaultValue={progression.notes ?? ""}
               readOnly
               rows={3}
-              className="mt-1 resize-none text-sm"
+              className="mt-1.5 resize-none rounded-lg bg-neutral-50 text-sm"
             />
           </div>
 
           {progression.chain_risk && (
             <>
-              <Button variant="outline" size="sm" onClick={() => setChainDialogOpen(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl"
+                onClick={() => setChainDialogOpen(true)}
+              >
                 View Chain ({progression.chain_risk.chain_length} links)
               </Button>
               <ChainDetailDialog
@@ -293,7 +331,7 @@ function ProgressionDialog({
         </div>
 
         <div className="mt-2 flex justify-end">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" className="rounded-xl" onClick={onClose}>
             Close
           </Button>
         </div>
@@ -316,15 +354,18 @@ export function SaleProgressionKanban({
   const [progressions, setProgressions] =
     useState<ProgressionsMap>(initialProgressions);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [selected, setSelected] = useState<AgentSaleProgressionWithRisk | null>(null);
+  const [selected, setSelected] = useState<AgentSaleProgressionWithRisk | null>(
+    null,
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
-  // Find a progression by id across all stages
-  function findProgression(id: string): AgentSaleProgressionWithRisk | undefined {
+  function findProgression(
+    id: string,
+  ): AgentSaleProgressionWithRisk | undefined {
     for (const stage of SALE_STAGES) {
       const found = progressions[stage]?.find((p) => p.id === id);
       if (found) return found;
@@ -332,7 +373,6 @@ export function SaleProgressionKanban({
     return undefined;
   }
 
-  // Find which stage a progression currently lives in
   function findStage(id: string): SaleStage | undefined {
     for (const stage of SALE_STAGES) {
       if (progressions[stage]?.some((p) => p.id === id)) return stage;
@@ -347,7 +387,6 @@ export function SaleProgressionKanban({
     if (!over) return;
 
     const sourceStage = findStage(active.id as string);
-    // over.id could be either a stage key or another card id
     const targetStage = (
       SALE_STAGES.includes(over.id as SaleStage)
         ? over.id
@@ -359,7 +398,6 @@ export function SaleProgressionKanban({
     const progression = findProgression(active.id as string);
     if (!progression) return;
 
-    // Optimistically update state
     const prev = { ...progressions };
     setProgressions((cur) => {
       const next = { ...cur };
@@ -385,9 +423,10 @@ export function SaleProgressionKanban({
         throw new Error(body.error ?? "Failed to update stage");
       }
     } catch (err) {
-      // Revert on error
       setProgressions(prev);
-      toast.error(err instanceof Error ? err.message : "Failed to update stage");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to update stage",
+      );
     }
   }
 
@@ -406,7 +445,7 @@ export function SaleProgressionKanban({
         onDragStart={(e) => setActiveId(e.active.id as string)}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-3 overflow-x-auto pb-4">
+        <div className="flex gap-3 overflow-x-auto pb-6">
           {SALE_STAGES.map((stage) => (
             <DroppableColumn
               key={stage}
@@ -419,13 +458,13 @@ export function SaleProgressionKanban({
 
         <DragOverlay>
           {activeProgression ? (
-            <div className="w-[220px] cursor-grabbing rounded-lg border bg-card p-3 shadow-lg">
-              <p className="truncate text-xs font-medium text-foreground">
+            <div className="w-[220px] cursor-grabbing rounded-xl bg-white p-3.5 shadow-xl">
+              <p className="truncate text-xs font-semibold text-neutral-800">
                 {activeProgression.property_id.substring(0, 8)}…
               </p>
-              <Badge variant="secondary" className="mt-1 text-[10px]">
+              <span className="mt-1.5 inline-flex rounded-full bg-brand-primary-lighter px-2 py-0.5 text-[10px] font-semibold text-brand-primary">
                 {STAGE_LABELS[activeProgression.stage].label}
-              </Badge>
+              </span>
             </div>
           ) : null}
         </DragOverlay>

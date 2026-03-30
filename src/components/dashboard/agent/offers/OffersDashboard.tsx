@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, Search } from "lucide-react";
+import { Building2, Search, TrendingUp } from "lucide-react";
 import type { AgentOffer, OfferStatus, AipStatus } from "@/types/agent";
 
 function formatGBP(amount: number): string {
@@ -24,40 +23,65 @@ function formatGBP(amount: number): string {
   }).format(amount);
 }
 
-function offerStatusClass(status: OfferStatus): string {
-  if (status === "pending") return "bg-blue-100 text-blue-700";
-  if (status === "accepted") return "bg-green-100 text-green-700";
-  if (status === "rejected") return "bg-red-100 text-red-700";
-  if (status === "countered") return "bg-orange-100 text-orange-700";
-  return "bg-neutral-100 text-neutral-600";
+function offerStatusConfig(status: OfferStatus): { bg: string; text: string; label: string } {
+  switch (status) {
+    case "pending":
+      return { bg: "bg-info-light", text: "text-info", label: "Pending" };
+    case "accepted":
+      return { bg: "bg-success-light", text: "text-success", label: "Accepted" };
+    case "rejected":
+      return { bg: "bg-error-light", text: "text-error", label: "Rejected" };
+    case "countered":
+      return { bg: "bg-warning-light", text: "text-warning", label: "Countered" };
+    case "withdrawn":
+      return { bg: "bg-neutral-100", text: "text-neutral-500", label: "Withdrawn" };
+    default:
+      return { bg: "bg-neutral-100", text: "text-neutral-500", label: status };
+  }
 }
 
-function aipStatusClass(status: AipStatus): string {
-  if (status === "verified") return "bg-green-100 text-green-700";
-  if (status === "provided") return "bg-yellow-100 text-yellow-700";
-  return "bg-neutral-100 text-neutral-500";
+function aipStatusConfig(status: AipStatus): { bg: string; text: string; label: string } {
+  switch (status) {
+    case "verified":
+      return { bg: "bg-success-light", text: "text-success", label: "AIP Verified" };
+    case "provided":
+      return { bg: "bg-warning-light", text: "text-warning", label: "AIP Provided" };
+    default:
+      return { bg: "bg-neutral-100", text: "text-neutral-500", label: "No AIP" };
+  }
 }
 
-function aipLabel(status: AipStatus): string {
-  if (status === "verified") return "AIP Verified";
-  if (status === "provided") return "AIP Provided";
-  return "No AIP";
+function StatusPill({ bg, text, label }: Readonly<{ bg: string; text: string; label: string }>) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${bg} ${text}`}
+    >
+      {label}
+    </span>
+  );
 }
 
 function OfferCard({ offer }: Readonly<{ offer: AgentOffer }>) {
   const router = useRouter();
+  const statusCfg = offerStatusConfig(offer.status);
+  const aipCfg = aipStatusConfig(offer.aip_status);
 
   return (
     <div
-      className="flex cursor-pointer flex-wrap items-start justify-between gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/40"
+      className="group flex cursor-pointer flex-wrap items-start justify-between gap-4 rounded-xl bg-neutral-50 p-4 transition-all hover:bg-brand-primary-lighter hover:shadow-sm active:scale-[0.99]"
       onClick={() => router.push(`/dashboard/agent/offers/${offer.id}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && router.push(`/dashboard/agent/offers/${offer.id}`)}
     >
       <div className="min-w-0">
-        <p className="font-medium">{offer.buyer_name}</p>
+        <p className="font-semibold text-neutral-900 group-hover:text-brand-primary">
+          {offer.buyer_name}
+        </p>
         {offer.buyer_email && (
-          <p className="text-xs text-muted-foreground">{offer.buyer_email}</p>
+          <p className="mt-0.5 text-xs text-neutral-500">{offer.buyer_email}</p>
         )}
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-1.5 text-xs text-neutral-400">
           {new Date(offer.created_at).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
@@ -67,17 +91,11 @@ function OfferCard({ offer }: Readonly<{ offer: AgentOffer }>) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-lg font-bold">{formatGBP(offer.amount)}</span>
-        <span
-          className={`rounded-full px-2 py-0.5 text-xs font-medium ${aipStatusClass(offer.aip_status)}`}
-        >
-          {aipLabel(offer.aip_status)}
+        <span className="text-xl font-bold tracking-tight text-neutral-900">
+          {formatGBP(offer.amount)}
         </span>
-        <span
-          className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${offerStatusClass(offer.status)}`}
-        >
-          {offer.status}
-        </span>
+        <StatusPill {...aipCfg} />
+        <StatusPill {...statusCfg} />
       </div>
     </div>
   );
@@ -118,13 +136,13 @@ export function OffersDashboard({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+        <div className="relative flex-1 min-w-48">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400" />
           <Input
-            className="pl-8"
+            className="rounded-lg bg-neutral-50 pl-9 text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary"
             placeholder="Search by buyer name…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -134,7 +152,7 @@ export function OffersDashboard({
           value={statusFilter}
           onValueChange={(v) => setStatusFilter(v as StatusFilter)}
         >
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-44 rounded-lg bg-neutral-50 text-neutral-700">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -149,36 +167,54 @@ export function OffersDashboard({
       </div>
 
       {totalOffers === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Building2 className="mb-3 size-10 text-muted-foreground" />
-            <p className="font-medium">No offers found</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {Object.keys(grouped).length === 0
-                ? "No offers have been received yet."
-                : "No offers match your current filters."}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
+          <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
+            <Building2 className="size-7 text-brand-primary" />
+          </div>
+          <p className="font-semibold text-neutral-900">No offers found</p>
+          <p className="mt-1 text-sm text-neutral-500">
+            {Object.keys(grouped).length === 0
+              ? "No offers have been received yet."
+              : "No offers match your current filters."}
+          </p>
+        </div>
       ) : (
         <div className="space-y-6">
           {Object.entries(filteredGrouped).map(([propertyId, offers]) => (
-            <Card key={propertyId}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                  <Building2 className="size-4 text-muted-foreground" />
-                  Property: {propertyId.slice(0, 8)}…
-                  <Badge variant="secondary" className="ml-auto">
+            <div
+              key={propertyId}
+              className="overflow-hidden rounded-2xl bg-white shadow-sm"
+            >
+              {/* Property header */}
+              <div className="flex items-center justify-between gap-2 bg-neutral-50 px-5 py-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary-lighter">
+                    <Building2 className="size-4 text-brand-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
+                      Property
+                    </p>
+                    <p className="font-mono text-sm font-semibold text-neutral-800">
+                      {propertyId.slice(0, 8)}…
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="size-3.5 text-brand-primary" />
+                  <span className="text-sm font-semibold text-brand-primary">
                     {offers.length} offer{offers.length !== 1 ? "s" : ""}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
+                  </span>
+                </div>
+              </div>
+
+              {/* Offer list */}
+              <div className="divide-y divide-neutral-100 p-3 space-y-1">
                 {offers.map((offer) => (
                   <OfferCard key={offer.id} offer={offer} />
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

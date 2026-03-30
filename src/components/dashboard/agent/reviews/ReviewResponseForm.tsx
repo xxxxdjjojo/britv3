@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Eye, EyeOff, Send } from "lucide-react";
 import Link from "next/link";
 
@@ -21,12 +19,50 @@ type Review = {
 };
 
 const PROFANITY_LIST = [
-  "damn", "hell", "crap", "ass", "bastard", "bitch", "shit", "fuck", "piss",
-  "dick", "cock", "cunt", "twat", "wank", "bollocks", "arse", "bloody", "bugger",
-  "shite", "arsehole", "wanker", "tosser", "pillock", "muppet", "bellend",
-  "knobhead", "numpty", "twit", "prat", "git", "plonker", "sod", "blimey",
-  "idiot", "moron", "stupid", "dumbass", "jackass", "douchebag", "asshole",
-  "motherfucker", "goddamn", "jesus christ", "christ",
+  "damn",
+  "hell",
+  "crap",
+  "ass",
+  "bastard",
+  "bitch",
+  "shit",
+  "fuck",
+  "piss",
+  "dick",
+  "cock",
+  "cunt",
+  "twat",
+  "wank",
+  "bollocks",
+  "arse",
+  "bloody",
+  "bugger",
+  "shite",
+  "arsehole",
+  "wanker",
+  "tosser",
+  "pillock",
+  "muppet",
+  "bellend",
+  "knobhead",
+  "numpty",
+  "twit",
+  "prat",
+  "git",
+  "plonker",
+  "sod",
+  "blimey",
+  "idiot",
+  "moron",
+  "stupid",
+  "dumbass",
+  "jackass",
+  "douchebag",
+  "asshole",
+  "motherfucker",
+  "goddamn",
+  "jesus christ",
+  "christ",
 ] as const;
 
 function checkProfanity(text: string): string[] {
@@ -40,7 +76,9 @@ function StarDisplay({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={star}
-          className={star <= rating ? "text-yellow-400" : "text-muted-foreground/30"}
+          className={
+            star <= rating ? "text-brand-secondary" : "text-neutral-200"
+          }
         >
           ★
         </span>
@@ -71,7 +109,9 @@ export function ReviewResponseForm({ review }: Props) {
     setError(null);
     const flagged = checkProfanity(response);
     if (flagged.length > 0) {
-      setError("Response contains inappropriate language. Please revise before submitting.");
+      setError(
+        "Response contains inappropriate language. Please revise before submitting.",
+      );
       return;
     }
     if (response.trim().length < 10) {
@@ -84,12 +124,17 @@ export function ReviewResponseForm({ review }: Props) {
       const res = await fetch("/api/agent/reviews", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: review.id, agent_response: response.trim() }),
+        body: JSON.stringify({
+          id: review.id,
+          agent_response: response.trim(),
+        }),
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error ?? "Failed to submit response");
+        throw new Error(
+          (body as { error?: string }).error ?? "Failed to submit response",
+        );
       }
 
       toast.success("Response submitted successfully");
@@ -104,60 +149,73 @@ export function ReviewResponseForm({ review }: Props) {
   return (
     <div className="max-w-2xl space-y-6">
       {/* Back link */}
-      <div>
-        <Button asChild variant="ghost" size="sm" className="-ml-2">
-          <Link href="/dashboard/agent/reviews">
-            <ArrowLeft className="mr-1.5 size-4" />
-            Back to Reviews
-          </Link>
-        </Button>
-      </div>
+      <Button asChild variant="ghost" size="sm" className="-ml-2 rounded-xl">
+        <Link href="/dashboard/agent/reviews">
+          <ArrowLeft className="mr-1.5 size-4" />
+          Back to Reviews
+        </Link>
+      </Button>
 
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Respond to Review</h1>
-        <p className="text-muted-foreground">Write a professional public response</p>
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+          Respond to Review
+        </h1>
+        <p className="mt-0.5 text-sm text-neutral-500">
+          Write a professional public response
+        </p>
       </div>
 
-      {/* Review display */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="font-heading text-base">Original Review</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-center gap-3 flex-wrap">
-            <p className="font-medium">{review.reviewer_name ?? "Anonymous"}</p>
+      {/* Original review */}
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="bg-neutral-50 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+            Original Review
+          </p>
+        </div>
+        <div className="px-5 py-4 space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="font-semibold text-neutral-900">
+              {review.reviewer_name ?? "Anonymous"}
+            </p>
             <StarDisplay rating={review.rating} />
-            <span className="text-sm text-muted-foreground">{dateStr}</span>
+            <span className="text-sm text-neutral-400">{dateStr}</span>
             {review.agent_response && (
-              <Badge variant="secondary">Already responded</Badge>
+              <span className="inline-flex rounded-full bg-success-light px-2.5 py-0.5 text-[10px] font-semibold text-success">
+                Already responded
+              </span>
             )}
           </div>
           {review.review_text && (
-            <p className="text-sm leading-relaxed">{review.review_text}</p>
+            <p className="text-sm leading-relaxed text-neutral-700">
+              {review.review_text}
+            </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
+          <span className="w-full border-t border-neutral-100" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Your response</span>
+          <span className="bg-neutral-50 px-3 text-xs font-semibold tracking-widest text-neutral-400">
+            Your Response
+          </span>
         </div>
       </div>
 
       {/* Response input / preview */}
-      <Card>
-        <CardHeader className="pb-3 flex flex-row items-center justify-between">
-          <CardTitle className="font-heading text-base">
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="flex items-center justify-between bg-neutral-50 px-5 py-4">
+          <p className="font-semibold text-neutral-900">
             {isPreview ? "Preview" : "Write Response"}
-          </CardTitle>
+          </p>
           <Button
             type="button"
             variant="ghost"
             size="sm"
+            className="rounded-xl text-neutral-500 hover:text-neutral-800"
             onClick={() => setIsPreview(!isPreview)}
           >
             {isPreview ? (
@@ -172,14 +230,20 @@ export function ReviewResponseForm({ review }: Props) {
               </>
             )}
           </Button>
-        </CardHeader>
-        <CardContent className="space-y-3">
+        </div>
+        <div className="p-5 space-y-4">
           {isPreview ? (
-            <div className="rounded-md border bg-muted/40 p-4 text-sm leading-relaxed">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-xl bg-brand-primary-lighter p-4">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-brand-primary">
                 Agency Response
               </p>
-              <p>{response || <span className="italic text-muted-foreground">No response written yet.</span>}</p>
+              <p className="text-sm leading-relaxed text-neutral-700">
+                {response || (
+                  <span className="italic text-neutral-400">
+                    No response written yet.
+                  </span>
+                )}
+              </p>
             </div>
           ) : (
             <>
@@ -191,29 +255,39 @@ export function ReviewResponseForm({ review }: Props) {
                 }}
                 maxLength={500}
                 rows={6}
-                placeholder="Write a professional, helpful response to this review..."
-                className="resize-none"
+                placeholder="Write a professional, helpful response to this review…"
+                className="resize-none rounded-lg bg-neutral-50"
               />
               <div className="flex items-center justify-between text-xs">
-                <span className={isNearLimit ? "text-destructive font-medium" : "text-muted-foreground"}>
+                <span
+                  className={
+                    isNearLimit
+                      ? "font-semibold text-error"
+                      : "text-neutral-400"
+                  }
+                >
                   {charCount}/500
                 </span>
-                <span className="text-muted-foreground">Be professional and constructive</span>
+                <span className="text-neutral-400">
+                  Be professional and constructive
+                </span>
               </div>
             </>
           )}
 
           {error && (
-            <p className="text-sm text-destructive">{error}</p>
+            <div className="rounded-xl bg-error-light px-4 py-3">
+              <p className="text-sm font-medium text-error">{error}</p>
+            </div>
           )}
 
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting || response.trim().length < 10}
-            className="w-full"
+            className="w-full rounded-xl bg-brand-primary text-white hover:bg-brand-primary/90"
           >
             {isSubmitting ? (
-              "Submitting..."
+              "Submitting…"
             ) : (
               <>
                 <Send className="mr-2 size-4" />
@@ -221,8 +295,8 @@ export function ReviewResponseForm({ review }: Props) {
               </>
             )}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
