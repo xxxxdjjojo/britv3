@@ -55,7 +55,7 @@ export function OTPInput(
   }
 
   return (
-    <div className="flex gap-2" role="group" aria-label="One-time password">
+    <div className="flex gap-2.5" role="group" aria-label="One-time password">
       {digits.map((digit, index) => (
         <input
           key={index}
@@ -74,11 +74,12 @@ export function OTPInput(
           autoFocus={props.autoFocus && index === 0}
           aria-label={`Digit ${index + 1} of 6`}
           className={cn(
-            "h-12 w-10 rounded-lg border-2 border-neutral-200 bg-white text-center",
-            "font-mono text-xl font-semibold text-neutral-900",
-            "transition-colors focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20",
+            "h-14 w-12 rounded-xl border-2 border-neutral-200 bg-white text-center",
+            "font-mono text-2xl font-bold text-neutral-900",
+            "transition-all duration-150",
+            "focus:border-brand-primary focus:outline-none focus:ring-4 focus:ring-brand-primary/10",
             "disabled:cursor-not-allowed disabled:opacity-50",
-            digit && "border-brand-primary bg-brand-primary/5",
+            digit && "border-brand-primary bg-brand-primary/5 text-brand-primary",
           )}
         />
       ))}
