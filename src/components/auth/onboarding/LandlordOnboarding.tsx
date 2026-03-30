@@ -7,13 +7,54 @@ import { Label } from "@/components/ui/label";
 import { OnboardingLayout } from "@/components/auth/OnboardingLayout";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { Upload, X } from "lucide-react";
+import { Upload, X, CheckCircle2, FileText, Zap, Flame } from "lucide-react";
 
 const STEPS = ["Your Portfolio", "First Property", "Compliance Docs"];
-const PORTFOLIO_TYPES = ["Flat", "House", "HMO", "Student", "Commercial"];
+
+const PORTFOLIO_TYPE_OPTIONS = [
+  { label: "Residential", value: "Residential" },
+  { label: "Commercial", value: "Commercial" },
+  { label: "Mixed Use", value: "Mixed Use" },
+  { label: "HMO", value: "HMO" },
+  { label: "Student", value: "Student" },
+];
+
+const PORTFOLIO_SIZES = [
+  { label: "1–2", value: 1 },
+  { label: "3–5", value: 3 },
+  { label: "6–10", value: 6 },
+  { label: "11–20", value: 11 },
+  { label: "20+", value: 20 },
+];
 
 type DocType = "gas_safety" | "epc" | "eicr";
 type UploadedDoc = { type: DocType; name: string };
+
+const DOC_CONFIG: {
+  type: DocType;
+  label: string;
+  hint: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    type: "gas_safety",
+    label: "Gas Safety Certificate",
+    hint: "Annual certificate — required for gas appliances",
+    icon: <Flame className="size-4 text-brand-secondary" />,
+  },
+  {
+    type: "epc",
+    label: "Energy Performance Certificate",
+    hint: "EPC rating A–G — valid for 10 years",
+    icon: <Zap className="size-4 text-brand-secondary" />,
+  },
+  {
+    type: "eicr",
+    label: "Electrical Installation Condition Report",
+    hint: "EICR — required every 5 years for rentals",
+    icon: <FileText className="size-4 text-brand-secondary" />,
+  },
+];
 
 export function LandlordOnboarding(
   props: Readonly<{
@@ -25,7 +66,7 @@ export function LandlordOnboarding(
   const [saving, setSaving] = useState(false);
 
   // Step 1 — Portfolio
-  const [portfolioSize, setPortfolioSize] = useState(1);
+  const [portfolioSize, setPortfolioSize] = useState<number>(1);
   const [portfolioTypes, setPortfolioTypes] = useState<string[]>([]);
 
   // Step 2 — First property
@@ -70,7 +111,6 @@ export function LandlordOnboarding(
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        // Landlord profile
         await supabase.from("landlord_profiles").upsert(
           {
             user_id: user.id,
@@ -79,9 +119,6 @@ export function LandlordOnboarding(
           },
           { onConflict: "user_id" },
         );
-        // Property details from Step 2 are collected for UX continuity
-        // but not persisted here — properties are added via the dashboard's
-        // Add Property flow with full validation and correct schema.
       }
     } catch {
       // Non-blocking
@@ -95,17 +132,12 @@ export function LandlordOnboarding(
     <button
       type="button"
       onClick={props.onSkip}
-      className="w-full text-center font-body text-sm text-neutral-400 hover:text-neutral-600"
+      className="w-full text-center font-sans text-sm text-neutral-400 transition-colors hover:text-neutral-600"
+      aria-label="Skip onboarding for now"
     >
       Skip for now
     </button>
   );
-
-  const DOC_LABELS: Record<DocType, string> = {
-    gas_safety: "Gas Safety Certificate",
-    epc: "Energy Performance Certificate (EPC)",
-    eicr: "Electrical Installation Condition Report (EICR)",
-  };
 
   return (
     <OnboardingLayout
@@ -118,7 +150,13 @@ export function LandlordOnboarding(
           "Compliance documents",
         ][step]
       }
-      subtitle="We'll use this to personalise your dashboard."
+      subtitle={
+        [
+          "We'll personalise your landlord dashboard.",
+          "Add your first rental property to get started.",
+          "Stay compliant — all documents optional for now.",
+        ][step]
+      }
     >
       <input
         ref={fileInputRef}
@@ -126,82 +164,118 @@ export function LandlordOnboarding(
         accept=".pdf,.jpg,.jpeg,.png"
         className="hidden"
         onChange={handleFileSelect}
+        aria-hidden="true"
       />
 
+      {/* ─── Step 1: Portfolio Scope ─────────────────────────────── */}
       {step === 0 && (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>How many properties do you manage?</Label>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setPortfolioSize(Math.max(1, portfolioSize - 1))}
-                className="flex size-10 items-center justify-center rounded-full border-2 border-neutral-300 text-lg font-medium"
-              >
-                -
-              </button>
-              <span className="w-12 text-center font-heading text-2xl font-bold text-neutral-900">
-                {portfolioSize}
-              </span>
-              <button
-                onClick={() => setPortfolioSize(portfolioSize + 1)}
-                className="flex size-10 items-center justify-center rounded-full border-2 border-neutral-300 text-lg font-medium"
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Property types</Label>
-            <div className="flex flex-wrap gap-2">
-              {PORTFOLIO_TYPES.map((type) => (
+        <div className="space-y-6">
+          {/* Portfolio size */}
+          <div className="space-y-3">
+            <Label className="font-sans text-sm font-medium text-neutral-700">
+              How many properties do you manage?
+            </Label>
+            <div className="grid grid-cols-5 gap-2">
+              {PORTFOLIO_SIZES.map((opt) => (
                 <button
-                  key={type}
+                  key={opt.value}
                   type="button"
-                  onClick={() => toggleType(type)}
+                  aria-label={`${opt.label} properties`}
+                  onClick={() => setPortfolioSize(opt.value)}
                   className={cn(
-                    "rounded-full border-2 px-3 py-1 text-sm font-medium transition-colors",
-                    portfolioTypes.includes(type)
-                      ? "border-brand-primary bg-brand-primary text-white"
-                      : "border-neutral-300 text-neutral-600 hover:border-brand-primary",
+                    "rounded-xl border-2 py-2.5 text-sm font-semibold transition-all",
+                    portfolioSize === opt.value
+                      ? "border-brand-primary bg-brand-primary text-white shadow-sm"
+                      : "border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary hover:text-brand-primary",
                   )}
                 >
-                  {type}
+                  {opt.label}
                 </button>
               ))}
             </div>
           </div>
-          <Button onClick={() => setStep(1)} className="w-full">
+
+          {/* Portfolio types */}
+          <div className="space-y-3">
+            <Label className="font-sans text-sm font-medium text-neutral-700">
+              Property types{" "}
+              <span className="text-xs font-normal text-neutral-400">
+                (select all that apply)
+              </span>
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {PORTFOLIO_TYPE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  aria-pressed={portfolioTypes.includes(opt.value)}
+                  aria-label={`Toggle ${opt.label}`}
+                  onClick={() => toggleType(opt.value)}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-full border-2 px-4 py-1.5 text-sm font-medium transition-all",
+                    portfolioTypes.includes(opt.value)
+                      ? "border-brand-primary bg-brand-primary text-white"
+                      : "border-neutral-200 bg-white text-neutral-600 hover:border-brand-primary hover:text-brand-primary",
+                  )}
+                >
+                  {portfolioTypes.includes(opt.value) && (
+                    <CheckCircle2 className="size-3.5" aria-hidden="true" />
+                  )}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Button
+            onClick={() => setStep(1)}
+            className="w-full h-11 rounded-xl bg-brand-primary font-semibold text-white hover:bg-brand-primary-light"
+            aria-label="Continue to property detail step"
+          >
             Continue
           </Button>
           <SkipLink />
         </div>
       )}
 
+      {/* ─── Step 2: Property Detail ─────────────────────────────── */}
       {step === 1 && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="space-y-2">
-            <Label>Property address</Label>
+            <Label
+              htmlFor="property-address"
+              className="font-sans text-sm font-medium text-neutral-700"
+            >
+              Property address
+            </Label>
             <input
+              id="property-address"
               type="text"
               placeholder="e.g. 45 Park Lane, London, W1K 1PN"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="h-11 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+              aria-label="Property address"
+              className="h-11 w-full rounded-xl border-2 border-neutral-200 bg-white px-4 py-2 font-sans text-sm text-neutral-900 outline-none placeholder:text-neutral-400 transition-colors focus:border-brand-primary"
             />
           </div>
+
           <div className="space-y-2">
-            <Label>Property type</Label>
+            <Label className="font-sans text-sm font-medium text-neutral-700">
+              Property type
+            </Label>
             <div className="grid grid-cols-3 gap-2">
               {["Flat", "House", "HMO"].map((t) => (
                 <button
                   key={t}
                   type="button"
+                  aria-pressed={propertyType === t}
+                  aria-label={`Property type: ${t}`}
                   onClick={() => setPropertyType(t)}
                   className={cn(
-                    "rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors",
+                    "rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all",
                     propertyType === t
                       ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
-                      : "border-neutral-200 text-neutral-700",
+                      : "border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary/50",
                   )}
                 >
                   {t}
@@ -209,49 +283,72 @@ export function LandlordOnboarding(
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Bedrooms</Label>
-              <div className="flex items-center gap-2">
+              <Label className="font-sans text-sm font-medium text-neutral-700">
+                Bedrooms
+              </Label>
+              <div className="flex h-11 items-center justify-between rounded-xl border-2 border-neutral-200 px-3">
                 <button
+                  type="button"
+                  aria-label="Decrease bedrooms"
                   onClick={() => setBedrooms(Math.max(1, bedrooms - 1))}
-                  className="flex size-8 items-center justify-center rounded-full border border-neutral-300"
+                  className="flex size-7 items-center justify-center rounded-full border border-neutral-300 text-neutral-600 hover:border-brand-primary hover:text-brand-primary"
                 >
-                  -
+                  –
                 </button>
-                <span className="w-8 text-center font-medium">{bedrooms}</span>
+                <span className="font-sans text-sm font-semibold text-neutral-900">
+                  {bedrooms}
+                </span>
                 <button
+                  type="button"
+                  aria-label="Increase bedrooms"
                   onClick={() => setBedrooms(bedrooms + 1)}
-                  className="flex size-8 items-center justify-center rounded-full border border-neutral-300"
+                  className="flex size-7 items-center justify-center rounded-full border border-neutral-300 text-neutral-600 hover:border-brand-primary hover:text-brand-primary"
                 >
                   +
                 </button>
               </div>
             </div>
+
             <div className="space-y-2">
-              <Label>Monthly rent</Label>
+              <Label
+                htmlFor="monthly-rent"
+                className="font-sans text-sm font-medium text-neutral-700"
+              >
+                Monthly rent
+              </Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-sm font-medium text-neutral-500">
                   £
                 </span>
                 <Input
+                  id="monthly-rent"
                   type="number"
                   value={monthlyRent}
                   onChange={(e) => setMonthlyRent(Number(e.target.value))}
-                  className="h-11 pl-7"
+                  aria-label="Monthly rent in pounds"
+                  className="h-11 rounded-xl border-2 border-neutral-200 pl-8 text-sm focus:border-brand-primary"
                 />
               </div>
             </div>
           </div>
-          <div className="flex gap-3">
+
+          <div className="flex gap-3 pt-1">
             <Button
               variant="outline"
               onClick={() => setStep(0)}
-              className="flex-1"
+              aria-label="Go back to portfolio scope"
+              className="flex-1 h-11 rounded-xl border-2 border-neutral-200 font-semibold text-neutral-700 hover:border-neutral-300"
             >
               Back
             </Button>
-            <Button onClick={() => setStep(2)} className="flex-1">
+            <Button
+              onClick={() => setStep(2)}
+              aria-label="Continue to compliance documents"
+              className="flex-1 h-11 rounded-xl bg-brand-primary font-semibold text-white hover:bg-brand-primary-light"
+            >
               Continue
             </Button>
           </div>
@@ -259,64 +356,98 @@ export function LandlordOnboarding(
         </div>
       )}
 
+      {/* ─── Step 3: Compliance Docs ─────────────────────────────── */}
       {step === 2 && (
-        <div className="space-y-4">
-          <p className="font-body text-sm text-neutral-500">
-            Upload compliance documents to stay on top of your obligations. All
-            optional — you can add them later.
+        <div className="space-y-5">
+          <p className="font-sans text-sm text-neutral-500">
+            Upload compliance documents to stay on top of your legal
+            obligations. All optional — you can add them later from your
+            dashboard.
           </p>
-          {(["gas_safety", "epc", "eicr"] as DocType[]).map((docType) => {
-            const uploaded = uploadedDocs.find((d) => d.type === docType);
-            return (
-              <div
-                key={docType}
-                className="flex items-center justify-between rounded-lg border border-neutral-200 p-3"
-              >
-                <div>
-                  <p className="text-sm font-medium text-neutral-900">
-                    {DOC_LABELS[docType]}
-                  </p>
-                  {uploaded && (
-                    <p className="text-xs text-neutral-400">{uploaded.name}</p>
+
+          <div className="space-y-3">
+            {DOC_CONFIG.map(({ type, label, hint, icon }) => {
+              const uploaded = uploadedDocs.find((d) => d.type === type);
+              return (
+                <div
+                  key={type}
+                  className={cn(
+                    "flex items-start justify-between rounded-xl border-2 p-4 transition-all",
+                    uploaded
+                      ? "border-brand-primary bg-brand-primary/5"
+                      : "border-neutral-200 bg-white",
                   )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-secondary-light">
+                      {icon}
+                    </div>
+                    <div>
+                      <p className="font-sans text-sm font-semibold text-neutral-900">
+                        {label}
+                      </p>
+                      {uploaded ? (
+                        <p className="mt-0.5 font-sans text-xs text-brand-primary">
+                          {uploaded.name}
+                        </p>
+                      ) : (
+                        <p className="mt-0.5 font-sans text-xs text-neutral-400">
+                          {hint}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="ml-3 shrink-0">
+                    {uploaded ? (
+                      <button
+                        type="button"
+                        aria-label={`Remove ${label}`}
+                        onClick={() =>
+                          setUploadedDocs((d) =>
+                            d.filter((x) => x.type !== type),
+                          )
+                        }
+                        className="flex size-7 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
+                      >
+                        <X className="size-4" aria-hidden="true" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        aria-label={`Upload ${label}`}
+                        onClick={() => triggerUpload(type)}
+                        className="flex items-center gap-1.5 rounded-lg border-2 border-neutral-200 bg-white px-3 py-1.5 font-sans text-xs font-medium text-neutral-600 transition-all hover:border-brand-primary hover:text-brand-primary"
+                      >
+                        <Upload className="size-3.5" aria-hidden="true" />
+                        Upload
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {uploaded ? (
-                    <button
-                      onClick={() =>
-                        setUploadedDocs((d) =>
-                          d.filter((x) => x.type !== docType),
-                        )
-                      }
-                      className="text-neutral-400 hover:text-neutral-600"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => triggerUpload(docType)}
-                      className="flex items-center gap-1.5 rounded-md border border-neutral-300 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-50"
-                    >
-                      <Upload className="size-3" />
-                      Upload
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* Upload hint */}
+          <p className="font-sans text-xs text-neutral-400">
+            PDF, JPG or PNG up to 10MB. Files are securely encrypted and GDPR
+            compliant.
+          </p>
+
           <div className="flex gap-3">
             <Button
               variant="outline"
               onClick={() => setStep(1)}
-              className="flex-1"
+              aria-label="Go back to property detail"
+              className="flex-1 h-11 rounded-xl border-2 border-neutral-200 font-semibold text-neutral-700 hover:border-neutral-300"
             >
               Back
             </Button>
             <Button
               onClick={handleComplete}
               disabled={saving}
-              className="flex-1"
+              aria-label={saving ? "Saving your details" : "Complete landlord setup"}
+              className="flex-1 h-11 rounded-xl bg-brand-primary font-semibold text-white hover:bg-brand-primary-light disabled:opacity-60"
             >
               {saving ? "Saving…" : "Complete Setup"}
             </Button>
