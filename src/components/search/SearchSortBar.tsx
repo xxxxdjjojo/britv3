@@ -2,6 +2,7 @@
 
 /**
  * Sort bar with result count, sort dropdown, and view mode toggle.
+ * Matches the Britestate "Invisible Estate" design system.
  */
 
 import { useSearchParams } from "@/hooks/useSearch";
@@ -13,22 +14,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import {
   LayoutListIcon,
   MapIcon,
-  ColumnsIcon,
+  Columns2Icon,
   SlidersHorizontalIcon,
+  LayoutGridIcon,
+  LayoutPanelTopIcon,
+  AlignJustifyIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { SearchSort } from "@/types/search";
 
-type ViewMode = "list" | "map" | "split";
+type ViewMode = "list" | "map" | "split" | "discovery" | "map-top" | "hemnet";
 
 const SORT_OPTIONS: { value: SearchSort; label: string }[] = [
   { value: "date_desc", label: "Newest first" },
   { value: "price_asc", label: "Price: low to high" },
   { value: "price_desc", label: "Price: high to low" },
   { value: "relevance", label: "Most relevant" },
+];
+
+const VIEW_MODES: { mode: ViewMode; Icon: React.ElementType; label: string }[] = [
+  { mode: "discovery", Icon: LayoutGridIcon, label: "Discovery Hub" },
+  { mode: "split", Icon: Columns2Icon, label: "Map + List Split" },
+  { mode: "map", Icon: MapIcon, label: "Map Fullscreen" },
+  { mode: "map-top", Icon: LayoutPanelTopIcon, label: "Map Top" },
+  { mode: "hemnet", Icon: AlignJustifyIcon, label: "Hemnet Style" },
+  { mode: "list", Icon: LayoutListIcon, label: "List View" },
 ];
 
 type SearchSortBarProps = Readonly<{
@@ -51,27 +64,28 @@ export function SearchSortBar({
   const currentSort = (params.sort as SearchSort) ?? "date_desc";
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b bg-background px-4 py-2">
+    <div className="flex items-center justify-between gap-3 bg-white px-4 py-2.5" style={{ borderBottom: "1px solid #f1f1f5" }}>
       <div className="flex items-center gap-3">
-        {/* Filter toggle -- both mobile & desktop */}
+        {/* Filter toggle */}
         <Button
           variant="outline"
           size="sm"
           onClick={onFiltersToggle}
-          className="gap-1.5"
+          className="gap-1.5 rounded-xl border-neutral-200 text-neutral-700 hover:border-brand-primary hover:text-brand-primary"
         >
           <SlidersHorizontalIcon className="size-4" />
           <span className="hidden sm:inline">Filters</span>
           {activeFilterCount > 0 && (
-            <Badge variant="default" className="ml-1 h-5 min-w-5 px-1.5">
+            <span className="flex size-5 items-center justify-center rounded-full bg-brand-primary text-[10px] font-bold text-white">
               {activeFilterCount}
-            </Badge>
+            </span>
           )}
         </Button>
 
         {/* Result count */}
-        <span className="text-sm text-muted-foreground">
-          {totalCount.toLocaleString()} {totalCount === 1 ? "property" : "properties"} found
+        <span className="text-sm text-neutral-500">
+          <span className="font-semibold text-neutral-900">{totalCount.toLocaleString()}</span>{" "}
+          {totalCount === 1 ? "property" : "properties"} found
         </span>
       </div>
 
@@ -81,7 +95,7 @@ export function SearchSortBar({
           value={currentSort}
           onValueChange={(val) => setParams({ sort: val as SearchSort })}
         >
-          <SelectTrigger size="sm">
+          <SelectTrigger size="sm" className="rounded-xl border-neutral-200 text-sm">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -94,43 +108,24 @@ export function SearchSortBar({
         </Select>
 
         {/* View toggle */}
-        <div className="hidden items-center gap-0.5 rounded-lg border p-0.5 md:flex">
-          <button
-            type="button"
-            onClick={() => onViewModeChange("list")}
-            className={`rounded-md p-1.5 transition-colors ${
-              viewMode === "list"
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-            aria-label="List view"
-          >
-            <LayoutListIcon className="size-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewModeChange("map")}
-            className={`rounded-md p-1.5 transition-colors ${
-              viewMode === "map"
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-            aria-label="Map view"
-          >
-            <MapIcon className="size-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewModeChange("split")}
-            className={`rounded-md p-1.5 transition-colors ${
-              viewMode === "split"
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-            aria-label="Split view"
-          >
-            <ColumnsIcon className="size-4" />
-          </button>
+        <div className="hidden items-center gap-0.5 rounded-xl bg-neutral-100 p-1 md:flex">
+          {VIEW_MODES.map(({ mode, Icon, label }) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => onViewModeChange(mode)}
+              title={label}
+              aria-label={label}
+              className={cn(
+                "rounded-lg p-1.5 transition-all duration-150",
+                viewMode === mode
+                  ? "bg-white text-brand-primary shadow-xs"
+                  : "text-neutral-500 hover:text-neutral-800",
+              )}
+            >
+              <Icon className="size-4" />
+            </button>
+          ))}
         </div>
       </div>
     </div>

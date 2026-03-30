@@ -1,15 +1,15 @@
 "use client";
 
 /**
- * Search filter panel -- desktop sidebar or mobile sheet.
+ * Search filter panel — desktop sidebar or mobile sheet.
  * All filters sync with URL via useSearchParams (nuqs).
+ * Matches the Britestate "Invisible Estate" design system.
  */
 
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "@/hooks/useSearch";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
   Sheet,
@@ -17,8 +17,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Switch } from "@/components/ui/switch";
-import { XIcon } from "lucide-react";
+import { X as XIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { EpcRating, PropertyType } from "@/types/property";
 
 const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
@@ -81,19 +81,21 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
   }, [setParams]);
 
   const filterContent = (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-5 p-4">
       {/* Property type */}
       <div>
-        <Label className="mb-2 block text-sm font-medium">Property Type</Label>
+        <Label className="mb-3 block text-sm font-semibold text-neutral-900">Property Type</Label>
         <div className="flex flex-col gap-2">
           {PROPERTY_TYPES.map(({ value, label }) => (
             <label
               key={value}
-              className="flex cursor-pointer items-center gap-2 text-sm"
+              className="flex cursor-pointer items-center gap-2.5 text-sm text-neutral-700 hover:text-neutral-900"
             >
-              <Checkbox
+              <input
+                type="checkbox"
                 checked={selectedTypes.has(value)}
-                onCheckedChange={() => handleTypeToggle(value)}
+                onChange={() => handleTypeToggle(value)}
+                className="size-4 rounded accent-brand-primary"
               />
               {label}
             </label>
@@ -103,9 +105,9 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
 
       {/* Price range */}
       <div>
-        <Label className="mb-2 block text-sm font-medium">Price Range</Label>
+        <Label className="mb-3 block text-sm font-semibold text-neutral-900">Price Range</Label>
         <div className="flex items-center gap-2">
-          <Input
+          <input
             type="number"
             placeholder="Min"
             value={params.min_price ?? ""}
@@ -114,10 +116,10 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                 min_price: e.target.value ? Number(e.target.value) : null,
               })
             }
-            className="w-full"
+            className="w-full rounded-xl bg-neutral-50 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 outline-none ring-1 ring-neutral-200 transition focus:ring-2 focus:ring-brand-primary"
           />
-          <span className="text-muted-foreground">-</span>
-          <Input
+          <span className="shrink-0 text-sm text-neutral-400">–</span>
+          <input
             type="number"
             placeholder="Max"
             value={params.max_price ?? ""}
@@ -126,15 +128,15 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                 max_price: e.target.value ? Number(e.target.value) : null,
               })
             }
-            className="w-full"
+            className="w-full rounded-xl bg-neutral-50 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 outline-none ring-1 ring-neutral-200 transition focus:ring-2 focus:ring-brand-primary"
           />
         </div>
       </div>
 
       {/* Bedrooms */}
       <div>
-        <Label className="mb-2 block text-sm font-medium">Min Bedrooms</Label>
-        <div className="flex gap-1">
+        <Label className="mb-3 block text-sm font-semibold text-neutral-900">Min Bedrooms</Label>
+        <div className="flex gap-1.5">
           {BEDROOM_OPTIONS.map((n) => (
             <button
               key={n}
@@ -144,13 +146,15 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                   min_bedrooms: params.min_bedrooms === n ? null : n,
                 })
               }
-              className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors ${
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-xl text-sm font-medium transition-colors",
                 params.min_bedrooms === n
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-input hover:bg-muted"
-              }`}
+                  ? "bg-brand-primary text-white"
+                  : "bg-neutral-100 text-neutral-700 hover:bg-brand-primary-lighter hover:text-brand-primary",
+              )}
             >
-              {n}{n === 5 ? "+" : ""}
+              {n}
+              {n === 5 ? "+" : ""}
             </button>
           ))}
         </div>
@@ -158,8 +162,8 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
 
       {/* Bathrooms */}
       <div>
-        <Label className="mb-2 block text-sm font-medium">Min Bathrooms</Label>
-        <div className="flex gap-1">
+        <Label className="mb-3 block text-sm font-semibold text-neutral-900">Min Bathrooms</Label>
+        <div className="flex gap-1.5">
           {BATHROOM_OPTIONS.map((n) => (
             <button
               key={n}
@@ -169,13 +173,15 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                   min_bathrooms: params.min_bathrooms === n ? null : n,
                 })
               }
-              className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors ${
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-xl text-sm font-medium transition-colors",
                 params.min_bathrooms === n
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-input hover:bg-muted"
-              }`}
+                  ? "bg-brand-primary text-white"
+                  : "bg-neutral-100 text-neutral-700 hover:bg-brand-primary-lighter hover:text-brand-primary",
+              )}
             >
-              {n}{n === 3 ? "+" : ""}
+              {n}
+              {n === 3 ? "+" : ""}
             </button>
           ))}
         </div>
@@ -183,10 +189,10 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
 
       {/* EPC Rating */}
       <div>
-        <Label className="mb-2 block text-sm font-medium">
+        <Label className="mb-3 block text-sm font-semibold text-neutral-900">
           Max EPC Rating
         </Label>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {EPC_OPTIONS.map((rating) => (
             <button
               key={rating}
@@ -196,11 +202,12 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
                   epc_rating: params.epc_rating === rating ? null : rating,
                 })
               }
-              className={`flex h-8 w-8 items-center justify-center rounded-md border text-sm transition-colors ${
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-xl text-sm font-medium transition-colors",
                 params.epc_rating === rating
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-input hover:bg-muted"
-              }`}
+                  ? "bg-brand-primary text-white"
+                  : "bg-neutral-100 text-neutral-700 hover:bg-brand-primary-lighter hover:text-brand-primary",
+              )}
             >
               {rating}
             </button>
@@ -209,18 +216,20 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
       </div>
 
       {/* New build */}
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">New Build Only</Label>
+      <div className="flex items-center justify-between rounded-xl bg-neutral-50 px-3.5 py-3">
+        <Label className="text-sm font-medium text-neutral-700">New Build Only</Label>
         <Switch
           checked={params.new_build ?? false}
-          onCheckedChange={(checked) =>
-            setParams({ new_build: checked || null })
-          }
+          onCheckedChange={(checked) => setParams({ new_build: checked || null })}
         />
       </div>
 
       {/* Clear all */}
-      <Button variant="outline" onClick={handleClearAll} className="w-full gap-2">
+      <Button
+        variant="outline"
+        onClick={handleClearAll}
+        className="w-full gap-2 rounded-xl border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:text-neutral-900"
+      >
         <XIcon className="size-4" />
         Clear All Filters
       </Button>
@@ -231,9 +240,9 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Filters</SheetTitle>
+        <SheetContent side="left" className="w-80 p-0">
+          <SheetHeader className="border-b border-neutral-100 px-4 py-3.5">
+            <SheetTitle className="font-heading text-base font-semibold">Filters</SheetTitle>
           </SheetHeader>
           <div className="overflow-y-auto">{filterContent}</div>
         </SheetContent>
@@ -245,13 +254,13 @@ export function SearchFilters({ open, onOpenChange, isMobile }: SearchFiltersPro
   if (!open) return null;
 
   return (
-    <aside className="w-72 shrink-0 overflow-y-auto border-r bg-background">
-      <div className="flex items-center justify-between border-b px-4 py-3">
-        <h2 className="text-sm font-medium">Filters</h2>
+    <aside className="w-72 shrink-0 overflow-y-auto bg-white" style={{ borderRight: "1px solid #f1f1f5" }}>
+      <div className="flex items-center justify-between px-4 py-3.5" style={{ borderBottom: "1px solid #f1f1f5" }}>
+        <h2 className="font-heading text-sm font-semibold text-neutral-900">Filters</h2>
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          className="rounded-md p-1 hover:bg-muted"
+          className="flex size-7 items-center justify-center rounded-lg text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
           aria-label="Close filters"
         >
           <XIcon className="size-4" />

@@ -15,7 +15,7 @@ import { PropertyMap } from "@/components/map/PropertyMap";
 import type { PropertyMapPoint } from "@/types/map";
 import type { SearchListingRow } from "@/types/property";
 
-type ViewMode = "list" | "map" | "split";
+type ViewMode = "list" | "map" | "split" | "discovery" | "map-top" | "hemnet";
 
 function listingToMapPoint(row: SearchListingRow): PropertyMapPoint | null {
   if (!row.coordinates) return null;
@@ -32,7 +32,7 @@ function listingToMapPoint(row: SearchListingRow): PropertyMapPoint | null {
 
 export function SearchPage() {
   const [params] = useSearchParams();
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [viewMode, setViewMode] = useState<ViewMode>("discovery");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const searchResults = useSearchResults(params);
@@ -88,7 +88,7 @@ export function SearchPage() {
       <SearchSortBar
         totalCount={totalCount}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        onViewModeChange={(mode) => setViewMode(mode)}
         activeFilterCount={activeFilterCount}
         onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
       />

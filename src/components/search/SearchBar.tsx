@@ -2,15 +2,15 @@
 
 /**
  * Search bar with postcode autocomplete and listing type toggle.
- * Uses usePostcodeAutocomplete for suggestions and useGeocode for lat/lng lookup.
+ * Matches the Britestate "Invisible Estate" design system.
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "@/hooks/useSearch";
 import { usePostcodeAutocomplete, useGeocode } from "@/hooks/useGeocode";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SearchIcon, MapPinIcon } from "lucide-react";
+import { SearchIcon, MapPinIcon, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function SearchBar() {
   const [params, setParams] = useSearchParams();
@@ -72,26 +72,28 @@ export function SearchBar() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center">
       {/* Listing type toggle */}
-      <div className="flex rounded-lg border bg-muted p-0.5">
+      <div className="flex rounded-xl bg-neutral-100 p-1">
         <button
           type="button"
           onClick={() => setParams({ listing_type: "sale" })}
-          className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+          className={cn(
+            "rounded-lg px-5 py-2 text-sm font-medium transition-all duration-150",
             listingType === "sale"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+              ? "bg-white text-neutral-900 shadow-xs"
+              : "text-neutral-600 hover:text-neutral-900",
+          )}
         >
           For Sale
         </button>
         <button
           type="button"
           onClick={() => setParams({ listing_type: "rent" })}
-          className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+          className={cn(
+            "rounded-lg px-5 py-2 text-sm font-medium transition-all duration-150",
             listingType === "rent"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+              ? "bg-white text-neutral-900 shadow-xs"
+              : "text-neutral-600 hover:text-neutral-900",
+          )}
         >
           To Rent
         </button>
@@ -99,9 +101,9 @@ export function SearchBar() {
 
       {/* Location input with autocomplete */}
       <div className="relative flex-1">
-        <div className="relative">
-          <MapPinIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+        <div className="relative flex items-center gap-2.5 rounded-xl bg-neutral-50 px-3.5 py-3 ring-1 ring-neutral-200 transition focus-within:ring-2 focus-within:ring-brand-primary">
+          <MapPinIcon className="size-4 shrink-0 text-neutral-400" />
+          <input
             ref={inputRef}
             type="text"
             placeholder="Enter postcode or area name..."
@@ -116,24 +118,37 @@ export function SearchBar() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSearch();
             }}
-            className="pl-9"
+            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none"
           />
+          {inputValue && (
+            <button
+              type="button"
+              onClick={() => {
+                setInputValue("");
+                setSelectedPostcode(null);
+              }}
+              className="shrink-0 text-neutral-400 hover:text-neutral-700 transition-colors"
+              aria-label="Clear"
+            >
+              <X className="size-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Autocomplete dropdown */}
         {showSuggestions && suggestions && suggestions.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-popover shadow-md"
+            className="absolute top-full z-50 mt-1.5 w-full overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-neutral-200"
           >
             {suggestions.map((postcode) => (
               <button
                 key={postcode}
                 type="button"
                 onClick={() => handleSelectPostcode(postcode)}
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-accent"
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-700 transition-colors hover:bg-neutral-50"
               >
-                <MapPinIcon className="size-3.5 text-muted-foreground" />
+                <MapPinIcon className="size-3.5 shrink-0 text-neutral-400" />
                 {postcode}
               </button>
             ))}
@@ -142,7 +157,10 @@ export function SearchBar() {
       </div>
 
       {/* Search button */}
-      <Button onClick={handleSearch} className="gap-2">
+      <Button
+        onClick={handleSearch}
+        className="gap-2 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white hover:bg-brand-primary/90"
+      >
         <SearchIcon className="size-4" />
         Search
       </Button>

@@ -1,11 +1,12 @@
 /**
  * EmptyState — displayed when a search returns zero results.
- * Server Component (no "use client").
+ * Matches the Britestate "Invisible Estate" design system.
  */
 
 import Link from "next/link";
-import { SearchX } from "lucide-react";
+import { SearchX, Bell, ArrowRight } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type EmptyStateProps = Readonly<{
   title?: string;
@@ -17,28 +18,57 @@ export function EmptyState({
   description = "Try adjusting your search criteria to find more results.",
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-      <div className="flex size-20 items-center justify-center rounded-full bg-neutral-100 mb-6">
-        <SearchX className="size-10 text-neutral-400" aria-hidden="true" />
+    <div className="flex flex-col items-center justify-center px-6 py-24 text-center">
+      {/* Icon */}
+      <div className="mb-6 flex size-20 items-center justify-center rounded-2xl bg-neutral-100">
+        <SearchX className="size-9 text-neutral-400" aria-hidden="true" />
       </div>
 
-      <h2 className="font-heading text-2xl font-bold text-neutral-900 mb-2">
+      <h2 className="font-heading text-2xl font-bold tracking-tight text-neutral-950 mb-2">
         {title}
       </h2>
 
-      <p className="text-neutral-500 text-base max-w-md mb-8 leading-relaxed">
+      <p className="max-w-md text-base leading-relaxed text-neutral-500 mb-8">
         {description}
       </p>
 
-      <ul className="text-neutral-600 text-sm space-y-2 mb-8 text-left">
-        <li>• Try widening your search area</li>
-        <li>• Adjust your budget range</li>
-        <li>• Remove some filters</li>
+      <ul className="mb-8 space-y-2 text-left text-sm text-neutral-600">
+        <li className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 text-xs">•</span>
+          Try widening your search area
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 text-xs">•</span>
+          Adjust your budget range
+        </li>
+        <li className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 text-xs">•</span>
+          Remove some property type filters
+        </li>
       </ul>
 
-      <Link href="/search" className={buttonVariants({ variant: "default" })}>
-        Set up an alert for these criteria
-      </Link>
+      <div className="flex flex-col items-center gap-3 sm:flex-row">
+        <Link
+          href="/search"
+          className={cn(
+            buttonVariants({ variant: "default" }),
+            "gap-2 rounded-xl bg-brand-primary px-6 font-semibold text-white hover:bg-brand-primary/90",
+          )}
+        >
+          <Bell className="size-4" />
+          Set up an alert for these criteria
+        </Link>
+        <Link
+          href="/search"
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "gap-1.5 rounded-xl text-neutral-600 hover:text-neutral-900",
+          )}
+        >
+          Clear all filters
+          <ArrowRight className="size-4" />
+        </Link>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { X, Heart, BedDouble, Bath, Ruler } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { MapProperty } from "./SearchMap";
 
 type MapPropertyCardProps = Readonly<{
@@ -15,73 +18,80 @@ function formatPrice(price: number, listingType?: string): string {
   return `£${price.toLocaleString("en-GB")}`;
 }
 
-export default function MapPropertyCard({
-  property,
-  onClose,
-}: MapPropertyCardProps) {
-  return (
-    <div className="bg-white rounded-xl shadow-lg max-w-[280px] overflow-hidden relative">
-      {/* Close button */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-2 right-2 z-10 w-6 h-6 flex items-center justify-center rounded-full bg-black/40 text-white text-xs hover:bg-black/60 transition-colors"
-        aria-label="Close"
-      >
-        ✕
-      </button>
+export default function MapPropertyCard({ property, onClose }: MapPropertyCardProps) {
+  const [saved, setSaved] = useState(false);
 
-      {/* Photo area — 16:10 aspect ratio */}
-      <div className="relative aspect-[16/10] bg-gray-200">
+  return (
+    <div className="w-72 overflow-hidden rounded-2xl bg-white/95 shadow-xl backdrop-blur-md">
+      {/* Photo area */}
+      <div className="relative aspect-[16/10] bg-neutral-100">
         {property.thumbnailUrl ? (
           <img
             src={property.thumbnailUrl}
             alt={property.address}
-            className="w-full h-full object-cover"
+            className="h-full w-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-            No image
+          <div className="flex h-full w-full items-center justify-center text-neutral-300 text-xs font-medium">
+            No image available
           </div>
         )}
 
-        {/* Heart / save button */}
+        {/* Close button */}
         <button
           type="button"
-          className="absolute top-2 left-2 w-7 h-7 flex items-center justify-center rounded-full bg-white/80 text-gray-500 hover:text-red-500 hover:bg-white transition-colors"
+          onClick={onClose}
+          className="absolute right-2.5 top-2.5 flex size-7 items-center justify-center rounded-full bg-neutral-950/50 text-white backdrop-blur-sm transition-colors hover:bg-neutral-950/70"
+          aria-label="Close property card"
+        >
+          <X className="size-3.5" />
+        </button>
+
+        {/* Save button */}
+        <button
+          type="button"
+          onClick={() => setSaved((s) => !s)}
+          className="absolute left-2.5 top-2.5 flex size-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-neutral-400 transition-colors hover:bg-white hover:text-red-500"
           aria-label="Save property"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            className="w-4 h-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
-            />
-          </svg>
+          <Heart
+            className={cn(
+              "size-3.5 transition-colors",
+              saved ? "fill-red-500 text-red-500" : "",
+            )}
+          />
         </button>
+
+        {/* Price badge */}
+        <div className="absolute bottom-2.5 left-2.5">
+          <span className="rounded-xl bg-brand-primary px-2.5 py-1 text-xs font-bold text-white">
+            {formatPrice(property.price, property.listing_type)}
+          </span>
+        </div>
       </div>
 
       {/* Info area */}
-      <div className="p-3">
-        <p className="text-sm text-gray-600 truncate">{property.address}</p>
-        <p className="text-base font-bold text-gray-900 mt-0.5">
-          {formatPrice(property.price, property.listing_type)}
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          {property.beds} bed · {property.baths} bath · {property.sqft.toLocaleString("en-GB")} sq ft
-        </p>
+      <div className="p-4">
+        <p className="truncate text-sm font-medium text-neutral-700">{property.address}</p>
+        <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500">
+          <span className="flex items-center gap-1">
+            <BedDouble className="size-3" />
+            {property.beds} bed
+          </span>
+          <span className="flex items-center gap-1">
+            <Bath className="size-3" />
+            {property.baths} bath
+          </span>
+          <span className="flex items-center gap-1">
+            <Ruler className="size-3" />
+            {property.sqft.toLocaleString("en-GB")} sq ft
+          </span>
+        </div>
         <Link
           href={`/properties/${property.slug}`}
-          className="inline-block mt-2 text-xs text-emerald-600 font-medium hover:text-emerald-700 hover:underline transition-colors"
+          className="mt-3 flex h-9 w-full items-center justify-center rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90"
         >
-          View Details →
+          View Details
         </Link>
       </div>
     </div>
