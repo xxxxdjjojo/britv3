@@ -8,8 +8,8 @@ import {
   X,
   ImageIcon,
   Sparkles,
+  Grid2X2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export type GalleryImage = {
@@ -28,6 +28,7 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const openLightbox = useCallback((index: number) => {
     setActiveIndex(index);
@@ -39,9 +40,9 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
 
   const closeLightbox = useCallback(() => {
     if (typeof window !== "undefined" && window.location.hash === "#gallery") {
-      window.history.back(); // popstate handler will call setLightboxOpen(false)
+      window.history.back();
     } else {
-      setLightboxOpen(false); // fallback if history not available
+      setLightboxOpen(false);
     }
   }, []);
 
@@ -53,16 +54,12 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
     setActiveIndex((i) => (i + 1) % images.length);
   }, [images.length]);
 
-  // Close lightbox when browser back button is pressed
   useEffect(() => {
-    const handlePopState = () => {
-      setLightboxOpen(false);
-    };
+    const handlePopState = () => setLightboxOpen(false);
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []); // No dependency on lightboxOpen needed
+  }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     if (!lightboxOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -74,22 +71,45 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxOpen, prev, next, closeLightbox]);
 
-  // Focus close button when lightbox opens
   useEffect(() => {
     if (lightboxOpen && closeButtonRef.current) {
       closeButtonRef.current.focus();
     }
   }, [lightboxOpen]);
 
+  // Lock body scroll when lightbox open
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [lightboxOpen]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartX.current;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) next();
+      else prev();
+    }
+    touchStartX.current = null;
+  }, [next, prev]);
+
   if (images.length === 0) {
     return (
       <div
         className={cn(
-          "flex h-80 items-center justify-center rounded-xl bg-neutral-200",
+          "flex h-80 items-center justify-center rounded-2xl bg-neutral-100",
           className,
         )}
       >
-        <ImageIcon className="size-12 text-neutral-400" />
+        <ImageIcon className="size-12 text-neutral-300" />
       </div>
     );
   }
@@ -98,64 +118,112 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
 
   return (
     <>
-      {/* Desktop: 2+2 grid */}
-      <div className={cn("hidden md:block relative rounded-xl overflow-hidden", className)}>
-        <div className="grid grid-cols-2 grid-rows-2 gap-1 h-[480px]">
-          {/* Main large image — priority for LCP */}
+      {/* ── Desktop: main + 2×2 grid ── */}
+      <div className={cn("hidden md:block relative rounded-2xl overflow-hidden", className)}>
+        <div className="grid grid-cols-[3fr_2fr] gap-0.5 h-[520px]">
+          {/* Main large image — LCP */}
           <div
-            className="row-span-2 relative cursor-pointer overflow-hidden"
+            className="relative cursor-pointer overflow-hidden group"
             onClick={() => openLightbox(0)}
+            role="button"
+            tabIndex={0}
+            aria-label={`View photo 1 of ${images.length}: ${images[0].alt}`}
+            onKeyDown={(e) => e.key === "Enter" && openLightbox(0)}
           >
             <Image
               src={images[0].src}
               alt={images[0].alt}
               fill
               priority
-              className="object-cover hover:scale-105 transition-transform duration-300"
-              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              sizes="(min-width: 1280px) 900px, (min-width: 768px) 60vw, 100vw"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
 
-          {/* Three thumbnails (or placeholders) */}
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={cn(
-                "relative overflow-hidden bg-neutral-200",
-                images[i] ? "cursor-pointer" : "",
-              )}
-              onClick={images[i] ? () => openLightbox(i) : undefined}
-            >
-              {images[i] ? (
-                <Image
-                  src={images[i].src}
-                  alt={images[i].alt}
-                  fill
-                  loading="lazy"
-                  className="object-cover hover:scale-105 transition-transform duration-300"
-                  sizes="(min-width: 768px) 25vw, 50vw"
-                />
-              ) : (
-                <div className="w-full h-full bg-neutral-200" />
-              )}
-            </div>
-          ))}
+          {/* Right: 2×2 grid of thumbnails */}
+          <div className="grid grid-cols-2 grid-rows-2 gap-0.5">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className={cn(
+                  "relative overflow-hidden bg-neutral-100 group",
+                  images[i] ? "cursor-pointer" : "",
+                  i === 3 ? "col-span-2" : "",
+                )}
+                onClick={images[i] ? () => openLightbox(i) : undefined}
+                role={images[i] ? "button" : undefined}
+                tabIndex={images[i] ? 0 : undefined}
+                aria-label={images[i] ? `View photo ${i + 1} of ${images.length}: ${images[i].alt}` : undefined}
+                onKeyDown={images[i] ? (e) => e.key === "Enter" && openLightbox(i) : undefined}
+              >
+                {images[i] ? (
+                  <>
+                    <Image
+                      src={images[i].src}
+                      alt={images[i].alt}
+                      fill
+                      loading="lazy"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      sizes="(min-width: 768px) 20vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-neutral-100" />
+                )}
+              </div>
+            ))}
+
+            {/* View all overlay on last visible thumbnail */}
+            {images.length > 4 && (
+              <div
+                className="relative overflow-hidden bg-neutral-900 cursor-pointer group"
+                onClick={() => openLightbox(4)}
+                role="button"
+                tabIndex={0}
+                aria-label={`View all ${images.length} photos`}
+                onKeyDown={(e) => e.key === "Enter" && openLightbox(4)}
+              >
+                {images[4] && (
+                  <Image
+                    src={images[4].src}
+                    alt={images[4].alt}
+                    fill
+                    loading="lazy"
+                    className="object-cover opacity-40"
+                    sizes="20vw"
+                  />
+                )}
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+                  <Grid2X2 className="size-5 text-white" />
+                  <span className="text-white text-xs font-semibold">
+                    +{images.length - 4} more
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* View all button */}
-        <Button
-          variant="secondary"
-          size="sm"
-          className="absolute bottom-3 right-3 gap-1.5 shadow-md"
+        <button
+          className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl bg-white/90 backdrop-blur-md px-4 py-2 text-sm font-semibold text-neutral-900 shadow-md hover:bg-white transition-colors min-h-[44px]"
           onClick={() => openLightbox(0)}
+          aria-label={`View all ${images.length} photos`}
         >
-          View All {images.length} Photos
-        </Button>
+          <Grid2X2 className="size-4" aria-hidden="true" />
+          View all {images.length} photos
+        </button>
       </div>
 
-      {/* Mobile: single image carousel */}
-      <div className={cn("md:hidden relative rounded-xl overflow-hidden", className)}>
-        <div className="relative h-64">
+      {/* ── Mobile: carousel ── */}
+      <div
+        className={cn("md:hidden relative rounded-2xl overflow-hidden", className)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="relative h-72">
           <Image
             src={images[activeIndex].src}
             alt={images[activeIndex].alt}
@@ -166,16 +234,19 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
             sizes="100vw"
           />
 
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
           {/* Arrow buttons */}
           <button
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow"
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur-sm p-2 text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={prev}
             aria-label="Previous image"
           >
             <ChevronLeft className="size-5" />
           </button>
           <button
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-1.5 shadow"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur-sm p-2 text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={next}
             aria-label="Next image"
           >
@@ -183,82 +254,106 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
           </button>
 
           {/* Counter */}
-          <div className="absolute bottom-2 right-3 rounded-full bg-background/80 px-2.5 py-0.5 text-xs font-medium">
-            {activeIndex + 1} of {images.length}
+          <div className="absolute bottom-3 right-3 rounded-full bg-black/50 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white">
+            {activeIndex + 1} / {images.length}
           </div>
+
+          {/* View all button */}
+          <button
+            className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-xl bg-black/50 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white min-h-[44px]"
+            onClick={() => openLightbox(activeIndex)}
+            aria-label={`View all ${images.length} photos`}
+          >
+            <Grid2X2 className="size-3.5" aria-hidden="true" />
+            All photos
+          </button>
         </div>
 
-        {/* Mobile: view all button */}
-        <div className="absolute bottom-2 left-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="gap-1.5 shadow-md text-xs h-7"
-            onClick={() => openLightbox(activeIndex)}
-          >
-            View All {images.length} Photos
-          </Button>
-        </div>
+        {/* Dot indicators */}
+        {images.length > 1 && images.length <= 8 && (
+          <div className="flex justify-center gap-1.5 py-2.5">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                aria-label={`Go to image ${i + 1}`}
+                className={cn(
+                  "rounded-full transition-all duration-200",
+                  i === activeIndex
+                    ? "w-5 h-1.5 bg-brand-primary"
+                    : "w-1.5 h-1.5 bg-neutral-300",
+                )}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Lightbox */}
+      {/* ── Fullscreen Lightbox ── */}
       {lightboxOpen && (
         <div
-          className="fixed inset-0 z-50 flex flex-col bg-[#0a0c0b]"
+          className="fixed inset-0 z-50 flex flex-col bg-neutral-950"
           role="dialog"
           aria-modal="true"
           aria-label={`Photo gallery for ${propertyTitle}`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Top bar */}
-          <div className="flex items-center justify-between px-4 py-3 shrink-0">
-            {/* Counter badge */}
-            <div className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white">
-              {activeIndex + 1} / {images.length}
+          <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white">
+                {activeIndex + 1} / {images.length}
+              </span>
+              {currentImage?.alt && (
+                <span className="hidden sm:block text-sm text-white/60 truncate max-w-sm">
+                  {currentImage.alt}
+                </span>
+              )}
             </div>
 
-            {/* Top-right controls */}
-            <div className="flex items-center gap-2">
-              <button
-                ref={closeButtonRef}
-                className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
-                aria-label="Close gallery"
-                onClick={closeLightbox}
-              >
-                <X className="size-5" />
-              </button>
-            </div>
+            <button
+              ref={closeButtonRef}
+              className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label="Close gallery"
+              onClick={closeLightbox}
+            >
+              <X className="size-5" />
+            </button>
           </div>
 
           {/* Main image area */}
-          <div className="flex flex-1 items-center justify-center relative px-12 min-h-0">
+          <div className="flex flex-1 items-center justify-center relative min-h-0 px-14">
             <button
-              className="absolute left-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors z-10"
+              className="absolute left-3 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors z-10 min-h-[44px] min-w-[44px] flex items-center justify-center"
               onClick={prev}
               aria-label="Previous image"
             >
               <ChevronLeft className="size-6" />
             </button>
 
-            <div className="relative w-full max-w-4xl aspect-[4/3]">
-              <Image
-                src={currentImage.src}
-                alt={currentImage.alt}
-                fill
-                loading="lazy"
-                className="object-contain"
-                sizes="90vw"
-              />
+            <div className="relative w-full max-w-5xl aspect-[4/3]">
+              {currentImage && (
+                <Image
+                  src={currentImage.src}
+                  alt={currentImage.alt}
+                  fill
+                  loading="lazy"
+                  className="object-contain"
+                  sizes="90vw"
+                />
+              )}
 
               {/* AI Highlight overlay */}
-              {currentImage.aiHighlight && (
-                <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-black/60 backdrop-blur-sm border border-teal-700/30 p-3">
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles className="size-4 shrink-0 text-[color:var(--color-brand-secondary)]" />
-                    <span className="text-xs font-medium text-teal-200">
-                      Britestate AI Highlight
+              {currentImage?.aiHighlight && (
+                <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-black/70 backdrop-blur-sm border border-brand-primary/30 p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Sparkles className="size-4 shrink-0 text-brand-secondary" />
+                    <span className="text-xs font-semibold text-brand-secondary">
+                      AI Highlight
                     </span>
                   </div>
-                  <p className="mt-1 text-sm italic text-white/90">
+                  <p className="text-sm italic text-white/90 leading-relaxed">
                     {currentImage.aiHighlight}
                   </p>
                 </div>
@@ -266,7 +361,7 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
             </div>
 
             <button
-              className="absolute right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors z-10"
+              className="absolute right-3 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors z-10 min-h-[44px] min-w-[44px] flex items-center justify-center"
               onClick={next}
               aria-label="Next image"
             >
@@ -275,29 +370,31 @@ export function HeroGallery({ images, propertyTitle, className }: HeroGalleryPro
           </div>
 
           {/* Thumbnail strip */}
-          <div className="flex gap-2 overflow-x-auto px-4 pb-4 pt-2 justify-center shrink-0">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveIndex(i)}
-                aria-label={`View image ${i + 1}: ${img.alt}`}
-                className={cn(
-                  "relative h-16 w-24 shrink-0 overflow-hidden rounded-md border-2 transition-all",
-                  i === activeIndex
-                    ? "border-white"
-                    : "border-transparent opacity-60 hover:opacity-100",
-                )}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  loading="lazy"
-                  className="object-cover"
-                  sizes="96px"
-                />
-              </button>
-            ))}
+          <div className="shrink-0 border-t border-white/10 py-3">
+            <div className="flex gap-2 overflow-x-auto px-4 justify-start sm:justify-center scrollbar-none">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveIndex(i)}
+                  aria-label={`View image ${i + 1}: ${img.alt}`}
+                  className={cn(
+                    "relative h-16 w-24 shrink-0 overflow-hidden rounded-lg transition-all duration-200 ring-2",
+                    i === activeIndex
+                      ? "ring-brand-primary opacity-100 scale-105"
+                      : "ring-transparent opacity-50 hover:opacity-80",
+                  )}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    loading="lazy"
+                    className="object-cover"
+                    sizes="96px"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

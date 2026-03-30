@@ -2,8 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { X, Expand, LayoutTemplate } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { X, Expand, LayoutTemplate, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -24,43 +23,25 @@ type FloorPlanViewerProps = Readonly<{
 }>;
 
 // ---------------------------------------------------------------------------
-// Annotation badge helpers
+// Annotation badge
 // ---------------------------------------------------------------------------
 
-type AnnotationBadgeProps = {
-  annotation: FloorPlanAnnotation;
-};
-
-function AnnotationBadge({ annotation }: AnnotationBadgeProps) {
+function AnnotationBadge({ annotation }: { annotation: FloorPlanAnnotation }) {
   const { room, area_sqm, vs_average } = annotation;
 
-  const badge = {
-    above: {
-      label: "↑ Above avg",
-      className: "bg-green-100 text-green-800 border-green-200",
-    },
-    below: {
-      label: "↓ Below avg",
-      className: "bg-amber-100 text-amber-800 border-amber-200",
-    },
-    average: {
-      label: "~ Avg",
-      className: "bg-neutral-100 text-neutral-600 border-neutral-200",
-    },
+  const config = {
+    above: { label: "↑ Above avg", className: "bg-green-100 text-green-800" },
+    below: { label: "↓ Below avg", className: "bg-amber-100 text-amber-800" },
+    average: { label: "~ Average", className: "bg-neutral-100 text-neutral-600" },
   }[vs_average];
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium text-foreground">{room}</span>
+      <span className="text-xs font-semibold text-foreground">{room}</span>
       <div className="flex items-center gap-1.5 flex-wrap">
         <span className="text-xs text-muted-foreground">{area_sqm} m²</span>
-        <span
-          className={cn(
-            "inline-flex items-center rounded-full border px-1.5 py-0.5 text-xs font-medium",
-            badge.className,
-          )}
-        >
-          {badge.label}
+        <span className={cn("inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium", config.className)}>
+          {config.label}
         </span>
       </div>
     </div>
@@ -71,55 +52,58 @@ function AnnotationBadge({ annotation }: AnnotationBadgeProps) {
 // Component
 // ---------------------------------------------------------------------------
 
-export function FloorPlanViewer({
-  floors,
-  annotations,
-}: FloorPlanViewerProps) {
+export function FloorPlanViewer({ floors, annotations }: FloorPlanViewerProps) {
   const [activeFloor, setActiveFloor] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-
-  // -------------------------------------------------------------------------
-  // Lightbox open / close with history shim (back button fix)
-  // -------------------------------------------------------------------------
+  const [scale, setScale] = useState(1);
 
   const openLightbox = useCallback(() => {
     setLightboxOpen(true);
+    setScale(1);
     history.pushState({ lightboxOpen: true }, "");
   }, []);
 
   const closeLightbox = useCallback(() => {
     if (window.history.state?.lightboxOpen) {
-      window.history.back(); // popstate handler will call setLightboxOpen(false)
+      window.history.back();
     } else {
       setLightboxOpen(false);
     }
   }, []);
 
-  const handlePopState = useCallback((e: PopStateEvent) => {
-    if (!(e.state as { lightboxOpen?: boolean } | null)?.lightboxOpen) {
-      setLightboxOpen(false);
-    }
-  }, []);
-
   useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (!(e.state as { lightboxOpen?: boolean } | null)?.lightboxOpen) {
+        setLightboxOpen(false);
+      }
+    };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [handlePopState]);
+  }, []);
 
-  // Escape key closes the lightbox
   useEffect(() => {
     if (!lightboxOpen) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeLightbox();
+      else if (e.key === "+" || e.key === "=") setScale((s) => Math.min(s + 0.25, 3));
+      else if (e.key === "-") setScale((s) => Math.max(s - 0.25, 0.5));
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [lightboxOpen, closeLightbox]);
 
-  // Empty state
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [lightboxOpen]);
+
   if (floors.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-xl border bg-neutral-50 p-10 text-center">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-neutral-50 p-10 text-center">
         <LayoutTemplate className="size-10 text-neutral-300" />
         <p className="text-sm text-muted-foreground">
           Floor plan not available for this property.
@@ -132,7 +116,7 @@ export function FloorPlanViewer({
 
   return (
     <>
-      <div className="rounded-xl border bg-card p-4 space-y-4">
+      <div className="rounded-2xl bg-neutral-50 p-5 space-y-4">
         {/* Floor switcher tabs */}
         {floors.length > 1 && (
           <div className="flex gap-2 flex-wrap">
@@ -140,11 +124,12 @@ export function FloorPlanViewer({
               <button
                 key={i}
                 onClick={() => setActiveFloor(i)}
+                aria-pressed={i === activeFloor}
                 className={cn(
-                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors border",
+                  "rounded-full px-4 py-2 text-sm font-medium transition-colors min-h-[44px]",
                   i === activeFloor
-                    ? "bg-[#1B4D3E] text-white border-[#1B4D3E]"
-                    : "bg-background text-foreground border-border hover:bg-muted",
+                    ? "bg-brand-primary text-white"
+                    : "bg-white text-neutral-700 hover:bg-neutral-100",
                 )}
               >
                 {floor.label}
@@ -154,7 +139,7 @@ export function FloorPlanViewer({
         )}
 
         {/* Floor plan image */}
-        <div className="relative rounded-lg overflow-hidden bg-neutral-50 border">
+        <div className="relative rounded-xl overflow-hidden bg-white">
           {current.imageUrl ? (
             <div className="relative w-full aspect-[4/3]">
               <Image
@@ -168,38 +153,31 @@ export function FloorPlanViewer({
             </div>
           ) : (
             <div className="w-full aspect-[4/3] bg-neutral-100 flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">
-                Floor plan image not available
-              </p>
+              <p className="text-sm text-muted-foreground">Floor plan image not available</p>
             </div>
           )}
 
-          {/* Expand button */}
           {current.imageUrl && (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="absolute bottom-3 right-3 gap-1.5 shadow-sm"
+            <button
+              className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-xl bg-white/90 backdrop-blur-md px-3 py-2 text-sm font-semibold text-neutral-900 shadow-sm hover:bg-white transition-colors min-h-[44px]"
               onClick={openLightbox}
+              aria-label="Expand floor plan"
             >
-              <Expand className="size-4" />
+              <Expand className="size-4" aria-hidden="true" />
               Expand
-            </Button>
+            </button>
           )}
         </div>
 
         {/* AI Annotations */}
         {annotations && annotations.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
               AI Room Analysis
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {annotations.map((annotation, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg border bg-muted/30 p-2.5"
-                >
+                <div key={i} className="rounded-xl bg-white p-3 shadow-xs">
                   <AnnotationBadge annotation={annotation} />
                 </div>
               ))}
@@ -208,54 +186,95 @@ export function FloorPlanViewer({
         )}
       </div>
 
-      {/* Lightbox */}
+      {/* ── Lightbox ── */}
       {lightboxOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <button
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-            onClick={closeLightbox}
-            aria-label="Close floor plan"
-          >
-            <X className="size-5" />
-          </button>
-
-          {/* Floor tabs in lightbox */}
-          {floors.length > 1 && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-              {floors.map((floor, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveFloor(i)}
-                  className={cn(
-                    "rounded-full px-3 py-1 text-sm font-medium transition-colors",
-                    i === activeFloor
-                      ? "bg-white text-black"
-                      : "bg-white/20 text-white hover:bg-white/30",
-                  )}
-                >
-                  {floor.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="relative w-full max-w-4xl aspect-[4/3]">
-            {current.imageUrl ? (
-              <Image
-                src={current.imageUrl}
-                alt={`${current.label} floor plan`}
-                fill
-                loading="lazy"
-                className="object-contain"
-                sizes="90vw"
-              />
-            ) : (
-              <div className="w-full h-full bg-neutral-200 flex items-center justify-center rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  Floor plan not available
-                </p>
+        <div
+          className="fixed inset-0 z-50 bg-neutral-950 flex flex-col"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${current.label} floor plan`}
+        >
+          {/* Top bar */}
+          <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-white/10">
+            {floors.length > 1 ? (
+              <div className="flex gap-2">
+                {floors.map((floor, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveFloor(i)}
+                    aria-pressed={i === activeFloor}
+                    className={cn(
+                      "rounded-full px-3 py-1.5 text-sm font-medium transition-colors min-h-[44px]",
+                      i === activeFloor
+                        ? "bg-white text-neutral-900"
+                        : "bg-white/20 text-white hover:bg-white/30",
+                    )}
+                  >
+                    {floor.label}
+                  </button>
+                ))}
               </div>
+            ) : (
+              <span className="text-sm font-medium text-white">{current.label}</span>
             )}
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 rounded-full bg-white/10 p-1">
+                <button
+                  className="rounded-full p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  onClick={() => setScale((s) => Math.max(s - 0.25, 0.5))}
+                  aria-label="Zoom out"
+                >
+                  <ZoomOut className="size-4" />
+                </button>
+                <span className="text-xs text-white/70 px-1 min-w-[3ch] text-center">
+                  {Math.round(scale * 100)}%
+                </span>
+                <button
+                  className="rounded-full p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  onClick={() => setScale((s) => Math.min(s + 0.25, 3))}
+                  aria-label="Zoom in"
+                >
+                  <ZoomIn className="size-4" />
+                </button>
+              </div>
+              <button
+                className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                onClick={closeLightbox}
+                aria-label="Close floor plan"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Floor plan with zoom */}
+          <div className="flex flex-1 items-center justify-center overflow-auto p-4 min-h-0">
+            <div
+              className="relative transition-transform duration-200 origin-center"
+              style={{ transform: `scale(${scale})`, width: "min(90vw, 900px)", aspectRatio: "4/3" }}
+            >
+              {current.imageUrl ? (
+                <Image
+                  src={current.imageUrl}
+                  alt={`${current.label} floor plan`}
+                  fill
+                  loading="lazy"
+                  className="object-contain"
+                  sizes="90vw"
+                />
+              ) : (
+                <div className="w-full h-full bg-neutral-800 flex items-center justify-center rounded-xl">
+                  <p className="text-sm text-white/60">Floor plan not available</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="pb-4 text-center">
+            <span className="text-xs text-white/40">
+              Use + / − keys or buttons to zoom
+            </span>
           </div>
         </div>
       )}

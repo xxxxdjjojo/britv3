@@ -1,4 +1,4 @@
-import { Droplets, ExternalLink } from "lucide-react";
+import { Droplets, ExternalLink, ShieldCheck } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,32 +17,43 @@ type Props = Readonly<{
 
 const RISK_CONFIG: Record<
   RiskLevel,
-  { badgeClass: string; dotClass: string; description: string }
+  {
+    badgeClass: string;
+    dotClass: string;
+    bgClass: string;
+    textClass: string;
+    description: string;
+  }
 > = {
   Low: {
-    badgeClass:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+    badgeClass: "bg-green-100 text-green-800",
     dotClass: "bg-green-500",
+    bgClass: "bg-green-50",
+    textClass: "text-green-700",
     description:
       "Low probability of flooding. Less than 1 in 1,000 chance of river or sea flooding each year.",
   },
   Medium: {
-    badgeClass:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+    badgeClass: "bg-amber-100 text-amber-800",
     dotClass: "bg-amber-500",
+    bgClass: "bg-amber-50",
+    textClass: "text-amber-700",
     description:
       "Medium probability of flooding. Between 1 in 100 and 1 in 1,000 chance of river or sea flooding each year.",
   },
   High: {
-    badgeClass:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+    badgeClass: "bg-orange-100 text-orange-800",
     dotClass: "bg-orange-500",
+    bgClass: "bg-orange-50",
+    textClass: "text-orange-700",
     description:
-      "High probability of flooding. Greater than 1 in 100 chance of river or sea flooding, or greater than 1 in 200 chance of sea flooding each year.",
+      "High probability of flooding. Greater than 1 in 100 chance of river or sea flooding each year.",
   },
   "Very High": {
-    badgeClass: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    badgeClass: "bg-red-100 text-red-800",
     dotClass: "bg-red-500",
+    bgClass: "bg-red-50",
+    textClass: "text-red-700",
     description:
       "Very high probability of flooding. Property is in an area known to flood regularly. Consider specialist insurance and flood resilience measures.",
   },
@@ -55,21 +66,24 @@ const RISK_CONFIG: Record<
 export function FloodRiskWidget({ riskLevel, source }: Props) {
   if (!riskLevel) {
     return (
-      <div className="rounded-xl border bg-card p-4 space-y-3">
+      <div className="rounded-2xl bg-neutral-50 p-5 space-y-3">
         <div className="flex items-center gap-2">
-          <Droplets className="size-4 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium">Flood Risk</p>
+          <div className="size-8 rounded-lg bg-white flex items-center justify-center shadow-xs shrink-0">
+            <Droplets className="size-4 text-neutral-500" aria-hidden="true" />
+          </div>
+          <p className="text-sm font-semibold text-neutral-900">Flood Risk</p>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-neutral-500 leading-relaxed">
           Flood risk data unavailable. Check the official{" "}
           <a
             href="https://check-long-term-flood-risk.service.gov.uk"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 underline underline-offset-2 hover:text-foreground"
+            className="inline-flex items-center gap-0.5 text-brand-primary underline underline-offset-2 hover:opacity-80"
+            aria-label="Check flood risk on gov.uk (opens in new tab)"
           >
             gov.uk flood risk checker
-            <ExternalLink className="size-3" />
+            <ExternalLink className="size-3" aria-hidden="true" />
           </a>
           .
         </p>
@@ -80,34 +94,59 @@ export function FloodRiskWidget({ riskLevel, source }: Props) {
   const config = RISK_CONFIG[riskLevel];
 
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
+    <div className="rounded-2xl bg-neutral-50 p-5 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Droplets className="size-4 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium">Flood Risk</p>
+          <div className="size-8 rounded-lg bg-white flex items-center justify-center shadow-xs shrink-0">
+            <Droplets className="size-4 text-neutral-500" aria-hidden="true" />
+          </div>
+          <p className="text-sm font-semibold text-neutral-900">Flood Risk</p>
         </div>
+
         {/* Risk badge */}
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${config.badgeClass}`}
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${config.badgeClass}`}
+          aria-label={`Flood risk level: ${riskLevel}`}
         >
-          <span className={`size-1.5 rounded-full ${config.dotClass}`} />
+          <span className={`size-1.5 rounded-full ${config.dotClass}`} aria-hidden="true" />
           {riskLevel}
         </span>
       </div>
 
-      {/* Description */}
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        {config.description}
-      </p>
+      {/* Visual risk indicator */}
+      <div className={`rounded-xl p-3 ${config.bgClass}`}>
+        <div className="flex items-center gap-2">
+          {riskLevel === "Low" ? (
+            <ShieldCheck className={`size-4 shrink-0 ${config.textClass}`} aria-hidden="true" />
+          ) : (
+            <Droplets className={`size-4 shrink-0 ${config.textClass}`} aria-hidden="true" />
+          )}
+          <p className={`text-xs font-medium leading-relaxed ${config.textClass}`}>
+            {config.description}
+          </p>
+        </div>
+      </div>
 
       {/* Source */}
       {source && (
-        <p className="text-xs text-muted-foreground border-t pt-2">
+        <p className="text-xs text-neutral-500">
           Source:{" "}
-          <span className="text-foreground font-medium">{source}</span>
+          <span className="font-medium text-neutral-700">{source}</span>
         </p>
       )}
+
+      {/* Gov.uk link */}
+      <a
+        href="https://check-long-term-flood-risk.service.gov.uk"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:underline"
+        aria-label="Check detailed flood risk on gov.uk (opens in new tab)"
+      >
+        Check detailed flood risk
+        <ExternalLink className="size-3" aria-hidden="true" />
+      </a>
     </div>
   );
 }

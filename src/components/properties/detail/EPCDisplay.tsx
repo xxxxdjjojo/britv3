@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+import { Zap, ExternalLink } from "lucide-react";
 import type { EpcRating } from "@/types/property";
 
 // ---------------------------------------------------------------------------
@@ -15,6 +15,26 @@ const EPC_COLORS: Record<EpcRating, string> = {
   E: "bg-orange-400",
   F: "bg-orange-600",
   G: "bg-red-600",
+};
+
+const EPC_TEXT_COLORS: Record<EpcRating, string> = {
+  A: "text-green-700",
+  B: "text-green-600",
+  C: "text-lime-600",
+  D: "text-yellow-600",
+  E: "text-orange-600",
+  F: "text-orange-700",
+  G: "text-red-700",
+};
+
+const EPC_BG_LIGHT: Record<EpcRating, string> = {
+  A: "bg-green-50",
+  B: "bg-green-50",
+  C: "bg-lime-50",
+  D: "bg-yellow-50",
+  E: "bg-orange-50",
+  F: "bg-orange-50",
+  G: "bg-red-50",
 };
 
 const EPC_DESCRIPTIONS: Record<EpcRating, string> = {
@@ -36,6 +56,7 @@ type Props = Readonly<{
   currentScore?: number | null;
   potentialRating?: EpcRating | null;
   potentialScore?: number | null;
+  postcode?: string;
 }>;
 
 // ---------------------------------------------------------------------------
@@ -47,76 +68,109 @@ export function EPCDisplay({
   currentScore,
   potentialRating,
   potentialScore,
+  postcode,
 }: Props) {
   if (!currentRating) {
     return (
-      <div className="rounded-xl border bg-card p-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Zap className="size-4 shrink-0" />
-          <p className="text-sm">EPC data not available</p>
+      <div className="rounded-2xl bg-neutral-50 p-5 space-y-2">
+        <div className="flex items-center gap-2 text-neutral-500">
+          <Zap className="size-4 shrink-0" aria-hidden="true" />
+          <p className="text-sm font-medium">Energy Performance Certificate</p>
         </div>
+        <p className="text-xs text-neutral-400">EPC data not available for this property.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
+    <div className="rounded-2xl bg-neutral-50 p-5 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Zap className="size-4 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium">Energy Performance Certificate</p>
+          <div className="size-8 rounded-lg bg-white flex items-center justify-center shadow-xs shrink-0">
+            <Zap className="size-4 text-neutral-600" aria-hidden="true" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-neutral-900">Energy Performance</p>
+            {currentScore != null && (
+              <p className="text-xs text-neutral-500">{currentScore}/100 points</p>
+            )}
+          </div>
         </div>
-        {currentScore != null && (
-          <span className="text-xs text-muted-foreground">
-            {currentScore}/100
+
+        {/* Current rating badge */}
+        <div
+          className={`flex flex-col items-center justify-center rounded-xl px-3 py-1.5 min-w-[52px] ${EPC_BG_LIGHT[currentRating]}`}
+          aria-label={`Current EPC rating: ${currentRating}`}
+        >
+          <span className={`text-2xl font-bold leading-none ${EPC_TEXT_COLORS[currentRating]}`}>
+            {currentRating}
           </span>
-        )}
+          <span className="text-xs text-neutral-500 mt-0.5">Current</span>
+        </div>
       </div>
 
       {/* Band bar */}
-      <div className="flex items-stretch gap-1 h-9">
-        {EPC_BANDS.map((band) => {
-          const isCurrent = band === currentRating;
-          return (
-            <div
-              key={band}
-              className={[
-                "flex flex-1 items-center justify-center rounded text-xs font-bold text-white transition-transform",
-                EPC_COLORS[band],
-                isCurrent
-                  ? "ring-2 ring-offset-1 ring-foreground scale-110 z-10"
-                  : "opacity-60",
-              ].join(" ")}
-            >
-              {band}
-            </div>
-          );
-        })}
+      <div>
+        <p className="text-xs text-neutral-500 mb-2">Energy efficiency rating</p>
+        <div className="flex items-stretch gap-0.5 h-8 rounded-lg overflow-hidden">
+          {EPC_BANDS.map((band) => {
+            const isCurrent = band === currentRating;
+            return (
+              <div
+                key={band}
+                className={[
+                  "flex flex-1 items-center justify-center text-xs font-bold text-white transition-all duration-200",
+                  EPC_COLORS[band],
+                  isCurrent ? "scale-y-110 shadow-md z-10 relative" : "opacity-50",
+                ].join(" ")}
+                aria-label={`Band ${band}${isCurrent ? " (current)" : ""}`}
+              >
+                {band}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Current rating description */}
-      <p className="text-xs text-muted-foreground">
-        <span className="font-medium text-foreground">Rating {currentRating}</span>
+      {/* Description */}
+      <p className="text-xs text-neutral-600 leading-relaxed">
+        <span className="font-semibold text-neutral-900">Rating {currentRating}</span>
         {" — "}
         {EPC_DESCRIPTIONS[currentRating]}
       </p>
 
       {/* Potential rating */}
       {potentialRating && (
-        <div className="flex items-center gap-2 pt-1 border-t">
+        <div className="flex items-center gap-3 pt-3 border-t border-neutral-200">
           <div
-            className={`size-5 rounded flex items-center justify-center text-[10px] font-bold text-white shrink-0 ${EPC_COLORS[potentialRating]}`}
+            className={`size-8 rounded-lg flex items-center justify-center text-sm font-bold text-white shrink-0 ${EPC_COLORS[potentialRating]}`}
+            aria-hidden="true"
           >
             {potentialRating}
           </div>
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">Potential:</span>{" "}
-            {potentialRating}
-            {potentialScore != null ? ` (${potentialScore})` : ""} —{" "}
-            {EPC_DESCRIPTIONS[potentialRating]}
-          </p>
+          <div>
+            <p className="text-xs font-semibold text-neutral-700">
+              Potential rating: {potentialRating}
+              {potentialScore != null ? ` (${potentialScore}/100)` : ""}
+            </p>
+            <p className="text-xs text-neutral-500">{EPC_DESCRIPTIONS[potentialRating]}</p>
+          </div>
         </div>
+      )}
+
+      {/* Gov.uk link */}
+      {postcode && (
+        <a
+          href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(postcode)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:underline"
+          aria-label="View full EPC certificate on gov.uk (opens in new tab)"
+        >
+          View full EPC certificate
+          <ExternalLink className="size-3" aria-hidden="true" />
+        </a>
       )}
     </div>
   );

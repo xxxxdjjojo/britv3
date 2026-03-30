@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
   Bed,
   Bath,
@@ -17,7 +15,7 @@ import {
 } from "lucide-react";
 import { Gallery } from "@/components/properties/Gallery";
 import { FloorPlan } from "@/components/properties/FloorPlan";
-import { PriceHistory } from "@/components/properties/PriceHistory";
+import { PriceHistoryChart } from "@/components/properties/detail/PriceHistoryChart";
 import type { EpcRating, ListingType } from "@/types/property";
 import type { PriceHistoryEntry } from "@/services/properties/property-detail-service";
 import { createClient } from "@/lib/supabase/server";
@@ -152,6 +150,24 @@ const EPC_COLORS: Record<string, string> = {
   F: "bg-orange-600",
   G: "bg-red-600",
 };
+const EPC_BG_LIGHT: Record<string, string> = {
+  A: "bg-green-50",
+  B: "bg-green-50",
+  C: "bg-lime-50",
+  D: "bg-yellow-50",
+  E: "bg-orange-50",
+  F: "bg-orange-50",
+  G: "bg-red-50",
+};
+const EPC_TEXT_COLORS: Record<string, string> = {
+  A: "text-green-700",
+  B: "text-green-600",
+  C: "text-lime-600",
+  D: "text-yellow-600",
+  E: "text-orange-600",
+  F: "text-orange-700",
+  G: "text-red-700",
+};
 
 // ---------------------------------------------------------------------------
 // Page
@@ -284,7 +300,7 @@ export default async function PropertyPage({
   const canBookViewing = !isInactiveStatus && (listing.status as string) !== "draft";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-neutral-50">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildPropertyJsonLd(detail)) }}
@@ -301,34 +317,34 @@ export default async function PropertyPage({
       />
       {isInactiveStatus && (
         <div className="mx-auto max-w-7xl px-4 pt-4">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+          <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
             This property is marked as <strong>{listing.status.replace(/_/g, " ")}</strong> and is no longer available for viewings.
           </div>
         </div>
       )}
       {/* Breadcrumbs */}
       <div className="mx-auto max-w-7xl px-4 pt-4 pb-2">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
-          <Link href="/" className="hover:text-foreground transition-colors">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-neutral-500 flex-wrap">
+          <Link href="/" className="hover:text-neutral-900 transition-colors">
             Home
           </Link>
-          <span aria-hidden="true">/</span>
+          <span aria-hidden="true" className="text-neutral-300">/</span>
           <Link
             href={`/properties?location=${encodeURIComponent(property.city)}`}
-            className="hover:text-foreground transition-colors"
+            className="hover:text-neutral-900 transition-colors"
           >
             {property.city}
           </Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page" className="text-foreground truncate max-w-[200px]">
+          <span aria-hidden="true" className="text-neutral-300">/</span>
+          <span aria-current="page" className="text-neutral-700 truncate max-w-[200px]">
             {address}
           </span>
         </nav>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 pb-24 lg:pb-8">
+      <div className="mx-auto max-w-7xl px-4 pb-24 lg:pb-12">
         {/* Gallery */}
-        <Gallery images={images} className="mt-2 mb-6" />
+        <Gallery images={images} className="mt-2 mb-8" />
 
         {/* Hero media — Virtual Tour & Video */}
         {(virtualTourUrl || videoTourUrl) && (
@@ -349,37 +365,44 @@ export default async function PropertyPage({
         )}
 
         {/* Sticky info bar */}
-        <div className="sticky top-16 z-20 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b mb-6 lg:static lg:bg-transparent lg:backdrop-blur-none lg:border-0 lg:px-0 lg:py-0 lg:mb-8">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="sticky top-16 z-20 -mx-4 px-4 py-4 bg-white/95 backdrop-blur-md border-b border-neutral-200 mb-8 lg:static lg:bg-transparent lg:backdrop-blur-none lg:border-0 lg:px-0 lg:py-0 lg:mb-10">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
-              {priceReduced && originalPrice != null && (
-                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                  Reduced from £{originalPrice.toLocaleString("en-GB")}
-                </Badge>
-              )}
-              <p className="text-sm text-muted-foreground mt-0.5 truncate max-w-xs">
-                {address}
+              {/* Price */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <p className="text-3xl font-bold text-neutral-900 font-heading tracking-tight">{priceFormatted}</p>
+                {priceReduced && originalPrice != null && (
+                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800">
+                    Reduced from £{originalPrice.toLocaleString("en-GB")}
+                  </span>
+                )}
+              </div>
+
+              <p className="flex items-center gap-1.5 text-sm text-neutral-500 mt-1">
+                <MapPin className="size-4 shrink-0" aria-hidden="true" />
+                <span className="truncate max-w-xs">{address}</span>
               </p>
-              <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Bed className="size-4" />
-                  {property.bedrooms} beds
+
+              {/* Key stats pills */}
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700">
+                  <Bed className="size-4" aria-hidden="true" />
+                  {property.bedrooms} bed{property.bedrooms !== 1 ? "s" : ""}
                 </span>
-                <span className="flex items-center gap-1">
-                  <Bath className="size-4" />
-                  {property.bathrooms} baths
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700">
+                  <Bath className="size-4" aria-hidden="true" />
+                  {property.bathrooms} bath{property.bathrooms !== 1 ? "s" : ""}
                 </span>
                 {sqft > 0 && (
-                  <span className="flex items-center gap-1">
-                    <Square className="size-4" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700">
+                    <Square className="size-4" aria-hidden="true" />
                     {sqft.toLocaleString("en-GB")} sq ft
                   </span>
                 )}
               </div>
 
-              {/* Social proof badge — shows live viewer count + saves */}
-              <div className="mt-2">
+              {/* Social proof badge */}
+              <div className="mt-3">
                 <SocialProofBadge
                   propertyId={property.id}
                   initialViewerCount={viewerCount}
@@ -400,13 +423,13 @@ export default async function PropertyPage({
                 propertyUrl={propertyUrl}
                 propertyTitle={propertyTitle}
               />
-              {/* Mobile book button */}
               {canBookViewing && (
                 <a
                   href="#book-viewing"
-                  className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 lg:hidden"
+                  className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-xl text-sm font-semibold bg-brand-primary text-white min-h-[44px] px-4 lg:hidden hover:opacity-90 transition-opacity"
+                  aria-label="Book a viewing"
                 >
-                  <CalendarIcon className="size-4" />
+                  <CalendarIcon className="size-4" aria-hidden="true" />
                   Book
                 </a>
               )}
@@ -417,21 +440,20 @@ export default async function PropertyPage({
         {/* 65/35 grid */}
         <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
           {/* ── MAIN CONTENT ── */}
-          <div className="space-y-10 min-w-0">
+          <div className="space-y-14 min-w-0">
             {/* About this property */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">
+            <section aria-labelledby="about-heading">
+              <h2 id="about-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
                 About this property
               </h2>
-              <Separator className="mb-4" />
-              <div className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
+              <div className="text-base leading-relaxed text-neutral-600 whitespace-pre-line">
                 {property.description}
               </div>
               {features.length > 0 && (
-                <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5" aria-label="Property features">
                   {features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm">
-                      <span className="size-1.5 rounded-full bg-brand-primary shrink-0" />
+                    <li key={f} className="flex items-center gap-2.5 text-sm text-neutral-700">
+                      <span className="size-2 rounded-full bg-brand-primary shrink-0" aria-hidden="true" />
                       {f}
                     </li>
                   ))}
@@ -439,11 +461,12 @@ export default async function PropertyPage({
               )}
             </section>
 
-            {/* Property features grid */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Property details</h2>
-              <Separator className="mb-4" />
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {/* Property details grid */}
+            <section aria-labelledby="details-heading">
+              <h2 id="details-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                Property details
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
                   {
                     icon: <Home className="size-4" />,
@@ -493,16 +516,16 @@ export default async function PropertyPage({
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-start gap-3 rounded-xl border bg-card p-3"
+                    className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-xs"
                   >
-                    <span className="text-muted-foreground mt-0.5">
+                    <span className="text-neutral-400 mt-0.5 shrink-0" aria-hidden="true">
                       {item.icon}
                     </span>
                     <div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-neutral-500 mb-0.5">
                         {item.label}
                       </p>
-                      <p className="font-medium text-sm">{item.value}</p>
+                      <p className="font-semibold text-sm text-neutral-900">{item.value}</p>
                     </div>
                   </div>
                 ))}
@@ -511,20 +534,22 @@ export default async function PropertyPage({
 
             {/* Floor Plan */}
             {floors.length > 0 && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">Floor plans</h2>
-                <Separator className="mb-4" />
+              <section aria-labelledby="floorplan-heading">
+                <h2 id="floorplan-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                  Floor plans
+                </h2>
                 <FloorPlan floors={floors} />
               </section>
             )}
 
             {/* Location map placeholder */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Location</h2>
-              <Separator className="mb-4" />
-              <div className="relative h-64 rounded-xl overflow-hidden border bg-neutral-100 flex items-center justify-center">
-                <MapPin className="size-10 text-muted-foreground opacity-40" />
-                <p className="absolute bottom-3 right-3 text-sm text-muted-foreground">
+            <section aria-labelledby="location-heading">
+              <h2 id="location-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                Location
+              </h2>
+              <div className="relative h-64 rounded-2xl overflow-hidden bg-neutral-200 flex items-center justify-center">
+                <MapPin className="size-10 text-neutral-400 opacity-60" aria-hidden="true" />
+                <p className="absolute bottom-3 right-3 text-sm text-neutral-600 bg-white/80 backdrop-blur-sm rounded-lg px-2.5 py-1">
                   {address}
                 </p>
               </div>
@@ -532,59 +557,71 @@ export default async function PropertyPage({
 
             {/* Price History */}
             {priceHistoryFormatted.length > 0 && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">Price history</h2>
-                <Separator className="mb-4" />
-                <PriceHistory history={priceHistoryFormatted} />
+              <section aria-labelledby="price-history-heading">
+                <h2 id="price-history-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                  Price history
+                </h2>
+                <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-neutral-200" />}>
+                  <PriceHistoryChart
+                    postcode={property.postcode}
+                    history={priceHistoryFormatted}
+                  />
+                </Suspense>
               </section>
             )}
 
-            {/* EPC display */}
+            {/* EPC display — using EPCDisplay component */}
             {property.epcRating && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">
-                  Energy Performance Certificate
+              <section aria-labelledby="epc-heading">
+                <h2 id="epc-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                  Energy Performance
                 </h2>
-                <Separator className="mb-4" />
-                <div className="rounded-xl border bg-card p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Zap className="size-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">Current EPC Rating</p>
-                      <p className="text-xs text-muted-foreground">
-                        Energy efficiency: {epc}
-                      </p>
-                    </div>
-                    <Badge className="ml-auto">{epc}</Badge>
-                  </div>
-                  <div className="flex items-stretch gap-1 h-8">
-                    {EPC_BANDS.map((band) => (
-                      <div
-                        key={band}
-                        className={`flex flex-1 items-center justify-center rounded text-xs font-bold text-white ${EPC_COLORS[band]} ${band === epc ? "ring-2 ring-offset-1 ring-foreground scale-110 z-10" : "opacity-70"}`}
-                      >
-                        {band}
+                {/* Import EPCDisplay inline since it's already in detail/ */}
+                <div className="rounded-2xl bg-neutral-50 p-5 space-y-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="size-8 rounded-lg bg-white flex items-center justify-center shadow-xs shrink-0">
+                        <Zap className="size-4 text-neutral-600" aria-hidden="true" />
                       </div>
-                    ))}
+                      <div>
+                        <p className="text-sm font-semibold text-neutral-900">Energy Performance Certificate</p>
+                        {property.epcScore != null && (
+                          <p className="text-xs text-neutral-500">{property.epcScore}/100 points</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`flex flex-col items-center justify-center rounded-xl px-3 py-1.5 min-w-[52px] ${EPC_BG_LIGHT[epc as keyof typeof EPC_BG_LIGHT] ?? "bg-neutral-50"}`}>
+                      <span className={`text-2xl font-bold leading-none ${EPC_TEXT_COLORS[epc as keyof typeof EPC_TEXT_COLORS] ?? "text-neutral-700"}`}>
+                        {epc}
+                      </span>
+                      <span className="text-xs text-neutral-500 mt-0.5">Current</span>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Rating {epc} — Energy efficiency certificate
-                  </p>
-                  {property.epcScore != null && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Score: {property.epcScore}/100
-                    </p>
-                  )}
+                  <div>
+                    <p className="text-xs text-neutral-500 mb-2">Energy efficiency rating</p>
+                    <div className="flex items-stretch gap-0.5 h-8 rounded-lg overflow-hidden">
+                      {EPC_BANDS.map((band) => (
+                        <div
+                          key={band}
+                          className={`flex flex-1 items-center justify-center text-xs font-bold text-white ${EPC_COLORS[band]} ${band === epc ? "scale-y-110 shadow-md z-10 relative" : "opacity-50"}`}
+                          aria-label={`Band ${band}${band === epc ? " (current)" : ""}`}
+                        >
+                          {band}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   <a
                     href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(property.postcode)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-brand-primary hover:underline mt-2"
+                    className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:underline"
+                    aria-label="View full EPC certificate on gov.uk (opens in new tab)"
                   >
-                    View full EPC certificate <span aria-hidden="true">↗</span>
+                    View full EPC certificate ↗
                   </a>
                   {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
-                    <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                    <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
                       <strong>MEES Notice:</strong> Rental properties in England and Wales may require a minimum EPC rating of C under upcoming regulations. This property currently holds a rating of {epc}.
                     </p>
                   )}
@@ -594,16 +631,15 @@ export default async function PropertyPage({
 
             {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
             {isFeatureEnabled("local_area_intelligence") && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">
-                  Local Area Intelligence
+              <section aria-labelledby="local-area-heading">
+                <h2 id="local-area-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                  Local area
                 </h2>
-                <Separator className="mb-4" />
                 <Suspense
                   fallback={
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
+                        <div key={n} className="h-48 bg-neutral-200 rounded-2xl animate-pulse" />
                       ))}
                     </div>
                   }
@@ -626,19 +662,18 @@ export default async function PropertyPage({
 
             {/* ── ROI SECTION (Wave 4) ── */}
             {listing.listingType === "sale" && (
-              <section id="roi-section">
-                <h2 className="text-xl font-semibold mb-3">
+              <section id="roi-section" aria-labelledby="roi-heading">
+                <h2 id="roi-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
                   Renovation ROI
                 </h2>
-                <Separator className="mb-4" />
                 <div className="space-y-6">
                   <Suspense
                     fallback={
-                      <div className="rounded-xl border bg-card p-6 animate-pulse">
-                        <div className="h-5 w-48 bg-muted rounded mb-4" />
+                      <div className="rounded-2xl bg-neutral-50 p-6 animate-pulse">
+                        <div className="h-5 w-48 bg-neutral-200 rounded mb-4" />
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {[1, 2, 3].map((n) => (
-                            <div key={n} className="h-28 bg-muted rounded-xl" />
+                            <div key={n} className="h-28 bg-neutral-200 rounded-2xl" />
                           ))}
                         </div>
                       </div>
@@ -659,9 +694,10 @@ export default async function PropertyPage({
             )}
 
             {/* ── ASK AGENT FORM (Wave 5) — anchored for AgentCardSidebar link ── */}
-            <section id={`ask-agent-${property.id}`}>
-              <h2 className="text-xl font-semibold mb-3">Contact Agent</h2>
-              <Separator className="mb-4" />
+            <section id={`ask-agent-${property.id}`} aria-labelledby="contact-agent-heading">
+              <h2 id="contact-agent-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+                Contact the agent
+              </h2>
               <AskAgentForm
                 propertyId={property.id}
                 agentId={agentId}
@@ -697,42 +733,43 @@ export default async function PropertyPage({
             {/* Agent card (Wave 5) */}
             <Suspense
               fallback={
-                <div className="rounded-xl border bg-card p-5 animate-pulse space-y-3">
-                  <div className="flex gap-3">
-                    <div className="size-12 rounded-full bg-muted shrink-0" />
+                <div className="rounded-2xl bg-white border border-neutral-200 p-5 animate-pulse space-y-4 shadow-sm">
+                  <div className="flex gap-3 items-center">
+                    <div className="size-14 rounded-full bg-neutral-100 shrink-0" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 w-32 bg-muted rounded" />
-                      <div className="h-3 w-24 bg-muted rounded" />
+                      <div className="h-4 w-32 bg-neutral-100 rounded" />
+                      <div className="h-3 w-24 bg-neutral-100 rounded" />
                     </div>
                   </div>
-                  <div className="h-10 bg-muted rounded-lg" />
+                  <div className="h-px bg-neutral-100" />
+                  <div className="h-11 bg-neutral-100 rounded-xl" />
                 </div>
               }
             >
               <AgentCardSidebar agentId={agentId} propertyId={property.id} />
             </Suspense>
 
-            {/* Apply to Rent — visible only for rental listings.
-                Authenticated users get a direct link; unauthenticated route through /login. */}
+            {/* Apply to Rent */}
             {listing.listingType === "rent" && listing.status === "active" && (
-              <div className="rounded-xl border bg-card p-4">
-                <h3 className="text-sm font-semibold mb-2">Interested in renting?</h3>
-                <p className="text-xs text-muted-foreground mb-3">
+              <div className="rounded-2xl bg-white border border-neutral-200 p-5 space-y-3 shadow-sm">
+                <h3 className="text-sm font-semibold text-neutral-900">Interested in renting?</h3>
+                <p className="text-xs text-neutral-500">
                   Submit a rental application to the landlord directly.
                 </p>
                 <Link
                   href={currentUserId
                     ? `/dashboard/renter/applications/apply/${property.id}`
                     : `/login?redirectTo=${encodeURIComponent(`/dashboard/renter/applications/apply/${property.id}`)}`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium h-10 px-4 transition-colors hover:bg-primary/90"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-primary text-white text-sm font-semibold min-h-[44px] px-4 hover:opacity-90 transition-opacity"
+                  aria-label="Apply to rent this property"
                 >
-                  <FileText className="size-4" />
+                  <FileText className="size-4" aria-hidden="true" />
                   Apply to Rent
                 </Link>
               </div>
             )}
 
-            {/* Book Viewing (Wave 5) — gated on listing status */}
+            {/* Book Viewing (Wave 5) */}
             {canBookViewing && (
               <div id="book-viewing">
                 <BookViewingModal
@@ -744,16 +781,16 @@ export default async function PropertyPage({
             )}
 
             {/* Mortgage Calculator (Wave 6) */}
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-2xl bg-white border border-neutral-200 p-5 shadow-sm">
               <MortgageCalculator initialPrice={listing.price} />
             </div>
 
             {/* SDLT Calculator (Wave 6) */}
-            <div className="rounded-xl border bg-card p-4">
+            <div className="rounded-2xl bg-white border border-neutral-200 p-5 shadow-sm">
               <SdltCalculator initialPrice={listing.price} />
             </div>
 
-            {/* Similar Properties in sidebar for desktop visibility */}
+            {/* Local Experts */}
             <Suspense fallback={null}>
               <RecommendedTradespeople postcode={property.postcode} />
             </Suspense>
@@ -762,19 +799,20 @@ export default async function PropertyPage({
       </div>
 
       {/* Mobile sticky bottom bar */}
-      <div className="fixed bottom-0 inset-x-0 z-30 border-t bg-background/95 backdrop-blur px-4 py-3 flex items-center justify-between gap-4 lg:hidden">
+      <div className="fixed bottom-0 inset-x-0 z-30 border-t border-neutral-200 bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-4 lg:hidden">
         <div>
-          <p className="font-bold text-lg text-primary">{priceFormatted}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="font-bold text-xl text-neutral-900 font-heading">{priceFormatted}</p>
+          <p className="text-xs text-neutral-500">
             {property.bedrooms} bed · {propertyTypeLabel}
           </p>
         </div>
         {canBookViewing && (
           <a
             href="#book-viewing"
-            className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground h-9 px-3 transition-colors hover:bg-primary/90"
+            className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-xl text-sm font-semibold bg-brand-primary text-white min-h-[44px] px-4 hover:opacity-90 transition-opacity"
+            aria-label="Book a viewing"
           >
-            <CalendarIcon className="size-4" />
+            <CalendarIcon className="size-4" aria-hidden="true" />
             Book Viewing
           </a>
         )}
