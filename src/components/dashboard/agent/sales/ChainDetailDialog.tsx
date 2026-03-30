@@ -7,20 +7,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import type { ChainDetail, ChainRiskLevel } from "@/types/agent";
 
-const RISK_COLOURS: Record<ChainRiskLevel, string> = {
-  low: "bg-emerald-100 text-emerald-800",
-  medium: "bg-amber-100 text-amber-800",
-  high: "bg-orange-100 text-orange-800",
-  critical: "bg-red-100 text-red-800",
+const RISK_CONFIG: Record<ChainRiskLevel, { bg: string; text: string }> = {
+  low: { bg: "bg-success-light", text: "text-success" },
+  medium: { bg: "bg-warning-light", text: "text-warning" },
+  high: { bg: "bg-orange-100", text: "text-orange-700" },
+  critical: { bg: "bg-error-light", text: "text-error" },
 };
 
-const HEALTH_DOT: Record<string, string> = {
-  green: "bg-emerald-500",
-  amber: "bg-amber-500",
-  red: "bg-red-500",
+const HEALTH_DOT: Record<"green" | "amber" | "red", string> = {
+  green: "bg-success",
+  amber: "bg-warning",
+  red: "bg-error",
 };
 
 function healthDot(days: number): string {
@@ -53,55 +52,81 @@ export function ChainDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Property Chain</DialogTitle>
+          <DialogTitle className="font-heading text-lg font-semibold tracking-tight">
+            Property Chain
+          </DialogTitle>
         </DialogHeader>
 
         {loading ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">Loading chain...</p>
+          <div className="flex items-center justify-center py-10">
+            <div className="flex gap-1">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="size-2 animate-bounce rounded-full bg-brand-primary"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                />
+              ))}
+            </div>
+          </div>
         ) : !detail ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">No chain data available.</p>
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="text-sm text-neutral-400">No chain data available.</p>
+          </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {/* Summary */}
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">{detail.total_length} links</span>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${RISK_COLOURS[detail.risk_level]}`}>
+            {/* Summary bar */}
+            <div className="flex items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3">
+              <span className="text-sm font-semibold text-neutral-800">
+                {detail.total_length} links
+              </span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${RISK_CONFIG[detail.risk_level].bg} ${RISK_CONFIG[detail.risk_level].text}`}
+              >
                 {detail.risk_level} risk ({detail.risk_score}/100)
               </span>
             </div>
 
             {/* Chain diagram */}
-            <div className="flex flex-col gap-0">
+            <div className="flex flex-col">
               {detail.members
                 .sort((a, b) => a.position - b.position)
                 .map((member, idx) => (
                   <div key={member.progression_id}>
                     <div
-                      className={`flex items-center gap-3 rounded-lg border p-3 ${
-                        member.is_own ? "border-brand-primary bg-brand-primary/5" : ""
+                      className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
+                        member.is_own
+                          ? "bg-brand-primary-lighter ring-1 ring-brand-primary/20"
+                          : "bg-neutral-50"
                       } ${
-                        detail.slowest_member?.progression_id === member.progression_id
-                          ? "ring-2 ring-red-400"
+                        detail.slowest_member?.progression_id ===
+                        member.progression_id
+                          ? "ring-2 ring-error"
                           : ""
                       }`}
                     >
-                      <div className={`size-2.5 shrink-0 rounded-full ${healthDot(member.days_in_stage)}`} />
-                      <div className="flex flex-col">
-                        <span className="text-xs font-medium">
+                      <div
+                        className={`size-2.5 shrink-0 rounded-full ${healthDot(member.days_in_stage)}`}
+                      />
+                      <div className="flex flex-1 flex-col">
+                        <span className="flex items-center gap-2 text-xs font-semibold text-neutral-800">
                           {member.property_id.slice(0, 8)}&hellip;
                           {member.is_own && (
-                            <Badge variant="secondary" className="ml-2 text-[9px]">Yours</Badge>
+                            <span className="rounded-full bg-brand-primary px-1.5 py-px text-[9px] font-semibold text-white">
+                              Yours
+                            </span>
                           )}
                         </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {member.stage.replace(/_/g, " ")} &middot; {member.days_in_stage}d
+                        <span className="text-[10px] text-neutral-500">
+                          {member.stage.replace(/_/g, " ")} &middot;{" "}
+                          {member.days_in_stage}d in stage
                         </span>
                       </div>
                     </div>
                     {idx < detail.members.length - 1 && (
-                      <div className="ml-[11px] h-4 w-px bg-border" />
+                      <div className="ml-[27px] h-4 w-px bg-neutral-200" />
                     )}
                   </div>
                 ))}
