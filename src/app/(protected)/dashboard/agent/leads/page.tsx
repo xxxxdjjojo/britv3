@@ -50,8 +50,10 @@ async function PageContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Leads & Pipeline</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-bold tracking-tight text-[#1a1c1c]">
+          Leads & Pipeline
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Manage client enquiries and track your sales pipeline
         </p>
       </div>

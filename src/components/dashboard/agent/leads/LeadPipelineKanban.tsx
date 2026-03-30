@@ -30,8 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { UserPlus, Search } from "lucide-react";
 import { LeadCard } from "./LeadCard";
 import type { AgentLead, LeadStage } from "@/types/agent";
@@ -49,6 +47,24 @@ const STAGE_LABELS: Record<LeadStage, string> = {
   closed: "Closed",
 };
 
+// Each column gets a slightly different surface shade per the design system hierarchy
+const STAGE_BG: Record<LeadStage, string> = {
+  new_enquiry: "bg-neutral-50",
+  qualified: "bg-blue-50/60",
+  viewing_booked: "bg-amber-50/60",
+  offer_made: "bg-emerald-50/60",
+  closed: "bg-neutral-100/80",
+};
+
+// Status pill colors for column header
+const STAGE_PILL: Record<LeadStage, string> = {
+  new_enquiry: "bg-neutral-200 text-neutral-700",
+  qualified: "bg-blue-100 text-blue-700",
+  viewing_booked: "bg-amber-100 text-amber-700",
+  offer_made: "bg-emerald-100 text-emerald-700",
+  closed: "bg-neutral-200 text-neutral-600",
+};
+
 function DroppableColumn({
   stage,
   children,
@@ -60,7 +76,9 @@ function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[200px] bg-muted/50 rounded-lg p-3 transition-colors ${isOver ? "bg-muted" : ""}`}
+      className={`min-h-[200px] rounded-xl p-2.5 transition-colors duration-150 ${STAGE_BG[stage]} ${
+        isOver ? "ring-2 ring-brand-primary/40 ring-inset" : ""
+      }`}
     >
       {children}
     </div>
@@ -117,7 +135,6 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
     if ((LEAD_STAGES as readonly string[]).includes(overId)) {
       newStage = overId as LeadStage;
     } else {
-      // over.id is another lead — find which stage it belongs to
       for (const stage of LEAD_STAGES) {
         if ((leads[stage] ?? []).some((l) => l.id === overId)) {
           newStage = stage;
@@ -128,7 +145,6 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
 
     if (!newStage) return;
 
-    // Find the lead's current stage
     let currentStage: LeadStage | null = null;
     for (const stage of LEAD_STAGES) {
       if ((leads[stage] ?? []).some((l) => l.id === leadId)) {
@@ -165,7 +181,6 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
         body: JSON.stringify({ id: leadId, stage: newStage }),
       });
     } catch {
-      // Revert on error
       setLeads(initialLeads);
     }
   }
@@ -203,31 +218,42 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
     }
   }
 
+  const totalLeads = Object.values(leads).flat().length;
+
   return (
     <div className="space-y-4">
+      {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Search leads..."
-            className="pl-8"
+            className="pl-9 bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary transition-colors"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
+        <div className="text-sm text-muted-foreground hidden sm:block">
+          {totalLeads} {totalLeads === 1 ? "lead" : "leads"} total
+        </div>
+
         <Dialog open={addLeadOpen} onOpenChange={setAddLeadOpen}>
-          <DialogTrigger render={<Button />}>
-            <UserPlus className="mr-2 size-4" />
-            Add Lead
+          <DialogTrigger asChild>
+            <Button className="bg-brand-primary hover:bg-brand-primary-light text-white gap-2 shrink-0">
+              <UserPlus className="size-4" />
+              Add Lead
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add New Lead</DialogTitle>
+              <DialogTitle className="text-lg font-semibold tracking-tight text-[#1a1c1c]">
+                Add New Lead
+              </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleAddLead} className="space-y-4 pt-2">
-              <div className="space-y-1">
-                <Label htmlFor="lead-name">
+            <form onSubmit={handleAddLead} className="space-y-4 pt-1">
+              <div className="space-y-1.5">
+                <Label htmlFor="lead-name" className="text-sm font-medium text-[#1a1c1c]">
                   Name <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -236,22 +262,31 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                   value={addLeadName}
                   onChange={(e) => setAddLeadName(e.target.value)}
                   required
+                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
                 />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="lead-email">Email</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="lead-email" className="text-sm font-medium text-[#1a1c1c]">
+                  Email
+                </Label>
                 <Input
                   id="lead-email"
                   type="email"
                   placeholder="contact@example.com"
                   value={addLeadEmail}
                   onChange={(e) => setAddLeadEmail(e.target.value)}
+                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
                 />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="lead-source">Source</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="lead-source" className="text-sm font-medium text-[#1a1c1c]">
+                  Source
+                </Label>
                 <Select value={addLeadSource} onValueChange={(v) => setAddLeadSource(v ?? "")}>
-                  <SelectTrigger id="lead-source">
+                  <SelectTrigger
+                    id="lead-source"
+                    className="bg-neutral-50 border-neutral-200"
+                  >
                     <SelectValue placeholder="Select source" />
                   </SelectTrigger>
                   <SelectContent>
@@ -264,15 +299,20 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-1">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setAddLeadOpen(false)}
+                  className="border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-brand-primary hover:bg-brand-primary-light text-white"
+                >
                   {isSubmitting ? "Adding..." : "Add Lead"}
                 </Button>
               </div>
@@ -287,19 +327,20 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-3 overflow-x-auto pb-4">
           {LEAD_STAGES.map((stage) => {
             const columnLeads = filterLeads(leads[stage] ?? []);
             const totalCount = (leads[stage] ?? []).length;
             return (
               <div key={stage} className="flex-shrink-0 w-64">
+                {/* Column header */}
                 <div className="flex items-center justify-between mb-2 px-1">
-                  <span className="text-sm font-semibold">
+                  <h3 className="text-xs font-semibold text-[#1a1c1c] uppercase tracking-wide">
                     {STAGE_LABELS[stage]}
-                  </span>
-                  <Badge variant="secondary" className="text-xs">
+                  </h3>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STAGE_PILL[stage]}`}>
                     {totalCount}
-                  </Badge>
+                  </span>
                 </div>
                 <DroppableColumn stage={stage}>
                   <SortableContext
@@ -311,9 +352,11 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                         <LeadCard key={lead.id} lead={lead} />
                       ))}
                       {columnLeads.length === 0 && (
-                        <p className="text-xs text-muted-foreground text-center py-4">
-                          No leads
-                        </p>
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                          <p className="text-xs text-muted-foreground">
+                            No leads
+                          </p>
+                        </div>
                       )}
                     </div>
                   </SortableContext>
@@ -325,18 +368,28 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
 
         <DragOverlay>
           {activeLeadData ? (
-            <Card className="w-64 shadow-lg opacity-90">
-              <CardContent className="p-3">
-                <p className="font-medium text-sm">
-                  {activeLeadData.contact_name}
-                </p>
-                {activeLeadData.contact_email && (
-                  <p className="text-xs text-muted-foreground truncate">
-                    {activeLeadData.contact_email}
+            <div className="w-64 bg-white rounded-xl shadow-xl ring-2 ring-brand-primary/20 p-3 opacity-95 rotate-1">
+              <div className="flex items-start gap-2.5">
+                <div className="size-8 rounded-full bg-brand-accent-light flex items-center justify-center shrink-0 text-brand-primary font-semibold text-xs">
+                  {activeLeadData.contact_name
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm text-[#1a1c1c] truncate">
+                    {activeLeadData.contact_name}
                   </p>
-                )}
-              </CardContent>
-            </Card>
+                  {activeLeadData.contact_email && (
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {activeLeadData.contact_email}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           ) : null}
         </DragOverlay>
       </DndContext>
