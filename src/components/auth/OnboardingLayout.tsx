@@ -12,10 +12,12 @@ export function OnboardingLayout(
   return (
     <div className="space-y-6">
       <WizardStepper steps={props.steps} currentStep={props.currentStep} />
-      <div>
-        <h2 className="font-heading text-xl font-bold text-neutral-900">{props.title}</h2>
+      <div className="space-y-1">
+        <h2 className="font-heading text-2xl font-bold text-neutral-900">
+          {props.title}
+        </h2>
         {props.subtitle && (
-          <p className="mt-1 font-body text-sm text-neutral-500">{props.subtitle}</p>
+          <p className="font-sans text-sm text-neutral-500">{props.subtitle}</p>
         )}
       </div>
       {props.children}
