@@ -65,18 +65,19 @@ export function FinancialSummary(
   return (
     <div className="space-y-4">
       {/* Period selector */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-muted-foreground">Period:</span>
-        <div className="flex gap-1">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-sm font-medium text-neutral-500">Period:</span>
+        <div className="flex gap-1.5 flex-wrap">
           {(Object.entries(PERIOD_LABELS) as [PeriodPreset, string][]).map(
             ([key, label]) => (
               <button
                 key={key}
                 onClick={() => setPeriod(key)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                aria-pressed={period === key}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                   period === key
-                    ? "bg-brand-600 text-white"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    ? "bg-brand-primary text-white shadow-sm"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
                 }`}
               >
                 {label}
@@ -88,50 +89,48 @@ export function FinancialSummary(
 
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card size="sm">
+        <Card size="sm" className="bg-white rounded-2xl border border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800">
           <CardHeader>
-            <CardTitle>Total Income</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Total Income</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <p className="font-heading text-2xl font-bold text-success">
               {isLoading
-                ? "..."
+                ? "—"
                 : gbpFormatter.format(summary?.total_income ?? 0)}
             </p>
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="bg-white rounded-2xl border border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800">
           <CardHeader>
-            <CardTitle>Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Total Expenses</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+            <p className="font-heading text-2xl font-bold text-error">
               {isLoading
-                ? "..."
+                ? "—"
                 : gbpFormatter.format(summary?.total_expenses ?? 0)}
             </p>
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="bg-white rounded-2xl border border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800">
           <CardHeader>
-            <CardTitle>Net Income</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-500">Net Income</CardTitle>
           </CardHeader>
           <CardContent>
             <p
-              className={`text-2xl font-bold ${
-                netIsPositive
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
+              className={`font-heading text-2xl font-bold ${
+                netIsPositive ? "text-success" : "text-error"
               }`}
             >
               {isLoading
-                ? "..."
+                ? "—"
                 : gbpFormatter.format(summary?.net_income ?? 0)}
             </p>
             {!isLoading && summary && (
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-neutral-500">
                 {summary.entry_count} entries
               </p>
             )}

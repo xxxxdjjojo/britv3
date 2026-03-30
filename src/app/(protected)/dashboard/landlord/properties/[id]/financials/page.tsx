@@ -49,10 +49,10 @@ async function PageContent(
   const tenancies = (tenanciesResult.data ?? []) as Tenancy[];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-6 md:p-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Financials</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Financials</h1>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
           Track income and expenses for this property
         </p>
       </div>
@@ -60,11 +60,11 @@ async function PageContent(
       {/* Financial summary with period selection */}
       <FinancialSummary propertyId={propertyId} />
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Log entry form */}
-        <Card>
+        <Card className="bg-white rounded-2xl border border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800">
           <CardHeader>
-            <CardTitle>Log Entry</CardTitle>
+            <CardTitle className="font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">Log Entry</CardTitle>
           </CardHeader>
           <CardContent>
             <FinancialEntryForm
@@ -75,76 +75,72 @@ async function PageContent(
         </Card>
 
         {/* Recent entries table */}
-        <Card>
+        <Card className="bg-white rounded-2xl border border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800">
           <CardHeader>
-            <CardTitle>Recent Entries</CardTitle>
+            <CardTitle className="font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">Recent Entries</CardTitle>
           </CardHeader>
           <CardContent>
             {entries.length === 0 ? (
-              <p className="py-8 text-center text-muted-foreground">
+              <p className="py-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
                 No entries yet. Use the form to log your first entry.
               </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b text-left text-muted-foreground">
-                      <th className="pb-2 pr-3 font-medium">Date</th>
-                      <th className="pb-2 pr-3 font-medium">Type</th>
-                      <th className="pb-2 pr-3 font-medium">Category</th>
-                      <th className="pb-2 pr-3 text-right font-medium">
-                        Amount
-                      </th>
-                      <th className="pb-2 font-medium">Receipt</th>
+                    <tr className="border-b border-neutral-100 text-left dark:border-neutral-800">
+                      <th className="pb-3 pr-3 text-xs font-medium uppercase tracking-wide text-neutral-400">Date</th>
+                      <th className="pb-3 pr-3 text-xs font-medium uppercase tracking-wide text-neutral-400">Type</th>
+                      <th className="pb-3 pr-3 text-xs font-medium uppercase tracking-wide text-neutral-400">Category</th>
+                      <th className="pb-3 pr-3 text-right text-xs font-medium uppercase tracking-wide text-neutral-400">Amount</th>
+                      <th className="pb-3 text-xs font-medium uppercase tracking-wide text-neutral-400">Receipt</th>
                     </tr>
                   </thead>
                   <tbody>
                     {entries.map((entry: FinancialEntry) => (
                       <tr
                         key={entry.id}
-                        className="border-b last:border-0"
+                        className="border-b border-neutral-50 last:border-0 dark:border-neutral-800"
                       >
-                        <td className="py-2 pr-3">
-                          {new Date(entry.entry_date).toLocaleDateString(
-                            "en-GB",
-                          )}
+                        <td className="py-3 pr-3 text-neutral-700 dark:text-neutral-300">
+                          {new Date(entry.entry_date).toLocaleDateString("en-GB")}
                         </td>
-                        <td className="py-2 pr-3">
+                        <td className="py-3 pr-3">
                           <span
-                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                            className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                               entry.type === "income"
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                                : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                                ? "bg-success-light text-success"
+                                : "bg-error-light text-error"
                             }`}
                           >
                             {entry.type}
                           </span>
                         </td>
-                        <td className="py-2 pr-3 capitalize">
+                        <td className="py-3 pr-3 capitalize text-neutral-700 dark:text-neutral-300">
                           {entry.category.replace(/_/g, " ")}
                         </td>
                         <td
-                          className={`py-2 pr-3 text-right font-medium ${
+                          className={`py-3 pr-3 text-right font-semibold ${
                             entry.type === "income"
-                              ? "text-green-600 dark:text-green-400"
-                              : "text-red-600 dark:text-red-400"
+                              ? "text-success"
+                              : "text-error"
                           }`}
                         >
                           {entry.type === "expense" ? "-" : ""}
                           {gbpFormatter.format(entry.amount)}
                         </td>
-                        <td className="py-2">
+                        <td className="py-3">
                           {entry.receipt_url ? (
                             <a
                               href={entry.receipt_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-brand-600 hover:underline"
+                              className="text-sm font-medium text-brand-primary hover:underline"
                             >
                               View
                             </a>
                           ) : (
-                            <span className="text-muted-foreground">-</span>
+                            <span className="text-neutral-400">-</span>
                           )}
                         </td>
                       </tr>

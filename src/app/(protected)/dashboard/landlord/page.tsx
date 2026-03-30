@@ -81,14 +81,15 @@ async function DashboardContent() {
   });
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-8 p-6 md:p-8">
       {/* Welcome Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-[#1B4D3E] p-8 text-white shadow-xl shadow-[#1B4D3E]/10 md:p-12">
+      <section className="relative overflow-hidden rounded-2xl bg-brand-primary p-8 text-white shadow-lg md:p-10">
         <div className="relative z-10 max-w-2xl">
-          <h2 className="mb-4 text-3xl font-black tracking-tight md:text-4xl">
-            Landlord Dashboard
+          <p className="mb-1 text-sm font-medium text-white/70 uppercase tracking-widest">Landlord Dashboard</p>
+          <h2 className="font-heading mb-3 text-3xl font-bold tracking-tight md:text-4xl">
+            Portfolio Overview
           </h2>
-          <p className="mb-8 text-lg leading-relaxed text-slate-100 opacity-90">
+          <p className="mb-7 text-base leading-relaxed text-white/80">
             {kpis.total_properties === 0
               ? "Get started by adding your first rental property."
               : `Managing ${kpis.total_properties} propert${kpis.total_properties === 1 ? "y" : "ies"}.${
@@ -97,87 +98,91 @@ async function DashboardContent() {
                     : " All compliance certificates are up to date."
                 }`}
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/dashboard/landlord/properties/add"
-              className="flex items-center gap-2 rounded-xl bg-white/10 border border-white/20 px-6 py-3 font-bold text-white backdrop-blur-md transition-colors hover:bg-white/20"
+              aria-label="Add a new property"
+              className="flex items-center gap-2 rounded-xl bg-white/15 border border-white/25 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
             >
-              <Plus className="size-5" />
+              <Plus className="size-4" />
               Add Property
             </Link>
             <Link
               href="/dashboard/landlord/compliance"
-              className="flex items-center gap-2 rounded-xl bg-white/10 border border-white/20 px-6 py-3 font-bold text-white backdrop-blur-md transition-colors hover:bg-white/20"
+              aria-label="View compliance status"
+              className="flex items-center gap-2 rounded-xl bg-white/15 border border-white/25 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
             >
-              <ShieldCheck className="size-5" />
+              <ShieldCheck className="size-4" />
               Compliance
             </Link>
           </div>
         </div>
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 opacity-10">
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 opacity-[0.07]">
           <Building2 className="h-full w-full translate-x-1/4 -translate-y-1/4" />
         </div>
       </section>
 
+      {/* KPI Cards */}
+      <section aria-label="Key performance indicators">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <KpiCard
+            title="Total Properties"
+            value={kpis.total_properties}
+            icon={Building2}
+          />
+          <KpiCard
+            title="Occupancy Rate"
+            value={`${kpis.occupancy_rate.toFixed(1)}%`}
+            icon={Percent}
+            trend={
+              kpis.occupancy_rate >= 90
+                ? { value: kpis.occupancy_rate, label: `${kpis.occupied}/${kpis.total_properties} occupied` }
+                : undefined
+            }
+            variant={kpis.occupancy_rate < 70 ? "warning" : "default"}
+          />
+          <KpiCard
+            title="Monthly Income"
+            value={`£${kpis.total_monthly_rent.toLocaleString("en-GB")}`}
+            icon={PoundSterling}
+          />
+          <KpiCard
+            title="Open Maintenance"
+            value={kpis.open_maintenance}
+            icon={Wrench}
+            variant={kpis.open_maintenance > 5 ? "warning" : "default"}
+          />
+        </div>
+      </section>
+
       {/* Health Score */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <section aria-label="Portfolio health score" className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         <HealthScoreCard score={healthScore} />
       </section>
 
       {/* All Clear Banner OR Action Items (mutually exclusive) */}
       {allClear ? (
-        <section>
+        <section aria-label="All clear status">
           <AllClearBanner monthlyCashflow={kpis.total_monthly_rent} />
         </section>
       ) : actionItems.length > 0 ? (
-        <section>
+        <section aria-label="Action items">
           <ActionItemsCard items={actionItems} />
         </section>
       ) : null}
 
-      {/* KPI Cards */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          title="Total Properties"
-          value={kpis.total_properties}
-          icon={Building2}
-        />
-        <KpiCard
-          title="Occupancy Rate"
-          value={`${kpis.occupancy_rate.toFixed(1)}%`}
-          icon={Percent}
-          trend={
-            kpis.occupancy_rate >= 90
-              ? { value: kpis.occupancy_rate, label: `${kpis.occupied}/${kpis.total_properties} occupied` }
-              : undefined
-          }
-          variant={kpis.occupancy_rate < 70 ? "warning" : "default"}
-        />
-        <KpiCard
-          title="Monthly Income"
-          value={`£${kpis.total_monthly_rent.toLocaleString("en-GB")}`}
-          icon={PoundSterling}
-        />
-        <KpiCard
-          title="Open Maintenance"
-          value={kpis.open_maintenance}
-          icon={Wrench}
-          variant={kpis.open_maintenance > 5 ? "warning" : "default"}
-        />
-      </section>
-
       {/* Compliance Alerts */}
       {alertsToShow.length > 0 && (
-        <section className="space-y-4">
+        <section aria-label="Compliance alerts" className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-xl font-bold">
-              <ShieldCheck className="size-5 text-red-500" />
+            <h3 className="font-heading flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+              <ShieldCheck className="size-5 text-error" />
               Compliance Alerts
             </h3>
             {alerts.length > 3 && (
               <Link
                 href="/dashboard/landlord/compliance"
-                className="text-sm font-bold text-[#1B4D3E] hover:underline"
+                className="text-sm font-semibold text-brand-primary hover:underline"
               >
                 View all ({alerts.length})
               </Link>
@@ -207,17 +212,17 @@ async function DashboardContent() {
       )}
 
       {/* Key Dates */}
-      <section className="space-y-4">
-        <h3 className="flex items-center gap-2 text-xl font-bold">
-          <Calendar className="size-5 text-[#1B4D3E]" />
+      <section aria-label="Key upcoming dates" className="space-y-4">
+        <h3 className="font-heading flex items-center gap-2 text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+          <Calendar className="size-5 text-brand-primary" />
           Key Dates
         </h3>
         <KeyDatesTicker dates={keyDates} />
       </section>
 
-      {/* Quick Links */}
-      <section className="space-y-4">
-        <h3 className="text-xl font-bold">Quick Actions</h3>
+      {/* Quick Actions */}
+      <section aria-label="Quick actions" className="space-y-4">
+        <h3 className="font-heading text-xl font-semibold text-neutral-900 dark:text-neutral-100">Quick Actions</h3>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
             { label: "Add Property", href: "/dashboard/landlord/properties/add", description: "Add a new rental to your portfolio" },
@@ -230,12 +235,13 @@ async function DashboardContent() {
             <Link
               key={action.href}
               href={action.href}
-              className="group rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:bg-slate-900 dark:border-slate-800"
+              aria-label={action.label}
+              className="group rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition-all hover:border-brand-primary/30 hover:shadow-md dark:bg-neutral-900 dark:border-neutral-800"
             >
-              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-[#1B4D3E]">
+              <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-brand-primary transition-colors">
                 {action.label}
               </p>
-              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                 {action.description}
               </p>
             </Link>
@@ -255,11 +261,16 @@ async function DashboardContent() {
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-8 p-8">
-      <Skeleton className="h-48 w-full rounded-2xl" />
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-8 p-6 md:p-8">
+      <Skeleton className="h-44 w-full rounded-2xl" />
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-36 rounded-2xl" />
+          <Skeleton key={i} className="h-32 rounded-2xl" />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-16 rounded-2xl" />
         ))}
       </div>
     </div>

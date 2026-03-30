@@ -23,28 +23,29 @@ export function ActionItemsCard({ items }: ActionItemsCardProps) {
   if (items.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <h3 className="flex items-center gap-2 text-lg font-bold">
-        <AlertTriangle className="size-5 text-amber-500" />
-        Do These Now
+    <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 dark:bg-neutral-900 dark:border-neutral-800">
+      <h3 className="flex items-center gap-2 font-heading text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+        <AlertTriangle className="size-5 text-warning" />
+        Action Required
       </h3>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {items.slice(0, 3).map((item, i) => {
           const Icon = URGENCY_ICON[item.urgency];
           return (
             <Link
               key={`${item.type}-${i}`}
               href={item.href}
-              className="group flex items-start gap-3 rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-slate-800 dark:bg-slate-900"
+              aria-label={item.title}
+              className="group flex items-start gap-3 rounded-xl border border-neutral-100 bg-neutral-50 p-4 transition-all hover:border-brand-primary/20 hover:bg-brand-primary/5 dark:border-neutral-800 dark:bg-neutral-800/50"
             >
               <Icon className={cn("mt-0.5 size-5 shrink-0", URGENCY_STYLES[item.urgency])} />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-slate-900 group-hover:text-[#1B4D3E] dark:text-slate-100">
+                <p className="text-sm font-semibold text-neutral-900 group-hover:text-brand-primary dark:text-neutral-100">
                   {item.title}
                 </p>
-                <p className="mt-0.5 text-xs text-slate-500">{item.description}</p>
+                <p className="mt-0.5 text-xs text-neutral-500">{item.description}</p>
               </div>
-              <ArrowRight className="mt-1 size-4 shrink-0 text-slate-300 group-hover:text-[#1B4D3E]" />
+              <ArrowRight className="mt-1 size-4 shrink-0 text-neutral-300 group-hover:text-brand-primary transition-colors" />
             </Link>
           );
         })}

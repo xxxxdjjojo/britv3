@@ -12,17 +12,16 @@ type KpiCardProps = Readonly<{
 
 export function KpiCard({ title, value, icon: Icon, trend, variant = "default" }: KpiCardProps) {
   const cardClass = cn(
-    "rounded-2xl border p-6 shadow-sm",
-    variant === "warning" && "border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/10",
-    variant === "danger" && "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/10",
-    variant === "default" && "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900",
+    "bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 dark:bg-neutral-900 dark:border-neutral-800",
+    variant === "warning" && "border-warning/40 bg-warning-light dark:border-warning/30 dark:bg-warning/10",
+    variant === "danger" && "border-error/40 bg-error-light dark:border-error/30 dark:bg-error/10",
   );
 
   const iconContainerClass = cn(
     "flex size-12 items-center justify-center rounded-xl",
-    variant === "default" && "bg-[#1B4D3E]/10 text-[#1B4D3E]",
-    variant === "warning" && "bg-amber-100 text-amber-600",
-    variant === "danger" && "bg-red-100 text-red-600",
+    variant === "default" && "bg-brand-primary/10 text-brand-primary",
+    variant === "warning" && "bg-warning-light text-warning",
+    variant === "danger" && "bg-error-light text-error",
   );
 
   const isPositiveTrend = trend && trend.value >= 0;
@@ -36,10 +35,10 @@ export function KpiCard({ title, value, icon: Icon, trend, variant = "default" }
         {trend && (
           <span
             className={cn(
-              "flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold",
+              "flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold",
               isPositiveTrend
-                ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
-                : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400",
+                ? "bg-success-light text-success dark:bg-success/10 dark:text-success"
+                : "bg-error-light text-error dark:bg-error/10 dark:text-error",
             )}
           >
             {isPositiveTrend ? (
@@ -51,8 +50,8 @@ export function KpiCard({ title, value, icon: Icon, trend, variant = "default" }
           </span>
         )}
       </div>
-      <p className="mb-1 text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
-      <h3 className="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+      <p className="mb-1 text-sm font-medium text-neutral-500 dark:text-neutral-400">{title}</p>
+      <h3 className="font-heading text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
         {value}
       </h3>
     </div>
