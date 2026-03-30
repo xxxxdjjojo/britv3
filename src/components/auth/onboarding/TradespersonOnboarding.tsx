@@ -17,21 +17,31 @@ import {
   FileText,
   CheckCircle2,
   Image as ImageIcon,
+  Wrench,
+  Zap,
+  Hammer,
+  Ruler,
+  ClipboardList,
+  Flame,
+  PaintRoller,
+  HardHat,
+  Home,
+  PaintBucket,
 } from "lucide-react";
 
 const STEPS = ["Services", "Coverage Area", "Credentials", "Portfolio & Bio"];
 
-const TRADE_CATEGORIES = [
-  { label: "Plumber", icon: "🔧" },
-  { label: "Electrician", icon: "⚡" },
-  { label: "Carpenter", icon: "🪚" },
-  { label: "Surveyor", icon: "📐" },
-  { label: "Conveyancer", icon: "📋" },
-  { label: "Gas Engineer", icon: "🔥" },
-  { label: "Painter & Decorator", icon: "🎨" },
-  { label: "Builder", icon: "🏗️" },
-  { label: "Roofer", icon: "🏠" },
-  { label: "Plasterer", icon: "🪣" },
+const TRADE_CATEGORIES: { label: string; icon: React.ReactNode }[] = [
+  { label: "Plumber", icon: <Wrench className="size-6" aria-hidden="true" /> },
+  { label: "Electrician", icon: <Zap className="size-6" aria-hidden="true" /> },
+  { label: "Carpenter", icon: <Hammer className="size-6" aria-hidden="true" /> },
+  { label: "Surveyor", icon: <Ruler className="size-6" aria-hidden="true" /> },
+  { label: "Conveyancer", icon: <ClipboardList className="size-6" aria-hidden="true" /> },
+  { label: "Gas Engineer", icon: <Flame className="size-6" aria-hidden="true" /> },
+  { label: "Painter & Decorator", icon: <PaintRoller className="size-6" aria-hidden="true" /> },
+  { label: "Builder", icon: <HardHat className="size-6" aria-hidden="true" /> },
+  { label: "Roofer", icon: <Home className="size-6" aria-hidden="true" /> },
+  { label: "Plasterer", icon: <PaintBucket className="size-6" aria-hidden="true" /> },
 ];
 
 const ACCREDITATIONS = [
@@ -264,9 +274,7 @@ export function TradespersonOnboarding(
                     : "border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary/50 hover:text-brand-primary",
                 )}
               >
-                <span className="text-xl" aria-hidden="true">
-                  {icon}
-                </span>
+                {icon}
                 <span className="font-sans text-xs font-medium leading-tight">
                   {label}
                 </span>

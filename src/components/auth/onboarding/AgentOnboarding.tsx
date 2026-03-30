@@ -113,6 +113,10 @@ export function AgentOnboarding(
       } = await supabase.auth.getUser();
       if (user) {
         // Create agency
+        // TODO: The `agencies` table currently has no `crm_platform` column.
+        // When the column is added via migration (e.g. ALTER TABLE agencies ADD
+        // COLUMN crm_platform TEXT), move `crm_platform` from the activity_log
+        // below into this insert payload directly.
         const { data: agency } = await supabase
           .from("agencies")
           .insert({
@@ -135,6 +139,20 @@ export function AgentOnboarding(
           },
           { onConflict: "user_id" },
         );
+
+        // Persist CRM platform selection until the agencies table has a
+        // crm_platform column (see TODO above).
+        if (crmPlatform) {
+          await supabase.from("activity_log").insert({
+            user_id: user.id,
+            event_type: "onboarding_crm_platform",
+            description: "Agent onboarding — CRM platform captured",
+            metadata: {
+              agency_id: agency?.id ?? null,
+              crm_platform: crmPlatform,
+            },
+          });
+        }
 
         // Send invites
         if (invites.length > 0) {

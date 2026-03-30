@@ -119,6 +119,26 @@ export function LandlordOnboarding(
           },
           { onConflict: "user_id" },
         );
+
+        // Persist first property details if the user filled them in.
+        // TODO: The `landlord_profiles` table currently has no property columns
+        // or JSONB metadata column. When a `first_property_data` JSONB column
+        // (or a dedicated `landlord_onboarding_properties` table) is added via
+        // migration, replace this with a proper upsert. For now we store it in
+        // the `activity_log` so the data is not silently discarded.
+        if (address.trim()) {
+          await supabase.from("activity_log").insert({
+            user_id: user.id,
+            event_type: "onboarding_first_property",
+            description: "Landlord onboarding — first property details captured",
+            metadata: {
+              address: address.trim(),
+              property_type: propertyType,
+              bedrooms,
+              monthly_rent: monthlyRent,
+            },
+          });
+        }
       }
     } catch {
       // Non-blocking
