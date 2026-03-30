@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -52,8 +52,6 @@ export function LoginForm() {
     setError(null);
     const { error: authError } = await signIn(data.email, data.password);
     if (authError) {
-      // Detect account lockout / rate-limit: redirect rather than showing an
-      // inline error so the user gets a dedicated, informative page.
       const errObj = authError as { status?: number; code?: string; message?: string };
       const isLockout =
         errObj.status === 429 ||
@@ -74,15 +72,15 @@ export function LoginForm() {
       return;
     }
     const redirectTo = searchParams.get("redirectTo");
-    // Prevent open redirect — must be internal path
-    const destination = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
-      ? redirectTo
-      : "/dashboard";
+    const destination =
+      redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+        ? redirectTo
+        : "/dashboard";
     router.push(destination);
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {oauthError && (
         <Alert variant="destructive">
           <AlertDescription>{oauthError}</AlertDescription>
@@ -95,49 +93,56 @@ export function LoginForm() {
       )}
 
       {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="font-body text-sm font-medium text-neutral-700">
+          Email address
+        </Label>
         <div className="relative">
-          <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400" />
+          <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
           <Input
             id="email"
             type="email"
             placeholder="you@example.com"
-            className="h-10 pl-9"
+            className="h-11 pl-10 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
             autoComplete="email"
+            aria-label="Email address"
             aria-invalid={!!errors.email}
             {...register("email")}
           />
         </div>
         {errors.email && (
-          <p className="text-xs text-error">{errors.email.message}</p>
+          <p className="text-xs text-error" role="alert">{errors.email.message}</p>
         )}
       </div>
 
       {/* Password */}
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="font-body text-sm font-medium text-neutral-700">
+          Password
+        </Label>
         <div className="relative">
+          <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
-            className="h-10 pr-10"
+            className="h-11 pl-10 pr-11 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
             autoComplete="current-password"
+            aria-label="Password"
             aria-invalid={!!errors.password}
             {...register("password")}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
         {errors.password && (
-          <p className="text-xs text-error">{errors.password.message}</p>
+          <p className="text-xs text-error" role="alert">{errors.password.message}</p>
         )}
       </div>
 
@@ -147,11 +152,16 @@ export function LoginForm() {
           <input
             type="checkbox"
             {...register("rememberMe")}
+            aria-label="Remember me"
             className="size-4 rounded border-neutral-300 accent-brand-primary"
           />
           <span className="font-body text-sm text-neutral-600">Remember me</span>
         </label>
-        <Link href="/forgot-password" className="font-body text-sm font-medium text-brand-accent hover:underline">
+        <Link
+          href="/forgot-password"
+          className="font-body text-sm font-medium text-brand-primary hover:underline underline-offset-2 transition-colors"
+          aria-label="Forgot password"
+        >
           Forgot password?
         </Link>
       </div>
@@ -160,13 +170,14 @@ export function LoginForm() {
       <Button
         type="submit"
         size="lg"
-        className="w-full"
+        className="w-full h-11 rounded-lg bg-brand-primary font-semibold text-white hover:bg-brand-primary-light transition-colors shadow-sm"
         disabled={isSubmitting}
+        aria-label={isSubmitting ? "Signing in…" : "Sign in"}
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="size-4 animate-spin" />
-            Signing in...
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            Signing in…
           </>
         ) : (
           "Sign In"

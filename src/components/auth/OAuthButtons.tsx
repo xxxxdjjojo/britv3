@@ -4,10 +4,11 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { Loader2 } from "lucide-react";
 
 function GoogleIcon() {
   return (
-    <svg className="size-5" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="size-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
         fill="#4285F4"
@@ -41,9 +42,6 @@ function OAuthButtonsInner() {
 
       sessionStorage.setItem("brite_return_url", window.location.pathname);
 
-      // Persist professional role intent in a cookie so the OAuth callback
-      // can assign the correct role after the cross-domain redirect.
-      // sessionStorage and URL params are lost during OAuth redirects.
       if (professionalRole) {
         document.cookie = `britestate_professional_role=${encodeURIComponent(professionalRole)};path=/;max-age=600;SameSite=Lax`;
       }
@@ -60,9 +58,10 @@ function OAuthButtonsInner() {
       });
 
       if (error) {
-        console.error("Google OAuth error:", error.message);
+        // OAuth redirect failed — surface silently (user stays on page)
+        setLoading(false);
       }
-    } finally {
+    } catch {
       setLoading(false);
     }
   }
@@ -71,11 +70,16 @@ function OAuthButtonsInner() {
     <Button
       variant="outline"
       size="lg"
-      className="w-full gap-2"
+      className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
       onClick={handleGoogle}
       disabled={loading}
+      aria-label="Continue with Google"
     >
-      <GoogleIcon />
+      {loading ? (
+        <Loader2 className="size-4 animate-spin text-neutral-400" aria-hidden="true" />
+      ) : (
+        <GoogleIcon />
+      )}
       Continue with Google
     </Button>
   );
@@ -85,7 +89,13 @@ export function OAuthButtons() {
   return (
     <Suspense
       fallback={
-        <Button variant="outline" size="lg" className="w-full gap-2" disabled>
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 shadow-sm"
+          disabled
+          aria-label="Loading Google sign-in"
+        >
           <GoogleIcon />
           Continue with Google
         </Button>
