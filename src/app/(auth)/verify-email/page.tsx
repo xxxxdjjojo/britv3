@@ -71,7 +71,7 @@ export default function VerifyEmailPage() {
               <span className="font-semibold text-brand-primary">{email}</span>
             </>
           ) : (
-            "We&apos;ve sent a verification link to your email address"
+            "We've sent a verification link to your email address"
           )}
         </p>
         <p className="font-sans text-sm text-neutral-500">
