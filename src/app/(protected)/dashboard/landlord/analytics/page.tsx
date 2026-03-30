@@ -11,23 +11,25 @@ import { getPortfolioKPIs, getPortfolioProperties } from "@/services/landlord/po
 import { getFinancialEntries } from "@/services/landlord/financial-service";
 import { calculateYield } from "@/lib/yield-calculator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TrendingUp, TrendingDown, Building2, Wrench } from "lucide-react";
 
 const PortfolioAnalyticsCharts = dynamic(
   () => import("@/components/landlord/PortfolioAnalyticsCharts"),
-  { loading: () => <div className="h-64 animate-pulse rounded-lg bg-muted" /> }
+  { loading: () => <div className="h-64 animate-pulse rounded-2xl bg-muted" /> }
 );
 
 
 function PageSkeleton() {
   return (
     <div className="space-y-6 p-6">
-      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-8 w-56" />
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-28 rounded-2xl" />
         ))}
       </div>
-      <Skeleton className="h-64 rounded-xl" />
+      <Skeleton className="h-72 rounded-2xl" />
+      <Skeleton className="h-72 rounded-2xl" />
     </div>
   );
 }
@@ -59,8 +61,6 @@ async function PageContent() {
     propertiesResult.status === "fulfilled" ? propertiesResult.value : [];
 
   // Fetch financial entries for all properties (portfolio-wide)
-  // getFinancialEntries requires propertyId — use the first property or fetch all
-  // We aggregate via a direct query for portfolio-wide analytics
   let entries: Awaited<ReturnType<typeof getFinancialEntries>> = [];
   try {
     const {
@@ -68,7 +68,6 @@ async function PageContent() {
     } = await supabase.auth.getUser();
 
     if (user) {
-      // Portfolio-wide: query all financial entries for landlord's properties
       const oneYearAgo = new Date();
       oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
@@ -111,42 +110,98 @@ async function PageContent() {
     new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(value);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-6">
+    <div className="space-y-6 p-6">
+      {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Portfolio Analytics</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Charts and KPIs across your entire rental portfolio.
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          Portfolio Analytics
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Charts and KPIs across your entire rental portfolio
         </p>
       </div>
 
       {/* Portfolio KPI Summary */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Total Income</p>
-          <p className="mt-1 text-2xl font-bold text-green-700">{formatGBP(totalIncome)}</p>
-          <p className="text-xs text-gray-500">Last 12 months</p>
+        {/* Total Income */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Total Income
+            </p>
+            <span className="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
+              <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            </span>
+          </div>
+          <p className="mt-3 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            {formatGBP(totalIncome)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Last 12 months</p>
         </div>
-        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Total Expenses</p>
-          <p className="mt-1 text-2xl font-bold text-red-600">{formatGBP(totalExpenses)}</p>
-          <p className="text-xs text-gray-500">Last 12 months</p>
+
+        {/* Total Expenses */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Total Expenses
+            </p>
+            <span className="rounded-lg bg-red-100 p-1.5 dark:bg-red-900/30">
+              <TrendingDown className="size-3.5 text-red-600 dark:text-red-400" />
+            </span>
+          </div>
+          <p className="mt-3 font-heading text-2xl font-bold text-red-600 dark:text-red-400">
+            {formatGBP(totalExpenses)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Last 12 months</p>
         </div>
-        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Net Cashflow</p>
-          <p className={`mt-1 text-2xl font-bold ${netCashflow >= 0 ? "text-green-700" : "text-red-600"}`}>
+
+        {/* Net Cashflow */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Net Cashflow
+            </p>
+            <span className={`rounded-lg p-1.5 ${netCashflow >= 0 ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-red-100 dark:bg-red-900/30"}`}>
+              {netCashflow >= 0
+                ? <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                : <TrendingDown className="size-3.5 text-red-600 dark:text-red-400" />
+              }
+            </span>
+          </div>
+          <p className={`mt-3 font-heading text-2xl font-bold ${netCashflow >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
             {formatGBP(netCashflow)}
           </p>
-          <p className="text-xs text-gray-500">Income minus expenses</p>
+          <p className="mt-1 text-xs text-muted-foreground">Income minus expenses</p>
         </div>
-        <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Avg Gross Yield</p>
-          <p className="mt-1 text-2xl font-bold text-[#1B4D3E]">
-            {avgYield ? `${avgYield.grossYield}%` : "\u2014"}
+
+        {/* Avg Gross Yield */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Avg Gross Yield
+            </p>
+            <span className="rounded-lg bg-brand-primary/10 p-1.5 dark:bg-primary/20">
+              <Building2 className="size-3.5 text-brand-primary dark:text-primary" />
+            </span>
+          </div>
+          <p className="mt-3 font-heading text-2xl font-bold text-brand-primary dark:text-primary">
+            {avgYield ? `${avgYield.grossYield}%` : "—"}
           </p>
-          <p className="text-xs text-gray-500">Across portfolio</p>
+          <p className="mt-1 text-xs text-muted-foreground">Across portfolio</p>
         </div>
       </div>
 
+      {/* Maintenance alert if needed */}
+      {kpis.open_maintenance > 0 && (
+        <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/40 dark:bg-amber-900/10">
+          <Wrench className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+          <p className="text-sm text-amber-700 dark:text-amber-400">
+            <span className="font-semibold">{kpis.open_maintenance}</span> open maintenance request{kpis.open_maintenance > 1 ? "s" : ""} across your portfolio
+          </p>
+        </div>
+      )}
+
+      {/* Charts */}
       <PortfolioAnalyticsCharts
         kpis={kpis}
         entries={entries}

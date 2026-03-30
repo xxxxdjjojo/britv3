@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { RentPaymentRow } from "@/components/landlord/RentPaymentRow";
 import type { RentCollectionEntry } from "@/types/landlord";
+import { CheckCircle2 } from "lucide-react";
 
 type PropertyRentClientProps = Readonly<{
   entries: RentCollectionEntry[];
@@ -43,8 +44,11 @@ export function PropertyRentClient({ entries }: PropertyRentClientProps) {
 
   if (entries.length === 0) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-        No rent payments recorded for this property.
+      <div className="flex h-40 flex-col items-center justify-center gap-2">
+        <CheckCircle2 className="size-8 text-muted-foreground/40" />
+        <p className="text-sm text-muted-foreground">
+          No rent payments recorded for this property.
+        </p>
       </div>
     );
   }
@@ -53,13 +57,13 @@ export function PropertyRentClient({ entries }: PropertyRentClientProps) {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Property</TableHead>
-            <TableHead>Tenant</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
+          <TableRow className="border-b border-border bg-muted/40 hover:bg-muted/40">
+            <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Property</TableHead>
+            <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tenant</TableHead>
+            <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Date</TableHead>
+            <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Amount</TableHead>
+            <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+            <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

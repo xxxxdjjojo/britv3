@@ -33,14 +33,16 @@ async function PageContent() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight">
-          Rent Collection
-        </h1>
-        <p className="text-muted-foreground">
-          Track and manage rent payments across your portfolio
-        </p>
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            Rent Collection
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Track and manage rent payments across your portfolio
+          </p>
+        </div>
       </div>
 
       <RentCollectionClient initialData={rentGroups} />

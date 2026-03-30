@@ -14,6 +14,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { DepositCard } from "@/components/landlord/DepositCard";
+import { AlertTriangle, CheckCircle2, Clock, Shield, PoundSterling, Plus } from "lucide-react";
 
 type DepositWithTenancy = DepositRegistration & {
   tenancy: {
@@ -228,66 +229,113 @@ export function DepositManagementClient({
     <div className="space-y-6">
       {/* Compliance warning banner */}
       {unregisteredDeposits.length > 0 && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/20">
-          <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-            Compliance warning: {unregisteredDeposits.length} deposit
-            {unregisteredDeposits.length > 1 ? "s" : ""} unregistered for more
-            than 30 days. Register with a government-approved scheme to avoid
-            penalties.
-          </p>
+        <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/10">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+              Compliance warning
+            </p>
+            <p className="mt-0.5 text-sm text-amber-700 dark:text-amber-400">
+              {unregisteredDeposits.length} deposit
+              {unregisteredDeposits.length > 1 ? "s" : ""} unregistered for more
+              than 30 days. Register with a government-approved scheme to avoid penalties.
+            </p>
+          </div>
         </div>
       )}
 
-      {/* Summary stats */}
+      {/* Summary KPI cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Total Deposits Held</p>
-            <p className="mt-1 text-2xl font-bold">
-              {gbpFormatter.format(totalHeld)}
+        {/* Total held */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Total Held
             </p>
+            <span className="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
+              <PoundSterling className="size-3.5 text-blue-600 dark:text-blue-400" />
+            </span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Registered</p>
-            <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
-              {registeredCount}
+          <p className="mt-3 font-heading text-2xl font-bold text-foreground">
+            {gbpFormatter.format(totalHeld)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Across all deposits</p>
+        </div>
+
+        {/* Registered */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Registered
             </p>
+            <span className="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
+              <Shield className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            </span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Pending</p>
-            <p className="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">
-              {pendingCount}
+          <p className="mt-3 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            {registeredCount}
+          </p>
+          <div className="mt-1 flex items-center gap-1">
+            <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+            <p className="text-xs text-emerald-600 dark:text-emerald-400">Protected</p>
+          </div>
+        </div>
+
+        {/* Pending */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Pending
             </p>
+            <span className="rounded-lg bg-amber-100 p-1.5 dark:bg-amber-900/30">
+              <Clock className="size-3.5 text-amber-600 dark:text-amber-400" />
+            </span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Disputed</p>
-            <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
-              {disputedCount}
+          <p className="mt-3 font-heading text-2xl font-bold text-amber-600 dark:text-amber-400">
+            {pendingCount}
+          </p>
+          <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            {pendingCount > 0 ? "Awaiting registration" : "All registered"}
+          </p>
+        </div>
+
+        {/* Disputed */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Disputed
             </p>
+            <span className="rounded-lg bg-red-100 p-1.5 dark:bg-red-900/30">
+              <AlertTriangle className="size-3.5 text-red-600 dark:text-red-400" />
+            </span>
           </div>
-        </Card>
+          <p className="mt-3 font-heading text-2xl font-bold text-red-600 dark:text-red-400">
+            {disputedCount}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {disputedCount > 0 ? "Under review" : "No disputes"}
+          </p>
+        </div>
       </div>
 
       {/* Register New Deposit button */}
       <div className="flex justify-end">
-        <Button size="sm" onClick={handleOpenCreate}>
+        <Button
+          size="sm"
+          className="gap-1.5 bg-brand-primary hover:bg-brand-primary/90 text-white dark:bg-primary dark:hover:bg-primary/90"
+          onClick={handleOpenCreate}
+        >
+          <Plus className="size-3.5" />
           Register New Deposit
         </Button>
       </div>
 
       {/* Deposit cards grid */}
       {deposits.length === 0 ? (
-        <Card>
-          <CardContent className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-            No deposit registrations found.
-          </CardContent>
-        </Card>
+        <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-card">
+          <Shield className="size-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">No deposit registrations found.</p>
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {deposits.map((deposit) => (

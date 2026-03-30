@@ -3,9 +3,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getRentCollection } from "@/services/landlord/financial-service";
 import { getTenancies } from "@/services/landlord/tenancy-service";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, TrendingUp, Calendar, PoundSterling, CheckCircle2 } from "lucide-react";
 import { PropertyRentClient } from "./PropertyRentClient";
 import type { RentCollectionEntry } from "@/types/landlord";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,8 +39,13 @@ function PageSkeleton() {
   return (
     <div className="space-y-6 p-6">
       <Skeleton className="h-4 w-24" />
-      <Skeleton className="h-8 w-48 mt-2" />
-      <Skeleton className="h-64 rounded-xl" />
+      <Skeleton className="h-8 w-64 mt-2" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-64 rounded-2xl" />
     </div>
   );
 }
@@ -111,15 +115,20 @@ async function PageContent({ params }: PageProps) {
   const lastPaymentDate =
     paidEntries.length > 0 ? paidEntries[0].entry.entry_date : null;
 
+  const totalExpected = totalCollected + totalOwed;
+  const collectionRate = totalExpected > 0
+    ? Math.round((totalCollected / totalExpected) * 100)
+    : 0;
+
   // Last 24 entries for display (approx last 12 months of monthly rent)
   const displayEntries = allEntries.slice(0, 24);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Back link */}
       <Link
         href="/dashboard/landlord/rent"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ChevronLeft className="size-4" />
         Back to Rent Collection
@@ -128,66 +137,92 @@ async function PageContent({ params }: PageProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
             {propertyAddress || `Property ${propertyId}`}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             {activeTenancyName}
             {currentRentAmount > 0 &&
               ` · ${gbpFormatter.format(currentRentAmount)}/mo`}
           </p>
         </div>
-        <Button size="sm" asChild>
+        <Button
+          size="sm"
+          className="bg-brand-primary hover:bg-brand-primary/90 text-white dark:bg-primary dark:hover:bg-primary/90"
+          asChild
+        >
           <Link href="/dashboard/landlord/rent">Log Payment</Link>
         </Button>
       </div>
 
-      {/* Summary stats */}
+      {/* Summary KPI cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">
-              Total Collected (Year)
+        {/* Total Collected */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Total Collected
             </p>
-            <CardTitle className="text-2xl text-green-600 dark:text-green-400">
-              {gbpFormatter.format(totalCollected)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">
-              Total Owed (Outstanding)
+            <span className="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
+              <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            </span>
+          </div>
+          <p className="mt-3 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            {gbpFormatter.format(totalCollected)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Last 12 months · {collectionRate}% rate
+          </p>
+        </div>
+
+        {/* Total Owed */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Outstanding
             </p>
-            <CardTitle className="text-2xl text-red-600 dark:text-red-400">
-              {gbpFormatter.format(totalOwed)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Last Payment</p>
-            <CardTitle className="text-xl">
-              {formatDate(lastPaymentDate)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
+            <span className="rounded-lg bg-red-100 p-1.5 dark:bg-red-900/30">
+              <PoundSterling className="size-3.5 text-red-600 dark:text-red-400" />
+            </span>
+          </div>
+          <p className="mt-3 font-heading text-2xl font-bold text-red-600 dark:text-red-400">
+            {gbpFormatter.format(totalOwed)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Overdue / partial</p>
+        </div>
+
+        {/* Last Payment */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-start justify-between">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Last Payment
+            </p>
+            <span className="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
+              <Calendar className="size-3.5 text-blue-600 dark:text-blue-400" />
+            </span>
+          </div>
+          <p className="mt-3 font-heading text-xl font-bold text-foreground">
+            {formatDate(lastPaymentDate)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Most recent paid</p>
+        </div>
       </div>
 
       {/* Payment history table — client component handles Mark Paid mutations */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            Payment History (Last 12 Months)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <PropertyRentClient entries={displayEntries} />
-        </CardContent>
-      </Card>
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-5 py-4">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="size-4 text-brand-primary dark:text-primary" />
+            <h2 className="font-heading text-base font-semibold text-foreground">
+              Payment History
+            </h2>
+            <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+              Last 12 months
+            </span>
+          </div>
+        </div>
+        <PropertyRentClient entries={displayEntries} />
+      </div>
     </div>
   );
 }

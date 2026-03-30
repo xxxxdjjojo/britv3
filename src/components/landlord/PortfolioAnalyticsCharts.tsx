@@ -185,19 +185,19 @@ export default function PortfolioAnalyticsCharts({
       {/* KPI headline row */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <KpiTile
-          label="Total Portfolio Value"
+          label="Portfolio Value"
           value={`£${(kpis.total_monthly_rent * 12 * 20).toLocaleString("en-GB")}`}
-          sub="Estimated (20x annual rent)"
+          sub="Est. (20x annual rent)"
         />
         <KpiTile
           label="Occupancy Rate"
           value={`${Math.round(kpis.occupancy_rate)}%`}
-          sub={`${kpis.occupied} of ${kpis.total_properties} occupied`}
+          sub={`${kpis.occupied} / ${kpis.total_properties} occupied`}
         />
         <KpiTile
-          label="Total Annual Income"
+          label="Annual Income"
           value={`£${(kpis.total_monthly_rent * 12).toLocaleString("en-GB")}`}
-          sub="Based on current rent roll"
+          sub="Current rent roll"
         />
         <KpiTile
           label="Open Maintenance"
@@ -212,10 +212,10 @@ export default function PortfolioAnalyticsCharts({
           <button
             key={range}
             onClick={() => setDateRange(range)}
-            className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
+            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
               dateRange === range
-                ? "bg-green-700 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                ? "bg-brand-primary text-white shadow-sm dark:bg-primary"
+                : "bg-muted text-muted-foreground hover:text-foreground"
             }`}
           >
             {range === "year" ? "Year" : range === "quarter" ? "Quarter" : "All Time"}
@@ -224,112 +224,124 @@ export default function PortfolioAnalyticsCharts({
       </div>
 
       {/* Chart 1: Income Trend */}
-      <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold text-gray-900">
-          Monthly Income Trend
-        </h3>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={monthlyIncome}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-            <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-            <YAxis
-              tick={{ fontSize: 11 }}
-              tickFormatter={(v: number) => `£${(v / 1000).toFixed(0)}k`}
-            />
-            <Tooltip content={<IncomeTooltip />} />
-            <Area
-              type="monotone"
-              dataKey="income"
-              stroke="#1B4D3E"
-              fill="#1B4D3E"
-              fillOpacity={0.15}
-              strokeWidth={2}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-5 py-4">
+          <h3 className="font-heading text-sm font-semibold text-foreground">
+            Monthly Income Trend
+          </h3>
+        </div>
+        <div className="p-5">
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={monthlyIncome}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis
+                tick={{ fontSize: 11 }}
+                tickFormatter={(v: number) => `£${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<IncomeTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="income"
+                stroke="#1B4D3E"
+                fill="#1B4D3E"
+                fillOpacity={0.12}
+                strokeWidth={2.5}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Chart 2: Occupancy by Month */}
-      <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold text-gray-900">
-          Occupancy Rate by Month
-        </h3>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={monthlyOccupancy}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-            <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-            <YAxis
-              tick={{ fontSize: 11 }}
-              tickFormatter={(v: number) => `${v}%`}
-              domain={[0, 100]}
-            />
-            <Tooltip content={<OccupancyTooltip />} />
-            <Bar
-              dataKey="occupancy_rate"
-              fill="#1B4D3E"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-5 py-4">
+          <h3 className="font-heading text-sm font-semibold text-foreground">
+            Occupancy Rate by Month
+          </h3>
+        </div>
+        <div className="p-5">
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={monthlyOccupancy}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis
+                tick={{ fontSize: 11 }}
+                tickFormatter={(v: number) => `${v}%`}
+                domain={[0, 100]}
+              />
+              <Tooltip content={<OccupancyTooltip />} />
+              <Bar
+                dataKey="occupancy_rate"
+                fill="#1B4D3E"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Chart 3: Property Type Breakdown (Donut) */}
-      <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold text-gray-900">
-          Property Type Breakdown
-        </h3>
-        {propertyTypes.length === 0 ? (
-          <p className="py-8 text-center text-sm text-gray-500">
-            No properties in portfolio
-          </p>
-        ) : (
-          <div className="flex items-center gap-6">
-            <ResponsiveContainer width={240} height={240}>
-              <PieChart>
-                <Pie
-                  data={propertyTypes}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  dataKey="count"
-                  nameKey="type"
-                >
-                  {propertyTypes.map((_, i) => (
-                    <Cell
-                      key={i}
-                      fill={CHART_COLOURS[i % CHART_COLOURS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number, name: string) => [
-                    `${value} properties`,
-                    name,
-                  ]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="space-y-2">
-              {propertyTypes.map((item, i) => (
-                <div key={item.type} className="flex items-center gap-2">
-                  <span
-                    className="h-3 w-3 rounded-full"
-                    style={{
-                      backgroundColor: CHART_COLOURS[i % CHART_COLOURS.length],
-                    }}
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <div className="border-b border-border px-5 py-4">
+          <h3 className="font-heading text-sm font-semibold text-foreground">
+            Property Type Breakdown
+          </h3>
+        </div>
+        <div className="p-5">
+          {propertyTypes.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No properties in portfolio
+            </p>
+          ) : (
+            <div className="flex items-center gap-6">
+              <ResponsiveContainer width={240} height={240}>
+                <PieChart>
+                  <Pie
+                    data={propertyTypes}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    dataKey="count"
+                    nameKey="type"
+                  >
+                    {propertyTypes.map((_, i) => (
+                      <Cell
+                        key={i}
+                        fill={CHART_COLOURS[i % CHART_COLOURS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${value} properties`,
+                      name,
+                    ]}
                   />
-                  <span className="text-sm capitalize text-gray-700">
-                    {item.type}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {item.count}
-                  </span>
-                </div>
-              ))}
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-2.5">
+                {propertyTypes.map((item, i) => (
+                  <div key={item.type} className="flex items-center gap-2.5">
+                    <span
+                      className="h-3 w-3 flex-shrink-0 rounded-full"
+                      style={{
+                        backgroundColor: CHART_COLOURS[i % CHART_COLOURS.length],
+                      }}
+                    />
+                    <span className="text-sm capitalize text-foreground">
+                      {item.type}
+                    </span>
+                    <span className="ml-auto text-sm font-semibold text-foreground">
+                      {item.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
@@ -343,12 +355,12 @@ function KpiTile({
   sub,
 }: Readonly<{ label: string; value: string; sub: string }>) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-xl font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-500">{sub}</p>
+      <p className="mt-2 font-heading text-xl font-bold text-foreground">{value}</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
     </div>
   );
 }

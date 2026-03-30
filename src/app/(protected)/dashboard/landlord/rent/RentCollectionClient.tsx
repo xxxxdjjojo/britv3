@@ -5,7 +5,6 @@ import posthog from "posthog-js";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { RentCollectionGroup, RentCollectionEntry } from "@/types/landlord";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import { RentPaymentRow } from "@/components/landlord/RentPaymentRow";
 import { FinancialEntryForm } from "@/components/landlord/FinancialEntryForm";
+import { TrendingUp, TrendingDown, AlertCircle, CheckCircle2, Download } from "lucide-react";
 
 const gbpFormatter = new Intl.NumberFormat("en-GB", {
   style: "currency",
@@ -93,6 +93,9 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
     0,
   );
   const overdueCount = (data?.overdue ?? []).length;
+  const collectionRate = totalExpected > 0
+    ? Math.round((totalCollected / totalExpected) * 100)
+    : 0;
 
   // Tab entries
   const tabEntries: Record<TabKey, RentCollectionEntry[]> = {
@@ -104,7 +107,7 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
   const currentEntries = tabEntries[activeTab];
 
   const TABS: { key: TabKey; label: string; count: number }[] = [
-    { key: "all", label: "All", count: allEntries.length },
+    { key: "all", label: "All Payments", count: allEntries.length },
     { key: "overdue", label: "Overdue", count: overdueCount },
     {
       key: "upcoming",
@@ -115,112 +118,171 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
 
   return (
     <div className="space-y-6">
-      {/* Summary cards */}
+      {/* Overdue alert banner */}
+      {overdueCount > 0 && (
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/40 dark:bg-red-900/10">
+          <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
+          <p className="text-sm font-medium text-red-700 dark:text-red-400">
+            {overdueCount} overdue payment{overdueCount > 1 ? "s" : ""} require{overdueCount === 1 ? "s" : ""} attention
+          </p>
+        </div>
+      )}
+
+      {/* Summary KPI cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Total Expected</p>
-            <CardTitle className="text-2xl">
-              {gbpFormatter.format(totalExpected)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Total Collected</p>
-            <CardTitle className="text-2xl text-green-600 dark:text-green-400">
-              {gbpFormatter.format(totalCollected)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Outstanding</p>
-            <CardTitle className="text-2xl text-amber-600 dark:text-amber-400">
-              {gbpFormatter.format(outstanding)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <p className="text-sm text-muted-foreground">Overdue Count</p>
-            <CardTitle className="text-2xl text-red-600 dark:text-red-400">
-              {overdueCount}
-            </CardTitle>
-          </CardHeader>
-          <CardContent />
-        </Card>
+        {/* Total Expected */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Total Expected
+          </p>
+          <p className="mt-2 font-heading text-2xl font-bold text-foreground">
+            {gbpFormatter.format(totalExpected)}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">This month</p>
+        </div>
+
+        {/* Total Collected */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Collected
+          </p>
+          <p className="mt-2 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            {gbpFormatter.format(totalCollected)}
+          </p>
+          <div className="mt-1 flex items-center gap-1">
+            <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+            <p className="text-xs text-emerald-600 dark:text-emerald-400">
+              {collectionRate}% collection rate
+            </p>
+          </div>
+        </div>
+
+        {/* Outstanding */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Outstanding
+          </p>
+          <p className="mt-2 font-heading text-2xl font-bold text-amber-600 dark:text-amber-400">
+            {gbpFormatter.format(outstanding)}
+          </p>
+          <div className="mt-1 flex items-center gap-1">
+            <TrendingDown className="size-3 text-amber-600 dark:text-amber-400" />
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              Partial / pending
+            </p>
+          </div>
+        </div>
+
+        {/* Overdue Count */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Overdue
+          </p>
+          <p className={`mt-2 font-heading text-2xl font-bold ${overdueCount > 0 ? "text-red-600 dark:text-red-400" : "text-foreground"}`}>
+            {overdueCount}
+          </p>
+          <div className="mt-1 flex items-center gap-1">
+            {overdueCount > 0 ? (
+              <TrendingUp className="size-3 text-red-600 dark:text-red-400" />
+            ) : (
+              <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+            )}
+            <p className={`text-xs ${overdueCount > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+              {overdueCount > 0 ? "Late payments" : "All clear"}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Tabs + Log Payment button */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-1 rounded-lg bg-muted p-1">
+      {/* Tabs + Action buttons */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* Tabs */}
+        <div className="flex gap-1 rounded-xl bg-muted/60 p-1">
           {TABS.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                 activeTab === tab.key
-                  ? "bg-white text-foreground shadow-sm dark:bg-gray-800"
+                  ? "bg-white text-foreground shadow-sm dark:bg-card dark:text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-xs">
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${
+                    activeTab === tab.key
+                      ? "bg-brand-primary/10 text-brand-primary dark:bg-primary/20 dark:text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
                   {tab.count}
                 </span>
               )}
             </button>
           ))}
         </div>
-        <Button size="sm" onClick={() => setLogPaymentOpen(true)}>
-          Log Payment
-        </Button>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <Download className="size-3.5" />
+            Export Ledger
+          </Button>
+          <Button
+            size="sm"
+            className="bg-brand-primary hover:bg-brand-primary/90 text-white dark:bg-primary dark:hover:bg-primary/90"
+            onClick={() => setLogPaymentOpen(true)}
+          >
+            Log Payment
+          </Button>
+        </div>
       </div>
 
       {/* Rent payment table */}
-      <Card>
-        <CardContent className="p-0">
-          {currentEntries.length === 0 ? (
-            <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-              No rent entries found.
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        {currentEntries.length === 0 ? (
+          <div className="flex h-40 items-center justify-center">
+            <div className="text-center">
+              <CheckCircle2 className="mx-auto mb-2 size-8 text-emerald-500" />
+              <p className="text-sm font-medium text-foreground">No rent entries found</p>
+              <p className="text-xs text-muted-foreground">
+                {activeTab === "overdue" ? "No overdue payments — great!" : "Nothing to display"}
+              </p>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Tenant</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentEntries.map((item) => (
-                    <RentPaymentRow
-                      key={item.entry.id}
-                      entry={{
-                        ...item.entry,
-                        tenant_name: item.tenant_name,
-                        property_address: item.property_address,
-                      }}
-                      onMarkPaid={(id) => markPaidMutation.mutate(id)}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-border bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Property</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tenant</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Due Date</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Amount</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentEntries.map((item) => (
+                  <RentPaymentRow
+                    key={item.entry.id}
+                    entry={{
+                      ...item.entry,
+                      tenant_name: item.tenant_name,
+                      property_address: item.property_address,
+                    }}
+                    onMarkPaid={(id) => markPaidMutation.mutate(id)}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
 
       {/* Log Payment Sheet */}
       <Sheet open={logPaymentOpen} onOpenChange={setLogPaymentOpen}>
