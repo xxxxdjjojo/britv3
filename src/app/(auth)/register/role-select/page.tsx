@@ -22,7 +22,6 @@ export default function RoleSelectPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      // User not logged in yet — store selection and redirect to register
       const role = roles[0];
       router.push(`/register?professional=${role}`);
       return;
@@ -32,7 +31,6 @@ export default function RoleSelectPage() {
 
     const role = roles[0];
 
-    // Insert role into user_roles table
     const { error: insertError } = await supabase
       .from("user_roles")
       .insert({ user_id: user.id, role });
@@ -43,7 +41,6 @@ export default function RoleSelectPage() {
       return;
     }
 
-    // Set as active role
     const { error: updateError } = await supabase
       .from("profiles")
       .update({ active_role: role })
@@ -55,23 +52,23 @@ export default function RoleSelectPage() {
       return;
     }
 
-    // Navigate to onboarding for the selected role
     router.push(`/register/onboarding/${role}`);
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Heading */}
       <div className="text-center">
-        <h1 className="font-heading text-2xl font-bold text-neutral-900">
-          Welcome to Britestate
+        <h1 className="font-heading text-3xl font-bold text-neutral-900 leading-tight">
+          Join Britestate
         </h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          Select your professional type
+        <p className="mt-2 font-body text-sm text-neutral-500 max-w-xs mx-auto">
+          Select your role to get the experience that&apos;s right for you
         </p>
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600" role="alert">
           {error}
         </div>
       )}
@@ -87,7 +84,8 @@ export default function RoleSelectPage() {
         Not a professional?{" "}
         <Link
           href="/register"
-          className="font-medium text-brand-accent hover:underline"
+          className="font-semibold text-brand-primary hover:underline underline-offset-2 transition-colors"
+          aria-label="Sign up as a homebuyer or renter"
         >
           Sign up as a homebuyer
         </Link>
