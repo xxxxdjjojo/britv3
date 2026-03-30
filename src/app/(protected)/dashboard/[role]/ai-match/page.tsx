@@ -21,8 +21,26 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { gbpToPence, penceToGBP } from "@/lib/currency";
-import type { AiMatchPreferences, AiMatchResult } from "@/services/ai/ai-match-service";
+import type {
+  AiMatchPreferences,
+  AiMatchResult,
+} from "@/services/ai/ai-match-service";
+import {
+  Sparkles,
+  Loader2,
+  MapPin,
+  Bed,
+  Bath,
+  PoundSterling,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  Plus,
+  Trash2,
+  SlidersHorizontal,
+} from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,15 +55,33 @@ type GetResponse = {
 type LifestyleEntry = { key: string; value: string };
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Constants
 // ---------------------------------------------------------------------------
 
 const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5", "6+"] as const;
 
-function scoreColor(score: number): string {
-  if (score >= 0.8) return "bg-green-100 text-green-800 border-green-200";
-  if (score >= 0.6) return "bg-amber-100 text-amber-800 border-amber-200";
-  return "bg-red-100 text-red-800 border-red-200";
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function scoreVariant(score: number): {
+  badge: string;
+  label: string;
+} {
+  if (score >= 0.8)
+    return {
+      badge: "bg-success-light border-success/30 text-success",
+      label: "Excellent",
+    };
+  if (score >= 0.6)
+    return {
+      badge: "bg-warning-light border-warning/30 text-warning",
+      label: "Good",
+    };
+  return {
+    badge: "bg-error-light border-error/30 text-error",
+    label: "Fair",
+  };
 }
 
 function formatGBP(pence: number): string {
@@ -67,7 +103,7 @@ export default function AiMatchPage() {
   const [budgetMax, setBudgetMax] = useState("");
   const [bedroomsMin, setBedroomsMin] = useState("");
   const [bedroomsMax, setBedroomsMax] = useState("");
-  const [mustHaves, setMustHaves] = useState(""); // newline-separated
+  const [mustHaves, setMustHaves] = useState("");
   const [lifestyle, setLifestyle] = useState<LifestyleEntry[]>([
     { key: "", value: "" },
   ]);
@@ -86,15 +122,23 @@ export default function AiMatchPage() {
     try {
       const res = await fetch("/api/ai-match", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load match data");
-      const data: GetResponse = await res.json() as GetResponse;
+      const data: GetResponse = (await res.json()) as GetResponse;
 
       if (data.preferences) {
         const p = data.preferences;
         setLocation(p.location ?? "");
-        setBudgetMin(p.budget_min !== null ? String(penceToGBP(p.budget_min)) : "");
-        setBudgetMax(p.budget_max !== null ? String(penceToGBP(p.budget_max)) : "");
-        setBedroomsMin(p.bedrooms_min !== null ? String(p.bedrooms_min) : "");
-        setBedroomsMax(p.bedrooms_max !== null ? String(p.bedrooms_max) : "");
+        setBudgetMin(
+          p.budget_min !== null ? String(penceToGBP(p.budget_min)) : "",
+        );
+        setBudgetMax(
+          p.budget_max !== null ? String(penceToGBP(p.budget_max)) : "",
+        );
+        setBedroomsMin(
+          p.bedrooms_min !== null ? String(p.bedrooms_min) : "",
+        );
+        setBedroomsMax(
+          p.bedrooms_max !== null ? String(p.bedrooms_max) : "",
+        );
         setMustHaves(p.must_haves.join("\n"));
 
         const entries = Object.entries(p.lifestyle_factors);
@@ -107,8 +151,7 @@ export default function AiMatchPage() {
 
       setResults(data.results);
       setResultsExpired(data.resultsExpired);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Could not load your match data. Please try again.");
     } finally {
       setIsLoading(false);
@@ -120,7 +163,11 @@ export default function AiMatchPage() {
   }, [loadData]);
 
   // ----- Lifestyle factor helpers -----------------------------------------
-  const updateLifestyle = (index: number, field: "key" | "value", val: string) => {
+  const updateLifestyle = (
+    index: number,
+    field: "key" | "value",
+    val: string,
+  ) => {
     setLifestyle((prev) => {
       const next = [...prev];
       next[index] = { ...next[index], [field]: val };
@@ -150,18 +197,27 @@ export default function AiMatchPage() {
       }
     }
 
-    const payload: Omit<AiMatchPreferences, "id" | "user_id" | "updated_at"> = {
-      location: location.trim() || null,
-      budget_min: budgetMin ? gbpToPence(parseFloat(budgetMin)) : null,
-      budget_max: budgetMax ? gbpToPence(parseFloat(budgetMax)) : null,
-      bedrooms_min: bedroomsMin ? parseInt(bedroomsMin.replace("+", ""), 10) : null,
-      bedrooms_max: bedroomsMax ? parseInt(bedroomsMax.replace("+", ""), 10) : null,
-      must_haves: mustHaves
-        .split("\n")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      lifestyle_factors: lifestyleFactors,
-    };
+    const payload: Omit<AiMatchPreferences, "id" | "user_id" | "updated_at"> =
+      {
+        location: location.trim() || null,
+        budget_min: budgetMin
+          ? gbpToPence(parseFloat(budgetMin))
+          : null,
+        budget_max: budgetMax
+          ? gbpToPence(parseFloat(budgetMax))
+          : null,
+        bedrooms_min: bedroomsMin
+          ? parseInt(bedroomsMin.replace("+", ""), 10)
+          : null,
+        bedrooms_max: bedroomsMax
+          ? parseInt(bedroomsMax.replace("+", ""), 10)
+          : null,
+        must_haves: mustHaves
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        lifestyle_factors: lifestyleFactors,
+      };
 
     try {
       const res = await fetch("/api/ai-match", {
@@ -171,14 +227,12 @@ export default function AiMatchPage() {
       });
 
       if (!res.ok) {
-        const body = await res.json() as { error?: string };
+        const body = (await res.json()) as { error?: string };
         throw new Error(body.error ?? "Analysis failed");
       }
 
-      // Reload results after analysis
       await loadData();
     } catch (err) {
-      console.error(err);
       setError(
         err instanceof Error
           ? err.message
@@ -191,135 +245,222 @@ export default function AiMatchPage() {
 
   // ----- Render -----------------------------------------------------------
   return (
-    <div className="space-y-8 p-6 max-w-3xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">AI Property Match</h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          Tell us what you&apos;re looking for and our AI will score every active
-          listing against your preferences.
+    <div className="mx-auto flex max-w-3xl flex-col gap-8">
+      {/* ── Page header ─────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <Sparkles
+            className="size-5 text-brand-secondary"
+            strokeWidth={1.25}
+          />
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+            AI Property Match
+          </h1>
+        </div>
+        <p className="text-sm text-neutral-500">
+          Tell us what you&apos;re looking for and our AI will score every
+          active listing against your preferences.
         </p>
       </div>
 
+      {/* ── Global error alert ────────────────────────────────────── */}
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="rounded-xl">
+          <AlertCircle className="size-4" strokeWidth={1.25} />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Section 1: Match Preferences (7.15)                                  */}
-      {/* ------------------------------------------------------------------ */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Match Preferences</CardTitle>
-          <CardDescription>
-            Set your criteria — we&apos;ll use these to find your best-fit properties.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Location */}
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              placeholder="e.g. Kensington, London"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </div>
-
-          {/* Budget */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="budget-min">Budget min (£)</Label>
-              <Input
-                id="budget-min"
-                type="number"
-                min={0}
-                placeholder="e.g. 200000"
-                value={budgetMin}
-                onChange={(e) => setBudgetMin(e.target.value)}
+      {/* ── Section 1: Match Preferences ──────────────────────────── */}
+      <Card className="overflow-hidden rounded-2xl shadow-sm">
+        <CardHeader className="border-b border-neutral-100 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-brand-primary-lighter">
+              <SlidersHorizontal
+                className="size-4 text-brand-primary"
+                strokeWidth={1.25}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="budget-max">Budget max (£)</Label>
-              <Input
-                id="budget-max"
-                type="number"
-                min={0}
-                placeholder="e.g. 500000"
-                value={budgetMax}
-                onChange={(e) => setBudgetMax(e.target.value)}
+            <div>
+              <CardTitle className="font-heading text-base font-semibold text-neutral-900">
+                Match Preferences
+              </CardTitle>
+              <CardDescription className="text-xs text-neutral-500">
+                Set your criteria — we&apos;ll use these to find your
+                best-fit properties.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-6 pt-6">
+          {/* Location */}
+          <FieldGroup label="Location" htmlFor="location">
+            <div className="relative">
+              <MapPin
+                className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                strokeWidth={1.25}
               />
+              <Input
+                id="location"
+                placeholder="e.g. Kensington, London"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="rounded-xl pl-9"
+              />
+            </div>
+          </FieldGroup>
+
+          {/* Budget */}
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-neutral-700">Budget</p>
+            <div className="grid grid-cols-2 gap-4">
+              <FieldGroup label="Minimum (£)" htmlFor="budget-min">
+                <div className="relative">
+                  <PoundSterling
+                    className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                    strokeWidth={1.25}
+                  />
+                  <Input
+                    id="budget-min"
+                    type="number"
+                    min={0}
+                    placeholder="200,000"
+                    value={budgetMin}
+                    onChange={(e) => setBudgetMin(e.target.value)}
+                    className="rounded-xl pl-9"
+                  />
+                </div>
+              </FieldGroup>
+              <FieldGroup label="Maximum (£)" htmlFor="budget-max">
+                <div className="relative">
+                  <PoundSterling
+                    className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                    strokeWidth={1.25}
+                  />
+                  <Input
+                    id="budget-max"
+                    type="number"
+                    min={0}
+                    placeholder="500,000"
+                    value={budgetMax}
+                    onChange={(e) => setBudgetMax(e.target.value)}
+                    className="rounded-xl pl-9"
+                  />
+                </div>
+              </FieldGroup>
             </div>
           </div>
 
           {/* Bedrooms */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="bedrooms-min">Bedrooms min</Label>
-              <Select value={bedroomsMin} onValueChange={(v: string | null) => setBedroomsMin(v ?? "")}>
-                <SelectTrigger id="bedrooms-min">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {BEDROOM_OPTIONS.map((o) => (
-                    <SelectItem key={o} value={o}>
-                      {o}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="bedrooms-max">Bedrooms max</Label>
-              <Select value={bedroomsMax} onValueChange={(v: string | null) => setBedroomsMax(v ?? "")}>
-                <SelectTrigger id="bedrooms-max">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {BEDROOM_OPTIONS.map((o) => (
-                    <SelectItem key={o} value={o}>
-                      {o}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-neutral-700">Bedrooms</p>
+            <div className="grid grid-cols-2 gap-4">
+              <FieldGroup label="Minimum" htmlFor="bedrooms-min">
+                <div className="relative">
+                  <Bed
+                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                    strokeWidth={1.25}
+                  />
+                  <Select
+                    value={bedroomsMin}
+                    onValueChange={(v: string | null) =>
+                      setBedroomsMin(v ?? "")
+                    }
+                  >
+                    <SelectTrigger
+                      id="bedrooms-min"
+                      className="rounded-xl pl-9"
+                    >
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BEDROOM_OPTIONS.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </FieldGroup>
+              <FieldGroup label="Maximum" htmlFor="bedrooms-max">
+                <div className="relative">
+                  <Bed
+                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                    strokeWidth={1.25}
+                  />
+                  <Select
+                    value={bedroomsMax}
+                    onValueChange={(v: string | null) =>
+                      setBedroomsMax(v ?? "")
+                    }
+                  >
+                    <SelectTrigger
+                      id="bedrooms-max"
+                      className="rounded-xl pl-9"
+                    >
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BEDROOM_OPTIONS.map((o) => (
+                        <SelectItem key={o} value={o}>
+                          {o}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </FieldGroup>
             </div>
           </div>
 
           {/* Must haves */}
-          <div className="space-y-2">
-            <Label htmlFor="must-haves">Must haves</Label>
-            <p className="text-xs text-gray-500">One per line, e.g. &quot;south-facing garden&quot;</p>
+          <FieldGroup
+            label="Must haves"
+            htmlFor="must-haves"
+            hint={`One feature per line, e.g. "south-facing garden"`}
+          >
             <Textarea
               id="must-haves"
               rows={4}
               placeholder={"south-facing garden\noff-street parking\nnear good schools"}
               value={mustHaves}
               onChange={(e) => setMustHaves(e.target.value)}
+              className="rounded-xl resize-none"
             />
-          </div>
+          </FieldGroup>
 
           {/* Lifestyle factors */}
-          <div className="space-y-3">
-            <Label>Lifestyle factors</Label>
-            <p className="text-xs text-gray-500">
-              Add up to 5 key/value pairs, e.g. &quot;commute&quot; / &quot;under 30 min to Canary Wharf&quot;
-            </p>
+          <div className="flex flex-col gap-3">
+            <div>
+              <p className="text-sm font-medium text-neutral-700">
+                Lifestyle factors
+              </p>
+              <p className="mt-0.5 text-xs text-neutral-500">
+                Add up to 5 key/value pairs, e.g. &quot;commute&quot; /
+                &quot;under 30 min to Canary Wharf&quot;
+              </p>
+            </div>
+
             {lifestyle.map((entry, idx) => (
-              <div key={idx} className="flex gap-2 items-start">
+              <div key={idx} className="flex items-start gap-2">
                 <Input
-                  placeholder="Key"
+                  placeholder="Factor"
                   value={entry.key}
-                  onChange={(e) => updateLifestyle(idx, "key", e.target.value)}
-                  className="w-1/3"
+                  onChange={(e) =>
+                    updateLifestyle(idx, "key", e.target.value)
+                  }
+                  className="w-1/3 rounded-xl"
+                  aria-label={`Lifestyle factor ${idx + 1} key`}
                 />
                 <Input
-                  placeholder="Value"
+                  placeholder="Preference"
                   value={entry.value}
-                  onChange={(e) => updateLifestyle(idx, "value", e.target.value)}
-                  className="flex-1"
+                  onChange={(e) =>
+                    updateLifestyle(idx, "value", e.target.value)
+                  }
+                  className="flex-1 rounded-xl"
+                  aria-label={`Lifestyle factor ${idx + 1} value`}
                 />
                 {lifestyle.length > 1 && (
                   <Button
@@ -327,136 +468,264 @@ export default function AiMatchPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => removeLifestyleEntry(idx)}
-                    className="text-gray-400 hover:text-red-500 shrink-0"
+                    className="size-9 shrink-0 rounded-xl p-0 text-neutral-400 hover:text-error"
+                    aria-label={`Remove lifestyle factor ${idx + 1}`}
                   >
-                    Remove
+                    <Trash2 className="size-4" strokeWidth={1.25} />
                   </Button>
                 )}
               </div>
             ))}
+
             {lifestyle.length < 5 && (
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={addLifestyleEntry}
+                className="w-fit gap-2 rounded-xl text-xs"
               >
-                + Add another
+                <Plus className="size-3.5" strokeWidth={1.25} />
+                Add factor
               </Button>
             )}
           </div>
 
           {/* Submit */}
           <Button
-            onClick={handleFindMatches}
+            onClick={() => void handleFindMatches()}
             disabled={isAnalysing || isLoading}
-            className="w-full"
+            className="h-11 w-full gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light disabled:opacity-60"
           >
             {isAnalysing ? (
-              <span className="flex items-center gap-2">
-                <svg
-                  className="animate-spin h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8z"
-                  />
-                </svg>
-                Analysing properties with AI...
-              </span>
+              <>
+                <Loader2
+                  className="size-4 animate-spin"
+                  strokeWidth={1.25}
+                />
+                Analysing properties with AI…
+              </>
             ) : (
-              "Find My Matches"
+              <>
+                <Sparkles className="size-4" strokeWidth={1.25} />
+                Find My Matches
+              </>
             )}
           </Button>
         </CardContent>
       </Card>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Section 2: My Matches (7.16)                                         */}
-      {/* ------------------------------------------------------------------ */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My Matches</CardTitle>
-          <CardDescription>
-            Properties scored by AI against your preferences. Results are valid
-            for 24 hours.
-          </CardDescription>
+      {/* ── Section 2: My Matches ─────────────────────────────────── */}
+      <Card className="overflow-hidden rounded-2xl shadow-sm">
+        <CardHeader className="flex flex-row items-start justify-between border-b border-neutral-100 pb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-brand-primary-lighter">
+              <Sparkles
+                className="size-4 text-brand-primary"
+                strokeWidth={1.25}
+              />
+            </div>
+            <div>
+              <CardTitle className="font-heading text-base font-semibold text-neutral-900">
+                My Matches
+              </CardTitle>
+              <CardDescription className="text-xs text-neutral-500">
+                Properties scored by AI against your preferences. Results
+                are valid for 24 hours.
+              </CardDescription>
+            </div>
+          </div>
+
+          {results.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void handleFindMatches()}
+              disabled={isAnalysing || isLoading}
+              className="h-8 gap-1.5 rounded-xl px-2 text-xs text-neutral-500 hover:text-brand-primary"
+              aria-label="Refresh matches"
+            >
+              <RefreshCw className="size-3.5" strokeWidth={1.25} />
+              Refresh
+            </Button>
+          )}
         </CardHeader>
-        <CardContent className="space-y-4">
+
+        <CardContent className="flex flex-col gap-4 pt-5">
           {/* Stale results banner */}
           {resultsExpired && (
-            <Alert className="border-amber-300 bg-amber-50 text-amber-800">
-              <AlertDescription>
+            <Alert className="rounded-xl border-warning/30 bg-warning-light text-warning">
+              <AlertCircle className="size-4" strokeWidth={1.25} />
+              <AlertDescription className="text-sm">
                 Your matches are from over 24 hours ago. Click &quot;Find My
                 Matches&quot; to refresh.
               </AlertDescription>
             </Alert>
           )}
 
-          {/* Loading state */}
+          {/* Loading skeleton */}
           {isLoading && (
-            <p className="text-sm text-gray-500">Loading matches...</p>
+            <div className="flex flex-col gap-3">
+              {[1, 2, 3].map((i) => (
+                <MatchResultSkeleton key={i} />
+              ))}
+            </div>
           )}
 
           {/* Empty state */}
-          {!isLoading && results.length === 0 && !resultsExpired && (
-            <p className="text-sm text-gray-500 py-6 text-center">
-              No matches yet — fill in your preferences and click &quot;Find My
-              Matches&quot;.
-            </p>
+          {!isLoading && results.length === 0 && (
+            <div className="flex flex-col items-center gap-3 py-10 text-center">
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-neutral-100">
+                <Sparkles
+                  className="size-7 text-neutral-400"
+                  strokeWidth={1.25}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="font-heading text-sm font-semibold text-neutral-700">
+                  No matches yet
+                </p>
+                <p className="max-w-xs text-xs text-neutral-500">
+                  Fill in your preferences above and click &quot;Find My
+                  Matches&quot; to get started.
+                </p>
+              </div>
+            </div>
           )}
 
-          {/* Results list */}
-          {results.map((result) => (
-            <div
-              key={result.id}
-              className="border rounded-lg p-4 space-y-3 bg-white shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">
-                    {result.listing?.address ?? "Unknown address"}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {result.listing ? formatGBP(result.listing.price) : "—"}
-                    {result.listing?.bedrooms !== null && result.listing?.bedrooms !== undefined
-                      ? ` · ${result.listing.bedrooms} bed`
-                      : ""}
-                    {result.listing?.property_type
-                      ? ` · ${result.listing.property_type}`
-                      : ""}
-                  </p>
-                </div>
-                <Badge
-                  className={`shrink-0 text-sm font-semibold border ${scoreColor(result.match_score)}`}
-                >
-                  {Math.round(result.match_score * 100)}% match
-                </Badge>
-              </div>
-
-              {result.match_reasons.length > 0 && (
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
-                  {result.match_reasons.map((reason, i) => (
-                    <li key={i}>{reason}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
+          {/* Results */}
+          {!isLoading &&
+            results.map((result) => (
+              <MatchResultCard key={result.id} result={result} />
+            ))}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Match result card
+// ---------------------------------------------------------------------------
+
+function MatchResultCard({
+  result,
+}: Readonly<{ result: AiMatchResult }>) {
+  const score = result.match_score;
+  const { badge, label } = scoreVariant(score);
+  const pct = Math.round(score * 100);
+
+  return (
+    <div className="overflow-hidden rounded-xl bg-neutral-50 p-4 transition-colors hover:bg-neutral-100">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="font-heading text-sm font-semibold text-neutral-900 truncate">
+            {result.listing?.address ?? "Unknown address"}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
+            {result.listing && (
+              <span className="font-medium text-neutral-700">
+                {formatGBP(result.listing.price)}
+              </span>
+            )}
+            {result.listing?.bedrooms != null && (
+              <span className="flex items-center gap-0.5">
+                <Bed className="size-3" strokeWidth={1.25} />
+                {result.listing.bedrooms} bed
+              </span>
+            )}
+            {result.listing?.bathrooms != null && (
+              <span className="flex items-center gap-0.5">
+                <Bath className="size-3" strokeWidth={1.25} />
+                {result.listing.bathrooms} bath
+              </span>
+            )}
+            {result.listing?.property_type && (
+              <span className="capitalize">
+                {result.listing.property_type.replace(/_/g, " ")}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <Badge
+            className={`border text-xs font-semibold ${badge}`}
+          >
+            {pct}% {label}
+          </Badge>
+        </div>
+      </div>
+
+      {result.match_reasons.length > 0 && (
+        <ul className="mt-3 flex flex-col gap-1.5">
+          {result.match_reasons.map((reason, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-2 text-xs text-neutral-600"
+            >
+              <CheckCircle2
+                className="mt-0.5 size-3 shrink-0 text-success"
+                strokeWidth={1.25}
+              />
+              {reason}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Loading skeleton for match results
+// ---------------------------------------------------------------------------
+
+function MatchResultSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 rounded-xl bg-neutral-50 p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-1 flex-col gap-2">
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-3 w-32" />
+        </div>
+        <Skeleton className="h-6 w-20 rounded-full" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-3/4" />
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Field group helper
+// ---------------------------------------------------------------------------
+
+function FieldGroup({
+  label,
+  htmlFor,
+  hint,
+  children,
+}: Readonly<{
+  label: string;
+  htmlFor: string;
+  hint?: string;
+  children: React.ReactNode;
+}>) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label
+        htmlFor={htmlFor}
+        className="text-sm font-medium text-neutral-700"
+      >
+        {label}
+      </Label>
+      {hint && (
+        <p className="text-xs text-neutral-500">{hint}</p>
+      )}
+      {children}
     </div>
   );
 }
