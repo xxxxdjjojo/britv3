@@ -9,6 +9,8 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { calculateYield } from "@/lib/yield-calculator";
+import { TrendingUp, Info } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const schema = z.object({
   propertyValue: z.coerce.number().min(0, "Property value must be 0 or more"),
@@ -22,9 +24,15 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 function yieldColour(yieldPct: number): string {
-  if (yieldPct >= 5) return "text-green-700";
-  if (yieldPct >= 3) return "text-amber-600";
-  return "text-red-600";
+  if (yieldPct >= 5) return "text-emerald-700 dark:text-emerald-400";
+  if (yieldPct >= 3) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
+}
+
+function yieldBg(yieldPct: number): string {
+  if (yieldPct >= 5) return "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800";
+  if (yieldPct >= 3) return "bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800";
+  return "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800";
 }
 
 type FieldProps = Readonly<{
@@ -37,13 +45,15 @@ type FieldProps = Readonly<{
 
 function MoneyField({ label, name, hint, register, error }: FieldProps) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium text-foreground">
         {label}
       </label>
-      {hint && <p className="text-xs text-gray-500">{hint}</p>}
-      <div className="relative mt-1">
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+      {hint && (
+        <p className="text-xs text-muted-foreground">{hint}</p>
+      )}
+      <div className="relative">
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground text-sm font-medium">
           £
         </span>
         <input
@@ -51,11 +61,11 @@ function MoneyField({ label, name, hint, register, error }: FieldProps) {
           step="1"
           min="0"
           {...register(name)}
-          className="block w-full rounded-md border border-gray-300 py-2 pl-7 pr-3 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="block w-full rounded-lg border border-input bg-background py-2.5 pl-7 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
           placeholder="0"
         />
       </div>
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
@@ -88,22 +98,34 @@ export default function YieldCalculatorPage() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 p-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Yield Calculator</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Calculate your gross and net rental yield in real-time. Results update
-          as you type.
-        </p>
+    <div className="flex flex-col gap-6 p-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <TrendingUp className="size-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            Yield Calculator
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Calculate your gross and net rental yield in real-time. Results update as you type.
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Input form */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-gray-900">
-            Property Details
-          </h2>
-          <div className="space-y-4">
+        <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <div>
+            <h2 className="font-heading text-base font-semibold text-foreground">
+              Property Details
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Enter the current property value and expected rent
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
             <MoneyField
               label="Property Value"
               name="propertyValue"
@@ -119,87 +141,95 @@ export default function YieldCalculatorPage() {
             />
           </div>
 
-          <h2 className="mb-4 mt-6 text-base font-semibold text-gray-900">
-            Monthly Costs
-          </h2>
-          <div className="space-y-4">
-            <MoneyField
-              label="Management Fee"
-              name="monthlyManagementFee"
-              hint="Typically 8–12% of monthly rent if using a letting agent"
-              register={register}
-              error={errors.monthlyManagementFee?.message}
-            />
-            <MoneyField
-              label="Maintenance Reserve"
-              name="monthlyMaintenance"
-              hint="Suggested: 1% of property value ÷ 12"
-              register={register}
-              error={errors.monthlyMaintenance?.message}
-            />
-            <MoneyField
-              label="Insurance"
-              name="monthlyInsurance"
-              register={register}
-              error={errors.monthlyInsurance?.message}
-            />
-            <MoneyField
-              label="Mortgage Interest"
-              name="monthlyMortgage"
-              hint="Interest-only portion for accurate net yield"
-              register={register}
-              error={errors.monthlyMortgage?.message}
-            />
+          <div className="border-t border-border pt-4">
+            <h2 className="font-heading text-base font-semibold text-foreground">
+              Monthly Costs
+            </h2>
+            <p className="mt-0.5 mb-4 text-xs text-muted-foreground">
+              Include all regular outgoings for an accurate net yield
+            </p>
+            <div className="flex flex-col gap-4">
+              <MoneyField
+                label="Management Fee"
+                name="monthlyManagementFee"
+                hint="Typically 8–12% of monthly rent if using a letting agent"
+                register={register}
+                error={errors.monthlyManagementFee?.message}
+              />
+              <MoneyField
+                label="Maintenance Reserve"
+                name="monthlyMaintenance"
+                hint="Suggested: 1% of property value ÷ 12"
+                register={register}
+                error={errors.monthlyMaintenance?.message}
+              />
+              <MoneyField
+                label="Insurance"
+                name="monthlyInsurance"
+                register={register}
+                error={errors.monthlyInsurance?.message}
+              />
+              <MoneyField
+                label="Mortgage Interest"
+                name="monthlyMortgage"
+                hint="Interest-only portion for accurate net yield"
+                register={register}
+                error={errors.monthlyMortgage?.message}
+              />
+            </div>
           </div>
         </div>
 
         {/* Results panel */}
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {/* Headline yields */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-gray-900">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="font-heading text-base font-semibold text-foreground mb-4">
               Results
             </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-gray-50 p-4 text-center">
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+            <div className="grid grid-cols-2 gap-3">
+              <div className={cn("rounded-xl border p-4 text-center", yieldBg(result.grossYield))}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Gross Yield
                 </p>
-                <p
-                  className={`mt-1 text-3xl font-bold ${yieldColour(result.grossYield)}`}
-                >
+                <p className={cn("mt-1 text-4xl font-bold font-heading", yieldColour(result.grossYield))}>
                   {result.grossYield}%
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">before costs</p>
               </div>
-              <div className="rounded-lg bg-gray-50 p-4 text-center">
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+              <div className={cn("rounded-xl border p-4 text-center", yieldBg(result.netYield))}>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Net Yield
                 </p>
-                <p
-                  className={`mt-1 text-3xl font-bold ${yieldColour(result.netYield)}`}
-                >
+                <p className={cn("mt-1 text-4xl font-bold font-heading", yieldColour(result.netYield))}>
                   {result.netYield}%
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">after costs</p>
               </div>
             </div>
 
-            <div className="mt-4 space-y-2 border-t border-gray-100 pt-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Annual Income</span>
-                <span className="font-medium text-gray-900">
+            <div className="mt-5 space-y-2 border-t border-border pt-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Annual Income</span>
+                <span className="font-semibold text-foreground">
                   £{result.annualRent.toLocaleString("en-GB")}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Annual Costs</span>
-                <span className="font-medium text-gray-900">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Annual Costs</span>
+                <span className="font-semibold text-foreground">
                   £{result.annualCosts.toLocaleString("en-GB")}
                 </span>
               </div>
-              <div className="flex justify-between border-t border-gray-100 pt-2 text-sm">
-                <span className="font-medium text-gray-700">Annual Profit</span>
+              <div className="flex items-center justify-between border-t border-border pt-2 text-sm">
+                <span className="font-medium text-foreground">Annual Profit</span>
                 <span
-                  className={`font-bold ${result.annualNet >= 0 ? "text-green-700" : "text-red-600"}`}
+                  className={cn(
+                    "font-bold",
+                    result.annualNet >= 0
+                      ? "text-emerald-700 dark:text-emerald-400"
+                      : "text-destructive",
+                  )}
                 >
                   £{result.annualNet.toLocaleString("en-GB")}
                 </span>
@@ -207,48 +237,44 @@ export default function YieldCalculatorPage() {
             </div>
           </div>
 
-          {/* UK benchmark info panel */}
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-            <h3 className="mb-1 text-sm font-semibold text-amber-900">
-              UK Benchmarks (2025)
+          {/* Yield bar visualisation */}
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-3">
+              Performance Rating
             </h3>
-            <ul className="space-y-1 text-xs text-amber-800">
-              <li>Average UK gross yield: 5.8%</li>
-              <li>Average UK net yield: 3.2–4.5% (varies by market)</li>
-              <li>
-                <span className="font-medium text-green-700">≥5% gross</span>
-                {" — "}strong
-              </li>
-              <li>
-                <span className="font-medium text-amber-600">3–5% gross</span>
-                {" — "}moderate
-              </li>
-              <li>
-                <span className="font-medium text-red-600">&lt;3% gross</span>
-                {" — "}consider strategy review
-              </li>
-            </ul>
-            <p className="mt-2 text-xs text-amber-700">
-              Your target yield varies by strategy (capital growth vs. income
-              focus) and market conditions.
-            </p>
+            <div className="space-y-3">
+              {[
+                { label: "Strong (≥5%)", threshold: 5, colour: "bg-emerald-500" },
+                { label: "Moderate (3–5%)", threshold: 3, colour: "bg-amber-500" },
+                { label: "Low (<3%)", threshold: 0, colour: "bg-red-500" },
+              ].map((tier) => (
+                <div key={tier.label} className="flex items-center gap-3 text-xs">
+                  <div className={cn("size-2.5 rounded-full shrink-0", tier.colour)} />
+                  <span className="text-muted-foreground flex-1">{tier.label}</span>
+                  {result.grossYield >= tier.threshold &&
+                    (tier.threshold === 5 ||
+                      (tier.threshold === 3 && result.grossYield < 5) ||
+                      (tier.threshold === 0 && result.grossYield < 3)) && (
+                      <span className="font-medium text-foreground">← your yield</span>
+                    )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Yield colour legend */}
-          <div className="rounded-lg border border-gray-200 bg-white p-4 text-xs text-gray-500">
-            <p className="font-medium text-gray-700">Colour guide</p>
-            <div className="mt-1 space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-green-700">Green</span> — ≥5%
-                (strong)
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-amber-600">Amber</span> — 3–5%
-                (moderate)
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-red-600">Red</span> — &lt;3%
-                (low)
+          {/* UK benchmark info panel */}
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+            <div className="flex items-start gap-2.5">
+              <Info className="size-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-300 mb-1.5">
+                  UK Benchmarks (2025)
+                </h3>
+                <ul className="space-y-1 text-xs text-amber-800 dark:text-amber-400">
+                  <li>Average UK gross yield: 5.8%</li>
+                  <li>Average UK net yield: 3.2–4.5%</li>
+                  <li>Target varies by strategy and market</li>
+                </ul>
               </div>
             </div>
           </div>
