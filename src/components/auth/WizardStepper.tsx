@@ -7,17 +7,30 @@ export function WizardStepper(
     currentStep: number;
   }>,
 ) {
+  const progressPct = Math.round(
+    ((props.currentStep + 1) / props.steps.length) * 100,
+  );
+
   return (
-    <>
-      {/* Mobile: compact text */}
-      <p className="font-body text-sm text-neutral-500 md:hidden">
+    <div className="space-y-4">
+      {/* Progress bar — thin strip at top */}
+      <div className="h-1 w-full overflow-hidden rounded-full bg-neutral-100">
+        <div
+          className="h-full rounded-full bg-brand-primary transition-all duration-500 ease-in-out"
+          style={{ width: `${progressPct}%` }}
+          aria-hidden="true"
+        />
+      </div>
+
+      {/* Mobile: compact "Step N of M — Label" */}
+      <p className="font-sans text-sm text-neutral-500 md:hidden">
         Step {props.currentStep + 1} of {props.steps.length} —{" "}
-        <span className="font-medium text-neutral-900">
+        <span className="font-semibold text-neutral-900">
           {props.steps[props.currentStep]}
         </span>
       </p>
 
-      {/* Desktop: full stepper */}
+      {/* Desktop: full numbered stepper */}
       <div className="hidden items-center md:flex">
         {props.steps.map((step, index) => {
           const isCompleted = index < props.currentStep;
@@ -29,18 +42,25 @@ export function WizardStepper(
                 {/* Circle */}
                 <div
                   className={cn(
-                    "flex size-8 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
+                    "flex size-8 items-center justify-center rounded-full text-sm font-semibold transition-all duration-200",
                     isCompleted &&
-                      "border-brand-primary bg-brand-primary text-white",
+                      "bg-brand-primary-lighter text-brand-primary",
                     isCurrent &&
-                      "border-brand-primary bg-brand-primary text-white",
+                      "bg-brand-primary text-white shadow-md",
                     !isCompleted &&
                       !isCurrent &&
-                      "border-neutral-300 bg-white text-neutral-400",
+                      "bg-neutral-100 text-neutral-400",
                   )}
+                  aria-label={
+                    isCompleted
+                      ? `${step} completed`
+                      : isCurrent
+                        ? `${step} current step`
+                        : `${step} upcoming`
+                  }
                 >
                   {isCompleted ? (
-                    <Check className="size-4" />
+                    <Check className="size-4" aria-hidden="true" />
                   ) : (
                     <span>{index + 1}</span>
                   )}
@@ -48,9 +68,9 @@ export function WizardStepper(
                 {/* Label */}
                 <span
                   className={cn(
-                    "whitespace-nowrap font-body text-xs",
+                    "whitespace-nowrap font-sans text-xs",
                     isCurrent
-                      ? "font-medium text-neutral-900"
+                      ? "font-semibold text-neutral-900"
                       : isCompleted
                         ? "text-brand-primary"
                         : "text-neutral-400",
@@ -64,17 +84,18 @@ export function WizardStepper(
               {index < props.steps.length - 1 && (
                 <div
                   className={cn(
-                    "mb-5 h-0.5 flex-1 transition-colors",
+                    "mb-5 h-0.5 flex-1 transition-colors duration-500",
                     index < props.currentStep
                       ? "bg-brand-primary"
                       : "bg-neutral-200",
                   )}
+                  aria-hidden="true"
                 />
               )}
             </div>
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
