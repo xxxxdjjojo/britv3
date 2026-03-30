@@ -146,25 +146,25 @@ export function MaintenanceRequestDetailClient({
     <div className="grid gap-6 lg:grid-cols-3">
       {/* ── Left column (2/3 width) ── */}
       <div className="space-y-6 lg:col-span-2">
-        {/* Header */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+        {/* Header card */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h1 className="font-heading text-xl font-bold text-foreground">
                   {request.title}
                 </h1>
                 <MaintenancePriorityBadge priority={request.priority} />
                 <MaintenanceStatusBadge status={currentStatus} />
               </div>
-              <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+              <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="size-4 shrink-0" />
                 {request.property_address}
                 {request.property_postcode
                   ? `, ${request.property_postcode}`
                   : ""}
               </p>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Reported{" "}
                 {formatDistanceToNow(new Date(request.created_at), {
                   addSuffix: true,
@@ -176,14 +176,14 @@ export function MaintenanceRequestDetailClient({
             {/* Status update */}
             {nextStatuses.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-500">Move to:</span>
+                <span className="text-xs text-muted-foreground">Move to:</span>
                 {nextStatuses.map((s) => (
                   <button
                     key={s}
                     type="button"
                     disabled={isUpdatingStatus}
                     onClick={() => handleStatusChange(s)}
-                    className="rounded-lg border border-[#1B4D3E] px-3 py-1.5 text-xs font-semibold text-[#1B4D3E] hover:bg-[#1B4D3E] hover:text-white transition-colors disabled:opacity-50"
+                    className="rounded-lg border border-brand-primary px-3 py-1.5 text-xs font-semibold text-brand-primary hover:bg-brand-primary hover:text-white transition-colors disabled:opacity-50"
                   >
                     {s.replace("_", " ").replace(/^\w/, (c) => c.toUpperCase())}
                   </button>
@@ -192,14 +192,14 @@ export function MaintenanceRequestDetailClient({
             )}
           </div>
 
-          <p className="mt-4 text-sm text-slate-700 dark:text-slate-300">
+          <p className="mt-4 text-sm leading-relaxed text-foreground/80">
             {request.description}
           </p>
         </div>
 
         {/* Status timeline */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="mb-6 text-sm font-semibold text-slate-900 dark:text-white">
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <h2 className="mb-6 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Status Timeline
           </h2>
           <div className="flex items-center">
@@ -216,10 +216,10 @@ export function MaintenanceRequestDetailClient({
                     <div
                       className={`flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-all ${
                         isCompleted
-                          ? "bg-[#1B4D3E] text-white"
+                          ? "bg-brand-primary text-white"
                           : isActive
-                            ? "bg-[#1B4D3E] text-white ring-4 ring-[#1B4D3E]/20"
-                            : "border-2 border-slate-200 text-slate-400 dark:border-slate-700"
+                            ? "bg-brand-primary text-white ring-4 ring-brand-primary/20"
+                            : "border-2 border-border text-muted-foreground"
                       }`}
                     >
                       {isCompleted ? (
@@ -230,7 +230,9 @@ export function MaintenanceRequestDetailClient({
                     </div>
                     <span
                       className={`mt-2 text-[10px] font-medium ${
-                        isFuture ? "text-slate-400" : "text-slate-700 dark:text-slate-300"
+                        isFuture
+                          ? "text-muted-foreground/50"
+                          : "text-foreground"
                       }`}
                     >
                       {step.label}
@@ -240,8 +242,8 @@ export function MaintenanceRequestDetailClient({
                     <div
                       className={`mx-1 h-0.5 flex-1 rounded-full ${
                         stepIndex < currentStepIndex
-                          ? "bg-[#1B4D3E]"
-                          : "bg-slate-200 dark:bg-slate-700"
+                          ? "bg-brand-primary"
+                          : "bg-border"
                       }`}
                     />
                   )}
@@ -251,11 +253,11 @@ export function MaintenanceRequestDetailClient({
           </div>
         </div>
 
-        {/* Photo gallery */}
+        {/* Photo evidence */}
         {signedPhotoUrls.length > 0 && (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-            <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">
-              Photos
+          <div className="rounded-xl border bg-card p-6 shadow-sm">
+            <h2 className="mb-4 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Photo Evidence
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {signedPhotoUrls.map((url, i) => (
@@ -264,12 +266,12 @@ export function MaintenanceRequestDetailClient({
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700"
+                  className="group block overflow-hidden rounded-lg border bg-muted"
                 >
                   <img
                     src={url}
                     alt={`Maintenance photo ${i + 1}`}
-                    className="aspect-video w-full object-cover hover:scale-105 transition-transform"
+                    className="aspect-video w-full object-cover transition-transform group-hover:scale-105"
                   />
                 </a>
               ))}
@@ -277,25 +279,30 @@ export function MaintenanceRequestDetailClient({
           </div>
         )}
 
-        {/* Notes */}
-        <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">
-            Landlord Notes
-          </h2>
+        {/* Private notes */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Private Notes
+            </h2>
+            <span className="text-xs text-muted-foreground">
+              Visible only to you
+            </span>
+          </div>
           <textarea
             ref={notesRef}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add internal notes about this request…"
             rows={4}
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E] dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            className="w-full rounded-lg border bg-muted/30 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
           />
           <div className="mt-3 flex justify-end">
             <button
               type="button"
               disabled={isSavingNotes}
               onClick={handleNotesSave}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1B4D3E]/90 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary-light transition-colors disabled:opacity-50"
             >
               <Save className="size-4" />
               {isSavingNotes ? "Saving…" : "Save Notes"}
@@ -308,52 +315,52 @@ export function MaintenanceRequestDetailClient({
       <div className="space-y-6">
         {/* Tenant info */}
         {request.tenant_name && (
-          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-            <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">
-              Tenant
+          <div className="rounded-xl border bg-card p-5 shadow-sm">
+            <h2 className="mb-4 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Reported By
             </h2>
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-[#1B4D3E]/10">
-                <User className="size-5 text-[#1B4D3E]" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-brand-primary/10">
+                <User className="size-5 text-brand-primary" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                <p className="text-sm font-semibold text-foreground">
                   {request.tenant_name}
                 </p>
-                <p className="text-xs text-slate-500">Active tenant</p>
+                <p className="text-xs text-muted-foreground">Active tenant</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Assign tradesperson */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
-            <HardHat className="size-4 text-slate-400" />
+        <div className="rounded-xl border bg-card p-5 shadow-sm">
+          <h2 className="mb-4 flex items-center gap-2 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            <HardHat className="size-4" />
             Tradesperson
           </h2>
 
           {assignedProvider ? (
             <div className="space-y-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+              <div className="rounded-lg border bg-muted/30 p-3">
+                <p className="text-sm font-semibold text-foreground">
                   {assignedProvider.business_name}
                 </p>
                 {assignedProvider.city && (
-                  <p className="flex items-center gap-1 text-xs text-slate-500">
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                     <MapPin className="size-3" />
                     {assignedProvider.city}
                   </p>
                 )}
                 {assignedProvider.average_rating && (
-                  <p className="text-xs text-amber-600">
+                  <p className="mt-1 text-xs font-medium text-warning">
                     ★ {assignedProvider.average_rating.toFixed(1)}
                   </p>
                 )}
               </div>
               <Link
                 href={`/dashboard/landlord/maintenance/${request.id}/assign`}
-                className="inline-flex items-center gap-1 text-xs font-medium text-[#1B4D3E] hover:underline"
+                className="inline-flex items-center gap-1 text-xs font-medium text-brand-primary hover:underline"
               >
                 Reassign
                 <ChevronRight className="size-3" />
@@ -361,12 +368,12 @@ export function MaintenanceRequestDetailClient({
             </div>
           ) : (
             <div>
-              <p className="mb-3 text-xs text-slate-500">
+              <p className="mb-3 text-xs text-muted-foreground">
                 No tradesperson assigned yet.
               </p>
               <Link
                 href={`/dashboard/landlord/maintenance/${request.id}/assign`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1B4D3E] px-4 py-2 text-sm font-semibold text-[#1B4D3E] hover:bg-[#1B4D3E] hover:text-white transition-colors"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-primary hover:text-white transition-colors"
               >
                 <HardHat className="size-4" />
                 Assign Tradesperson
@@ -376,64 +383,66 @@ export function MaintenanceRequestDetailClient({
         </div>
 
         {/* WhatsApp tenant notification */}
-        {showWhatsAppNotify && (currentStatus === "assigned" || currentStatus === "in_progress") && (
-          <div className="rounded-xl border border-green-200 bg-green-50 p-5 dark:border-green-800 dark:bg-green-950">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-full bg-green-500">
-                  <MessageCircle className="size-4 text-white" />
+        {showWhatsAppNotify &&
+          (currentStatus === "assigned" ||
+            currentStatus === "in_progress") && (
+            <div className="rounded-xl border border-success/30 bg-success-light p-5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-success">
+                    <MessageCircle className="size-4 text-white" />
+                  </div>
+                  <h2 className="text-sm font-semibold text-success">
+                    Notify Tenant
+                  </h2>
                 </div>
-                <h2 className="text-sm font-semibold text-green-900 dark:text-green-100">
-                  Notify Tenant
-                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowWhatsAppNotify(false)}
+                  aria-label="Dismiss"
+                  className="text-success/60 hover:text-success transition-colors"
+                >
+                  <X className="size-4" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowWhatsAppNotify(false)}
-                aria-label="Dismiss"
-                className="text-green-500 hover:text-green-700 dark:hover:text-green-300 transition-colors"
+              <p className="mt-2 text-xs text-success/80">
+                Let your tenant know their request has been{" "}
+                {currentStatus === "assigned"
+                  ? "assigned to a tradesperson"
+                  : "marked as in progress"}.
+              </p>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(
+                  `Hi ${request.tenant_name ?? "there"}, your maintenance request "${request.title}" has been ${currentStatus === "assigned" ? "assigned to a tradesperson" : "marked as in progress"} and we'll keep you updated on the resolution. — Your Landlord`,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-success px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
               >
-                <X className="size-4" />
-              </button>
+                <MessageCircle className="size-4" />
+                Send WhatsApp Update
+              </a>
             </div>
-            <p className="mt-2 text-xs text-green-800 dark:text-green-200">
-              Let your tenant know their request has been{" "}
-              {currentStatus === "assigned"
-                ? "assigned to a tradesperson"
-                : "marked as in progress"}.
-            </p>
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(
-                `Hi ${request.tenant_name ?? "there"}, your maintenance request "${request.title}" has been ${currentStatus === "assigned" ? "assigned to a tradesperson" : "marked as in progress"} and we'll keep you updated on the resolution. — Your Landlord`,
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-600 transition-colors"
-            >
-              <MessageCircle className="size-4" />
-              Send WhatsApp Update
-            </a>
-          </div>
-        )}
+          )}
 
-        {/* Contact info */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">
+        {/* Quick actions */}
+        <div className="rounded-xl border bg-card p-5 shadow-sm">
+          <h2 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Quick Actions
           </h2>
           <div className="space-y-2">
             <a
-              href={`tel:`}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              href="tel:"
+              className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
             >
-              <Phone className="size-4 text-slate-400" />
+              <Phone className="size-4 text-muted-foreground" />
               Call tenant
             </a>
             <a
-              href={`mailto:`}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              href="mailto:"
+              className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
             >
-              <Mail className="size-4 text-slate-400" />
+              <Mail className="size-4 text-muted-foreground" />
               Email tenant
             </a>
           </div>
