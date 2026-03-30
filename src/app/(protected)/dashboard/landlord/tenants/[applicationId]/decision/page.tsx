@@ -3,7 +3,7 @@
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Loader2, Info } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
@@ -62,38 +62,44 @@ export default function DecisionPage({ params }: Props) {
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
-      {/* Back link */}
-      <Button asChild variant="ghost" size="sm">
-        <Link href={`/dashboard/landlord/tenants/${applicationId}`}>
-          <ArrowLeft className="mr-1 size-4" />
+      {/* Back navigation */}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link
+          href={`/dashboard/landlord/tenants/${applicationId}`}
+          className="hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          <ArrowLeft className="size-3.5" />
           Back to Application
         </Link>
-      </Button>
+      </div>
 
+      {/* Page title */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Application Decision</h1>
+        <h1 className="text-2xl font-bold font-heading tracking-tight">Application Decision</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Accept or reject this rental application.
+          Accept or reject this rental application. The applicant will be notified by email.
         </p>
       </div>
 
+      {/* Decision tabs */}
       <Tabs value={tab} onValueChange={(v) => setTab(v as "accept" | "reject")}>
-        <TabsList className="grid grid-cols-2 w-full">
-          <TabsTrigger value="accept" className="flex items-center gap-2">
-            <CheckCircle className="size-4 text-green-600" />
+        <TabsList className="grid grid-cols-2 w-full rounded-xl h-11">
+          <TabsTrigger value="accept" className="rounded-lg flex items-center gap-2 font-medium">
+            <CheckCircle className="size-4 text-emerald-600" />
             Accept
           </TabsTrigger>
-          <TabsTrigger value="reject" className="flex items-center gap-2">
+          <TabsTrigger value="reject" className="rounded-lg flex items-center gap-2 font-medium">
             <XCircle className="size-4 text-red-500" />
             Reject
           </TabsTrigger>
         </TabsList>
 
         {/* Accept tab */}
-        <TabsContent value="accept">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base text-green-700 dark:text-green-400">
+        <TabsContent value="accept" className="mt-4">
+          <Card className="rounded-2xl border-emerald-200 dark:border-emerald-800/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-heading text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+                <CheckCircle className="size-4" />
                 Accept Application
               </CardTitle>
               <CardDescription>
@@ -101,18 +107,25 @@ export default function DecisionPage({ params }: Props) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 p-4 text-sm text-green-800 dark:text-green-300">
-                <p>
-                  The applicant will receive an email informing them that their application has been
-                  approved. You should follow up with next steps (deposit, tenancy agreement) directly.
-                </p>
+              {/* Info block */}
+              <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/30 p-4">
+                <div className="flex gap-3">
+                  <Info className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="text-sm text-emerald-800 dark:text-emerald-300 space-y-1">
+                    <p className="font-medium">What happens next?</p>
+                    <ul className="space-y-1 text-emerald-700 dark:text-emerald-400">
+                      <li>• The applicant receives an approval email</li>
+                      <li>• Follow up with deposit and tenancy agreement details</li>
+                      <li>• You can generate a tenancy agreement from the dashboard</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <Button
                 onClick={handleAccept}
                 disabled={loading}
-                className="w-full"
-                style={{ backgroundColor: "#1B4D3E" }}
+                className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
               >
                 {loading ? (
                   <>
@@ -131,10 +144,11 @@ export default function DecisionPage({ params }: Props) {
         </TabsContent>
 
         {/* Reject tab */}
-        <TabsContent value="reject">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base text-red-700 dark:text-red-400">
+        <TabsContent value="reject" className="mt-4">
+          <Card className="rounded-2xl border-red-200 dark:border-red-800/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-heading text-red-700 dark:text-red-400 flex items-center gap-2">
+                <XCircle className="size-4" />
                 Reject Application
               </CardTitle>
               <CardDescription>
@@ -143,16 +157,20 @@ export default function DecisionPage({ params }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="rejection_reason">
+                <Label htmlFor="rejection_reason" className="text-sm font-medium">
                   Rejection Reason <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
                   id="rejection_reason"
                   rows={4}
-                  placeholder="Please provide a reason for rejection (minimum 10 characters)..."
+                  placeholder="Please provide a clear reason for the rejection (minimum 10 characters)..."
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className={reason.length > 0 && reason.trim().length < 10 ? "border-destructive" : ""}
+                  className={`rounded-xl resize-none ${
+                    reason.length > 0 && reason.trim().length < 10
+                      ? "border-destructive focus-visible:ring-destructive"
+                      : ""
+                  }`}
                 />
                 {reason.length > 0 && reason.trim().length < 10 && (
                   <p className="text-xs text-destructive">
@@ -161,15 +179,21 @@ export default function DecisionPage({ params }: Props) {
                 )}
               </div>
 
-              <div className="rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/20 p-4 text-sm text-red-700 dark:text-red-300">
-                <p>This will send a rejection email to the applicant. This action cannot be undone.</p>
+              {/* Warning block */}
+              <div className="rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/20 p-4">
+                <div className="flex gap-3">
+                  <Info className="size-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-700 dark:text-red-300">
+                    This will send a rejection email to the applicant. This action cannot be undone.
+                  </p>
+                </div>
               </div>
 
               <Button
                 onClick={handleReject}
                 disabled={loading || reason.trim().length < 10}
                 variant="destructive"
-                className="w-full"
+                className="w-full h-11 font-medium"
               >
                 {loading ? (
                   <>

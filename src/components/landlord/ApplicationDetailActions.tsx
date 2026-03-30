@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { TenantApplication, TenantApplicationStatus } from "@/types/landlord";
@@ -21,6 +22,11 @@ const STAGE_LABELS: Record<TenantApplicationStatus, string> = {
   approved: "Approved",
   rejected: "Rejected",
   withdrawn: "Withdrawn",
+};
+
+const STAGE_DESCRIPTIONS: Partial<Record<TenantApplicationStatus, string>> = {
+  shortlisted: "Applicant will be added to your shortlist for further review.",
+  referencing: "Reference checks will be initiated for this applicant.",
 };
 
 type Props = Readonly<{ application: TenantApplication }>;
@@ -54,18 +60,34 @@ export function ApplicationDetailActions({ application }: Props) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Actions</CardTitle>
+    <Card className="rounded-2xl border-[color:var(--color-brand-primary)]/20 dark:border-emerald-800/30 bg-[color:var(--color-brand-primary-lighter)]/50 dark:bg-[color:var(--color-brand-primary)]/5">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-heading text-[color:var(--color-brand-primary)] dark:text-emerald-400">
+          Advance Stage
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-3">
+        {STAGE_DESCRIPTIONS[nextStage] && (
+          <p className="text-xs text-muted-foreground">
+            {STAGE_DESCRIPTIONS[nextStage]}
+          </p>
+        )}
         <Button
           onClick={handleAdvance}
           disabled={loading}
-          className="w-full"
-          variant="outline"
+          className="w-full bg-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-light)] text-white font-medium"
         >
-          {loading ? "Updating..." : `Move to ${STAGE_LABELS[nextStage]}`}
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Updating...
+            </>
+          ) : (
+            <>
+              Move to {STAGE_LABELS[nextStage]}
+              <ArrowRight className="ml-2 size-4" />
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>

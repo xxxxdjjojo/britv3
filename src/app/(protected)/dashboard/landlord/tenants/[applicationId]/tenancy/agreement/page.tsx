@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Upload, Sparkles, Home, ShieldCheck, Info } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { getTenancy } from "@/services/landlord/tenancy-service";
@@ -58,13 +58,14 @@ export default async function TenancyAgreementPage({ params }: Props) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link
           href="/dashboard/landlord/tenants"
-          className="hover:text-foreground transition-colors"
+          className="hover:text-foreground transition-colors flex items-center gap-1"
         >
+          <ArrowLeft className="size-3.5" />
           Tenants
         </Link>
         <span>/</span>
@@ -73,29 +74,93 @@ export default async function TenancyAgreementPage({ params }: Props) {
         <span className="text-foreground font-medium">Agreement</span>
       </nav>
 
-      {/* Back button */}
-      <Button asChild variant="ghost" size="sm">
-        <Link href="/dashboard/landlord/tenants">
-          <ArrowLeft className="mr-1 size-4" />
-          Back to Tenants
-        </Link>
-      </Button>
-
-      {/* Page title */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Tenancy Agreement</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          {tenancy.tenant_name} · {propertyAddress}
-        </p>
+      {/* Page header */}
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-6">
+        <div className="flex items-start gap-4">
+          <div className="size-12 rounded-2xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 flex items-center justify-center shrink-0">
+            <FileText className="size-6 text-[color:var(--color-brand-primary)]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold font-heading tracking-tight">Tenancy Agreement</h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              {tenancy.tenant_name}
+            </p>
+            <div className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Home className="size-3.5" />
+              <span>{propertyAddress}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Section 1: Upload existing agreement */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Upload Existing Agreement</CardTitle>
+      {/* Tenancy summary card */}
+      <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-heading flex items-center gap-2">
+            <ShieldCheck className="size-4 text-[color:var(--color-brand-primary)]" />
+            Tenancy Details
+          </CardTitle>
           <CardDescription>
-            Already have a signed tenancy agreement? Upload it here to keep on file.
+            These details will be pre-filled in the generated agreement.
           </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+            <div>
+              <dt className="text-muted-foreground">Tenant</dt>
+              <dd className="font-semibold text-foreground mt-0.5">{tenancy.tenant_name}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Property</dt>
+              <dd className="font-semibold text-foreground mt-0.5">{propertyAddress}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Lease Start</dt>
+              <dd className="font-semibold text-foreground mt-0.5">{tenancy.lease_start_date}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Lease End</dt>
+              <dd className="font-semibold text-foreground mt-0.5">
+                {tenancy.lease_end_date ?? "Periodic"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Monthly Rent</dt>
+              <dd className="font-semibold text-foreground mt-0.5">
+                £{tenancy.rent_amount.toLocaleString("en-GB")} / {tenancy.rent_frequency}
+              </dd>
+            </div>
+            {tenancy.deposit_amount != null && (
+              <div>
+                <dt className="text-muted-foreground">Deposit</dt>
+                <dd className="font-semibold text-foreground mt-0.5">
+                  £{tenancy.deposit_amount.toLocaleString("en-GB")}
+                  {tenancy.deposit_scheme ? (
+                    <span className="ml-1 text-xs font-normal text-muted-foreground">
+                      ({tenancy.deposit_scheme})
+                    </span>
+                  ) : null}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </CardContent>
+      </Card>
+
+      {/* Section 1: Upload existing agreement */}
+      <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+        <CardHeader className="pb-3">
+          <div className="flex items-start gap-3">
+            <div className="size-9 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
+              <Upload className="size-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-heading">Upload Existing Agreement</CardTitle>
+              <CardDescription className="mt-0.5">
+                Already have a signed tenancy agreement? Upload it here to keep on file.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <TenancyAgreementUpload
@@ -107,59 +172,37 @@ export default async function TenancyAgreementPage({ params }: Props) {
       </Card>
 
       {/* Section 2: Generate new agreement */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <FileText className="size-4" />
-            Generate New Agreement
-          </CardTitle>
-          <CardDescription>
-            Generate a standard Assured Shorthold Tenancy Agreement as a PDF, pre-filled with the
-            tenancy details below. Download and sign manually.
-          </CardDescription>
+      <Card className="rounded-2xl border-[color:var(--color-brand-primary)]/20 dark:border-emerald-800/30 bg-[color:var(--color-brand-primary-lighter)]/30 dark:bg-[color:var(--color-brand-primary)]/5">
+        <CardHeader className="pb-3">
+          <div className="flex items-start gap-3">
+            <div className="size-9 rounded-xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 flex items-center justify-center shrink-0">
+              <Sparkles className="size-4 text-[color:var(--color-brand-primary)]" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-heading flex items-center gap-2">
+                Generate New Agreement
+              </CardTitle>
+              <CardDescription className="mt-0.5">
+                Generate a standard Assured Shorthold Tenancy Agreement as a PDF, pre-filled with
+                tenancy details. Download and sign manually.
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Tenancy summary */}
-          <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Tenant</span>
-              <span className="font-medium">{tenancy.tenant_name}</span>
+          {/* Legal disclaimer */}
+          <div className="rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/20 p-3.5">
+            <div className="flex gap-3">
+              <Info className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                <span className="font-semibold">Legal note:</span> This document is for guidance
+                only. Seek independent legal advice before using as a legally binding tenancy
+                agreement.
+              </p>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Property</span>
-              <span className="font-medium text-right max-w-[60%]">{propertyAddress}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Lease Start</span>
-              <span className="font-medium">{tenancy.lease_start_date}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Lease End</span>
-              <span className="font-medium">{tenancy.lease_end_date ?? "Periodic"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Rent</span>
-              <span className="font-medium">
-                £{tenancy.rent_amount.toLocaleString("en-GB")} / {tenancy.rent_frequency}
-              </span>
-            </div>
-            {tenancy.deposit_amount != null && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Deposit</span>
-                <span className="font-medium">
-                  £{tenancy.deposit_amount.toLocaleString("en-GB")}
-                  {tenancy.deposit_scheme ? ` (${tenancy.deposit_scheme})` : ""}
-                </span>
-              </div>
-            )}
           </div>
 
-          <div className="rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/20 p-3 text-xs text-amber-700 dark:text-amber-300">
-            This document is for guidance only. Seek independent legal advice before using as a
-            legally binding tenancy agreement.
-          </div>
-
-          {/* PDF download — client-side only (dynamic ssr:false in wrapper) */}
+          {/* PDF download button — client-side only (dynamic ssr:false in wrapper) */}
           <TenancyAgreementPDFWrapper
             tenancy={tenancy}
             landlordName={landlordName}
@@ -167,6 +210,16 @@ export default async function TenancyAgreementPage({ params }: Props) {
           />
         </CardContent>
       </Card>
+
+      {/* Back link */}
+      <div className="pb-4">
+        <Button asChild variant="outline" className="rounded-xl">
+          <Link href="/dashboard/landlord/tenants">
+            <ArrowLeft className="mr-2 size-4" />
+            Back to Tenants
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
