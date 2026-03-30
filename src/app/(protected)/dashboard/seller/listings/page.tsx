@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Home } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSellerListings } from "@/services/seller/listing-service";
 import { StatusTabs } from "@/components/seller/StatusTabs";
@@ -61,33 +61,50 @@ async function PageContent({ searchParams }: Props) {
   const displayed = status ? allListings.filter((l) => l.status === status) : allListings;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-6xl">
+      {/* Page Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">My Listings</h1>
-          <p className="text-slate-500 mt-1">Manage all your property listings</p>
+          <h1 className="text-2xl font-bold text-[--color-neutral-900] font-['Plus_Jakarta_Sans'] tracking-tight">
+            My Listings
+          </h1>
+          <p className="text-[--color-neutral-500] mt-1 text-sm font-inter">
+            Manage all your property listings
+          </p>
         </div>
         <Link
           href="/dashboard/seller/listings/create?step=1"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] active:scale-95 transition-all shadow-lg shadow-[#1B4D3E]/20"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] active:scale-95 transition-all shadow-sm font-inter flex-shrink-0"
         >
-          <Plus size={16} />
-          Create New Listing
+          <Plus size={16} strokeWidth={1.25} />
+          Create Listing
         </Link>
       </div>
+
+      {/* Status Tabs */}
       <StatusTabs tabs={tabs} />
+
+      {/* Listings */}
       {displayed.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-          <p className="text-slate-400 mb-4">No listings{status ? ` with status "${status}"` : ""}</p>
+        <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-[--color-brand-primary-lighter] flex items-center justify-center mb-4">
+            <Home size={24} className="text-[--color-brand-primary]" strokeWidth={1.25} />
+          </div>
+          <p className="text-[--color-neutral-500] mb-1 font-inter text-sm">
+            No listings{status ? ` with status "${status}"` : ""}
+          </p>
+          <p className="text-[--color-neutral-400] text-xs font-inter mb-6">
+            Create your first listing to get started
+          </p>
           <Link
             href="/dashboard/seller/listings/create?step=1"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] transition-colors font-inter"
           >
-            <Plus size={14} /> Create your first listing
+            <Plus size={14} strokeWidth={1.25} /> Create your first listing
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {displayed.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}

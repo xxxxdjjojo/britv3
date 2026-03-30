@@ -20,7 +20,7 @@ export default async function SellerDashboardLayout(
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-[--color-neutral-50] flex">
       <SellerSidebar
         userName={profile?.full_name ?? "Seller"}
         avatarUrl={profile?.avatar_url ?? null}

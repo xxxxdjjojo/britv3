@@ -3,7 +3,7 @@ import nextDynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Home, Eye, MessageSquare, Calendar } from "lucide-react";
+import { Home, Eye, MessageSquare, Calendar, ArrowRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "@/components/seller/KpiCard";
 import { getSellerKPIs } from "@/services/seller/listing-service";
@@ -69,19 +69,26 @@ async function PageContent() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-6xl">
+      {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Seller Dashboard</h1>
-        <p className="text-slate-500 mt-1">Track your listings and manage your sale</p>
+        <h1 className="text-2xl font-bold text-[--color-neutral-900] font-['Plus_Jakarta_Sans'] tracking-tight">
+          Seller Dashboard
+        </h1>
+        <p className="text-[--color-neutral-500] mt-1 text-sm font-inter">
+          Track your listings and manage your sale
+        </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Link href="/dashboard/seller/listings" className="block">
           <KpiCard
             label="Active Listings"
             value={kpis.active_listings}
             icon={Home}
-            iconBgClass="bg-emerald-100"
-            iconColorClass="text-emerald-600"
+            iconBgClass="bg-[--color-brand-primary-lighter]"
+            iconColorClass="text-[--color-brand-primary]"
           />
         </Link>
         <Link href="/dashboard/seller/analytics" className="block">
@@ -90,8 +97,8 @@ async function PageContent() {
             value={kpis.total_views_30d.toLocaleString()}
             changePct={kpis.views_change_pct}
             icon={Eye}
-            iconBgClass="bg-blue-100"
-            iconColorClass="text-blue-600"
+            iconBgClass="bg-[--color-info-light]"
+            iconColorClass="text-[--color-info]"
           />
         </Link>
         <Link href="/dashboard/seller/analytics" className="block">
@@ -100,8 +107,8 @@ async function PageContent() {
             value={kpis.enquiries_30d}
             changePct={kpis.enquiries_change_pct}
             icon={MessageSquare}
-            iconBgClass="bg-orange-100"
-            iconColorClass="text-orange-600"
+            iconBgClass="bg-[--color-warning-light]"
+            iconColorClass="text-[--color-warning]"
           />
         </Link>
         <Link href="/dashboard/seller/viewings" className="block">
@@ -109,44 +116,81 @@ async function PageContent() {
             label="Upcoming Viewings"
             value={kpis.upcoming_viewings}
             icon={Calendar}
-            iconBgClass="bg-purple-100"
+            iconBgClass="bg-purple-50"
             iconColorClass="text-purple-600"
           />
         </Link>
       </div>
+
+      {/* Empty State */}
       {kpis.active_listings === 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
-          <div className="mx-auto h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
-            <Home className="h-8 w-8 text-emerald-600" />
+        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+          <div className="mx-auto h-16 w-16 rounded-2xl bg-[--color-brand-primary-lighter] flex items-center justify-center mb-4">
+            <Home className="h-8 w-8 text-[--color-brand-primary]" strokeWidth={1.25} />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">No listings yet</h2>
-          <p className="text-slate-500 mt-2 max-w-md mx-auto">
+          <h2 className="text-xl font-bold text-[--color-neutral-900] font-['Plus_Jakarta_Sans']">
+            No listings yet
+          </h2>
+          <p className="text-[--color-neutral-500] mt-2 max-w-md mx-auto text-sm font-inter">
             Create your first listing to start tracking views, enquiries, and offers from buyers.
           </p>
-          <a href="/dashboard/seller/listings/create?step=1"
-            className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors shadow-lg shadow-[#1B4D3E]/20">
+          <a
+            href="/dashboard/seller/listings/create?step=1"
+            className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] transition-colors shadow-lg shadow-black/10 font-inter"
+          >
             Create Your First Listing
           </a>
         </div>
       )}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+
+      {/* Performance Chart */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="font-semibold text-slate-900 font-['Plus_Jakarta_Sans']">Performance (30 days)</h2>
-            <p className="text-sm text-slate-400 mt-0.5">Daily views across all listings</p>
+            <h2 className="font-semibold text-[--color-neutral-900] font-['Plus_Jakarta_Sans']">
+              Performance
+            </h2>
+            <p className="text-sm text-[--color-neutral-400] mt-0.5 font-inter">
+              Daily views across all listings — last 30 days
+            </p>
           </div>
+          <Link
+            href="/dashboard/seller/analytics"
+            className="flex items-center gap-1.5 text-xs font-medium text-[--color-brand-primary] hover:underline font-inter"
+          >
+            View full analytics <ArrowRight size={12} strokeWidth={1.25} />
+          </Link>
         </div>
         <PerformanceChart data={chartData} />
       </div>
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-        <h2 className="font-semibold text-slate-900 mb-4 font-['Plus_Jakarta_Sans']">Upcoming Viewings</h2>
+
+      {/* Upcoming Viewings */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-semibold text-[--color-neutral-900] font-['Plus_Jakarta_Sans']">
+            Upcoming Viewings
+          </h2>
+          <Link
+            href="/dashboard/seller/viewings"
+            className="flex items-center gap-1.5 text-xs font-medium text-[--color-brand-primary] hover:underline font-inter"
+          >
+            View all <ArrowRight size={12} strokeWidth={1.25} />
+          </Link>
+        </div>
         {viewings.data && viewings.data.length > 0 ? (
-          <ul className="space-y-3">
-            {viewings.data.map((v: any) => (
-              <li key={v.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+          <ul className="divide-y divide-[--color-neutral-100]">
+            {viewings.data.map((v: {
+              id: string;
+              buyer_name: string;
+              viewing_datetime: string;
+              viewing_type: string;
+            }) => (
+              <li key={v.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">{v.buyer_name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm font-semibold text-[--color-neutral-900] font-inter">
+                    {v.buyer_name}
+                  </p>
+                  <p className="text-xs text-[--color-neutral-400] mt-0.5 font-inter">
                     {new Date(v.viewing_datetime).toLocaleDateString("en-GB", {
                       weekday: "short",
                       day: "numeric",
@@ -156,14 +200,16 @@ async function PageContent() {
                     })}
                   </p>
                 </div>
-                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 capitalize">
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[--color-info-light] text-[--color-info] capitalize font-inter">
                   {v.viewing_type.replace("_", " ")}
                 </span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-slate-400 py-4 text-center">No upcoming viewings</p>
+          <div className="py-8 text-center">
+            <p className="text-sm text-[--color-neutral-400] font-inter">No upcoming viewings scheduled</p>
+          </div>
         )}
       </div>
     </div>
