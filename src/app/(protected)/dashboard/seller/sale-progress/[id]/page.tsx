@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft, Share2, CheckCircle2 } from "lucide-react";
 import { SaleProgressionStepper } from "@/components/seller/sale-progress/SaleProgressionStepper";
 import { SaleDocumentsList } from "@/components/seller/sale-progress/SaleDocumentsList";
 import { SaleContactsSidebar } from "@/components/seller/sale-progress/SaleContactsSidebar";
@@ -43,32 +43,69 @@ export default async function SaleProgressionPage({ params }: Props) {
     ? [listing?.address_line_1, listing?.city].filter(Boolean).join(", ")
     : "Property";
 
+  const completedStages = Object.keys(progression.stage_dates).length;
+  const totalStages = 8;
+  const progressPct = Math.round((completedStages / totalStages) * 100);
+  const isComplete = progression.current_stage === 8;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
           <Link
             href="/dashboard/seller/offers"
-            className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700"
+            className="inline-flex items-center gap-1.5 text-sm text-[#1a1c1c]/50 hover:text-[#1a1c1c] transition-colors mb-2"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={15} strokeWidth={1.5} />
             Offers
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans'] mt-2">
+          <h1 className="text-2xl font-bold text-[#1a1c1c] tracking-tight">
             Sale Progression
           </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-sm text-[#1a1c1c]/60 mt-0.5">
             {address}
-            {offer && ` · Buyer: ${offer.buyer_name}`}
+            {offer && (
+              <span className="text-[#1a1c1c]/40"> · Buyer: {offer.buyer_name}</span>
+            )}
           </p>
         </div>
-        <button
-          type="button"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-        >
-          <Share2 size={16} />
-          Share Progress
-        </button>
+
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Completion badge */}
+          {isComplete && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+              <CheckCircle2 size={13} />
+              Sale complete
+            </span>
+          )}
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#faf9f8] hover:bg-[#f4f3f2] text-sm font-semibold text-[#1a1c1c] transition-colors"
+          >
+            <Share2 size={15} strokeWidth={1.25} />
+            Share
+          </button>
+        </div>
+      </div>
+
+      {/* Progress overview pill */}
+      <div className="bg-[#faf9f8] rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-[#1a1c1c]">
+            Overall progress
+          </span>
+          <span className="text-sm font-bold text-[#1B4D3E]">
+            {completedStages}/{totalStages} stages
+          </span>
+        </div>
+        <div className="h-2 rounded-full bg-[#1B4D3E]/10">
+          <div
+            className="h-full rounded-full bg-[#1B4D3E] transition-all duration-700"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <p className="text-xs text-[#1a1c1c]/40 mt-2">{progressPct}% complete</p>
       </div>
 
       <SaleProgressionStepper progression={progression} />
