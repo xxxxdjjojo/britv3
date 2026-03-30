@@ -143,6 +143,22 @@ export function RenterOnboarding(
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        // Derive the primary notification_frequency from the most common email
+        // frequency across all alert categories (used as the scalar DB column).
+        // TODO: When a `notification_preferences` JSONB column is added to
+        // `renter_preferences`, persist the full `alertPrefs` matrix here instead.
+        const freqCounts = alertPrefs.reduce<Record<string, number>>(
+          (acc, p) => {
+            const key = p.email.toLowerCase();
+            acc[key] = (acc[key] ?? 0) + 1;
+            return acc;
+          },
+          {},
+        );
+        const primaryFreq =
+          Object.entries(freqCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ??
+          "daily";
+
         await supabase.from("renter_preferences").upsert(
           {
             user_id: user.id,
@@ -152,7 +168,7 @@ export function RenterOnboarding(
             property_types: propertyTypes,
             min_bedrooms: minBeds,
             requirements: mustHaves,
-            notification_frequency: alertPrefs[0]?.email.toLowerCase() ?? "daily",
+            notification_frequency: primaryFreq,
           },
           { onConflict: "user_id" },
         );
