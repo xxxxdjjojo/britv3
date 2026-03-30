@@ -18,7 +18,7 @@ function PageSkeleton() {
 async function PageContent() {
   const supabase = await createClient();
 
-  let applications = await listApplications(supabase).catch(() => []);
+  const applications = await listApplications(supabase).catch(() => []);
 
   return <TenantScreeningClient initialApplications={applications} />;
 }

@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Mail, Briefcase, ArrowRight } from "lucide-react";
+import { Mail, Briefcase, ArrowRight, PoundSterling } from "lucide-react";
 
 import type { TenantApplication, TenantApplicationStatus, CreditCheckStatus, ReferencesStatus } from "@/types/landlord";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 // -- Status badge config ------------------------------------------------------
 
@@ -15,9 +13,9 @@ const STATUS_STYLES: Record<
   { bg: string; text: string; dot: string; label: string }
 > = {
   received: {
-    bg: "bg-gray-100 dark:bg-gray-800/40",
-    text: "text-gray-700 dark:text-gray-300",
-    dot: "bg-gray-500",
+    bg: "bg-slate-100 dark:bg-slate-800/40",
+    text: "text-slate-700 dark:text-slate-300",
+    dot: "bg-slate-400",
     label: "Received",
   },
   shortlisted: {
@@ -33,9 +31,9 @@ const STATUS_STYLES: Record<
     label: "Referencing",
   },
   approved: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    text: "text-green-700 dark:text-green-400",
-    dot: "bg-green-500",
+    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    text: "text-emerald-700 dark:text-emerald-400",
+    dot: "bg-emerald-500",
     label: "Approved",
   },
   rejected: {
@@ -45,30 +43,58 @@ const STATUS_STYLES: Record<
     label: "Rejected",
   },
   withdrawn: {
-    bg: "bg-gray-100 dark:bg-gray-800/40",
-    text: "text-gray-600 dark:text-gray-400",
-    dot: "bg-gray-400",
+    bg: "bg-slate-100 dark:bg-slate-800/40",
+    text: "text-slate-600 dark:text-slate-400",
+    dot: "bg-slate-400",
     label: "Withdrawn",
   },
 };
 
 const CREDIT_STYLES: Record<
   CreditCheckStatus,
-  { variant: "outline" | "secondary" | "destructive"; label: string }
+  { bg: string; text: string; label: string }
 > = {
-  pending: { variant: "outline", label: "Credit: Pending" },
-  passed: { variant: "secondary", label: "Credit: Passed" },
-  failed: { variant: "destructive", label: "Credit: Failed" },
-  not_run: { variant: "outline", label: "Credit: Not run" },
+  pending: {
+    bg: "bg-slate-100 dark:bg-slate-800/40",
+    text: "text-slate-600 dark:text-slate-400",
+    label: "Credit: Pending",
+  },
+  passed: {
+    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    text: "text-emerald-700 dark:text-emerald-400",
+    label: "Credit: Passed",
+  },
+  failed: {
+    bg: "bg-red-100 dark:bg-red-900/30",
+    text: "text-red-700 dark:text-red-400",
+    label: "Credit: Failed",
+  },
+  not_run: {
+    bg: "bg-slate-100 dark:bg-slate-800/40",
+    text: "text-slate-500 dark:text-slate-500",
+    label: "Credit: Not run",
+  },
 };
 
 const REF_STYLES: Record<
   ReferencesStatus,
-  { variant: "outline" | "secondary"; label: string }
+  { bg: string; text: string; label: string }
 > = {
-  pending: { variant: "outline", label: "Refs: Pending" },
-  received: { variant: "outline", label: "Refs: Received" },
-  verified: { variant: "secondary", label: "Refs: Verified" },
+  pending: {
+    bg: "bg-slate-100 dark:bg-slate-800/40",
+    text: "text-slate-600 dark:text-slate-400",
+    label: "Refs: Pending",
+  },
+  received: {
+    bg: "bg-blue-100 dark:bg-blue-900/30",
+    text: "text-blue-700 dark:text-blue-400",
+    label: "Refs: Received",
+  },
+  verified: {
+    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    text: "text-emerald-700 dark:text-emerald-400",
+    label: "Refs: Verified",
+  },
 };
 
 // -- Props --------------------------------------------------------------------
@@ -96,71 +122,82 @@ export function ApplicationPipelineCard({
     .toUpperCase();
 
   return (
-    <Card className="mb-3 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-      <CardContent className="p-4 space-y-3">
-        {/* Header: avatar + name */}
-        <div className="flex items-start gap-3">
-          <div className="size-9 shrink-0 rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E] dark:bg-[#1B4D3E]/20 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
-            {initials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-sm truncate">{application.applicant_name}</p>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground truncate">
-              <Mail className="size-3 shrink-0" />
-              <span className="truncate">{application.applicant_email}</span>
-            </div>
+    <div className="mb-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3.5 shadow-sm hover:shadow-md hover:border-[color:var(--color-brand-primary)]/30 transition-all duration-150">
+      {/* Header: avatar + name */}
+      <div className="flex items-start gap-2.5">
+        <div className="size-8 shrink-0 rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+          {initials}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-sm font-heading truncate">{application.applicant_name}</p>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground truncate mt-0.5">
+            <Mail className="size-3 shrink-0" />
+            <span className="truncate">{application.applicant_email}</span>
           </div>
         </div>
+      </div>
 
-        {/* Income + employment */}
-        {(application.monthly_income != null || application.employment_status) && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Briefcase className="size-3 shrink-0" />
-            <span>
-              {application.employment_status ?? "—"}
-              {application.monthly_income != null && (
-                <span className="ml-1 font-medium text-foreground">
-                  · £{application.monthly_income.toLocaleString("en-GB")}/mo
+      {/* Income + employment */}
+      {(application.monthly_income != null || application.employment_status) && (
+        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+          <Briefcase className="size-3 shrink-0" />
+          <span className="truncate">
+            {application.employment_status ?? "—"}
+            {application.monthly_income != null && (
+              <>
+                <span className="mx-1">·</span>
+                <PoundSterling className="size-3 inline-block" />
+                <span className="font-medium text-foreground">
+                  {application.monthly_income.toLocaleString("en-GB")}/mo
                 </span>
-              )}
-            </span>
-          </div>
-        )}
-
-        {/* Status badges */}
-        <div className="flex flex-wrap gap-1.5">
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyle.bg} ${statusStyle.text}`}
-          >
-            <span className={`size-1.5 rounded-full ${statusStyle.dot}`} />
-            {statusStyle.label}
+              </>
+            )}
           </span>
-          <Badge variant={creditStyle.variant} className="text-xs">
-            {creditStyle.label}
-          </Badge>
-          <Badge variant={refStyle.variant} className="text-xs">
-            {refStyle.label}
-          </Badge>
         </div>
+      )}
 
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-1">
-          <Button asChild variant="outline" size="sm" className="text-xs">
-            <Link href={`/dashboard/landlord/tenants/${application.id}`}>
-              Review
-              <ArrowRight className="ml-1 size-3" />
-            </Link>
-          </Button>
-          {onMoveToNextStage && (
-            <button
-              onClick={onMoveToNextStage}
-              className="text-xs text-[#1B4D3E] dark:text-emerald-400 font-medium hover:underline"
-            >
-              Move stage
-            </button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      {/* Status chips */}
+      <div className="mt-2.5 flex flex-wrap gap-1">
+        <span
+          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}
+        >
+          <span className={`size-1.5 rounded-full ${statusStyle.dot}`} />
+          {statusStyle.label}
+        </span>
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${creditStyle.bg} ${creditStyle.text}`}
+        >
+          {creditStyle.label}
+        </span>
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${refStyle.bg} ${refStyle.text}`}
+        >
+          {refStyle.label}
+        </span>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-3 flex items-center justify-between">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs border-[color:var(--color-brand-primary)]/30 text-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-lighter)] hover:text-[color:var(--color-brand-primary)] dark:border-emerald-800/50 dark:text-emerald-400"
+        >
+          <Link href={`/dashboard/landlord/tenants/${application.id}`}>
+            Review
+            <ArrowRight className="ml-1 size-3" />
+          </Link>
+        </Button>
+        {onMoveToNextStage && (
+          <button
+            onClick={onMoveToNextStage}
+            className="text-xs text-[color:var(--color-brand-primary)] dark:text-emerald-400 font-medium hover:underline"
+          >
+            Move stage
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
