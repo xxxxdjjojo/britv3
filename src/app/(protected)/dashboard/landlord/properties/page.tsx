@@ -21,19 +21,19 @@ async function PropertiesContent() {
   const vacant = properties.length - occupied;
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-6 md:p-8">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            Portfolio Overview
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            My Properties
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">
-            Managing {properties.length} propert{properties.length !== 1 ? "ies" : "y"} &mdash;{" "}
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+            {properties.length} propert{properties.length !== 1 ? "ies" : "y"} &mdash;{" "}
             {occupied} occupied, {vacant} vacant
           </p>
         </div>
-        <Button asChild>
+        <Button asChild aria-label="Add a new property" className="bg-brand-primary hover:bg-brand-primary-light text-white rounded-xl">
           <Link href="/dashboard/landlord/properties/add">
             <Plus className="mr-2 size-4" />
             Add Property
@@ -44,21 +44,21 @@ async function PropertiesContent() {
       {/* Summary stats */}
       {properties.length > 0 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-sm text-slate-500">Total</p>
-            <p className="mt-1 text-2xl font-bold">{properties.length}</p>
+          <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Total</p>
+            <p className="mt-1.5 font-heading text-2xl font-bold text-neutral-900 dark:text-neutral-100">{properties.length}</p>
           </div>
-          <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-sm text-slate-500">Occupied</p>
-            <p className="mt-1 text-2xl font-bold text-emerald-600">{occupied}</p>
+          <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Occupied</p>
+            <p className="mt-1.5 font-heading text-2xl font-bold text-success">{occupied}</p>
           </div>
-          <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-sm text-slate-500">Vacant</p>
-            <p className="mt-1 text-2xl font-bold text-slate-600">{vacant}</p>
+          <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Vacant</p>
+            <p className="mt-1.5 font-heading text-2xl font-bold text-neutral-600">{vacant}</p>
           </div>
-          <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-sm text-slate-500">Occupancy</p>
-            <p className="mt-1 text-2xl font-bold">
+          <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">Occupancy</p>
+            <p className="mt-1.5 font-heading text-2xl font-bold text-neutral-900 dark:text-neutral-100">
               {properties.length > 0
                 ? `${Math.round((occupied / properties.length) * 100)}%`
                 : "—"}
@@ -69,17 +69,17 @@ async function PropertiesContent() {
 
       {/* Property grid */}
       {properties.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed py-24 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E]">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-24 text-center dark:border-neutral-700">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
             <Building2 className="size-8" />
           </div>
-          <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="mt-4 font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             No properties yet
           </h3>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
             Add your first rental property to start managing your portfolio.
           </p>
-          <Button asChild className="mt-6">
+          <Button asChild className="mt-6 bg-brand-primary hover:bg-brand-primary-light text-white rounded-xl" aria-label="Add your first property">
             <Link href="/dashboard/landlord/properties/add">
               <Plus className="mr-2 size-4" />
               Add Property
@@ -95,19 +95,19 @@ async function PropertiesContent() {
 
 function PropertiesSkeleton() {
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-6 md:p-8">
       <div className="flex items-center justify-between">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-10 w-36" />
+        <Skeleton className="h-10 w-64 rounded-xl" />
+        <Skeleton className="h-10 w-36 rounded-xl" />
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-24 rounded-xl" />
+          <Skeleton key={i} className="h-24 rounded-2xl" />
         ))}
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-48 rounded-xl" />
+          <Skeleton key={i} className="h-56 rounded-2xl" />
         ))}
       </div>
     </div>

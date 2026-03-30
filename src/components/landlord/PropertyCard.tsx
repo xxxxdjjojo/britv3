@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { MapPin, Wrench, AlertTriangle } from "lucide-react";
 import type { PortfolioProperty } from "@/services/landlord/portfolio-service";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isTenancyExpired } from "@/components/landlord/TenancyStatusBadge";
 import type { TenancyStatus } from "@/types/landlord";
 
@@ -27,78 +27,87 @@ export function PropertyCard(
     p.lease_end_date,
   );
 
+  const statusBadge = expired
+    ? { label: "Expired", className: "bg-error-light text-error" }
+    : isOccupied
+      ? { label: "Occupied", className: "bg-success-light text-success" }
+      : { label: "Vacant", className: "bg-neutral-100 text-neutral-600" };
+
   return (
-    <Link href={`/dashboard/landlord/properties/${p.id}/overview`}>
-      <Card className="cursor-pointer transition-shadow hover:shadow-md">
-        <CardHeader>
-          <CardTitle className="flex items-start justify-between gap-2">
-            <span className="truncate">{p.address_line_1}</span>
-            <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                expired
-                  ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                  : isOccupied
-                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                    : "bg-gray-100 text-gray-600 dark:bg-gray-800/30 dark:text-gray-400"
-              }`}
-            >
-              {expired ? "Expired" : isOccupied ? "Occupied" : "Vacant"}
-            </span>
-          </CardTitle>
-        </CardHeader>
+    <Link
+      href={`/dashboard/landlord/properties/${p.id}/overview`}
+      aria-label={`View property ${p.address_line_1}`}
+      className="group block bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden transition-shadow hover:shadow-md dark:bg-neutral-900 dark:border-neutral-800"
+    >
+      {/* Property image placeholder */}
+      <div className="h-32 bg-brand-primary/10 flex items-center justify-center">
+        <div className="flex size-12 items-center justify-center rounded-full bg-brand-primary/20">
+          <MapPin className="size-6 text-brand-primary" />
+        </div>
+      </div>
 
-        <CardContent className="space-y-2">
-          {/* Expired tenancy warning banner */}
-          {expired && p.lease_end_date && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
-              Tenancy expired on{" "}
-              {new Date(p.lease_end_date).toLocaleDateString("en-GB")}. Renew or
-              end this tenancy.
-            </div>
-          )}
+      <div className="p-5 space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="font-heading font-semibold text-neutral-900 truncate dark:text-neutral-100 group-hover:text-brand-primary transition-colors">
+              {p.address_line_1}
+            </h3>
+            <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">
+              {p.city}, {p.postcode}
+            </p>
+          </div>
+          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusBadge.className}`}>
+            {statusBadge.label}
+          </span>
+        </div>
 
-          <p className="text-sm text-muted-foreground">
-            {p.city}, {p.postcode}
-          </p>
+        {/* Expired tenancy warning */}
+        {expired && p.lease_end_date && (
+          <div className="rounded-lg border border-error/20 bg-error-light px-3 py-2 text-xs text-error">
+            Tenancy expired {new Date(p.lease_end_date).toLocaleDateString("en-GB")}. Renew or end.
+          </div>
+        )}
 
+        <div className="space-y-1.5">
           {isOccupied && p.tenant_name && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Tenant:</span>{" "}
-              <span className="font-medium">{p.tenant_name}</span>
-            </div>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <span className="font-medium text-neutral-900 dark:text-neutral-100">{p.tenant_name}</span>
+            </p>
           )}
 
           {p.rent_amount != null && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Rent:</span>{" "}
-              <span className="font-medium">
-                {formatGBP(p.rent_amount)}/{p.rent_frequency ?? "month"}
+            <p className="text-sm">
+              <span className="font-heading font-semibold text-neutral-900 dark:text-neutral-100">
+                {formatGBP(p.rent_amount)}
               </span>
-            </div>
+              <span className="text-neutral-500">/{p.rent_frequency ?? "month"}</span>
+            </p>
           )}
 
           {p.lease_end_date && (
-            <div className="text-sm">
-              <span className="text-muted-foreground">Lease ends:</span>{" "}
-              <span>{new Date(p.lease_end_date).toLocaleDateString("en-GB")}</span>
-            </div>
+            <p className="text-xs text-neutral-500">
+              Lease ends: {new Date(p.lease_end_date).toLocaleDateString("en-GB")}
+            </p>
           )}
+        </div>
 
-          <div className="flex items-center gap-3 pt-1">
+        {(p.open_maintenance_count > 0 || hasExpiringDocs) && (
+          <div className="flex items-center gap-2 pt-1 border-t border-neutral-100 dark:border-neutral-800">
             {p.open_maintenance_count > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                {p.open_maintenance_count} maintenance
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-accent/10 px-2 py-0.5 text-xs font-medium text-brand-accent">
+                <Wrench className="size-3" />
+                {p.open_maintenance_count}
               </span>
             )}
-
             {hasExpiringDocs && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                {p.expiring_documents_count} expiring doc{p.expiring_documents_count > 1 ? "s" : ""}
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning">
+                <AlertTriangle className="size-3" />
+                {p.expiring_documents_count} doc{p.expiring_documents_count > 1 ? "s" : ""}
               </span>
             )}
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </Link>
   );
 }

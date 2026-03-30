@@ -71,10 +71,11 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
   return (
     <Link
       href={item.href}
+      aria-current={isActive ? "page" : undefined}
       className={
         isActive
-          ? "flex items-center gap-3 rounded-lg border-l-4 border-[#1B4D3E] bg-[#1B4D3E]/10 px-4 py-3 text-sm font-semibold text-[#1B4D3E]"
-          : "flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          ? "flex items-center gap-3 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+          : "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100"
       }
     >
       <Icon className="size-4 shrink-0" />
@@ -85,17 +86,17 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
 
 function SidebarInner(props: Readonly<{ pathname: string }>) {
   return (
-    <div className="flex h-full flex-col overflow-y-auto">
+    <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-neutral-900">
       {/* Logo */}
-      <div className="flex items-center gap-3 border-b p-6">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-[#1B4D3E] text-white">
+      <div className="flex items-center gap-3 border-b border-neutral-200 px-5 py-5 dark:border-neutral-800">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-brand-primary text-white shadow-sm">
           <Building2 className="size-5" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-[#1B4D3E]">Britestate</h1>
+        <h1 className="font-heading text-lg font-bold tracking-tight text-brand-primary">Britestate</h1>
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 space-y-1 p-4">
+      <nav className="flex-1 space-y-0.5 p-3" aria-label="Landlord dashboard navigation">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.href} item={item} pathname={props.pathname} />
         ))}
@@ -110,7 +111,7 @@ export function LandlordSidebar() {
   return (
     <>
       {/* Desktop permanent sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r bg-background lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900 lg:block">
         <SidebarInner pathname={pathname} />
       </aside>
 
@@ -120,7 +121,7 @@ export function LandlordSidebar() {
           <SheetTrigger asChild>
             <button
               type="button"
-              className="inline-flex size-10 items-center justify-center rounded-md border bg-background text-foreground shadow-sm hover:bg-accent"
+              className="inline-flex size-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
               aria-label="Open navigation menu"
             >
               <Menu className="size-5" />
