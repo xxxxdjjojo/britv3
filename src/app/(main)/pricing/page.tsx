@@ -3,6 +3,7 @@ import { PLANS_BY_ROLE } from "@/lib/billing-config";
 import type { Plan } from "@/lib/billing-config";
 import { PricingTabs } from "@/components/pricing/PricingTabs";
 import Link from "next/link";
+import { ShieldCheck, Sparkles, CheckCircle2 } from "lucide-react";
 
 // Marketing metadata that doesn't belong in billing-config.ts.
 // Prices, names, and features are derived from PLANS_BY_ROLE (source of truth).
@@ -90,32 +91,68 @@ const PRICING_TABS = [
   },
 ];
 
+const TRUST_ITEMS = [
+  { icon: ShieldCheck, text: "Bank-grade security & encryption" },
+  { icon: CheckCircle2, text: "Cancel or change plan anytime" },
+  { icon: Sparkles, text: "AI features included in all plans" },
+];
+
 export default function PricingPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-      <div className="text-center">
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
-          Simple, Transparent Pricing
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
-          Free for homeowners. Performance-based for agents. Membership-based
-          for tradespeople.
-        </p>
-      </div>
+    <div className="bg-neutral-50">
+      {/* Hero */}
+      <section className="bg-brand-primary text-white py-20 lg:py-28">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6 text-sm font-semibold">
+            <Sparkles className="size-4" />
+            <span>Performance-based. Transparent. Fair.</span>
+          </div>
+          <h1 className="font-heading text-5xl md:text-6xl font-bold tracking-tight mb-6">
+            Simple, Transparent Pricing
+          </h1>
+          <p className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Free for homeowners. Performance-based for agents. Membership-based
+            for tradespeople.
+          </p>
 
-      <div className="mt-10">
+          {/* Trust items */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mt-10">
+            {TRUST_ITEMS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.text} className="flex items-center gap-2 text-white/90 text-sm font-medium">
+                  <Icon className="size-4 shrink-0" />
+                  <span>{item.text}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing tabs */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <PricingTabs tabs={PRICING_TABS} defaultTab="tradespeople" />
-      </div>
+      </section>
 
-      <p className="mt-16 text-center text-sm text-neutral-500">
-        Have questions?{" "}
-        <Link
-          href="/contact"
-          className="text-[#1B4D3E] underline-offset-4 hover:underline"
-        >
-          Contact our sales team
-        </Link>
-      </p>
+      {/* FAQ / Contact prompt */}
+      <section className="bg-brand-primary-lighter py-14">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="font-heading text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight mb-3">
+            Have questions about pricing?
+          </h2>
+          <p className="text-neutral-600 text-base mb-8">
+            Our team is happy to walk you through the right plan for your
+            situation.
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-brand-primary-light transition-colors shadow-md"
+          >
+            Contact our sales team
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

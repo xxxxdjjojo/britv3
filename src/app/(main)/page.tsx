@@ -377,7 +377,7 @@ export default function HomePage() {
                 className="flex flex-col items-center text-center gap-5 relative"
               >
                 <div className="relative">
-                  <div className="size-20 rounded-full bg-white shadow-md flex items-center justify-center text-brand-primary border border-brand-primary/10">
+                  <div className="size-20 rounded-full bg-white shadow-md flex items-center justify-center text-brand-primary">
                     <item.icon className="size-8" />
                   </div>
                   <span className="absolute -top-2 -right-2 size-7 rounded-full bg-brand-primary text-white text-xs font-bold flex items-center justify-center shadow">
