@@ -3,10 +3,22 @@
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  MapPin,
+  Home,
+  Camera,
+  PoundSterling,
+  FileText,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  Upload,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -14,30 +26,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 // ============================================================================
 // Types
 // ============================================================================
 
 type WizardData = {
-  // Step 1: Address
   postcode: string;
   address_line_1: string;
   city: string;
-  // Step 2: Property details
   property_type: string;
   bedrooms: number;
   bathrooms: number;
   floor_area: number | null;
-  // Step 3: Photos (handled separately via ref)
-  // Step 4: Price
   price: number;
   pricing_qualifier: string;
-  // Step 5: Description
   description: string;
 };
 
 const TOTAL_STEPS = 6;
+
+const STEP_CONFIG = [
+  { label: "Address", Icon: MapPin, description: "Property location" },
+  { label: "Details", Icon: Home, description: "Property specs" },
+  { label: "Photos", Icon: Camera, description: "Upload images" },
+  { label: "Price", Icon: PoundSterling, description: "Set asking price" },
+  { label: "Description", Icon: FileText, description: "Write copy" },
+  { label: "Review", Icon: CheckCircle, description: "Publish listing" },
+] as const;
 
 // ============================================================================
 // Step indicator
@@ -45,43 +62,45 @@ const TOTAL_STEPS = 6;
 
 function StepIndicator({ current, total }: Readonly<{ current: number; total: number }>) {
   return (
-    <div className="flex items-center justify-center gap-2 mb-6">
-      {Array.from({ length: total }).map((_, i) => {
-        const step = i + 1;
-        const isCompleted = step < current;
-        const isActive = step === current;
-        return (
-          <div
-            key={step}
-            className={[
-              "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-colors",
-              isCompleted
-                ? "bg-primary border-primary text-primary-foreground"
-                : isActive
-                  ? "border-primary text-primary"
-                  : "border-muted-foreground text-muted-foreground",
-            ].join(" ")}
-          >
-            {step}
-          </div>
-        );
-      })}
+    <div className="relative mb-8">
+      {/* Track */}
+      <div className="absolute left-0 right-0 top-5 h-px bg-border" />
+      {/* Steps */}
+      <ol className="relative flex items-start justify-between">
+        {Array.from({ length: total }).map((_, i) => {
+          const step = i + 1;
+          const { label, Icon } = STEP_CONFIG[i];
+          const isCompleted = step < current;
+          const isActive = step === current;
+          return (
+            <li key={step} className="flex flex-1 flex-col items-center gap-2">
+              <div
+                className={cn(
+                  "relative z-10 flex size-10 items-center justify-center rounded-full border-2 transition-all duration-300",
+                  isCompleted
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : isActive
+                      ? "border-brand-primary bg-white text-brand-primary dark:bg-card"
+                      : "border-border bg-card text-muted-foreground",
+                )}
+              >
+                <Icon className="size-4" strokeWidth={1.5} />
+              </div>
+              <span
+                className={cn(
+                  "hidden text-xs font-medium sm:block",
+                  isActive ? "text-brand-primary" : isCompleted ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }
-
-// ============================================================================
-// Step labels
-// ============================================================================
-
-const STEP_LABELS = [
-  "Address",
-  "Property Details",
-  "Photos",
-  "Price",
-  "Description",
-  "Review & Publish",
-];
 
 // ============================================================================
 // Field wrapper
@@ -90,13 +109,15 @@ const STEP_LABELS = [
 function Field({
   label,
   error,
+  hint,
   children,
-}: Readonly<{ label: string; error?: string; children: React.ReactNode }>) {
+}: Readonly<{ label: string; error?: string; hint?: string; children: React.ReactNode }>) {
   return (
-    <div className="space-y-1">
-      <Label>{label}</Label>
+    <div className="flex flex-col gap-1.5">
+      <Label className="text-sm font-medium text-foreground">{label}</Label>
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
     </div>
   );
 }
@@ -136,14 +157,10 @@ export function CreateListingWizard() {
     },
   });
 
-  // -------------------------------------------------------------------------
-  // Step field groups for validation
-  // -------------------------------------------------------------------------
-
   const STEP_FIELDS: Array<(keyof WizardData)[]> = [
     ["postcode", "address_line_1", "city"],
     ["property_type", "bedrooms", "bathrooms"],
-    [], // photos — no required fields
+    [],
     ["price", "pricing_qualifier"],
     ["description"],
     [],
@@ -162,19 +179,15 @@ export function CreateListingWizard() {
     setStep((s) => Math.max(s - 1, 1));
   }
 
-  // -------------------------------------------------------------------------
-  // Photo handling
-  // -------------------------------------------------------------------------
-
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []).slice(0, 10);
     const urls = files.map((f) => URL.createObjectURL(f));
     setPreviewUrls(urls);
   }
 
-  // -------------------------------------------------------------------------
-  // AI description generation
-  // -------------------------------------------------------------------------
+  function removePreview(index: number) {
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  }
 
   async function generateAiDescription() {
     setAiGenerating(true);
@@ -201,10 +214,6 @@ export function CreateListingWizard() {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // Publish
-  // -------------------------------------------------------------------------
-
   async function onPublish() {
     setPublishing(true);
     try {
@@ -212,14 +221,10 @@ export function CreateListingWizard() {
       const res = await fetch("/api/agent/listings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...values,
-          status: "active",
-        }),
+        body: JSON.stringify({ ...values, status: "active" }),
       });
       if (!res.ok) throw new Error("Publish failed");
       toast.success("Listing published successfully.");
-      // Redirect to listings page
       window.location.href = "/dashboard/agent/listings";
     } catch {
       toast.error("Could not publish listing right now. Please try again later.");
@@ -228,35 +233,33 @@ export function CreateListingWizard() {
     }
   }
 
-  // -------------------------------------------------------------------------
-  // Render helpers
-  // -------------------------------------------------------------------------
-
   const values = watch();
+  const { label: stepLabel, description: stepDescription } = STEP_CONFIG[step - 1];
 
   function renderStep() {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4">
-            <Field label="Postcode" error={errors.postcode?.message}>
+          <div className="flex flex-col gap-5">
+            <Field label="Postcode" error={errors.postcode?.message} hint="e.g. SW1A 1AA">
               <Input
                 {...register("postcode", { required: "Postcode is required" })}
-                placeholder="e.g. SW1A 1AA"
+                placeholder="SW1A 1AA"
+                className="rounded-xl"
               />
             </Field>
             <Field label="Address Line 1" error={errors.address_line_1?.message}>
               <Input
-                {...register("address_line_1", {
-                  required: "Address is required",
-                })}
-                placeholder="e.g. 10 Downing Street"
+                {...register("address_line_1", { required: "Address is required" })}
+                placeholder="10 Downing Street"
+                className="rounded-xl"
               />
             </Field>
             <Field label="City" error={errors.city?.message}>
               <Input
                 {...register("city", { required: "City is required" })}
-                placeholder="e.g. London"
+                placeholder="London"
+                className="rounded-xl"
               />
             </Field>
           </div>
@@ -264,14 +267,14 @@ export function CreateListingWizard() {
 
       case 2:
         return (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-5">
             <Field label="Property Type" error={errors.property_type?.message}>
               <Select
                 value={values.property_type}
                 onValueChange={(v) => setValue("property_type", v ?? "")}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue placeholder="Select property type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="house">House</SelectItem>
@@ -281,39 +284,42 @@ export function CreateListingWizard() {
                 </SelectContent>
               </Select>
               {errors.property_type && (
-                <p className="text-xs text-destructive">{errors.property_type.message}</p>
+                <p className="text-xs font-medium text-destructive">{errors.property_type.message}</p>
               )}
             </Field>
-            <Field label="Bedrooms" error={errors.bedrooms?.message}>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="Bedrooms" error={errors.bedrooms?.message}>
+                <Input
+                  type="number"
+                  min={0}
+                  {...register("bedrooms", {
+                    required: "Required",
+                    valueAsNumber: true,
+                    min: { value: 0, message: "Min 0" },
+                  })}
+                  className="rounded-xl"
+                />
+              </Field>
+              <Field label="Bathrooms" error={errors.bathrooms?.message}>
+                <Input
+                  type="number"
+                  min={0}
+                  {...register("bathrooms", {
+                    required: "Required",
+                    valueAsNumber: true,
+                    min: { value: 0, message: "Min 0" },
+                  })}
+                  className="rounded-xl"
+                />
+              </Field>
+            </div>
+            <Field label="Floor Area (sq ft)" hint="Optional">
               <Input
                 type="number"
                 min={0}
-                {...register("bedrooms", {
-                  required: "Bedrooms required",
-                  valueAsNumber: true,
-                  min: { value: 0, message: "Min 0" },
-                })}
-              />
-            </Field>
-            <Field label="Bathrooms" error={errors.bathrooms?.message}>
-              <Input
-                type="number"
-                min={0}
-                {...register("bathrooms", {
-                  required: "Bathrooms required",
-                  valueAsNumber: true,
-                  min: { value: 0, message: "Min 0" },
-                })}
-              />
-            </Field>
-            <Field label="Floor Area (sq ft, optional)">
-              <Input
-                type="number"
-                min={0}
-                {...register("floor_area", {
-                  valueAsNumber: true,
-                })}
-                placeholder="Optional"
+                {...register("floor_area", { valueAsNumber: true })}
+                placeholder="e.g. 850"
+                className="rounded-xl"
               />
             </Field>
           </div>
@@ -321,17 +327,21 @@ export function CreateListingWizard() {
 
       case 3:
         return (
-          <div className="space-y-4">
-            <div
-              className="border-2 border-dashed border-muted-foreground rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+          <div className="flex flex-col gap-5">
+            <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
+              className="group flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-border p-10 text-center transition-colors hover:border-brand-primary hover:bg-brand-primary/5"
             >
-              <p className="text-muted-foreground text-sm">
-                Drag & drop photos here, or click to select
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Up to 10 images. JPEG, PNG, WebP accepted.
-              </p>
+              <div className="flex size-14 items-center justify-center rounded-xl bg-muted transition-colors group-hover:bg-brand-primary/10">
+                <Upload className="size-6 text-muted-foreground transition-colors group-hover:text-brand-primary" strokeWidth={1.25} />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Drop photos here or click to browse</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Up to 10 images &middot; JPEG, PNG, WebP
+                </p>
+              </div>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -340,16 +350,26 @@ export function CreateListingWizard() {
                 className="hidden"
                 onChange={handleFileChange}
               />
-            </div>
+            </button>
+
             {previewUrls.length > 0 && (
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
                 {previewUrls.map((url, i) => (
-                  <img
-                    key={i}
-                    src={url}
-                    alt={`Preview ${i + 1}`}
-                    className="h-20 w-full object-cover rounded-md"
-                  />
+                  <div key={i} className="group relative">
+                    <img
+                      src={url}
+                      alt={`Preview ${i + 1}`}
+                      className="h-20 w-full rounded-xl object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePreview(i)}
+                      aria-label={`Remove photo ${i + 1}`}
+                      className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity hover:bg-black/80 group-hover:opacity-100"
+                    >
+                      <X className="size-3" strokeWidth={2} />
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -358,20 +378,26 @@ export function CreateListingWizard() {
 
       case 4:
         return (
-          <div className="space-y-4">
-            <Field label="Price (GBP)" error={errors.price?.message}>
-              <Input
-                type="number"
-                min={0}
-                {...register("price", {
-                  required: "Price is required",
-                  valueAsNumber: true,
-                  min: { value: 1, message: "Price must be positive" },
-                })}
-                placeholder="e.g. 350000"
-              />
+          <div className="flex flex-col gap-5">
+            <Field label="Asking Price (GBP)" error={errors.price?.message}>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
+                  £
+                </span>
+                <Input
+                  type="number"
+                  min={0}
+                  {...register("price", {
+                    required: "Price is required",
+                    valueAsNumber: true,
+                    min: { value: 1, message: "Price must be positive" },
+                  })}
+                  placeholder="350000"
+                  className="rounded-xl pl-7"
+                />
+              </div>
               {values.price > 0 && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs font-medium text-brand-primary">
                   {new Intl.NumberFormat("en-GB", {
                     style: "currency",
                     currency: "GBP",
@@ -385,7 +411,7 @@ export function CreateListingWizard() {
                 value={values.pricing_qualifier}
                 onValueChange={(v) => setValue("pricing_qualifier", v ?? "")}
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-xl">
                   <SelectValue placeholder="Select qualifier" />
                 </SelectTrigger>
                 <SelectContent>
@@ -401,43 +427,50 @@ export function CreateListingWizard() {
 
       case 5:
         return (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <Label>Description</Label>
+              <Label className="text-sm font-medium text-foreground">Property Description</Label>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={generateAiDescription}
                 disabled={aiGenerating}
+                className="gap-1.5 rounded-xl"
               >
-                {aiGenerating ? "Generating..." : "AI Suggestion"}
+                <Sparkles
+                  className={cn("size-3.5 text-amber-500", aiGenerating && "animate-pulse")}
+                  strokeWidth={1.25}
+                />
+                {aiGenerating ? "Generating…" : "AI Suggestion"}
               </Button>
             </div>
             <textarea
-              {...register("description", {
-                required: "Description is required",
-              })}
+              {...register("description", { required: "Description is required" })}
               rows={8}
-              className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-y"
-              placeholder="Describe the property..."
+              className={cn(
+                "w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground",
+                "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
+                errors.description && "border-destructive ring-destructive/20",
+              )}
+              placeholder="Describe the property in detail — location highlights, features, finish quality…"
             />
             {errors.description && (
-              <p className="text-xs text-destructive">{errors.description.message}</p>
+              <p className="text-xs font-medium text-destructive">{errors.description.message}</p>
             )}
+            <p className="text-xs text-muted-foreground">
+              {values.description?.length ?? 0} characters &middot; aim for 200+
+            </p>
           </div>
         );
 
       case 6:
         return (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-              Review your listing
-            </h3>
-            <div className="divide-y divide-border rounded-lg border">
+          <div className="flex flex-col gap-6">
+            <div className="rounded-xl bg-muted/40 px-1 py-1">
               {[
                 ["Address", [values.address_line_1, values.city, values.postcode].filter(Boolean).join(", ")],
-                ["Property Type", values.property_type],
+                ["Type", values.property_type || "Not set"],
                 ["Bedrooms", String(values.bedrooms)],
                 ["Bathrooms", String(values.bathrooms)],
                 [
@@ -454,25 +487,40 @@ export function CreateListingWizard() {
                       }).format(values.price)
                     : "Not set",
                 ],
-                ["Pricing Qualifier", values.pricing_qualifier || "Not set"],
-                ["Photos", `${previewUrls.length} selected`],
+                ["Qualifier", values.pricing_qualifier || "Not set"],
+                ["Photos", previewUrls.length > 0 ? `${previewUrls.length} selected` : "None selected"],
               ].map(([label, value]) => (
-                <div key={label} className="flex justify-between px-4 py-3 text-sm">
-                  <span className="text-muted-foreground">{label}</span>
-                  <span className="font-medium text-right max-w-[60%] break-words">
+                <div
+                  key={label}
+                  className="flex items-center justify-between rounded-lg px-4 py-3 text-sm odd:bg-card"
+                >
+                  <span className="font-medium text-muted-foreground">{label}</span>
+                  <span className="max-w-[60%] break-words text-right font-medium text-foreground">
                     {value}
                   </span>
                 </div>
               ))}
             </div>
+
             {values.description && (
-              <div className="rounded-lg border p-4 space-y-1">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Description
+              <div className="rounded-xl bg-card p-4 ring-1 ring-border/60">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Description preview
                 </p>
-                <p className="text-sm whitespace-pre-wrap">{values.description}</p>
+                <p className="text-sm leading-relaxed text-foreground line-clamp-6 whitespace-pre-wrap">
+                  {values.description}
+                </p>
               </div>
             )}
+
+            <div className="rounded-xl bg-brand-primary/5 p-4 ring-1 ring-brand-primary/20">
+              <p className="text-sm font-medium text-brand-primary">
+                Ready to publish?
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Your listing will go live immediately and appear in Britestate search results.
+              </p>
+            </div>
           </div>
         );
 
@@ -482,39 +530,88 @@ export function CreateListingWizard() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">
-            New Listing — {STEP_LABELS[step - 1]}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <StepIndicator current={step} total={TOTAL_STEPS} />
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-2xl">
+        {/* Page heading */}
+        <div className="mb-8 text-center">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            New Listing
+          </p>
+          <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight text-foreground">
+            {stepLabel}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">{stepDescription}</p>
+        </div>
+
+        {/* Step indicator */}
+        <StepIndicator current={step} total={TOTAL_STEPS} />
+
+        {/* Card */}
+        <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border/60 sm:p-8">
           <form onSubmit={handleSubmit(onPublish)} noValidate>
             {renderStep()}
-            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+
+            {/* Navigation */}
+            <div className="mt-8 flex items-center justify-between gap-4 border-t border-border/60 pt-6">
               <Button
                 type="button"
                 variant="outline"
                 onClick={goBack}
                 disabled={step === 1}
+                className="gap-2 rounded-xl"
               >
+                <ChevronLeft className="size-4" strokeWidth={1.5} />
                 Back
               </Button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all duration-300",
+                      i + 1 === step
+                        ? "w-6 bg-brand-primary"
+                        : i + 1 < step
+                          ? "w-1.5 bg-brand-primary/40"
+                          : "w-1.5 bg-muted-foreground/20",
+                    )}
+                  />
+                ))}
+              </div>
+
               {step < TOTAL_STEPS ? (
-                <Button type="button" onClick={goNext}>
-                  Next
+                <Button
+                  type="button"
+                  onClick={goNext}
+                  className="gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light"
+                >
+                  Continue
+                  <ChevronRight className="size-4" strokeWidth={1.5} />
                 </Button>
               ) : (
-                <Button type="submit" disabled={publishing}>
-                  {publishing ? "Publishing..." : "Publish Listing"}
+                <Button
+                  type="submit"
+                  disabled={publishing}
+                  className="gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light"
+                >
+                  {publishing ? (
+                    <>
+                      <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      Publishing…
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="size-4" strokeWidth={1.5} />
+                      Publish Listing
+                    </>
+                  )}
                 </Button>
               )}
             </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

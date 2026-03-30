@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "sonner";
+import { Building2, Archive, FileEdit, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -17,6 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 type Props = Readonly<{
   listings: Record<string, unknown>[];
@@ -41,6 +43,7 @@ function ListingCard({ listing, onRestored, onDeleted }: ListingCardProps) {
   const title = getStr(listing, "title") || getStr(listing, "address_line_1") || "Untitled";
   const imageUrl = getStr(listing, "primary_image_url");
   const status = getStr(listing, "status");
+  const isDraft = status === "draft";
 
   async function handleRestore() {
     setRestoring(true);
@@ -77,65 +80,128 @@ function ListingCard({ listing, onRestored, onDeleted }: ListingCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden">
-      <div className="relative h-40 bg-muted">
+    <div className="group flex flex-col overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 transition-all duration-300 hover:shadow-md hover:ring-border">
+      {/* Image */}
+      <div className="relative h-40 overflow-hidden bg-muted">
         {imageUrl ? (
-          <Image src={imageUrl} alt={title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-            No image
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground">
+            <Building2 className="size-7" strokeWidth={1} />
+            <span className="text-xs">No image</span>
           </div>
         )}
-        {status && (
-          <span className="absolute top-2 left-2 bg-secondary text-secondary-foreground text-xs font-medium px-2 py-1 rounded-full uppercase">
-            {status}
-          </span>
-        )}
+        {/* Status badge */}
+        <span
+          className={cn(
+            "absolute left-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize",
+            isDraft
+              ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
+              : "bg-muted/90 text-muted-foreground backdrop-blur-sm",
+          )}
+        >
+          {status}
+        </span>
       </div>
-      <CardContent className="p-4 space-y-3">
-        <p className="font-medium text-sm line-clamp-2">{title}</p>
-        <div className="flex items-center gap-2">
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-4">
+        <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">{title}</p>
+
+        {/* Actions */}
+        <div className="mt-4 flex items-center gap-2 border-t border-border/60 pt-4">
           <Button
             variant="outline"
             size="sm"
             onClick={handleRestore}
             disabled={restoring}
+            className="flex-1 gap-1.5 rounded-lg text-xs font-medium"
           >
-            {restoring ? "Restoring..." : "Restore"}
+            <RotateCcw className={cn("size-3.5", restoring && "animate-spin")} strokeWidth={1.25} />
+            {restoring ? "Restoring…" : "Restore"}
           </Button>
+
           <AlertDialog>
-            <AlertDialogTrigger>
-              <Button variant="destructive" size="sm" disabled={deleting} type="button">
-                {deleting ? "Deleting..." : "Delete"}
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={deleting}
+                type="button"
+                className="flex-1 gap-1.5 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="size-3.5" strokeWidth={1.25} />
+                {deleting ? "Deleting…" : "Delete"}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="rounded-2xl">
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete listing?</AlertDialogTitle>
+                <AlertDialogTitle className="font-heading">Delete listing?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. The listing will be permanently deleted.
+                  This action cannot be undone. The listing will be permanently deleted from your account.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  Delete
+                <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="rounded-xl bg-destructive text-white hover:bg-destructive/90"
+                >
+                  Delete listing
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ type }: Readonly<{ type: "archived" | "draft" }>) {
+  const isDraft = type === "draft";
+  return (
+    <div className="flex flex-col items-center gap-6 rounded-2xl bg-card py-20 text-center shadow-sm ring-1 ring-border/60">
+      <div className="flex size-16 items-center justify-center rounded-2xl bg-muted">
+        {isDraft ? (
+          <FileEdit className="size-7 text-muted-foreground" strokeWidth={1.25} />
+        ) : (
+          <Archive className="size-7 text-muted-foreground" strokeWidth={1.25} />
+        )}
+      </div>
+      <div>
+        <h3 className="font-heading text-base font-semibold text-foreground">
+          No {isDraft ? "draft" : "archived"} listings
+        </h3>
+        <p className="mt-1 max-w-xs text-sm text-muted-foreground">
+          {isDraft
+            ? "Listings you save as drafts will appear here."
+            : "Listings you archive will be stored here for future reference."}
+        </p>
+      </div>
+      {isDraft && (
+        <Button
+          className="gap-2 bg-brand-primary text-white hover:bg-brand-primary-light"
+          render={<Link href="/dashboard/agent/listings/create" />}
+        >
+          <Plus className="size-4" strokeWidth={1.5} />
+          Create Listing
+        </Button>
+      )}
+    </div>
   );
 }
 
 export function ArchivedDraftListings({ listings }: Props) {
   const [items, setItems] = useState(listings);
 
-  const archived = items.filter(
-    (l) => getStr(l, "status") === "archived",
-  );
+  const archived = items.filter((l) => getStr(l, "status") === "archived");
   const drafts = items.filter((l) => getStr(l, "status") === "draft");
 
   function handleRestored(id: string) {
@@ -146,14 +212,12 @@ export function ArchivedDraftListings({ listings }: Props) {
     setItems((prev) => prev.filter((l) => getStr(l, "id") !== id));
   }
 
-  function renderGrid(data: Record<string, unknown>[]) {
+  function renderGrid(data: Record<string, unknown>[], type: "archived" | "draft") {
     if (data.length === 0) {
-      return (
-        <p className="text-muted-foreground text-sm py-4">No listings found.</p>
-      );
+      return <EmptyState type={type} />;
     }
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {data.map((listing) => (
           <ListingCard
             key={getStr(listing, "id")}
@@ -167,24 +231,50 @@ export function ArchivedDraftListings({ listings }: Props) {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-semibold text-foreground">
-        Archived & Draft Listings
-      </h1>
+    <div className="flex flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
+      {/* Header */}
+      <div>
+        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+          Listings
+        </p>
+        <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight text-foreground">
+          Archived &amp; Drafts
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {archived.length} archived &middot; {drafts.length} draft{drafts.length !== 1 ? "s" : ""}
+        </p>
+      </div>
+
+      {/* Tabs */}
       <Tabs defaultValue="archived">
-        <TabsList>
-          <TabsTrigger value="archived">
-            Archived ({archived.length})
+        <TabsList className="rounded-xl bg-muted p-1">
+          <TabsTrigger
+            value="archived"
+            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm"
+          >
+            <Archive className="mr-1.5 size-3.5" strokeWidth={1.25} />
+            Archived
+            <span className="ml-1.5 rounded-full bg-muted-foreground/20 px-1.5 py-0.5 text-xs">
+              {archived.length}
+            </span>
           </TabsTrigger>
-          <TabsTrigger value="drafts">
-            Drafts ({drafts.length})
+          <TabsTrigger
+            value="drafts"
+            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm"
+          >
+            <FileEdit className="mr-1.5 size-3.5" strokeWidth={1.25} />
+            Drafts
+            <span className="ml-1.5 rounded-full bg-muted-foreground/20 px-1.5 py-0.5 text-xs">
+              {drafts.length}
+            </span>
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="archived" className="mt-4">
-          {renderGrid(archived)}
+
+        <TabsContent value="archived" className="mt-6">
+          {renderGrid(archived, "archived")}
         </TabsContent>
-        <TabsContent value="drafts" className="mt-4">
-          {renderGrid(drafts)}
+        <TabsContent value="drafts" className="mt-6">
+          {renderGrid(drafts, "draft")}
         </TabsContent>
       </Tabs>
     </div>
