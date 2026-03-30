@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { Loader2, Lock, CheckCircle2 } from "lucide-react";
+import { Loader2, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -33,6 +33,8 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 export function ResetPasswordForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -76,14 +78,22 @@ export function ResetPasswordForm() {
           <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
           <Input
             id="new-password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Enter new password"
-            className="h-11 pl-10 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
+            className="h-11 pl-10 pr-11 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
             autoComplete="new-password"
             aria-label="New password"
             aria-invalid={!!errors.password}
             {...register("password")}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+            aria-label={showPassword ? "Hide new password" : "Show new password"}
+          >
+            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
         </div>
         {errors.password && (
           <p className="text-xs text-error" role="alert">{errors.password.message}</p>
@@ -121,14 +131,22 @@ export function ResetPasswordForm() {
           <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" aria-hidden="true" />
           <Input
             id="confirm-new-password"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm new password"
-            className="h-11 pl-10 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
+            className="h-11 pl-10 pr-11 rounded-lg border-neutral-200 bg-white text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary/30 focus-visible:border-brand-primary"
             autoComplete="new-password"
             aria-label="Confirm new password"
             aria-invalid={!!errors.confirmPassword}
             {...register("confirmPassword")}
           />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+            aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+          >
+            {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
         </div>
         {errors.confirmPassword && (
           <p className="text-xs text-error" role="alert">

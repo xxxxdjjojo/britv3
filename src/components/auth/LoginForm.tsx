@@ -159,7 +159,7 @@ export function LoginForm() {
         </label>
         <Link
           href="/forgot-password"
-          className="font-body text-sm font-medium text-brand-primary hover:underline underline-offset-2 transition-colors"
+          className="font-body text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
           aria-label="Forgot password"
         >
           Forgot password?

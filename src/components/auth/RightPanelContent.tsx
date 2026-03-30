@@ -64,7 +64,7 @@ export function RightPanelContent() {
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-brand-primary">
       {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-primary via-[#1a4538] to-[#0d2b22]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-primary via-brand-primary/90 to-brand-primary/70" />
 
       {/* Radial glow accent */}
       <div className="absolute inset-0 opacity-25" aria-hidden="true">

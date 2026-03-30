@@ -311,11 +311,11 @@ export function RegisterForm() {
           />
           <label htmlFor="terms-accepted" className="text-xs text-neutral-600 leading-relaxed cursor-pointer">
             I agree to the{" "}
-            <Link href="/terms" className="font-medium text-brand-primary hover:underline" target="_blank">
+            <Link href="/terms" className="font-medium text-brand-accent hover:underline" target="_blank">
               Terms of Service
             </Link>
             {" "}and{" "}
-            <Link href="/privacy" className="font-medium text-brand-primary hover:underline" target="_blank">
+            <Link href="/privacy" className="font-medium text-brand-accent hover:underline" target="_blank">
               Privacy Policy
             </Link>
           </label>
@@ -361,7 +361,7 @@ export function RegisterForm() {
       <div className="text-center">
         <Link
           href="/register/role-select"
-          className="text-sm font-medium text-brand-primary hover:underline underline-offset-2 transition-colors"
+          className="text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
           aria-label="Sign up as a professional"
         >
           I&apos;m a professional — see professional options

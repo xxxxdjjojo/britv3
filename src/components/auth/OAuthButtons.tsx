@@ -29,12 +29,20 @@ function GoogleIcon() {
   );
 }
 
+function AppleIcon() {
+  return (
+    <svg className="size-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.31.07 2.22.74 2.98.8 1.12-.22 2.19-.91 3.39-.84 1.44.1 2.52.64 3.23 1.64-2.95 1.77-2.25 5.65.22 6.74-.51 1.39-1.19 2.76-1.82 4.52zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+    </svg>
+  );
+}
+
 function OAuthButtonsInner() {
-  const [loading, setLoading] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<"google" | "apple" | null>(null);
   const searchParams = useSearchParams();
 
-  async function handleGoogle() {
-    setLoading(true);
+  async function handleOAuth(provider: "google" | "apple") {
+    setLoadingProvider(provider);
     try {
       const supabase = createClient();
       const professionalRole = searchParams.get("professional");
@@ -46,42 +54,67 @@ function OAuthButtonsInner() {
         document.cookie = `britestate_professional_role=${encodeURIComponent(professionalRole)};path=/;max-age=600;SameSite=Lax`;
       }
 
+      const options =
+        provider === "google"
+          ? {
+              queryParams: {
+                access_type: "offline",
+                prompt: "consent",
+              },
+              redirectTo: `${origin}/auth/callback?next=/dashboard`,
+            }
+          : {
+              redirectTo: `${origin}/auth/callback?next=/dashboard`,
+            };
+
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
-          redirectTo: `${origin}/auth/callback?next=/dashboard`,
-        },
+        provider,
+        options,
       });
 
       if (error) {
         // OAuth redirect failed — surface silently (user stays on page)
-        setLoading(false);
+        setLoadingProvider(null);
       }
     } catch {
-      setLoading(false);
+      setLoadingProvider(null);
     }
   }
 
   return (
-    <Button
-      variant="outline"
-      size="lg"
-      className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
-      onClick={handleGoogle}
-      disabled={loading}
-      aria-label="Continue with Google"
-    >
-      {loading ? (
-        <Loader2 className="size-4 animate-spin text-neutral-400" aria-hidden="true" />
-      ) : (
-        <GoogleIcon />
-      )}
-      Continue with Google
-    </Button>
+    <div className="flex flex-col gap-3">
+      <Button
+        variant="outline"
+        size="lg"
+        className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
+        onClick={() => handleOAuth("google")}
+        disabled={loadingProvider !== null}
+        aria-label="Continue with Google"
+      >
+        {loadingProvider === "google" ? (
+          <Loader2 className="size-4 animate-spin text-neutral-400" aria-hidden="true" />
+        ) : (
+          <GoogleIcon />
+        )}
+        Continue with Google
+      </Button>
+
+      <Button
+        variant="outline"
+        size="lg"
+        className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
+        onClick={() => handleOAuth("apple")}
+        disabled={loadingProvider !== null}
+        aria-label="Sign in with Apple"
+      >
+        {loadingProvider === "apple" ? (
+          <Loader2 className="size-4 animate-spin text-neutral-400" aria-hidden="true" />
+        ) : (
+          <AppleIcon />
+        )}
+        Continue with Apple
+      </Button>
+    </div>
   );
 }
 
@@ -89,16 +122,28 @@ export function OAuthButtons() {
   return (
     <Suspense
       fallback={
-        <Button
-          variant="outline"
-          size="lg"
-          className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 shadow-sm"
-          disabled
-          aria-label="Loading Google sign-in"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 shadow-sm"
+            disabled
+            aria-label="Loading Google sign-in"
+          >
+            <GoogleIcon />
+            Continue with Google
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 shadow-sm"
+            disabled
+            aria-label="Loading Apple sign-in"
+          >
+            <AppleIcon />
+            Continue with Apple
+          </Button>
+        </div>
       }
     >
       <OAuthButtonsInner />

@@ -84,7 +84,7 @@ export function ForgotPasswordForm() {
                 setSubmitted(false);
                 setCooldown(0);
               }}
-              className="font-body text-sm font-medium text-brand-primary hover:underline underline-offset-2 transition-colors"
+              className="font-body text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
               aria-label="Try again with a different email"
             >
               Didn&apos;t receive it? Try again
