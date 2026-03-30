@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Loader2, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Check, Home, ImagePlus, Eye } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 // --- Step definitions ---
 
 const STEPS = [
-  { number: 1, label: "Details" },
-  { number: 2, label: "Photos" },
-  { number: 3, label: "Review" },
+  { number: 1, label: "Details", icon: Home },
+  { number: 2, label: "Photos", icon: ImagePlus },
+  { number: 3, label: "Review", icon: Eye },
 ];
 
 // --- Zod schemas per step ---
@@ -46,40 +46,77 @@ type ListingFormData = Step1Data & {
 
 function StepIndicator(props: Readonly<{ currentStep: number }>) {
   return (
-    <div className="flex items-center gap-2">
-      {STEPS.map((step, idx) => (
-        <div key={step.number} className="flex items-center gap-2">
-          <div
-            className={cn(
-              "flex size-8 items-center justify-center rounded-full text-sm font-bold transition-colors",
-              props.currentStep > step.number
-                ? "bg-[#1B4D3E] text-white"
-                : props.currentStep === step.number
-                  ? "border-2 border-[#1B4D3E] text-[#1B4D3E]"
-                  : "border-2 border-slate-200 text-slate-400",
-            )}
-          >
-            {props.currentStep > step.number ? (
-              <Check className="size-4" />
-            ) : (
-              step.number
+    <div className="flex items-center gap-1">
+      {STEPS.map((step, idx) => {
+        const Icon = step.icon;
+        const isDone = props.currentStep > step.number;
+        const isCurrent = props.currentStep === step.number;
+        return (
+          <div key={step.number} className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              <div
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full text-sm font-bold transition-all",
+                  isDone
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : isCurrent
+                      ? "border-2 border-primary bg-primary/10 text-primary"
+                      : "border-2 border-border bg-background text-muted-foreground",
+                )}
+              >
+                {isDone ? (
+                  <Check className="size-4" />
+                ) : (
+                  <Icon className="size-3.5" />
+                )}
+              </div>
+              <span
+                className={cn(
+                  "text-sm font-medium hidden sm:block",
+                  isCurrent
+                    ? "text-foreground"
+                    : isDone
+                      ? "text-primary"
+                      : "text-muted-foreground",
+                )}
+              >
+                {step.label}
+              </span>
+            </div>
+            {idx < STEPS.length - 1 && (
+              <ChevronRight className="mx-1 size-4 text-muted-foreground/40 shrink-0" />
             )}
           </div>
-          <span
-            className={cn(
-              "text-sm font-medium",
-              props.currentStep === step.number
-                ? "text-[#1B4D3E]"
-                : "text-slate-400",
-            )}
-          >
-            {step.label}
-          </span>
-          {idx < STEPS.length - 1 && (
-            <ChevronRight className="size-4 text-slate-300" />
-          )}
-        </div>
-      ))}
+        );
+      })}
+    </div>
+  );
+}
+
+// --- Field component ---
+
+function FormField(
+  props: Readonly<{
+    label: string;
+    required?: boolean;
+    error?: string;
+    hint?: string;
+    children: React.ReactNode;
+  }>,
+) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label className="text-sm font-medium text-foreground">
+        {props.label}
+        {props.required && <span className="text-destructive ml-0.5">*</span>}
+      </Label>
+      {props.hint && (
+        <p className="text-xs text-muted-foreground -mt-0.5">{props.hint}</p>
+      )}
+      {props.children}
+      {props.error && (
+        <p className="text-xs text-destructive">{props.error}</p>
+      )}
     </div>
   );
 }
@@ -99,6 +136,7 @@ export default function CreateListingPage(
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<Step1Data>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -111,6 +149,8 @@ export default function CreateListingPage(
       deposit_amount: undefined,
     },
   });
+
+  const watchedValues = watch();
 
   const handleStep1 = (data: Step1Data) => {
     setStep1Data(data);
@@ -183,80 +223,91 @@ export default function CreateListingPage(
   };
 
   return (
-    <div className="p-8">
-      <div className="mx-auto max-w-2xl">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href={`/dashboard/landlord/properties/${propertyId}`}
-            className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-[#1B4D3E]"
-          >
-            <ChevronLeft className="size-4" />
-            Back to Property
-          </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            Create Rental Listing
-          </h1>
-          <p className="mt-1 text-slate-500 dark:text-slate-400">
-            Publish this property as a rental listing on Britestate.
-          </p>
-        </div>
+    <div className="flex flex-col gap-6 p-6">
+      {/* Back link */}
+      <Link
+        href={`/dashboard/landlord/properties/${propertyId}`}
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
+      >
+        <ChevronLeft className="size-4" />
+        Back to Property
+      </Link>
 
-        {/* Step indicator */}
-        <div className="mb-8">
+      {/* Header */}
+      <div>
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          Create Rental Listing
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Publish this property as a rental listing on Britestate.
+        </p>
+      </div>
+
+      {/* Step indicator */}
+      <div className="rounded-2xl border border-border bg-card px-5 py-4">
+        <div className="flex items-center justify-between">
           <StepIndicator currentStep={step} />
+          <span className="text-xs text-muted-foreground font-medium">
+            Step {step < 10 ? `0${step}` : step} of {STEPS.length < 10 ? `0${STEPS.length}` : STEPS.length}
+          </span>
         </div>
+      </div>
 
+      <div className="mx-auto w-full max-w-2xl">
         {/* Step 1: Listing Details */}
         {step === 1 && (
-          <form onSubmit={handleSubmit(handleStep1)} className="space-y-6">
-            <div className="rounded-xl border bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-100">Listing Details</h2>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Listing Title *</Label>
+          <form onSubmit={handleSubmit(handleStep1)} className="flex flex-col gap-5">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="font-heading text-base font-semibold text-foreground mb-4">
+                Listing Details
+              </h2>
+              <div className="flex flex-col gap-4">
+                <FormField
+                  label="Listing Title"
+                  required
+                  error={errors.title?.message}
+                >
                   <Input
-                    id="title"
                     placeholder="e.g. Spacious 2-bedroom flat in central London"
                     {...register("title")}
-                    className="mt-1"
                   />
-                  {errors.title && (
-                    <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="description">Description *</Label>
+                </FormField>
+
+                <FormField
+                  label="Description"
+                  required
+                  error={errors.description?.message}
+                >
                   <Textarea
-                    id="description"
                     placeholder="Describe the property, its features, and nearby amenities..."
                     rows={5}
                     {...register("description")}
-                    className="mt-1"
+                    className="resize-none"
                   />
-                  {errors.description && (
-                    <p className="mt-1 text-xs text-red-600">{errors.description.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="available_from">Available From *</Label>
+                </FormField>
+
+                <FormField
+                  label="Available From"
+                  required
+                  error={errors.available_from?.message}
+                >
                   <Input
-                    id="available_from"
                     type="date"
                     {...register("available_from")}
-                    className="mt-1"
                   />
-                  {errors.available_from && (
-                    <p className="mt-1 text-xs text-red-600">{errors.available_from.message}</p>
-                  )}
-                </div>
+                </FormField>
+
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="rent_amount">Monthly Rent (£) *</Label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">£</span>
+                  <FormField
+                    label="Monthly Rent"
+                    required
+                    error={errors.rent_amount?.message}
+                  >
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground text-sm font-medium pointer-events-none">
+                        £
+                      </span>
                       <Input
-                        id="rent_amount"
                         type="number"
                         min={0}
                         step={50}
@@ -265,16 +316,17 @@ export default function CreateListingPage(
                         className="pl-7"
                       />
                     </div>
-                    {errors.rent_amount && (
-                      <p className="mt-1 text-xs text-red-600">{errors.rent_amount.message}</p>
-                    )}
-                  </div>
-                  <div>
-                    <Label htmlFor="deposit_amount">Deposit (£)</Label>
-                    <div className="relative mt-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">£</span>
+                  </FormField>
+
+                  <FormField
+                    label="Deposit"
+                    hint="Optional"
+                  >
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground text-sm font-medium pointer-events-none">
+                        £
+                      </span>
                       <Input
-                        id="deposit_amount"
                         type="number"
                         min={0}
                         step={50}
@@ -283,15 +335,25 @@ export default function CreateListingPage(
                         className="pl-7"
                       />
                     </div>
-                  </div>
+                  </FormField>
                 </div>
               </div>
             </div>
 
+            {/* Auto-save indicator */}
+            {(watchedValues.title || watchedValues.description) && (
+              <p className="text-xs text-muted-foreground text-right">
+                Draft auto-saved locally
+              </p>
+            )}
+
             <div className="flex justify-end">
-              <Button type="submit" className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white">
+              <Button
+                type="submit"
+                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
                 Next: Photos
-                <ChevronRight className="ml-2 size-4" />
+                <ChevronRight className="size-4" />
               </Button>
             </div>
           </form>
@@ -299,36 +361,41 @@ export default function CreateListingPage(
 
         {/* Step 2: Photos */}
         {step === 2 && (
-          <div className="space-y-6">
-            <div className="rounded-xl border bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h2 className="mb-2 font-bold text-slate-900 dark:text-slate-100">Property Photos</h2>
-              <p className="mb-6 text-sm text-slate-500">
+          <div className="flex flex-col gap-5">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="font-heading text-base font-semibold text-foreground mb-1">
+                Property Photos
+              </h2>
+              <p className="mb-6 text-sm text-muted-foreground">
                 Add photos to make your listing more attractive to renters. You can add more photos
                 after publishing from the property&apos;s document section.
               </p>
 
-              {/* Photo upload placeholder — full implementation in Phase 15 */}
-              <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 p-8 text-center dark:border-slate-700">
-                <p className="text-sm font-medium text-slate-500">
-                  Photo upload available after listing is created.
+              {/* Photo upload placeholder */}
+              <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/20 p-8 text-center transition-colors hover:border-primary/30 hover:bg-primary/5 cursor-pointer">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-muted mb-3">
+                  <ImagePlus className="size-6 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-foreground">
+                  Photo upload available after listing is created
                 </p>
-                <p className="mt-1 text-xs text-slate-400">
+                <p className="mt-1 text-xs text-muted-foreground">
                   You can proceed to publish without photos and add them later.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
-              <Button variant="outline" onClick={() => setStep(1)}>
-                <ChevronLeft className="mr-2 size-4" />
+              <Button variant="outline" onClick={() => setStep(1)} className="gap-2">
+                <ChevronLeft className="size-4" />
                 Back
               </Button>
               <Button
                 onClick={() => setStep(3)}
-                className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white"
+                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 Next: Review
-                <ChevronRight className="ml-2 size-4" />
+                <ChevronRight className="size-4" />
               </Button>
             </div>
           </div>
@@ -336,60 +403,81 @@ export default function CreateListingPage(
 
         {/* Step 3: Review + Publish */}
         {step === 3 && step1Data && (
-          <div className="space-y-6">
-            <div className="rounded-xl border bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-100">Review Listing</h2>
-              <dl className="space-y-4">
-                <div>
-                  <dt className="text-xs font-medium uppercase text-slate-400">Title</dt>
-                  <dd className="mt-1 text-sm font-semibold">{step1Data.title}</dd>
+          <div className="flex flex-col gap-5">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <h2 className="font-heading text-base font-semibold text-foreground mb-4">
+                Review Listing
+              </h2>
+              <dl className="flex flex-col gap-4">
+                <div className="rounded-xl bg-muted/40 p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Title
+                  </dt>
+                  <dd className="mt-1 text-sm font-semibold text-foreground">{step1Data.title}</dd>
                 </div>
-                <div>
-                  <dt className="text-xs font-medium uppercase text-slate-400">Description</dt>
-                  <dd className="mt-1 text-sm">{step1Data.description}</dd>
+
+                <div className="rounded-xl bg-muted/40 p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Description
+                  </dt>
+                  <dd className="mt-1 text-sm text-foreground">{step1Data.description}</dd>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <dt className="text-xs font-medium uppercase text-slate-400">Available From</dt>
-                    <dd className="mt-1 text-sm">
-                      {new Date(step1Data.available_from).toLocaleDateString("en-GB")}
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl bg-muted/40 p-4">
+                    <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Available From
+                    </dt>
+                    <dd className="mt-1 text-sm font-medium text-foreground">
+                      {new Date(step1Data.available_from).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </dd>
                   </div>
-                  <div>
-                    <dt className="text-xs font-medium uppercase text-slate-400">Monthly Rent</dt>
-                    <dd className="mt-1 text-sm font-bold text-[#1B4D3E]">
+                  <div className="rounded-xl bg-primary/10 border border-primary/20 p-4">
+                    <dt className="text-xs font-semibold uppercase tracking-wide text-primary/70">
+                      Monthly Rent
+                    </dt>
+                    <dd className="mt-1 text-sm font-bold text-primary">
                       £{step1Data.rent_amount.toLocaleString("en-GB")}/mo
                     </dd>
                   </div>
                   {step1Data.deposit_amount != null && step1Data.deposit_amount > 0 && (
-                    <div>
-                      <dt className="text-xs font-medium uppercase text-slate-400">Deposit</dt>
-                      <dd className="mt-1 text-sm font-semibold">
+                    <div className="rounded-xl bg-muted/40 p-4">
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Deposit
+                      </dt>
+                      <dd className="mt-1 text-sm font-semibold text-foreground">
                         £{step1Data.deposit_amount.toLocaleString("en-GB")}
                       </dd>
                     </div>
                   )}
                 </div>
-                <div>
-                  <dt className="text-xs font-medium uppercase text-slate-400">Photos</dt>
-                  <dd className="mt-1 text-sm text-slate-500">
-                    {photoUrls.length > 0 ? `${photoUrls.length} photo(s)` : "No photos added"}
+
+                <div className="rounded-xl bg-muted/40 p-4">
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Photos
+                  </dt>
+                  <dd className="mt-1 text-sm text-muted-foreground">
+                    {photoUrls.length > 0 ? `${photoUrls.length} photo(s) added` : "No photos added — can be added after publishing"}
                   </dd>
                 </div>
               </dl>
             </div>
 
             <div className="flex items-center justify-between">
-              <Button variant="outline" onClick={() => setStep(2)}>
-                <ChevronLeft className="mr-2 size-4" />
+              <Button variant="outline" onClick={() => setStep(2)} className="gap-2">
+                <ChevronLeft className="size-4" />
                 Back
               </Button>
               <Button
                 onClick={handlePublish}
                 disabled={isSubmitting}
-                className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white"
+                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="size-4 animate-spin" />}
                 Publish Listing
               </Button>
             </div>

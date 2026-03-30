@@ -33,6 +33,7 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
+  ClipboardList,
 } from "lucide-react";
 
 // -- PDF renderer — SSR:false to avoid server rendering issues ---------------
@@ -159,8 +160,6 @@ export default function CheckInPage() {
       const roomsPayload = buildRoomsPayload();
 
       if (!reportId) {
-        // First save — create the report
-        // landlord_id is overwritten server-side by createInventoryReport using auth user
         const report = await createInventoryReport(supabase, {
           property_id: propertyId,
           landlord_id: "",
@@ -175,7 +174,6 @@ export default function CheckInPage() {
         setReportId(report.id);
         setSuccessMsg("Draft saved.");
       } else {
-        // Update existing draft
         await updateInventoryReport(supabase, reportId, {
           rooms: roomsPayload,
           notes: overallNotes || null,
@@ -234,63 +232,92 @@ export default function CheckInPage() {
   }, [reportId, propertyId, rooms, overallNotes, allPhotoUrls]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 p-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link href="/dashboard/landlord/properties" className="hover:text-foreground">
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <Link
+          href="/dashboard/landlord/properties"
+          className="hover:text-foreground transition-colors"
+        >
           Properties
         </Link>
-        <ChevronRight className="size-4" />
+        <ChevronRight className="size-3.5" />
         {propertyAddress ? (
           <Link
             href={`/dashboard/landlord/properties/${propertyId}`}
-            className="hover:text-foreground"
+            className="hover:text-foreground transition-colors"
           >
             {propertyAddress}
           </Link>
         ) : (
           <span>Property</span>
         )}
-        <ChevronRight className="size-4" />
-        <span className="text-foreground font-medium">Check-In Report</span>
+        <ChevronRight className="size-3.5" />
+        <span className="font-medium text-foreground">Check-In Report</span>
       </nav>
 
       {/* Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight font-heading">
-            Inventory Check-In Report
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Document each room&apos;s condition at the start of the tenancy
-          </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <ClipboardList className="size-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+              Inventory Check-In Report
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Document each room&apos;s condition at the start of the tenancy
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {status === "complete" && (
-            <Badge className="bg-success text-white border-0">
-              <CheckCircle2 className="mr-1.5 size-3.5" />
+            <Badge className="bg-emerald-600 text-white border-0 gap-1.5">
+              <CheckCircle2 className="size-3.5" />
               Complete
             </Badge>
           )}
           {status === "draft" && reportId && (
-            <Badge variant="secondary">Draft saved</Badge>
+            <Badge variant="secondary" className="gap-1.5">
+              <Save className="size-3" />
+              Draft saved
+            </Badge>
           )}
         </div>
       </div>
 
       {/* Status messages */}
       {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+        <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-3 text-sm text-destructive">
           <AlertCircle className="size-4 shrink-0" />
           {error}
         </div>
       )}
       {successMsg && (
-        <div className="flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
           <CheckCircle2 className="size-4 shrink-0" />
           {successMsg}
         </div>
       )}
+
+      {/* Progress summary */}
+      <div className="rounded-xl border border-border bg-muted/30 px-5 py-4">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Rooms documented</span>
+          <span className="font-semibold text-foreground">
+            {rooms.filter((r) => r.notes.trim() || r.photoUrls.length > 0).length} / {rooms.length}
+          </span>
+        </div>
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-500"
+            style={{
+              width: `${(rooms.filter((r) => r.notes.trim() || r.photoUrls.length > 0).length / rooms.length) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
 
       {/* Room forms */}
       <div className="flex flex-col gap-4">
@@ -322,16 +349,18 @@ export default function CheckInPage() {
               }
             }}
           />
-          <Button variant="outline" size="sm" onClick={addRoom}>
-            <Plus className="mr-1.5 size-4" />
+          <Button variant="outline" size="sm" onClick={addRoom} className="gap-1.5">
+            <Plus className="size-4" />
             Add Room
           </Button>
         </div>
       )}
 
       {/* Overall notes */}
-      <div className="flex flex-col gap-1.5">
-        <Label>Overall Notes</Label>
+      <div className="rounded-xl border border-border bg-card p-5">
+        <Label className="text-sm font-semibold text-foreground mb-2 block">
+          Overall Notes
+        </Label>
         <Textarea
           value={overallNotes}
           onChange={(e) => setOverallNotes(e.target.value)}
@@ -343,29 +372,31 @@ export default function CheckInPage() {
       </div>
 
       {/* Action buttons */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
         {status !== "complete" && (
           <>
             <Button
               variant="outline"
               onClick={() => void saveDraft()}
               disabled={saving || completing}
+              className="gap-2"
             >
               {saving ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
               ) : (
-                <Save className="mr-2 size-4" />
+                <Save className="size-4" />
               )}
               Save Draft
             </Button>
             <Button
               onClick={() => void markComplete()}
               disabled={saving || completing}
+              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {completing ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" />
               ) : (
-                <CheckCircle2 className="mr-2 size-4" />
+                <CheckCircle2 className="size-4" />
               )}
               Mark Complete
             </Button>
