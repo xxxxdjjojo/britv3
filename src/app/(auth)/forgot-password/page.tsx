@@ -14,14 +14,14 @@ export default function ForgotPasswordPage() {
         <h1 className="font-heading text-3xl font-bold text-neutral-900 leading-tight">
           Reset your password
         </h1>
-        <p className="mt-1.5 font-body text-sm text-neutral-500">
+        <p className="mt-1.5 font-sans text-sm text-neutral-500">
           Enter your email and we&apos;ll send you a reset link
         </p>
       </div>
 
       <ForgotPasswordForm />
 
-      <p className="text-center font-body text-sm text-neutral-500">
+      <p className="text-center font-sans text-sm text-neutral-500">
         Remember your password?{" "}
         <Link
           href="/login"

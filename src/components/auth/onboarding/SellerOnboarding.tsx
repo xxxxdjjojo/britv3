@@ -97,7 +97,7 @@ export function SellerOnboarding(
     <button
       type="button"
       onClick={props.onSkip}
-      className="w-full text-center font-body text-sm text-neutral-400 hover:text-neutral-600"
+      className="w-full text-center font-sans text-sm text-neutral-400 hover:text-neutral-600"
     >
       Skip for now
     </button>

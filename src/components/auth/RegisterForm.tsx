@@ -200,7 +200,7 @@ export function RegisterForm() {
       {/* Name fields — side by side */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label htmlFor="firstName" className="font-body text-sm font-medium text-neutral-700">
+          <Label htmlFor="firstName" className="font-sans text-sm font-medium text-neutral-700">
             First name
           </Label>
           <div className="relative">
@@ -221,7 +221,7 @@ export function RegisterForm() {
           )}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="lastName" className="font-body text-sm font-medium text-neutral-700">
+          <Label htmlFor="lastName" className="font-sans text-sm font-medium text-neutral-700">
             Last name
           </Label>
           <div className="relative">
@@ -245,7 +245,7 @@ export function RegisterForm() {
 
       {/* Email */}
       <div className="space-y-1.5">
-        <Label htmlFor="register-email" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="register-email" className="font-sans text-sm font-medium text-neutral-700">
           Email address
         </Label>
         <div className="relative">
@@ -268,7 +268,7 @@ export function RegisterForm() {
 
       {/* Password */}
       <div className="space-y-1.5">
-        <Label htmlFor="register-password" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="register-password" className="font-sans text-sm font-medium text-neutral-700">
           Password
         </Label>
         <div className="relative">

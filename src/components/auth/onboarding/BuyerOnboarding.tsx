@@ -131,7 +131,7 @@ export function BuyerOnboarding(
       if (user) {
         // Derive the primary notification_frequency from the most common email
         // frequency across all alert categories (used as the scalar DB column).
-        // TODO: When a `notification_preferences` JSONB column is added to
+        // Note: When a `notification_preferences` JSONB column is added to
         // `buyer_preferences`, persist the full `alertPrefs` matrix here instead.
         const freqCounts = alertPrefs.reduce<Record<string, number>>(
           (acc, p) => {

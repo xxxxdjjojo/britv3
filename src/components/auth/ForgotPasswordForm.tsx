@@ -61,11 +61,11 @@ export function ForgotPasswordForm() {
           <h3 className="font-heading text-lg font-semibold text-neutral-900">
             Check your inbox
           </h3>
-          <p className="mt-2 font-body text-sm text-neutral-500 leading-relaxed">
+          <p className="mt-2 font-sans text-sm text-neutral-500 leading-relaxed">
             We&apos;ve sent a reset link to{" "}
             <strong className="font-semibold text-neutral-900">{submittedEmail}</strong>
           </p>
-          <p className="mt-1 font-body text-xs text-neutral-400">
+          <p className="mt-1 font-sans text-xs text-neutral-400">
             Didn&apos;t get it? Check your spam folder.
           </p>
         </div>
@@ -73,7 +73,7 @@ export function ForgotPasswordForm() {
         {/* Resend / try again */}
         <div className="text-center">
           {cooldown > 0 ? (
-            <p className="font-body text-sm text-neutral-400">
+            <p className="font-sans text-sm text-neutral-400">
               Resend available in{" "}
               <span className="font-medium text-neutral-600">{cooldown}s</span>
             </p>
@@ -84,7 +84,7 @@ export function ForgotPasswordForm() {
                 setSubmitted(false);
                 setCooldown(0);
               }}
-              className="font-body text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
+              className="font-sans text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
               aria-label="Try again with a different email"
             >
               Didn&apos;t receive it? Try again
@@ -105,7 +105,7 @@ export function ForgotPasswordForm() {
 
       {/* Email */}
       <div className="space-y-1.5">
-        <Label htmlFor="forgot-email" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="forgot-email" className="font-sans text-sm font-medium text-neutral-700">
           Email address
         </Label>
         <div className="relative">

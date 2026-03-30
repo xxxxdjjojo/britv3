@@ -48,13 +48,13 @@ export default async function AuthLayout({
 
         {/* Footer links */}
         <div className="mt-10 flex items-center gap-4">
-          <Link href="/privacy" className="font-body text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
+          <Link href="/privacy" className="font-sans text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
             Privacy Policy
           </Link>
-          <Link href="/terms" className="font-body text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
+          <Link href="/terms" className="font-sans text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
             Terms
           </Link>
-          <Link href="/help" className="font-body text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
+          <Link href="/help" className="font-sans text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
             Help
           </Link>
         </div>

@@ -121,7 +121,7 @@ export function LandlordOnboarding(
         );
 
         // Persist first property details if the user filled them in.
-        // TODO: The `landlord_profiles` table currently has no property columns
+        // Note: The `landlord_profiles` table currently has no property columns
         // or JSONB metadata column. When a `first_property_data` JSONB column
         // (or a dedicated `landlord_onboarding_properties` table) is added via
         // migration, replace this with a proper upsert. For now we store it in

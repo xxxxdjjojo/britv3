@@ -71,7 +71,7 @@ export function ResetPasswordForm() {
 
       {/* New Password */}
       <div className="space-y-1.5">
-        <Label htmlFor="new-password" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="new-password" className="font-sans text-sm font-medium text-neutral-700">
           New password
         </Label>
         <div className="relative">
@@ -124,7 +124,7 @@ export function ResetPasswordForm() {
 
       {/* Confirm Password */}
       <div className="space-y-1.5">
-        <Label htmlFor="confirm-new-password" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="confirm-new-password" className="font-sans text-sm font-medium text-neutral-700">
           Confirm new password
         </Label>
         <div className="relative">

@@ -113,7 +113,7 @@ export function AgentOnboarding(
       } = await supabase.auth.getUser();
       if (user) {
         // Create agency
-        // TODO: The `agencies` table currently has no `crm_platform` column.
+        // Note: The `agencies` table currently has no `crm_platform` column.
         // When the column is added via migration (e.g. ALTER TABLE agencies ADD
         // COLUMN crm_platform TEXT), move `crm_platform` from the activity_log
         // below into this insert payload directly.

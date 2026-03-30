@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -62,7 +60,7 @@ export default function RoleSelectPage() {
         <h1 className="font-heading text-3xl font-bold text-neutral-900 leading-tight">
           Join Britestate
         </h1>
-        <p className="mt-2 font-body text-sm text-neutral-500 max-w-xs mx-auto">
+        <p className="mt-2 font-sans text-sm text-neutral-500 max-w-xs mx-auto">
           Select your role to get the experience that&apos;s right for you
         </p>
       </div>
@@ -80,7 +78,7 @@ export default function RoleSelectPage() {
         singleSelect
       />
 
-      <p className="text-center font-body text-sm text-neutral-500">
+      <p className="text-center font-sans text-sm text-neutral-500">
         Not a professional?{" "}
         <Link
           href="/register"

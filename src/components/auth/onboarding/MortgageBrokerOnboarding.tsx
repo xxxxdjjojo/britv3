@@ -74,7 +74,7 @@ export function MortgageBrokerOnboarding(
   }
 
   const SkipLink = () => (
-    <button type="button" onClick={props.onSkip} className="w-full text-center font-body text-sm text-neutral-400 hover:text-neutral-600">Skip for now</button>
+    <button type="button" onClick={props.onSkip} className="w-full text-center font-sans text-sm text-neutral-400 hover:text-neutral-600">Skip for now</button>
   );
 
   return (

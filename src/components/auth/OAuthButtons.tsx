@@ -86,7 +86,7 @@ function OAuthButtonsInner() {
       <Button
         variant="outline"
         size="lg"
-        className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
+        className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-sans font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
         onClick={() => handleOAuth("google")}
         disabled={loadingProvider !== null}
         aria-label="Continue with Google"
@@ -102,7 +102,7 @@ function OAuthButtonsInner() {
       <Button
         variant="outline"
         size="lg"
-        className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
+        className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-sans font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors shadow-sm"
         onClick={() => handleOAuth("apple")}
         disabled={loadingProvider !== null}
         aria-label="Sign in with Apple"
@@ -126,7 +126,7 @@ export function OAuthButtons() {
           <Button
             variant="outline"
             size="lg"
-            className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 shadow-sm"
+            className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-sans font-medium text-neutral-700 shadow-sm"
             disabled
             aria-label="Loading Google sign-in"
           >
@@ -136,7 +136,7 @@ export function OAuthButtons() {
           <Button
             variant="outline"
             size="lg"
-            className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-body font-medium text-neutral-700 shadow-sm"
+            className="w-full h-11 gap-3 rounded-lg border-neutral-200 bg-white font-sans font-medium text-neutral-700 shadow-sm"
             disabled
             aria-label="Loading Apple sign-in"
           >

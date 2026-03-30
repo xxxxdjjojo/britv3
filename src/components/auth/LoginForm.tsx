@@ -94,7 +94,7 @@ export function LoginForm() {
 
       {/* Email */}
       <div className="space-y-1.5">
-        <Label htmlFor="email" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="email" className="font-sans text-sm font-medium text-neutral-700">
           Email address
         </Label>
         <div className="relative">
@@ -117,7 +117,7 @@ export function LoginForm() {
 
       {/* Password */}
       <div className="space-y-1.5">
-        <Label htmlFor="password" className="font-body text-sm font-medium text-neutral-700">
+        <Label htmlFor="password" className="font-sans text-sm font-medium text-neutral-700">
           Password
         </Label>
         <div className="relative">
@@ -155,11 +155,11 @@ export function LoginForm() {
             aria-label="Remember me"
             className="size-4 rounded border-neutral-300 accent-brand-primary"
           />
-          <span className="font-body text-sm text-neutral-600">Remember me</span>
+          <span className="font-sans text-sm text-neutral-600">Remember me</span>
         </label>
         <Link
           href="/forgot-password"
-          className="font-body text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
+          className="font-sans text-sm font-medium text-brand-accent hover:underline underline-offset-2 transition-colors"
           aria-label="Forgot password"
         >
           Forgot password?

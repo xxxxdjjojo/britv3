@@ -78,7 +78,7 @@ export function RightPanelContent() {
           <h2 className="font-heading text-4xl font-bold leading-tight text-white">
             The smarter way<br />to move
           </h2>
-          <p className="mt-3 font-body text-sm text-white/70">
+          <p className="mt-3 font-sans text-sm text-white/70">
             Trusted by thousands across the UK
           </p>
 
@@ -89,7 +89,7 @@ export function RightPanelContent() {
                 <span className="flex size-5 items-center justify-center rounded-full bg-white/20 text-xs text-white font-bold" aria-hidden="true">
                   {prop.icon}
                 </span>
-                <span className="font-body text-sm text-white/80">{prop.text}</span>
+                <span className="font-sans text-sm text-white/80">{prop.text}</span>
               </li>
             ))}
           </ul>
@@ -102,7 +102,7 @@ export function RightPanelContent() {
           aria-live="polite"
           aria-label={`Testimonial from ${testimonial.name}`}
         >
-          <p className="font-body text-base italic leading-relaxed text-white/90">
+          <p className="font-sans text-base italic leading-relaxed text-white/90">
             &ldquo;{testimonial.quote}&rdquo;
           </p>
           <div className="mt-5 flex items-center gap-3">
@@ -116,7 +116,7 @@ export function RightPanelContent() {
               <p className="font-heading text-sm font-semibold text-white">
                 {testimonial.name}
               </p>
-              <p className="font-body text-xs text-white/60">
+              <p className="font-sans text-xs text-white/60">
                 {testimonial.role}
               </p>
             </div>
@@ -148,7 +148,7 @@ export function RightPanelContent() {
               key={stat.label}
               className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 backdrop-blur-sm"
             >
-              <span className="font-body text-sm font-medium text-white">
+              <span className="font-sans text-sm font-medium text-white">
                 {stat.label}
               </span>
             </div>
