@@ -196,7 +196,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
         <section aria-labelledby="section-identity">
           <h2
             id="section-identity"
-            className="mb-5 font-heading text-base font-semibold text-neutral-900"
+            className="mb-5 font-headline text-base font-semibold text-primary"
           >
             Business Identity
           </h2>
@@ -293,7 +293,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
         <section aria-labelledby="section-bio">
           <h2
             id="section-bio"
-            className="mb-5 font-heading text-base font-semibold text-neutral-900"
+            className="mb-5 font-headline text-base font-semibold text-primary"
           >
             Professional Bio
           </h2>
@@ -328,7 +328,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
         <section aria-labelledby="section-quals">
           <h2
             id="section-quals"
-            className="mb-5 font-heading text-base font-semibold text-neutral-900"
+            className="mb-5 font-headline text-base font-semibold text-primary"
           >
             Qualifications &amp; Accreditations
           </h2>
@@ -384,7 +384,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
         <section aria-labelledby="section-services">
           <h2
             id="section-services"
-            className="mb-5 font-heading text-base font-semibold text-neutral-900"
+            className="mb-5 font-headline text-base font-semibold text-primary"
           >
             Service Categories
           </h2>
@@ -412,11 +412,11 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
         </section>
 
         {/* Submit */}
-        <div className="flex justify-end border-t border-neutral-100 pt-6">
+        <div className="flex justify-end border-t border-outline-variant/20 pt-6">
           <Button
             type="submit"
             disabled={isSaving}
-            className="min-w-36 bg-brand-primary text-white hover:bg-brand-primary-light"
+            className="min-w-36 bg-primary text-white hover:bg-primary-container"
           >
             {isSaving ? "Saving..." : "Publish Updates"}
           </Button>

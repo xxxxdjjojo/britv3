@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Trash2, Star, StarOff, ImageIcon } from "lucide-react";
+import { GripVertical, Pencil, Trash2, ImageIcon } from "lucide-react";
 import type { ProviderPortfolioItem } from "@/types/provider-dashboard";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -53,116 +53,100 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
   const afterSrc = item.after_image_path ? `${bucketBase}${item.after_image_path}` : null;
 
   return (
-    <div
+    <article
       ref={setNodeRef}
       style={style}
-      className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden flex flex-col"
+      className="group relative bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 hover:-translate-y-1"
     >
-      {/* Before / After images */}
-      <div className="grid grid-cols-2 divide-x divide-neutral-200 dark:divide-neutral-700 h-40">
-        <div className="relative bg-neutral-100 dark:bg-neutral-800 flex flex-col">
-          <span className="absolute top-1 left-1 z-10 text-xs font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">
-            Before
-          </span>
-          {beforeSrc ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={beforeSrc}
-              alt={`${item.title} — before`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-neutral-400">
-              <ImageIcon className="w-8 h-8" />
-            </div>
-          )}
-        </div>
-        <div className="relative bg-neutral-100 dark:bg-neutral-800 flex flex-col">
-          <span className="absolute top-1 left-1 z-10 text-xs font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">
-            After
-          </span>
-          {afterSrc ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={afterSrc}
-              alt={`${item.title} — after`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-neutral-400">
-              <ImageIcon className="w-8 h-8" />
-            </div>
-          )}
-        </div>
+      {/* Image area — aspect-[4/5] like Stitch design */}
+      <div className="aspect-[4/5] overflow-hidden bg-surface-container relative">
+        {afterSrc ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={afterSrc}
+            alt={`${item.title} — after`}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : beforeSrc ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={beforeSrc}
+            alt={`${item.title} — before`}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex-1 h-full flex items-center justify-center text-on-surface-variant">
+            <ImageIcon className="w-12 h-12" />
+          </div>
+        )}
+
+        {/* Drag handle overlay */}
+        <button
+          {...attributes}
+          {...listeners}
+          aria-label="Drag to reorder"
+          className="absolute top-3 right-3 p-1.5 bg-black/40 text-white rounded-lg cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <GripVertical className="w-4 h-4" />
+        </button>
       </div>
 
-      {/* Card body */}
-      <div className="p-3 flex flex-col gap-2 flex-1">
-        <div className="flex items-start gap-2">
-          {/* Drag handle */}
-          <button
-            {...attributes}
-            {...listeners}
-            aria-label="Drag to reorder"
-            className="mt-0.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 cursor-grab active:cursor-grabbing shrink-0"
-          >
-            <GripVertical className="w-4 h-4" />
-          </button>
-
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-neutral-900 dark:text-neutral-100 truncate">
+      {/* Card content */}
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-on-surface leading-tight truncate">
               {item.title}
-            </p>
+            </h3>
             {item.category && (
-              <span className="inline-block mt-0.5 text-xs bg-info-light text-info dark:bg-info/10 dark:text-info px-1.5 py-0.5 rounded-full font-medium">
+              <p className="text-sm text-on-surface-variant mt-1">
                 {CATEGORY_LABELS[item.category] ?? item.category}
-              </span>
+              </p>
             )}
           </div>
+          {item.is_featured && (
+            <span className="px-3 py-1 bg-primary-fixed text-[0.6875rem] font-bold text-primary-container rounded-full uppercase tracking-wider shrink-0 ml-2">
+              Featured
+            </span>
+          )}
         </div>
 
         {item.description && (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
-            {item.description}
-          </p>
+          <p className="text-xs text-on-surface-variant line-clamp-2 mb-4">{item.description}</p>
         )}
+
+        <div className="flex items-center justify-between pt-4 border-t border-surface-container">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onEdit(item)}
+              className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(item.id)}
+              className="flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-error transition-colors"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={item.is_featured}
+              onChange={(e) => onToggleFeatured(item.id, e.target.checked)}
+              aria-label={item.is_featured ? "Remove from featured" : "Set as featured"}
+            />
+            <div className="w-11 h-6 bg-surface-container rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
+            <span className="ml-3 text-[0.6875rem] font-bold uppercase tracking-wider text-on-surface-variant">
+              {item.is_featured ? "Visible" : "Hidden"}
+            </span>
+          </label>
+        </div>
       </div>
-
-      {/* Actions */}
-      <div className="px-3 pb-3 flex items-center gap-2 justify-end">
-        <button
-          onClick={() => onToggleFeatured(item.id, !item.is_featured)}
-          title={item.is_featured ? "Remove featured" : "Set as featured"}
-          className={[
-            "p-1.5 rounded-lg transition-colors",
-            item.is_featured
-              ? "text-warning hover:text-warning/80 bg-warning-light dark:bg-warning/10"
-              : "text-neutral-400 hover:text-warning hover:bg-warning-light dark:hover:bg-warning/10",
-          ].join(" ")}
-        >
-          {item.is_featured ? (
-            <Star className="w-4 h-4 fill-current" />
-          ) : (
-            <StarOff className="w-4 h-4" />
-          )}
-        </button>
-
-        <button
-          onClick={() => onEdit(item)}
-          title="Edit project"
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-info hover:bg-info-light dark:hover:bg-info/10 transition-colors"
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
-
-        <button
-          onClick={() => onDelete(item.id)}
-          title="Delete project"
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-error hover:bg-error-light dark:hover:bg-error/10 transition-colors"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
+    </article>
   );
 }

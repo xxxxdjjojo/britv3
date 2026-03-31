@@ -265,36 +265,35 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            Work Portfolio
-          </h1>
-          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {items.length} project{items.length !== 1 ? "s" : ""} &mdash; drag to reorder
-          </p>
-        </div>
+        <p className="mt-1 text-sm text-on-surface-variant">
+          {items.length} project{items.length !== 1 ? "s" : ""} — drag to reorder
+        </p>
         <button
           onClick={() => {
             setShowAddDialog(true);
             setError(null);
           }}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-r from-primary to-primary-container px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
           aria-label="Add new portfolio project"
         >
           <Plus className="size-4" />
-          Add Project
+          New Project
         </button>
       </div>
 
       {/* Grid */}
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 py-20 text-center">
-          <ImageIcon className="mx-auto mb-4 size-12 text-neutral-300" />
-          <p className="font-heading font-semibold text-neutral-700">No portfolio projects yet</p>
-          <p className="mt-1.5 text-sm text-neutral-500">
-            Add your first before/after project to showcase your work.
-          </p>
-        </div>
+        <button
+          onClick={() => { setShowAddDialog(true); setError(null); }}
+          className="flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/50 rounded-xl aspect-[4/5] bg-surface-container-low hover:bg-surface-container hover:border-primary-fixed-dim transition-all group max-w-xs mx-auto"
+        >
+          <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-primary-fixed-dim shadow-sm group-hover:scale-110 transition-transform">
+            <ImageIcon className="size-8" />
+          </div>
+          <span className="mt-4 font-bold text-on-surface-variant uppercase text-[0.6875rem] tracking-[0.1em]">
+            Upload New Portfolio Project
+          </span>
+        </button>
       ) : (
         <DndContext
           sensors={sensors}
@@ -302,7 +301,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
               {items.map((item) => (
                 <PortfolioItemCard
                   key={item.id}
@@ -312,6 +311,18 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                   onToggleFeatured={handleToggleFeatured}
                 />
               ))}
+              {/* Add card */}
+              <button
+                onClick={() => { setShowAddDialog(true); setError(null); }}
+                className="flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/50 rounded-xl aspect-[4/5] bg-surface-container-low hover:bg-surface-container hover:border-primary-fixed-dim transition-all group"
+              >
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-primary-fixed-dim shadow-sm group-hover:scale-110 transition-transform">
+                  <Plus className="size-8" />
+                </div>
+                <span className="mt-4 font-bold text-on-surface-variant uppercase text-[0.6875rem] tracking-[0.1em]">
+                  Upload New Portfolio Project
+                </span>
+              </button>
             </div>
           </SortableContext>
         </DndContext>
@@ -320,14 +331,14 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
       {/* Add Project Dialog */}
       {showAddDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
-            <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-700">
-              <h2 className="font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+          <div className="w-full max-w-lg rounded-2xl bg-surface-container-lowest shadow-xl">
+            <div className="flex items-center justify-between border-b border-outline-variant/20 px-6 py-4">
+              <h2 className="font-headline text-lg font-semibold text-on-surface">
                 Add Portfolio Project
               </h2>
               <button
                 onClick={() => setShowAddDialog(false)}
-                className="rounded-lg p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
+                className="rounded-lg p-1 text-on-surface-variant transition-colors hover:bg-surface-container"
                 aria-label="Close dialog"
               >
                 <X className="size-5" />
@@ -430,14 +441,14 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
       {/* Edit Dialog */}
       {editState && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
-            <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-700">
-              <h2 className="font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+          <div className="w-full max-w-lg rounded-2xl bg-surface-container-lowest shadow-xl">
+            <div className="flex items-center justify-between border-b border-outline-variant/20 px-6 py-4">
+              <h2 className="font-headline text-lg font-semibold text-on-surface">
                 Edit Project
               </h2>
               <button
                 onClick={() => setEditState(null)}
-                className="rounded-lg p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
+                className="rounded-lg p-1 text-on-surface-variant transition-colors hover:bg-surface-container"
                 aria-label="Close dialog"
               >
                 <X className="size-5" />
