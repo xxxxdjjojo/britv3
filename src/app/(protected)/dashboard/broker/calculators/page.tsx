@@ -45,16 +45,16 @@ function AffordabilityCalculator() {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       {/* Inputs */}
-      <Card>
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
         <CardContent className="p-6 space-y-5">
-          <h3 className="text-lg font-bold text-neutral-900">Income & Expenses</h3>
+          <h3 className="font-heading text-base font-semibold text-foreground">Income &amp; Expenses</h3>
 
           <div className="space-y-2">
-            <Label htmlFor="annual-income" className="text-sm font-semibold">
+            <Label htmlFor="annual-income" className="font-body text-xs font-medium text-neutral-500">
               Annual Income (Gross)
             </Label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-body text-sm text-neutral-400">
                 &pound;
               </span>
               <Input
@@ -64,17 +64,17 @@ function AffordabilityCalculator() {
                 step={1000}
                 value={annualIncome}
                 onChange={(e) => setAnnualIncome(Number(e.target.value))}
-                className="pl-8"
+                className="pl-8 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="partner-income" className="text-sm font-semibold">
+            <Label htmlFor="partner-income" className="font-body text-xs font-medium text-neutral-500">
               Partner Annual Income (optional)
             </Label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-body text-sm text-neutral-400">
                 &pound;
               </span>
               <Input
@@ -84,17 +84,17 @@ function AffordabilityCalculator() {
                 step={1000}
                 value={partnerIncome}
                 onChange={(e) => setPartnerIncome(Number(e.target.value))}
-                className="pl-8"
+                className="pl-8 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="monthly-expenses" className="text-sm font-semibold">
+            <Label htmlFor="monthly-expenses" className="font-body text-xs font-medium text-neutral-500">
               Monthly Commitments
             </Label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-body text-sm text-neutral-400">
                 &pound;
               </span>
               <Input
@@ -104,20 +104,20 @@ function AffordabilityCalculator() {
                 step={50}
                 value={monthlyExpenses}
                 onChange={(e) => setMonthlyExpenses(Number(e.target.value))}
-                className="pl-8"
+                className="pl-8 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
-            <p className="text-xs text-neutral-400">
+            <p className="font-body text-xs text-neutral-500">
               Include credit cards, loans, childcare, and other regular commitments.
             </p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="affordability-deposit" className="text-sm font-semibold">
+              <Label htmlFor="affordability-deposit" className="font-body text-xs font-medium text-neutral-500">
                 Available Deposit
               </Label>
-              <span className="text-sm font-medium text-neutral-500">
+              <span className="font-body text-sm font-medium text-neutral-500">
                 {formatCurrency(deposit)}
               </span>
             </div>
@@ -136,10 +136,10 @@ function AffordabilityCalculator() {
 
       {/* Results */}
       <div className="space-y-4">
-        <Card className="border-[#1B4D3E]/20">
+        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-brand-primary/20 border-0">
           <CardContent className="p-6">
-            <h3 className="mb-4 text-lg font-bold text-neutral-900">Borrowing Estimates</h3>
-            <p className="mb-4 text-xs text-neutral-500">
+            <h3 className="mb-4 font-heading text-base font-semibold text-foreground">Borrowing Estimates</h3>
+            <p className="mb-4 font-body text-xs text-neutral-500">
               Based on standard lender income multiples. Actual affordability may vary by lender.
             </p>
 
@@ -149,28 +149,28 @@ function AffordabilityCalculator() {
                 { label: "Standard (4.5x)", loan: multiplier45, property: maxPropertyAt45 },
                 { label: "Maximum (5x)", loan: multiplier5, property: maxPropertyAt5 },
               ].map((tier) => (
-                <div key={tier.label} className="flex items-center justify-between rounded-lg border border-neutral-200 p-3">
+                <div key={tier.label} className="flex items-center justify-between rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 p-3">
                   <div>
-                    <p className="text-xs font-medium text-neutral-500">{tier.label}</p>
-                    <p className="text-sm text-neutral-600">Loan: {formatCurrency(tier.loan)}</p>
+                    <p className="font-body text-xs font-medium text-neutral-500">{tier.label}</p>
+                    <p className="font-body text-sm text-foreground">Loan: {formatCurrency(tier.loan)}</p>
                   </div>
-                  <p className="text-lg font-bold text-[#1B4D3E]">{formatCurrency(tier.property)}</p>
+                  <p className="font-heading text-lg font-bold text-brand-primary">{formatCurrency(tier.property)}</p>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
           <CardContent className="p-6">
-            <h3 className="mb-2 text-base font-bold text-neutral-900">Stress Test</h3>
-            <p className="mb-3 text-xs text-neutral-500">
+            <h3 className="mb-2 font-heading text-base font-semibold text-foreground">Stress Test</h3>
+            <p className="mb-3 font-body text-xs text-neutral-500">
               At a {stressTestRate}% stress test rate over 25 years, based on affordable monthly payment of {formatCurrency(affordableMonthly)}.
             </p>
-            <div className="rounded-lg bg-neutral-50 border border-neutral-200 p-4 text-center">
-              <p className="text-xs font-medium text-neutral-500 mb-1">Max Loan (Stress Tested)</p>
-              <p className="text-2xl font-black text-neutral-900">{formatCurrency(maxLoanFromAffordability)}</p>
-              <p className="text-xs text-neutral-400 mt-1">
+            <div className="rounded-lg bg-muted/40 border border-neutral-200/60 dark:border-neutral-700/60 p-4 text-center">
+              <p className="font-body text-xs font-medium text-neutral-500 mb-1">Max Loan (Stress Tested)</p>
+              <p className="font-heading text-2xl font-black text-foreground">{formatCurrency(maxLoanFromAffordability)}</p>
+              <p className="font-body text-xs text-neutral-500 mt-1">
                 Max property: {formatCurrency(maxLoanFromAffordability + deposit)}
               </p>
             </div>
@@ -186,8 +186,8 @@ export default function CalculatorsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Calculator Tools</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Calculator Tools</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Use these calculators to help clients understand their mortgage options and costs.
         </p>
       </div>

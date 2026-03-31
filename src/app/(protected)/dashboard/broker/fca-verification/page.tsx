@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   ShieldCheck,
   Upload,
@@ -26,10 +25,10 @@ type Document = {
 };
 
 const STATUS_CONFIG: Record<VerificationStatus, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> = {
-  verified: { label: "Verified", color: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: CheckCircle2 },
-  pending: { label: "Pending Review", color: "bg-amber-50 text-amber-700 border-amber-200", icon: Clock },
-  expired: { label: "Expired", color: "bg-red-50 text-red-700 border-red-200", icon: AlertTriangle },
-  not_submitted: { label: "Not Submitted", color: "bg-neutral-50 text-neutral-500 border-neutral-200", icon: FileText },
+  verified: { label: "Verified", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle2 },
+  pending: { label: "Pending Review", color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300", icon: Clock },
+  expired: { label: "Expired", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300", icon: AlertTriangle },
+  not_submitted: { label: "Not Submitted", color: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400", icon: FileText },
 };
 
 const MOCK_DOCUMENTS: Document[] = [
@@ -67,10 +66,10 @@ function StatusBadge({ status }: Readonly<{ status: VerificationStatus }>) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
   return (
-    <Badge variant="outline" className={`${config.color} gap-1.5`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium gap-1.5 ${config.color}`}>
       <Icon className="size-3" />
       {config.label}
-    </Badge>
+    </span>
   );
 }
 
@@ -87,29 +86,29 @@ export default function FCAVerificationPage() {
     <div className="p-6 space-y-6 max-w-4xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">FCA Verification</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="font-heading text-xl font-semibold text-foreground">FCA Verification</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Manage your Financial Conduct Authority registration and compliance documents.
         </p>
       </div>
 
       {/* FCA Number Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 p-6">
         <div className="flex items-start gap-4">
-          <div className="flex size-11 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+          <div className="flex size-11 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
             <ShieldCheck className="size-5" />
           </div>
           <div className="flex-1 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-semibold text-neutral-900">FCA Registration</h2>
-                <p className="text-sm text-neutral-500">Your FCA firm reference number</p>
+                <h2 className="font-heading text-base font-semibold text-foreground">FCA Registration</h2>
+                <p className="font-body text-sm text-neutral-500">Your FCA firm reference number</p>
               </div>
               <StatusBadge status={fcaStatus} />
             </div>
             <div className="flex items-end gap-3">
               <div className="flex-1 max-w-xs">
-                <Label htmlFor="fca-number" className="text-sm font-medium">
+                <Label htmlFor="fca-number" className="font-body text-xs font-medium text-neutral-500">
                   FCA Number
                 </Label>
                 <Input
@@ -117,14 +116,14 @@ export default function FCAVerificationPage() {
                   value={fcaNumber}
                   onChange={(e) => setFcaNumber(e.target.value)}
                   placeholder="Enter your FCA number"
-                  className="mt-1"
+                  className="mt-1 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
                 />
               </div>
-              <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+              <Button className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white hover:bg-brand-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
                 Verify
               </Button>
             </div>
-            <p className="text-xs text-neutral-400">
+            <p className="font-body text-xs text-neutral-500">
               Your FCA number is checked against the FCA Register to confirm your authorisation status.
             </p>
           </div>
@@ -132,21 +131,21 @@ export default function FCAVerificationPage() {
       </div>
 
       {/* Verification Progress */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-neutral-900">Document Verification</h2>
-          <span className="text-sm font-semibold text-[#1B4D3E]">
+          <h2 className="font-heading text-base font-semibold text-foreground">Document Verification</h2>
+          <span className="font-body text-sm font-semibold text-brand-primary">
             {verifiedCount}/{totalCount} verified
           </span>
         </div>
         <div className="space-y-1 mb-6">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
             <div
-              className="h-full rounded-full bg-[#1B4D3E] transition-all"
+              className="h-2 rounded-full bg-brand-primary transition-all"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <p className="text-xs text-neutral-400">{progressPercent}% complete</p>
+          <p className="font-body text-xs text-neutral-500">{progressPercent}% complete</p>
         </div>
 
         {/* Document List */}
@@ -154,16 +153,16 @@ export default function FCAVerificationPage() {
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="flex flex-col gap-4 rounded-lg border border-neutral-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-sm font-semibold text-neutral-900">{doc.name}</h3>
+                  <h3 className="font-body text-sm font-semibold text-foreground">{doc.name}</h3>
                   <StatusBadge status={doc.status} />
                 </div>
-                <p className="text-xs text-neutral-500">{doc.description}</p>
+                <p className="font-body text-xs text-neutral-500">{doc.description}</p>
                 {doc.uploadedAt && (
-                  <p className="mt-1 text-xs text-neutral-400">
+                  <p className="mt-1 font-body text-xs text-neutral-500">
                     Uploaded: {new Date(doc.uploadedAt).toLocaleDateString("en-GB")}
                     {doc.expiresAt && ` \u00B7 Expires: ${new Date(doc.expiresAt).toLocaleDateString("en-GB")}`}
                   </p>
@@ -171,12 +170,12 @@ export default function FCAVerificationPage() {
               </div>
               <div className="shrink-0">
                 {doc.status === "not_submitted" || doc.status === "expired" ? (
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                  <Button variant="outline" size="sm" className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-4 py-2 font-body text-sm font-medium text-foreground hover:bg-muted transition-colors gap-1.5">
                     <Upload className="size-3.5" />
                     Upload
                   </Button>
                 ) : (
-                  <Button variant="ghost" size="sm" className="gap-1.5 text-neutral-500">
+                  <Button variant="ghost" size="sm" className="gap-1.5 font-body text-sm text-neutral-500">
                     <FileText className="size-3.5" />
                     View
                   </Button>

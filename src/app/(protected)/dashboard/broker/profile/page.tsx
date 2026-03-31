@@ -60,32 +60,32 @@ export default function BrokerProfilePage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Broker Profile</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <h1 className="font-heading text-xl font-semibold text-foreground">Broker Profile</h1>
+          <p className="mt-1 font-body text-sm text-neutral-500">
             Manage your public-facing profile information.
           </p>
         </div>
-        <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31] gap-1.5">
+        <Button className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white hover:bg-brand-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2 gap-1.5">
           <Save className="size-4" />
           Save Changes
         </Button>
       </div>
 
       {/* Photo Upload */}
-      <Card>
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
         <CardContent className="p-6">
           <div className="flex items-center gap-6">
             <div className="relative">
               <div className="flex size-24 items-center justify-center rounded-full bg-neutral-100 border-2 border-dashed border-neutral-300">
                 <UserCircle className="size-12 text-neutral-400" />
               </div>
-              <button className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-[#1B4D3E] text-white shadow-sm hover:bg-[#163d31]">
+              <button className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-brand-primary text-white shadow-sm hover:bg-brand-primary/90 transition-colors">
                 <Camera className="size-4" />
               </button>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-neutral-900">Profile Photo</h3>
-              <p className="text-xs text-neutral-500 mt-1">
+              <h3 className="font-body text-sm font-semibold text-foreground">Profile Photo</h3>
+              <p className="font-body text-xs text-neutral-500 mt-1">
                 Upload a professional photo. JPG or PNG, max 2MB.
               </p>
             </div>
@@ -94,32 +94,34 @@ export default function BrokerProfilePage() {
       </Card>
 
       {/* Business Details */}
-      <Card>
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
         <CardContent className="p-6 space-y-4">
-          <h3 className="text-base font-semibold text-neutral-900">Business Details</h3>
+          <h3 className="font-heading text-base font-semibold text-foreground">Business Details</h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="business-name" className="text-sm font-medium">Business Name</Label>
+              <Label htmlFor="business-name" className="font-body text-xs font-medium text-neutral-500">Business Name</Label>
               <Input
                 id="business-name"
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="contact-name" className="text-sm font-medium">Contact Name</Label>
+              <Label htmlFor="contact-name" className="font-body text-xs font-medium text-neutral-500">Contact Name</Label>
               <Input
                 id="contact-name"
                 value={contactName}
                 onChange={(e) => setContactName(e.target.value)}
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="profile-email" className="text-sm font-medium flex items-center gap-1.5">
+              <Label htmlFor="profile-email" className="font-body text-xs font-medium text-neutral-500 flex items-center gap-1.5">
                 <Mail className="size-3.5 text-neutral-400" />
                 Email
               </Label>
@@ -128,10 +130,11 @@ export default function BrokerProfilePage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="profile-phone" className="text-sm font-medium flex items-center gap-1.5">
+              <Label htmlFor="profile-phone" className="font-body text-xs font-medium text-neutral-500 flex items-center gap-1.5">
                 <Phone className="size-3.5 text-neutral-400" />
                 Phone
               </Label>
@@ -139,13 +142,14 @@ export default function BrokerProfilePage() {
                 id="profile-phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="profile-website" className="text-sm font-medium flex items-center gap-1.5">
+              <Label htmlFor="profile-website" className="font-body text-xs font-medium text-neutral-500 flex items-center gap-1.5">
                 <Globe className="size-3.5 text-neutral-400" />
                 Website
               </Label>
@@ -153,16 +157,17 @@ export default function BrokerProfilePage() {
                 id="profile-website"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium flex items-center gap-1.5">
+              <Label className="font-body text-xs font-medium text-neutral-500 flex items-center gap-1.5">
                 <ShieldCheck className="size-3.5 text-neutral-400" />
                 FCA Number
               </Label>
-              <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-neutral-200 bg-neutral-50">
-                <span className="text-sm text-neutral-700">{fcaNumber}</span>
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+              <div className="flex items-center gap-2 h-9 px-3 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card">
+                <span className="font-body text-sm text-foreground">{fcaNumber}</span>
+                <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 border-0 text-[10px]">
                   Verified
                 </Badge>
               </div>
@@ -172,25 +177,25 @@ export default function BrokerProfilePage() {
       </Card>
 
       {/* Bio */}
-      <Card>
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
         <CardContent className="p-6 space-y-3">
-          <h3 className="text-base font-semibold text-neutral-900">About You</h3>
+          <h3 className="font-heading text-base font-semibold text-foreground">About You</h3>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={4}
-            className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] focus:border-transparent"
+            className="w-full rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
             placeholder="Tell potential clients about your experience and expertise..."
           />
-          <p className="text-xs text-neutral-400">{bio.length}/500 characters</p>
+          <p className="font-body text-xs text-neutral-500">{bio.length}/500 characters</p>
         </CardContent>
       </Card>
 
       {/* Specialisms */}
-      <Card>
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
         <CardContent className="p-6 space-y-3">
-          <h3 className="text-base font-semibold text-neutral-900">Specialisms</h3>
-          <p className="text-xs text-neutral-500">Select the mortgage types you specialise in.</p>
+          <h3 className="font-heading text-base font-semibold text-foreground">Specialisms</h3>
+          <p className="font-body text-xs text-neutral-500">Select the mortgage types you specialise in.</p>
           <div className="flex flex-wrap gap-2">
             {SPECIALISMS.map((s) => (
               <button
@@ -199,8 +204,8 @@ export default function BrokerProfilePage() {
                 onClick={() => toggleSpecialism(s)}
                 className={
                   selectedSpecialisms.has(s)
-                    ? "rounded-full border-2 border-[#1B4D3E] bg-[#E8F5EE] px-3 py-1.5 text-xs font-semibold text-[#1B4D3E] transition-colors"
-                    : "rounded-full border-2 border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300"
+                    ? "rounded-full border-2 border-brand-primary bg-brand-primary-lighter px-3 py-1.5 font-body text-xs font-medium text-brand-primary transition-colors"
+                    : "rounded-full border-2 border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-1.5 font-body text-xs font-medium text-neutral-600 hover:border-neutral-400 transition-colors"
                 }
               >
                 {s}
@@ -211,9 +216,9 @@ export default function BrokerProfilePage() {
       </Card>
 
       {/* Service Area */}
-      <Card>
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 border-0">
         <CardContent className="p-6 space-y-3">
-          <h3 className="text-base font-semibold text-neutral-900 flex items-center gap-1.5">
+          <h3 className="font-heading text-base font-semibold text-foreground flex items-center gap-1.5">
             <MapPin className="size-4 text-neutral-400" />
             Service Area
           </h3>
@@ -221,8 +226,9 @@ export default function BrokerProfilePage() {
             value={serviceArea}
             onChange={(e) => setServiceArea(e.target.value)}
             placeholder="e.g. London, Surrey, Kent"
+            className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
           />
-          <p className="text-xs text-neutral-400">
+          <p className="font-body text-xs text-neutral-500">
             Comma-separated list of areas you cover.
           </p>
         </CardContent>

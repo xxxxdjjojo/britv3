@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,10 +26,10 @@ type Lead = {
 };
 
 const STATUS_CONFIG: Record<LeadStatus, { label: string; color: string }> = {
-  new: { label: "New", color: "bg-blue-50 text-blue-700 border-blue-200" },
-  contacted: { label: "Contacted", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  qualified: { label: "Qualified", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  lost: { label: "Lost", color: "bg-neutral-50 text-neutral-500 border-neutral-200" },
+  new: { label: "New", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" },
+  contacted: { label: "Contacted", color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" },
+  qualified: { label: "Qualified", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
+  lost: { label: "Lost", color: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400" },
 };
 
 const MOCK_LEADS: Lead[] = [
@@ -139,8 +138,8 @@ export default function LeadsPage() {
     <div className="p-6 space-y-6 max-w-5xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Leads</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Leads</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Manage incoming mortgage enquiries and convert them into clients.
         </p>
       </div>
@@ -154,8 +153,8 @@ export default function LeadsPage() {
             onClick={() => setStatusFilter(status)}
             className={
               statusFilter === status
-                ? "rounded-full bg-[#1B4D3E] px-3 py-1.5 text-xs font-semibold text-white"
-                : "rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-50"
+                ? "rounded-full bg-brand-primary px-3 py-1.5 font-body text-xs font-semibold text-white transition-colors"
+                : "rounded-full border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-1.5 font-body text-xs font-medium text-neutral-600 hover:bg-muted transition-colors"
             }
           >
             {status === "all" ? "All" : STATUS_CONFIG[status].label} ({counts[status]})
@@ -170,7 +169,7 @@ export default function LeadsPage() {
           placeholder="Search by name or type..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
+          className="pl-9 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-2"
         />
       </div>
 
@@ -181,23 +180,23 @@ export default function LeadsPage() {
           return (
             <div
               key={lead.id}
-              className="bg-white rounded-xl shadow-sm border border-neutral-200 p-5 hover:shadow-md transition-shadow"
+              className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-sm font-semibold text-neutral-900">{lead.name}</h3>
-                    <Badge variant="outline" className={config.color}>
+                    <h3 className="font-body text-sm font-semibold text-foreground">{lead.name}</h3>
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium ${config.color}`}>
                       {config.label}
-                    </Badge>
+                    </span>
                   </div>
-                  <p className="text-xs text-neutral-500 mb-2">{lead.message}</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+                  <p className="font-body text-xs text-neutral-500 mb-2">{lead.message}</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-body text-xs text-neutral-500">
                     <span className="flex items-center gap-1">
                       <PoundSterling className="size-3" />
                       {formatCurrency(lead.propertyValue)}
                     </span>
-                    <span className="font-medium text-neutral-600">{lead.enquiryType}</span>
+                    <span className="font-medium text-foreground">{lead.enquiryType}</span>
                     <span className="flex items-center gap-1">
                       <Clock className="size-3" />
                       {new Date(lead.date).toLocaleDateString("en-GB")}
@@ -205,11 +204,11 @@ export default function LeadsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                  <Button variant="outline" size="sm" className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-4 py-2 font-body text-sm font-medium text-foreground hover:bg-muted transition-colors gap-1.5">
                     <Phone className="size-3.5" />
                     Call
                   </Button>
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                  <Button variant="outline" size="sm" className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-4 py-2 font-body text-sm font-medium text-foreground hover:bg-muted transition-colors gap-1.5">
                     <Mail className="size-3.5" />
                     Email
                   </Button>
@@ -221,7 +220,7 @@ export default function LeadsPage() {
 
         {filtered.length === 0 && (
           <div className="rounded-xl border border-dashed border-neutral-300 py-12 text-center">
-            <p className="text-sm text-neutral-400">No leads match your filters.</p>
+            <p className="font-body text-sm text-neutral-500">No leads match your filters.</p>
           </div>
         )}
       </div>

@@ -56,8 +56,8 @@ export default function AnalyticsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Analytics</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Analytics</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Track your business performance and identify growth opportunities.
         </p>
       </div>
@@ -92,8 +92,8 @@ export default function AnalyticsPage() {
       {/* Charts Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Monthly Performance */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900 flex items-center gap-2">
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 p-6">
+          <h2 className="mb-4 font-heading text-base font-semibold text-foreground flex items-center gap-2">
             <BarChart3 className="size-4 text-neutral-400" />
             Monthly Performance
           </h2>
@@ -103,18 +103,18 @@ export default function AnalyticsPage() {
               const barWidth = (m.revenue / maxRevenue) * 100;
               return (
                 <div key={m.month} className="flex items-center gap-3">
-                  <span className="w-8 text-xs font-medium text-neutral-500">{m.month}</span>
+                  <span className="w-8 font-body text-xs font-medium text-neutral-500">{m.month}</span>
                   <div className="flex-1">
-                    <div className="h-6 rounded-md bg-neutral-100 overflow-hidden">
+                    <div className="h-6 rounded-md bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
                       <div
-                        className="h-full rounded-md bg-[#1B4D3E] transition-all"
+                        className="h-full rounded-md bg-brand-primary transition-all"
                         style={{ width: `${barWidth}%` }}
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-xs shrink-0">
+                  <div className="flex items-center gap-3 font-body text-xs shrink-0">
                     <span className="text-neutral-500">{m.leads} leads</span>
-                    <span className="font-semibold text-neutral-900">{formatCurrency(m.revenue)}</span>
+                    <span className="font-semibold text-foreground">{formatCurrency(m.revenue)}</span>
                   </div>
                 </div>
               );
@@ -123,18 +123,18 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Enquiry Breakdown */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">Enquiry Breakdown</h2>
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 p-6">
+          <h2 className="mb-4 font-heading text-base font-semibold text-foreground">Enquiry Breakdown</h2>
           <div className="space-y-3">
             {ENQUIRY_TYPES.map((item) => (
               <div key={item.type}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-neutral-700">{item.type}</span>
-                  <span className="text-xs font-semibold text-neutral-900">{item.count} ({item.pct}%)</span>
+                  <span className="font-body text-sm text-foreground">{item.type}</span>
+                  <span className="font-body text-xs font-semibold text-foreground">{item.count} ({item.pct}%)</span>
                 </div>
-                <div className="h-2 rounded-full bg-neutral-100 overflow-hidden">
+                <div className="h-2 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#1B4D3E] transition-all"
+                    className="h-2 rounded-full bg-brand-primary transition-all"
                     style={{ width: `${item.pct}%` }}
                   />
                 </div>
@@ -144,16 +144,16 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top Lenders */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 lg:col-span-2">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">Top Lenders Used</h2>
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 p-6 lg:col-span-2">
+          <h2 className="mb-4 font-heading text-base font-semibold text-foreground">Top Lenders Used</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-neutral-200">
-                  <th className="px-3 py-2 text-left font-semibold text-neutral-600">Lender</th>
-                  <th className="px-3 py-2 text-right font-semibold text-neutral-600">Deals Placed</th>
-                  <th className="px-3 py-2 text-right font-semibold text-neutral-600">Avg Rate</th>
-                  <th className="px-3 py-2 text-left font-semibold text-neutral-600">Share</th>
+                <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60 bg-muted/40">
+                  <th className="px-3 py-2 text-left font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lender</th>
+                  <th className="px-3 py-2 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Deals Placed</th>
+                  <th className="px-3 py-2 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Avg Rate</th>
+                  <th className="px-3 py-2 text-left font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Share</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,19 +161,19 @@ export default function AnalyticsPage() {
                   const totalDeals = TOP_LENDERS.reduce((s, l) => s + l.deals, 0);
                   const share = Math.round((lender.deals / totalDeals) * 100);
                   return (
-                    <tr key={lender.name} className="border-b border-neutral-100">
-                      <td className="px-3 py-2.5 font-medium text-neutral-900">{lender.name}</td>
-                      <td className="px-3 py-2.5 text-right text-neutral-700">{lender.deals}</td>
-                      <td className="px-3 py-2.5 text-right font-semibold text-[#1B4D3E]">{lender.avgRate.toFixed(2)}%</td>
+                    <tr key={lender.name} className="border-b border-neutral-100/60 dark:border-neutral-700/60 hover:bg-muted/30 transition-colors">
+                      <td className="px-3 py-2.5 font-body text-sm font-medium text-foreground">{lender.name}</td>
+                      <td className="px-3 py-2.5 text-right font-body text-sm text-foreground">{lender.deals}</td>
+                      <td className="px-3 py-2.5 text-right font-body text-sm font-semibold text-brand-primary">{lender.avgRate.toFixed(2)}%</td>
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1.5 rounded-full bg-neutral-100 overflow-hidden">
+                          <div className="flex-1 h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-[#1B4D3E]"
+                              className="h-full rounded-full bg-brand-primary"
                               style={{ width: `${share}%` }}
                             />
                           </div>
-                          <span className="text-xs text-neutral-500 w-8">{share}%</span>
+                          <span className="font-body text-xs text-neutral-500 w-8">{share}%</span>
                         </div>
                       </td>
                     </tr>

@@ -66,31 +66,31 @@ export default function BillingPage() {
     <div className="p-6 space-y-6 max-w-5xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Billing</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Billing</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Manage your subscription and payment details.
         </p>
       </div>
 
       {/* Current Plan */}
-      <Card className="border-[#1B4D3E]/20">
+      <Card className="rounded-xl bg-card shadow-sm ring-1 ring-brand-primary/20 border-0">
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex size-12 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
                 <Crown className="size-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-neutral-900">Professional Plan</h2>
-                  <Badge className="bg-[#1B4D3E] text-white">Current</Badge>
+                  <h2 className="font-heading text-base font-semibold text-foreground">Professional Plan</h2>
+                  <Badge className="bg-brand-primary text-white font-body text-xs">Current</Badge>
                 </div>
-                <p className="text-sm text-neutral-500">
+                <p className="font-body text-sm text-neutral-500">
                   {formatCurrency(49.99)}/month &middot; Next billing: 1 April 2026
                 </p>
               </div>
             </div>
-            <Button variant="outline" className="shrink-0">
+            <Button variant="outline" className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-4 py-2 font-body text-sm font-medium text-foreground hover:bg-muted transition-colors shrink-0">
               <CreditCard className="mr-2 size-4" />
               Update Payment Method
             </Button>
@@ -100,37 +100,37 @@ export default function BillingPage() {
 
       {/* Plans Comparison */}
       <div>
-        <h2 className="mb-4 text-base font-semibold text-neutral-900">Available Plans</h2>
+        <h2 className="mb-4 font-heading text-base font-semibold text-foreground">Available Plans</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {PLANS.map((plan) => (
             <Card
               key={plan.name}
-              className={plan.current ? "border-2 border-[#1B4D3E] shadow-md" : ""}
+              className={`rounded-xl bg-card shadow-sm border-0 ${plan.current ? "ring-2 ring-brand-primary shadow-md" : "ring-1 ring-neutral-200/60 dark:ring-neutral-700/60"}`}
             >
               <CardContent className="p-6">
                 <div className="mb-4">
-                  <h3 className="text-lg font-bold text-neutral-900">{plan.name}</h3>
+                  <h3 className="font-heading text-base font-semibold text-foreground">{plan.name}</h3>
                   <div className="mt-1 flex items-baseline gap-1">
-                    <span className="text-3xl font-black text-neutral-900">
+                    <span className="font-heading text-3xl font-black text-foreground">
                       {formatCurrency(plan.price)}
                     </span>
-                    <span className="text-sm text-neutral-500">/month</span>
+                    <span className="font-body text-sm text-neutral-500">/month</span>
                   </div>
                 </div>
                 <ul className="mb-6 space-y-2">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm text-neutral-600">
-                      <CheckCircle2 className="size-4 shrink-0 text-[#1B4D3E] mt-0.5" />
+                    <li key={feature} className="flex items-start gap-2 font-body text-sm text-foreground">
+                      <CheckCircle2 className="size-4 shrink-0 text-brand-primary mt-0.5" />
                       {feature}
                     </li>
                   ))}
                 </ul>
                 {plan.current ? (
-                  <Button disabled className="w-full" variant="outline">
+                  <Button disabled className="w-full rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-4 py-2 font-body text-sm font-medium" variant="outline">
                     Current Plan
                   </Button>
                 ) : (
-                  <Button className="w-full bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+                  <Button className="w-full rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white hover:bg-brand-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
                     {plan.price > 49.99 ? "Upgrade" : "Downgrade"}
                     <ArrowRight className="ml-1.5 size-4" />
                   </Button>
@@ -142,35 +142,35 @@ export default function BillingPage() {
       </div>
 
       {/* Payment History */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
-        <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4">
-          <h2 className="text-base font-semibold text-neutral-900">Payment History</h2>
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+        <div className="flex items-center justify-between border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
+          <h2 className="font-heading text-base font-semibold text-foreground">Payment History</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-100 bg-neutral-50/50">
-                <th className="px-6 py-2.5 text-left font-semibold text-neutral-600">Date</th>
-                <th className="px-6 py-2.5 text-left font-semibold text-neutral-600">Description</th>
-                <th className="px-6 py-2.5 text-right font-semibold text-neutral-600">Amount</th>
-                <th className="px-6 py-2.5 text-center font-semibold text-neutral-600">Status</th>
-                <th className="px-6 py-2.5 text-center font-semibold text-neutral-600">Invoice</th>
+              <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60 bg-muted/40">
+                <th className="px-6 py-2.5 text-left font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Date</th>
+                <th className="px-6 py-2.5 text-left font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Description</th>
+                <th className="px-6 py-2.5 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Amount</th>
+                <th className="px-6 py-2.5 text-center font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Status</th>
+                <th className="px-6 py-2.5 text-center font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Invoice</th>
               </tr>
             </thead>
             <tbody>
               {PAYMENT_HISTORY.map((payment) => (
-                <tr key={payment.id} className="border-b border-neutral-100">
-                  <td className="px-6 py-3 text-neutral-700">
+                <tr key={payment.id} className="border-b border-neutral-100/60 dark:border-neutral-700/60 hover:bg-muted/30 transition-colors">
+                  <td className="px-6 py-3 font-body text-sm text-foreground">
                     {new Date(payment.date).toLocaleDateString("en-GB")}
                   </td>
-                  <td className="px-6 py-3 text-neutral-700">{payment.description}</td>
-                  <td className="px-6 py-3 text-right font-medium text-neutral-900">
+                  <td className="px-6 py-3 font-body text-sm text-foreground">{payment.description}</td>
+                  <td className="px-6 py-3 text-right font-body text-sm font-medium text-foreground">
                     {formatCurrency(payment.amount)}
                   </td>
                   <td className="px-6 py-3 text-center">
-                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
                       Paid
-                    </Badge>
+                    </span>
                   </td>
                   <td className="px-6 py-3 text-center">
                     <Button variant="ghost" size="sm">
