@@ -15,6 +15,7 @@ import {
   Truck,
   GraduationCap,
   BarChart3,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -152,12 +153,23 @@ const TOOLS: Tool[] = [
     stat: "5",
     statLabel: "Government schemes covered",
   },
+  {
+    href: "/tools/equity-calculator",
+    icon: Layers,
+    title: "Home Equity Calculator",
+    description:
+      "Calculate the equity in your home instantly and project how it will grow over time. See your LTV ratio, equity classification, and model future scenarios with different growth rates.",
+    color:
+      "bg-brand-primary/10 text-brand-primary",
+    stat: "10-yr",
+    statLabel: "Equity growth projection",
+  },
 ];
 
 const STATS = [
   { value: "50,000+", label: "Monthly Users" },
   { value: "£0", label: "Completely Free" },
-  { value: "10", label: "Property Tools" },
+  { value: "11", label: "Property Tools" },
   { value: "4.9★", label: "User Rating" },
 ];
 
