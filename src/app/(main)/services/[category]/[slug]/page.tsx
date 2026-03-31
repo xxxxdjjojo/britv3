@@ -18,6 +18,7 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import {
   fetchProviderBySlug,
   fetchProviderReviews,
@@ -177,42 +178,42 @@ async function CategoryLocationPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localJsonLd) }}
       />
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-        <main className="max-w-7xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-[#faf9f8] dark:bg-[#0f1a17]">
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
           {/* Breadcrumb */}
-          <nav className="flex text-xs text-slate-500 mb-4 gap-2 items-center">
-            <a href="/" className="hover:text-[#2563EB]">
+          <nav className="flex text-xs text-[#9ca3af] mb-4 gap-2 items-center flex-wrap" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-[#1B4D3E] transition-colors">
               Home
-            </a>
-            <span>/</span>
-            <a href="/marketplace" className="hover:text-[#2563EB]">
+            </Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/marketplace" className="hover:text-[#1B4D3E] transition-colors">
               Services
-            </a>
-            <span>/</span>
-            <a href={`/services/${category}`} className="hover:text-[#2563EB]">
+            </Link>
+            <span aria-hidden="true">/</span>
+            <Link href={`/services/${category}`} className="hover:text-[#1B4D3E] transition-colors">
               {categoryDisplay}
-            </a>
-            <span>/</span>
-            <span className="text-[#2563EB] font-medium">{locationDisplay}</span>
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-[#1B4D3E] font-medium">{locationDisplay}</span>
           </nav>
 
           {/* Hero */}
           <section className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-4">
               {`Verified ${categoryDisplay} in `}
-              <span className="text-[#2563EB] underline decoration-[#2563EB]/30 underline-offset-8">
+              <span className="text-[#1B4D3E] dark:text-[#4ade80]">
                 {locationDisplay}
               </span>
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400 mb-6">
+            <p className="text-lg text-[#6b7280] dark:text-[#9ca3af] mb-6">
               {meta.intro}
             </p>
-            <div className="inline-flex gap-6 bg-white dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 shadow-sm text-sm">
+            <div className="inline-flex gap-6 bg-[#f4f3f2] dark:bg-[#1a2822] p-4 rounded-2xl text-sm">
               <span>
-                <strong className="text-[#2563EB] text-lg">
+                <strong className="text-[#1B4D3E] dark:text-[#4ade80] text-lg font-bold">
                   {providers?.length ?? 0}
                 </strong>{" "}
-                Pros Verified
+                <span className="text-[#6b7280] dark:text-[#9ca3af]">Pros Verified</span>
               </span>
             </div>
           </section>
@@ -220,18 +221,18 @@ async function CategoryLocationPage({
           {/* Provider cards */}
           <div className="space-y-4 mb-16">
             {(providers ?? []).length === 0 ? (
-              <div className="text-center py-12 text-slate-500">
-                <p className="text-lg font-medium">
+              <div className="text-center py-16 rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822]">
+                <p className="text-lg font-medium text-[#6b7280] dark:text-[#9ca3af]">
                   No verified {categoryDisplay.toLowerCase()} found in{" "}
                   {locationDisplay}.
                 </p>
                 <p className="mt-2 text-sm">
-                  <a
+                  <Link
                     href="/marketplace"
-                    className="text-[#2563EB] hover:underline"
+                    className="text-[#1B4D3E] dark:text-[#4ade80] hover:underline font-medium"
                   >
                     Browse all services
-                  </a>
+                  </Link>
                 </p>
               </div>
             ) : (
@@ -253,8 +254,10 @@ async function CategoryLocationPage({
           />
 
           {/* Related categories */}
-          <section className="mt-16 border-t border-slate-200 dark:border-slate-800 pt-12">
-            <h2 className="text-xl font-bold mb-4">Also Looking For?</h2>
+          <section className="mt-16 pt-12 border-t border-[#e8e6e3] dark:border-[#1a2822]">
+            <h2 className="text-xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-4">
+              Also Looking For?
+            </h2>
             <div className="flex flex-wrap gap-3">
               {Object.entries(CATEGORY_SLUGS)
                 .filter(([k]) => k !== String(categoryDb))
@@ -263,7 +266,7 @@ async function CategoryLocationPage({
                   <a
                     key={slug}
                     href={`/services/${slug}/${location}`}
-                    className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-[#2563EB] hover:text-[#2563EB] text-sm font-medium transition-colors"
+                    className="px-4 py-2 rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822] hover:bg-[#eceae8] dark:hover:bg-[#243330] text-[#6b7280] dark:text-[#9ca3af] hover:text-[#1B4D3E] dark:hover:text-[#4ade80] text-sm font-medium transition-colors"
                   >
                     {formatCategoryDisplay(slug)} in {locationDisplay}
                   </a>
@@ -312,20 +315,20 @@ export default async function TradespersonProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-[#faf9f8] dark:bg-[#0f1a17]">
         <ProviderHero provider={provider} category={category} />
-        <main className="max-w-7xl mx-auto px-6 py-8 relative">
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 relative">
           <div className="flex flex-col lg:flex-row gap-8">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <ProfileTabs
                 about={
                   <div className="space-y-8">
                     {/* About section */}
                     <section>
-                      <h3 className="text-2xl font-bold mb-4">
+                      <h3 className="text-2xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-4">
                         About {provider.business_name}
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 leading-relaxed max-w-3xl">
+                      <p className="text-[#6b7280] dark:text-[#9ca3af] leading-relaxed max-w-3xl">
                         {provider.description ?? "No description provided."}
                       </p>
                     </section>
@@ -336,12 +339,16 @@ export default async function TradespersonProfilePage({ params }: Params) {
                     )}
 
                     {/* Recent reviews preview */}
-                    <section>
-                      <h3 className="text-xl font-bold mb-4">Recent Reviews</h3>
-                      <p className="text-slate-500 text-sm">
-                        See Reviews tab for all {reviews.total} reviews.
-                      </p>
-                    </section>
+                    {reviews.total > 0 && (
+                      <section>
+                        <h3 className="text-xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-2">
+                          Recent Reviews
+                        </h3>
+                        <p className="text-[#9ca3af] text-sm">
+                          See Reviews tab for all {reviews.total} reviews.
+                        </p>
+                      </section>
+                    )}
                   </div>
                 }
                 services={

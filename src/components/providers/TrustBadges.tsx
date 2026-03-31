@@ -1,8 +1,8 @@
 /**
  * TrustBadges — Server Component
  *
- * Renders a horizontal flex-wrap row of accreditation/verification badge pills
- * for a service provider's public profile page.
+ * "Invisible Estate" design: soft background-shift pill badges, no borders.
+ * Renders accreditation/verification trust signals for a provider profile.
  */
 
 import { ShieldCheck, Flame, Zap, BadgeCheck, Building2, Scale, Shield } from "lucide-react";
@@ -20,19 +20,60 @@ type BadgeKey =
 
 type BadgeConfigEntry = {
   label: string;
-  color: string;
+  bg: string;
+  text: string;
   Icon: LucideIcon;
 };
 
 const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
-  britestate_verified: { label: "Britestate Verified", color: "bg-[#1B4D3E]", Icon: ShieldCheck },
-  gas_safe: { label: "Gas Safe", color: "bg-orange-600", Icon: Flame },
-  niceic: { label: "NICEIC", color: "bg-orange-500", Icon: Zap },
-  fca: { label: "FCA Regulated", color: "bg-blue-800", Icon: BadgeCheck },
-  rics: { label: "RICS Member", color: "bg-[#1B4D3E]", Icon: Building2 },
-  sra: { label: "SRA Regulated", color: "bg-blue-700", Icon: Scale },
-  clc: { label: "CLC Regulated", color: "bg-blue-600", Icon: Scale },
-  insured: { label: "Insured", color: "bg-green-600", Icon: Shield },
+  britestate_verified: {
+    label: "Britestate Verified",
+    bg: "bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20",
+    text: "text-[#1B4D3E] dark:text-[#4ade80]",
+    Icon: ShieldCheck,
+  },
+  gas_safe: {
+    label: "Gas Safe",
+    bg: "bg-orange-50 dark:bg-orange-900/20",
+    text: "text-orange-700 dark:text-orange-400",
+    Icon: Flame,
+  },
+  niceic: {
+    label: "NICEIC",
+    bg: "bg-orange-50 dark:bg-orange-900/20",
+    text: "text-orange-700 dark:text-orange-400",
+    Icon: Zap,
+  },
+  fca: {
+    label: "FCA Regulated",
+    bg: "bg-blue-50 dark:bg-blue-900/20",
+    text: "text-blue-800 dark:text-blue-400",
+    Icon: BadgeCheck,
+  },
+  rics: {
+    label: "RICS Member",
+    bg: "bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20",
+    text: "text-[#1B4D3E] dark:text-[#4ade80]",
+    Icon: Building2,
+  },
+  sra: {
+    label: "SRA Regulated",
+    bg: "bg-blue-50 dark:bg-blue-900/20",
+    text: "text-blue-700 dark:text-blue-400",
+    Icon: Scale,
+  },
+  clc: {
+    label: "CLC Regulated",
+    bg: "bg-blue-50 dark:bg-blue-900/20",
+    text: "text-blue-700 dark:text-blue-400",
+    Icon: Scale,
+  },
+  insured: {
+    label: "Insured",
+    bg: "bg-emerald-50 dark:bg-emerald-900/20",
+    text: "text-emerald-700 dark:text-emerald-400",
+    Icon: Shield,
+  },
 };
 
 type Accreditation = {
@@ -82,7 +123,7 @@ export default function TrustBadges({
   }
 
   return (
-    <div className="flex flex-wrap gap-2 mt-3">
+    <div className="flex flex-wrap gap-2 mt-3" role="list" aria-label="Trust credentials">
       {badges.map(({ key, title }) => {
         const config = BADGE_CONFIG[key];
         const { Icon } = config;
@@ -90,9 +131,10 @@ export default function TrustBadges({
           <span
             key={`${key}-${title}`}
             title={title}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white ${config.color}`}
+            role="listitem"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold ${config.bg} ${config.text}`}
           >
-            <Icon className="w-3.5 h-3.5" />
+            <Icon className="w-3.5 h-3.5" aria-hidden="true" />
             {config.label}
           </span>
         );
