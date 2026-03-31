@@ -23,9 +23,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Phone,
   Search,
-  Sparkles,
   Navigation,
   RefreshCw,
 } from "lucide-react";

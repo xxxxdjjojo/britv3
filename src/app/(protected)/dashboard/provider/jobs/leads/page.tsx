@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getProviderLeads } from "@/services/provider/provider-job-service";
 import { JobLeadsClient } from "@/components/dashboard/provider/JobLeadsClient";
 
-export const metadata = { title: "New Leads — Provider Dashboard" };
+export const metadata = { title: "Job Leads — Provider Dashboard" };
 
 export default async function ProviderLeadsPage() {
   const supabase = await createClient();
@@ -29,12 +29,17 @@ export default async function ProviderLeadsPage() {
   const leads = await getProviderLeads(providerId, supabase);
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-bold font-heading text-neutral-900">New Leads</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Open service requests matching your categories. Leads expire after 48 hours.
-        </p>
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
+      {/* ── Page Header ─────────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold font-heading text-emerald-900 tracking-tight">
+            Marketplace Opportunities
+          </h1>
+          <p className="text-neutral-500 text-sm">
+            Leads filtered by your skills and service area. Leads expire after 48 hours.
+          </p>
+        </div>
       </div>
 
       <JobLeadsClient initialLeads={leads} providerId={providerId} />

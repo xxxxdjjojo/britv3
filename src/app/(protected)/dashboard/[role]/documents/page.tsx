@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Loader2,
   Lock,
+  UserCheck,
   CreditCard,
   Folder,
   MoreVertical,
@@ -103,7 +104,7 @@ const DOCUMENT_TYPES: Record<DocumentType, DocTypeConfig> = {
   id_proof: {
     label: "ID Proof",
     description: "Passport, driving licence, or national ID",
-    icon: IdCard,
+    icon: UserCheck,
   },
   proof_of_funds: {
     label: "Proof of Funds",

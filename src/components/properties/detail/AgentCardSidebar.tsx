@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Phone, Mail, User, Star, ExternalLink } from "lucide-react";
+import { Phone, Mail, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------------------
@@ -17,8 +17,6 @@ type AgentData = {
   agency_name: string | null;
   phone: string | null;
   email: string | null;
-  rating?: number | null;
-  review_count?: number | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -28,6 +26,7 @@ type AgentData = {
 async function fetchAgent(agentId: string): Promise<AgentData | null> {
   const supabase = await createClient();
 
+  // Fetch profile row
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("display_name, avatar_url, phone")
@@ -36,6 +35,7 @@ async function fetchAgent(agentId: string): Promise<AgentData | null> {
 
   if (profileError || !profile) return null;
 
+  // Fetch agency profile (may not exist if user is a private seller)
   const { data: agency } = await supabase
     .from("agent_agency_profiles")
     .select("agency_name, contact_email, contact_phone")
@@ -48,33 +48,29 @@ async function fetchAgent(agentId: string): Promise<AgentData | null> {
     agency_name: agency?.agency_name ?? null,
     phone: agency?.contact_phone ?? profile.phone ?? null,
     email: agency?.contact_email ?? null,
-    rating: null,
-    review_count: null,
   };
 }
 
 // ---------------------------------------------------------------------------
-// Fallback card
+// Fallback card shown when agent data is not found
 // ---------------------------------------------------------------------------
 
 function FallbackContactCard({ propertyId }: Readonly<{ propertyId: string }>) {
   return (
-    <div className="rounded-2xl bg-white border border-neutral-200 p-5 space-y-4 shadow-sm">
+    <div className="rounded-2xl bg-white shadow-sm p-6 space-y-5">
       <div className="flex items-center gap-3">
-        <div className="size-12 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
-          <User className="size-5 text-neutral-400" aria-hidden="true" />
+        <div className="size-12 rounded-full bg-[#f4f3f2] flex items-center justify-center shrink-0">
+          <User className="size-5 text-[#c0c9c3]" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-neutral-900">Contact the Agent</p>
-          <p className="text-xs text-neutral-500">Get in touch about this property</p>
+          <p className="text-sm font-semibold text-[#1a1c1c]">Contact the Agent</p>
+          <p className="text-xs text-[#707974]">Get in touch about this property</p>
         </div>
       </div>
       <a
-        href={`#ask-agent-${propertyId}`}
-        className="flex items-center justify-center gap-2 w-full rounded-xl py-3 px-4 text-sm font-semibold text-white bg-brand-primary hover:opacity-90 transition-opacity min-h-[44px]"
-        aria-label="Contact agent about this property"
+        href={`#contact-agent-${propertyId}`}
+        className="flex items-center justify-center w-full rounded-xl py-3 px-4 text-sm font-bold text-white bg-[#1B4D3E] hover:bg-[#003629] transition-colors"
       >
-        <Mail className="size-4" aria-hidden="true" />
         Contact Agent
       </a>
     </div>
@@ -95,55 +91,40 @@ export async function AgentCardSidebar({ agentId, propertyId }: Props) {
   const displayName = agent.display_name ?? "Agent";
 
   return (
-    <div className="rounded-2xl bg-white border border-neutral-200 p-5 space-y-4 shadow-sm">
+    <div className="rounded-2xl bg-white shadow-sm p-6 space-y-5">
       {/* Identity row */}
-      <div className="flex items-center gap-3">
-        <div className="relative size-14 rounded-full overflow-hidden bg-neutral-100 shrink-0 ring-2 ring-neutral-100">
+      <div className="flex items-center gap-4 pb-5 border-b border-[#e3e2e1]">
+        <div className="relative size-12 rounded-full overflow-hidden bg-[#f4f3f2] shrink-0">
           {agent.avatar_url ? (
             <Image
               src={agent.avatar_url}
               alt={`Photo of ${displayName}`}
               fill
               className="object-cover"
-              sizes="56px"
+              sizes="48px"
             />
           ) : (
-            <div className="size-full flex items-center justify-center bg-brand-primary/10">
-              <User className="size-6 text-brand-primary" aria-hidden="true" />
+            <div className="size-full flex items-center justify-center">
+              <User className="size-5 text-[#c0c9c3]" />
             </div>
           )}
         </div>
 
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-neutral-900 truncate">{displayName}</p>
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-[#1a1c1c] truncate">{displayName}</p>
           {agent.agency_name && (
-            <p className="text-xs text-neutral-500 truncate">{agent.agency_name}</p>
-          )}
-          {agent.rating != null && (
-            <div className="flex items-center gap-1 mt-0.5">
-              <Star className="size-3 text-brand-secondary fill-brand-secondary" aria-hidden="true" />
-              <span className="text-xs font-medium text-neutral-700">{agent.rating.toFixed(1)}</span>
-              {agent.review_count != null && agent.review_count > 0 && (
-                <span className="text-xs text-neutral-400">({agent.review_count})</span>
-              )}
-            </div>
+            <p className="text-xs text-[#707974] truncate">{agent.agency_name}</p>
           )}
         </div>
       </div>
-
-      {/* Divider */}
-      <div className="h-px bg-neutral-100" />
 
       {/* Contact details */}
       {agent.phone && (
         <a
           href={`tel:${agent.phone.replace(/\s/g, "")}`}
-          className="flex items-center gap-2.5 text-sm text-neutral-600 hover:text-brand-primary transition-colors group min-h-[44px]"
-          aria-label={`Call ${displayName} on ${agent.phone}`}
+          className="flex items-center gap-2 text-sm text-[#404945] hover:text-[#1B4D3E] transition-colors"
         >
-          <div className="size-8 rounded-lg bg-neutral-50 flex items-center justify-center group-hover:bg-brand-primary/10 transition-colors shrink-0">
-            <Phone className="size-4" aria-hidden="true" />
-          </div>
+          <Phone className="size-4 shrink-0" />
           <span className="truncate">{agent.phone}</span>
         </a>
       )}
@@ -151,21 +132,26 @@ export async function AgentCardSidebar({ agentId, propertyId }: Props) {
       {/* Primary CTA */}
       <a
         href={`#ask-agent-${propertyId}`}
-        className="flex items-center justify-center gap-2 w-full rounded-xl py-3 px-4 text-sm font-semibold text-white bg-brand-primary hover:opacity-90 transition-opacity min-h-[44px]"
-        aria-label={`Send a message to ${displayName}`}
+        className="flex items-center justify-center gap-2 w-full rounded-xl py-3 px-4 text-sm font-bold text-white bg-[#1B4D3E] hover:bg-[#003629] transition-colors"
       >
-        <Mail className="size-4" aria-hidden="true" />
-        Send a message
+        <Mail className="size-4" />
+        Contact Agent
+      </a>
+
+      {/* Secondary — Ask a question */}
+      <a
+        href={`#ask-agent-${propertyId}`}
+        className="flex items-center justify-center w-full rounded-xl py-3 px-4 text-sm font-bold text-[#1a1c1c] bg-[#eec068]/30 hover:bg-[#eec068]/50 transition-colors"
+      >
+        Ask a Question
       </a>
 
       {/* Email fallback */}
       {agent.email && (
         <a
           href={`mailto:${agent.email}`}
-          className="flex items-center justify-center gap-1.5 text-xs text-neutral-500 hover:text-brand-primary transition-colors min-h-[44px]"
-          aria-label={`Email ${displayName} directly`}
+          className="block text-center text-xs text-[#707974] hover:text-[#1B4D3E] transition-colors"
         >
-          <ExternalLink className="size-3" aria-hidden="true" />
           or email directly
         </a>
       )}

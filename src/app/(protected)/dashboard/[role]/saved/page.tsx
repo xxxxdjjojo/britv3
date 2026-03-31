@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Heart,
   Search,
-  Bed,
   MapPin,
   Grid2X2,
   List,

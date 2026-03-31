@@ -3,15 +3,31 @@
 /**
  * JobDetailView — Client Component
  *
- * Two-column layout:
- *   Left  — job header, scope of work, message placeholder, timeline
- *   Right — status panel (with transitions), quote summary, invoice, review
+ * Two-column layout matching Stitch job-detail design:
+ *   Left  — breadcrumb + job header, description + issue docs, project activity timeline
+ *   Right — client contact card, location, documents, status actions
  */
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, Calendar, Tag, AlertCircle, Star, MessageSquare } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  Tag,
+  AlertCircle,
+  Star,
+  Phone,
+  Mail,
+  MessageSquare,
+  Share2,
+  ChevronRight,
+  Upload,
+  FileText,
+  Receipt,
+  CheckCircle2,
+  FolderOpen,
+} from "lucide-react";
 import type { JobDetail } from "@/services/provider/provider-job-service";
 import { JobTimeline } from "./JobTimeline";
 
@@ -66,18 +82,21 @@ type StatusStyle = { label: string; className: string };
 function getStatusStyle(status: string): StatusStyle {
   switch (status) {
     case "pending":
-      return { label: "Pending", className: "bg-warning-light text-warning" };
+      return { label: "Pending", className: "bg-amber-100 text-amber-800 border border-amber-200" };
     case "confirmed":
     case "active":
-      return { label: status === "confirmed" ? "Confirmed" : "Active", className: "bg-info-light text-info" };
+      return {
+        label: status === "confirmed" ? "Confirmed" : "Active",
+        className: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+      };
     case "in_progress":
-      return { label: "In Progress", className: "bg-info-light text-info" };
+      return { label: "In Progress", className: "bg-emerald-100 text-emerald-800 border border-emerald-200" };
     case "completed":
-      return { label: "Completed", className: "bg-success-light text-success" };
+      return { label: "Completed", className: "bg-blue-50 text-blue-700 border border-blue-200" };
     case "cancelled":
-      return { label: "Cancelled", className: "bg-error-light text-error" };
+      return { label: "Cancelled", className: "bg-red-50 text-red-700 border border-red-200" };
     default:
-      return { label: status, className: "bg-neutral-100 text-neutral-700" };
+      return { label: status, className: "bg-neutral-100 text-neutral-700 border border-neutral-200" };
   }
 }
 
@@ -106,6 +125,189 @@ const STATUS_TRANSITIONS: Record<string, Transition[]> = {
     { label: "Cancel", next: "cancelled", variant: "danger" },
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Client Contact Card (sidebar)
+// ---------------------------------------------------------------------------
+
+function ClientCard({ job }: Readonly<{ job: JobDetail }>) {
+  const initials = job.client.name
+    .split(" ")
+    .map((n) => n[0] ?? "")
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  return (
+    <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
+      <div className="flex items-center gap-4 mb-6">
+        <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800 font-bold text-lg">
+          {initials}
+        </div>
+        <div>
+          <h4 className="text-base font-bold text-neutral-900">{job.client.name}</h4>
+          <p className="text-xs font-semibold text-neutral-500 uppercase tracking-tighter">Client</p>
+        </div>
+      </div>
+      <div className="space-y-3 mb-6">
+        <div className="flex items-center gap-3 text-sm text-neutral-600">
+          <Phone className="size-4 text-neutral-400" />
+          <span>Contact via messaging</span>
+        </div>
+        <div className="flex items-center gap-3 text-sm text-neutral-600">
+          <Mail className="size-4 text-neutral-400" />
+          <span className="truncate">{job.client.email ?? "No email on file"}</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Link
+          href={`/dashboard/provider/messages`}
+          className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 text-emerald-900 font-bold text-sm hover:bg-neutral-50 transition-colors"
+        >
+          <Phone className="size-4" />
+          Contact
+        </Link>
+        <Link
+          href={`/dashboard/provider/messages`}
+          className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 text-emerald-900 font-bold text-sm hover:bg-neutral-50 transition-colors"
+        >
+          <MessageSquare className="size-4" />
+          Message
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Location Section (sidebar)
+// ---------------------------------------------------------------------------
+
+function LocationCard({ job }: Readonly<{ job: JobDetail }>) {
+  const addressLine = [job.address.line1, job.address.city, job.address.postcode]
+    .filter(Boolean)
+    .join(", ");
+
+  if (!addressLine) return null;
+
+  return (
+    <section className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+      <div className="p-6 pb-3">
+        <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest flex items-center gap-2">
+          <MapPin className="size-4" />
+          Job Location
+        </h3>
+      </div>
+      <div className="h-32 bg-emerald-50 relative flex items-center justify-center">
+        <div className="bg-emerald-900 text-white p-2 rounded-full shadow-lg ring-4 ring-white">
+          <MapPin className="size-5" />
+        </div>
+      </div>
+      <div className="p-4 bg-neutral-50 border-t border-neutral-200">
+        <p className="text-xs font-bold text-neutral-900">{job.address.line1 ?? "Address"}</p>
+        <p className="text-xs text-neutral-500">
+          {[job.address.city, job.address.postcode].filter(Boolean).join(", ")}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Documents Card (sidebar)
+// ---------------------------------------------------------------------------
+
+function DocumentsCard({
+  jobId,
+  quote,
+  invoice,
+}: Readonly<{
+  jobId: string;
+  quote: JobSidebarData["quote"];
+  invoice: JobSidebarData["invoice"];
+}>) {
+  return (
+    <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest flex items-center gap-2">
+          <FolderOpen className="size-4" />
+          Documents
+        </h3>
+        <button className="text-emerald-900 text-xs font-bold hover:underline flex items-center gap-1">
+          <Upload className="size-3" />
+          Upload
+        </button>
+      </div>
+      <div className="space-y-3">
+        {/* Quote doc */}
+        {quote.exists ? (
+          <Link
+            href={`/dashboard/provider/quotes/new?jobId=${jobId}`}
+            className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="bg-emerald-50 p-2 rounded-lg text-emerald-600">
+                <FileText className="size-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-700">
+                  Quote #{quote.lineCount} item{quote.lineCount !== 1 ? "s" : ""}
+                </p>
+                {quote.totalPence != null && (
+                  <p className="text-[10px] text-neutral-400">{formatAmount(quote.totalPence)}</p>
+                )}
+              </div>
+            </div>
+            <CheckCircle2 className="size-4 text-emerald-600" />
+          </Link>
+        ) : (
+          <Link
+            href={`/dashboard/provider/quotes/new?jobId=${jobId}`}
+            className="flex items-center justify-between p-3 rounded-xl border border-dashed border-neutral-200 hover:border-emerald-300 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="bg-neutral-100 p-2 rounded-lg text-neutral-400 group-hover:text-emerald-600 transition-colors">
+                <FileText className="size-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-700">No Quote Yet</p>
+                <p className="text-[10px] text-neutral-400">Tap to create a quote</p>
+              </div>
+            </div>
+          </Link>
+        )}
+
+        {/* Invoice doc */}
+        {invoice.exists ? (
+          <div className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
+                <Receipt className="size-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-700">Invoice #{invoice.number ?? "—"}</p>
+                <p className="text-[10px] text-neutral-400 capitalize">{invoice.status ?? "draft"}</p>
+              </div>
+            </div>
+            <CheckCircle2 className="size-4 text-blue-600" />
+          </div>
+        ) : (
+          <div className="flex items-center justify-between p-3 rounded-xl border border-dashed border-neutral-200 opacity-60">
+            <div className="flex items-center gap-3">
+              <div className="bg-neutral-100 p-2 rounded-lg text-neutral-400">
+                <Receipt className="size-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-700">Invoice</p>
+                <p className="text-[10px] text-neutral-400">Available on completion</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Status Panel (sidebar)
@@ -145,10 +347,11 @@ function StatusPanel({
   }
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4">
-      <h2 className="text-sm font-semibold font-heading text-neutral-900">Job Status</h2>
+    <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+      <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Job Status</h3>
       <div>
-        <span className={["inline-block rounded-full px-3 py-1 text-sm font-medium", className].join(" ")}>
+        <span className={["inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold", className].join(" ")}>
+          <span className="w-1.5 h-1.5 rounded-full bg-current" />
           {label}
         </span>
       </div>
@@ -161,10 +364,10 @@ function StatusPanel({
               onClick={() => handleTransition(t.next)}
               disabled={isPending}
               className={[
-                "w-full rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-50",
+                "w-full rounded-xl px-4 py-2.5 text-sm font-bold transition disabled:opacity-50",
                 t.variant === "primary"
-                  ? "bg-brand-primary text-white hover:bg-brand-primary/90"
-                  : "border border-error/30 bg-white text-error hover:bg-error-light",
+                  ? "bg-emerald-900 text-white hover:bg-emerald-800"
+                  : "border border-red-200 bg-white text-red-600 hover:bg-red-50",
               ].join(" ")}
             >
               {isPending ? "Updating…" : t.label}
@@ -179,100 +382,12 @@ function StatusPanel({
           {error}
         </p>
       )}
-    </div>
+    </section>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Quote Summary (sidebar)
-// ---------------------------------------------------------------------------
-
-function QuoteSummary({
-  jobId,
-  quote,
-}: Readonly<{ jobId: string; quote: JobSidebarData["quote"] }>) {
-  return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold font-heading text-neutral-900">Quote</h2>
-      {quote.exists ? (
-        <div className="space-y-1">
-          <p className="text-2xl font-bold text-neutral-900">
-            {quote.totalPence != null ? formatAmount(quote.totalPence) : "—"}
-          </p>
-          <p className="text-xs text-neutral-500">
-            {quote.lineCount} line item{quote.lineCount !== 1 ? "s" : ""}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <p className="text-xs text-neutral-500">No quote submitted yet.</p>
-          <Link
-            href={`/dashboard/provider/quotes/new?jobId=${jobId}`}
-            className="inline-block rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
-          >
-            Create Quote
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Invoice (sidebar)
-// ---------------------------------------------------------------------------
-
-function InvoicePanel({
-  jobId,
-  status: jobStatus,
-  invoice,
-}: Readonly<{
-  jobId: string;
-  status: string;
-  invoice: JobSidebarData["invoice"];
-}>) {
-  const isComplete = jobStatus === "completed";
-
-  return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold font-heading text-neutral-900">Invoice</h2>
-      {invoice.exists ? (
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-neutral-900">
-            #{invoice.number ?? "—"}
-          </p>
-          <span
-            className={[
-              "inline-block rounded-full px-2.5 py-0.5 text-xs font-medium",
-              invoice.status === "paid"
-                ? "bg-success-light text-success"
-                : invoice.status === "sent"
-                  ? "bg-info-light text-info"
-                  : "bg-neutral-100 text-neutral-600",
-            ].join(" ")}
-          >
-            {invoice.status ?? "draft"}
-          </span>
-        </div>
-      ) : isComplete ? (
-        <div className="space-y-2">
-          <p className="text-xs text-neutral-500">Job complete — no invoice yet.</p>
-          <Link
-            href={`/dashboard/provider/jobs/${jobId}/invoice/new`}
-            className="inline-block rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
-          >
-            Generate Invoice
-          </Link>
-        </div>
-      ) : (
-        <p className="text-xs text-neutral-500">Invoice will be available once the job is complete.</p>
-      )}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Review (sidebar)
+// Review Panel (sidebar)
 // ---------------------------------------------------------------------------
 
 function ReviewPanel({
@@ -298,8 +413,8 @@ function ReviewPanel({
   }
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold font-heading text-neutral-900">Review</h2>
+    <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
+      <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Review</h3>
       {review.exists && review.rating != null ? (
         <div className="space-y-2">
           <StarRating rating={review.rating} />
@@ -313,7 +428,7 @@ function ReviewPanel({
         <div className="space-y-2">
           <p className="text-xs text-neutral-500">No review yet.</p>
           <button
-            className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition"
+            className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition"
             onClick={() => {
               // Placeholder: request review flow not yet built
               alert(`Review request for job ${jobId} — coming soon`);
@@ -323,7 +438,7 @@ function ReviewPanel({
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -342,115 +457,156 @@ export function JobDetailView({
 
   return (
     <div className="p-6 max-w-7xl space-y-6">
-      {/* Back link */}
-      <div>
-        <Link
-          href="/dashboard/provider/jobs/active"
-          className="text-sm text-brand-primary hover:underline"
-        >
-          ← Back to Active Jobs
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* ── Left column ──────────────────────────────────────────────── */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Header */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h1 className="text-xl font-bold font-heading text-neutral-900">{job.serviceType}</h1>
-                <p className="mt-1 text-sm text-neutral-500">
-                  Client: <span className="font-medium text-neutral-700">{job.client.name}</span>
-                  {" · "}
-                  Posted {formatDate(job.createdAt)}
-                </p>
-              </div>
-              <span className={["rounded-full px-3 py-1 text-sm font-medium", statusClass].join(" ")}>
-                {statusLabel}
-              </span>
-            </div>
-          </div>
-
-          {/* Scope of Work */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm space-y-4">
-            <h2 className="text-base font-semibold font-heading text-neutral-900">Scope of Work</h2>
-
-            <p className="text-sm text-neutral-700 leading-relaxed">
-              {job.description || "No description provided."}
-            </p>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {/* Budget */}
-              {job.agreedPricePence != null && (
-                <div className="flex items-start gap-2">
-                  <Tag className="mt-0.5 size-4 shrink-0 text-neutral-400" />
-                  <div>
-                    <p className="text-xs text-neutral-400">Agreed Price</p>
-                    <p className="text-sm font-medium text-neutral-900">
-                      {formatAmount(job.agreedPricePence)}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Location */}
-              {job.address.postcode && (
-                <div className="flex items-start gap-2">
-                  <MapPin className="mt-0.5 size-4 shrink-0 text-neutral-400" />
-                  <div>
-                    <p className="text-xs text-neutral-400">Location</p>
-                    <p className="text-sm font-medium text-neutral-900">
-                      {[job.address.line1, job.address.city, job.address.postcode]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Category */}
-              <div className="flex items-start gap-2">
-                <AlertCircle className="mt-0.5 size-4 shrink-0 text-neutral-400" />
-                <div>
-                  <p className="text-xs text-neutral-400">Category</p>
-                  <p className="text-sm font-medium text-neutral-900">{job.serviceType}</p>
-                </div>
-              </div>
-
-              {/* Scheduled date */}
-              {job.scheduledAt && (
-                <div className="flex items-start gap-2">
-                  <Calendar className="mt-0.5 size-4 shrink-0 text-neutral-400" />
-                  <div>
-                    <p className="text-xs text-neutral-400">Scheduled</p>
-                    <p className="text-sm font-medium text-neutral-900">
-                      {formatDate(job.scheduledAt)}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Message placeholder */}
-          <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-6 flex items-center gap-3">
-            <MessageSquare className="size-5 text-neutral-300 shrink-0" />
-            <p className="text-sm text-neutral-400">Message history coming soon</p>
-          </div>
-
-          {/* Timeline */}
-          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold font-heading text-neutral-900">Job Timeline</h2>
-            <JobTimeline status={job.status} timeline={job.timeline} />
+      {/* ── Page Header ─────────────────────────────────────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-neutral-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Link href="/dashboard/provider/jobs/active" className="hover:text-emerald-900 transition-colors">
+              Jobs
+            </Link>
+            <ChevronRight className="size-3" />
+            <span className="text-neutral-500">{job.id.slice(0, 8).toUpperCase()}</span>
+          </nav>
+          <h1 className="text-2xl font-extrabold text-neutral-900 font-heading tracking-tight">
+            {job.serviceType} at{" "}
+            {[job.address.line1, job.address.city].filter(Boolean).join(", ") || "Client Property"}
+          </h1>
+          <div className="flex items-center gap-3 mt-3">
+            <span className={["inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold", statusClass].join(" ")}>
+              <span className="w-1.5 h-1.5 rounded-full bg-current" />
+              {statusLabel}
+            </span>
+            <span className="text-neutral-500 text-sm flex items-center gap-1 font-medium">
+              <span className="text-neutral-400">Client:</span>
+              {job.client.name}
+            </span>
           </div>
         </div>
+        <div className="flex gap-3">
+          <button className="px-4 py-2 border border-neutral-200 rounded-lg text-sm font-bold text-neutral-600 hover:bg-neutral-100 transition-all flex items-center gap-2">
+            <Share2 className="size-4" />
+            Share
+          </button>
+          <button className="px-5 py-2 bg-emerald-900 text-white rounded-lg text-sm font-bold shadow-md hover:bg-emerald-800 transition-all flex items-center gap-2">
+            Manage Job
+          </button>
+        </div>
+      </div>
 
-        {/* ── Right sidebar ─────────────────────────────────────────────── */}
-        <div className="space-y-4">
+      {/* ── Dashboard Grid ───────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column (2/3) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Description + Issue Documentation Bento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Project Description */}
+            <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
+              <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <FileText className="size-4" />
+                Project Description
+              </h3>
+              <p className="text-neutral-600 leading-relaxed text-sm">
+                {job.description || "No description provided."}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <span className="bg-neutral-100 text-neutral-600 px-3 py-1 rounded-full text-xs font-semibold">
+                  {job.serviceType}
+                </span>
+                {job.agreedPricePence != null && (
+                  <span className="bg-neutral-100 text-neutral-600 px-3 py-1 rounded-full text-xs font-semibold">
+                    {formatAmount(job.agreedPricePence)}
+                  </span>
+                )}
+                {job.scheduledAt && (
+                  <span className="bg-neutral-100 text-neutral-600 px-3 py-1 rounded-full text-xs font-semibold">
+                    <Calendar className="size-3 inline mr-1" />
+                    {formatDate(job.scheduledAt)}
+                  </span>
+                )}
+              </div>
+            </section>
+
+            {/* Scope of Work Details */}
+            <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
+              <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Tag className="size-4" />
+                Job Details
+              </h3>
+              <div className="space-y-4">
+                {job.agreedPricePence != null && (
+                  <div className="flex items-start gap-3">
+                    <Tag className="mt-0.5 size-4 shrink-0 text-neutral-400" />
+                    <div>
+                      <p className="text-xs text-neutral-400">Agreed Price</p>
+                      <p className="text-sm font-bold text-neutral-900">
+                        {formatAmount(job.agreedPricePence)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {job.address.postcode && (
+                  <div className="flex items-start gap-3">
+                    <MapPin className="mt-0.5 size-4 shrink-0 text-neutral-400" />
+                    <div>
+                      <p className="text-xs text-neutral-400">Location</p>
+                      <p className="text-sm font-bold text-neutral-900">
+                        {[job.address.line1, job.address.city, job.address.postcode]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-neutral-400" />
+                  <div>
+                    <p className="text-xs text-neutral-400">Category</p>
+                    <p className="text-sm font-bold text-neutral-900">{job.serviceType}</p>
+                  </div>
+                </div>
+                {job.scheduledAt && (
+                  <div className="flex items-start gap-3">
+                    <Calendar className="mt-0.5 size-4 shrink-0 text-neutral-400" />
+                    <div>
+                      <p className="text-xs text-neutral-400">Scheduled</p>
+                      <p className="text-sm font-bold text-neutral-900">{formatDate(job.scheduledAt)}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          {/* Project Activity Log / Timeline */}
+          <section className="bg-white p-8 rounded-2xl border border-neutral-200 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 pointer-events-none select-none">
+              <span className="text-8xl text-neutral-100 -rotate-12 block">⏱</span>
+            </div>
+            <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest mb-8 flex items-center gap-2 relative z-10">
+              Project Activity
+            </h3>
+            <div className="relative z-10">
+              <JobTimeline status={job.status} timeline={job.timeline} />
+            </div>
+          </section>
+        </div>
+
+        {/* Right Column (1/3) */}
+        <div className="space-y-6">
+          {/* Status Actions */}
           <StatusPanel jobId={job.id} status={job.status} />
-          <QuoteSummary jobId={job.id} quote={sidebar.quote} />
-          <InvoicePanel jobId={job.id} status={job.status} invoice={sidebar.invoice} />
+
+          {/* Client Contact */}
+          <ClientCard job={job} />
+
+          {/* Location */}
+          <LocationCard job={job} />
+
+          {/* Documents */}
+          <DocumentsCard jobId={job.id} quote={sidebar.quote} invoice={sidebar.invoice} />
+
+          {/* Review */}
           <ReviewPanel jobId={job.id} review={sidebar.review} />
         </div>
       </div>

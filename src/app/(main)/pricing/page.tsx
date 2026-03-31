@@ -3,7 +3,7 @@ import { PLANS_BY_ROLE } from "@/lib/billing-config";
 import type { Plan } from "@/lib/billing-config";
 import { PricingTabs } from "@/components/pricing/PricingTabs";
 import Link from "next/link";
-import { ShieldCheck, Sparkles, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowRight, CheckCircle } from "lucide-react";
 
 // Marketing metadata that doesn't belong in billing-config.ts.
 // Prices, names, and features are derived from PLANS_BY_ROLE (source of truth).
@@ -91,68 +91,144 @@ const PRICING_TABS = [
   },
 ];
 
-const TRUST_ITEMS = [
-  { icon: ShieldCheck, text: "Bank-grade security & encryption" },
-  { icon: CheckCircle2, text: "Cancel or change plan anytime" },
-  { icon: Sparkles, text: "AI features included in all plans" },
+const TRUST_FEATURES = [
+  "No hidden fees",
+  "Cancel anytime",
+  "GDPR compliant",
+  "Bank-grade security",
 ];
 
 export default function PricingPage() {
   return (
-    <div className="bg-neutral-50">
+    <>
       {/* Hero */}
       <section className="bg-brand-primary text-white py-20 lg:py-28">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6 text-sm font-semibold">
-            <Sparkles className="size-4" />
-            <span>Performance-based. Transparent. Fair.</span>
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-6 text-sm font-semibold backdrop-blur-sm">
+            <ShieldCheck className="size-4" />
+            <span>Simple, transparent pricing</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-6xl font-bold tracking-tight mb-6">
-            Simple, Transparent Pricing
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
+            Pricing that works for everyone
           </h1>
-          <p className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
             Free for homeowners. Performance-based for agents. Membership-based
-            for tradespeople.
+            for tradespeople. No surprises.
           </p>
-
-          {/* Trust items */}
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 mt-10">
-            {TRUST_ITEMS.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.text} className="flex items-center gap-2 text-white/90 text-sm font-medium">
-                  <Icon className="size-4 shrink-0" />
-                  <span>{item.text}</span>
-                </div>
-              );
-            })}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
+            {TRUST_FEATURES.map((feature) => (
+              <div key={feature} className="flex items-center gap-2 text-white/80 text-sm">
+                <CheckCircle className="size-4 text-white/60" />
+                <span>{feature}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing tabs */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-        <PricingTabs tabs={PRICING_TABS} defaultTab="tradespeople" />
+      {/* Pricing Tabs */}
+      <section className="bg-neutral-50 py-20 lg:py-28">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8">
+          <PricingTabs tabs={PRICING_TABS} defaultTab="tradespeople" />
+        </div>
       </section>
 
-      {/* FAQ / Contact prompt */}
-      <section className="bg-brand-primary-lighter py-14">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-neutral-900 tracking-tight mb-3">
-            Have questions about pricing?
-          </h2>
-          <p className="text-neutral-600 text-base mb-8">
-            Our team is happy to walk you through the right plan for your
-            situation.
-          </p>
+      {/* FAQ / Trust Section */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+            <div>
+              <h2 className="font-heading text-3xl font-bold text-neutral-900 tracking-tight mb-8">
+                Common questions
+              </h2>
+              <div className="space-y-6">
+                {[
+                  {
+                    q: "Is it really free for homebuyers?",
+                    a: "Yes. Searching, saving properties, booking viewings, and tracking transactions are completely free for homebuyers and renters — always.",
+                  },
+                  {
+                    q: "How does performance pricing work for agents?",
+                    a: "We charge a small percentage commission only on successfully completed transactions. No monthly fees, no upfront costs. If you don't earn, we don't earn.",
+                  },
+                  {
+                    q: "What's included in the tradesperson membership?",
+                    a: "Membership includes your verified profile, job lead access, AI scheduling, client reviews, and our dispute resolution service. Tiers differ by lead volume and feature access.",
+                  },
+                  {
+                    q: "Can I switch plans?",
+                    a: "Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the start of the next billing period.",
+                  },
+                ].map((faq) => (
+                  <div key={faq.q} className="border-b border-neutral-100 pb-6 last:border-0 last:pb-0">
+                    <h3 className="font-heading text-base font-semibold text-neutral-900 mb-2">
+                      {faq.q}
+                    </h3>
+                    <p className="text-sm text-neutral-500 leading-relaxed">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <div className="rounded-2xl bg-brand-primary p-8 text-white">
+                <h3 className="font-heading text-xl font-bold mb-3">
+                  Need a custom solution?
+                </h3>
+                <p className="text-white/80 text-sm leading-relaxed mb-6">
+                  For enterprise agencies, large portfolios, or developer
+                  partnerships, we offer custom pricing and dedicated support.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 h-10 px-6 rounded-xl bg-white text-brand-primary text-sm font-semibold hover:bg-brand-primary-lighter transition-colors shadow-sm"
+                >
+                  Contact sales
+                  <ArrowRight className="size-4" />
+                </Link>
+              </div>
+
+              <div className="rounded-2xl bg-brand-primary-lighter p-8">
+                <h3 className="font-heading text-xl font-bold text-brand-primary mb-3">
+                  Founding member discount
+                </h3>
+                <p className="text-neutral-600 text-sm leading-relaxed mb-4">
+                  Early members get locked-in pricing for life. Apply now while
+                  founding spots are available.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["30% off", "Lock-in pricing", "Priority support"].map(
+                    (badge) => (
+                      <span
+                        key={badge}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-semibold"
+                      >
+                        <CheckCircle className="size-3" />
+                        {badge}
+                      </span>
+                    ),
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact link */}
+      <div className="bg-neutral-50 py-8 text-center border-t border-neutral-100">
+        <p className="text-sm text-neutral-500">
+          Have questions?{" "}
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-brand-primary-light transition-colors shadow-md"
+            className="text-brand-primary font-medium underline-offset-4 hover:underline"
           >
             Contact our sales team
           </Link>
-        </div>
-      </section>
-    </div>
+        </p>
+      </div>
+    </>
   );
 }

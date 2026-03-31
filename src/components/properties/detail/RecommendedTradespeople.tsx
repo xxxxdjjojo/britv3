@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Wrench, User, ArrowRight } from "lucide-react";
+import { Star, Wrench, User, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
 // ---------------------------------------------------------------------------
@@ -30,6 +30,7 @@ type TradespersonRow = {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Extract the postcode district prefix, e.g. "TW7 9AB" → "TW7" */
 function postcodeDistrict(postcode: string): string {
   return postcode.trim().split(" ")[0] ?? postcode.trim();
 }
@@ -77,66 +78,74 @@ async function fetchTradespeople(postcode: string): Promise<TradespersonRow[]> {
     .contains("service_postcodes", [district])
     .limit(3);
 
-  if (error || !data || data.length === 0) return [];
+  if (error || !data || data.length === 0) {
+    return [];
+  }
 
   return data as unknown as TradespersonRow[];
 }
 
 // ---------------------------------------------------------------------------
-// Card sub-component
+// Card sub-component — Stitch "Local Experts" design
 // ---------------------------------------------------------------------------
 
 function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
-  const name = tp.profiles?.full_name ?? tp.business_name;
   const avatarUrl = tp.profiles?.avatar_url ?? null;
   const rating = tp.provider_rating_stats?.average_rating ?? null;
   const reviewCount = tp.provider_rating_stats?.total_reviews ?? 0;
+  const ratingStars = rating ? Math.round(rating) : 0;
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-neutral-100 last:border-0">
-      {/* Avatar */}
-      <div className="relative size-11 rounded-full overflow-hidden bg-neutral-100 shrink-0 ring-2 ring-neutral-100">
-        {avatarUrl ? (
-          <Image
-            src={avatarUrl}
-            alt={`Photo of ${name}`}
-            fill
-            className="object-cover"
-            sizes="44px"
-          />
-        ) : (
-          <div className="size-full flex items-center justify-center bg-brand-primary/10">
-            <User className="size-4 text-brand-primary" aria-hidden="true" />
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="min-w-0 flex-1 space-y-0.5">
-        <p className="text-sm font-semibold text-neutral-900 truncate">{tp.business_name}</p>
-        <div className="flex items-center gap-1 text-xs text-neutral-500">
-          <Wrench className="size-3 shrink-0" aria-hidden="true" />
-          <span className="truncate">{primaryService(tp.services)}</span>
-        </div>
-        <div className="flex items-center gap-1 text-xs">
-          <Star
-            className="size-3 shrink-0 text-brand-secondary fill-brand-secondary"
-            aria-hidden="true"
-          />
-          <span className="font-medium text-neutral-700">{formatRating(rating)}</span>
-          {reviewCount > 0 && (
-            <span className="text-neutral-400">({reviewCount})</span>
+    <div className="bg-white p-5 rounded-2xl flex flex-col gap-4 shadow-sm border border-[#eeeeed]">
+      {/* Header: icon + verified badge */}
+      <div className="flex justify-between items-start">
+        <div className="size-12 rounded-full bg-[#f4f3f2] flex items-center justify-center overflow-hidden shrink-0">
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt={`Photo of ${tp.business_name}`}
+              width={48}
+              height={48}
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <Wrench className="size-5 text-[#1B4D3E]" />
           )}
         </div>
+        <span className="flex items-center gap-1 bg-[#1B4D3E]/10 text-[#1B4D3E] px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase">
+          <ShieldCheck className="size-3" />
+          Verified
+        </span>
       </div>
 
-      {/* Link */}
+      {/* Name + rating */}
+      <div className="flex-1">
+        <h4 className="text-base font-heading font-bold text-[#1B4D3E] mb-1">
+          {tp.business_name}
+        </h4>
+        <p className="text-xs text-[#707974] mb-3">{primaryService(tp.services)}</p>
+        <div className="flex items-center gap-2">
+          <div className="flex text-[#D4A853]">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className="size-3.5"
+                fill={i < ratingStars ? "currentColor" : "none"}
+              />
+            ))}
+          </div>
+          <span className="text-[10px] font-bold text-[#707974] uppercase tracking-widest">
+            {reviewCount > 0 ? `${reviewCount} Reviews` : "New"}
+          </span>
+        </div>
+      </div>
+
+      {/* CTA */}
       <Link
         href={`/services/tradespeople/${tp.slug}`}
-        className="shrink-0 rounded-xl px-3 py-2 text-xs font-semibold border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white transition-colors min-h-[44px] flex items-center justify-center"
-        aria-label={`View profile for ${tp.business_name}`}
+        className="w-full py-3 bg-[#1B4D3E] text-white rounded-xl font-bold text-xs uppercase tracking-widest text-center hover:bg-[#003629] transition-colors"
       >
-        View
+        Get Quote
       </Link>
     </div>
   );
@@ -152,33 +161,20 @@ export async function RecommendedTradespeople({ postcode }: Props) {
   if (tradespeople.length === 0) return null;
 
   return (
-    <section
-      aria-labelledby="recommended-trades-heading"
-      className="rounded-2xl bg-white border border-neutral-200 p-5 space-y-1 shadow-sm"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h2
-            id="recommended-trades-heading"
-            className="text-sm font-semibold text-neutral-900"
-          >
-            Local Experts
-          </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Verified professionals near this property
-          </p>
-        </div>
-        <Link
-          href={`/services/tradespeople?postcode=${encodeURIComponent(postcode)}`}
-          className="flex items-center gap-1 text-xs text-brand-primary hover:underline"
-          aria-label="Browse all local tradespeople"
+    <section aria-labelledby="recommended-trades-heading" className="space-y-4">
+      <div>
+        <h2
+          id="recommended-trades-heading"
+          className="text-sm font-heading font-bold text-[#1B4D3E] uppercase tracking-wider"
         >
-          Browse all
-          <ArrowRight className="size-3" aria-hidden="true" />
-        </Link>
+          Local Experts
+        </h2>
+        <p className="text-xs text-[#707974] mt-0.5">
+          Verified professionals near this property
+        </p>
       </div>
 
-      <div>
+      <div className="space-y-3">
         {tradespeople.map((tp) => (
           <TradespersonCard key={tp.user_id} tp={tp} />
         ))}

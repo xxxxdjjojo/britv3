@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Badge } from "@/components/ui/badge";
 import {
   Bed,
   Bath,
@@ -12,10 +13,15 @@ import {
   FileText,
   Tag,
   Calendar as CalendarIcon,
+  CheckCircle2,
+  Wifi,
+  Car,
+  TrendingUp,
+  ChevronRight,
 } from "lucide-react";
 import { Gallery } from "@/components/properties/Gallery";
 import { FloorPlan } from "@/components/properties/FloorPlan";
-import { PriceHistoryChart } from "@/components/properties/detail/PriceHistoryChart";
+import { PriceHistory } from "@/components/properties/PriceHistory";
 import type { EpcRating, ListingType } from "@/types/property";
 import type { PriceHistoryEntry } from "@/services/properties/property-detail-service";
 import { createClient } from "@/lib/supabase/server";
@@ -77,7 +83,6 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = await createClient();
   const detail = await getPropertyBySlug(slug);
 
   if (!detail) {
@@ -142,31 +147,13 @@ function postcodeDistrict(postcode: string): string {
 
 const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const EPC_COLORS: Record<string, string> = {
-  A: "bg-green-600",
-  B: "bg-green-500",
-  C: "bg-lime-500",
-  D: "bg-yellow-400",
-  E: "bg-orange-400",
-  F: "bg-orange-600",
-  G: "bg-red-600",
-};
-const EPC_BG_LIGHT: Record<string, string> = {
-  A: "bg-green-50",
-  B: "bg-green-50",
-  C: "bg-lime-50",
-  D: "bg-yellow-50",
-  E: "bg-orange-50",
-  F: "bg-orange-50",
-  G: "bg-red-50",
-};
-const EPC_TEXT_COLORS: Record<string, string> = {
-  A: "text-green-700",
-  B: "text-green-600",
-  C: "text-lime-600",
-  D: "text-yellow-600",
-  E: "text-orange-600",
-  F: "text-orange-700",
-  G: "text-red-700",
+  A: "bg-emerald-700",
+  B: "bg-emerald-500",
+  C: "bg-yellow-400",
+  D: "bg-orange-400",
+  E: "bg-orange-600",
+  F: "bg-red-500",
+  G: "bg-red-700",
 };
 
 // ---------------------------------------------------------------------------
@@ -300,7 +287,7 @@ export default async function PropertyPage({
   const canBookViewing = !isInactiveStatus && (listing.status as string) !== "draft";
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-[#faf9f8]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildPropertyJsonLd(detail)) }}
@@ -315,94 +302,73 @@ export default async function PropertyPage({
           ])),
         }}
       />
-      {isInactiveStatus && (
-        <div className="mx-auto max-w-7xl px-4 pt-4">
-          <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
-            This property is marked as <strong>{listing.status.replace(/_/g, " ")}</strong> and is no longer available for viewings.
+
+      <div className="mx-auto max-w-[1440px] px-4 md:px-8">
+        {/* Inactive status banner */}
+        {isInactiveStatus && (
+          <div className="pt-4">
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
+              This property is marked as <strong>{listing.status.replace(/_/g, " ")}</strong> and is no longer available for viewings.
+            </div>
           </div>
-        </div>
-      )}
-      {/* Breadcrumbs */}
-      <div className="mx-auto max-w-7xl px-4 pt-4 pb-2">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-neutral-500 flex-wrap">
-          <Link href="/" className="hover:text-neutral-900 transition-colors">
-            Home
-          </Link>
-          <span aria-hidden="true" className="text-neutral-300">/</span>
+        )}
+
+        {/* Breadcrumbs */}
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-1.5 py-5 text-xs font-medium text-[#707974] overflow-x-auto whitespace-nowrap"
+        >
+          <Link href="/" className="hover:text-[#1B4D3E] transition-colors">Home</Link>
+          <ChevronRight className="size-3.5" />
           <Link
             href={`/properties?location=${encodeURIComponent(property.city)}`}
-            className="hover:text-neutral-900 transition-colors"
+            className="hover:text-[#1B4D3E] transition-colors"
           >
             {property.city}
           </Link>
-          <span aria-hidden="true" className="text-neutral-300">/</span>
-          <span aria-current="page" className="text-neutral-700 truncate max-w-[200px]">
-            {address}
-          </span>
+          <ChevronRight className="size-3.5" />
+          <span className="text-[#1a1c1c] truncate max-w-[200px]">{address}</span>
         </nav>
-      </div>
 
-      <div className="mx-auto max-w-7xl px-4 pb-24 lg:pb-12">
         {/* Gallery */}
-        <Gallery images={images} className="mt-2 mb-8" />
+        <Gallery images={images} className="mb-6" />
 
         {/* Hero media — Virtual Tour & Video */}
         {(virtualTourUrl || videoTourUrl) && (
-          <div className="grid gap-6 sm:grid-cols-2 mb-6">
+          <div className="grid gap-4 sm:grid-cols-2 mb-6">
             {virtualTourUrl && (
               <div>
-                <h3 className="text-lg font-semibold mb-2">Virtual Tour</h3>
+                <h3 className="text-sm font-semibold text-[#1a1c1c] mb-2">Virtual Tour</h3>
                 <VirtualTourViewer tourUrl={virtualTourUrl} />
               </div>
             )}
             {videoTourUrl && (
               <div>
-                <h3 className="text-lg font-semibold mb-2">Video Tour</h3>
+                <h3 className="text-sm font-semibold text-[#1a1c1c] mb-2">Video Tour</h3>
                 <VideoTourPlayer videoUrl={videoTourUrl} />
               </div>
             )}
           </div>
         )}
 
-        {/* Sticky info bar */}
-        <div className="sticky top-16 z-20 -mx-4 px-4 py-4 bg-white/95 backdrop-blur-md border-b border-neutral-200 mb-8 lg:static lg:bg-transparent lg:backdrop-blur-none lg:border-0 lg:px-0 lg:py-0 lg:mb-10">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+        {/* Sticky key info bar */}
+        <div className="sticky top-16 z-30 -mx-4 md:-mx-8 px-4 md:px-8 py-4 bg-white/90 backdrop-blur-xl border-b border-neutral-100 mb-8 transition-shadow duration-300">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 max-w-[1440px] mx-auto">
             <div>
-              {/* Price */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <p className="text-3xl font-bold text-neutral-900 font-heading tracking-tight">{priceFormatted}</p>
-                {priceReduced && originalPrice != null && (
-                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800">
-                    Reduced from £{originalPrice.toLocaleString("en-GB")}
-                  </span>
-                )}
-              </div>
-
-              <p className="flex items-center gap-1.5 text-sm text-neutral-500 mt-1">
-                <MapPin className="size-4 shrink-0" aria-hidden="true" />
-                <span className="truncate max-w-xs">{address}</span>
+              <h1 className="text-2xl md:text-3xl font-heading font-bold text-[#1B4D3E]">
+                {priceFormatted}
+              </h1>
+              {priceReduced && originalPrice != null && (
+                <Badge className="mt-1 bg-green-100 text-green-800 border-0 text-xs">
+                  Reduced from £{originalPrice.toLocaleString("en-GB")}
+                </Badge>
+              )}
+              <p className="text-[#404945] font-medium text-sm flex items-center gap-1 mt-1">
+                <MapPin className="size-3.5 shrink-0" />
+                {address}
               </p>
-
-              {/* Key stats pills */}
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700">
-                  <Bed className="size-4" aria-hidden="true" />
-                  {property.bedrooms} bed{property.bedrooms !== 1 ? "s" : ""}
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700">
-                  <Bath className="size-4" aria-hidden="true" />
-                  {property.bathrooms} bath{property.bathrooms !== 1 ? "s" : ""}
-                </span>
-                {sqft > 0 && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700">
-                    <Square className="size-4" aria-hidden="true" />
-                    {sqft.toLocaleString("en-GB")} sq ft
-                  </span>
-                )}
-              </div>
-
-              {/* Social proof badge */}
-              <div className="mt-3">
+              {/* Social proof */}
+              <div className="mt-1.5">
                 <SocialProofBadge
                   propertyId={property.id}
                   initialViewerCount={viewerCount}
@@ -411,235 +377,261 @@ export default async function PropertyPage({
               </div>
             </div>
 
-            {/* Action buttons: Save, Share, Report */}
-            <div className="flex gap-2 items-center flex-wrap">
-              <SavePropertyButton
-                propertyId={property.id}
-                initialSaved={saveState.saved}
-                initialNotes={saveState.notes}
-              />
-              <PropertyDetailActions
-                propertyId={property.id}
-                propertyUrl={propertyUrl}
-                propertyTitle={propertyTitle}
-              />
-              {canBookViewing && (
-                <a
-                  href="#book-viewing"
-                  className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-xl text-sm font-semibold bg-brand-primary text-white min-h-[44px] px-4 lg:hidden hover:opacity-90 transition-opacity"
-                  aria-label="Book a viewing"
-                >
-                  <CalendarIcon className="size-4" aria-hidden="true" />
-                  Book
-                </a>
-              )}
+            <div className="flex flex-wrap items-center gap-4 md:gap-6">
+              {/* Key stats */}
+              <div className="flex items-center gap-5 text-sm text-[#404945]">
+                <div className="flex items-center gap-1.5">
+                  <Bed className="size-4 text-[#D4A853]" />
+                  <span className="font-semibold text-[#1a1c1c]">{property.bedrooms} Bed</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Bath className="size-4 text-[#D4A853]" />
+                  <span className="font-semibold text-[#1a1c1c]">{property.bathrooms} Bath</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Home className="size-4 text-[#D4A853]" />
+                  <span className="font-semibold text-[#1a1c1c]">{propertyTypeLabel}</span>
+                </div>
+                {sqft > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <Square className="size-4 text-[#D4A853]" />
+                    <span className="font-semibold text-[#1a1c1c]">
+                      {sqft.toLocaleString("en-GB")} sq ft
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-2">
+                {canBookViewing && (
+                  <a
+                    href="#book-viewing"
+                    className="bg-[#1B4D3E] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all hover:bg-[#003629]"
+                  >
+                    Book Viewing
+                  </a>
+                )}
+                <SavePropertyButton
+                  propertyId={property.id}
+                  initialSaved={saveState.saved}
+                  initialNotes={saveState.notes}
+                />
+                <PropertyDetailActions
+                  propertyId={property.id}
+                  propertyUrl={propertyUrl}
+                  propertyTitle={propertyTitle}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* 65/35 grid */}
-        <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="grid gap-10 lg:grid-cols-[1fr_360px] pb-24 lg:pb-10">
           {/* ── MAIN CONTENT ── */}
-          <div className="space-y-14 min-w-0">
+          <div className="space-y-12 min-w-0">
+
             {/* About this property */}
-            <section aria-labelledby="about-heading">
-              <h2 id="about-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+            <section>
+              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
                 About this property
               </h2>
-              <div className="text-base leading-relaxed text-neutral-600 whitespace-pre-line">
+              <div className="text-[#404945] leading-relaxed text-sm whitespace-pre-line">
                 {property.description}
               </div>
               {features.length > 0 && (
-                <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5" aria-label="Property features">
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {features.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-sm text-neutral-700">
-                      <span className="size-2 rounded-full bg-brand-primary shrink-0" aria-hidden="true" />
-                      {f}
-                    </li>
+                    <div
+                      key={f}
+                      className="flex items-start gap-3 p-4 rounded-xl bg-[#f4f3f2]"
+                    >
+                      <CheckCircle2 className="size-4 text-[#1B4D3E] shrink-0 mt-0.5 fill-[#1B4D3E] stroke-white" />
+                      <p className="text-sm font-medium text-[#1a1c1c]">{f}</p>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </section>
 
             {/* Property details grid */}
-            <section aria-labelledby="details-heading">
-              <h2 id="details-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+            <section>
+              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
                 Property details
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                 {[
+                  { label: "Property Type", value: propertyTypeLabel },
+                  { label: "Tenure", value: tenureLabel },
+                  { label: "Council Tax", value: councilTax },
+                  { label: "EPC Rating", value: epc !== "N/A" ? epc : "Not rated" },
+                  { label: "Bedrooms", value: String(property.bedrooms) },
+                  { label: "Bathrooms", value: String(property.bathrooms) },
+                  ...(property.receptionRooms != null
+                    ? [{ label: "Receptions", value: String(property.receptionRooms) }]
+                    : []),
                   {
-                    icon: <Home className="size-4" />,
-                    label: "Type",
-                    value: propertyTypeLabel,
-                  },
-                  {
-                    icon: <FileText className="size-4" />,
-                    label: "Tenure",
-                    value: tenureLabel,
-                  },
-                  {
-                    icon: <Tag className="size-4" />,
-                    label: "Council Tax",
-                    value: councilTax,
-                  },
-                  {
-                    icon: <Zap className="size-4" />,
-                    label: "EPC Rating",
-                    value: epc,
-                  },
-                  {
-                    icon: <Bed className="size-4" />,
-                    label: "Bedrooms",
-                    value: String(property.bedrooms),
-                  },
-                  {
-                    icon: <Bath className="size-4" />,
-                    label: "Bathrooms",
-                    value: String(property.bathrooms),
-                  },
-                  ...(property.receptionRooms != null ? [{
-                    icon: <Home className="size-4" />,
-                    label: "Receptions",
-                    value: String(property.receptionRooms),
-                  }] : []),
-                  {
-                    icon: <CalendarIcon className="size-4" />,
                     label: "Listed",
-                    value: new Date(listing.listedDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+                    value: new Date(listing.listedDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    }),
                   },
-                  ...(property.tenure === "leasehold" && property.leaseRemainingYears != null ? [{
-                    icon: <FileText className="size-4" />,
-                    label: "Lease Remaining",
-                    value: `${property.leaseRemainingYears} years`,
-                  }] : []),
+                  ...(property.tenure === "leasehold" && property.leaseRemainingYears != null
+                    ? [{ label: "Lease Remaining", value: `${property.leaseRemainingYears} years` }]
+                    : []),
                 ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-xs"
-                  >
-                    <span className="text-neutral-400 mt-0.5 shrink-0" aria-hidden="true">
-                      {item.icon}
-                    </span>
-                    <div>
-                      <p className="text-xs text-neutral-500 mb-0.5">
-                        {item.label}
-                      </p>
-                      <p className="font-semibold text-sm text-neutral-900">{item.value}</p>
-                    </div>
+                  <div key={item.label} className="space-y-1">
+                    <p className="text-[10px] uppercase tracking-wider text-[#404945] font-bold">
+                      {item.label}
+                    </p>
+                    {item.label === "EPC Rating" && epc !== "N/A" ? (
+                      <span className="inline-block bg-green-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+                        EPC {epc}
+                      </span>
+                    ) : (
+                      <p className="text-sm font-semibold text-[#1a1c1c]">{item.value}</p>
+                    )}
                   </div>
                 ))}
               </div>
             </section>
 
-            {/* Floor Plan */}
+            {/* Floor Plans */}
             {floors.length > 0 && (
-              <section aria-labelledby="floorplan-heading">
-                <h2 id="floorplan-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
-                  Floor plans
-                </h2>
+              <section>
+                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">Floor Plans</h2>
                 <FloorPlan floors={floors} />
               </section>
             )}
 
-            {/* Location map placeholder */}
-            <section aria-labelledby="location-heading">
-              <h2 id="location-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
-                Location
-              </h2>
-              <div className="relative h-64 rounded-2xl overflow-hidden bg-neutral-200 flex items-center justify-center">
-                <MapPin className="size-10 text-neutral-400 opacity-60" aria-hidden="true" />
-                <p className="absolute bottom-3 right-3 text-sm text-neutral-600 bg-white/80 backdrop-blur-sm rounded-lg px-2.5 py-1">
+            {/* Location */}
+            <section>
+              <div className="flex justify-between items-end mb-5">
+                <h2 className="text-xl font-heading font-bold text-[#1B4D3E]">
+                  Location &amp; Connectivity
+                </h2>
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-[#D4A853] flex items-center gap-1 hover:underline"
+                >
+                  Open in Google Maps
+                </a>
+              </div>
+              <div className="h-64 rounded-2xl overflow-hidden bg-[#f4f3f2] relative flex items-center justify-center">
+                <MapPin className="size-8 text-[#c0c9c3]" />
+                <p className="absolute bottom-3 right-3 text-xs text-[#707974] bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
                   {address}
                 </p>
               </div>
             </section>
 
-            {/* Price History */}
+            {/* Market Insights / Price History */}
             {priceHistoryFormatted.length > 0 && (
-              <section aria-labelledby="price-history-heading">
-                <h2 id="price-history-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
-                  Price history
+              <section>
+                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                  Market Insights
                 </h2>
-                <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-neutral-200" />}>
-                  <PriceHistoryChart
-                    postcode={property.postcode}
-                    history={priceHistoryFormatted}
-                  />
-                </Suspense>
+                <div className="bg-[#f4f3f2] rounded-2xl p-6">
+                  <p className="text-sm font-bold text-[#404945] mb-4">Price History</p>
+                  <PriceHistory history={priceHistoryFormatted} />
+                </div>
               </section>
             )}
 
-            {/* EPC display — using EPCDisplay component */}
+            {/* EPC — Energy Performance */}
             {property.epcRating && (
-              <section aria-labelledby="epc-heading">
-                <h2 id="epc-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+              <section>
+                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
                   Energy Performance
                 </h2>
-                {/* Import EPCDisplay inline since it's already in detail/ */}
-                <div className="rounded-2xl bg-neutral-50 p-5 space-y-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="size-8 rounded-lg bg-white flex items-center justify-center shadow-xs shrink-0">
-                        <Zap className="size-4 text-neutral-600" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-neutral-900">Energy Performance Certificate</p>
-                        {property.epcScore != null && (
-                          <p className="text-xs text-neutral-500">{property.epcScore}/100 points</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className={`flex flex-col items-center justify-center rounded-xl px-3 py-1.5 min-w-[52px] ${EPC_BG_LIGHT[epc as keyof typeof EPC_BG_LIGHT] ?? "bg-neutral-50"}`}>
-                      <span className={`text-2xl font-bold leading-none ${EPC_TEXT_COLORS[epc as keyof typeof EPC_TEXT_COLORS] ?? "text-neutral-700"}`}>
-                        {epc}
+                <div className="bg-[#f4f3f2] rounded-2xl p-6 space-y-6">
+                  <div className="flex justify-between items-end">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-medium text-[#404945] uppercase tracking-wider">
+                        Current Rating
                       </span>
-                      <span className="text-xs text-neutral-500 mt-0.5">Current</span>
+                      <div className="text-3xl font-heading font-extrabold text-[#1B4D3E]">
+                        {property.epcScore != null ? `${property.epcScore} | ` : ""}{epc}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-neutral-500 mb-2">Energy efficiency rating</p>
-                    <div className="flex items-stretch gap-0.5 h-8 rounded-lg overflow-hidden">
-                      {EPC_BANDS.map((band) => (
-                        <div
-                          key={band}
-                          className={`flex flex-1 items-center justify-center text-xs font-bold text-white ${EPC_COLORS[band]} ${band === epc ? "scale-y-110 shadow-md z-10 relative" : "opacity-50"}`}
-                          aria-label={`Band ${band}${band === epc ? " (current)" : ""}`}
-                        >
-                          {band}
-                        </div>
-                      ))}
-                    </div>
+
+                  {/* EPC Scale */}
+                  <div className="flex h-10 rounded-lg overflow-hidden gap-0.5">
+                    {EPC_BANDS.map((band) => (
+                      <div
+                        key={band}
+                        className={`flex flex-1 items-center justify-center text-white text-xs font-bold ${EPC_COLORS[band]} ${band === epc ? "ring-4 ring-[#1B4D3E] ring-offset-1 z-10 rounded-sm" : ""}`}
+                      >
+                        {band}
+                      </div>
+                    ))}
                   </div>
+
                   <a
                     href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(property.postcode)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:underline"
-                    aria-label="View full EPC certificate on gov.uk (opens in new tab)"
+                    className="inline-flex items-center gap-1 text-xs text-[#1B4D3E] hover:underline font-medium"
                   >
-                    View full EPC certificate ↗
+                    View full EPC certificate
                   </a>
+
                   {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
-                    <p className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
-                      <strong>MEES Notice:</strong> Rental properties in England and Wales may require a minimum EPC rating of C under upcoming regulations. This property currently holds a rating of {epc}.
-                    </p>
+                    <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 text-xs text-amber-800">
+                      <strong>MEES Notice:</strong> Rental properties may require a minimum EPC rating of C under upcoming regulations. This property holds a rating of {epc}.
+                    </div>
                   )}
                 </div>
               </section>
             )}
 
+            {/* Environmental & Utility Insights */}
+            <section>
+              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                Environmental &amp; Connectivity
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-5 rounded-xl bg-white shadow-sm flex gap-4 items-center">
+                  <Wifi className="size-7 text-[#1B4D3E] shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-[#404945] tracking-wider">Broadband</p>
+                    <p className="text-sm font-bold text-[#1a1c1c] mt-0.5">Check availability</p>
+                  </div>
+                </div>
+                <div className="p-5 rounded-xl bg-white shadow-sm flex gap-4 items-center">
+                  <TrendingUp className="size-7 text-[#1B4D3E] shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-[#404945] tracking-wider">Flood Risk</p>
+                    <p className="text-sm font-bold text-[#1a1c1c] mt-0.5">View report</p>
+                  </div>
+                </div>
+                <div className="p-5 rounded-xl bg-white shadow-sm flex gap-4 items-center">
+                  <Car className="size-7 text-[#D4A853] shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-[#404945] tracking-wider">Transport</p>
+                    <p className="text-sm font-bold text-[#1a1c1c] mt-0.5">View connections</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
             {isFeatureEnabled("local_area_intelligence") && (
-              <section aria-labelledby="local-area-heading">
-                <h2 id="local-area-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
-                  Local area
+              <section>
+                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                  Local Area Intelligence
                 </h2>
                 <Suspense
                   fallback={
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <div key={n} className="h-48 bg-neutral-200 rounded-2xl animate-pulse" />
+                        <div key={n} className="h-48 bg-[#f4f3f2] rounded-2xl animate-pulse" />
                       ))}
                     </div>
                   }
@@ -662,18 +654,18 @@ export default async function PropertyPage({
 
             {/* ── ROI SECTION (Wave 4) ── */}
             {listing.listingType === "sale" && (
-              <section id="roi-section" aria-labelledby="roi-heading">
-                <h2 id="roi-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
+              <section id="roi-section">
+                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
                   Renovation ROI
                 </h2>
-                <div className="space-y-6">
+                <div className="space-y-5">
                   <Suspense
                     fallback={
-                      <div className="rounded-2xl bg-neutral-50 p-6 animate-pulse">
-                        <div className="h-5 w-48 bg-neutral-200 rounded mb-4" />
+                      <div className="rounded-2xl bg-[#f4f3f2] p-6 animate-pulse">
+                        <div className="h-5 w-48 bg-[#e3e2e1] rounded mb-4" />
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {[1, 2, 3].map((n) => (
-                            <div key={n} className="h-28 bg-neutral-200 rounded-2xl" />
+                            <div key={n} className="h-28 bg-[#e3e2e1] rounded-xl" />
                           ))}
                         </div>
                       </div>
@@ -682,7 +674,6 @@ export default async function PropertyPage({
                     <RenovationROIPanel property={property as unknown as import("@/types/property").Property} supabase={supabase} />
                   </Suspense>
 
-                  {/* WhatIf Floor Plan — shows overlay when a renovation type is selected */}
                   {floorPlanUrl && (
                     <WhatIfFloorPlan
                       floorPlanUrl={floorPlanUrl}
@@ -693,27 +684,25 @@ export default async function PropertyPage({
               </section>
             )}
 
-            {/* ── ASK AGENT FORM (Wave 5) — anchored for AgentCardSidebar link ── */}
-            <section id={`ask-agent-${property.id}`} aria-labelledby="contact-agent-heading">
-              <h2 id="contact-agent-heading" className="text-2xl font-bold text-neutral-900 font-heading tracking-tight mb-6">
-                Contact the agent
-              </h2>
-              <AskAgentForm
-                propertyId={property.id}
-                agentId={agentId}
-                agentName={agentName}
-              />
+            {/* ── ASK AGENT FORM ── */}
+            <section id={`ask-agent-${property.id}`}>
+              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">Contact Agent</h2>
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <AskAgentForm
+                  propertyId={property.id}
+                  agentId={agentId}
+                  agentName={agentName}
+                />
+              </div>
             </section>
 
-            {/* ── BOTTOM SECTIONS ── */}
-
-            {/* Similar Properties */}
+            {/* ── SIMILAR PROPERTIES ── */}
             <Suspense
               fallback={
-                <div className="space-y-2">
-                  <div className="h-4 w-40 bg-muted rounded animate-pulse" />
+                <div className="space-y-3">
+                  <div className="h-4 w-40 bg-[#f4f3f2] rounded animate-pulse" />
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className="h-20 bg-muted rounded-lg animate-pulse" />
+                    <div key={n} className="h-20 bg-[#f4f3f2] rounded-xl animate-pulse" />
                   ))}
                 </div>
               }
@@ -730,19 +719,18 @@ export default async function PropertyPage({
 
           {/* ── SIDEBAR ── */}
           <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
-            {/* Agent card (Wave 5) */}
+            {/* Agent card */}
             <Suspense
               fallback={
-                <div className="rounded-2xl bg-white border border-neutral-200 p-5 animate-pulse space-y-4 shadow-sm">
-                  <div className="flex gap-3 items-center">
-                    <div className="size-14 rounded-full bg-neutral-100 shrink-0" />
+                <div className="rounded-2xl bg-white p-5 animate-pulse space-y-3 shadow-sm">
+                  <div className="flex gap-3">
+                    <div className="size-12 rounded-full bg-[#f4f3f2] shrink-0" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 w-32 bg-neutral-100 rounded" />
-                      <div className="h-3 w-24 bg-neutral-100 rounded" />
+                      <div className="h-4 w-32 bg-[#f4f3f2] rounded" />
+                      <div className="h-3 w-24 bg-[#f4f3f2] rounded" />
                     </div>
                   </div>
-                  <div className="h-px bg-neutral-100" />
-                  <div className="h-11 bg-neutral-100 rounded-xl" />
+                  <div className="h-10 bg-[#f4f3f2] rounded-xl" />
                 </div>
               }
             >
@@ -751,27 +739,26 @@ export default async function PropertyPage({
 
             {/* Apply to Rent */}
             {listing.listingType === "rent" && listing.status === "active" && (
-              <div className="rounded-2xl bg-white border border-neutral-200 p-5 space-y-3 shadow-sm">
-                <h3 className="text-sm font-semibold text-neutral-900">Interested in renting?</h3>
-                <p className="text-xs text-neutral-500">
+              <div className="rounded-2xl bg-white p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-[#1a1c1c] mb-2">Interested in renting?</h3>
+                <p className="text-xs text-[#404945] mb-4 leading-relaxed">
                   Submit a rental application to the landlord directly.
                 </p>
                 <Link
                   href={currentUserId
                     ? `/dashboard/renter/applications/apply/${property.id}`
                     : `/login?redirectTo=${encodeURIComponent(`/dashboard/renter/applications/apply/${property.id}`)}`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-primary text-white text-sm font-semibold min-h-[44px] px-4 hover:opacity-90 transition-opacity"
-                  aria-label="Apply to rent this property"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4D3E] text-white text-sm font-bold h-11 px-4 transition-colors hover:bg-[#003629]"
                 >
-                  <FileText className="size-4" aria-hidden="true" />
+                  <FileText className="size-4" />
                   Apply to Rent
                 </Link>
               </div>
             )}
 
-            {/* Book Viewing (Wave 5) */}
+            {/* Book Viewing */}
             {canBookViewing && (
-              <div id="book-viewing">
+              <div id="book-viewing" className="rounded-2xl bg-white shadow-sm overflow-hidden">
                 <BookViewingModal
                   propertyId={property.id}
                   propertyStatus={listing.status}
@@ -780,17 +767,18 @@ export default async function PropertyPage({
               </div>
             )}
 
-            {/* Mortgage Calculator (Wave 6) */}
-            <div className="rounded-2xl bg-white border border-neutral-200 p-5 shadow-sm">
-              <MortgageCalculator initialPrice={listing.price} />
+            {/* Financial Overview */}
+            <div className="rounded-2xl bg-[#f4f3f2] p-5 space-y-5">
+              <h3 className="text-sm font-heading font-bold text-[#1B4D3E]">Financial Overview</h3>
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <MortgageCalculator initialPrice={listing.price} />
+              </div>
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <SdltCalculator initialPrice={listing.price} />
+              </div>
             </div>
 
-            {/* SDLT Calculator (Wave 6) */}
-            <div className="rounded-2xl bg-white border border-neutral-200 p-5 shadow-sm">
-              <SdltCalculator initialPrice={listing.price} />
-            </div>
-
-            {/* Local Experts */}
+            {/* Recommended Tradespeople */}
             <Suspense fallback={null}>
               <RecommendedTradespeople postcode={property.postcode} />
             </Suspense>
@@ -799,20 +787,19 @@ export default async function PropertyPage({
       </div>
 
       {/* Mobile sticky bottom bar */}
-      <div className="fixed bottom-0 inset-x-0 z-30 border-t border-neutral-200 bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-4 lg:hidden">
+      <div className="fixed bottom-0 inset-x-0 z-30 border-t bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-4 lg:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
         <div>
-          <p className="font-bold text-xl text-neutral-900 font-heading">{priceFormatted}</p>
-          <p className="text-xs text-neutral-500">
+          <p className="font-heading font-bold text-lg text-[#1B4D3E]">{priceFormatted}</p>
+          <p className="text-xs text-[#404945]">
             {property.bedrooms} bed · {propertyTypeLabel}
           </p>
         </div>
         {canBookViewing && (
           <a
             href="#book-viewing"
-            className="shrink-0 gap-1.5 inline-flex items-center justify-center rounded-xl text-sm font-semibold bg-brand-primary text-white min-h-[44px] px-4 hover:opacity-90 transition-opacity"
-            aria-label="Book a viewing"
+            className="shrink-0 bg-[#1B4D3E] text-white font-bold text-sm rounded-xl h-10 px-5 flex items-center gap-2 transition-colors hover:bg-[#003629]"
           >
-            <CalendarIcon className="size-4" aria-hidden="true" />
+            <CalendarIcon className="size-4" />
             Book Viewing
           </a>
         )}

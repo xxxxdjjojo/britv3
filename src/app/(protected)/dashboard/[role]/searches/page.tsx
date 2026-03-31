@@ -45,18 +45,6 @@ function formatFilters(filters: SavedSearch["filters"]): string {
   return parts.length > 0 ? parts.join(" · ") : "All properties";
 }
 
-function formatFrequency(freq: string): string {
-  switch (freq) {
-    case "instant":
-      return "INSTANT";
-    case "daily":
-      return "DAILY";
-    case "weekly":
-      return "WEEKLY";
-    default:
-      return freq.toUpperCase();
-  }
-}
 
 export const metadata = {
   title: "Saved Searches — Britestate",
@@ -119,8 +107,6 @@ export default async function SavedSearchesPage() {
           <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
             {searches.map((search) => {
               const newCount = search.new_results_count ?? 0;
-              const activeFreq = formatFrequency(search.alert_frequency);
-
               return (
                 <div
                   key={search.id}

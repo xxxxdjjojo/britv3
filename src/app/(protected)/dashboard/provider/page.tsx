@@ -8,21 +8,18 @@ import {
 } from "@/services/provider/provider-dashboard-service";
 import { getCashPosition } from "@/services/provider/provider-cash-position-service";
 import { getSmartActions } from "@/services/provider/provider-smart-actions-service";
-import { KPICard } from "@/components/dashboard/provider/KPICard";
-import { ActivityFeed } from "@/components/dashboard/provider/ActivityFeed";
 import { UpcomingJobsList } from "@/components/dashboard/provider/UpcomingJobsList";
-import { CashPositionWidget } from "@/components/dashboard/provider/CashPositionWidget";
 import { SmartActionsCard } from "@/components/dashboard/provider/SmartActionsCard";
-import { Button } from "@/components/ui/button";
+import { ActivityFeed } from "@/components/dashboard/provider/ActivityFeed";
 import {
-  Inbox,
   Briefcase,
-  Star,
   PoundSterling,
   FileText,
-  CreditCard,
-  Image,
   ArrowRight,
+  TrendingUp,
+  Clock,
+  MapPin,
+  Filter,
 } from "lucide-react";
 
 export default async function ProviderDashboardPage() {
@@ -46,20 +43,34 @@ export default async function ProviderDashboardPage() {
         ? 65
         : 30;
 
-  const monthlyEarnings = `£${(stats.totalEarningsPence / 100).toFixed(2)}`;
+  const monthlyEarnings = `£${(stats.totalEarningsPence / 100).toLocaleString("en-GB", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+
+  const pendingQuotes = stats.totalLeads ?? 0;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl">
+    <div className="p-6 space-y-8 max-w-7xl">
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
-      <div>
-        <h1 className="text-2xl font-bold font-heading text-neutral-900">
-          {businessName
-            ? `Welcome back, ${businessName}`
-            : "Provider Dashboard"}
-        </h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Here&apos;s what&apos;s happening with your business today.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold font-heading text-emerald-900 tracking-tight">
+            Jobs Overview
+          </h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            {businessName ? businessName : "Your business at a glance"}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/provider/quotes/builder"
+            className="flex items-center gap-2 rounded-xl bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary/90 transition-colors"
+          >
+            <FileText className="size-4" />
+            New Quote
+          </Link>
+        </div>
       </div>
 
       {/* ── Verification Banner ──────────────────────────────────────────────── */}
@@ -85,14 +96,12 @@ export default async function ProviderDashboardPage() {
                 </div>
               </div>
             </div>
-            <Link href="/dashboard/provider/verification">
-              <Button
-                size="sm"
-                className="shrink-0 bg-white text-brand-primary hover:bg-white/90 font-semibold"
-              >
-                Complete Verification
-                <ArrowRight className="ml-1.5 size-4" />
-              </Button>
+            <Link
+              href="/dashboard/provider/verification"
+              className="shrink-0 flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-brand-primary hover:bg-white/90 transition-colors"
+            >
+              Complete Verification
+              <ArrowRight className="size-4" />
             </Link>
           </div>
         </div>
@@ -101,86 +110,175 @@ export default async function ProviderDashboardPage() {
       {/* ── Smart Action Suggestions ─────────────────────────────────────────── */}
       <SmartActionsCard actions={smartActions} />
 
-      {/* ── 4 KPI Cards ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <KPICard
-          title="New Leads"
-          value={stats.totalLeads}
-          icon={Inbox}
-        />
-        <KPICard
-          title="Active Jobs"
-          value={stats.activeJobs}
-          icon={Briefcase}
-        />
-        <KPICard
-          title="Pending Reviews"
-          value={stats.averageRating > 0 ? `${stats.averageRating}★` : "—"}
-          icon={Star}
-        />
-        <KPICard
-          title="Total Earnings"
-          value={monthlyEarnings}
-          icon={PoundSterling}
-        />
-      </div>
+      {/* ── KPI Bento Grid ──────────────────────────────────────────────────── */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* Active Jobs KPI */}
+        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Active Jobs</p>
+            <h3 className="text-3xl font-bold text-emerald-900 font-heading">
+              {String(stats.activeJobs).padStart(2, "0")}
+            </h3>
+            <p className="text-xs text-success flex items-center gap-1 font-semibold">
+              <TrendingUp className="size-3" />
+              +2 from last week
+            </p>
+          </div>
+          <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-900">
+            <Briefcase className="size-5" />
+          </div>
+        </div>
 
-      {/* ── Cash Position Widget ─────────────────────────────────────────────── */}
-      <CashPositionWidget cashPosition={cashPosition} />
+        {/* Earnings MTD KPI */}
+        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Earnings MTD</p>
+            <h3 className="text-3xl font-bold text-emerald-900 font-heading">{monthlyEarnings}</h3>
+            <p className="text-xs text-neutral-500 flex items-center gap-1 font-semibold">
+              <Clock className="size-3" />
+              82% of monthly target
+            </p>
+          </div>
+          <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+            <PoundSterling className="size-5" />
+          </div>
+        </div>
 
-      {/* ── Two-Column Grid: Activity + Upcoming Jobs ────────────────────────── */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">Recent Activity</h2>
+        {/* Pending Quotes KPI */}
+        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Pending Quotes</p>
+            <h3 className="text-3xl font-bold text-emerald-900 font-heading">
+              {String(pendingQuotes).padStart(2, "0")}
+            </h3>
+            <p className="text-xs text-error flex items-center gap-1 font-semibold">
+              <Clock className="size-3" />
+              3 requiring follow-up
+            </p>
+          </div>
+          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+            <FileText className="size-5" />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Action Bar + Job Filter Tabs ────────────────────────────────────── */}
+      <section className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-neutral-200">
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+          <Link
+            href="/dashboard/provider/jobs/active"
+            className="whitespace-nowrap px-4 py-2 bg-emerald-900 text-white rounded-lg text-sm font-semibold shadow-sm"
+          >
+            All Jobs
+          </Link>
+          <Link
+            href="/dashboard/provider/jobs/active"
+            className="whitespace-nowrap px-4 py-2 text-neutral-600 hover:bg-neutral-100 rounded-lg text-sm font-medium transition-colors"
+          >
+            Active
+          </Link>
+          <Link
+            href="/dashboard/provider/jobs/active"
+            className="whitespace-nowrap px-4 py-2 text-neutral-600 hover:bg-neutral-100 rounded-lg text-sm font-medium transition-colors"
+          >
+            Upcoming
+          </Link>
+          <Link
+            href="/dashboard/provider/jobs/active"
+            className="whitespace-nowrap px-4 py-2 text-neutral-600 hover:bg-neutral-100 rounded-lg text-sm font-medium transition-colors"
+          >
+            Completed
+          </Link>
+        </div>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Link
+            href="/dashboard/provider/jobs/active"
+            className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-50 text-neutral-700 transition-colors"
+          >
+            <Filter className="size-4" />
+            Sort &amp; Filter
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Upcoming Jobs Table ──────────────────────────────────────────────── */}
+      <section className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-emerald-900 font-heading uppercase tracking-widest">
+            Upcoming Jobs
+          </h2>
+          <Link
+            href="/dashboard/provider/jobs/active"
+            className="text-sm font-bold text-brand-secondary hover:underline"
+          >
+            View All
+          </Link>
+        </div>
+        <div className="p-6">
+          <UpcomingJobsList jobs={upcomingJobs} />
+        </div>
+      </section>
+
+      {/* ── Productivity Section ─────────────────────────────────────────────── */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
+        {/* Recent Activity / Schedule Card */}
+        <div className="bg-white rounded-2xl border border-neutral-200 p-6 space-y-4">
+          <div className="flex justify-between items-center">
+            <h4 className="font-bold text-emerald-900 font-heading">Recent Activity</h4>
+            <Link
+              href="/dashboard/provider/availability"
+              className="text-sm font-bold text-brand-secondary hover:underline"
+            >
+              View Calendar
+            </Link>
+          </div>
           <ActivityFeed items={activity} />
         </div>
 
-        {/* Upcoming Jobs */}
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-neutral-900">Upcoming Jobs</h2>
-            <Link
-              href="/dashboard/provider/jobs/active"
-              className="text-xs font-medium text-brand-primary hover:underline"
-            >
-              View all
-            </Link>
+        {/* Service Coverage Map Card */}
+        <div className="relative bg-emerald-900 rounded-2xl overflow-hidden min-h-[200px] flex items-end">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-800 to-emerald-950 opacity-80" />
+          <div className="relative p-6 w-full">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-xs font-bold text-emerald-200 uppercase tracking-widest mb-1">
+                  Service Coverage
+                </p>
+                <h4 className="text-xl font-bold text-white font-heading">
+                  {businessName ?? "Your Service Area"}
+                </h4>
+                <p className="text-sm text-emerald-100/70 mt-1">
+                  {upcomingJobs.length} jobs scheduled this week
+                </p>
+              </div>
+              <Link
+                href="/dashboard/provider/availability"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2"
+              >
+                <MapPin className="size-4" />
+                Availability
+              </Link>
+            </div>
+            {/* Cash position snippet */}
+            {cashPosition && (
+              <div className="mt-4 flex items-center gap-4 pt-4 border-t border-white/10">
+                <div>
+                  <p className="text-xs text-emerald-300 font-medium">Cash In</p>
+                  <p className="text-base font-bold text-white">
+                    £{(cashPosition.receivedPence / 100).toLocaleString("en-GB")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-emerald-300 font-medium">Outstanding</p>
+                  <p className="text-base font-bold text-white">
+                    £{(cashPosition.invoicedPence / 100).toLocaleString("en-GB")}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          <UpcomingJobsList jobs={upcomingJobs} />
         </div>
-      </div>
-
-      {/* ── Quick Actions ────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-        <h2 className="mb-4 text-base font-semibold text-neutral-900">Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/dashboard/provider/quotes/builder">
-            <Button className="bg-brand-primary text-white hover:bg-brand-primary/90">
-              <FileText className="mr-2 size-4" />
-              New Quote
-            </Button>
-          </Link>
-          <Link href="/dashboard/provider/payments">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
-              <CreditCard className="mr-2 size-4" />
-              Log Payment
-            </Button>
-          </Link>
-          <Link href="/dashboard/provider/portfolio">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
-              <Image className="mr-2 size-4" />
-              Add Portfolio Item
-            </Button>
-          </Link>
-          <Link href="/dashboard/provider/reviews">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
-              <Star className="mr-2 size-4" />
-              Invite to Review
-            </Button>
-          </Link>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

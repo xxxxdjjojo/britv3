@@ -9,19 +9,19 @@ import {
   Key,
   Camera,
   Users,
-  Handshake,
-  CheckCircle2,
-  Building2,
+  HandshakeIcon,
+  CheckCircle,
+  Building,
   Filter,
-  BarChart3,
+  BarChart,
   Store,
   Megaphone,
-  LayoutGrid,
+  Layers,
   Wrench,
   Inbox,
   Star,
   ArrowRight,
-  Sparkles,
+  ChevronRight,
 } from "lucide-react";
 
 type Step = {
@@ -34,10 +34,10 @@ type Step = {
 type Role = {
   key: string;
   label: string;
-  steps: readonly Step[];
+  steps: Step[];
 };
 
-const roles: readonly Role[] = [
+const roles: Role[] = [
   {
     key: "buyer",
     label: "Buyer",
@@ -92,14 +92,14 @@ const roles: readonly Role[] = [
       },
       {
         number: 3,
-        icon: Handshake,
+        icon: HandshakeIcon,
         title: "Accept an offer",
         description:
           "Compare offers side-by-side, verify buyer positions, and accept with confidence using our transparent process.",
       },
       {
         number: 4,
-        icon: CheckCircle2,
+        icon: CheckCircle,
         title: "Complete the sale",
         description:
           "Track the transaction from offer to completion. Coordinate with all parties through a single timeline view.",
@@ -112,7 +112,7 @@ const roles: readonly Role[] = [
     steps: [
       {
         number: 1,
-        icon: Building2,
+        icon: Building,
         title: "List your rental",
         description:
           "Advertise your property to thousands of verified tenants. Set your terms, rent, and availability dates.",
@@ -133,7 +133,7 @@ const roles: readonly Role[] = [
       },
       {
         number: 4,
-        icon: BarChart3,
+        icon: BarChart,
         title: "Grow your portfolio",
         description:
           "Track yield, expenses, and compliance across all your properties with portfolio analytics and reporting tools.",
@@ -160,7 +160,7 @@ const roles: readonly Role[] = [
       },
       {
         number: 3,
-        icon: LayoutGrid,
+        icon: Layers,
         title: "Manage your pipeline",
         description:
           "Track viewings, offers, and transactions across your entire portfolio with CRM tools built for property.",
@@ -194,106 +194,45 @@ const roles: readonly Role[] = [
       },
     ],
   },
-] as const;
+];
+
+const STATS = [
+  { value: "25,000+", label: "Verified Listings" },
+  { value: "5,000+", label: "Verified Pros" },
+  { value: "50,000+", label: "Happy Users" },
+  { value: "4.9/5", label: "Average Rating" },
+];
 
 export default function HowItWorksPage() {
   const [activeRole, setActiveRole] = useState<string>("buyer");
   const activeData = roles.find((r) => r.key === activeRole) ?? roles[0];
 
   return (
-    <div className="bg-neutral-50 min-h-screen">
-      {/* Hero Header */}
+    <>
+      {/* Hero */}
       <section className="bg-brand-primary text-white py-20 lg:py-28">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6 text-sm font-semibold">
-            <Sparkles className="size-4" />
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-6 text-sm font-semibold backdrop-blur-sm">
+            <Search className="size-4" />
             <span>Simple. Transparent. Intelligent.</span>
           </div>
-          <h1 className="font-heading text-5xl md:text-6xl font-bold tracking-tight mb-6">
-            How It Works
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
+            How Britestate Works
           </h1>
-          <p className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Britestate simplifies every step of the property journey. Choose
-            your role to see how it works for you.
+          <p className="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+            From first search to moving day — Britestate guides you every step
+            of the way. Choose your role to see how it works for you.
           </p>
         </div>
       </section>
 
-      {/* Role Switcher */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <div className="bg-white rounded-2xl shadow-lg p-2 flex flex-wrap justify-center gap-1">
-          {roles.map((role) => (
-            <button
-              key={role.key}
-              onClick={() => setActiveRole(role.key)}
-              className={`rounded-xl px-6 py-3 text-sm font-semibold transition-all min-h-[44px] ${
-                activeRole === role.key
-                  ? "bg-brand-primary text-white shadow-sm"
-                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
-              }`}
-              aria-pressed={activeRole === role.key}
-            >
-              {role.label}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* Steps */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="space-y-6">
-          {activeData.steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.number}
-                className="relative bg-white rounded-2xl p-6 sm:p-8 shadow-sm flex gap-5 sm:gap-8 group hover:shadow-md transition-shadow duration-300"
-              >
-                {/* Step connector line */}
-                {index < activeData.steps.length - 1 && (
-                  <div
-                    className="absolute left-[2.75rem] sm:left-[3.5rem] top-full h-6 w-px bg-brand-primary/20 z-10"
-                    aria-hidden="true"
-                  />
-                )}
-
-                {/* Icon + number */}
-                <div className="relative shrink-0">
-                  <div className="size-14 sm:size-16 rounded-2xl bg-brand-primary-lighter flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors duration-300">
-                    <Icon className="size-6 sm:size-7" />
-                  </div>
-                  <span className="absolute -top-2 -right-2 size-6 rounded-full bg-brand-primary text-white text-xs font-bold flex items-center justify-center shadow-sm">
-                    {step.number}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-1">
-                  <h3 className="font-heading text-lg sm:text-xl font-semibold text-neutral-900 mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Stats bar */}
-      <section className="bg-brand-primary-lighter py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-            {[
-              { value: "25,000+", label: "Properties Listed" },
-              { value: "50,000+", label: "Happy Users" },
-              { value: "5,000+", label: "Verified Pros" },
-              { value: "4.9/5", label: "User Rating" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="font-heading text-3xl font-bold text-brand-primary">
+      {/* Stats Bar */}
+      <section className="bg-brand-primary-lighter border-b border-brand-primary/10">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {STATS.map((stat) => (
+              <div key={stat.label}>
+                <div className="font-heading text-2xl font-bold text-brand-primary">
                   {stat.value}
                 </div>
                 <div className="text-sm text-neutral-600 mt-1">{stat.label}</div>
@@ -303,33 +242,155 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
+      {/* Role Switcher + Steps */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+              Your journey, your way
+            </h2>
+            <p className="text-neutral-600 text-lg max-w-xl mx-auto">
+              Select your role to see the tailored experience Britestate provides.
+            </p>
+          </div>
+
+          {/* Role Tabs */}
+          <div className="flex flex-wrap justify-center gap-2 mb-14">
+            {roles.map((role) => (
+              <button
+                key={role.key}
+                onClick={() => setActiveRole(role.key)}
+                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
+                  activeRole === role.key
+                    ? "bg-brand-primary text-white shadow-md"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-brand-primary-lighter hover:text-brand-primary"
+                }`}
+              >
+                {role.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Steps Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {activeData.steps.map((step, i) => (
+              <div
+                key={step.number}
+                className="relative flex flex-col gap-4 p-6 rounded-2xl bg-neutral-50 hover:bg-brand-primary-lighter transition-colors group"
+              >
+                {/* Connector arrow on desktop */}
+                {i < activeData.steps.length - 1 && (
+                  <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                    <ChevronRight className="size-5 text-neutral-400" />
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-brand-primary/10 text-brand-primary flex items-center justify-center group-hover:bg-brand-primary group-hover:text-white transition-all shrink-0">
+                    <step.icon className="size-5" />
+                  </div>
+                  <span className="size-7 rounded-full bg-brand-primary text-white text-xs font-bold flex items-center justify-center shrink-0">
+                    {step.number}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-heading text-base font-bold text-neutral-900 mb-1.5">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-neutral-500 leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Highlights */}
+      <section className="bg-neutral-50 py-20 lg:py-28">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="font-heading text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+              Everything in one platform
+            </h2>
+            <p className="text-neutral-600 text-lg max-w-xl mx-auto">
+              No more switching between apps and services. Britestate handles
+              the entire property journey end-to-end.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Search,
+                title: "AI-Powered Search",
+                description:
+                  "Describe your ideal home in plain English. Our AI understands schools, commute times, and lifestyle preferences to surface perfect matches.",
+              },
+              {
+                icon: Users,
+                title: "Verified Professionals",
+                description:
+                  "Every agent, solicitor, and tradesperson passes our rigorous 3-client + 3-peer verification process before joining the platform.",
+              },
+              {
+                icon: Key,
+                title: "End-to-End Transactions",
+                description:
+                  "From offer to keys in one place. Digital contracts, secure deposits, and real-time progress tracking keep everyone in the loop.",
+              },
+            ].map((feature) => (
+              <div
+                key={feature.title}
+                className="flex flex-col gap-4 p-8 rounded-2xl bg-white shadow-sm border border-neutral-100 hover:shadow-md transition-shadow"
+              >
+                <div className="size-12 rounded-xl bg-brand-primary-lighter text-brand-primary flex items-center justify-center">
+                  <feature.icon className="size-6" />
+                </div>
+                <h3 className="font-heading text-lg font-bold text-neutral-900">
+                  {feature.title}
+                </h3>
+                <p className="text-neutral-500 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+      <section className="bg-brand-primary text-white py-20">
+        <div className="max-w-screen-xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="font-heading text-3xl lg:text-4xl font-bold tracking-tight mb-4">
             Ready to get started?
           </h2>
-          <p className="text-neutral-600 text-lg mb-8">
+          <p className="text-white/80 text-lg mb-10 max-w-xl mx-auto">
             Free for homebuyers and renters. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-xl bg-brand-primary text-white font-semibold text-base hover:bg-brand-primary-light transition-colors shadow-md w-full sm:w-auto min-w-[180px]"
+              className="inline-flex items-center gap-2 h-12 px-8 rounded-xl bg-white text-brand-primary text-sm font-semibold hover:bg-brand-primary-lighter transition-colors shadow-md"
             >
-              <Sparkles className="size-5" />
-              Get Started Free
+              Create a free account
+              <ArrowRight className="size-4" />
             </Link>
             <Link
               href="/search"
-              className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-xl border-2 border-brand-primary text-brand-primary font-semibold text-base hover:bg-brand-primary/5 transition-colors w-full sm:w-auto min-w-[180px]"
+              className="inline-flex items-center gap-2 h-12 px-8 rounded-xl border border-white/30 text-white text-sm font-semibold hover:bg-white/10 transition-colors"
             >
-              Browse Properties
-              <ArrowRight className="size-4" />
+              Browse properties
             </Link>
           </div>
+          <p className="mt-6 text-white/60 text-sm">
+            Already have an account?{" "}
+            <Link href="/login" className="text-white underline underline-offset-4">
+              Sign in
+            </Link>
+          </p>
         </div>
       </section>
-    </div>
+    </>
   );
 }

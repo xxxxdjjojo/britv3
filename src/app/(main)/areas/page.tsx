@@ -139,30 +139,25 @@ export default async function AreasPage() {
   return (
     <>
       {/* ── Hero ── */}
-      <header className="relative bg-brand-primary overflow-hidden py-24 px-4">
-        {/* Decorative orbs */}
-        <div className="pointer-events-none absolute -top-32 -right-32 size-96 rounded-full bg-white/5" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 size-72 rounded-full bg-white/5" />
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <span className="inline-block bg-white/10 text-white/80 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-            Area Intelligence
-          </span>
-          <h1 className="text-4xl md:text-[3.5rem] font-black text-white mb-6 font-heading leading-none tracking-tight" style={{ letterSpacing: "-0.02em" }}>
+      <header className="bg-gradient-to-br from-primary via-[#16402f] to-[#003629] py-24 px-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32 pointer-events-none" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 font-heading leading-tight">
             Explore UK Property Areas
           </h1>
-          <p className="text-lg text-white/75 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto">
             In-depth area guides with average prices, market trends, transport links, schools, and local services — for every UK city and neighbourhood.
           </p>
-          {/* Glassmorphism search bar */}
-          <div className="flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl max-w-xl mx-auto p-1.5 shadow-xl">
-            <MapPin className="size-5 text-white/50 mx-3 flex-shrink-0" />
+          <div className="flex items-center bg-white rounded-2xl shadow-2xl max-w-xl mx-auto p-1.5">
+            <MapPin className="size-5 text-neutral-400 mx-3 flex-shrink-0" />
             <input
               type="text"
               placeholder="Search a city, postcode or area..."
-              className="flex-grow text-white placeholder-white/40 bg-transparent py-3 pr-2 focus:outline-none text-base"
+              className="flex-grow text-neutral-700 bg-transparent py-3 pr-2 focus:outline-none text-base"
               readOnly
             />
-            <button className="bg-white text-brand-primary px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-neutral-100 transition-colors text-sm">
+            <button className="bg-primary text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-primary/90 transition-colors">
               <Search className="size-4" />
               Search
             </button>
@@ -170,35 +165,34 @@ export default async function AreasPage() {
         </div>
       </header>
 
-      <main className="bg-[#faf9f8] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-28">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
 
         {/* ── Featured Neighbourhoods ── */}
         <section>
           <div className="flex justify-between items-end mb-8">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-2">Trending Now</p>
-              <h2 className="text-3xl font-black font-heading tracking-tight" style={{ letterSpacing: "-0.02em" }}>Trending Neighbourhoods</h2>
-              <p className="text-neutral-500 mt-2">Areas seeing the highest search activity this month</p>
+              <h2 className="text-2xl font-bold font-heading">Trending Neighbourhoods</h2>
+              <p className="text-neutral-500 mt-1">Areas seeing the highest search activity this month</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURED_AREAS.map((area) => (
               <Link
                 key={area.slug}
                 href={`/areas/${area.slug}`}
-                className="group relative rounded-2xl overflow-hidden bg-neutral-200 aspect-[4/5] flex flex-col justify-end hover:shadow-xl transition-all duration-300"
+                className="group relative rounded-2xl overflow-hidden bg-neutral-800 aspect-[4/5] flex flex-col justify-end hover:shadow-xl transition-shadow"
               >
-                <div className="absolute inset-0 bg-neutral-400 group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-neutral-300 opacity-60 group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-x-0 top-4 px-4 flex justify-between items-start z-10">
                   <span className="bg-brand-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                     {area.tag}
                   </span>
                 </div>
-                <div className="relative z-10 bg-gradient-to-t from-neutral-950/90 via-neutral-950/40 to-transparent p-5 pt-16">
-                  <p className="text-white/60 text-xs font-bold uppercase tracking-widest mb-1">{area.city}</p>
-                  <h3 className="text-white text-xl font-black mb-1 font-heading">{area.name}</h3>
-                  <p className="text-white/75 text-sm">Avg. &pound;{area.avgPrice}</p>
-                  <div className="mt-3 flex items-center gap-1.5 text-brand-primary text-sm font-bold">
+                <div className="relative z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 pt-12">
+                  <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">{area.city}</p>
+                  <h3 className="text-white text-xl font-bold mb-1">{area.name}</h3>
+                  <p className="text-white/80 text-sm">Avg. &pound;{area.avgPrice}</p>
+                  <div className="mt-3 flex items-center gap-1 text-brand-primary text-sm font-semibold">
                     View area guide <ArrowRight className="size-3.5" />
                   </div>
                 </div>
@@ -209,29 +203,28 @@ export default async function AreasPage() {
 
         {/* ── UK Cities Grid ── */}
         <section>
-          <div className="mb-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-2">All Cities</p>
-            <h2 className="text-3xl font-black font-heading tracking-tight" style={{ letterSpacing: "-0.02em" }}>Browse by City</h2>
-            <p className="text-neutral-500 mt-2">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold font-heading">Browse by City</h2>
+            <p className="text-neutral-500 mt-1">
               Comprehensive property market data for every major UK city
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {UK_CITIES.map((city) => (
               <Link
                 key={city.slug}
                 href={`/areas/${city.slug}`}
-                className="group bg-white rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                className="group bg-white rounded-2xl border border-primary/10 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
                 {/* City image placeholder */}
-                <div className="relative rounded-xl overflow-hidden mb-5 h-36 bg-[#f4f3f2]">
+                <div className="relative rounded-xl overflow-hidden mb-5 h-36 bg-primary/5">
                   {"highlight" in city && city.highlight && (
                     <span className={`absolute top-3 left-3 ${city.highlightColor} text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10`}>
                       {city.highlight}
                     </span>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent" />
-                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-primary">
                     <MapPin className="size-3.5" />
                     <span className="text-xs font-semibold">{city.listings} listings</span>
                   </div>
@@ -239,21 +232,21 @@ export default async function AreasPage() {
 
                 {/* Content */}
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-xl font-black font-heading" style={{ letterSpacing: "-0.02em" }}>{city.name}</h3>
-                  <div className="flex items-center gap-1 text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                    <TrendingUp className="size-3" />
+                  <h3 className="text-xl font-bold font-heading text-neutral-900">{city.name}</h3>
+                  <div className="flex items-center gap-1 text-sm font-semibold text-emerald-600">
+                    <TrendingUp className="size-3.5" />
                     {city.change}
                   </div>
                 </div>
 
-                <p className="text-neutral-500 text-sm mb-5 leading-relaxed">{city.description}</p>
+                <p className="text-neutral-500 text-sm mb-4 leading-relaxed">{city.description}</p>
 
-                <div className="flex items-center justify-between pt-4 border-t border-[#f4f3f2]">
+                <div className="flex items-center justify-between pt-4 border-t border-primary/5">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Avg Price</p>
-                    <p className="text-lg font-black text-neutral-950">&pound;{city.avgPrice}</p>
+                    <p className="text-lg font-bold text-neutral-900">&pound;{city.avgPrice}</p>
                   </div>
-                  <div className="flex items-center gap-1 text-brand-primary text-sm font-bold group-hover:gap-2 transition-all">
+                  <div className="flex items-center gap-1 text-primary text-sm font-semibold group-hover:gap-2 transition-all">
                     View guide <ArrowRight className="size-4" />
                   </div>
                 </div>
@@ -263,29 +256,26 @@ export default async function AreasPage() {
         </section>
 
         {/* ── Market Overview Banner ── */}
-        <section className="bg-brand-primary rounded-3xl p-8 md:p-14 grid md:grid-cols-2 gap-10 items-center overflow-hidden relative">
-          <div className="pointer-events-none absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -mr-36 -mt-36" />
-          <div className="pointer-events-none absolute bottom-0 left-1/2 w-48 h-48 bg-white/5 rounded-full -mb-24" />
+        <section className="bg-primary rounded-3xl p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -mr-36 -mt-36" />
+          <div className="absolute bottom-0 left-1/2 w-48 h-48 bg-white/5 rounded-full -mb-24" />
           <div className="relative z-10">
-            <span className="inline-block bg-white/15 text-white/80 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
-              Market Intelligence
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 font-heading leading-tight" style={{ letterSpacing: "-0.02em" }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 font-heading">
               UK Property Market Report 2026
             </h2>
-            <p className="text-white/75 mb-7 leading-relaxed">
+            <p className="text-white/80 mb-6 leading-relaxed">
               National prices up 4.8% year-on-year. Northern cities outperforming London for capital growth. Rental demand at record highs.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/market-trends"
-                className="inline-flex items-center gap-2 bg-white text-brand-primary px-6 py-3 rounded-xl font-bold hover:bg-neutral-50 transition-colors text-sm"
+                className="inline-flex items-center gap-2 bg-white text-primary px-6 py-3 rounded-xl font-bold hover:bg-neutral-100 transition-colors"
               >
                 View Market Trends <ArrowRight className="size-4" />
               </Link>
               <Link
-                href="/sold-prices/london"
-                className="inline-flex items-center gap-2 bg-white/10 text-white border border-white/20 px-6 py-3 rounded-xl font-bold hover:bg-white/20 transition-colors text-sm"
+                href="/sold-prices"
+                className="inline-flex items-center gap-2 bg-white/10 text-white border border-white/30 px-6 py-3 rounded-xl font-bold hover:bg-white/20 transition-colors"
               >
                 Sold Prices <ArrowRight className="size-4" />
               </Link>
@@ -293,10 +283,10 @@ export default async function AreasPage() {
           </div>
           <div className="relative z-10 grid grid-cols-2 gap-4">
             {kpis.map((kpi) => (
-              <div key={kpi.label} className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
-                <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-2">{kpi.label}</p>
-                <p className="text-white text-2xl font-black font-heading">{kpi.value}</p>
-                <p className="text-white/60 text-xs mt-1">{kpi.change}</p>
+              <div key={kpi.label} className="bg-white/10 rounded-xl p-4">
+                <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">{kpi.label}</p>
+                <p className="text-white text-xl font-bold">{kpi.value}</p>
+                <p className="text-white/70 text-xs mt-0.5">{kpi.change}</p>
               </div>
             ))}
           </div>

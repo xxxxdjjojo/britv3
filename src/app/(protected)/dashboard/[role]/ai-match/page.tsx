@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -34,7 +32,6 @@ import {
   Edit2,
   Zap,
   Heart,
-  SlidersHorizontal,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -642,7 +639,7 @@ export default function AiMatchPage() {
 
 function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
   const score = result.match_score;
-  const { badge, dotColor, label } = scoreVariant(score);
+  const { dotColor, label } = scoreVariant(score);
   const isTopMatch = score >= 0.8;
 
   return (
