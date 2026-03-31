@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const STORAGE_KEY = "britestate_compare";
 const MAX_COMPARE = 3;
@@ -16,11 +16,10 @@ function readStorage(): string[] {
 }
 
 export function useCompare() {
-  const [ids, setIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    setIds(readStorage());
-  }, []);
+  const [ids, setIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    return readStorage();
+  });
 
   function add(id: string) {
     const current = readStorage();
