@@ -26,17 +26,9 @@ const BUYER_TYPE_OPTIONS: Array<{ value: BuyerType; label: string; englandOnly?:
 ];
 
 const COUNTRY_OPTIONS: Array<{ value: Country; label: string }> = [
-  { value: "england", label: "England & Northern Ireland" },
+  { value: "england", label: "England & NI" },
   { value: "scotland", label: "Scotland" },
   { value: "wales", label: "Wales" },
-];
-
-const BAND_COLORS = [
-  "bg-neutral-300 dark:bg-neutral-700",
-  "bg-brand-primary/60",
-  "bg-brand-primary",
-  "bg-brand-primary dark:bg-brand-accent",
-  "bg-brand-accent dark:bg-brand-accent/80",
 ];
 
 const TAX_LABELS: Record<Country, { short: string; long: string }> = {
@@ -50,6 +42,15 @@ const FOOTER_TEXT: Record<Country, string> = {
   scotland: "LBTT rates per Revenue Scotland. Scotland.",
   wales: "LTT rates per Welsh Revenue Authority. Wales.",
 };
+
+// Bar colours for stacked chart — green gradient progression
+const BAND_COLORS = [
+  "bg-brand-primary-lighter",
+  "bg-brand-primary/40",
+  "bg-brand-primary/70",
+  "bg-brand-primary",
+  "bg-brand-primary-light",
+];
 
 function getUrlParam(key: string, defaultValue: number): number {
   if (typeof window === "undefined") return defaultValue;
@@ -70,11 +71,17 @@ type SdltCalculatorProps = Readonly<{
 }>;
 
 export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
-  const [country, setCountry] = useState<Country>(() => getUrlString("country", "england", ["england", "scotland", "wales"]));
-  const [buyerType, setBuyerType] = useState<BuyerType>(() => getUrlString("buyer", "standard", ["standard", "first_time", "additional"]));
-  const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 300000));
+  const [country, setCountry] = useState<Country>(() =>
+    getUrlString("country", "england", ["england", "scotland", "wales"])
+  );
+  const [buyerType, setBuyerType] = useState<BuyerType>(() =>
+    getUrlString("buyer", "standard", ["standard", "first_time", "additional"])
+  );
+  const [propertyPrice, setPropertyPrice] = useState(() =>
+    initialPrice ?? getUrlParam("price", 300000)
+  );
 
-  // Sync state to URL (disabled when embedded with initialPrice to avoid overwriting page URL)
+  // Sync state to URL (disabled when embedded with initialPrice)
   useEffect(() => {
     if (initialPrice != null) return;
     const params = new URLSearchParams();
@@ -86,9 +93,8 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
   }, [propertyPrice, country, buyerType, initialPrice]);
 
   // Reset buyer type if switching away from England with "additional" selected
-  const effectiveBuyerType = country !== "england" && buyerType === "additional"
-    ? "standard"
-    : buyerType;
+  const effectiveBuyerType =
+    country !== "england" && buyerType === "additional" ? "standard" : buyerType;
 
   const result: SdltResult = useMemo(() => {
     switch (country) {
@@ -119,11 +125,11 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
 
   return (
     <div className="space-y-8">
-      {/* Input Card */}
-      <section className="rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        {/* Country Selector */}
-        <div className="mb-6">
-          <Label className="mb-2 block text-sm font-semibold dark:text-neutral-300">
+      {/* ── Input Section ── */}
+      <section className="rounded-xl border border-neutral-100 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        {/* Country selector */}
+        <div className="mb-7">
+          <Label className="mb-3 block text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
             Country
           </Label>
           <div className="flex flex-wrap gap-2">
@@ -133,15 +139,14 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
                 type="button"
                 onClick={() => {
                   setCountry(opt.value);
-                  // Reset buyer type if "additional" not available
                   if (opt.value !== "england" && buyerType === "additional") {
                     setBuyerType("standard");
                   }
                 }}
                 className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                   country === opt.value
-                    ? "border-brand-primary bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20"
-                    : "border-neutral-200 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 text-neutral-600 hover:border-brand-primary/50 hover:text-brand-primary dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800"
                 }`}
               >
                 {opt.label}
@@ -153,11 +158,11 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Property Price */}
           <div>
-            <Label className="mb-2 block text-sm font-semibold dark:text-neutral-300">
+            <Label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
               Property Price
             </Label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
+              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-500">
                 £
               </span>
               <Input
@@ -166,19 +171,24 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
                 step={1000}
                 value={propertyPrice}
                 onChange={(e) => setPropertyPrice(Number(e.target.value))}
-                className="bg-neutral-50 py-3 pl-8 text-lg font-medium dark:bg-neutral-800 dark:border-neutral-700"
+                className="h-12 bg-neutral-50 pl-8 text-base font-medium dark:bg-neutral-800 dark:border-neutral-700"
                 placeholder="e.g. 250,000"
               />
             </div>
+            {propertyPrice > 0 && result.totalTax === 0 && (
+              <p className="mt-2 text-xs font-medium text-brand-primary">
+                No {taxLabel.short} payable on this amount.
+              </p>
+            )}
           </div>
 
           {/* Buyer Type */}
           <div>
-            <Label className="mb-2 block text-sm font-semibold dark:text-neutral-300">
+            <Label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
               Buyer Type
               {country === "wales" && (
-                <span className="ml-2 text-xs font-normal text-neutral-400">
-                  (no first-time relief in Wales)
+                <span className="ml-2 normal-case text-neutral-400">
+                  (no first-time relief)
                 </span>
               )}
             </Label>
@@ -189,14 +199,16 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
             >
               {visibleBuyerTypes.map((option) => {
                 const disabled = country === "wales" && option.value === "first_time";
+                const isActive =
+                  (country === "wales" ? "standard" : effectiveBuyerType) === option.value;
                 return (
                   <label
                     key={option.value}
                     className={`relative flex cursor-pointer items-center rounded-lg border p-3 transition-colors ${
                       disabled
-                        ? "cursor-not-allowed opacity-50 border-neutral-200 dark:border-neutral-700"
-                        : (country === "wales" ? "standard" : effectiveBuyerType) === option.value
-                          ? "border-brand-primary bg-brand-primary/5 dark:bg-brand-primary/10"
+                        ? "cursor-not-allowed opacity-40 border-neutral-200 dark:border-neutral-700"
+                        : isActive
+                          ? "border-brand-primary bg-brand-primary-lighter/50 dark:bg-brand-primary/10"
                           : "border-neutral-200 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
                     }`}
                   >
@@ -219,113 +231,121 @@ export function SdltCalculator({ initialPrice }: SdltCalculatorProps = {}) {
         </div>
       </section>
 
-      {/* Results Dashboard */}
-      <section className="rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        {/* Total + Effective Rate */}
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="mb-1 text-sm font-bold uppercase tracking-wider text-neutral-500">
-              Total {taxLabel.short}
-            </h2>
-            <div className="text-5xl font-extrabold text-brand-primary">
-              {formatCurrency(result.totalTax)}
+      {/* ── Results Panel ── */}
+      <section className="overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        {/* Top result bar — gradient background */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-brand-primary to-brand-primary-light px-8 py-7">
+          <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/5 blur-xl" />
+          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-white/60">
+                Total {taxLabel.short}
+              </p>
+              <div className="font-heading text-5xl font-bold text-white">
+                {formatCurrency(result.totalTax)}
+              </div>
             </div>
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-lg bg-green-100 px-4 py-2 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-            <span className="text-sm font-bold">
-              Effective Rate: {(result.effectiveRate * 100).toFixed(2)}%
-            </span>
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-white">
+              <span className="text-sm font-bold">
+                Effective Rate: {(result.effectiveRate * 100).toFixed(1)}%
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Stacked Bar Chart */}
-        {barSegments.length > 0 && propertyPrice > 0 && (
-          <div className="mb-10">
-            <div className="mb-2 flex items-end justify-between">
-              <span className="text-xs font-semibold uppercase text-neutral-500">
-                Tax Band Breakdown
-              </span>
-              <span className="text-xs text-neutral-400 italic">
-                Calculated for {formatCurrency(propertyPrice)}
-              </span>
-            </div>
-            <div className="flex h-10 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-              {barSegments.map((seg, i) => (
-                <div
-                  key={i}
-                  className={`h-full ${BAND_COLORS[i] || BAND_COLORS[BAND_COLORS.length - 1]}`}
-                  style={{ width: `${seg.widthPct}%` }}
-                  title={`${seg.rate}% band`}
-                />
-              ))}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-4">
-              {barSegments.map((seg, i) => (
-                <div key={i} className="flex items-center gap-2">
+        <div className="p-8">
+          {/* Stacked Bar Chart */}
+          {barSegments.length > 0 && propertyPrice > 0 && (
+            <div className="mb-8">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                  Tax Band Breakdown
+                </span>
+                <span className="text-xs text-neutral-400 italic">
+                  {formatCurrency(propertyPrice)}
+                </span>
+              </div>
+              <div className="flex h-8 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                {barSegments.map((seg, i) => (
                   <div
-                    className={`h-3 w-3 rounded-full ${BAND_COLORS[i] || BAND_COLORS[BAND_COLORS.length - 1]}`}
+                    key={i}
+                    className={`h-full ${BAND_COLORS[i] ?? BAND_COLORS[BAND_COLORS.length - 1]}`}
+                    style={{ width: `${seg.widthPct}%` }}
+                    title={`${seg.rate}% band`}
                   />
-                  <span className="text-xs font-medium">
-                    {seg.rate}% Rate
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Detailed Band Table */}
-        {result.bands.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                  <th className="py-4 text-sm font-semibold text-neutral-600 dark:text-neutral-400">
-                    Property Value Band
-                  </th>
-                  <th className="py-4 text-sm font-semibold text-neutral-600 dark:text-neutral-400">
-                    Tax Rate
-                  </th>
-                  <th className="py-4 text-right text-sm font-semibold text-neutral-600 dark:text-neutral-400">
-                    Tax Payable
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {result.bands.map((band, i) => (
-                  <tr key={i}>
-                    <td className="py-4 text-sm">
-                      {formatCurrency(band.from)} - {formatCurrency(band.to)}
-                    </td>
-                    <td className="py-4 text-sm font-medium">
-                      {(band.rate * 100).toFixed(0)}%
-                    </td>
-                    <td className="py-4 text-right text-sm font-semibold">
-                      {formatCurrency(band.tax)}
-                    </td>
-                  </tr>
                 ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t-2 border-neutral-100 dark:border-neutral-800">
-                  <td
-                    className="py-5 font-bold text-neutral-900 dark:text-white"
-                    colSpan={2}
-                  >
-                    Total {taxLabel.short} Payable
-                  </td>
-                  <td className="py-5 text-right text-xl font-bold text-neutral-900 dark:text-white">
-                    {formatCurrency(result.totalTax)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        )}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-4">
+                {barSegments.map((seg, i) => (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <div
+                      className={`h-2.5 w-2.5 rounded-full ${BAND_COLORS[i] ?? BAND_COLORS[BAND_COLORS.length - 1]}`}
+                    />
+                    <span className="text-xs text-neutral-500">{seg.rate}% rate</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-        <p className="mt-4 text-xs text-neutral-500">
-          {FOOTER_TEXT[country]}
-        </p>
+          {/* Threshold Breakdown table */}
+          {result.bands.length > 0 && (
+            <>
+              <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+                Threshold Breakdown
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-neutral-100 dark:border-neutral-800">
+                      <th className="pb-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                        Property Value Band
+                      </th>
+                      <th className="pb-3 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                        Rate
+                      </th>
+                      <th className="pb-3 text-right text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                        Tax Payable
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-50 dark:divide-neutral-800/50">
+                    {result.bands.map((band, i) => (
+                      <tr key={i} className="group">
+                        <td className="py-3.5 text-sm text-neutral-700 dark:text-neutral-300">
+                          {formatCurrency(band.from)} – {formatCurrency(band.to)}
+                        </td>
+                        <td className="py-3.5 text-sm font-medium text-neutral-900 dark:text-white">
+                          {(band.rate * 100).toFixed(0)}%
+                        </td>
+                        <td className="py-3.5 text-right text-sm font-semibold text-neutral-900 dark:text-white">
+                          {formatCurrency(band.tax)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-neutral-100 dark:border-neutral-800">
+                      <td
+                        className="py-4 text-sm font-bold text-neutral-900 dark:text-white"
+                        colSpan={2}
+                      >
+                        Total {taxLabel.short} Payable
+                      </td>
+                      <td className="py-4 text-right text-base font-bold text-brand-primary">
+                        {formatCurrency(result.totalTax)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </>
+          )}
+
+          <p className="mt-5 text-[11px] text-neutral-400 italic">
+            {FOOTER_TEXT[country]}
+          </p>
+        </div>
       </section>
     </div>
   );
