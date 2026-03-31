@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { ROLE_TO_ROUTE } from "@/lib/constants";
 import { AuthLogo } from "@/components/auth/AuthLogo";
+import { AuthDecorativeBackground } from "@/components/auth/AuthDecorativeBackground";
 
 export default function VerifyEmailConfirmedPage() {
   const [onboardingUrl, setOnboardingUrl] = useState("/dashboard");
@@ -41,34 +42,22 @@ export default function VerifyEmailConfirmedPage() {
     : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#f0f4f0] via-white to-[#e8f0ec] px-4">
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-lg text-center md:p-10">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <AuthLogo />
-        </div>
+    <div className="relative min-h-screen bg-surface overflow-hidden flex flex-col items-center justify-center px-4 py-12">
+      <AuthDecorativeBackground />
+
+      {/* Logo */}
+      <div className="relative z-10 mb-8 flex justify-center">
+        <AuthLogo />
+      </div>
+
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-8 shadow-lg text-center md:p-10 space-y-6">
 
         {/* Success icon — dark green rounded-xl square */}
         <div className="flex justify-center">
-          <div className="relative flex size-20 items-center justify-center rounded-xl bg-[#1B4D3E]">
-            <span className="absolute inline-flex size-full animate-ping rounded-xl bg-[#1B4D3E] opacity-10" />
-            <CheckCircle2 className="relative size-10 text-white" aria-hidden="true" />
+          <div className="flex size-20 items-center justify-center rounded-xl bg-brand-primary">
+            <CheckCircle2 className="size-10 text-white" aria-hidden="true" />
           </div>
-        </div>
-
-        {/* Step progress indicator */}
-        <div className="flex items-center justify-center gap-2">
-          {[1, 2, 3].map((step) => (
-            <div
-              key={step}
-              className={
-                step <= 2
-                  ? "h-1.5 w-8 rounded-full bg-brand-primary"
-                  : "h-1.5 w-8 rounded-full bg-neutral-200"
-              }
-              aria-hidden="true"
-            />
-          ))}
         </div>
 
         {/* Heading */}
@@ -86,7 +75,7 @@ export default function VerifyEmailConfirmedPage() {
         <div className="flex flex-col gap-3">
           <Button
             size="lg"
-            className="w-full bg-[#1B4D3E] text-white hover:bg-[#163d31]"
+            className="w-full rounded-xl bg-brand-primary py-3.5 text-white hover:bg-brand-primary/90"
             asChild
             aria-label={
               displayRole
@@ -135,10 +124,25 @@ export default function VerifyEmailConfirmedPage() {
           </span>
         </div>
 
-        {/* Step complete label */}
-        <p className="text-[10px] uppercase tracking-[0.15em] text-[#9ca3af]">
-          Step 2 of 3 Complete
-        </p>
+        {/* Step progress indicator */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-center gap-2">
+            {[1, 2, 3].map((step) => (
+              <div
+                key={step}
+                className={
+                  step <= 2
+                    ? "h-1.5 w-8 rounded-full bg-brand-primary"
+                    : "h-1.5 w-8 rounded-full bg-neutral-200"
+                }
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-neutral-400">
+            Step 2 of 3 Complete
+          </p>
+        </div>
       </div>
     </div>
   );

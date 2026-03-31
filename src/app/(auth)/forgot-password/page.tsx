@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
         Remember your password?{" "}
         <Link
           href="/login"
-          className="font-semibold text-brand-accent hover:underline underline-offset-2 transition-colors"
+          className="font-semibold text-brand-primary hover:underline underline-offset-2 transition-colors"
           aria-label="Back to sign in"
         >
           Back to sign in

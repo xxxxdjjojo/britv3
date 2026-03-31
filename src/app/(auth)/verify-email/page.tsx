@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { AuthLogo } from "@/components/auth/AuthLogo";
+import { AuthDecorativeBackground } from "@/components/auth/AuthDecorativeBackground";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -49,23 +50,24 @@ export default function VerifyEmailPage() {
   }, [email, cooldown]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-[#f0f4f0] via-white to-[#e8f0ec] px-4">
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-lg md:p-10">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <AuthLogo />
-        </div>
+    <div className="relative min-h-screen bg-surface overflow-hidden flex flex-col items-center justify-center px-4 py-12">
+      <AuthDecorativeBackground />
 
-        {/* Animated Mail Icon with notification dot */}
+      {/* Logo */}
+      <div className="relative z-10 mb-8 flex justify-center">
+        <AuthLogo />
+      </div>
+
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-8 shadow-lg md:p-10 space-y-6">
+
+        {/* Mail icon — rounded-xl square, bg-brand-primary, gold dot */}
         <div className="flex justify-center">
-          <div className="relative flex size-24 items-center justify-center rounded-full bg-brand-primary-lighter">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-primary opacity-10" />
-            <div className="relative flex size-16 items-center justify-center rounded-full bg-brand-primary">
-              <Mail className="size-8 text-white" aria-hidden="true" />
-            </div>
-            {/* Notification dot */}
+          <div className="relative inline-flex size-16 items-center justify-center rounded-xl bg-brand-primary">
+            <Mail className="size-8 text-white" aria-hidden="true" />
+            {/* Gold notification dot */}
             <span
-              className="absolute right-1 top-1 size-4 rounded-full border-2 border-white bg-amber-400"
+              className="absolute -right-1.5 -top-1.5 size-4 rounded-full border-2 border-white bg-amber-400"
               aria-hidden="true"
             />
           </div>
@@ -81,10 +83,11 @@ export default function VerifyEmailPage() {
               <>
                 We&apos;ve sent a verification link to{" "}
                 <span className="font-semibold text-brand-primary">{email}</span>
-                . Please click the link to confirm your account.
+                . Please click the link to confirm your account and start
+                managing your properties.
               </>
             ) : (
-              "We've sent a verification link to your email address. Please click the link to confirm your account."
+              "We've sent a verification link to your email address. Please click the link to confirm your account and start managing your properties."
             )}
           </p>
         </div>
@@ -93,7 +96,7 @@ export default function VerifyEmailPage() {
         <div className="space-y-3">
           <Button
             size="lg"
-            className="w-full bg-[#1B4D3E] text-white hover:bg-[#163d31]"
+            className="w-full rounded-xl bg-brand-primary py-3.5 text-white hover:bg-brand-primary/90"
             asChild
             aria-label="Open your email app"
           >
@@ -110,38 +113,40 @@ export default function VerifyEmailPage() {
             </p>
           )}
 
-          <Button
-            variant="outline"
-            size="lg"
-            className={cn(
-              "w-full border-neutral-200 text-neutral-700 hover:bg-neutral-50",
-              cooldown > 0 && "text-neutral-400",
-            )}
-            onClick={handleResend}
-            disabled={resending || cooldown > 0}
-            aria-label={
-              cooldown > 0
-                ? `Resend verification email (available in ${cooldown} seconds)`
-                : "Resend verification email"
-            }
-          >
-            {resending ? (
-              <>
-                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                Sending...
-              </>
-            ) : cooldown > 0 ? (
-              <>
-                <RotateCcw className="size-4" aria-hidden="true" />
-                Resend link ({cooldown}s)
-              </>
-            ) : (
-              <>
-                <RotateCcw className="size-4" aria-hidden="true" />
-                Resend link
-              </>
-            )}
-          </Button>
+          <p className="text-center text-sm text-neutral-500">
+            Didn&apos;t receive the email?{" "}
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending || cooldown > 0}
+              aria-label={
+                cooldown > 0
+                  ? `Resend verification email (available in ${cooldown} seconds)`
+                  : "Resend verification email"
+              }
+              className={cn(
+                "font-medium",
+                resending || cooldown > 0
+                  ? "cursor-not-allowed text-neutral-400"
+                  : "text-brand-primary hover:underline",
+              )}
+            >
+              {resending ? (
+                <span className="inline-flex items-center gap-1">
+                  <Loader2 className="size-3 animate-spin" aria-hidden="true" />
+                  Sending...
+                </span>
+              ) : cooldown > 0 ? (
+                <span className="inline-flex items-center gap-1">
+                  <RotateCcw className="size-3" aria-hidden="true" />
+                  Resend link ({Math.floor(cooldown / 60)}:
+                  {String(cooldown % 60).padStart(2, "0")})
+                </span>
+              ) : (
+                "Resend link"
+              )}
+            </button>
+          </p>
         </div>
 
         {/* Change email link */}
@@ -157,12 +162,12 @@ export default function VerifyEmailPage() {
 
         {/* Security footer badges */}
         <div className="flex items-center justify-center gap-3 pt-1">
-          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-[#9ca3af]">
+          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">
             <Lock className="size-3 shrink-0" aria-hidden="true" />
             Secure Verification
           </span>
-          <span className="text-[#d1d5db]" aria-hidden="true">•</span>
-          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-[#9ca3af]">
+          <span className="text-neutral-300" aria-hidden="true">•</span>
+          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">
             <Shield className="size-3 shrink-0" aria-hidden="true" />
             End-to-End Encrypted
           </span>

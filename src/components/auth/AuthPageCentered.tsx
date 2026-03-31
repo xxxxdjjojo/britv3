@@ -1,34 +1,33 @@
 import type { ReactNode } from "react";
-import { AuthLogo } from "@/components/auth/AuthLogo";
+import { AuthDecorativeBackground } from "@/components/auth/AuthDecorativeBackground";
 import { AuthFooter } from "@/components/auth/AuthFooter";
 
 type AuthPageCenteredProps = Readonly<{
   children: ReactNode;
+  /** Whether to show decorative gradient blur circles. Defaults to true. */
+  showBackground?: boolean;
 }>;
 
 /**
  * Type A: Centered layout
  * Used by: Login, Verify Email, Email Confirmed
  *
- * Renders a centered card on a subtle gradient background.
- * No side panel — logo is top-center, footer is bottom-center.
+ * Renders a centered card on a subtle surface background with optional
+ * decorative gradient blur circles. No side panel.
  */
-export function AuthPageCentered({ children }: AuthPageCenteredProps) {
+export function AuthPageCentered({ children, showBackground = true }: AuthPageCenteredProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-[#faf9f8] via-white to-[#f4f3f2]">
-      {/* Top bar with logo */}
-      <header className="flex shrink-0 justify-center px-6 pt-10">
-        <AuthLogo />
-      </header>
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-surface">
+      {showBackground && <AuthDecorativeBackground />}
 
       {/* Centered content */}
-      <main className="flex flex-1 flex-col items-center justify-center px-6 py-10">
-        <div className="w-full max-w-[460px]">{children}</div>
+      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10">
+        <div className="w-full max-w-[440px]">{children}</div>
       </main>
 
       {/* Footer */}
-      <footer className="flex shrink-0 justify-center px-6 pb-10">
-        <AuthFooter />
+      <footer className="relative z-10 flex shrink-0 justify-center px-6 pb-10">
+        <AuthFooter variant="centered" />
       </footer>
     </div>
   );

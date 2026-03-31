@@ -14,7 +14,7 @@ export default function RegisterPage() {
       {/* Heading */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-neutral-900 leading-tight">
-          Start your journey
+          Create your account
         </h1>
         <p className="mt-1.5 font-sans text-sm text-neutral-500">
           Find, buy, rent or sell — all in one place
@@ -41,7 +41,7 @@ export default function RegisterPage() {
       {/* Sign in link */}
       <p className="text-center font-sans text-sm text-neutral-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-brand-accent hover:underline underline-offset-2 transition-colors">
+        <Link href="/login" className="font-semibold text-brand-primary hover:underline underline-offset-2 transition-colors">
           Sign in
         </Link>
       </p>

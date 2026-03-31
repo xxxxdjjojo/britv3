@@ -13,6 +13,8 @@ type RoleCard = {
   icon: React.ElementType;
   label: string;
   description: string;
+  iconBg: string;
+  iconColor: string;
 };
 
 const TOP_ROW_ROLES: RoleCard[] = [
@@ -21,12 +23,16 @@ const TOP_ROW_ROLES: RoleCard[] = [
     icon: Home,
     label: "I'm looking to Buy or Rent",
     description: "Access off-market listings and premium property insights tailored to your search.",
+    iconBg: "bg-brand-primary-lighter",
+    iconColor: "text-brand-primary",
   },
   {
     id: "seller" as UserRole,
     icon: Key,
     label: "I'm looking to Sell",
     description: "Discreetly list your property to verified high-intent buyers without public listing fees.",
+    iconBg: "bg-brand-secondary-light",
+    iconColor: "text-brand-secondary",
   },
 ];
 
@@ -36,18 +42,24 @@ const BOTTOM_ROW_ROLES: RoleCard[] = [
     icon: Building2,
     label: "I'm a Landlord",
     description: "Manage portfolios and connect with vetted tenants instantly.",
+    iconBg: "bg-brand-primary-lighter",
+    iconColor: "text-brand-primary",
   },
   {
     id: "agent" as UserRole,
     icon: Briefcase,
     label: "I'm an Estate Agent",
     description: "Scale your brokerage with our exclusive off-market network.",
+    iconBg: "bg-brand-primary-lighter",
+    iconColor: "text-brand-primary",
   },
   {
     id: "service_provider" as UserRole,
     icon: Wrench,
     label: "I'm a Tradesperson",
     description: "Join our certified network for property maintenance and renovation projects.",
+    iconBg: "bg-neutral-100",
+    iconColor: "text-neutral-600",
   },
 ];
 
@@ -107,7 +119,7 @@ export default function RoleSelectPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-gradient-to-br from-[#faf9f8] via-white to-[#f4f3f2] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-surface overflow-y-auto">
       {/* Logo */}
       <header className="flex shrink-0 justify-center px-6 pt-10">
         <AuthLogo />
@@ -119,10 +131,10 @@ export default function RoleSelectPage() {
           {/* Heading */}
           <div className="text-center">
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-neutral-900 leading-tight">
-              Join Britestate
+              Join The Invisible Estate
             </h1>
             <p className="mt-2 font-sans text-sm text-neutral-500">
-              Select your role to get the experience that&apos;s right for you
+              How would you like to use The Invisible Estate?
             </p>
           </div>
 
@@ -165,19 +177,18 @@ export default function RoleSelectPage() {
               type="button"
               onClick={handleContinue}
               disabled={!selected || loading}
-              className="w-full max-w-[460px] rounded-2xl bg-[#1B4D3E] px-6 py-3.5 font-sans text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#163d31] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+              className="w-full max-w-[460px] rounded-2xl bg-brand-primary px-6 py-3.5 font-sans text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {loading ? "Setting up your account…" : "Continue →"}
             </button>
 
             <p className="text-center font-sans text-sm text-neutral-500">
-              Not a professional?{" "}
+              Already have an account?{" "}
               <Link
-                href="/register"
+                href="/login"
                 className="font-semibold text-brand-primary hover:underline underline-offset-2 transition-colors"
-                aria-label="Sign up as a homebuyer or renter"
               >
-                Sign up as a homebuyer
+                Sign in
               </Link>
             </p>
           </div>
@@ -203,6 +214,13 @@ export default function RoleSelectPage() {
           >
             Terms of Service
           </Link>
+          <span className="text-neutral-300" aria-hidden="true">·</span>
+          <Link
+            href="/security"
+            className="font-sans text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            Security
+          </Link>
         </div>
       </footer>
     </div>
@@ -222,28 +240,28 @@ function RoleCardButton({ role, isSelected, onSelect }: RoleCardButtonProps) {
       type="button"
       onClick={() => onSelect(role.id)}
       className={[
-        "relative w-full rounded-2xl bg-white p-6 text-left shadow-sm transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2",
+        "relative w-full rounded-2xl bg-white p-6 text-left shadow-sm transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
         isSelected
-          ? "ring-2 ring-[#1B4D3E] bg-[#1B4D3E]/5"
+          ? "ring-2 ring-brand-primary bg-brand-primary/5"
           : "ring-1 ring-neutral-100",
       ].join(" ")}
       aria-pressed={isSelected}
     >
       {/* Checkmark badge */}
       {isSelected && (
-        <span className="absolute right-4 top-4 flex size-5 items-center justify-center rounded-full bg-[#1B4D3E]">
+        <span className="absolute right-4 top-4 flex size-5 items-center justify-center rounded-full bg-brand-primary">
           <Check className="size-3 text-white" strokeWidth={3} />
         </span>
       )}
 
       {/* Icon */}
-      <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-[#f4f3f2]">
-        <Icon className="size-5 text-[#1B4D3E]" strokeWidth={1.75} />
+      <div className={`mb-4 flex size-12 items-center justify-center rounded-full ${role.iconBg}`}>
+        <Icon className={`size-6 ${role.iconColor}`} strokeWidth={1.75} />
       </div>
 
       {/* Text */}
       <p className="font-sans text-sm font-semibold text-neutral-900">{role.label}</p>
-      <p className="mt-1 font-sans text-sm text-[#6b7280] leading-snug">{role.description}</p>
+      <p className="mt-1 font-sans text-sm text-neutral-500 leading-snug">{role.description}</p>
     </button>
   );
 }
