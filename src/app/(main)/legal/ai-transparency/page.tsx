@@ -28,26 +28,26 @@ export default function AiTransparencyPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">Legal</Link>
+        <Link href="/legal" className="hover:text-foreground transition-colors">Legal</Link>
         <span>/</span>
-        <span className="text-neutral-900">AI Transparency Notice</span>
+        <span className="text-foreground">AI Transparency Notice</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">AI Transparency Notice</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">AI Transparency Notice</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         Britestate uses artificial intelligence to enhance your property search experience. We believe
         in being transparent about when and how AI is used.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="how-we-use-ai">
-          <h2 className="text-2xl font-bold font-heading">1. How We Use AI</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. How We Use AI</h2>
           <p>
             Britestate uses artificial intelligence to enhance your property search experience. We
             believe in being transparent about when and how AI is used.
@@ -55,7 +55,7 @@ export default function AiTransparencyPage() {
         </section>
 
         <section id="ai-powered-features">
-          <h2 className="text-2xl font-bold font-heading">2. AI-Powered Features</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. AI-Powered Features</h2>
           <p>
             <strong>Property Recommendations:</strong> Our recommendation engine uses your search
             history, saved properties, and stated preferences to suggest properties you might be
@@ -78,11 +78,11 @@ export default function AiTransparencyPage() {
         </section>
 
         <section id="your-data-and-ai">
-          <h2 className="text-2xl font-bold font-heading">3. Your Data and AI</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Your Data and AI</h2>
           <p>
             3.1. Your search and browsing data is used to personalise recommendations. You can opt out
             of personalised recommendations in your{" "}
-            <Link href="/account/settings/privacy" className="text-primary hover:underline">
+            <Link href="/account/settings/privacy" className="text-brand-primary hover:underline">
               privacy settings
             </Link>{" "}
             at any time.
@@ -99,7 +99,7 @@ export default function AiTransparencyPage() {
         </section>
 
         <section id="limitations">
-          <h2 className="text-2xl font-bold font-heading">4. Limitations</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Limitations</h2>
           <p>
             AI-generated outputs may contain inaccuracies. They are intended as helpful tools, not
             definitive answers. Always verify important information independently and seek professional
@@ -108,7 +108,7 @@ export default function AiTransparencyPage() {
         </section>
 
         <section id="your-rights">
-          <h2 className="text-2xl font-bold font-heading">5. Your Rights</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Your Rights</h2>
           <p>
             You have the right to: opt out of AI-powered personalisation; request human review of
             AI-generated outputs that affect you; receive meaningful information about how our AI
@@ -117,11 +117,11 @@ export default function AiTransparencyPage() {
           <p>
             Contact <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a> to
             exercise these rights, or see our{" "}
-            <Link href="/legal/gdpr-rights" className="text-primary hover:underline">
+            <Link href="/legal/gdpr-rights" className="text-brand-primary hover:underline">
               GDPR Data Subject Rights
             </Link>{" "}
             page for the full process. Our{" "}
-            <Link href="/legal/privacy" className="text-primary hover:underline">
+            <Link href="/legal/privacy" className="text-brand-primary hover:underline">
               Privacy Policy
             </Link>{" "}
             contains further information on how we process personal data.

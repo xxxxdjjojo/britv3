@@ -31,26 +31,26 @@ export default function FeeTransparencyPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">Legal</Link>
+        <Link href="/legal" className="hover:text-foreground transition-colors">Legal</Link>
         <span>/</span>
-        <span className="text-neutral-900">Fee Transparency</span>
+        <span className="text-foreground">Fee Transparency</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Fee Transparency</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Fee Transparency</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         Britestate Ltd believes in clear, upfront pricing with no hidden fees. This page sets out all
         fees associated with using the Platform, in accordance with CMA guidance on fee transparency.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="commitment">
-          <h2 className="text-2xl font-bold font-heading">1. Our Commitment to Transparency</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Our Commitment to Transparency</h2>
           <p>
             Britestate Ltd believes in clear, upfront pricing with no hidden fees. This page sets out
             all fees associated with using the Platform, in accordance with CMA guidance on fee
@@ -59,7 +59,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="homebuyers-renters">
-          <h2 className="text-2xl font-bold font-heading">2. For Homebuyers and Renters</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. For Homebuyers and Renters</h2>
           <p>
             Searching for properties, setting alerts, saving favourites, and contacting agents is
             free. There are no fees for homebuyers or renters using the Platform.
@@ -67,7 +67,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="sellers">
-          <h2 className="text-2xl font-bold font-heading">3. For Sellers</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. For Sellers</h2>
           <p>
             Listing your property through an estate agent on Britestate is covered by your agreement
             with the agent. Britestate does not charge sellers directly.
@@ -79,7 +79,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="landlords">
-          <h2 className="text-2xl font-bold font-heading">4. For Landlords</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. For Landlords</h2>
           <p>
             Listing rental properties is [free / part of a subscription &mdash; specify]. Landlords
             are responsible for any fees charged by their managing agent, which are separate from
@@ -88,7 +88,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="estate-agents">
-          <h2 className="text-2xl font-bold font-heading">5. For Estate Agents</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. For Estate Agents</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -140,7 +140,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="service-providers">
-          <h2 className="text-2xl font-bold font-heading">6. For Service Providers</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. For Service Providers</h2>
           <p>
             Service providers (surveyors, conveyancers, mortgage brokers, tradespeople) may list their
             services on the Britestate marketplace. Listing fees and commission rates are displayed on
@@ -149,7 +149,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="payment-processing">
-          <h2 className="text-2xl font-bold font-heading">7. Payment Processing</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. Payment Processing</h2>
           <p>
             All payments are processed securely by Stripe. Britestate does not store your card
             details. Stripe&apos;s fees are included in the prices shown and are not charged
@@ -158,7 +158,7 @@ export default function FeeTransparencyPage() {
         </section>
 
         <section id="changes-to-fees">
-          <h2 className="text-2xl font-bold font-heading">8. Changes to Fees</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">8. Changes to Fees</h2>
           <p>
             We will provide at least 30 days&apos; written notice before changing any fees. Price
             increases do not apply to prepaid annual subscriptions until renewal.
@@ -166,7 +166,7 @@ export default function FeeTransparencyPage() {
           <p>
             If you have questions about fees, contact us at{" "}
             <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a> or see our{" "}
-            <Link href="/legal/complaints" className="text-primary hover:underline">
+            <Link href="/legal/complaints" className="text-brand-primary hover:underline">
               Complaints Procedure
             </Link>{" "}
             if you believe you have been charged incorrectly.

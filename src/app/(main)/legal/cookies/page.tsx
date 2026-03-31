@@ -106,24 +106,24 @@ export default function CookiesPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Cookie Policy</span>
+        <span className="text-foreground">Cookie Policy</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Cookie Policy</h1>
-      <p className="mb-8 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Cookie Policy</h1>
+      <p className="mb-6 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="what-are-cookies">
-          <h2 className="text-2xl font-bold font-heading">1. What Are Cookies</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. What Are Cookies</h2>
           <p>
             1.1. Cookies are small text files placed on your device when you visit a website. They
             serve various purposes including remembering your preferences, enabling core
@@ -140,7 +140,7 @@ export default function CookiesPage() {
         </section>
 
         <section id="categories">
-          <h2 className="text-2xl font-bold font-heading">2. Categories of Cookies</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. Categories of Cookies</h2>
           <p>
             <strong>2.1. Strictly Necessary Cookies.</strong> These are essential for the Platform
             to function. They enable core features like authentication, security, and cookie consent
@@ -167,7 +167,7 @@ export default function CookiesPage() {
         </section>
 
         <section id="cookie-table">
-          <h2 className="text-2xl font-bold font-heading">3. Cookie Table</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Cookie Table</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -205,7 +205,7 @@ export default function CookiesPage() {
         </section>
 
         <section id="how-to-manage">
-          <h2 className="text-2xl font-bold font-heading">4. How to Manage Your Preferences</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. How to Manage Your Preferences</h2>
           <p>
             4.1. <strong>On Britestate:</strong> Click &ldquo;Manage Cookie Preferences&rdquo; in
             the footer or use the button below to open your cookie settings. You can toggle
@@ -242,7 +242,7 @@ export default function CookiesPage() {
               href="https://www.allaboutcookies.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-brand-primary hover:underline"
             >
               allaboutcookies.org
             </a>
@@ -255,12 +255,12 @@ export default function CookiesPage() {
         </section>
 
         <section id="updates">
-          <h2 className="text-2xl font-bold font-heading">5. Updates</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Updates</h2>
           <p>
             We update this Cookie Policy when we add or remove cookies. Material changes will be
             communicated via our cookie consent banner. For more information about how we process
             your personal data, see our{" "}
-            <Link href="/legal/privacy" className="text-primary hover:underline">
+            <Link href="/legal/privacy" className="text-brand-primary hover:underline">
               Privacy Policy
             </Link>
             .

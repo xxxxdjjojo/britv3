@@ -27,26 +27,26 @@ export default function AcceptableUsePage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">Legal</Link>
+        <Link href="/legal" className="hover:text-foreground transition-colors">Legal</Link>
         <span>/</span>
-        <span className="text-neutral-900">Acceptable Use Policy</span>
+        <span className="text-foreground">Acceptable Use Policy</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Acceptable Use Policy</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Acceptable Use Policy</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         This policy supplements our{" "}
         <Link href="/legal/terms" className="underline">Terms of Service</Link>{" "}
         and applies to all Users of the Britestate platform. Violations may result in account suspension or termination.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="introduction">
-          <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Introduction</h2>
           <p>
             1.1. This Acceptable Use Policy (&ldquo;AUP&rdquo;) supplements the Terms of Service and applies to all
             Users of the Britestate platform. It sets out the standards of conduct we expect and the behaviours we
@@ -59,7 +59,7 @@ export default function AcceptableUsePage() {
         </section>
 
         <section id="permitted-uses">
-          <h2 className="text-2xl font-bold font-heading">2. Permitted Uses</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. Permitted Uses</h2>
           <p>
             2.1. You may use Britestate to: search for and view property listings; list properties for sale or rent
             (where you have lawful authority); contact and communicate with other Users in connection with genuine
@@ -69,7 +69,7 @@ export default function AcceptableUsePage() {
         </section>
 
         <section id="prohibited-conduct">
-          <h2 className="text-2xl font-bold font-heading">3. Prohibited Conduct</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Prohibited Conduct</h2>
           <p>You must not:</p>
 
           <h3 className="text-xl font-semibold font-heading">3.1. Fraudulent and Misleading Activity</h3>
@@ -146,7 +146,7 @@ export default function AcceptableUsePage() {
         </section>
 
         <section id="content-standards">
-          <h2 className="text-2xl font-bold font-heading">4. Content Standards</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Content Standards</h2>
           <p>
             4.1. <strong>Listing Accuracy.</strong> All listings must truthfully represent the property. Photos must be
             of the actual property and taken within the past 12 months (or clearly marked as historical). Material
@@ -166,7 +166,7 @@ export default function AcceptableUsePage() {
         </section>
 
         <section id="enforcement">
-          <h2 className="text-2xl font-bold font-heading">5. Enforcement</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Enforcement</h2>
           <p>
             5.1. We monitor the Platform for breaches of this AUP using a combination of automated tools, user
             reports, and manual review.
@@ -187,7 +187,7 @@ export default function AcceptableUsePage() {
         </section>
 
         <section id="reporting-violations">
-          <h2 className="text-2xl font-bold font-heading">6. Reporting Violations</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Reporting Violations</h2>
           <p>
             6.1. If you believe a User has breached this AUP, please report it using the &ldquo;Report&rdquo; button
             on the relevant listing, review, or profile, or email{" "}
@@ -200,7 +200,7 @@ export default function AcceptableUsePage() {
         </section>
 
         <section id="appeals">
-          <h2 className="text-2xl font-bold font-heading">7. Appeals</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. Appeals</h2>
           <p>
             7.1. If your account is suspended or content is removed, you may appeal within 14 days by emailing{" "}
             <a href="mailto:compliance@britestate.co.uk">compliance@britestate.co.uk</a> with the subject line

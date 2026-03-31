@@ -29,25 +29,25 @@ export default function ComplaintsPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Complaints Procedure</span>
+        <span className="text-foreground">Complaints Procedure</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">
         Complaints Procedure
       </h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         Britestate Ltd takes all complaints seriously and aims to resolve them fairly and promptly.
         To raise a complaint, email{" "}
         <a
@@ -63,9 +63,9 @@ export default function ComplaintsPage() {
         section of the platform.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="introduction">
-          <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Introduction</h2>
           <p>
             Britestate Ltd takes all complaints seriously and aims to resolve them fairly and
             promptly. This procedure explains how to make a complaint and what to expect from us
@@ -74,7 +74,7 @@ export default function ComplaintsPage() {
         </section>
 
         <section id="what-you-can-complain-about">
-          <h2 className="text-2xl font-bold font-heading">2. What You Can Complain About</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. What You Can Complain About</h2>
           <p>
             You may complain about: the platform&rsquo;s services, features, or performance; the
             conduct of another user (including an estate agent or service provider); data protection
@@ -84,7 +84,7 @@ export default function ComplaintsPage() {
         </section>
 
         <section id="how-to-complain">
-          <h2 className="text-2xl font-bold font-heading">3. How to Complain</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. How to Complain</h2>
           <p>
             <strong>Step 1 &mdash; Contact Us.</strong> Email{" "}
             <a href="mailto:complaints@britestate.co.uk">complaints@britestate.co.uk</a> or use the
@@ -108,7 +108,7 @@ export default function ComplaintsPage() {
         </section>
 
         <section id="escalation">
-          <h2 className="text-2xl font-bold font-heading">4. Escalation</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Escalation</h2>
           <p>If you are not satisfied with our response:</p>
           <p>
             <strong>4.1. Internal Escalation.</strong> You may request a review by a senior manager
@@ -159,7 +159,7 @@ export default function ComplaintsPage() {
         </section>
 
         <section id="complaints-about-estate-agents">
-          <h2 className="text-2xl font-bold font-heading">5. Complaints About Estate Agents</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Complaints About Estate Agents</h2>
           <p>
             If your complaint relates to an estate agent registered on the platform, we will:
             forward the complaint to the agent for their response; facilitate communication where

@@ -30,25 +30,25 @@ export default function AccessibilityPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Accessibility Statement</span>
+        <span className="text-foreground">Accessibility Statement</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">
         Accessibility Statement
       </h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         We are committed to making Britestate accessible to everyone. If you encounter any
         accessibility barrier, please contact us at{" "}
         <a
@@ -60,9 +60,9 @@ export default function AccessibilityPage() {
         and we will do our best to help.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="our-commitment">
-          <h2 className="text-2xl font-bold font-heading">1. Our Commitment</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Our Commitment</h2>
           <p>
             Britestate Ltd is committed to making our platform accessible to everyone, including
             people with disabilities. We aim to conform to the Web Content Accessibility Guidelines
@@ -71,7 +71,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="conformance-status">
-          <h2 className="text-2xl font-bold font-heading">2. Conformance Status</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. Conformance Status</h2>
           <p>
             We believe our platform <strong>partially conforms</strong> to WCAG 2.1 Level AA.
             &ldquo;Partially conforms&rdquo; means that some parts of the content do not fully
@@ -80,7 +80,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="known-issues">
-          <h2 className="text-2xl font-bold font-heading">3. Known Issues</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Known Issues</h2>
           <p>The following areas have known accessibility limitations:</p>
           <ul>
             <li>
@@ -99,7 +99,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="testing">
-          <h2 className="text-2xl font-bold font-heading">4. Testing</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Testing</h2>
           <p>
             We test accessibility using: automated scanning (axe-core); manual testing with screen
             readers (NVDA, VoiceOver); keyboard-only navigation testing; and colour contrast
@@ -108,7 +108,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="feedback">
-          <h2 className="text-2xl font-bold font-heading">5. Feedback</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Feedback</h2>
           <p>
             If you encounter accessibility barriers on Britestate, please contact us:
           </p>
@@ -125,7 +125,7 @@ export default function AccessibilityPage() {
         </section>
 
         <section id="enforcement">
-          <h2 className="text-2xl font-bold font-heading">6. Enforcement</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Enforcement</h2>
           <p>
             If you are not satisfied with our response, you may contact the Equality Advisory
             Support Service (EASS) at{" "}

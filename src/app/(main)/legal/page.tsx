@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 type DocCard = {
   href: string;
-  icon: React.ComponentType<{ size?: number }>;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
   title: string;
   desc: string;
 };
@@ -140,47 +140,40 @@ const categories: Category[] = [
 
 export default function LegalPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <div className="mx-auto max-w-4xl px-4 py-12">
       {/* Hero */}
-      <div className="mb-16">
-        <h1 className="text-4xl font-bold font-heading tracking-tight text-neutral-900">
-          Legal Hub
+      <div className="mb-10 text-center">
+        <h1 className="font-heading text-2xl font-bold text-foreground">
+          Legal Centre
         </h1>
-        <p className="mt-4 text-lg text-neutral-600">
+        <p className="mt-2 font-body text-base text-neutral-500">
           Britestate&apos;s legal documents, policies, and compliance information.
         </p>
       </div>
 
       {/* Category sections */}
-      <div className="space-y-16">
+      <div className="space-y-10">
         {categories.map((category) => (
           <section key={category.heading}>
-            <h2 className="mb-6 text-xl font-semibold font-heading text-neutral-900 border-b border-neutral-200 pb-3">
+            <h2 className="mb-4 font-heading text-base font-semibold text-foreground">
               {category.heading}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {category.docs.map((doc) => {
                 const Icon = doc.icon;
                 return (
                   <Link
                     key={doc.href}
                     href={doc.href}
-                    className="group flex items-start gap-4 rounded-xl border border-neutral-200 p-5 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                    className="rounded-xl bg-card p-5 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 hover:shadow-md transition-shadow"
                   >
-                    <span className="shrink-0 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                      <Icon size={20} />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-neutral-900 group-hover:text-primary transition-colors">
-                        {doc.title}
-                      </p>
-                      <p className="mt-1 text-sm text-neutral-500 leading-relaxed">
-                        {doc.desc}
-                      </p>
-                    </div>
-                    <span className="shrink-0 text-neutral-400 group-hover:text-primary transition-colors mt-1">
-                      →
-                    </span>
+                    <Icon className="size-5 text-brand-primary mb-3" />
+                    <p className="font-body text-sm font-medium text-foreground">
+                      {doc.title}
+                    </p>
+                    <p className="mt-1 font-body text-xs text-neutral-500">
+                      {doc.desc}
+                    </p>
                   </Link>
                 );
               })}

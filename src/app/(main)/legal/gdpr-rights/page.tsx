@@ -28,26 +28,26 @@ export default function GdprRightsPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">Legal</Link>
+        <Link href="/legal" className="hover:text-foreground transition-colors">Legal</Link>
         <span>/</span>
-        <span className="text-neutral-900">GDPR Data Subject Rights</span>
+        <span className="text-foreground">GDPR Data Subject Rights</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">GDPR Data Subject Rights</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">GDPR Data Subject Rights</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         Under the UK General Data Protection Regulation, you have rights in relation to your personal data held by
         Britestate Ltd. This page explains each right and how to exercise it. See also our{" "}
         <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="your-rights">
-          <h2 className="text-2xl font-bold font-heading">1. Your Rights</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Your Rights</h2>
           <p>
             Under the UK General Data Protection Regulation, you have the following rights in relation to your
             personal data held by Britestate Ltd:
@@ -98,7 +98,7 @@ export default function GdprRightsPage() {
         </section>
 
         <section id="how-to-make-a-request">
-          <h2 className="text-2xl font-bold font-heading">2. How to Make a Request</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. How to Make a Request</h2>
           <p>
             Use the form below, or email{" "}
             <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>, or write to: Data Protection
@@ -114,7 +114,7 @@ export default function GdprRightsPage() {
         </section>
 
         <section id="identity-verification">
-          <h2 className="text-2xl font-bold font-heading">3. Identity Verification</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Identity Verification</h2>
           <p>
             To protect your data, we must verify your identity before processing your request. We may ask you to
             confirm your email address, provide a copy of photo ID, or answer security questions linked to your
@@ -123,7 +123,7 @@ export default function GdprRightsPage() {
         </section>
 
         <section id="response-timeframe">
-          <h2 className="text-2xl font-bold font-heading">4. Response Timeframe</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Response Timeframe</h2>
           <p>
             We will respond to your request within <strong>30 calendar days</strong> of receiving it (and verifying
             your identity). If your request is complex or we receive a high volume of requests, we may extend this by
@@ -132,7 +132,7 @@ export default function GdprRightsPage() {
         </section>
 
         <section id="fees">
-          <h2 className="text-2xl font-bold font-heading">5. Fees</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Fees</h2>
           <p>
             Requests are free of charge. However, we may charge a reasonable fee for manifestly unfounded or
             excessive requests, or where you request additional copies of your data.
@@ -140,7 +140,7 @@ export default function GdprRightsPage() {
         </section>
 
         <section id="exemptions">
-          <h2 className="text-2xl font-bold font-heading">6. Exemptions</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Exemptions</h2>
           <p>
             We may be unable to fully comply with your request where an exemption applies, including: ongoing legal
             proceedings, regulatory obligations (e.g., AML record retention), or the rights and freedoms of others.
@@ -149,7 +149,7 @@ export default function GdprRightsPage() {
         </section>
 
         <section id="complaints">
-          <h2 className="text-2xl font-bold font-heading">7. Complaints</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. Complaints</h2>
           <p>
             If you are not satisfied with our response, you have the right to lodge a complaint with the Information
             Commissioner&rsquo;s Office:

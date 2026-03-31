@@ -34,23 +34,23 @@ export default function DisclaimerPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Disclaimer</span>
+        <span className="text-foreground">Disclaimer</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Disclaimer</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Disclaimer</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         Nothing on Britestate constitutes professional advice. Always consult a qualified
         professional before making property-related decisions. See our{" "}
         <Link href="/legal/terms" className="underline hover:no-underline">
@@ -59,9 +59,9 @@ export default function DisclaimerPage() {
         for full liability provisions.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="no-professional-advice">
-          <h2 className="text-2xl font-bold font-heading">1. No Professional Advice</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. No Professional Advice</h2>
           <p>
             1.1. Nothing on the Britestate platform constitutes legal, financial, mortgage,
             surveying, investment, tax, or valuation advice. All content is provided for general
@@ -76,7 +76,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="accuracy-of-listings">
-          <h2 className="text-2xl font-bold font-heading">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
             2. Accuracy of Listings and Third-Party Content
           </h2>
           <p>
@@ -93,7 +93,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="valuations-and-market-data">
-          <h2 className="text-2xl font-bold font-heading">3. Valuations and Market Data</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Valuations and Market Data</h2>
           <p>
             3.1. Any property valuations, price estimates, or market data displayed on the platform
             (including AI-generated estimates) are based on publicly available data and algorithmic
@@ -106,7 +106,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="epc-and-energy-data">
-          <h2 className="text-2xl font-bold font-heading">4. EPC and Energy Data</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. EPC and Energy Data</h2>
           <p>
             4.1. Energy Performance Certificate (EPC) data is sourced from the government&rsquo;s
             EPC register. While we endeavour to display current data, EPCs have a 10-year validity
@@ -115,13 +115,13 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="ai-generated-content">
-          <h2 className="text-2xl font-bold font-heading">5. AI-Generated Content</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. AI-Generated Content</h2>
           <p>
             5.1. Certain features on Britestate use artificial intelligence to generate property
             descriptions, recommendations, and insights. AI-generated content may contain
             inaccuracies or omissions. It is labelled as AI-generated and should be treated as a
             starting point, not a definitive source. See our{" "}
-            <Link href="/legal/ai-transparency" className="text-primary hover:underline">
+            <Link href="/legal/ai-transparency" className="text-brand-primary hover:underline">
               AI Transparency Notice
             </Link>{" "}
             for further detail.
@@ -129,7 +129,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="maps-and-location-data">
-          <h2 className="text-2xl font-bold font-heading">6. Maps and Location Data</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Maps and Location Data</h2>
           <p>
             6.1. Maps and location information are provided by MapTiler and MapLibre GL JS. Map pin
             locations are approximate and may not reflect the exact position of a property. Walk
@@ -139,7 +139,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="third-party-links">
-          <h2 className="text-2xl font-bold font-heading">7. Third-Party Links</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. Third-Party Links</h2>
           <p>
             7.1. The platform may contain links to third-party websites and services. Britestate is
             not responsible for the content, privacy practices, or availability of those sites.
@@ -148,7 +148,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="intermediary-status">
-          <h2 className="text-2xl font-bold font-heading">8. Platform Intermediary Status</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">8. Platform Intermediary Status</h2>
           <p>
             8.1. Britestate acts as a technology platform intermediary. We facilitate connections
             between buyers, sellers, landlords, tenants, estate agents, and service providers, but
@@ -162,7 +162,7 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="liability">
-          <h2 className="text-2xl font-bold font-heading">9. Limitation of Liability</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">9. Limitation of Liability</h2>
           <p>
             9.1. To the maximum extent permitted by applicable law, Britestate Ltd excludes all
             liability for any loss or damage arising from your use of the platform or your reliance
@@ -176,12 +176,12 @@ export default function DisclaimerPage() {
         </section>
 
         <section id="governing-law">
-          <h2 className="text-2xl font-bold font-heading">10. Governing Law</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">10. Governing Law</h2>
           <p>
             10.1. This disclaimer is governed by the laws of England and Wales. The courts of
             England and Wales have exclusive jurisdiction, subject to the consumer jurisdiction
             rights described in our{" "}
-            <Link href="/legal/terms" className="text-primary hover:underline">
+            <Link href="/legal/terms" className="text-brand-primary hover:underline">
               Terms of Service
             </Link>
             .

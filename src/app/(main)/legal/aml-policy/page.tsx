@@ -30,25 +30,25 @@ export default function AmlPolicyPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">AML Policy</span>
+        <span className="text-foreground">AML Policy</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">
         Anti-Money Laundering Policy
       </h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         This is a public summary of our Anti-Money Laundering obligations. Our full internal AML
         policy — including MLRO procedures, SAR processes, and staff training programmes — is
         available on request by contacting{" "}
@@ -58,9 +58,9 @@ export default function AmlPolicyPage() {
         .
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="policy-statement">
-          <h2 className="text-2xl font-bold font-heading">1. Policy Statement</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Policy Statement</h2>
           <p>
             1.1. Britestate Ltd is committed to preventing the use of its platform for money
             laundering and terrorist financing. This policy sets out our obligations under the Money
@@ -76,7 +76,7 @@ export default function AmlPolicyPage() {
         </section>
 
         <section id="what-aml-means-for-you">
-          <h2 className="text-2xl font-bold font-heading">2. What AML Means for You</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. What AML Means for You</h2>
           <p>
             2.1. As a platform facilitating property transactions, we are required by law to
             conduct checks on users involved in those transactions. This is to prevent the
@@ -95,7 +95,7 @@ export default function AmlPolicyPage() {
         </section>
 
         <section id="cdd">
-          <h2 className="text-2xl font-bold font-heading">3. Customer Due Diligence</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Customer Due Diligence</h2>
           <p>
             3.1. Before establishing a business relationship or facilitating a transaction, we may
             require you to provide: proof of identity (full legal name, date of birth, residential
@@ -119,7 +119,7 @@ export default function AmlPolicyPage() {
         </section>
 
         <section id="sanctions">
-          <h2 className="text-2xl font-bold font-heading">4. Sanctions Screening</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Sanctions Screening</h2>
           <p>
             4.1. We screen users involved in property transactions against the Office of Financial
             Sanctions Implementation (OFSI) consolidated sanctions list and other relevant
@@ -133,7 +133,7 @@ export default function AmlPolicyPage() {
         </section>
 
         <section id="suspicious-activity">
-          <h2 className="text-2xl font-bold font-heading">5. Reporting Suspicious Activity</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Reporting Suspicious Activity</h2>
           <p>
             5.1. If you have concerns about suspected money laundering or financial crime
             connected to activity on the platform, please contact us at{" "}
@@ -159,7 +159,7 @@ export default function AmlPolicyPage() {
         </section>
 
         <section id="regulatory-oversight">
-          <h2 className="text-2xl font-bold font-heading">6. Regulatory Oversight</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Regulatory Oversight</h2>
           <p>
             6.1. Britestate Ltd is supervised by HMRC for the purposes of the Money Laundering
             Regulations 2017. HMRC AML supervision registration reference: [HMRC REFERENCE].

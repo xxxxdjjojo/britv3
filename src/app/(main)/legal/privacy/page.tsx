@@ -35,22 +35,22 @@ export default function PrivacyPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Privacy Policy</span>
+        <span className="text-foreground">Privacy Policy</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Privacy Policy</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Privacy Policy</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         This policy explains how Britestate Ltd processes your personal data in compliance with UK
         GDPR, the Data Protection Act 2018, and the Data (Use and Access) Act 2025. To exercise
         your data rights, visit our{" "}
@@ -60,9 +60,9 @@ export default function PrivacyPage() {
         .
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="introduction">
-          <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Introduction</h2>
           <p>
             1.1. Britestate Ltd (&ldquo;Britestate&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is
             the data controller for the personal data processed through the britestate.co.uk
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-we-collect">
-          <h2 className="text-2xl font-bold font-heading">2. Data We Collect</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. Data We Collect</h2>
           <p>We collect the following categories of personal data:</p>
           <p>
             <strong>2.1. Account Data:</strong> Name, email address, phone number, password
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="legal-basis">
-          <h2 className="text-2xl font-bold font-heading">3. Legal Basis for Processing</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Legal Basis for Processing</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -222,7 +222,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="how-we-use">
-          <h2 className="text-2xl font-bold font-heading">4. How We Use Your Data</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. How We Use Your Data</h2>
           <p>
             4.1. To operate and maintain the Platform, including account management, listing
             display, search functionality, and communication features.
@@ -247,7 +247,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-sharing">
-          <h2 className="text-2xl font-bold font-heading">5. Data Sharing</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Data Sharing</h2>
           <p>We share your data with the following categories of recipients:</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -301,7 +301,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-retention">
-          <h2 className="text-2xl font-bold font-heading">6. Data Retention</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Data Retention</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -368,7 +368,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="international-transfers">
-          <h2 className="text-2xl font-bold font-heading">7. International Transfers</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. International Transfers</h2>
           <p>
             7.1. Some of our sub-processors operate outside the United Kingdom. Where data is
             transferred outside the UK, we ensure appropriate safeguards are in place.
@@ -389,7 +389,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="automated-decisions">
-          <h2 className="text-2xl font-bold font-heading">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
             8. Automated Decision-Making and Profiling
           </h2>
           <p>
@@ -406,7 +406,7 @@ export default function PrivacyPage() {
             your privacy settings; (b) request human review of any AI-generated output that
             significantly affects you; (c) receive meaningful information about the logic involved
             in our AI systems. See our{" "}
-            <Link href="/legal/ai-transparency" className="text-primary hover:underline">
+            <Link href="/legal/ai-transparency" className="text-brand-primary hover:underline">
               AI Transparency Notice
             </Link>
             .
@@ -414,7 +414,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="your-rights">
-          <h2 className="text-2xl font-bold font-heading">9. Your Rights</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">9. Your Rights</h2>
           <p>Under UK GDPR, you have the following rights:</p>
           <p>
             <strong>9.1. Right of Access (Art. 15):</strong> You may request a copy of all
@@ -453,7 +453,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             To exercise any right, use our{" "}
-            <Link href="/legal/gdpr-rights" className="text-primary hover:underline">
+            <Link href="/legal/gdpr-rights" className="text-brand-primary hover:underline">
               GDPR Rights page
             </Link>
             , or email{" "}
@@ -468,7 +468,7 @@ export default function PrivacyPage() {
               href="https://ico.org.uk"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-brand-primary hover:underline"
             >
               ico.org.uk
             </a>{" "}
@@ -477,10 +477,10 @@ export default function PrivacyPage() {
         </section>
 
         <section id="cookies">
-          <h2 className="text-2xl font-bold font-heading">10. Cookies</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">10. Cookies</h2>
           <p>
             We use cookies and similar technologies. Please see our{" "}
-            <Link href="/legal/cookies" className="text-primary hover:underline">
+            <Link href="/legal/cookies" className="text-brand-primary hover:underline">
               Cookie Policy
             </Link>{" "}
             for full details, including how to manage your preferences.
@@ -488,7 +488,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="childrens-data">
-          <h2 className="text-2xl font-bold font-heading">11. Children&rsquo;s Data</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">11. Children&rsquo;s Data</h2>
           <p>
             The Platform is not directed at children under 18. We do not knowingly collect personal
             data from children. If we become aware that we have collected data from a child under
@@ -497,7 +497,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-security">
-          <h2 className="text-2xl font-bold font-heading">12. Data Security</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">12. Data Security</h2>
           <p>
             12.1. We implement appropriate technical and organisational measures to protect your
             data, including encryption in transit (TLS 1.3) and at rest (AES-256), role-based
@@ -511,7 +511,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="changes">
-          <h2 className="text-2xl font-bold font-heading">13. Changes to This Policy</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">13. Changes to This Policy</h2>
           <p>
             We will notify you of material changes to this policy by email or in-app notification
             at least 30 days before they take effect. The &ldquo;last updated&rdquo; date at the
@@ -520,7 +520,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="dpo-contact">
-          <h2 className="text-2xl font-bold font-heading">14. Contact</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">14. Contact</h2>
           <p>
             Data Protection Officer:{" "}
             <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>

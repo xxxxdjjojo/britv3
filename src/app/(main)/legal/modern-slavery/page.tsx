@@ -32,33 +32,33 @@ export default function ModernSlaveryPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Modern Slavery Statement</span>
+        <span className="text-foreground">Modern Slavery Statement</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">
         Modern Slavery Statement
       </h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         This statement is made pursuant to Section 54 of the Modern Slavery Act 2015 and sets out
         the steps Britestate Ltd has taken to ensure modern slavery and human trafficking are not
         taking place in our business or supply chains. Financial year ending: [DATE].
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="introduction">
-          <h2 className="text-2xl font-bold font-heading">1. Introduction</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. Introduction</h2>
           <p>
             Britestate Ltd is committed to preventing modern slavery and human trafficking in our
             business and supply chains. We have a zero-tolerance approach to any form of modern
@@ -67,7 +67,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="our-business">
-          <h2 className="text-2xl font-bold font-heading">2. Our Business</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. Our Business</h2>
           <p>
             Britestate is a property technology platform connecting homebuyers, renters, sellers,
             landlords, estate agents, and service providers across the United Kingdom. We are a
@@ -76,7 +76,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="supply-chains">
-          <h2 className="text-2xl font-bold font-heading">3. Our Supply Chains</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. Our Supply Chains</h2>
           <p>
             Our supply chains principally consist of: cloud infrastructure providers (Supabase,
             Vercel, AWS); payment processors (Stripe); software services (PostHog, Sentry, Resend,
@@ -86,7 +86,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="policies">
-          <h2 className="text-2xl font-bold font-heading">4. Policies</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">4. Policies</h2>
           <p>
             We maintain policies that contribute to ensuring there is no modern slavery in our
             business or supply chains, including: this Modern Slavery Statement; our Employee Code
@@ -95,7 +95,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="due-diligence">
-          <h2 className="text-2xl font-bold font-heading">5. Due Diligence</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Due Diligence</h2>
           <p>
             5.1. We assess the risk of modern slavery in our supply chains by: evaluating the
             nature and location of each supplier; reviewing supplier modern slavery statements where
@@ -111,7 +111,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="training">
-          <h2 className="text-2xl font-bold font-heading">6. Training</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">6. Training</h2>
           <p>
             Relevant staff receive training on modern slavery awareness, including how to identify
             and report concerns. Training is provided on induction and refreshed annually.
@@ -119,7 +119,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="kpis">
-          <h2 className="text-2xl font-bold font-heading">7. Key Performance Indicators</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. Key Performance Indicators</h2>
           <p>
             We measure effectiveness through: percentage of key suppliers assessed for modern
             slavery risk; number of staff trained; number of concerns reported and investigated;
@@ -128,7 +128,7 @@ export default function ModernSlaveryPage() {
         </section>
 
         <section id="approval">
-          <h2 className="text-2xl font-bold font-heading">8. Approval</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">8. Approval</h2>
           <p>
             This statement has been approved by the Board of Directors of Britestate Ltd and is
             signed by [NAME], [TITLE]. It will be reviewed annually.

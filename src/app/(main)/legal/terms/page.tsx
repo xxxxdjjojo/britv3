@@ -42,25 +42,25 @@ export default function TermsPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">
+        <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
         <span>/</span>
-        <span className="text-neutral-900">Terms of Service</span>
+        <span className="text-foreground">Terms of Service</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">
         Terms of Service
       </h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         Please read these Terms carefully before using Britestate. By accessing or using our
         platform, you agree to be bound by these Terms and our other{" "}
         <Link href="/legal" className="underline hover:no-underline">
@@ -69,9 +69,9 @@ export default function TermsPage() {
         . If you do not agree, you must not use the Platform.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="about-these-terms">
-          <h2 className="text-2xl font-bold font-heading">1. About These Terms</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">1. About These Terms</h2>
           <p>
             1.1. These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of the
             Britestate platform at britestate.co.uk and any associated mobile applications
@@ -82,15 +82,15 @@ export default function TermsPage() {
           </p>
           <p>
             1.2. By accessing or using the Platform, you agree to be bound by these Terms, our{" "}
-            <Link href="/legal/privacy" className="text-primary hover:underline">
+            <Link href="/legal/privacy" className="text-brand-primary hover:underline">
               Privacy Policy
             </Link>
             ,{" "}
-            <Link href="/legal/cookies" className="text-primary hover:underline">
+            <Link href="/legal/cookies" className="text-brand-primary hover:underline">
               Cookie Policy
             </Link>
             , and{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-brand-primary hover:underline">
               Acceptable Use Policy
             </Link>{" "}
             (together, the &ldquo;Legal Documents&rdquo;). If you do not agree, you must not use
@@ -107,7 +107,7 @@ export default function TermsPage() {
         </section>
 
         <section id="the-platform">
-          <h2 className="text-2xl font-bold font-heading">2. The Platform</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">2. The Platform</h2>
           <p>
             2.1. Britestate is a property technology platform that connects homebuyers, renters,
             sellers, landlords, estate agents, and service providers (each a &ldquo;User&rdquo; or
@@ -127,7 +127,7 @@ export default function TermsPage() {
         </section>
 
         <section id="user-accounts">
-          <h2 className="text-2xl font-bold font-heading">3. User Accounts</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">3. User Accounts</h2>
           <p>
             3.1. To access certain features, you must create an account. You must provide accurate,
             current, and complete information and keep it updated.
@@ -146,7 +146,7 @@ export default function TermsPage() {
         </section>
 
         <section id="user-roles">
-          <h2 className="text-2xl font-bold font-heading">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
             4. User Roles and Specific Terms
           </h2>
           <p>
@@ -174,7 +174,7 @@ export default function TermsPage() {
             Scheme), that you hold appropriate professional indemnity insurance, and that you are
             registered with HMRC for AML supervision. You must display your fees transparently on
             your Britestate profile in accordance with CMA guidance. See our{" "}
-            <Link href="/legal/fee-transparency" className="text-primary hover:underline">
+            <Link href="/legal/fee-transparency" className="text-brand-primary hover:underline">
               Fee Transparency Policy
             </Link>
             .
@@ -188,13 +188,13 @@ export default function TermsPage() {
         </section>
 
         <section id="fees-and-payments">
-          <h2 className="text-2xl font-bold font-heading">5. Fees and Payments</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">5. Fees and Payments</h2>
           <p>
             5.1. <strong>Platform Commission.</strong> Where transactions are facilitated through
             the Platform, a commission of 2.5% of the transaction value may apply. This is
             processed via Stripe Connect. The commission is payable by [SPECIFY: agent/service
             provider/other] and is clearly displayed before any transaction is confirmed. See our{" "}
-            <Link href="/legal/fee-transparency" className="text-primary hover:underline">
+            <Link href="/legal/fee-transparency" className="text-brand-primary hover:underline">
               Fee Transparency Policy
             </Link>{" "}
             for full details.
@@ -226,7 +226,7 @@ export default function TermsPage() {
         </section>
 
         <section id="content-and-ip">
-          <h2 className="text-2xl font-bold font-heading">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
             6. Content and Intellectual Property
           </h2>
           <p>
@@ -251,7 +251,7 @@ export default function TermsPage() {
           <p>
             6.4. <strong>Reviews.</strong> All reviews must be genuine, based on actual experience,
             and comply with our{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-brand-primary hover:underline">
               Acceptable Use Policy
             </Link>
             . We reserve the right to remove reviews that we reasonably believe are fake,
@@ -260,10 +260,10 @@ export default function TermsPage() {
         </section>
 
         <section id="prohibited-uses">
-          <h2 className="text-2xl font-bold font-heading">7. Prohibited Uses</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">7. Prohibited Uses</h2>
           <p>
             7.1. You must not use the Platform in breach of our{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-brand-primary hover:underline">
               Acceptable Use Policy
             </Link>
             . In particular, you must not post fraudulent, misleading, or phantom listings; scrape
@@ -274,7 +274,7 @@ export default function TermsPage() {
         </section>
 
         <section id="disclaimers">
-          <h2 className="text-2xl font-bold font-heading">8. Disclaimers</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">8. Disclaimers</h2>
           <p>
             8.1. The Platform is provided &ldquo;as is&rdquo; and &ldquo;as available.&rdquo; We
             do not guarantee that the Platform will be uninterrupted, error-free, or free from
@@ -285,7 +285,7 @@ export default function TermsPage() {
             data are provided for informational purposes only. We do not verify the accuracy of
             third-party content and do not provide legal, financial, surveying, or mortgage advice.
             See our{" "}
-            <Link href="/legal/disclaimer" className="text-primary hover:underline">
+            <Link href="/legal/disclaimer" className="text-brand-primary hover:underline">
               Disclaimer
             </Link>{" "}
             for full details.
@@ -297,7 +297,7 @@ export default function TermsPage() {
         </section>
 
         <section id="liability">
-          <h2 className="text-2xl font-bold font-heading">9. Limitation of Liability</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">9. Limitation of Liability</h2>
           <p>
             9.1. Nothing in these Terms excludes or limits our liability for: (a) death or personal
             injury caused by our negligence; (b) fraud or fraudulent misrepresentation; (c) any
@@ -321,7 +321,7 @@ export default function TermsPage() {
         </section>
 
         <section id="indemnification">
-          <h2 className="text-2xl font-bold font-heading">10. Indemnification</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">10. Indemnification</h2>
           <p>
             10.1. If you are an estate agent, landlord, or service provider, you agree to
             indemnify Britestate against any claims, losses, damages, or expenses (including legal
@@ -332,11 +332,11 @@ export default function TermsPage() {
         </section>
 
         <section id="suspension-termination">
-          <h2 className="text-2xl font-bold font-heading">11. Suspension and Termination</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">11. Suspension and Termination</h2>
           <p>
             11.1. We may suspend or terminate your account at any time if we reasonably believe you
             have breached these Terms, our{" "}
-            <Link href="/legal/acceptable-use" className="text-primary hover:underline">
+            <Link href="/legal/acceptable-use" className="text-brand-primary hover:underline">
               Acceptable Use Policy
             </Link>
             , or any applicable law. Where practicable, we will give you notice and an opportunity
@@ -355,7 +355,7 @@ export default function TermsPage() {
         </section>
 
         <section id="dispute-resolution">
-          <h2 className="text-2xl font-bold font-heading">12. Dispute Resolution</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">12. Dispute Resolution</h2>
           <p>
             12.1. We aim to resolve disputes informally. Please contact{" "}
             <a href="mailto:support@britestate.co.uk">support@britestate.co.uk</a> in the first
@@ -365,7 +365,7 @@ export default function TermsPage() {
             12.2. If we cannot resolve a dispute informally, you may refer the matter to an
             alternative dispute resolution (ADR) provider. For consumers, you may use the UK Online
             Dispute Resolution platform. See our{" "}
-            <Link href="/legal/complaints" className="text-primary hover:underline">
+            <Link href="/legal/complaints" className="text-brand-primary hover:underline">
               Complaints Policy
             </Link>{" "}
             for details.
@@ -377,7 +377,7 @@ export default function TermsPage() {
         </section>
 
         <section id="force-majeure">
-          <h2 className="text-2xl font-bold font-heading">13. Force Majeure</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">13. Force Majeure</h2>
           <p>
             13.1. We shall not be liable for any failure or delay in performing our obligations
             where such failure or delay results from events beyond our reasonable control, including
@@ -387,7 +387,7 @@ export default function TermsPage() {
         </section>
 
         <section id="ai-features">
-          <h2 className="text-2xl font-bold font-heading">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
             14. AI Features and Automated Decision-Making
           </h2>
           <p>
@@ -395,7 +395,7 @@ export default function TermsPage() {
             embeddings) to provide property recommendations, estimated valuations, and search
             matching. These outputs are generated algorithmically and should not be relied upon as
             professional advice. See our{" "}
-            <Link href="/legal/ai-transparency" className="text-primary hover:underline">
+            <Link href="/legal/ai-transparency" className="text-brand-primary hover:underline">
               AI Transparency Notice
             </Link>
             .
@@ -413,7 +413,7 @@ export default function TermsPage() {
         </section>
 
         <section id="governing-law">
-          <h2 className="text-2xl font-bold font-heading">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
             15. Governing Law and Jurisdiction
           </h2>
           <p>15.1. These Terms are governed by the laws of England and Wales.</p>
@@ -425,7 +425,7 @@ export default function TermsPage() {
         </section>
 
         <section id="changes">
-          <h2 className="text-2xl font-bold font-heading">16. Changes to These Terms</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">16. Changes to These Terms</h2>
           <p>
             16.1. We may update these Terms from time to time. We will notify you of material
             changes by email or in-app notification at least 30 days before they take effect.
@@ -437,7 +437,7 @@ export default function TermsPage() {
         </section>
 
         <section id="general">
-          <h2 className="text-2xl font-bold font-heading">17. General</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">17. General</h2>
           <p>
             17.1. <strong>Entire Agreement.</strong> These Terms (together with the other Legal
             Documents) constitute the entire agreement between you and Britestate in relation to
@@ -463,7 +463,7 @@ export default function TermsPage() {
         </section>
 
         <section id="contact">
-          <h2 className="text-2xl font-bold font-heading">18. Contact Us</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">18. Contact Us</h2>
           <p>
             Britestate Ltd
             <br />

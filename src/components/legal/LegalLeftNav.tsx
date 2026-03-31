@@ -58,10 +58,10 @@ export default function LegalLeftNav() {
     <>
       {/* Desktop: vertical categorised nav */}
       <nav className="hidden lg:block" aria-label="Legal pages navigation">
-        <ul className="space-y-6">
+        <ul className="space-y-5">
           {NAV_CATEGORIES.map((category) => (
             <li key={category.heading}>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+              <p className="mb-2 font-body text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
                 {category.heading}
               </p>
               <ul className="space-y-0.5">
@@ -73,8 +73,8 @@ export default function LegalLeftNav() {
                         href={item.href}
                         className={
                           isActive
-                            ? "block rounded-md px-3 py-1.5 text-sm font-medium bg-primary/10 text-primary"
-                            : "block rounded-md px-3 py-1.5 text-sm text-neutral-600 hover:text-primary hover:bg-neutral-50 transition-colors"
+                            ? "block rounded-md px-3 py-1.5 font-body text-sm font-medium bg-brand-primary/10 text-brand-primary"
+                            : "block rounded-md px-3 py-1.5 font-body text-sm text-neutral-500 hover:text-foreground hover:bg-muted/40 transition-colors"
                         }
                         aria-current={isActive ? "page" : undefined}
                       >
@@ -103,8 +103,8 @@ export default function LegalLeftNav() {
                 href={item.href}
                 className={
                   isActive
-                    ? "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium bg-primary text-white"
-                    : "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors"
+                    ? "shrink-0 rounded-full px-3 py-1.5 font-body text-xs font-medium bg-brand-primary text-white"
+                    : "shrink-0 rounded-full px-3 py-1.5 font-body text-xs font-medium bg-muted text-neutral-600 hover:bg-muted/80 transition-colors"
                 }
                 aria-current={isActive ? "page" : undefined}
               >

@@ -50,7 +50,7 @@ export default function LegalRightToc({ sections }: LegalRightTocProps) {
 
   return (
     <nav aria-label="On this page">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+      <p className="mb-3 font-body text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
         On This Page
       </p>
       <ul className="space-y-2">
@@ -62,8 +62,8 @@ export default function LegalRightToc({ sections }: LegalRightTocProps) {
                 href={`#${id}`}
                 className={
                   isActive
-                    ? "block border-l-2 border-primary pl-3 text-sm font-medium text-primary"
-                    : "block border-l-2 border-transparent pl-3 text-sm text-neutral-500 hover:text-primary transition-colors"
+                    ? "block border-l-2 border-brand-primary pl-3 font-body text-sm font-medium text-brand-primary"
+                    : "block border-l-2 border-transparent pl-3 font-body text-sm text-neutral-500 hover:text-foreground transition-colors"
                 }
                 aria-current={isActive ? "location" : undefined}
               >

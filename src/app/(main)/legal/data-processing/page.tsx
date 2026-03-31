@@ -39,27 +39,27 @@ export const metadata: Metadata = {
 export default function DataProcessingPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
-      <nav className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span>/</span>
-        <Link href="/legal" className="hover:text-primary transition-colors">Legal</Link>
+        <Link href="/legal" className="hover:text-foreground transition-colors">Legal</Link>
         <span>/</span>
-        <span className="text-neutral-900">Data Processing Agreement</span>
+        <span className="text-foreground">Data Processing Agreement</span>
       </nav>
 
-      <h1 className="mb-2 text-3xl font-bold font-heading text-neutral-900">Data Processing Agreement</h1>
-      <p className="mb-4 text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Data Processing Agreement</h1>
+      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
-      <div className="mb-8 bg-yellow-50 border border-yellow-100 text-yellow-800 rounded-lg p-4 text-sm">
+      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
         This is a summary of the Data Processing Agreement (&ldquo;DPA&rdquo;) that applies when Britestate processes
         personal data on behalf of Users who are data controllers (primarily estate agents and service providers).
         The full DPA is available on request from{" "}
         <a href="mailto:privacy@britestate.co.uk" className="underline">privacy@britestate.co.uk</a>.
       </div>
 
-      <div className="prose prose-neutral max-w-none text-[16px] md:text-[17px] leading-[1.7]">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="scope">
-          <h2 className="text-2xl font-bold font-heading">Scope</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Scope</h2>
           <p>
             This DPA applies where an estate agent or service provider uploads client data to the Platform and
             Britestate processes it on their instructions.
@@ -67,7 +67,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="roles">
-          <h2 className="text-2xl font-bold font-heading">Roles</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Roles</h2>
           <p>
             <strong>Britestate&rsquo;s Role:</strong> Data Processor (under Art. 28 UK GDPR).
           </p>
@@ -78,7 +78,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="controller-obligations">
-          <h2 className="text-2xl font-bold font-heading">Controller Obligations</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Controller Obligations</h2>
           <p>The controller must:</p>
           <ul>
             <li>Have a lawful basis for the personal data it uploads;</li>
@@ -90,7 +90,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="britestate-obligations">
-          <h2 className="text-2xl font-bold font-heading">Britestate Obligations</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Britestate Obligations</h2>
           <p>Britestate will:</p>
           <ul>
             <li>Process data only on documented instructions from the controller;</li>
@@ -103,7 +103,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="sub-processors">
-          <h2 className="text-2xl font-bold font-heading">Sub-Processors</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Sub-Processors</h2>
           <p className="mb-4">
             Britestate uses the sub-processors listed in our{" "}
             <Link href="/legal/privacy">Privacy Policy</Link> (Section 5). We will notify controllers at least
@@ -133,7 +133,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="international-transfers">
-          <h2 className="text-2xl font-bold font-heading">International Transfers</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">International Transfers</h2>
           <p>
             International transfers are handled as described in our{" "}
             <Link href="/legal/privacy">Privacy Policy</Link> (Section 7). Transfers outside the UK are protected
@@ -142,7 +142,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="audit-rights">
-          <h2 className="text-2xl font-bold font-heading">Audit Rights</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Audit Rights</h2>
           <p>
             Controllers may audit Britestate&rsquo;s compliance with this DPA with reasonable notice and during
             business hours, subject to confidentiality obligations.
@@ -150,7 +150,7 @@ export default function DataProcessingPage() {
         </section>
 
         <section id="full-dpa">
-          <h2 className="text-2xl font-bold font-heading">Full DPA</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Full DPA</h2>
           <p>
             The full Data Processing Agreement is available on request from{" "}
             <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>.

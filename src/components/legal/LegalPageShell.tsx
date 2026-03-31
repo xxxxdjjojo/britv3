@@ -13,7 +13,7 @@ type LegalPageShellProps = Readonly<{
 export function LegalPageShell({ toc, children }: LegalPageShellProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_240px] gap-8 xl:gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_220px] gap-8 xl:gap-12">
         <aside className="lg:sticky lg:top-8 lg:self-start">
           <LegalLeftNav />
         </aside>
