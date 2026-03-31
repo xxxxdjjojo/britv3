@@ -26,14 +26,14 @@ function PricingBadge({ pricing }: Readonly<{ pricing: ProviderPricing }>) {
   }
   if (pricing.type === "fixed") {
     return (
-      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#1B4D3E]/8 text-[#1B4D3E] dark:bg-[#1B4D3E]/20 dark:text-[#4ade80]">
+      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-success">
         £{pricing.amount.toLocaleString("en-GB")} fixed
       </span>
     );
   }
   // type === "quote"
   return (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#D4A853]/10 text-[#92700a] dark:bg-[#D4A853]/15 dark:text-[#D4A853]">
+    <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-brand-secondary/10 text-brand-secondary-dark dark:bg-brand-secondary/15 dark:text-brand-secondary">
       Quote on request
     </span>
   );
@@ -43,12 +43,12 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
   if (services.length === 0) {
     return (
       <div className="space-y-5">
-        <h2 className="text-2xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white">
+        <h2 className="text-2xl font-bold font-heading tracking-tight text-neutral-950 dark:text-white">
           Services &amp; Pricing
         </h2>
-        <div className="py-16 rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822] text-center">
-          <Wrench className="w-10 h-10 text-[#9ca3af] mx-auto mb-3" aria-hidden="true" />
-          <p className="text-[#6b7280] dark:text-[#9ca3af] font-medium">No services listed yet</p>
+        <div className="py-16 rounded-2xl bg-surface-container-low dark:bg-neutral-800 text-center">
+          <Wrench className="w-10 h-10 text-neutral-400 mx-auto mb-3" aria-hidden="true" />
+          <p className="text-neutral-500 dark:text-neutral-400 font-medium">No services listed yet</p>
         </div>
       </div>
     );
@@ -57,9 +57,9 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
   return (
     <div className="space-y-5">
       {/* Section header */}
-      <h2 className="text-2xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white">
+      <h2 className="text-2xl font-bold font-heading tracking-tight text-neutral-950 dark:text-white">
         Services &amp; Pricing
-        <span className="text-base font-normal text-[#9ca3af] ml-2">({services.length})</span>
+        <span className="text-base font-normal text-neutral-400 ml-2">({services.length})</span>
       </h2>
 
       {/* Services grid */}
@@ -67,11 +67,11 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
         {services.map((service) => (
           <div
             key={service.id}
-            className="p-5 rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822] hover:bg-[#eceae8] dark:hover:bg-[#1f302a] transition-colors flex flex-col"
+            className="p-5 rounded-2xl bg-surface-container-low dark:bg-neutral-800 hover:bg-[#eceae8] dark:hover:bg-[#1f302a] transition-colors flex flex-col"
           >
             {/* Service name + pricing badge */}
             <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="text-base font-bold text-[#1a1a1a] dark:text-white leading-snug font-heading tracking-tight">
+              <h3 className="text-base font-bold text-neutral-950 dark:text-white leading-snug font-heading tracking-tight">
                 {service.name}
               </h3>
               <PricingBadge pricing={service.pricing} />
@@ -79,14 +79,14 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
 
             {/* Description */}
             {service.description && (
-              <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] leading-relaxed mb-3">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed mb-3">
                 {service.description}
               </p>
             )}
 
             {/* Duration estimate */}
             {service.estimated_duration_hours !== null && (
-              <div className="flex items-center gap-1.5 text-xs text-[#9ca3af] mb-4">
+              <div className="flex items-center gap-1.5 text-xs text-neutral-400 mb-4">
                 <Clock className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
                 <span>
                   ~{service.estimated_duration_hours}{" "}
@@ -101,7 +101,7 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
               <button
                 type="button"
                 data-quote-service={service.name}
-                className="w-full min-h-[44px] bg-[#1B4D3E] text-white py-2.5 px-4 rounded-xl font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] transition-colors text-sm shadow-sm"
+                className="w-full min-h-[44px] bg-brand-primary text-white py-2.5 px-4 rounded-xl font-semibold hover:bg-brand-primary/90 active:bg-brand-primary-dark transition-colors text-sm shadow-sm"
                 aria-label={`Request quote for ${service.name}`}
               >
                 Request Quote

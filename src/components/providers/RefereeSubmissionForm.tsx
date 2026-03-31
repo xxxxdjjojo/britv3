@@ -140,7 +140,7 @@ export function RefereeSubmissionForm({
           placeholder={`Describe your experience working with ${providerName}...`}
           rows={6}
           maxLength={2000}
-          className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+          className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
         />
         <p className={`mt-1 text-xs ${text.length >= 50 ? "text-green-600" : "text-gray-500"}`}>
           {text.length} / 50 minimum characters
@@ -154,7 +154,7 @@ export function RefereeSubmissionForm({
             type="checkbox"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#1B4D3E] focus:ring-[#1B4D3E]"
+            className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
           />
           <span className="text-xs text-gray-600">
             I consent to this reference being shared publicly on Britestate to
@@ -168,7 +168,7 @@ export function RefereeSubmissionForm({
         type="button"
         onClick={handleSubmit}
         disabled={!isValid || loading}
-        className="w-full rounded-lg bg-[#1B4D3E] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#163f33] disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-lg bg-brand-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? "Submitting..." : "Submit Reference"}
       </button>

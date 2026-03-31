@@ -28,8 +28,8 @@ type BadgeConfigEntry = {
 const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
   britestate_verified: {
     label: "Britestate Verified",
-    bg: "bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20",
-    text: "text-[#1B4D3E] dark:text-[#4ade80]",
+    bg: "bg-brand-primary/10 dark:bg-brand-primary/20",
+    text: "text-brand-primary dark:text-success",
     Icon: ShieldCheck,
   },
   gas_safe: {
@@ -52,8 +52,8 @@ const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
   },
   rics: {
     label: "RICS Member",
-    bg: "bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20",
-    text: "text-[#1B4D3E] dark:text-[#4ade80]",
+    bg: "bg-brand-primary/10 dark:bg-brand-primary/20",
+    text: "text-brand-primary dark:text-success",
     Icon: Building2,
   },
   sra: {

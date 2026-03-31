@@ -20,8 +20,8 @@ function FilledStars({ rating }: Readonly<{ rating: number }>) {
           key={star}
           className={`w-5 h-5 ${
             star <= Math.round(rating)
-              ? "fill-[#D4A853] text-[#D4A853]"
-              : "fill-[#e8e6e3] text-[#e8e6e3] dark:fill-[#1a2822] dark:text-[#1a2822]"
+              ? "fill-brand-secondary text-brand-secondary"
+              : "fill-neutral-200 text-neutral-200 dark:fill-neutral-800 dark:text-neutral-800"
           }`}
         />
       ))}
@@ -43,20 +43,20 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
 
   return (
     <section
-      className="rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822] p-6 space-y-5"
+      className="rounded-2xl bg-surface-container-low dark:bg-neutral-800 p-6 space-y-5"
       aria-label="Rating breakdown"
     >
       {/* Large rating display */}
       <div className="flex items-center gap-5">
         <div className="text-center">
-          <span className="text-5xl font-bold text-[#1B4D3E] dark:text-[#4ade80] font-heading tracking-tight">
+          <span className="text-5xl font-bold text-brand-primary dark:text-success font-heading tracking-tight">
             {avg.toFixed(1)}
           </span>
-          <p className="text-xs text-[#9ca3af] mt-0.5">out of 5</p>
+          <p className="text-xs text-neutral-400 mt-0.5">out of 5</p>
         </div>
         <div className="space-y-1">
           <FilledStars rating={avg} />
-          <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Based on {total} {total === 1 ? "review" : "reviews"}
           </p>
         </div>
@@ -68,11 +68,11 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
           const pct = total > 0 ? Math.round((count / total) * 100) : 0;
           return (
             <div key={stars} className="flex items-center gap-3">
-              <span className="text-xs text-[#6b7280] dark:text-[#9ca3af] w-12 shrink-0 text-right">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 w-12 shrink-0 text-right">
                 {stars}★
               </span>
               <div
-                className="flex-1 h-2 bg-[#e8e6e3] dark:bg-[#243330] rounded-full overflow-hidden"
+                className="flex-1 h-2 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden"
                 role="progressbar"
                 aria-valuenow={pct}
                 aria-valuemin={0}
@@ -80,11 +80,11 @@ export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps)
                 aria-label={`${label}: ${pct}%`}
               >
                 <div
-                  className="h-full bg-[#1B4D3E] dark:bg-[#4ade80] rounded-full transition-all duration-500"
+                  className="h-full bg-brand-primary dark:bg-success rounded-full transition-all duration-500"
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-xs text-[#9ca3af] w-6 text-right shrink-0">
+              <span className="text-xs text-neutral-400 w-6 text-right shrink-0">
                 {count}
               </span>
             </div>
