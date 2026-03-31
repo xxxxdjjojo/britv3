@@ -46,18 +46,21 @@ function formatStatusLabel(status: string) {
   return status.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Stable reference computed at module load time (avoids impure Date.now in render)
+const NOW_MS = Date.now();
+
+function getDaysAgo(createdAt: string | null | undefined): number | null {
+  if (!createdAt) return null;
+  return Math.floor((NOW_MS - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+}
+
 export function ListingCard({ listing, onArchive }: Props) {
   const thumb = listing.photos[0]?.url;
   const address = [listing.address_line_1, listing.city].filter(Boolean).join(", ");
   const price = listing.asking_price
     ? `£${(listing.asking_price / 100).toLocaleString("en-GB")}`
     : "POA";
-  const listedDaysAgo =
-    listing.created_at
-      ? Math.floor(
-          (Date.now() - new Date(listing.created_at).getTime()) / (1000 * 60 * 60 * 24)
-        )
-      : null;
+  const listedDaysAgo = getDaysAgo(listing.created_at);
 
   return (
     <div className="group bg-white rounded-xl overflow-hidden flex items-stretch hover:shadow-[0_20px_50px_rgba(26,28,28,0.06)] transition-shadow duration-500">

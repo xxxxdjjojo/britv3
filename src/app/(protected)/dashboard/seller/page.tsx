@@ -168,12 +168,12 @@ async function PageContent() {
           <p className="text-zinc-500 text-sm mb-6 max-w-md mx-auto">
             Create your first listing to start tracking views, enquiries, and offers from buyers.
           </p>
-          <a
+          <Link
             href="/dashboard/seller/listings/create?step=1"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[--color-brand-primary-dark] text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm"
           >
             Create Your First Listing
-          </a>
+          </Link>
         </div>
       )}
 
