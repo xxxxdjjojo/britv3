@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { FileEdit, Save } from "lucide-react";
 import {
   calculateMonthlyPayment,
   calculateTotalRepayable,
@@ -32,38 +30,98 @@ const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
 
-const formatCompact = (value: number) =>
+const formatCurrencyNoDecimals = (value: number) =>
   new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
-    notation: "compact",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+
+/** Estimate stamp duty (England rates, simplified) */
+function estimateStampDuty(price: number): number {
+  if (price <= 250000) return 0;
+  if (price <= 925000) return (price - 250000) * 0.05;
+  if (price <= 1500000) return 675000 * 0.05 + (price - 925000) * 0.1;
+  return 675000 * 0.05 + 575000 * 0.1 + (price - 1500000) * 0.12;
+}
+
+/** Generate simplified repayment schedule for bar chart at key years */
+function buildBarData(
+  loanAmount: number,
+  interestRate: number,
+  termYears: number,
+  interestOnly: boolean,
+) {
+  const monthly = interestOnly
+    ? loanAmount * (interestRate / 100 / 12)
+    : calculateMonthlyPayment(loanAmount, interestRate, termYears);
+
+  const monthlyRate = interestRate / 100 / 12;
+  const totalMonths = termYears * 12;
+
+  // We'll sample 12 evenly-spaced years
+  const sampleCount = Math.min(12, termYears);
+  const step = termYears / sampleCount;
+
+  const bars: Array<{ year: number; principal: number; interest: number }> = [];
+
+  for (let i = 0; i < sampleCount; i++) {
+    const year = Math.round(step * (i + 0.5));
+    const monthIndex = Math.min(year * 12 - 1, totalMonths - 1);
+
+    let remainingBalance = loanAmount;
+    if (!interestOnly && monthlyRate > 0) {
+      // Balance after `monthIndex` months
+      const compFactor = Math.pow(1 + monthlyRate, monthIndex + 1);
+      remainingBalance = loanAmount * compFactor - monthly * ((compFactor - 1) / monthlyRate);
+      remainingBalance = Math.max(0, remainingBalance);
+    } else if (interestOnly) {
+      remainingBalance = loanAmount;
+    }
+
+    // Monthly breakdown at this point
+    const interestPart = remainingBalance * monthlyRate;
+    const principalPart = interestOnly ? 0 : Math.max(0, monthly - interestPart);
+
+    bars.push({ year, principal: principalPart, interest: interestPart });
+  }
+
+  return { bars, maxPayment: monthly };
+}
 
 type MortgageCalculatorProps = Readonly<{
   initialPrice?: number;
 }>;
 
 export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {}) {
-  const { saveParams, hasParams } = useMortgageParams();
+  const { saveParams } = useMortgageParams();
 
-  const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 300000));
-  const [deposit, setDeposit] = useState(() => getUrlParam("deposit", 30000));
-  const [interestRate, setInterestRate] = useState(() => getUrlParam("rate", 4.5));
+  // ── Input state ──────────────────────────────────────────────────────────
+  const [propertyPrice, setPropertyPrice] = useState(() => initialPrice ?? getUrlParam("price", 1250000));
+  const [deposit, setDeposit] = useState(() => getUrlParam("deposit", 250000));
+  const [interestRate, setInterestRate] = useState(() => getUrlParam("rate", 4.25));
   const [termYears, setTermYears] = useState(() => getUrlParam("term", 25));
   const [interestOnly, setInterestOnly] = useState(() => getUrlBool("io", false));
 
-  // Sync state to URL (disabled when embedded with initialPrice to avoid overwriting page URL)
+  // ── Pending state (applied on "Update Analysis") ─────────────────────────
+  const [pendingPrice, setPendingPrice] = useState(propertyPrice);
+  const [pendingDeposit, setPendingDeposit] = useState(deposit);
+  const [pendingRate, setPendingRate] = useState(interestRate);
+  const [pendingTerm, setPendingTerm] = useState(termYears);
+  const [pendingInterestOnly, setPendingInterestOnly] = useState(interestOnly);
+
+  // Sync URL
   useEffect(() => {
     if (initialPrice != null) return;
     const params = new URLSearchParams();
-    if (propertyPrice !== 300000) params.set("price", String(propertyPrice));
-    if (deposit !== 30000) params.set("deposit", String(deposit));
-    if (interestRate !== 4.5) params.set("rate", String(interestRate));
+    if (propertyPrice !== 1250000) params.set("price", String(propertyPrice));
+    if (deposit !== 250000) params.set("deposit", String(deposit));
+    if (interestRate !== 4.25) params.set("rate", String(interestRate));
     if (termYears !== 25) params.set("term", String(termYears));
     if (interestOnly) params.set("io", "1");
     const url = params.toString() ? `?${params.toString()}` : window.location.pathname;
@@ -97,266 +155,309 @@ export function MortgageCalculator({ initialPrice }: MortgageCalculatorProps = {
     }
 
     const ltv = propertyPrice > 0 ? (loanAmount / propertyPrice) * 100 : 0;
+    const stampDuty = estimateStampDuty(propertyPrice);
 
-    return { monthlyPayment, totalRepayable, totalInterest, ltv };
+    return { monthlyPayment, totalRepayable, totalInterest, ltv, stampDuty };
   }, [loanAmount, interestRate, termYears, propertyPrice, interestOnly]);
 
-  const handleSaveParams = () => {
-    saveParams({ deposit, interestRate, termYears });
+  // ── Bar chart data ────────────────────────────────────────────────────────
+  const { bars, maxPayment } = useMemo(
+    () => buildBarData(loanAmount, interestRate, termYears, interestOnly),
+    [loanAmount, interestRate, termYears, interestOnly],
+  );
+
+  const applyAnalysis = () => {
+    setPropertyPrice(pendingPrice);
+    setDeposit(pendingDeposit);
+    setInterestRate(pendingRate);
+    setTermYears(pendingTerm);
+    setInterestOnly(pendingInterestOnly);
+    saveParams({ deposit: pendingDeposit, interestRate: pendingRate, termYears: pendingTerm });
   };
 
-  // Donut chart calculations
-  const principalRatio =
-    results.totalRepayable > 0 ? loanAmount / results.totalRepayable : 0;
-  const circumference = 2 * Math.PI * 70; // ~440
-  const dashOffset = circumference * (1 - principalRatio);
+  // ── Derived label years for chart ─────────────────────────────────────────
+  const midYear = Math.round(termYears / 2);
 
   return (
-    <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-9">
-      {/* Left Column: Input Form */}
-      <Card className="lg:col-span-4">
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-9">
+      {/* ── Left: Financial Inputs ── */}
+      <Card className="lg:col-span-4 rounded-2xl border border-neutral-200 shadow-sm dark:border-neutral-800">
         <CardContent className="p-8">
-          <h2 className="mb-6 flex items-center gap-2 text-xl font-bold">
-            <FileEdit className="h-5 w-5 text-brand-primary" />
-            Your Details
+          <h2 className="mb-6 text-base font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+            Financial Inputs
           </h2>
 
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Property Price */}
-            <div className="space-y-2">
-              <Label htmlFor="property-price" className="text-sm font-semibold">
+            <div className="space-y-1.5">
+              <Label
+                htmlFor="mc-price"
+                className="text-[10px] font-bold uppercase tracking-widest text-neutral-400"
+              >
                 Property Price
               </Label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
-                  &pound;
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-400">
+                  £
                 </span>
                 <Input
-                  id="property-price"
+                  id="mc-price"
                   type="number"
                   min={0}
                   step={1000}
-                  value={propertyPrice}
-                  onChange={(e) => setPropertyPrice(Number(e.target.value))}
-                  className="pl-8"
+                  value={pendingPrice}
+                  onChange={(e) => setPendingPrice(Number(e.target.value))}
+                  className="pl-7 h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm font-medium text-neutral-900 focus:border-brand-primary dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
                 />
               </div>
             </div>
 
             {/* Deposit */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="deposit" className="text-sm font-semibold">
+                <Label
+                  htmlFor="mc-deposit"
+                  className="text-[10px] font-bold uppercase tracking-widest text-neutral-400"
+                >
                   Deposit
                 </Label>
-                <span className="text-sm font-medium text-neutral-500">
-                  {depositPercent}% of property price
-                </span>
-              </div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
-                  &pound;
-                </span>
-                <Input
-                  id="deposit"
-                  type="number"
-                  min={0}
-                  step={1000}
-                  value={deposit}
-                  onChange={(e) => setDeposit(Number(e.target.value))}
-                  className="pl-8"
-                />
-              </div>
-              <Slider
-                min={0}
-                max={propertyPrice}
-                step={1000}
-                value={[deposit]}
-                onValueChange={(val) =>
-                  setDeposit(Array.isArray(val) ? val[0] : val)
-                }
-              />
-            </div>
-
-            {/* Interest Only Toggle */}
-            <div className="flex items-center justify-between">
-              <Label className="text-sm font-semibold">Interest Only</Label>
-              <Switch checked={interestOnly} onCheckedChange={setInterestOnly} />
-            </div>
-
-            {/* Interest Rate */}
-            <div className="space-y-2">
-              <Label htmlFor="interest-rate" className="text-sm font-semibold">
-                Interest Rate <span className="font-normal text-neutral-400">(illustrative)</span>
-              </Label>
-              <div className="relative">
-                <Input
-                  id="interest-rate"
-                  type="number"
-                  min={0}
-                  max={20}
-                  step={0.1}
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(Number(e.target.value))}
-                  className="pr-8"
-                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
+                <span className="text-[10px] font-semibold text-neutral-400">
+                  {pendingPrice > 0
+                    ? Math.round((pendingDeposit / pendingPrice) * 1000) / 10
+                    : 0}
                   %
                 </span>
               </div>
-            </div>
-
-            {/* Mortgage Term */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="term" className="text-sm font-semibold">
-                  Mortgage Term
-                </Label>
-                <span className="font-bold text-brand-primary">
-                  {termYears} Years
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-400">
+                  £
                 </span>
-              </div>
-              <Slider
-                min={5}
-                max={40}
-                step={1}
-                value={[termYears]}
-                onValueChange={(val) =>
-                  setTermYears(Array.isArray(val) ? val[0] : val)
-                }
-              />
-              <div className="flex justify-between text-[10px] font-medium text-neutral-400">
-                <span>5Y</span>
-                <span>20Y</span>
-                <span>40Y</span>
+                <Input
+                  id="mc-deposit"
+                  type="number"
+                  min={0}
+                  step={1000}
+                  value={pendingDeposit}
+                  onChange={(e) => setPendingDeposit(Number(e.target.value))}
+                  className="pl-7 h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm font-medium text-neutral-900 focus:border-brand-primary dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                />
               </div>
             </div>
 
-            {/* Save Parameters */}
+            {/* Interest Rate + Loan Term (side by side) */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="mc-rate"
+                  className="text-[10px] font-bold uppercase tracking-widest text-neutral-400"
+                >
+                  Interest Rate
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="mc-rate"
+                    type="number"
+                    min={0}
+                    max={20}
+                    step={0.05}
+                    value={pendingRate}
+                    onChange={(e) => setPendingRate(Number(e.target.value))}
+                    className="pr-7 h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm font-medium text-neutral-900 focus:border-brand-primary dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-400">
+                    %
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="mc-term"
+                  className="text-[10px] font-bold uppercase tracking-widest text-neutral-400"
+                >
+                  Loan Term
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="mc-term"
+                    type="number"
+                    min={1}
+                    max={40}
+                    step={1}
+                    value={pendingTerm}
+                    onChange={(e) => setPendingTerm(Number(e.target.value))}
+                    className="pr-10 h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm font-medium text-neutral-900 focus:border-brand-primary dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-neutral-400">
+                    Yrs
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Repayment / Interest Only toggle */}
+            <div className="flex overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+              <button
+                type="button"
+                onClick={() => setPendingInterestOnly(false)}
+                className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
+                  !pendingInterestOnly
+                    ? "bg-brand-primary text-white"
+                    : "bg-white text-neutral-500 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-400"
+                }`}
+              >
+                Repayment
+              </button>
+              <button
+                type="button"
+                onClick={() => setPendingInterestOnly(true)}
+                className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${
+                  pendingInterestOnly
+                    ? "bg-brand-primary text-white"
+                    : "bg-white text-neutral-500 hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-400"
+                }`}
+              >
+                Interest Only
+              </button>
+            </div>
+
+            {/* Update Analysis */}
             <Button
-              onClick={handleSaveParams}
-              variant="outline"
-              className="mt-4 w-full gap-2"
+              onClick={applyAnalysis}
+              className="w-full h-11 rounded-xl bg-brand-primary text-white font-semibold hover:bg-brand-primary-light"
             >
-              <Save className="h-4 w-4" />
-              {hasParams ? "Update Saved Parameters" : "Save These Parameters"}
+              Update Analysis
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Right Column: Results Dashboard */}
-      <div className="space-y-6 lg:col-span-5">
-        <Card className="relative overflow-hidden shadow-xl">
-          <div className="absolute -mr-16 -mt-16 right-0 top-0 h-32 w-32 rounded-full bg-brand-primary/5" />
+      {/* ── Right: Results ── */}
+      <div className="space-y-4 lg:col-span-5">
+        {/* Main result card */}
+        <Card className="rounded-2xl border border-neutral-200 shadow-sm dark:border-neutral-800">
           <CardContent className="p-8">
-            {/* Monthly Payment */}
-            <h2 className="mb-2 text-sm font-bold uppercase tracking-widest text-neutral-400">
-              Estimated Monthly Payment
-            </h2>
-            <div className="mb-8 flex items-baseline gap-2">
-              <span className="text-5xl font-black text-neutral-900 dark:text-white">
-                {formatCurrency(results.monthlyPayment)}
+            {/* Header row */}
+            <div className="mb-1 flex items-start justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                Estimated Monthly Repayment
+              </p>
+              <span className="rounded-md border border-brand-secondary/40 bg-brand-secondary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-secondary">
+                LTV Ratio {results.ltv.toFixed(0)}%
               </span>
-              <span className="font-medium text-neutral-500">/ month</span>
             </div>
 
-            {/* Donut Chart + Breakdown */}
-            <div className="flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 md:flex-row dark:border-neutral-800">
-              {/* Donut Chart */}
-              <div className="relative h-40 w-40 flex-shrink-0">
-                <svg
-                  className="h-full w-full -rotate-90"
-                  viewBox="0 0 160 160"
-                >
-                  <circle
-                    cx="80"
-                    cy="80"
-                    r="70"
-                    fill="transparent"
-                    stroke="currentColor"
-                    strokeWidth="20"
-                    className="text-neutral-100 dark:text-neutral-800"
-                  />
-                  <circle
-                    cx="80"
-                    cy="80"
-                    r="70"
-                    fill="transparent"
-                    stroke="currentColor"
-                    strokeWidth="20"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={dashOffset}
-                    className="text-brand-primary"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[10px] font-bold uppercase text-neutral-400">
-                    Total Cost
-                  </span>
-                  <span className="text-sm font-bold">
-                    {formatCompact(results.totalRepayable)}
-                  </span>
-                </div>
-              </div>
+            {/* Big number */}
+            <p className="mb-6 font-heading text-5xl font-bold tracking-tight text-neutral-900 dark:text-white">
+              {formatCurrency(results.monthlyPayment)}
+            </p>
 
-              {/* Legend */}
-              <div className="w-full flex-1 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-brand-primary" />
-                    <span className="text-sm font-medium">Principal</span>
-                  </div>
-                  <span className="text-sm font-bold">
-                    {formatCurrency(loanAmount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-neutral-200 dark:bg-neutral-700" />
-                    <span className="text-sm font-medium text-neutral-500">
-                      Interest
-                    </span>
-                  </div>
-                  <span className="text-sm font-bold">
-                    {formatCurrency(results.totalInterest)}
-                  </span>
-                </div>
+            {/* Bar chart */}
+            <div className="mb-2">
+              <div className="flex items-end gap-1 h-24">
+                {bars.map((bar, i) => {
+                  const total = bar.principal + bar.interest;
+                  const principalPct = maxPayment > 0 ? (bar.principal / maxPayment) * 100 : 0;
+                  const interestPct = maxPayment > 0 ? (bar.interest / maxPayment) * 100 : 0;
+                  const isLast = i === bars.length - 1;
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-1 flex-col items-center gap-0 justify-end h-full"
+                      title={`Year ${bar.year}: ${formatCurrencyNoDecimals(total)}/mo`}
+                    >
+                      <div className="flex w-full flex-col justify-end gap-0" style={{ height: "100%" }}>
+                        {/* Interest portion (top, lighter) */}
+                        <div
+                          className={`w-full rounded-t-sm ${isLast ? "bg-brand-secondary" : "bg-brand-primary/30"}`}
+                          style={{ height: `${interestPct}%` }}
+                        />
+                        {/* Principal portion (bottom, solid) */}
+                        <div
+                          className={`w-full ${isLast ? "bg-brand-secondary/70" : "bg-brand-primary"}`}
+                          style={{ height: `${principalPct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* X-axis labels */}
+              <div className="mt-2 flex items-center justify-between px-0">
+                <span className="text-[9px] font-semibold uppercase text-neutral-400">
+                  Year 0
+                </span>
+                <span className="text-[9px] font-semibold uppercase text-neutral-400">
+                  Year {midYear}
+                </span>
+                <span className="text-[9px] font-semibold uppercase text-neutral-400">
+                  Year {termYears}
+                </span>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Summary Stats */}
-            <div className="mt-8 grid grid-cols-2 gap-4 border-t border-neutral-100 pt-8 dark:border-neutral-800">
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Total Interest Paid
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {formatCurrency(results.totalInterest)}
-                </p>
+        {/* Three stat cards */}
+        <div className="grid grid-cols-3 gap-3">
+          <Card className="rounded-2xl border border-neutral-200 shadow-sm dark:border-neutral-800">
+            <CardContent className="p-4">
+              <p className="mb-1 text-[9px] font-bold uppercase tracking-wider text-neutral-400">
+                Total Repayable
+              </p>
+              <p className="font-heading text-base font-bold text-neutral-900 dark:text-white">
+                {formatCurrencyNoDecimals(results.totalRepayable)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-2xl border border-neutral-200 shadow-sm dark:border-neutral-800">
+            <CardContent className="p-4">
+              <p className="mb-1 text-[9px] font-bold uppercase tracking-wider text-neutral-400">
+                Total Interest
+              </p>
+              <p className="font-heading text-base font-bold text-neutral-900 dark:text-white">
+                {formatCurrencyNoDecimals(results.totalInterest)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-2xl border border-brand-secondary/30 bg-brand-secondary/5 shadow-sm dark:border-neutral-800">
+            <CardContent className="p-4">
+              <p className="mb-1 text-[9px] font-bold uppercase tracking-wider text-brand-secondary">
+                Stamp Duty (Est)
+              </p>
+              <p className="font-heading text-base font-bold text-brand-secondary">
+                {formatCurrencyNoDecimals(results.stampDuty)}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* CTA card */}
+        <Card className="rounded-2xl bg-brand-primary shadow-sm">
+          <CardContent className="flex items-center justify-between p-5">
+            <div>
+              <p className="mb-0.5 text-sm font-bold text-white">
+                Ready to apply?
+              </p>
+              <p className="text-xs text-white/70">
+                Compare 1,000s of rates instantly.
+              </p>
+              <Link
+                href="/marketplace?category=mortgage-broker"
+                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-white/90 underline underline-offset-2 hover:text-white"
+              >
+                Check Rates →
+              </Link>
+            </div>
+            {/* Advisor card */}
+            <div className="flex items-center gap-3 border-l border-white/20 pl-5">
+              <div className="h-10 w-10 rounded-full bg-white/20 overflow-hidden flex items-center justify-center">
+                <span className="text-xs font-bold text-white">JV</span>
               </div>
               <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Total Repayable
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {formatCurrency(results.totalRepayable)}
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Loan-to-Value (LTV)
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {results.ltv.toFixed(1)}%
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Loan Amount
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {formatCurrency(loanAmount)}
+                <p className="text-[10px] font-bold text-white">Julianne Vane</p>
+                <p className="text-[9px] text-white/60">Senior Portfolio Advisor</p>
+                <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-white/80">
+                  Speak to an Expert
                 </p>
               </div>
             </div>
