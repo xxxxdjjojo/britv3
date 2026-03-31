@@ -42,7 +42,7 @@ export default function VerifyEmailConfirmedPage() {
     : null;
 
   return (
-    <div className="relative min-h-screen bg-surface overflow-hidden flex flex-col items-center justify-center px-4 py-12">
+    <div className="fixed inset-0 z-50 min-h-screen bg-surface overflow-hidden flex flex-col items-center justify-center px-4 py-12 overflow-y-auto">
       <AuthDecorativeBackground />
 
       {/* Logo */}

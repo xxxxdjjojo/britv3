@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function TwoFactorPage() {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-surface">
+    <div className="fixed inset-0 z-50 flex min-h-screen flex-col overflow-hidden bg-surface overflow-y-auto">
       <AuthDecorativeBackground />
 
       <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10">

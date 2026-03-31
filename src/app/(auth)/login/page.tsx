@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-screen flex-col bg-surface overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex min-h-screen flex-col overflow-hidden bg-surface overflow-y-auto">
       <AuthDecorativeBackground />
 
       {/* Centered content */}
