@@ -70,51 +70,41 @@ export default function OfflinePage() {
   }, [isOnline]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-3">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-3">
         <Logo />
         <div className="flex items-center gap-3">
           <div
-            className={`flex items-center gap-2 rounded-full px-3 py-1 ${
+            className={`flex items-center gap-2 rounded-full px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider ${
               isOnline
-                ? "bg-success-light text-success"
-                : "bg-brand-primary-lighter text-brand-primary"
+                ? "bg-brand-primary text-white"
+                : "bg-amber-100 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
             }`}
           >
             <CloudOff className="size-3.5" aria-hidden="true" />
-            <span className="text-xs font-bold uppercase tracking-wider">
-              {isOnline ? "Back Online" : "Offline"}
-            </span>
+            <span>{isOnline ? "Back Online" : "Offline"}</span>
           </div>
         </div>
       </header>
 
       {/* ── Main ───────────────────────────────────────────────── */}
-      <main className="flex flex-1 justify-center py-6 px-4 md:px-10">
+      <main className="flex flex-1 justify-center px-4 py-6 md:px-10">
         <div className="flex w-full max-w-3xl flex-col gap-8">
 
           {/* Offline hero */}
-          <div className="flex flex-col items-center justify-center rounded-xl border border-brand-primary/5 bg-white px-4 py-12 shadow-sm">
-            <div className="relative mb-6">
+          <div className="flex flex-col items-center justify-center rounded-xl bg-card px-4 py-12 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+            <div className="mb-6 rounded-full bg-amber-100 p-6 dark:bg-amber-900/20">
               <CloudOff
-                className="size-24 text-neutral-200"
-                strokeWidth={1}
+                className="size-12 text-amber-600 dark:text-amber-400"
+                strokeWidth={1.5}
                 aria-hidden="true"
               />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span
-                  className="text-4xl font-bold text-brand-primary"
-                  aria-hidden="true"
-                >
-                  ✕
-                </span>
-              </div>
             </div>
-            <h1 className="font-heading text-2xl font-bold text-neutral-900">
+            <h1 className="font-heading text-2xl font-bold text-foreground">
               {isOnline ? "You're back online!" : "You're offline"}
             </h1>
-            <p className="mt-2 max-w-xs text-center text-neutral-600">
+            <p className="mt-2 max-w-xs text-center font-body text-base text-neutral-500">
               {isOnline
                 ? "Redirecting you back to Britestate…"
                 : "Check your internet connection and try again."}
@@ -143,11 +133,11 @@ export default function OfflinePage() {
 
           {/* Cached content */}
           <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between border-b border-brand-primary/10 pb-2">
-              <h2 className="font-heading text-xl font-bold text-neutral-900">
+            <div className="flex items-center justify-between border-b border-neutral-200/60 pb-2 dark:border-neutral-700/60">
+              <h2 className="font-heading text-xl font-bold text-foreground">
                 Cached Content
               </h2>
-              <span className="text-xs font-medium text-neutral-500">
+              <span className="font-body text-xs font-medium text-neutral-500">
                 Available Offline
               </span>
             </div>
@@ -157,7 +147,7 @@ export default function OfflinePage() {
               <section>
                 <div className="mb-3 flex items-center gap-2">
                   <Search className="size-5 text-brand-primary" aria-hidden="true" />
-                  <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-neutral-900">
+                  <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-foreground">
                     Recent Searches
                   </h3>
                 </div>
@@ -165,13 +155,13 @@ export default function OfflinePage() {
                   {recentSearches.map((s, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 rounded-lg border border-brand-primary/10 bg-white px-3 py-2 shadow-sm"
+                      className="flex items-center gap-2 rounded-lg bg-card px-3 py-2 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60"
                     >
                       <Search
                         className="size-4 text-neutral-400"
                         aria-hidden="true"
                       />
-                      <span className="text-sm font-medium text-neutral-700">
+                      <span className="font-body text-sm font-medium text-foreground">
                         {s.label}
                       </span>
                     </div>
@@ -188,7 +178,7 @@ export default function OfflinePage() {
                     className="size-5 text-brand-primary"
                     aria-hidden="true"
                   />
-                  <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-neutral-900">
+                  <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-foreground">
                     Saved Properties
                   </h3>
                 </div>
@@ -196,19 +186,19 @@ export default function OfflinePage() {
                   {savedProperties.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-stretch justify-between gap-4 rounded-xl border border-brand-primary/5 bg-white p-3 shadow-sm transition-all hover:border-brand-primary/20"
+                      className="flex items-stretch justify-between gap-4 rounded-xl bg-card p-3 shadow-sm ring-1 ring-neutral-200/60 transition-shadow hover:shadow-md dark:ring-neutral-700/60"
                     >
                       <div className="flex flex-1 flex-col justify-between py-1">
                         <div className="flex flex-col gap-1">
-                          <p className="font-heading font-bold leading-tight text-neutral-900">
+                          <p className="font-heading font-bold leading-tight text-foreground">
                             {p.title}
                           </p>
-                          <p className="text-sm text-neutral-500">
+                          <p className="font-body text-sm text-neutral-500">
                             {p.location} • {p.price}
                           </p>
                         </div>
                         <div className="mt-4 flex gap-2">
-                          <span className="flex items-center gap-1 rounded-lg border border-neutral-200 px-2 py-1 text-[10px] font-bold uppercase text-neutral-400">
+                          <span className="flex items-center gap-1 rounded-lg border border-neutral-200/60 px-2 py-1 font-body text-[10px] font-semibold uppercase text-neutral-400 dark:border-neutral-700/60">
                             <CloudOff className="size-3" aria-hidden="true" />
                             Cached
                           </span>
@@ -220,12 +210,12 @@ export default function OfflinePage() {
                 </div>
               </section>
             ) : (
-              <div className="rounded-xl border border-dashed border-neutral-200 p-8 text-center text-neutral-400">
+              <div className="rounded-xl border border-dashed border-neutral-200/60 p-8 text-center dark:border-neutral-700/60">
                 <Bookmark
-                  className="mx-auto mb-2 size-8 opacity-40"
+                  className="mx-auto mb-2 size-8 text-neutral-300 dark:text-neutral-600"
                   aria-hidden="true"
                 />
-                <p className="text-sm">
+                <p className="font-body text-sm text-neutral-500">
                   No cached content available. Save properties to view them
                   offline.
                 </p>
@@ -234,15 +224,15 @@ export default function OfflinePage() {
           </div>
 
           {/* Help footer */}
-          <div className="flex items-center justify-center gap-4 border-t border-brand-primary/10 py-6">
+          <div className="flex items-center justify-center gap-4 border-t border-neutral-200/60 py-6 dark:border-neutral-700/60">
             <div className="flex items-center gap-2 text-neutral-500">
               <CloudOff className="size-4" aria-hidden="true" />
-              <span className="text-xs">Offline Mode</span>
+              <span className="font-body text-xs">Offline Mode</span>
             </div>
-            <div className="size-1 rounded-full bg-neutral-300" aria-hidden="true" />
+            <div className="size-1 rounded-full bg-neutral-300 dark:bg-neutral-600" aria-hidden="true" />
             <Link
               href="/help"
-              className="text-xs font-bold text-brand-primary hover:underline"
+              className="font-body text-xs font-semibold text-brand-primary hover:underline"
             >
               Help &amp; Support
             </Link>
@@ -252,7 +242,7 @@ export default function OfflinePage() {
 
       {/* ── Mobile bottom nav ──────────────────────────────────── */}
       <nav
-        className="sticky bottom-0 z-10 flex items-center justify-around border-t border-brand-primary/10 bg-white px-6 py-3"
+        className="sticky bottom-0 z-10 flex items-center justify-around border-t border-neutral-200/60 bg-card px-6 py-3 dark:border-neutral-700/60"
         aria-label="Mobile navigation"
       >
         {(
@@ -271,7 +261,7 @@ export default function OfflinePage() {
             <span className="text-xl" role="img" aria-hidden="true">
               {icon}
             </span>
-            <span className="text-[10px] font-bold">{label}</span>
+            <span className="font-body text-[10px] font-semibold">{label}</span>
           </div>
         ))}
       </nav>

@@ -51,9 +51,9 @@ export default function RateLimitedPage() {
   const dashOffset = circumference * (1 - progress / 100);
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-5 lg:px-10">
+      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-5 lg:px-10">
         <Logo />
         <Button asChild size="sm" variant="ghost">
           <Link href="/help">Help</Link>
@@ -62,10 +62,10 @@ export default function RateLimitedPage() {
 
       {/* ── Main ───────────────────────────────────────────────── */}
       <main className="flex flex-1 items-center justify-center p-6">
-        <div className="w-full max-w-md rounded-3xl border border-brand-primary/5 bg-white p-8 text-center shadow-sm md:p-12">
-          {/* Gauge icon with ring */}
+        <div className="w-full max-w-md rounded-2xl bg-card p-8 text-center shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 md:p-12">
+          {/* Gauge icon with countdown ring */}
           <div className="relative mb-8 flex items-center justify-center">
-            <div className="absolute inset-0 scale-150 rounded-full bg-warning-light/60 blur-2xl" />
+            <div className="absolute inset-0 scale-150 rounded-full bg-amber-100/60 blur-2xl dark:bg-amber-900/10" />
             {/* Countdown ring */}
             <svg
               className="relative -rotate-90"
@@ -98,19 +98,21 @@ export default function RateLimitedPage() {
               />
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
-              <Gauge
-                className="size-8 text-warning"
-                aria-hidden="true"
-              />
+              <div className="rounded-full bg-amber-100 p-2 dark:bg-amber-900/20">
+                <Gauge
+                  className="size-8 text-amber-600 dark:text-amber-400"
+                  aria-hidden="true"
+                />
+              </div>
             </div>
           </div>
 
           {/* Text */}
-          <div className="space-y-3">
-            <h1 className="font-heading text-3xl font-bold text-neutral-900 md:text-4xl">
+          <div className="space-y-2">
+            <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
               Too many requests
             </h1>
-            <p className="text-lg leading-relaxed text-neutral-600">
+            <p className="font-body text-base leading-relaxed text-neutral-500">
               You&apos;ve made too many requests in a short time. Please wait
               before trying again.
             </p>
@@ -118,12 +120,12 @@ export default function RateLimitedPage() {
 
           {/* Countdown */}
           {!canRetry && (
-            <div className="mx-auto mt-8 flex w-fit flex-col items-center rounded-xl bg-warning-light px-8 py-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-warning">
+            <div className="mx-auto mt-8 flex w-fit flex-col items-center rounded-xl bg-amber-50 px-8 py-4 dark:bg-amber-900/10">
+              <p className="font-body text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                 Try again in
               </p>
               <p
-                className="font-heading text-4xl font-bold text-warning"
+                className="font-heading text-3xl font-bold text-foreground"
                 aria-live="polite"
                 aria-atomic="true"
               >
@@ -133,30 +135,30 @@ export default function RateLimitedPage() {
           )}
 
           {/* Actions */}
-          <div className="mt-10 flex flex-col gap-3">
+          <div className="mt-8 flex flex-col gap-3">
             <Button
               size="lg"
-              className="h-14 w-full text-base font-bold"
+              className="h-12 w-full font-body text-sm font-medium"
               onClick={handleRetry}
               disabled={!canRetry}
             >
-              <RefreshCw className="mr-2 size-5" aria-hidden="true" />
+              <RefreshCw className="mr-2 size-4" aria-hidden="true" />
               {canRetry ? "Try Again" : `Wait ${formatted}`}
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="h-14 w-full text-base font-bold"
+              className="h-12 w-full font-body text-sm font-medium"
             >
               <Link href="/">
-                <Home className="mr-2 size-5" aria-hidden="true" />
+                <Home className="mr-2 size-4" aria-hidden="true" />
                 Go Home
               </Link>
             </Button>
           </div>
 
-          <p className="mt-6 text-xs text-neutral-400">
+          <p className="mt-6 font-body text-xs text-neutral-400">
             Rate limiting protects our platform for everyone. If you believe
             this is an error, please{" "}
             <Link

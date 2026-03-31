@@ -19,9 +19,9 @@ export default function ErrorPage({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-5 lg:px-10">
+      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-5 lg:px-10">
         <Logo />
         <Button asChild size="sm" variant="ghost">
           <Link href="/help">Help</Link>
@@ -30,48 +30,55 @@ export default function ErrorPage({
 
       {/* ── Main ───────────────────────────────────────────────── */}
       <main className="flex flex-1 items-center justify-center p-6">
-        <div className="w-full max-w-md rounded-3xl border border-brand-primary/5 bg-white p-8 text-center shadow-sm md:p-12">
+        <div className="w-full max-w-md rounded-2xl bg-card p-8 text-center shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 md:p-12">
           {/* Illustration */}
           <div className="relative mb-8 flex items-center justify-center">
-            <div className="absolute inset-0 scale-150 rounded-full bg-brand-primary/5 blur-2xl" />
-            <div className="relative flex size-32 items-center justify-center rounded-full bg-brand-primary-lighter text-brand-primary md:size-40">
-              <Wrench className="size-14 md:size-16" aria-hidden="true" />
+            <span
+              className="font-heading text-[120px] font-bold leading-none text-brand-primary/10 select-none"
+              aria-hidden="true"
+            >
+              500
+            </span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full bg-brand-primary-lighter p-6 dark:bg-brand-primary/20">
+                <Wrench className="size-12 text-brand-primary" aria-hidden="true" />
+              </div>
             </div>
           </div>
 
           {/* Text */}
-          <div className="space-y-3">
-            <h1 className="font-heading text-3xl font-bold text-neutral-900 md:text-4xl">
+          <div className="space-y-2">
+            <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
               Something went wrong
             </h1>
-            <p className="text-lg leading-relaxed text-neutral-600">
+            <p className="font-body text-base leading-relaxed text-neutral-500">
               We&apos;re working on fixing this. Please try again in a moment.
             </p>
             {error.digest && (
-              <p className="font-mono text-xs text-neutral-400">
+              <p className="font-mono text-xs text-muted-foreground">
                 ref: {error.digest}
               </p>
             )}
           </div>
 
           {/* Actions */}
-          <div className="mt-10 flex flex-col gap-3">
+          <div className="mt-8 flex flex-col gap-3">
             <Button
               size="lg"
-              className="h-14 w-full text-base font-bold shadow-lg shadow-brand-primary/20"
+              className="h-12 w-full font-body text-sm font-medium"
               onClick={reset}
             >
-              <RefreshCw className="mr-2 size-5" aria-hidden="true" />
+              <RefreshCw className="mr-2 size-4" aria-hidden="true" />
               Try Again
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="h-14 w-full text-base font-bold"
+              className="h-12 w-full font-body text-sm font-medium"
             >
               <Link href="/">
-                <Home className="mr-2 size-5" aria-hidden="true" />
+                <Home className="mr-2 size-4" aria-hidden="true" />
                 Go Home
               </Link>
             </Button>
@@ -83,7 +90,7 @@ export default function ErrorPage({
               href="https://status.britestate.co.uk"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 font-medium text-brand-primary underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-2 font-body text-sm font-medium text-brand-primary underline-offset-4 hover:underline"
             >
               <ExternalLink className="size-4" aria-hidden="true" />
               Check our status page

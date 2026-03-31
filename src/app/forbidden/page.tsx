@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function ForbiddenPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-5 md:px-20">
+      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-5 md:px-20">
         <Logo />
         <Button
           asChild
@@ -45,82 +45,85 @@ export default function ForbiddenPage() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-12 md:py-24">
         <div className="flex w-full max-w-[560px] flex-col items-center text-center">
           {/* Lock illustration */}
-          <div className="relative mb-10">
-            <div className="absolute inset-0 scale-150 rounded-full bg-brand-primary/5 blur-3xl" />
-            <div className="relative flex size-48 items-center justify-center rounded-full border border-brand-primary/5 bg-white shadow-xl">
-              <LockKeyhole
-                className="size-20 text-brand-primary"
-                strokeWidth={1.25}
-                aria-hidden="true"
-              />
+          <div className="relative mb-10 flex items-center justify-center">
+            <span
+              className="font-heading text-[160px] font-bold leading-none text-brand-primary/10 select-none"
+              aria-hidden="true"
+            >
+              403
+            </span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full bg-brand-primary-lighter p-8 dark:bg-brand-primary/20">
+                <LockKeyhole
+                  className="size-14 text-brand-primary"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                />
+              </div>
             </div>
           </div>
 
           {/* Text */}
-          <div className="mb-10 flex flex-col gap-4">
-            <h1 className="font-heading text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl">
+          <div className="mb-8 flex flex-col gap-3">
+            <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
               Access denied
             </h1>
-            <p className="mx-auto max-w-md text-lg leading-relaxed text-neutral-600">
+            <p className="mx-auto max-w-md font-body text-base leading-relaxed text-neutral-500">
               You don&apos;t have permission to view this page. If you think
               this is a mistake, please contact support.
             </p>
           </div>
 
           {/* CTAs */}
-          <div className="flex w-full flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button asChild size="lg" className="w-full min-w-40 sm:w-auto">
-              <Link href="/">
-                <Home className="mr-2 size-5" aria-hidden="true" />
-                Go Home
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="w-full min-w-40 sm:w-auto"
+          <div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/"
+              className="inline-flex min-w-40 items-center justify-center rounded-lg bg-brand-primary px-6 py-2.5 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             >
-              <Link href="/help">
-                <Headphones className="mr-2 size-5" aria-hidden="true" />
-                Contact Support
-              </Link>
-            </Button>
+              <Home className="mr-2 size-4" aria-hidden="true" />
+              Go Home
+            </Link>
+            <Link
+              href="/help"
+              className="inline-flex min-w-40 items-center justify-center rounded-lg border border-neutral-200/60 px-6 py-2.5 font-body text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2 dark:border-neutral-700/60"
+            >
+              <Headphones className="mr-2 size-4" aria-hidden="true" />
+              Contact Support
+            </Link>
           </div>
 
           {/* Helpful links grid */}
-          <div className="mt-16 grid w-full grid-cols-1 gap-8 border-t border-neutral-200 pt-10 sm:grid-cols-3">
+          <div className="mt-14 grid w-full grid-cols-1 gap-4 border-t border-neutral-200/60 pt-10 dark:border-neutral-700/60 sm:grid-cols-3">
             {(
               [
                 {
                   href: "/help",
                   icon: Headphones,
                   label: "Help Centre",
+                  description: "Browse our support articles.",
                 },
                 {
                   href: "/about",
                   icon: BookOpen,
                   label: "Documentation",
+                  description: "Learn about Britestate features.",
                 },
                 {
                   href: "/contact",
                   icon: Shield,
                   label: "Security Status",
+                  description: "View our security overview.",
                 },
               ] as const
-            ).map(({ href, icon: Icon, label }) => (
+            ).map(({ href, icon: Icon, label, description }) => (
               <Link
                 key={label}
                 href={href}
-                className="flex flex-col items-center gap-2 transition-colors hover:text-brand-primary"
+                className="rounded-xl bg-card p-4 text-left shadow-sm ring-1 ring-neutral-200/60 transition-shadow hover:shadow-md dark:ring-neutral-700/60"
               >
-                <Icon
-                  className="size-5 text-brand-primary/60"
-                  aria-hidden="true"
-                />
-                <span className="text-sm font-medium text-neutral-500">
-                  {label}
-                </span>
+                <Icon className="mb-2 size-5 text-brand-primary" aria-hidden="true" />
+                <p className="font-body text-sm font-medium text-foreground">{label}</p>
+                <p className="mt-1 font-body text-xs text-neutral-500">{description}</p>
               </Link>
             ))}
           </div>
@@ -128,7 +131,7 @@ export default function ForbiddenPage() {
       </main>
 
       {/* ── Footer ─────────────────────────────────────────────── */}
-      <footer className="flex flex-col gap-6 border-t border-brand-primary/5 bg-white px-6 py-10 text-center">
+      <footer className="flex flex-col gap-6 border-t border-brand-primary/5 bg-card px-6 py-10 text-center">
         <div className="flex flex-wrap items-center justify-center gap-8">
           {(
             [
@@ -140,13 +143,13 @@ export default function ForbiddenPage() {
             <Link
               key={label}
               href={href}
-              className="text-sm font-medium text-neutral-500 transition-colors hover:text-brand-primary"
+              className="font-body text-sm font-medium text-neutral-500 transition-colors hover:text-brand-primary"
             >
               {label}
             </Link>
           ))}
         </div>
-        <p className="text-sm text-neutral-400">
+        <p className="font-body text-sm text-neutral-400">
           © 2026 Britestate Real Estate. All rights reserved.
         </p>
       </footer>

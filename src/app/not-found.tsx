@@ -13,9 +13,9 @@ export default async function NotFound() {
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-5 lg:px-20">
+      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-5 lg:px-20">
         <Logo />
         <nav className="hidden items-center gap-8 md:flex">
           {(
@@ -29,7 +29,7 @@ export default async function NotFound() {
             <Link
               key={label}
               href={href}
-              className="text-sm font-medium text-neutral-600 transition-colors hover:text-brand-primary"
+              className="font-body text-sm font-medium text-neutral-500 transition-colors hover:text-brand-primary"
             >
               {label}
             </Link>
@@ -51,95 +51,75 @@ export default async function NotFound() {
         <div className="mx-auto max-w-2xl">
           {/* Illustration */}
           <div className="relative mb-16 flex items-center justify-center">
-            <div className="flex size-64 items-center justify-center rounded-full bg-brand-primary-lighter md:size-80">
-              <Home className="size-28 text-brand-primary/20 md:size-36" aria-hidden="true" />
-            </div>
-            {/* Badge — top-right */}
-            <div className="absolute right-0 top-2 rounded-xl border border-brand-primary/10 bg-white p-4 shadow-md md:-right-4">
-              <SearchX className="size-8 text-brand-primary" aria-hidden="true" />
-            </div>
-            {/* Error 404 pill — below circle */}
-            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 rounded-full border border-brand-primary/20 bg-neutral-50 px-6 py-2 shadow-sm">
-              <span className="font-heading text-sm font-semibold uppercase tracking-widest text-brand-primary">
-                Error 404
-              </span>
+            <span
+              className="font-heading text-[180px] font-bold leading-none text-brand-primary/10 select-none"
+              aria-hidden="true"
+            >
+              404
+            </span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full bg-brand-primary-lighter p-8 dark:bg-brand-primary/20">
+                <SearchX className="size-16 text-brand-primary" aria-hidden="true" />
+              </div>
             </div>
           </div>
 
           {/* Heading */}
-          <h1 className="font-heading text-5xl font-light text-neutral-400 md:text-6xl">
+          <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
             Page not found
           </h1>
-          <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-neutral-600">
+          <p className="mx-auto mt-3 max-w-lg font-body text-base leading-relaxed text-neutral-500">
             The page you&apos;re looking for doesn&apos;t exist or has been
             moved. Let&apos;s get you back on track.
           </p>
 
           {/* CTAs */}
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/">
-                <Home className="mr-2 size-5" aria-hidden="true" />
-                Go Home
-              </Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto"
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/"
+              className="inline-flex items-center rounded-lg bg-brand-primary px-6 py-2.5 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             >
-              <Link href="/search">
-                <SearchX className="mr-2 size-5" aria-hidden="true" />
-                Search Properties
-              </Link>
-            </Button>
+              <Home className="mr-2 size-4" aria-hidden="true" />
+              Go Home
+            </Link>
+            <Link
+              href="/search"
+              className="inline-flex items-center rounded-lg border border-neutral-200/60 px-6 py-2.5 font-body text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2 dark:border-neutral-700/60"
+            >
+              <SearchX className="mr-2 size-4" aria-hidden="true" />
+              Search Properties
+            </Link>
           </div>
 
           {/* Helpful link cards */}
-          <div className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-3">
             <Link
               href="/search"
-              className="group rounded-xl border border-brand-primary/10 bg-white/60 p-6 text-left transition-all hover:border-brand-primary/30 hover:bg-white hover:shadow-md"
+              className="rounded-xl bg-card p-5 text-left shadow-sm ring-1 ring-neutral-200/60 transition-shadow hover:shadow-md dark:ring-neutral-700/60"
             >
-              <Building2
-                className="mb-3 size-6 text-brand-primary"
-                aria-hidden="true"
-              />
-              <h3 className="mb-1 font-heading font-semibold text-neutral-800">
-                New Listings
-              </h3>
-              <p className="text-sm text-neutral-500">
+              <Building2 className="mb-3 size-5 text-brand-primary" aria-hidden="true" />
+              <p className="font-body text-sm font-medium text-foreground">New Listings</p>
+              <p className="mt-1 font-body text-xs text-neutral-500">
                 Explore the latest homes on the market.
               </p>
             </Link>
             <Link
               href="/help"
-              className="group rounded-xl border border-brand-primary/10 bg-white/60 p-6 text-left transition-all hover:border-brand-primary/30 hover:bg-white hover:shadow-md"
+              className="rounded-xl bg-card p-5 text-left shadow-sm ring-1 ring-neutral-200/60 transition-shadow hover:shadow-md dark:ring-neutral-700/60"
             >
-              <Headphones
-                className="mb-3 size-6 text-brand-primary"
-                aria-hidden="true"
-              />
-              <h3 className="mb-1 font-heading font-semibold text-neutral-800">
-                Help Centre
-              </h3>
-              <p className="text-sm text-neutral-500">
+              <Headphones className="mb-3 size-5 text-brand-primary" aria-hidden="true" />
+              <p className="font-body text-sm font-medium text-foreground">Help Centre</p>
+              <p className="mt-1 font-body text-xs text-neutral-500">
                 Need assistance? Talk to our support team.
               </p>
             </Link>
             <Link
               href="/areas"
-              className="group rounded-xl border border-brand-primary/10 bg-white/60 p-6 text-left transition-all hover:border-brand-primary/30 hover:bg-white hover:shadow-md"
+              className="rounded-xl bg-card p-5 text-left shadow-sm ring-1 ring-neutral-200/60 transition-shadow hover:shadow-md dark:ring-neutral-700/60"
             >
-              <MapPin
-                className="mb-3 size-6 text-brand-primary"
-                aria-hidden="true"
-              />
-              <h3 className="mb-1 font-heading font-semibold text-neutral-800">
-                Neighbourhoods
-              </h3>
-              <p className="text-sm text-neutral-500">
+              <MapPin className="mb-3 size-5 text-brand-primary" aria-hidden="true" />
+              <p className="font-body text-sm font-medium text-foreground">Neighbourhoods</p>
+              <p className="mt-1 font-body text-xs text-neutral-500">
                 Find the perfect area for your next move.
               </p>
             </Link>
@@ -161,13 +141,13 @@ export default async function NotFound() {
               <Link
                 key={label}
                 href={href}
-                className="text-sm text-neutral-500 transition-colors hover:text-brand-primary"
+                className="font-body text-sm text-neutral-500 transition-colors hover:text-brand-primary"
               >
                 {label}
               </Link>
             ))}
           </div>
-          <p className="text-sm text-neutral-400">
+          <p className="font-body text-sm text-neutral-400">
             © 2026 Britestate. All rights reserved.
           </p>
         </div>
