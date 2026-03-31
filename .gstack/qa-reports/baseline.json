@@ -1,20 +1,10 @@
 {
-  "date": "2026-03-26",
+  "date": "2026-04-01",
   "url": "http://localhost:3000",
-  "healthScore": 92,
+  "healthScore": 91,
   "issues": [
-    {"id": "ISSUE-001", "title": "PostHog Script MIME Type Error", "severity": "low", "category": "console"},
-    {"id": "ISSUE-002", "title": "fetchTopRatedProviders DB Column Missing", "severity": "medium", "category": "console"},
-    {"id": "ISSUE-003", "title": "Hydration Mismatch Warning", "severity": "low", "category": "console"}
+    { "id": "ISSUE-001", "title": "Auth page overlay missing", "severity": "critical", "category": "functional", "status": "fixed" },
+    { "id": "ISSUE-002", "title": "Pricing redirects to login", "severity": "medium", "category": "functional", "status": "deferred" }
   ],
-  "categoryScores": {
-    "console": 40,
-    "links": 100,
-    "visual": 100,
-    "functional": 100,
-    "ux": 100,
-    "performance": 100,
-    "content": 100,
-    "accessibility": 100
-  }
+  "categoryScores": { "console": 70, "links": 100, "visual": 100, "functional": 95, "ux": 95, "performance": 85, "content": 100, "accessibility": 90 }
 }

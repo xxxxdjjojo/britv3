@@ -220,7 +220,7 @@ function InfoRow({
         <Icon className="size-4 text-brand-primary" />
       </div>
       <div className="min-w-0">
-        <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-neutral-400">
           {label}
         </p>
         <p className="truncate text-sm font-medium text-neutral-800">{value}</p>
@@ -328,7 +328,7 @@ export function NegotiationThread({
       {/* Buyer details */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-muted/30 px-5 py-3.5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
             Buyer Details
           </p>
         </div>
@@ -349,7 +349,7 @@ export function NegotiationThread({
         {offer.conditions && (
           <div className="px-4 pb-4">
             <div className="mb-3 h-px bg-neutral-100" />
-            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+            <p className="text-xs font-medium uppercase tracking-widest text-neutral-400">
               Conditions
             </p>
             <p className="mt-1.5 text-sm text-neutral-700">{offer.conditions}</p>
@@ -360,7 +360,7 @@ export function NegotiationThread({
       {/* History timeline */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-muted/30 px-5 py-3.5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
             History
           </p>
         </div>
@@ -381,7 +381,7 @@ export function NegotiationThread({
       {!isFinal && (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="bg-muted/30 px-5 py-3.5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+            <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
               Actions
             </p>
           </div>

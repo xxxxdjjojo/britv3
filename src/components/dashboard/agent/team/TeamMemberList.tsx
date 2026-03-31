@@ -535,7 +535,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
             value={newRole}
             onValueChange={(v) => setNewRole((v ?? "") as TeamRole)}
           >
-            <SelectTrigger className="rounded-lg bg-neutral-50">
+            <SelectTrigger className="rounded-xl bg-muted/40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -580,7 +580,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
             value={newBranchId}
             onValueChange={(v) => setNewBranchId(v ?? "")}
           >
-            <SelectTrigger className="rounded-lg bg-neutral-50">
+            <SelectTrigger className="rounded-xl bg-muted/40">
               <SelectValue placeholder="No branch" />
             </SelectTrigger>
             <SelectContent>

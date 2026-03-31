@@ -264,7 +264,7 @@ function ProgressionDialog({
           {/* IDs */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+              <p className="text-[10px] font-medium uppercase tracking-widest text-neutral-400">
                 Property ID
               </p>
               <p className="mt-1 font-mono text-xs text-neutral-700">
@@ -272,7 +272,7 @@ function ProgressionDialog({
               </p>
             </div>
             <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+              <p className="text-[10px] font-medium uppercase tracking-widest text-neutral-400">
                 Offer ID
               </p>
               <p className="mt-1 font-mono text-xs text-neutral-700">
@@ -296,7 +296,7 @@ function ProgressionDialog({
 
           {progression.solicitor_buyer && (
             <div className="rounded-xl bg-muted/40 p-3">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">
                 Buyer Solicitor
               </p>
               <div className="space-y-1 font-mono text-xs text-neutral-700">
