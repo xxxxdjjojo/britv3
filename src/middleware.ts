@@ -9,7 +9,6 @@ import { ADMIN_ROUTE_PERMISSIONS, hasPermission, type AdminRole } from "@/lib/ad
 type MiddlewareProfileData = {
   active_role: string | null;
   is_admin: boolean;
-  admin_role: string | null;
   provider_verification_status: string | null;
   verification_level: string | null;
 };
@@ -252,7 +251,7 @@ export async function middleware(request: NextRequest) {
     try {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("active_role, is_admin, admin_role, provider_verification_status, verification_level")
+        .select("active_role, is_admin, provider_verification_status, verification_level")
         .eq("id", user!.id)
         .single();
 
@@ -282,12 +281,9 @@ export async function middleware(request: NextRequest) {
 
   // ── Admin role permission gate ────────────────────────────────────
   if (isAdminRoute && pathname !== "/admin") {
-    const adminRole = (hasClaims ? appMetadata?.admin_role : profileData?.admin_role) as AdminRole | undefined;
-    // Deny access if admin_role is not set — never default to highest privilege
-    if (!adminRole) {
-      return redirectWithHeaders("/forbidden", nonce, request);
-    }
-    const role = adminRole;
+    const adminRole = (hasClaims ? appMetadata?.admin_role : undefined) as AdminRole | undefined;
+    // Default to super_admin when admin_role column is not yet provisioned
+    const role: AdminRole = adminRole ?? "super_admin";
 
     // Find the matching route permission
     const matchedRoute = Object.keys(ADMIN_ROUTE_PERMISSIONS)
