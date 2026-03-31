@@ -4,6 +4,8 @@ import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { Loader2 } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -21,6 +23,12 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
+        accent:
+          "bg-brand-accent text-white hover:bg-brand-accent/90 focus-visible:border-brand-accent/40 focus-visible:ring-brand-accent/20",
+        premium:
+          "bg-brand-secondary text-neutral-950 hover:bg-brand-secondary/90 focus-visible:border-brand-secondary/40 focus-visible:ring-brand-secondary/20",
+        "outline-destructive":
+          "border-error text-error bg-background hover:bg-error-light focus-visible:border-error/40 focus-visible:ring-error/20",
       },
       size: {
         default:
@@ -45,8 +53,11 @@ const buttonVariants = cva(
 
 type ButtonProps = ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {
-    /** Render as the immediate child element (Radix Slot pattern). */
     asChild?: boolean;
+    loading?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
+    fullWidth?: boolean;
   };
 
 function Button({
@@ -54,15 +65,21 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  loading = false,
+  leftIcon,
+  rightIcon,
+  fullWidth = false,
   children,
   ...props
 }: ButtonProps) {
-  const resolvedClassName = cn(buttonVariants({ variant, size, className }));
+  const resolvedClassName = cn(
+    buttonVariants({ variant, size }),
+    fullWidth && "w-full",
+    loading && "pointer-events-none",
+    className,
+  );
 
   if (asChild && React.isValidElement(children)) {
-    // Merge button styles into child element (e.g. Link).
-    // This replicates the Radix `asChild` / Slot pattern without
-    // requiring @radix-ui/react-slot as a direct dependency.
     return React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
       "data-slot": "button",
       className: cn(
@@ -76,11 +93,23 @@ function Button({
     <ButtonPrimitive
       data-slot="button"
       className={resolvedClassName}
+      disabled={loading || props.disabled}
       {...props}
     >
-      {children}
+      {loading ? (
+        <>
+          <Loader2 className="size-4 animate-spin" data-icon="inline-start" />
+          {children}
+        </>
+      ) : (
+        <>
+          {leftIcon && <span data-icon="inline-start">{leftIcon}</span>}
+          {children}
+          {rightIcon && <span data-icon="inline-end">{rightIcon}</span>}
+        </>
+      )}
     </ButtonPrimitive>
-  )
+  );
 }
 
 export type { ButtonProps }

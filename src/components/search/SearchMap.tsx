@@ -58,7 +58,7 @@ const DEFAULT_ZOOM = 6;
 
 // Brand colors from the Invisible Estate design system
 const PROPERTY_MARKER_COLOR = "#1B4D3E"; // brand-primary
-const PROVIDER_MARKER_COLOR = "#A07D2E"; // brand-secondary
+const PROVIDER_MARKER_COLOR = "#D4A853"; // brand-secondary
 
 // ---------------------------------------------------------------------------
 // Helpers
