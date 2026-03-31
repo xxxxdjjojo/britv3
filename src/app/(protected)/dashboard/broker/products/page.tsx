@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -52,10 +51,10 @@ const RATE_TYPE_LABELS: Record<RateType, string> = {
   tracker: "Tracker",
 };
 
-const RATE_TYPE_COLORS: Record<RateType, string> = {
-  fixed: "bg-blue-50 text-blue-700 border-blue-200",
-  variable: "bg-amber-50 text-amber-700 border-amber-200",
-  tracker: "bg-purple-50 text-purple-700 border-purple-200",
+const RATE_TYPE_CLASSES: Record<RateType, string> = {
+  fixed: "bg-brand-primary-lighter text-brand-primary",
+  variable: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+  tracker: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
 };
 
 const formatCurrency = (value: number) =>
@@ -93,18 +92,18 @@ export default function ProductsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Mortgage Products</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Mortgage Products</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Compare mortgage products across lenders to find the best deal for your clients.
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4">
+      <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Search */}
           <div>
-            <Label htmlFor="product-search" className="text-xs font-medium text-neutral-500">
+            <Label htmlFor="product-search" className="font-body text-xs font-medium text-neutral-500">
               Search
             </Label>
             <div className="relative mt-1">
@@ -114,16 +113,16 @@ export default function ProductsPage() {
                 placeholder="Lender or product name..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
+                className="pl-9 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm"
               />
             </div>
           </div>
 
           {/* Rate Type */}
           <div>
-            <Label className="text-xs font-medium text-neutral-500">Rate Type</Label>
+            <Label className="font-body text-xs font-medium text-neutral-500">Rate Type</Label>
             <Select value={rateTypeFilter} onValueChange={(value: string | null) => setRateTypeFilter(value ?? "")}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm">
                 <SelectValue placeholder="All types" />
               </SelectTrigger>
               <SelectContent>
@@ -137,9 +136,9 @@ export default function ProductsPage() {
 
           {/* Max LTV */}
           <div>
-            <Label className="text-xs font-medium text-neutral-500">Min LTV Available</Label>
+            <Label className="font-body text-xs font-medium text-neutral-500">Min LTV Available</Label>
             <Select value={maxLtvFilter} onValueChange={(value: string | null) => setMaxLtvFilter(value ?? "")}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm">
                 <SelectValue placeholder="Any LTV" />
               </SelectTrigger>
               <SelectContent>
@@ -155,9 +154,9 @@ export default function ProductsPage() {
 
           {/* Term */}
           <div>
-            <Label className="text-xs font-medium text-neutral-500">Term</Label>
+            <Label className="font-body text-xs font-medium text-neutral-500">Term</Label>
             <Select value={termFilter} onValueChange={(value: string | null) => setTermFilter(value ?? "")}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card font-body text-sm">
                 <SelectValue placeholder="Any term" />
               </SelectTrigger>
               <SelectContent>
@@ -173,57 +172,57 @@ export default function ProductsPage() {
       </div>
 
       {/* Results count */}
-      <p className="text-sm text-neutral-500">
-        Showing <span className="font-semibold text-neutral-900">{filtered.length}</span> products
+      <p className="font-body text-sm text-neutral-500">
+        Showing <span className="font-semibold text-foreground">{filtered.length}</span> products
       </p>
 
       {/* Products Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50/50">
-                <th className="px-4 py-3 text-left font-semibold text-neutral-600">Lender</th>
-                <th className="px-4 py-3 text-left font-semibold text-neutral-600">Product</th>
-                <th className="px-4 py-3 text-right font-semibold text-neutral-600">Rate</th>
-                <th className="px-4 py-3 text-center font-semibold text-neutral-600">Type</th>
-                <th className="px-4 py-3 text-right font-semibold text-neutral-600">Max LTV</th>
-                <th className="px-4 py-3 text-right font-semibold text-neutral-600">Fees</th>
-                <th className="px-4 py-3 text-right font-semibold text-neutral-600">Monthly</th>
-                <th className="px-4 py-3 text-right font-semibold text-neutral-600">APRC</th>
+              <tr className="bg-muted/40">
+                <th className="px-4 py-3 text-left font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lender</th>
+                <th className="px-4 py-3 text-left font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product</th>
+                <th className="px-4 py-3 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Rate</th>
+                <th className="px-4 py-3 text-center font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Type</th>
+                <th className="px-4 py-3 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Max LTV</th>
+                <th className="px-4 py-3 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fees</th>
+                <th className="px-4 py-3 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">Monthly</th>
+                <th className="px-4 py-3 text-right font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">APRC</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((product) => (
                 <tr
                   key={product.id}
-                  className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors cursor-pointer"
+                  className="border-b border-neutral-100/60 dark:border-neutral-700/60 transition-colors hover:bg-muted/30 cursor-pointer"
                 >
-                  <td className="px-4 py-3 font-medium text-neutral-900">{product.lender}</td>
-                  <td className="px-4 py-3 text-neutral-700">{product.productName}</td>
-                  <td className="px-4 py-3 text-right font-bold text-[#1B4D3E]">{product.rate.toFixed(2)}%</td>
+                  <td className="px-4 py-3 font-body text-sm font-medium text-foreground">{product.lender}</td>
+                  <td className="px-4 py-3 font-body text-sm text-foreground">{product.productName}</td>
+                  <td className="px-4 py-3 text-right font-heading text-sm font-bold text-brand-primary">{product.rate.toFixed(2)}%</td>
                   <td className="px-4 py-3 text-center">
-                    <Badge variant="outline" className={RATE_TYPE_COLORS[product.rateType]}>
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-body text-xs font-medium ${RATE_TYPE_CLASSES[product.rateType]}`}>
                       {RATE_TYPE_LABELS[product.rateType]}
-                    </Badge>
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-right text-neutral-700">{product.maxLtv}%</td>
-                  <td className="px-4 py-3 text-right text-neutral-700">
+                  <td className="px-4 py-3 text-right font-body text-sm text-foreground">{product.maxLtv}%</td>
+                  <td className="px-4 py-3 text-right font-body text-sm text-foreground">
                     {product.fees === 0 ? (
                       <span className="text-emerald-600 font-medium">Free</span>
                     ) : (
                       formatCurrency(product.fees)
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold text-neutral-900">
+                  <td className="px-4 py-3 text-right font-body text-sm font-semibold text-foreground">
                     {formatCurrency(product.monthlyPayment)}
                   </td>
-                  <td className="px-4 py-3 text-right text-neutral-500">{product.aprc.toFixed(1)}%</td>
+                  <td className="px-4 py-3 text-right font-body text-sm text-neutral-500">{product.aprc.toFixed(1)}%</td>
                 </tr>
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-12 text-center text-neutral-400">
+                  <td colSpan={8} className="px-4 py-12 text-center font-body text-sm text-neutral-400">
                     No products match your filters. Try adjusting your criteria.
                   </td>
                 </tr>
