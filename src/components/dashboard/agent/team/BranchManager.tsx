@@ -236,7 +236,7 @@ export function BranchManager({ branches: initialBranches, members }: Props) {
             return (
               <div
                 key={branch.id}
-                className="overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md"
+                className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md"
               >
                 {/* Card header */}
                 <div className="flex items-start justify-between gap-2 bg-neutral-50 px-4 py-4">

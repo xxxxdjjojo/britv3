@@ -324,7 +324,7 @@ export function NegotiationThread({
       </div>
 
       {/* Buyer details */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-neutral-50 px-5 py-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
             Buyer Details
@@ -345,8 +345,9 @@ export function NegotiationThread({
           />
         </div>
         {offer.conditions && (
-          <div className="border-t border-neutral-100 px-4 pb-4">
-            <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-400">
+          <div className="px-4 pb-4">
+            <div className="mb-3 h-px bg-neutral-100" />
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">
               Conditions
             </p>
             <p className="mt-1.5 text-sm text-neutral-700">{offer.conditions}</p>
@@ -355,7 +356,7 @@ export function NegotiationThread({
       </div>
 
       {/* History timeline */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-neutral-50 px-5 py-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
             History
@@ -376,7 +377,7 @@ export function NegotiationThread({
 
       {/* Actions */}
       {!isFinal && (
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="bg-neutral-50 px-5 py-3.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Actions

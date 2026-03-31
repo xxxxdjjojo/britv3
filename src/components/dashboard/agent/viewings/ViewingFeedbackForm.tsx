@@ -96,7 +96,7 @@ function FeedbackCard({ feedback }: Readonly<{ feedback: AgentViewingFeedback }>
   const likeCfg = likelihoodConfig(feedback.likelihood_to_offer);
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
       {/* Header */}
       <div className="bg-neutral-50 px-4 py-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
@@ -252,7 +252,7 @@ function AddFeedbackForm({ onAdded }: Readonly<{ onAdded: () => void }>) {
   ];
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
       <div className="bg-neutral-50 px-6 py-4">
         <p className="font-semibold text-neutral-900">Add Viewing Feedback</p>
       </div>

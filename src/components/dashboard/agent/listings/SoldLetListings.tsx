@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import Image from "next/image";
 import { Building2, Clock, CheckCircle2, Banknote } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,10 +55,12 @@ function SoldLetCard({ listing }: Readonly<{ listing: Record<string, unknown> }>
       {/* Image */}
       <div className="relative h-48 overflow-hidden bg-muted">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, 300px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -68,8 +73,8 @@ function SoldLetCard({ listing }: Readonly<{ listing: Record<string, unknown> }>
           className={cn(
             "absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide",
             isSold
-              ? "bg-red-600/90 text-white"
-              : "bg-emerald-600/90 text-white",
+              ? "bg-error/90 text-white"
+              : "bg-success/90 text-white",
           )}
         >
           {isSold ? "Sold" : "Let"}

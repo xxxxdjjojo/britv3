@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Eye, EyeOff, Send } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Send, Star } from "lucide-react";
 import Link from "next/link";
 
 type Review = {
@@ -72,16 +72,13 @@ function checkProfanity(text: string): string[] {
 
 function StarDisplay({ rating }: { rating: number }) {
   return (
-    <span className="text-lg" aria-label={`${rating} out of 5 stars`}>
+    <span className="inline-flex gap-0.5" aria-label={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <span
+        <Star
           key={star}
-          className={
-            star <= rating ? "text-brand-secondary" : "text-neutral-200"
-          }
-        >
-          ★
-        </span>
+          className={`size-4 ${star <= rating ? "text-brand-secondary fill-brand-secondary" : "text-neutral-200"}`}
+          strokeWidth={1.25}
+        />
       ))}
     </span>
   );
@@ -166,7 +163,7 @@ export function ReviewResponseForm({ review }: Props) {
       </div>
 
       {/* Original review */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-neutral-50 px-5 py-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
             Original Review
@@ -194,19 +191,15 @@ export function ReviewResponseForm({ review }: Props) {
       </div>
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-neutral-100" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-neutral-50 px-3 text-xs font-semibold tracking-widest text-neutral-400">
-            Your Response
-          </span>
-        </div>
+      <div className="relative flex items-center justify-center">
+        <div className="h-px w-full bg-neutral-100" />
+        <span className="absolute bg-background px-3 text-xs font-semibold tracking-widest text-neutral-400 uppercase">
+          Your Response
+        </span>
       </div>
 
       {/* Response input / preview */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="flex items-center justify-between bg-neutral-50 px-5 py-4">
           <p className="font-semibold text-neutral-900">
             {isPreview ? "Preview" : "Write Response"}

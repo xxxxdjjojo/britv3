@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Building2,
   Eye,
@@ -12,7 +13,6 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -101,10 +101,12 @@ function ListingCard({ listing }: Readonly<{ listing: Record<string, unknown> }>
       {/* Image */}
       <div className="relative h-48 overflow-hidden bg-muted">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, 300px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -148,20 +150,23 @@ function ListingCard({ listing }: Readonly<{ listing: Record<string, unknown> }>
         </div>
 
         {/* Actions */}
-        <div className="mt-4 flex items-center gap-2 border-t border-border/60 pt-4">
-          <Link
-            href={`/dashboard/agent/listings/${id}/analytics`}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/80"
-          >
-            <BarChart3 className="size-3.5" strokeWidth={1.25} />
-            Analytics
-          </Link>
-          <Link
-            href={`/dashboard/agent/listings/${id}`}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs font-medium text-brand-primary transition-colors hover:bg-brand-primary/20"
-          >
-            View listing
-          </Link>
+        <div className="mt-4 pt-4">
+          <div className="mb-4 h-px bg-border/60" />
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/dashboard/agent/listings/${id}/analytics`}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/80"
+            >
+              <BarChart3 className="size-3.5" strokeWidth={1.25} />
+              Analytics
+            </Link>
+            <Link
+              href={`/dashboard/agent/listings/${id}`}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs font-medium text-brand-primary transition-colors hover:bg-brand-primary/20"
+            >
+              View listing
+            </Link>
+          </div>
         </div>
       </div>
     </div>

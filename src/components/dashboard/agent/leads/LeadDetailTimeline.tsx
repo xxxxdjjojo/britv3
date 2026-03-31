@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -119,7 +120,7 @@ export function LeadDetailTimeline({
         setNoteText("");
       }
     } catch {
-      // fail silently
+      toast.error("Failed to add note");
     } finally {
       setIsAddingNote(false);
     }
@@ -269,7 +270,8 @@ export function LeadDetailTimeline({
               )}
 
               {/* Add note form */}
-              <div className="mt-4 pt-4 border-t border-neutral-100">
+              <div className="mt-4 pt-4">
+                <div className="mb-4 h-px bg-neutral-100" />
                 <form onSubmit={handleAddNote} className="space-y-2.5">
                   <Textarea
                     placeholder="Add a note..."

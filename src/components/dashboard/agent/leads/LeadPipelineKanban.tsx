@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserPlus, Search } from "lucide-react";
+import { toast } from "sonner";
 import { LeadCard } from "./LeadCard";
 import type { AgentLead, LeadStage } from "@/types/agent";
 import { LEAD_STAGES, LEAD_SOURCES } from "@/types/agent";
@@ -210,9 +211,11 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
         setAddLeadEmail("");
         setAddLeadSource("");
         setAddLeadOpen(false);
+      } else {
+        toast.error("Failed to add lead");
       }
     } catch {
-      // fail silently — the lead can be refreshed
+      toast.error("Failed to add lead");
     } finally {
       setIsSubmitting(false);
     }

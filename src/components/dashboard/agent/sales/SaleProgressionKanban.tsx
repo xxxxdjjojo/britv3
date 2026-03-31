@@ -24,11 +24,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Handshake,
+  FileText,
+  Scale,
+  Search as SearchIcon,
+  Building,
+  Landmark,
+  PenTool,
+  PartyPopper,
+} from "lucide-react";
 import type { AgentSaleProgressionWithRisk, SaleStage } from "@/types/agent";
 import { SALE_STAGES } from "@/types/agent";
 import { ChainRiskBadge } from "@/components/dashboard/agent/sales/ChainRiskBadge";
@@ -38,27 +47,27 @@ import { ChainDetailDialog } from "@/components/dashboard/agent/sales/ChainDetai
 // Stage metadata
 // --------------------------------------------------------------------------
 
-const STAGE_LABELS: Record<SaleStage, { label: string; desc: string; emoji: string }> = {
+const STAGE_LABELS: Record<SaleStage, { label: string; desc: string; Icon: React.ElementType }> = {
   offer_accepted: {
     label: "Offer Accepted",
     desc: "Memo of sale pending",
-    emoji: "🤝",
+    Icon: Handshake,
   },
   memorandum_of_sale: {
     label: "Memo of Sale",
     desc: "Memorandum issued",
-    emoji: "📄",
+    Icon: FileText,
   },
   solicitors_instructed: {
     label: "Solicitors",
     desc: "Both parties instructed",
-    emoji: "⚖️",
+    Icon: Scale,
   },
-  searches: { label: "Searches", desc: "Local searches underway", emoji: "🔍" },
-  survey: { label: "Survey", desc: "Property survey booked", emoji: "🏗️" },
-  mortgage: { label: "Mortgage", desc: "Mortgage offer received", emoji: "🏦" },
-  exchange: { label: "Exchange", desc: "Contracts exchanged", emoji: "✍️" },
-  completion: { label: "Completion", desc: "Completion day", emoji: "🎉" },
+  searches: { label: "Searches", desc: "Local searches underway", Icon: SearchIcon },
+  survey: { label: "Survey", desc: "Property survey booked", Icon: Building },
+  mortgage: { label: "Mortgage", desc: "Mortgage offer received", Icon: Landmark },
+  exchange: { label: "Exchange", desc: "Contracts exchanged", Icon: PenTool },
+  completion: { label: "Completion", desc: "Completion day", Icon: PartyPopper },
 };
 
 // --------------------------------------------------------------------------
@@ -179,7 +188,7 @@ function DroppableColumn({
       <div className="mb-1 px-1">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <span className="text-sm">{meta.emoji}</span>
+            <meta.Icon className="size-3.5 text-neutral-500 shrink-0" strokeWidth={1.5} />
             <p className="text-xs font-semibold text-neutral-800">{meta.label}</p>
           </div>
           <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-neutral-500 shadow-sm">
@@ -241,8 +250,8 @@ function ProgressionDialog({
         <div className="flex flex-col gap-4">
           {/* Stage pill + health */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-brand-primary-lighter px-3 py-1 text-xs font-semibold text-brand-primary">
-              {STAGE_LABELS[progression.stage].emoji}{" "}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary-lighter px-3 py-1 text-xs font-semibold text-brand-primary">
+              {(() => { const { Icon } = STAGE_LABELS[progression.stage]; return <Icon className="size-3 shrink-0" strokeWidth={1.5} />; })()}
               {STAGE_LABELS[progression.stage].label}
             </span>
             <span
@@ -462,7 +471,8 @@ export function SaleProgressionKanban({
               <p className="truncate text-xs font-semibold text-neutral-800">
                 {activeProgression.property_id.substring(0, 8)}…
               </p>
-              <span className="mt-1.5 inline-flex rounded-full bg-brand-primary-lighter px-2 py-0.5 text-[10px] font-semibold text-brand-primary">
+              <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-brand-primary-lighter px-2 py-0.5 text-[10px] font-semibold text-brand-primary">
+                {(() => { const { Icon } = STAGE_LABELS[activeProgression.stage]; return <Icon className="size-2.5 shrink-0" strokeWidth={1.5} />; })()}
                 {STAGE_LABELS[activeProgression.stage].label}
               </span>
             </div>

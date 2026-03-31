@@ -387,7 +387,7 @@ export function ClientList({ clients }: Props) {
       )}
 
       {/* Table */}
-      <div className="rounded-xl bg-white overflow-hidden shadow-sm">
+      <div className="rounded-xl bg-card overflow-hidden shadow-sm ring-1 ring-border/60">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (

@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -72,6 +70,7 @@ function OfferCard({ offer }: Readonly<{ offer: AgentOffer }>) {
       onClick={() => router.push(`/dashboard/agent/offers/${offer.id}`)}
       role="button"
       tabIndex={0}
+      aria-label={`View offer from ${offer.buyer_name}, ${formatGBP(offer.amount)}`}
       onKeyDown={(e) => e.key === "Enter" && router.push(`/dashboard/agent/offers/${offer.id}`)}
     >
       <div className="min-w-0">
@@ -183,7 +182,7 @@ export function OffersDashboard({
           {Object.entries(filteredGrouped).map(([propertyId, offers]) => (
             <div
               key={propertyId}
-              className="overflow-hidden rounded-2xl bg-white shadow-sm"
+              className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60"
             >
               {/* Property header */}
               <div className="flex items-center justify-between gap-2 bg-neutral-50 px-5 py-3.5">
@@ -209,9 +208,11 @@ export function OffersDashboard({
               </div>
 
               {/* Offer list */}
-              <div className="divide-y divide-neutral-100 p-3 space-y-1">
-                {offers.map((offer) => (
-                  <OfferCard key={offer.id} offer={offer} />
+              <div className="p-3 space-y-1">
+                {offers.map((offer, idx) => (
+                  <div key={offer.id} className={idx % 2 === 0 ? "" : "bg-neutral-50/50 rounded-xl"}>
+                    <OfferCard offer={offer} />
+                  </div>
                 ))}
               </div>
             </div>

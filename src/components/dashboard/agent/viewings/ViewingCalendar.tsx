@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -405,6 +404,7 @@ export function ViewingCalendar({
             size="icon"
             className="size-9 rounded-xl"
             onClick={handlePrev}
+            aria-label="Previous period"
           >
             <ChevronLeft className="size-4" />
           </Button>
@@ -416,6 +416,7 @@ export function ViewingCalendar({
             size="icon"
             className="size-9 rounded-xl"
             onClick={handleNext}
+            aria-label="Next period"
           >
             <ChevronRight className="size-4" />
           </Button>
@@ -443,7 +444,7 @@ export function ViewingCalendar({
 
       {/* Calendar view */}
       {viewMode === "month" && (
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="flex flex-col items-center px-4 py-4">
             <DayPicker
               mode="single"
@@ -488,7 +489,7 @@ export function ViewingCalendar({
 
       {/* Day / selected-date slot list */}
       {(viewMode === "day" || viewMode === "month") && (
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="bg-neutral-50 px-5 py-4">
             <p className="font-semibold text-neutral-900">
               {viewMode === "day"

@@ -356,6 +356,7 @@ export function CreateListingWizard() {
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
                 {previewUrls.map((url, i) => (
                   <div key={i} className="group relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={url}
                       alt={`Preview ${i + 1}`}
@@ -449,9 +450,9 @@ export function CreateListingWizard() {
               {...register("description", { required: "Description is required" })}
               rows={8}
               className={cn(
-                "w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground",
+                "w-full resize-y rounded-xl bg-neutral-50 ring-1 ring-neutral-200/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground",
                 "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
-                errors.description && "border-destructive ring-destructive/20",
+                errors.description && "ring-destructive ring-destructive/20",
               )}
               placeholder="Describe the property in detail — location highlights, features, finish quality…"
             />
@@ -552,62 +553,65 @@ export function CreateListingWizard() {
             {renderStep()}
 
             {/* Navigation */}
-            <div className="mt-8 flex items-center justify-between gap-4 border-t border-border/60 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={goBack}
-                disabled={step === 1}
-                className="gap-2 rounded-xl"
-              >
-                <ChevronLeft className="size-4" strokeWidth={1.5} />
-                Back
-              </Button>
-
-              <div className="flex items-center gap-1">
-                {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "h-1.5 rounded-full transition-all duration-300",
-                      i + 1 === step
-                        ? "w-6 bg-brand-primary"
-                        : i + 1 < step
-                          ? "w-1.5 bg-brand-primary/40"
-                          : "w-1.5 bg-muted-foreground/20",
-                    )}
-                  />
-                ))}
-              </div>
-
-              {step < TOTAL_STEPS ? (
+            <div className="mt-8">
+              <div className="mb-6 h-px bg-border/60" />
+              <div className="flex items-center justify-between gap-4">
                 <Button
                   type="button"
-                  onClick={goNext}
-                  className="gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light"
+                  variant="outline"
+                  onClick={goBack}
+                  disabled={step === 1}
+                  className="gap-2 rounded-xl"
                 >
-                  Continue
-                  <ChevronRight className="size-4" strokeWidth={1.5} />
+                  <ChevronLeft className="size-4" strokeWidth={1.5} />
+                  Back
                 </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  disabled={publishing}
-                  className="gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light"
-                >
-                  {publishing ? (
-                    <>
-                      <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                      Publishing…
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="size-4" strokeWidth={1.5} />
-                      Publish Listing
-                    </>
-                  )}
-                </Button>
-              )}
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "h-1.5 rounded-full transition-all duration-300",
+                        i + 1 === step
+                          ? "w-6 bg-brand-primary"
+                          : i + 1 < step
+                            ? "w-1.5 bg-brand-primary/40"
+                            : "w-1.5 bg-muted-foreground/20",
+                      )}
+                    />
+                  ))}
+                </div>
+
+                {step < TOTAL_STEPS ? (
+                  <Button
+                    type="button"
+                    onClick={goNext}
+                    className="gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light"
+                  >
+                    Continue
+                    <ChevronRight className="size-4" strokeWidth={1.5} />
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={publishing}
+                    className="gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light"
+                  >
+                    {publishing ? (
+                      <>
+                        <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        Publishing…
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="size-4" strokeWidth={1.5} />
+                        Publish Listing
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </div>

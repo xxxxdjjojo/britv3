@@ -131,7 +131,7 @@ export function ClientProfile({ client }: Props) {
       </Link>
 
       {/* Profile header */}
-      <div className="rounded-2xl bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl bg-card shadow-sm overflow-hidden ring-1 ring-border/60">
         {/* Green top band */}
         <div className="h-2 bg-brand-primary" />
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
@@ -420,7 +420,7 @@ export function ClientProfile({ client }: Props) {
             </CardHeader>
             <CardContent className="space-y-3">
               <textarea
-                className="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-3 py-2.5 text-sm text-[#1a1c1c] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary focus:bg-white transition-colors min-h-[120px] resize-y placeholder:text-muted-foreground"
+                className="w-full rounded-xl bg-neutral-50 ring-1 ring-neutral-200/60 px-3 py-2.5 text-sm text-[#1a1c1c] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:bg-card transition-colors min-h-[120px] resize-y placeholder:text-muted-foreground"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add notes about this client..."

@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MessageSquare, Star } from "lucide-react";
+import { MessageSquare, Star as StarIcon } from "lucide-react";
 
 type Review = {
   id: string;
@@ -47,23 +47,22 @@ function StarDisplay({
   size?: "sm" | "md" | "lg";
 }) {
   const sizeClass =
-    size === "lg" ? "text-3xl" : size === "sm" ? "text-sm" : "text-lg";
+    size === "lg" ? "size-7" : size === "sm" ? "size-3.5" : "size-5";
   return (
     <span
-      className={`${sizeClass} tracking-tight`}
+      className="inline-flex gap-0.5"
       aria-label={`${rating} out of 5 stars`}
     >
       {[1, 2, 3, 4, 5].map((star) => (
-        <span
+        <StarIcon
           key={star}
-          className={
+          className={`${sizeClass} ${
             star <= Math.round(rating)
-              ? "text-brand-secondary"
+              ? "text-brand-secondary fill-brand-secondary"
               : "text-neutral-200"
-          }
-        >
-          ★
-        </span>
+          }`}
+          strokeWidth={1.25}
+        />
       ))}
     </span>
   );
@@ -118,7 +117,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
       </div>
 
       {/* Hero rating card */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-brand-primary px-6 py-5">
           <p className="text-sm font-medium text-white/70">Overall Rating</p>
         </div>
@@ -146,7 +145,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
                 return (
                   <div key={star} className="flex items-center gap-2.5 text-sm">
                     <span className="w-5 shrink-0 text-right text-xs font-medium text-neutral-400">
-                      {star}★
+                      {star}
                     </span>
                     <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
                       <div
@@ -167,7 +166,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
 
       {/* Sentiment trend chart */}
       {trendData.length > 1 && (
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="bg-neutral-50 px-5 py-4">
             <p className="font-semibold text-neutral-900">Rating Trend</p>
           </div>
@@ -247,7 +246,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
         {filteredReviews.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
             <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-              <Star className="size-7 text-brand-primary" />
+              <StarIcon className="size-7 text-brand-primary" />
             </div>
             <p className="font-semibold text-neutral-800">No reviews found</p>
             <p className="mt-1 text-sm text-neutral-500">
@@ -271,7 +270,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
           return (
             <div
               key={review.id}
-              className="overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md"
+              className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md"
             >
               <div className="bg-neutral-50 px-5 py-4">
                 <div className="flex items-start justify-between gap-4">

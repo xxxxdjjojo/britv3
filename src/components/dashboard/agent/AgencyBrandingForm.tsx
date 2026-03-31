@@ -64,7 +64,7 @@ function Section({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
       <div className="bg-neutral-50 px-6 py-4">
         <p className="font-semibold text-neutral-900">{title}</p>
         {description && (
@@ -207,7 +207,7 @@ export function AgencyBrandingForm({ profile }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {/* Live preview */}
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-neutral-50 px-6 py-4">
           <p className="font-semibold text-neutral-900">Preview</p>
           <p className="mt-0.5 text-xs text-neutral-500">
