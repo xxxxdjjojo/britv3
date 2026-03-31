@@ -39,7 +39,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
   const statusLabel = listing.status === "let" ? "Let" : "Sold";
   const statusClass =
     listing.status === "let"
-      ? "bg-blue-100 text-blue-700"
+      ? "bg-[#1B4D3E]/10 text-[#1B4D3E]"
       : "bg-emerald-100 text-emerald-700";
 
   return (
