@@ -104,13 +104,16 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
     }, 300);
   }
 
+  const inputClass =
+    "w-full px-3 py-2 rounded-lg bg-[#f4f3f2] dark:bg-[#1a2822] text-[#1a1a1a] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]";
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       {/* Trigger button */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors"
+        className="w-full px-4 py-3 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] transition-colors"
       >
         Request a Free Valuation
       </button>
@@ -142,17 +145,17 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-lg font-bold text-[#1a1a1a] dark:text-white mb-2">
                 Request Submitted!
               </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm">
+              <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm">
                 Thank you! We&apos;ll be in touch within 24 hours.
               </p>
             </div>
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+              className="px-6 py-2 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] transition-colors"
             >
               Close
             </button>
@@ -162,7 +165,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
           <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
             {/* Property address */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Property Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -172,13 +175,13 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="e.g. 42 Maple Street"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               />
             </div>
 
             {/* Postcode */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Postcode
               </label>
               <input
@@ -187,20 +190,20 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.postcode}
                 onChange={handleChange}
                 placeholder="e.g. SW1A 1AA"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               />
             </div>
 
             {/* Property type */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Property Type
               </label>
               <select
                 name="propertyType"
                 value={formData.propertyType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               >
                 <option value="">Select type</option>
                 <option value="detached">Detached</option>
@@ -213,14 +216,14 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Bedrooms */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Bedrooms
               </label>
               <select
                 name="bedrooms"
                 value={formData.bedrooms}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               >
                 <option value="">Select bedrooms</option>
                 <option value="1">1</option>
@@ -233,14 +236,14 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Tenure */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Tenure
               </label>
               <select
                 name="tenure"
                 value={formData.tenure}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               >
                 <option value="">Select tenure</option>
                 <option value="freehold">Freehold</option>
@@ -251,14 +254,14 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Preferred contact time */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Preferred Contact Time
               </label>
               <select
                 name="contactTime"
                 value={formData.contactTime}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               >
                 <option value="">Select time</option>
                 <option value="morning">Morning (9–12)</option>
@@ -268,11 +271,11 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
               </select>
             </div>
 
-            <hr className="border-slate-200 dark:border-slate-700" />
+            <hr className="border-[#e8e6e3] dark:border-[#243330]" />
 
             {/* Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Your Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -282,13 +285,13 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Full name"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               />
             </div>
 
             {/* Phone */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Phone <span className="text-red-500">*</span>
               </label>
               <input
@@ -298,13 +301,13 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="e.g. 07700 900123"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                 Email <span className="text-red-500">*</span>
               </label>
               <input
@@ -314,7 +317,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
+                className={inputClass}
               />
             </div>
 
@@ -327,7 +330,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full px-4 py-3 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-3 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? "Submitting…" : "Request Valuation"}
             </button>

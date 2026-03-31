@@ -30,7 +30,7 @@ function StarRow({ rating }: Readonly<{ rating: number }>) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`w-4 h-4 ${star <= rating ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200 dark:fill-slate-700 dark:text-slate-700"}`}
+          className={`w-4 h-4 ${star <= rating ? "fill-[#D4A853] text-[#D4A853]" : "fill-[#e8e6e3] text-[#e8e6e3] dark:fill-[#243330] dark:text-[#243330]"}`}
         />
       ))}
     </div>
@@ -62,8 +62,8 @@ function ReviewerAvatar({
     : "?";
 
   return (
-    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
-      <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+    <div className="w-10 h-10 rounded-full bg-[#f4f3f2] dark:bg-[#1a2822] flex items-center justify-center flex-shrink-0">
+      <span className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
         {initials}
       </span>
     </div>
@@ -76,7 +76,7 @@ function PropertyContextPill({
 }: Readonly<{ address: string; listingType?: "sale" | "let" | null }>) {
   return (
     <div className="flex items-center gap-2 mb-2">
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs text-slate-600 dark:text-slate-400">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f4f3f2] dark:bg-[#1a2822] rounded text-xs text-[#6b7280] dark:text-[#9ca3af]">
         <Home className="w-3 h-3" />
         {address}
       </span>
@@ -86,7 +86,7 @@ function PropertyContextPill({
         </span>
       )}
       {listingType === "let" && (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#1B4D3E]/10 text-[#1B4D3E] dark:bg-[#1B4D3E]/20 dark:text-emerald-400">
           Let
         </span>
       )}
@@ -103,18 +103,18 @@ export function AgentReviewsTab({
     <div className="space-y-6">
       {/* Section header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h2 className="text-2xl font-heading font-bold tracking-tight text-[#1a1a1a] dark:text-white">
           Reviews ({total})
         </h2>
-        <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+        <span className="text-sm text-[#6b7280] dark:text-[#9ca3af] font-medium">
           Sort: Most Recent
         </span>
       </div>
 
       {/* Review cards */}
       {reviews.length === 0 ? (
-        <div className="p-8 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
-          <p className="text-slate-500 dark:text-slate-400 text-sm">
+        <div className="p-8 rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822] text-center">
+          <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm">
             No reviews yet for {agencyName}
           </p>
         </div>
@@ -123,7 +123,7 @@ export function AgentReviewsTab({
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="p-6 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+              className="p-6 rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822]"
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-4 mb-3">
@@ -133,10 +133,10 @@ export function AgentReviewsTab({
                     avatarUrl={review.profiles.avatar_url}
                   />
                   <div>
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                    <p className="font-semibold text-[#1a1a1a] dark:text-white text-sm">
                       {review.profiles.full_name ?? "Anonymous"}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-[#6b7280] dark:text-[#9ca3af]">
                       Verified Customer &bull;{" "}
                       {formatRelativeDate(review.created_at)}
                     </p>
@@ -155,14 +155,14 @@ export function AgentReviewsTab({
 
               {/* Title */}
               {review.title && (
-                <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm mb-1">
+                <p className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] text-sm mb-1">
                   {review.title}
                 </p>
               )}
 
               {/* Body */}
               {review.body && (
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm leading-relaxed">
                   {review.body}
                 </p>
               )}
@@ -170,10 +170,10 @@ export function AgentReviewsTab({
               {/* Agency response */}
               {review.provider_response && (
                 <div className="ml-8 mt-4 p-4 bg-[#1B4D3E]/5 dark:bg-[#1B4D3E]/10 rounded-lg border-l-4 border-[#1B4D3E]">
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <p className="text-xs font-bold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                     Response from {agencyName}:
                   </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 italic leading-relaxed">
+                  <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] italic leading-relaxed">
                     {review.provider_response}
                   </p>
                 </div>

@@ -43,9 +43,9 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
       : "bg-emerald-100 text-emerald-700";
 
   return (
-    <article className="group bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow">
+    <article className="group bg-[#faf9f8] dark:bg-[#0f1a17] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-800">
+      <div className="relative h-48 overflow-hidden bg-[#f4f3f2] dark:bg-[#1a2822]">
         {listing.cover_image_url ? (
           <Image
             src={listing.cover_image_url}
@@ -54,7 +54,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-slate-400 text-xs">
+          <div className="absolute inset-0 flex items-center justify-center text-[#9ca3af] text-xs">
             No image
           </div>
         )}
@@ -78,25 +78,25 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
         </h3>
         {/* Asking price (struck through if differs) */}
         {listing.price != null && listing.sold_price !== listing.price && (
-          <p className="text-sm text-slate-500 line-through mt-0.5">
+          <p className="text-sm text-[#6b7280] line-through mt-0.5">
             Asking {formatPrice(listing.price)}
           </p>
         )}
 
-        <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">
+        <p className="text-xs uppercase tracking-wide text-[#6b7280] mt-1">
           {listing.property_type ?? "Property"}
         </p>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-1">
+        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] mt-1 line-clamp-1">
           {address || listing.title}
         </p>
         {listing.sold_at && (
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#9ca3af] mt-1">
             {statusLabel} {formatDate(listing.sold_at)}
           </p>
         )}
 
         {/* Stats row */}
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
+        <div className="flex items-center gap-4 mt-4 pt-4 text-sm text-[#6b7280] dark:text-[#9ca3af]">
           {listing.bedrooms != null && (
             <span className="flex items-center gap-1">
               <Bed className="w-4 h-4" />
@@ -118,7 +118,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
 export default function SoldLetTab({ listings, total }: SoldLetTabProps) {
   if (listings.length === 0) {
     return (
-      <p className="text-slate-500 dark:text-slate-400 text-sm py-8 text-center">
+      <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm py-8 text-center">
         No sold or let properties
       </p>
     );
@@ -127,7 +127,7 @@ export default function SoldLetTab({ listings, total }: SoldLetTabProps) {
   return (
     <div>
       {total > listings.length && (
-        <p className="text-sm text-slate-500 mb-4">
+        <p className="text-sm text-[#6b7280] mb-4">
           Showing {listings.length} of {total} transactions
         </p>
       )}

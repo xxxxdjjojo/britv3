@@ -25,11 +25,11 @@ export default function AgencyStatBar({ stats }: AgencyStatBarProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-6">
       {statItems.map((item) => (
         <div key={item.label} className="text-center">
-          <p className="text-2xl font-bold text-[#2563EB]">{item.value}</p>
-          <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold mt-1">
+          <p className="text-2xl font-bold text-[#1B4D3E]">{item.value}</p>
+          <p className="text-xs uppercase tracking-wider text-[#6b7280] font-semibold mt-1">
             {item.label}
           </p>
         </div>
