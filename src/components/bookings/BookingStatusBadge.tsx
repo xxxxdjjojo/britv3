@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import type { BookingStatus } from "@/types/marketplace";
 import { cn } from "@/lib/utils";
 
@@ -44,15 +43,14 @@ export function BookingStatusBadge({
   const config = STATUS_CONFIG[status];
 
   return (
-    <Badge
-      variant="outline"
+    <span
       className={cn(
-        "border-transparent font-medium",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium",
         config.className,
         className,
       )}
     >
       {config.label}
-    </Badge>
+    </span>
   );
 }

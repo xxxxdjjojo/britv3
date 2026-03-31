@@ -5,12 +5,6 @@ import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingTimeline } from "@/components/bookings/BookingTimeline";
 import { BookingStatusBadge } from "@/components/bookings/BookingStatusBadge";
@@ -97,7 +91,7 @@ export default function BookingDetailPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="py-12 text-center text-sm text-muted-foreground">
+      <div className="py-12 text-center font-body text-sm text-neutral-500">
         Loading...
       </div>
     );
@@ -106,7 +100,7 @@ export default function BookingDetailPage({ params }: PageProps) {
   if (!booking) {
     return (
       <div className="py-12 text-center">
-        <p className="text-muted-foreground">Booking not found.</p>
+        <p className="font-body text-sm text-neutral-500">Booking not found.</p>
       </div>
     );
   }
@@ -117,35 +111,36 @@ export default function BookingDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <Button
-        variant="ghost"
-        size="sm"
-        render={<Link href="/dashboard/bookings" />}
+      <Link
+        href="/dashboard/bookings"
+        className="inline-flex items-center gap-1.5 font-body text-sm text-neutral-500 transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to Bookings
-      </Button>
+      </Link>
 
       {/* Booking Info */}
-      <Card>
-        <CardHeader>
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+        <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle>{booking.booking_reference}</CardTitle>
+              <h1 className="font-heading text-xl font-semibold text-foreground">
+                {booking.booking_reference}
+              </h1>
               {booking.service_title && (
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 font-body text-sm text-neutral-500">
                   {booking.service_title}
                 </p>
               )}
             </div>
             <BookingStatusBadge status={booking.status} />
           </div>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
+        </div>
+        <div className="px-6 py-4 space-y-3">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-muted-foreground">Scheduled Start</p>
-              <p className="font-medium">
+              <p className="font-body text-xs text-neutral-500">Scheduled Start</p>
+              <p className="font-body text-sm font-medium text-foreground">
                 {new Date(booking.scheduled_start_date).toLocaleDateString(
                   "en-GB",
                   { day: "numeric", month: "long", year: "numeric" },
@@ -153,8 +148,8 @@ export default function BookingDetailPage({ params }: PageProps) {
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Scheduled End</p>
-              <p className="font-medium">
+              <p className="font-body text-xs text-neutral-500">Scheduled End</p>
+              <p className="font-body text-sm font-medium text-foreground">
                 {new Date(booking.scheduled_end_date).toLocaleDateString(
                   "en-GB",
                   { day: "numeric", month: "long", year: "numeric" },
@@ -163,25 +158,25 @@ export default function BookingDetailPage({ params }: PageProps) {
             </div>
           </div>
           {booking.cancellation_reason && (
-            <div className="rounded-lg bg-red-50 p-3 dark:bg-red-900/10">
-              <p className="text-xs font-medium text-red-800 dark:text-red-400">
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/10 p-4 ring-1 ring-red-200/60 dark:ring-red-700/60">
+              <p className="font-body text-xs font-medium text-red-800 dark:text-red-400">
                 Cancellation reason:
               </p>
-              <p className="text-sm text-red-700 dark:text-red-300">
+              <p className="font-body text-sm text-red-700 dark:text-red-300">
                 {booking.cancellation_reason}
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Status Actions */}
       {nextStatuses.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
+            <h2 className="font-heading text-base font-semibold text-foreground">Actions</h2>
+          </div>
+          <div className="px-6 py-4 space-y-4">
             <Textarea
               placeholder="Reason (optional, required for some transitions)"
               value={reason}
@@ -189,63 +184,57 @@ export default function BookingDetailPage({ params }: PageProps) {
             />
             <div className="flex flex-wrap gap-2">
               {nextStatuses.map((status) => (
-                <Button
+                <button
                   key={status}
-                  variant={
-                    status === "cancelled" || status === "declined"
-                      ? "destructive"
-                      : "default"
-                  }
-                  size="sm"
                   disabled={transitioning}
                   onClick={() => handleTransition(status)}
-                  className="capitalize"
+                  className={
+                    status === "cancelled" || status === "declined"
+                      ? "rounded-lg bg-destructive px-3 py-1.5 font-body text-sm font-medium capitalize text-white transition-colors hover:bg-destructive/90 disabled:opacity-50"
+                      : "rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium capitalize text-white transition-colors hover:bg-brand-primary/90 disabled:opacity-50"
+                  }
                 >
                   {status.replace(/_/g, " ")}
-                </Button>
+                </button>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Leave Review (completed bookings) */}
       {booking.status === "completed" && (
-        <Card>
-          <CardContent className="flex items-center justify-between py-4">
+        <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Star className="size-5 text-brand-secondary" />
-              <span className="text-sm font-medium">
+              <span className="font-body text-sm font-medium text-foreground">
                 How was your experience?
               </span>
             </div>
-            <Button
-              size="sm"
-              render={
-                <Link
-                  href={`/dashboard/reviews?booking=${booking.id}&provider=${booking.provider_id}`}
-                />
-              }
+            <Link
+              href={`/dashboard/reviews?booking=${booking.id}&provider=${booking.provider_id}`}
+              className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90"
             >
               Leave a Review
-            </Button>
-          </CardContent>
-        </Card>
+            </Link>
+          </div>
+        </div>
       )}
 
       {/* Timeline */}
       {booking.status_history && booking.status_history.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Timeline</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
+            <h2 className="font-heading text-base font-semibold text-foreground">Timeline</h2>
+          </div>
+          <div className="px-6 py-4">
             <BookingTimeline
               entries={booking.status_history}
               currentStatus={booking.status}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
