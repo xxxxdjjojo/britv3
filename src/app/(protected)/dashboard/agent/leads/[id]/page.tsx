@@ -63,10 +63,10 @@ async function PageContent({ params }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">
           {lead!.contact_name}
         </h1>
-        <p className="text-muted-foreground">Lead detail and activity log</p>
+        <p className="text-sm text-muted-foreground mt-1">Lead detail and activity log</p>
       </div>
 
       <LeadDetailTimeline

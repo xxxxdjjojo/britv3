@@ -21,7 +21,7 @@ import {
   Mail,
   Calendar,
   ArrowLeft,
-  User,
+  Phone,
 } from "lucide-react";
 import type {
   AgentLead,
@@ -47,11 +47,11 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 };
 
 const STAGE_COLORS: Record<LeadStage, string> = {
-  new_enquiry: "bg-neutral-100 text-neutral-700",
-  qualified: "bg-blue-100 text-blue-700",
-  viewing_booked: "bg-amber-100 text-amber-700",
-  offer_made: "bg-emerald-100 text-emerald-700",
-  closed: "bg-neutral-200 text-neutral-600",
+  new_enquiry: "bg-muted text-muted-foreground",
+  qualified: "bg-info-light text-info",
+  viewing_booked: "bg-warning-light text-warning",
+  offer_made: "bg-success-light text-success",
+  closed: "bg-muted text-muted-foreground",
 };
 
 function ActivityIcon({ type }: Readonly<{ type: string }>) {
@@ -59,27 +59,27 @@ function ActivityIcon({ type }: Readonly<{ type: string }>) {
     case "note":
     case "note_added":
       return (
-        <div className="flex items-center justify-center size-8 rounded-full bg-blue-100 text-blue-600 shrink-0">
-          <MessageSquare className="size-4" />
+        <div className="flex items-center justify-center size-8 rounded-full bg-info-light text-info shrink-0">
+          <MessageSquare className="size-4" strokeWidth={1.25} />
         </div>
       );
     case "lead_assigned":
       return (
-        <div className="flex items-center justify-center size-8 rounded-full bg-brand-accent-light text-brand-primary shrink-0">
-          <UserCheck className="size-4" />
+        <div className="flex items-center justify-center size-8 rounded-full bg-accent text-accent-foreground shrink-0">
+          <UserCheck className="size-4" strokeWidth={1.25} />
         </div>
       );
     case "stage_changed":
       return (
-        <div className="flex items-center justify-center size-8 rounded-full bg-amber-100 text-amber-600 shrink-0">
-          <ArrowRight className="size-4" />
+        <div className="flex items-center justify-center size-8 rounded-full bg-warning-light text-warning shrink-0">
+          <ArrowRight className="size-4" strokeWidth={1.25} />
         </div>
       );
     case "lead_created":
     default:
       return (
-        <div className="flex items-center justify-center size-8 rounded-full bg-neutral-100 text-neutral-500 shrink-0">
-          <Plus className="size-4" />
+        <div className="flex items-center justify-center size-8 rounded-full bg-muted text-muted-foreground shrink-0">
+          <Plus className="size-4" strokeWidth={1.25} />
         </div>
       );
   }
@@ -171,20 +171,20 @@ export function LeadDetailTimeline({
         href="/dashboard/agent/leads"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-primary transition-colors"
       >
-        <ArrowLeft className="size-4" />
+        <ArrowLeft className="size-4" strokeWidth={1.25} />
         Back to Pipeline
       </Link>
 
       {/* Lead header card */}
-      <div className="rounded-2xl bg-white shadow-sm overflow-hidden">
-        <div className="h-2 bg-brand-primary" />
+      <div className="rounded-2xl bg-card shadow-sm overflow-hidden ring-1 ring-border/60">
+        <div className="h-1.5 bg-brand-primary" />
         <div className="flex items-start gap-4 p-6">
           {/* Avatar */}
-          <div className="size-14 rounded-2xl bg-brand-accent-light flex items-center justify-center shrink-0 text-brand-primary font-bold text-lg">
+          <div className="size-14 rounded-2xl bg-accent flex items-center justify-center shrink-0 text-accent-foreground font-bold text-lg">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold tracking-tight text-[#1a1c1c]">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">
               {lead.contact_name}
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -204,7 +204,7 @@ export function LeadDetailTimeline({
                     href={`mailto:${lead.contact_email}`}
                     className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-primary transition-colors"
                   >
-                    <Mail className="size-3.5" />
+                    <Mail className="size-3.5" strokeWidth={1.25} />
                     {lead.contact_email}
                   </a>
                 )}
@@ -213,7 +213,7 @@ export function LeadDetailTimeline({
                     href={`tel:${lead.contact_phone}`}
                     className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-primary transition-colors"
                   >
-                    <User className="size-3.5" />
+                    <Phone className="size-3.5" strokeWidth={1.25} />
                     {lead.contact_phone}
                   </a>
                 )}
@@ -228,9 +228,9 @@ export function LeadDetailTimeline({
         <div className="lg:col-span-2 space-y-4">
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-2">
-                <div className="size-6 rounded-lg bg-brand-accent-light flex items-center justify-center">
-                  <MessageSquare className="size-3.5 text-brand-primary" />
+              <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <div className="size-6 rounded-lg bg-accent flex items-center justify-center">
+                  <MessageSquare className="size-3.5 text-accent-foreground" strokeWidth={1.25} />
                 </div>
                 Activity Timeline
               </CardTitle>
@@ -238,10 +238,13 @@ export function LeadDetailTimeline({
             <CardContent>
               {localActivities.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <div className="size-12 rounded-2xl bg-neutral-100 flex items-center justify-center mb-3">
-                    <MessageSquare className="size-6 text-neutral-400" />
+                  <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                    <MessageSquare className="size-6 text-muted-foreground" strokeWidth={1.25} />
                   </div>
-                  <p className="text-sm text-muted-foreground">No activity yet.</p>
+                  <p className="text-sm font-medium text-foreground">No activity yet</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Add a note below to log your first interaction.
+                  </p>
                 </div>
               ) : (
                 <ol className="relative space-y-0">
@@ -249,11 +252,11 @@ export function LeadDetailTimeline({
                     <li key={activity.id} className="flex gap-3 pb-5 relative">
                       {/* Connector line */}
                       {i < localActivities.length - 1 && (
-                        <div className="absolute left-4 top-8 bottom-0 w-px bg-neutral-100" />
+                        <div className="absolute left-4 top-8 bottom-0 w-px bg-border/60" />
                       )}
                       <ActivityIcon type={activity.activity_type} />
                       <div className="flex-1 min-w-0 pt-0.5">
-                        <p className="text-sm text-[#1a1c1c] leading-snug">
+                        <p className="text-sm text-foreground leading-snug">
                           {activity.description ?? activity.activity_type}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -271,14 +274,14 @@ export function LeadDetailTimeline({
 
               {/* Add note form */}
               <div className="mt-4 pt-4">
-                <div className="mb-4 h-px bg-neutral-100" />
+                <div className="mb-4 h-px bg-border/60" />
                 <form onSubmit={handleAddNote} className="space-y-2.5">
                   <Textarea
                     placeholder="Add a note..."
                     value={noteText}
                     onChange={(e) => setNoteText(e.target.value)}
                     rows={3}
-                    className="bg-neutral-50 border-neutral-200 text-sm focus:bg-white focus:border-brand-primary transition-colors resize-none rounded-xl"
+                    className="bg-muted/50 border-border text-sm focus:bg-background focus:border-ring transition-colors resize-none rounded-xl"
                   />
                   <Button
                     type="submit"
@@ -286,7 +289,7 @@ export function LeadDetailTimeline({
                     disabled={isAddingNote || !noteText.trim()}
                     className="bg-brand-primary hover:bg-brand-primary-light text-white gap-1.5 h-8"
                   >
-                    <MessageSquare className="size-3.5" />
+                    <MessageSquare className="size-3.5" strokeWidth={1.25} />
                     {isAddingNote ? "Adding..." : "Add Note"}
                   </Button>
                 </form>
@@ -300,7 +303,7 @@ export function LeadDetailTimeline({
           {/* Pipeline card */}
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-[#1a1c1c]">
+              <CardTitle className="text-sm font-semibold text-foreground">
                 Pipeline
               </CardTitle>
             </CardHeader>
@@ -313,7 +316,7 @@ export function LeadDetailTimeline({
                   value={currentStage}
                   onValueChange={(v) => handleStageChange(v as LeadStage)}
                 >
-                  <SelectTrigger className="bg-neutral-50 border-neutral-200 focus:border-brand-primary">
+                  <SelectTrigger className="bg-muted/50 border-border focus:border-ring">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -334,7 +337,7 @@ export function LeadDetailTimeline({
                   value={currentAssignedTo}
                   onValueChange={handleAssignedToChange}
                 >
-                  <SelectTrigger className="bg-neutral-50 border-neutral-200 focus:border-brand-primary">
+                  <SelectTrigger className="bg-muted/50 border-border focus:border-ring">
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent>
@@ -353,7 +356,7 @@ export function LeadDetailTimeline({
           {/* Actions card */}
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-[#1a1c1c]">
+              <CardTitle className="text-sm font-semibold text-foreground">
                 Actions
               </CardTitle>
             </CardHeader>
@@ -361,22 +364,22 @@ export function LeadDetailTimeline({
               {lead.contact_email && (
                 <Button
                   variant="outline"
-                  className="justify-start border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50 hover:border-brand-primary hover:text-brand-primary transition-colors"
+                  className="justify-start hover:border-brand-primary hover:text-brand-primary transition-colors"
                   asChild
                 >
                   <a href={`mailto:${lead.contact_email}`}>
-                    <Mail className="mr-2 size-4" />
+                    <Mail className="mr-2 size-4" strokeWidth={1.25} />
                     Send Email
                   </a>
                 </Button>
               )}
               <Button
                 variant="outline"
-                className="justify-start border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50 hover:border-brand-primary hover:text-brand-primary transition-colors"
+                className="justify-start hover:border-brand-primary hover:text-brand-primary transition-colors"
                 asChild
               >
                 <Link href="/dashboard/agent/viewings">
-                  <Calendar className="mr-2 size-4" />
+                  <Calendar className="mr-2 size-4" strokeWidth={1.25} />
                   Book Viewing
                 </Link>
               </Button>

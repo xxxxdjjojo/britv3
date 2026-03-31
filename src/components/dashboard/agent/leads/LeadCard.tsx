@@ -5,12 +5,13 @@ import { CSS } from "@dnd-kit/utilities";
 import type { AgentLead } from "@/types/agent";
 import { Calendar, GripVertical } from "lucide-react";
 
+// Source badge colors using design-system semantic tokens
 const SOURCE_COLORS: Record<string, string> = {
-  website: "bg-blue-50 text-blue-700",
-  referral: "bg-emerald-50 text-emerald-700",
-  portal: "bg-purple-50 text-purple-700",
-  cold_call: "bg-amber-50 text-amber-700",
-  walk_in: "bg-rose-50 text-rose-700",
+  website: "bg-info-light text-info",
+  referral: "bg-success-light text-success",
+  portal: "bg-[color-mix(in_srgb,var(--color-brand-secondary-light)_80%,transparent)] text-[color-mix(in_srgb,var(--color-brand-secondary)_90%,#000)]",
+  cold_call: "bg-warning-light text-warning",
+  walk_in: "bg-error-light text-error",
 };
 
 export function LeadCard({ lead }: Readonly<{ lead: AgentLead }>) {
@@ -29,7 +30,7 @@ export function LeadCard({ lead }: Readonly<{ lead: AgentLead }>) {
     opacity: isDragging ? 0.4 : 1,
   };
 
-  const sourceColorClass = SOURCE_COLORS[lead.source ?? ""] ?? "bg-neutral-100 text-neutral-600";
+  const sourceColorClass = SOURCE_COLORS[lead.source ?? ""] ?? "bg-muted text-muted-foreground";
 
   // Avatar initials
   const initials = lead.contact_name
@@ -49,7 +50,7 @@ export function LeadCard({ lead }: Readonly<{ lead: AgentLead }>) {
         tabIndex={isDragging ? -1 : 0}
       >
         <div
-          className={`group relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-150 overflow-hidden ${
+          className={`group relative bg-card rounded-xl shadow-sm hover:shadow-md transition-all duration-150 overflow-hidden ${
             isDragging ? "shadow-xl ring-2 ring-brand-primary/30" : ""
           }`}
         >
@@ -57,21 +58,21 @@ export function LeadCard({ lead }: Readonly<{ lead: AgentLead }>) {
           <div
             {...attributes}
             {...listeners}
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center size-11 cursor-grab active:cursor-grabbing text-neutral-300 hover:text-neutral-500 transition-colors opacity-0 group-hover:opacity-100 z-10"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center size-11 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100 z-10"
             aria-label="Drag to reorder"
           >
-            <GripVertical className="size-4" />
+            <GripVertical className="size-4" strokeWidth={1.25} />
           </div>
 
           <div className="p-3 pr-10">
             <div className="flex items-start gap-2.5">
               {/* Avatar */}
-              <div className="size-8 rounded-full bg-brand-accent-light flex items-center justify-center shrink-0 text-brand-primary font-semibold text-xs">
+              <div className="size-8 rounded-full bg-accent flex items-center justify-center shrink-0 text-accent-foreground font-semibold text-xs">
                 {initials}
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-[#1a1c1c] leading-snug truncate">
+                <p className="font-semibold text-sm text-foreground leading-snug truncate">
                   {lead.contact_name}
                 </p>
                 {lead.contact_email && (
@@ -91,7 +92,7 @@ export function LeadCard({ lead }: Readonly<{ lead: AgentLead }>) {
                 <span />
               )}
               <span className="inline-flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-                <Calendar className="size-3" />
+                <Calendar className="size-3" strokeWidth={1.25} />
                 {new Date(lead.created_at).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",

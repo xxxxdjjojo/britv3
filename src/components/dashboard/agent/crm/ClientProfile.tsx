@@ -43,11 +43,11 @@ type EditForm = {
 };
 
 const CLIENT_TYPE_COLORS: Record<string, string> = {
-  buyer: "bg-brand-accent-light text-brand-primary",
-  seller: "bg-amber-50 text-amber-700",
-  renter: "bg-blue-50 text-blue-700",
-  landlord: "bg-purple-50 text-purple-700",
-  investor: "bg-emerald-50 text-emerald-700",
+  buyer: "bg-accent text-accent-foreground",
+  seller: "bg-warning-light text-warning",
+  renter: "bg-info-light text-info",
+  landlord: "bg-[color-mix(in_srgb,var(--color-brand-secondary-light)_80%,transparent)] text-[color-mix(in_srgb,var(--color-brand-secondary)_90%,#000)]",
+  investor: "bg-success-light text-success",
 };
 
 export function ClientProfile({ client }: Props) {
@@ -117,7 +117,7 @@ export function ClientProfile({ client }: Props) {
     setTags(tags.filter((t) => t !== tag));
   }
 
-  const typeColorClass = CLIENT_TYPE_COLORS[client.client_type] ?? "bg-neutral-100 text-neutral-700";
+  const typeColorClass = CLIENT_TYPE_COLORS[client.client_type] ?? "bg-muted text-muted-foreground";
 
   return (
     <div className="space-y-6">
@@ -126,19 +126,19 @@ export function ClientProfile({ client }: Props) {
         href="/dashboard/agent/crm"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-primary transition-colors"
       >
-        <ArrowLeft className="size-4" />
+        <ArrowLeft className="size-4" strokeWidth={1.25} />
         Back to CRM
       </Link>
 
       {/* Profile header */}
       <div className="rounded-2xl bg-card shadow-sm overflow-hidden ring-1 ring-border/60">
-        {/* Green top band */}
-        <div className="h-2 bg-brand-primary" />
+        {/* Brand accent top strip */}
+        <div className="h-1.5 bg-brand-primary" />
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
             {/* Avatar */}
-            <div className="size-14 rounded-2xl bg-brand-accent-light flex items-center justify-center shrink-0">
-              <User className="size-7 text-brand-primary" />
+            <div className="size-14 rounded-2xl bg-accent flex items-center justify-center shrink-0">
+              <User className="size-7 text-accent-foreground" strokeWidth={1.25} />
             </div>
 
             <div>
@@ -147,14 +147,14 @@ export function ClientProfile({ client }: Props) {
                   <div className="flex flex-wrap gap-2">
                     <Input
                       {...register("name", { required: true })}
-                      className="text-xl font-bold h-10 w-64 bg-neutral-50 border-neutral-200"
+                      className="text-xl font-bold h-10 w-64 bg-muted/50 border-border"
                       placeholder="Client name"
                     />
                     <Select
                       defaultValue={client.client_type}
                       onValueChange={(v) => setValue("client_type", v as ClientType)}
                     >
-                      <SelectTrigger className="w-36 bg-neutral-50 border-neutral-200">
+                      <SelectTrigger className="w-36 bg-muted/50 border-border">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -171,12 +171,12 @@ export function ClientProfile({ client }: Props) {
                       {...register("email")}
                       type="email"
                       placeholder="Email"
-                      className="w-56 bg-neutral-50 border-neutral-200"
+                      className="w-56 bg-muted/50 border-border"
                     />
                     <Input
                       {...register("phone")}
                       placeholder="Phone"
-                      className="w-44 bg-neutral-50 border-neutral-200"
+                      className="w-44 bg-muted/50 border-border"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -193,7 +193,6 @@ export function ClientProfile({ client }: Props) {
                       variant="outline"
                       size="sm"
                       onClick={() => setIsEditing(false)}
-                      className="border-neutral-200 text-[#1a1c1c]"
                     >
                       Cancel
                     </Button>
@@ -201,7 +200,7 @@ export function ClientProfile({ client }: Props) {
                 </form>
               ) : (
                 <>
-                  <h1 className="text-2xl font-bold tracking-tight text-[#1a1c1c]">
+                  <h1 className="text-2xl font-bold tracking-tight text-foreground font-heading">
                     {client.name}
                   </h1>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -221,7 +220,7 @@ export function ClientProfile({ client }: Props) {
                           href={`mailto:${client.email}`}
                           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-primary transition-colors"
                         >
-                          <Mail className="size-3.5" />
+                          <Mail className="size-3.5" strokeWidth={1.25} />
                           {client.email}
                         </a>
                       )}
@@ -230,7 +229,7 @@ export function ClientProfile({ client }: Props) {
                           href={`tel:${client.phone}`}
                           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-primary transition-colors"
                         >
-                          <Phone className="size-3.5" />
+                          <Phone className="size-3.5" strokeWidth={1.25} />
                           {client.phone}
                         </a>
                       )}
@@ -248,10 +247,10 @@ export function ClientProfile({ client }: Props) {
                   variant="outline"
                   size="sm"
                   asChild
-                  className="h-9 gap-1.5 border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50"
+                  className="h-9 gap-1.5"
                 >
                   <a href={`mailto:${client.email}`}>
-                    <Mail className="size-4" />
+                    <Mail className="size-4" strokeWidth={1.25} />
                     Email
                   </a>
                 </Button>
@@ -261,7 +260,7 @@ export function ClientProfile({ client }: Props) {
                 onClick={() => setIsEditing(true)}
                 className="h-9 gap-1.5 bg-brand-primary hover:bg-brand-primary-light text-white"
               >
-                <Pencil className="size-4" />
+                <Pencil className="size-4" strokeWidth={1.25} />
                 Edit
               </Button>
             </div>
@@ -271,33 +270,33 @@ export function ClientProfile({ client }: Props) {
 
       {/* Tabs */}
       <Tabs defaultValue="overview">
-        <TabsList className="bg-neutral-100 p-1 gap-1 rounded-xl">
+        <TabsList className="bg-muted p-1 gap-1 rounded-xl">
           <TabsTrigger
             value="overview"
-            className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
+            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
           >
-            <User className="size-3.5" />
+            <User className="size-3.5" strokeWidth={1.25} />
             Overview
           </TabsTrigger>
           <TabsTrigger
             value="properties"
-            className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
+            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
           >
-            <Home className="size-3.5" />
+            <Home className="size-3.5" strokeWidth={1.25} />
             Properties
           </TabsTrigger>
           <TabsTrigger
             value="communication"
-            className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
+            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
           >
-            <MessageSquare className="size-3.5" />
+            <MessageSquare className="size-3.5" strokeWidth={1.25} />
             Communication
           </TabsTrigger>
           <TabsTrigger
             value="transactions"
-            className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
+            className="rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:text-brand-primary gap-1.5"
           >
-            <CreditCard className="size-3.5" />
+            <CreditCard className="size-3.5" strokeWidth={1.25} />
             Transactions
           </TabsTrigger>
         </TabsList>
@@ -307,9 +306,9 @@ export function ClientProfile({ client }: Props) {
           <div className="grid md:grid-cols-2 gap-4">
             <Card className="border-0 shadow-sm rounded-2xl">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-2">
-                  <div className="size-6 rounded-lg bg-brand-accent-light flex items-center justify-center">
-                    <User className="size-3.5 text-brand-primary" />
+                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <div className="size-6 rounded-lg bg-accent flex items-center justify-center">
+                    <User className="size-3.5 text-accent-foreground" strokeWidth={1.25} />
                   </div>
                   Contact Details
                 </CardTitle>
@@ -327,20 +326,20 @@ export function ClientProfile({ client }: Props) {
                     <span className="text-muted-foreground">—</span>
                   )}
                 </div>
-                <div className="h-px bg-neutral-100" />
+                <div className="h-px bg-border/60" />
                 <div className="flex items-center justify-between py-1">
                   <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
                     Phone
                   </span>
                   {client.phone ? (
-                    <a href={`tel:${client.phone}`} className="text-[#1a1c1c] hover:underline font-medium">
+                    <a href={`tel:${client.phone}`} className="text-foreground hover:underline font-medium">
                       {client.phone}
                     </a>
                   ) : (
                     <span className="text-muted-foreground">—</span>
                   )}
                 </div>
-                <div className="h-px bg-neutral-100" />
+                <div className="h-px bg-border/60" />
                 <div className="flex items-center justify-between py-1">
                   <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
                     Type
@@ -354,9 +353,9 @@ export function ClientProfile({ client }: Props) {
 
             <Card className="border-0 shadow-sm rounded-2xl">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-2">
-                  <div className="size-6 rounded-lg bg-brand-accent-light flex items-center justify-center">
-                    <Tag className="size-3.5 text-brand-primary" />
+                <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <div className="size-6 rounded-lg bg-accent flex items-center justify-center">
+                    <Tag className="size-3.5 text-accent-foreground" strokeWidth={1.25} />
                   </div>
                   Tags
                 </CardTitle>
@@ -369,7 +368,7 @@ export function ClientProfile({ client }: Props) {
                     tags.map((tag) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-700"
+                        className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground"
                       >
                         {tag}
                         <button
@@ -378,7 +377,7 @@ export function ClientProfile({ client }: Props) {
                           className="hover:text-destructive transition-colors ml-0.5"
                           aria-label={`Remove tag ${tag}`}
                         >
-                          <X className="size-3" />
+                          <X className="size-3" strokeWidth={1.25} />
                         </button>
                       </span>
                     ))
@@ -389,7 +388,7 @@ export function ClientProfile({ client }: Props) {
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     placeholder="Add a tag..."
-                    className="bg-neutral-50 border-neutral-200 text-sm h-8"
+                    className="bg-muted/50 border-border text-sm h-8"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -402,9 +401,9 @@ export function ClientProfile({ client }: Props) {
                     size="sm"
                     variant="outline"
                     onClick={addTag}
-                    className="h-8 gap-1 border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50"
+                    className="h-8 gap-1"
                   >
-                    <Plus className="size-3.5" />
+                    <Plus className="size-3.5" strokeWidth={1.25} />
                     Add
                   </Button>
                 </div>
@@ -414,13 +413,13 @@ export function ClientProfile({ client }: Props) {
 
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-[#1a1c1c]">
+              <CardTitle className="text-sm font-semibold text-foreground">
                 Notes
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <textarea
-                className="w-full rounded-xl bg-neutral-50 ring-1 ring-neutral-200/60 px-3 py-2.5 text-sm text-[#1a1c1c] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:bg-card transition-colors min-h-[120px] resize-y placeholder:text-muted-foreground"
+                className="w-full rounded-xl bg-muted/50 ring-1 ring-border/60 px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:bg-card transition-colors min-h-[120px] resize-y placeholder:text-muted-foreground"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add notes about this client..."
@@ -439,7 +438,7 @@ export function ClientProfile({ client }: Props) {
           {client.preferences && Object.keys(client.preferences).length > 0 && (
             <Card className="border-0 shadow-sm rounded-2xl">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-[#1a1c1c]">
+                <CardTitle className="text-sm font-semibold text-foreground">
                   Preferences
                 </CardTitle>
               </CardHeader>
@@ -451,11 +450,11 @@ export function ClientProfile({ client }: Props) {
                         <dt className="font-medium text-muted-foreground capitalize text-xs uppercase tracking-wide">
                           {key.replace(/_/g, " ")}
                         </dt>
-                        <dd className="text-[#1a1c1c] font-medium">
+                        <dd className="text-foreground font-medium">
                           {String(val)}
                         </dd>
                       </div>
-                      {i < arr.length - 1 && <div className="h-px bg-neutral-100" />}
+                      {i < arr.length - 1 && <div className="h-px bg-border/60" />}
                     </div>
                   ))}
                 </dl>
@@ -467,11 +466,12 @@ export function ClientProfile({ client }: Props) {
         {/* Properties */}
         <TabsContent value="properties" className="mt-4">
           <Card className="border-0 shadow-sm rounded-2xl">
-            <CardContent className="py-12 text-center">
-              <div className="size-12 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-3">
-                <Home className="size-6 text-neutral-400" />
+            <CardContent className="py-14 text-center">
+              <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                <Home className="size-6 text-muted-foreground" strokeWidth={1.25} />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-medium text-foreground">No properties linked</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 Properties linked to this client will appear here.
               </p>
             </CardContent>
@@ -481,11 +481,12 @@ export function ClientProfile({ client }: Props) {
         {/* Communication */}
         <TabsContent value="communication" className="mt-4">
           <Card className="border-0 shadow-sm rounded-2xl">
-            <CardContent className="py-12 text-center">
-              <div className="size-12 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-3">
-                <MessageSquare className="size-6 text-neutral-400" />
+            <CardContent className="py-14 text-center">
+              <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                <MessageSquare className="size-6 text-muted-foreground" strokeWidth={1.25} />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-medium text-foreground">No messages yet</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 Communication history from the messaging system will appear here.
               </p>
             </CardContent>
@@ -495,11 +496,12 @@ export function ClientProfile({ client }: Props) {
         {/* Transactions */}
         <TabsContent value="transactions" className="mt-4">
           <Card className="border-0 shadow-sm rounded-2xl">
-            <CardContent className="py-12 text-center">
-              <div className="size-12 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-3">
-                <CreditCard className="size-6 text-neutral-400" />
+            <CardContent className="py-14 text-center">
+              <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+                <CreditCard className="size-6 text-muted-foreground" strokeWidth={1.25} />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-medium text-foreground">No transactions yet</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 Transactions involving this client will appear here.
               </p>
             </CardContent>

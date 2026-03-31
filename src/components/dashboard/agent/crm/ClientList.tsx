@@ -43,7 +43,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, UserPlus, Mail, Download, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import {
+  Search,
+  UserPlus,
+  Mail,
+  Download,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+  Users,
+} from "lucide-react";
 
 type Props = Readonly<{
   clients: AgentCrmClient[];
@@ -56,12 +65,13 @@ type AddClientForm = {
   client_type: ClientType;
 };
 
+// CSS-var-compatible badge classes — semantic colors from design system
 const CLIENT_TYPE_COLORS: Record<string, string> = {
-  buyer: "bg-brand-accent-light text-brand-primary",
-  seller: "bg-amber-50 text-amber-700",
-  renter: "bg-blue-50 text-blue-700",
-  landlord: "bg-purple-50 text-purple-700",
-  investor: "bg-emerald-50 text-emerald-700",
+  buyer: "bg-accent text-accent-foreground",
+  seller: "bg-warning-light text-warning",
+  renter: "bg-info-light text-info",
+  landlord: "bg-[color-mix(in_srgb,var(--color-brand-secondary-light)_80%,transparent)] text-[color-mix(in_srgb,var(--color-brand-secondary)_90%,#000)]",
+  investor: "bg-success-light text-success",
 };
 
 export function ClientList({ clients }: Props) {
@@ -115,7 +125,7 @@ export function ClientList({ clients }: Props) {
       cell: (info) => (
         <a
           href={`/dashboard/agent/crm/${info.row.original.id}`}
-          className="font-semibold text-[#1a1c1c] hover:text-brand-primary transition-colors"
+          className="font-semibold text-foreground hover:text-brand-primary transition-colors"
         >
           {info.getValue() as string}
         </a>
@@ -141,7 +151,7 @@ export function ClientList({ clients }: Props) {
       cell: (info) => {
         const val = info.getValue() as string | null;
         return val ? (
-          <a href={`tel:${val}`} className="text-sm hover:underline">{val}</a>
+          <a href={`tel:${val}`} className="text-sm text-foreground hover:underline">{val}</a>
         ) : (
           <span className="text-muted-foreground">—</span>
         );
@@ -152,7 +162,7 @@ export function ClientList({ clients }: Props) {
       header: "Type",
       cell: (info) => {
         const type = info.getValue() as string;
-        const colorClass = CLIENT_TYPE_COLORS[type] ?? "bg-neutral-100 text-neutral-700";
+        const colorClass = CLIENT_TYPE_COLORS[type] ?? "bg-muted text-muted-foreground";
         return (
           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${colorClass}`}>
             {type.replace("_", " ")}
@@ -166,7 +176,7 @@ export function ClientList({ clients }: Props) {
       cell: (info) => {
         const val = info.getValue() as string | null;
         return val ? (
-          <span className="text-sm text-[#1a1c1c]">{new Date(val).toLocaleDateString("en-GB")}</span>
+          <span className="text-sm text-foreground">{new Date(val).toLocaleDateString("en-GB")}</span>
         ) : (
           <span className="text-muted-foreground">—</span>
         );
@@ -180,7 +190,7 @@ export function ClientList({ clients }: Props) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-brand-primary hover:bg-brand-accent-light hover:text-brand-primary h-8 px-3 text-xs font-medium"
+            className="text-brand-primary hover:bg-accent hover:text-accent-foreground h-8 px-3 text-xs font-medium"
           >
             View
           </Button>
@@ -247,16 +257,19 @@ export function ClientList({ clients }: Props) {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 gap-2">
           <div className="relative max-w-xs flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
+              strokeWidth={1.25}
+            />
             <Input
               placeholder="Search clients..."
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-9 bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary transition-colors"
+              className="pl-9 bg-muted/50 border-border focus:bg-background focus:border-ring transition-colors"
             />
           </div>
           <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v ?? "")}>
-            <SelectTrigger className="w-40 bg-neutral-50 border-neutral-200">
+            <SelectTrigger className="w-40 bg-muted/50 border-border">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
@@ -273,57 +286,57 @@ export function ClientList({ clients }: Props) {
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
             <Button className="bg-brand-primary hover:bg-brand-primary-light text-white gap-2 shrink-0">
-              <UserPlus className="size-4" />
+              <UserPlus className="size-4" strokeWidth={1.25} />
               Add Client
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold tracking-tight text-[#1a1c1c]">
+              <DialogTitle className="text-lg font-semibold tracking-tight text-foreground font-heading">
                 Add New Client
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit(onAddClient)} className="space-y-4 pt-1">
               <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="name" className="text-sm font-medium text-foreground">
                   Name <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
                   {...register("name", { required: true })}
-                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
+                  className="bg-muted/50 border-border focus:bg-background focus:border-ring"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="email" className="text-sm font-medium text-foreground">
                   Email
                 </Label>
                 <Input
                   id="email"
                   type="email"
                   {...register("email")}
-                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
+                  className="bg-muted/50 border-border focus:bg-background focus:border-ring"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="phone" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="phone" className="text-sm font-medium text-foreground">
                   Phone
                 </Label>
                 <Input
                   id="phone"
                   {...register("phone")}
-                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
+                  className="bg-muted/50 border-border focus:bg-background focus:border-ring"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="client_type" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="client_type" className="text-sm font-medium text-foreground">
                   Client Type
                 </Label>
                 <Select
                   defaultValue="buyer"
                   onValueChange={(v) => setValue("client_type", v as ClientType)}
                 >
-                  <SelectTrigger className="bg-neutral-50 border-neutral-200">
+                  <SelectTrigger className="bg-muted/50 border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -340,7 +353,6 @@ export function ClientList({ clients }: Props) {
                   type="button"
                   variant="outline"
                   onClick={() => setAddOpen(false)}
-                  className="border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50"
                 >
                   Cancel
                 </Button>
@@ -359,28 +371,28 @@ export function ClientList({ clients }: Props) {
 
       {/* Bulk action bar */}
       {selectedRows.length > 0 && (
-        <div className="flex items-center gap-3 rounded-xl bg-brand-accent-light px-4 py-3 text-sm border-0">
-          <span className="font-semibold text-brand-primary">
+        <div className="flex items-center gap-3 rounded-xl bg-accent px-4 py-3 text-sm shadow-sm">
+          <span className="font-semibold text-accent-foreground">
             {selectedRows.length} selected
           </span>
-          <div className="h-4 w-px bg-brand-primary/20" />
+          <div className="h-4 w-px bg-accent-foreground/20" />
           <a href={`mailto:${selectedEmails}`}>
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 gap-1.5 text-brand-primary hover:bg-white/60 text-xs font-medium"
+              className="h-8 gap-1.5 text-accent-foreground hover:bg-background/40 text-xs font-medium"
             >
-              <Mail className="size-3.5" />
+              <Mail className="size-3.5" strokeWidth={1.25} />
               Send Email
             </Button>
           </a>
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 gap-1.5 text-brand-primary hover:bg-white/60 text-xs font-medium"
+            className="h-8 gap-1.5 text-accent-foreground hover:bg-background/40 text-xs font-medium"
             onClick={() => toast.info("Export coming soon")}
           >
-            <Download className="size-3.5" />
+            <Download className="size-3.5" strokeWidth={1.25} />
             Export
           </Button>
         </div>
@@ -391,15 +403,15 @@ export function ClientList({ clients }: Props) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id} className="bg-neutral-50/80 hover:bg-neutral-50/80">
+              <TableRow key={hg.id} className="bg-muted/40 hover:bg-muted/40">
                 {hg.headers.map((header) => {
                   const sorted = header.column.getIsSorted();
                   return (
                     <TableHead
                       key={header.id}
                       onClick={header.column.getToggleSortingHandler()}
-                      className={`text-xs font-semibold text-neutral-500 uppercase tracking-wide ${
-                        header.column.getCanSort() ? "cursor-pointer select-none hover:text-[#1a1c1c]" : ""
+                      className={`text-xs font-semibold text-muted-foreground uppercase tracking-wide ${
+                        header.column.getCanSort() ? "cursor-pointer select-none hover:text-foreground" : ""
                       }`}
                     >
                       <span className="inline-flex items-center gap-1">
@@ -411,11 +423,11 @@ export function ClientList({ clients }: Props) {
                             )}
                         {header.column.getCanSort() && (
                           sorted === "asc" ? (
-                            <ChevronUp className="size-3.5" />
+                            <ChevronUp className="size-3.5" strokeWidth={1.25} />
                           ) : sorted === "desc" ? (
-                            <ChevronDown className="size-3.5" />
+                            <ChevronDown className="size-3.5" strokeWidth={1.25} />
                           ) : (
-                            <ChevronsUpDown className="size-3.5 opacity-40" />
+                            <ChevronsUpDown className="size-3.5 opacity-40" strokeWidth={1.25} />
                           )
                         )}
                       </span>
@@ -430,13 +442,20 @@ export function ClientList({ clients }: Props) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-32 text-center text-muted-foreground"
+                  className="h-40 text-center text-muted-foreground"
                 >
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="size-10 rounded-full bg-neutral-100 flex items-center justify-center">
-                      <Search className="size-5 text-neutral-400" />
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="size-12 rounded-full bg-muted flex items-center justify-center">
+                      <Users className="size-5 text-muted-foreground" strokeWidth={1.25} />
                     </div>
-                    <span className="text-sm">No clients found.</span>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">No clients found</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {clients.length === 0
+                          ? "Add your first client to get started."
+                          : "Try adjusting your search or filter."}
+                      </p>
+                    </div>
                   </div>
                 </TableCell>
               </TableRow>
@@ -445,10 +464,10 @@ export function ClientList({ clients }: Props) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className="hover:bg-neutral-50/70 transition-colors data-[state=selected]:bg-brand-accent-light/50"
+                  className="hover:bg-muted/30 transition-colors data-[state=selected]:bg-accent/50"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-sm text-[#1a1c1c]">
+                    <TableCell key={cell.id} className="text-sm text-foreground">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -473,7 +492,7 @@ export function ClientList({ clients }: Props) {
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="h-8 px-3 text-xs border-neutral-200 hover:bg-neutral-50 disabled:opacity-40"
+            className="h-8 px-3 text-xs disabled:opacity-40"
           >
             Previous
           </Button>
@@ -482,7 +501,7 @@ export function ClientList({ clients }: Props) {
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="h-8 px-3 text-xs border-neutral-200 hover:bg-neutral-50 disabled:opacity-40"
+            className="h-8 px-3 text-xs disabled:opacity-40"
           >
             Next
           </Button>

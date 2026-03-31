@@ -48,22 +48,22 @@ const STAGE_LABELS: Record<LeadStage, string> = {
   closed: "Closed",
 };
 
-// Each column gets a slightly different surface shade per the design system hierarchy
+// Column background shades using design-system tokens
 const STAGE_BG: Record<LeadStage, string> = {
-  new_enquiry: "bg-neutral-50",
-  qualified: "bg-blue-50/60",
-  viewing_booked: "bg-amber-50/60",
-  offer_made: "bg-emerald-50/60",
-  closed: "bg-neutral-100/80",
+  new_enquiry: "bg-muted/40",
+  qualified: "bg-info-light/30",
+  viewing_booked: "bg-warning-light/30",
+  offer_made: "bg-success-light/30",
+  closed: "bg-muted/60",
 };
 
-// Status pill colors for column header
+// Status pill using design-system semantic tokens
 const STAGE_PILL: Record<LeadStage, string> = {
-  new_enquiry: "bg-neutral-200 text-neutral-700",
-  qualified: "bg-blue-100 text-blue-700",
-  viewing_booked: "bg-amber-100 text-amber-700",
-  offer_made: "bg-emerald-100 text-emerald-700",
-  closed: "bg-neutral-200 text-neutral-600",
+  new_enquiry: "bg-muted text-muted-foreground",
+  qualified: "bg-info-light text-info",
+  viewing_booked: "bg-warning-light text-warning",
+  offer_made: "bg-success-light text-success",
+  closed: "bg-muted text-muted-foreground",
 };
 
 function DroppableColumn({
@@ -228,10 +228,13 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
       {/* Toolbar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
+            strokeWidth={1.25}
+          />
           <Input
             placeholder="Search leads..."
-            className="pl-9 bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary transition-colors"
+            className="pl-9 bg-muted/50 border-border focus:bg-background focus:border-ring transition-colors"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -244,19 +247,19 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
         <Dialog open={addLeadOpen} onOpenChange={setAddLeadOpen}>
           <DialogTrigger asChild>
             <Button className="bg-brand-primary hover:bg-brand-primary-light text-white gap-2 shrink-0">
-              <UserPlus className="size-4" />
+              <UserPlus className="size-4" strokeWidth={1.25} />
               Add Lead
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold tracking-tight text-[#1a1c1c]">
+              <DialogTitle className="text-lg font-semibold tracking-tight text-foreground font-heading">
                 Add New Lead
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleAddLead} className="space-y-4 pt-1">
               <div className="space-y-1.5">
-                <Label htmlFor="lead-name" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="lead-name" className="text-sm font-medium text-foreground">
                   Name <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -265,11 +268,11 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                   value={addLeadName}
                   onChange={(e) => setAddLeadName(e.target.value)}
                   required
-                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
+                  className="bg-muted/50 border-border focus:bg-background focus:border-ring"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="lead-email" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="lead-email" className="text-sm font-medium text-foreground">
                   Email
                 </Label>
                 <Input
@@ -278,17 +281,17 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                   placeholder="contact@example.com"
                   value={addLeadEmail}
                   onChange={(e) => setAddLeadEmail(e.target.value)}
-                  className="bg-neutral-50 border-neutral-200 focus:bg-white focus:border-brand-primary"
+                  className="bg-muted/50 border-border focus:bg-background focus:border-ring"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="lead-source" className="text-sm font-medium text-[#1a1c1c]">
+                <Label htmlFor="lead-source" className="text-sm font-medium text-foreground">
                   Source
                 </Label>
                 <Select value={addLeadSource} onValueChange={(v) => setAddLeadSource(v ?? "")}>
                   <SelectTrigger
                     id="lead-source"
-                    className="bg-neutral-50 border-neutral-200"
+                    className="bg-muted/50 border-border"
                   >
                     <SelectValue placeholder="Select source" />
                   </SelectTrigger>
@@ -307,7 +310,6 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                   type="button"
                   variant="outline"
                   onClick={() => setAddLeadOpen(false)}
-                  className="border-neutral-200 text-[#1a1c1c] hover:bg-neutral-50"
                 >
                   Cancel
                 </Button>
@@ -338,7 +340,7 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
               <div key={stage} className="flex-shrink-0 w-64">
                 {/* Column header */}
                 <div className="flex items-center justify-between mb-2 px-1">
-                  <h3 className="text-xs font-semibold text-[#1a1c1c] uppercase tracking-wide">
+                  <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">
                     {STAGE_LABELS[stage]}
                   </h3>
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STAGE_PILL[stage]}`}>
@@ -371,9 +373,9 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
 
         <DragOverlay>
           {activeLeadData ? (
-            <div className="w-64 bg-white rounded-xl shadow-xl ring-2 ring-brand-primary/20 p-3 opacity-95 rotate-1">
+            <div className="w-64 bg-card rounded-xl shadow-xl ring-2 ring-brand-primary/20 p-3 opacity-95 rotate-1">
               <div className="flex items-start gap-2.5">
-                <div className="size-8 rounded-full bg-brand-accent-light flex items-center justify-center shrink-0 text-brand-primary font-semibold text-xs">
+                <div className="size-8 rounded-full bg-accent flex items-center justify-center shrink-0 text-accent-foreground font-semibold text-xs">
                   {activeLeadData.contact_name
                     .split(" ")
                     .slice(0, 2)
@@ -382,7 +384,7 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
                     .toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-sm text-[#1a1c1c] truncate">
+                  <p className="font-semibold text-sm text-foreground truncate">
                     {activeLeadData.contact_name}
                   </p>
                   {activeLeadData.contact_email && (
