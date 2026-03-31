@@ -43,13 +43,13 @@ type UrgencyLevel = "urgent" | "high" | "medium" | "low" | string;
 function urgencyBadge(urgency: UrgencyLevel): { label: string; className: string } {
   switch (urgency) {
     case "urgent":
-      return { label: "Urgent", className: "bg-red-100 text-red-700" };
+      return { label: "Urgent", className: "bg-error-light text-error" };
     case "high":
-      return { label: "High Priority", className: "bg-amber-100 text-amber-700" };
+      return { label: "High Priority", className: "bg-warning-light text-warning" };
     case "medium":
       return { label: "Medium", className: "bg-neutral-100 text-neutral-600" };
     case "low":
-      return { label: "Low Priority", className: "bg-green-100 text-green-700" };
+      return { label: "Low Priority", className: "bg-success-light text-success" };
     default:
       return { label: "New", className: "bg-neutral-100 text-neutral-600" };
   }
@@ -68,13 +68,13 @@ function DeclineDialog(props: Readonly<{
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
         <h3 className="text-base font-semibold text-neutral-900">Decline lead?</h3>
         <p className="mt-1 text-sm text-neutral-500">
           This lead will be removed from your list. Please provide a reason.
         </p>
         <select
-          className="mt-4 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]"
+          className="mt-4 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-brand-primary"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         >
@@ -166,13 +166,13 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
         />
       )}
 
-      <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm transition hover:shadow-md">
         {/* Header row */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             {/* Category icon avatar */}
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1B4D3E]/10">
-              <Wrench className="size-5 text-[#1B4D3E]" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
+              <Wrench className="size-5 text-brand-primary" />
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-neutral-900">
@@ -210,14 +210,14 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
 
         {/* Error */}
         {error && (
-          <p className="mt-2 text-xs text-red-600">{error}</p>
+          <p className="mt-2 text-xs text-error">{error}</p>
         )}
 
         {/* Actions */}
         <div className="mt-4 flex gap-2">
           <Button
             size="sm"
-            className="flex-1 bg-[#1B4D3E] text-white hover:bg-[#163d31]"
+            className="flex-1 bg-brand-primary text-white hover:bg-brand-primary/90"
             onClick={handleAccept}
             disabled={accepting || declining}
           >

@@ -31,7 +31,7 @@ export default async function ProviderLeadsPage() {
   return (
     <div className="p-6 space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">New Leads</h1>
+        <h1 className="text-2xl font-bold font-heading text-neutral-900">New Leads</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Open service requests matching your categories. Leads expire after 48 hours.
         </p>

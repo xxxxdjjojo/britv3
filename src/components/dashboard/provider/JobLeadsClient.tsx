@@ -17,7 +17,7 @@ function FilterTabs(props: Readonly<{
 }>) {
   const tabs = ["All", ...props.categories];
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
       {tabs.map((tab) => (
         <button
           key={tab}
@@ -25,7 +25,7 @@ function FilterTabs(props: Readonly<{
           className={[
             "rounded-full px-4 py-1.5 text-sm font-medium transition",
             props.active === tab
-              ? "bg-[#1B4D3E] text-white"
+              ? "bg-brand-primary text-white"
               : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
           ].join(" ")}
         >
@@ -129,7 +129,7 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
 
       {/* Lead cards */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50 py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 py-16 text-center">
           <Inbox className="size-10 text-neutral-300" />
           <p className="mt-3 text-sm font-medium text-neutral-500">No leads right now</p>
           <p className="mt-1 text-xs text-neutral-400">

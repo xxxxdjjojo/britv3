@@ -55,7 +55,7 @@ function StepIcon({
         className={[
           "size-4 rounded-full border-2 flex-shrink-0 z-10",
           done
-            ? "bg-[#1B4D3E] border-[#1B4D3E]"
+            ? "bg-brand-primary border-brand-primary"
             : "bg-white border-neutral-300",
         ].join(" ")}
       />
@@ -64,7 +64,7 @@ function StepIcon({
         <div
           className={[
             "w-px flex-1 mt-0.5",
-            done ? "bg-[#1B4D3E]" : "border-l-2 border-dashed border-neutral-300",
+            done ? "bg-brand-primary" : "border-l-2 border-dashed border-neutral-300",
           ].join(" ")}
           style={{ minHeight: "2.5rem" }}
         />

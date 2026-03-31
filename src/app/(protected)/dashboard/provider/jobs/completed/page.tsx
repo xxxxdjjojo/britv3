@@ -31,7 +31,7 @@ function formatDate(iso: string): string {
 function StarRating({ rating }: Readonly<{ rating: number | null }>) {
   if (rating == null) {
     return (
-      <span className="inline-block rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-600">
+      <span className="inline-block rounded-full bg-warning-light px-2.5 py-0.5 text-xs font-medium text-warning">
         Awaiting review
       </span>
     );
@@ -54,7 +54,7 @@ function CompletedJobRow({ job }: Readonly<{ job: CompletedJob }>) {
       <td className="py-3 px-4">
         <Link
           href={`/dashboard/provider/jobs/${job.id}`}
-          className="text-sm font-medium text-[#1B4D3E] hover:underline"
+          className="text-sm font-medium text-brand-primary hover:underline"
         >
           {job.title}
         </Link>
@@ -83,11 +83,11 @@ function SearchForm({ query }: Readonly<{ query: string }>) {
         name="q"
         defaultValue={query}
         placeholder="Search jobs…"
-        className="flex-1 rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]"
+        className="flex-1 rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-primary"
       />
       <button
         type="submit"
-        className="rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
+        className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
       >
         Search
       </button>
@@ -190,7 +190,7 @@ export default async function CompletedJobsPage(props: Readonly<{
     <div className="p-6 space-y-6 max-w-7xl">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Completed Jobs</h1>
+          <h1 className="text-2xl font-bold font-heading text-neutral-900">Completed Jobs</h1>
           <p className="mt-1 text-sm text-neutral-500">
             Your full job history with earnings and review status.
           </p>
@@ -199,7 +199,7 @@ export default async function CompletedJobsPage(props: Readonly<{
       </div>
 
       {result.data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50 py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 py-16 text-center">
           <CheckCircle className="size-10 text-neutral-300" />
           <p className="mt-3 text-sm font-medium text-neutral-500">
             {query ? "No jobs match your search" : "No completed jobs yet"}
@@ -212,7 +212,7 @@ export default async function CompletedJobsPage(props: Readonly<{
         </div>
       ) : (
         <>
-          <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
             <table className="w-full">
               <thead>
                 <tr className="bg-neutral-50 border-b border-neutral-200">

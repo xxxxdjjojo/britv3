@@ -71,14 +71,14 @@ export default async function ProviderAvailabilityPage() {
   return (
     <div className="p-6 max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Availability</h1>
+        <h1 className="text-2xl font-bold font-heading text-neutral-900">Availability</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Click any available date to mark it as unavailable. Click a blocked
           date to unblock it. Booked dates cannot be changed.
         </p>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
         <AvailabilityCalendar
           initialBlockedRanges={blockedRanges}
           initialBookings={bookings}
