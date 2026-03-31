@@ -257,18 +257,20 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
     setError(null);
   };
 
-  const labelClass = "block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1";
+  const labelClass = "block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5";
   const inputClass =
-    "w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-blue-500";
+    "w-full rounded-lg border border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-2 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-primary";
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Portfolio</h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            {items.length} project{items.length !== 1 ? "s" : ""} — drag to reorder
+          <h1 className="font-heading text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+            Work Portfolio
+          </h1>
+          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+            {items.length} project{items.length !== 1 ? "s" : ""} &mdash; drag to reorder
           </p>
         </div>
         <button
@@ -276,19 +278,22 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
             setShowAddDialog(true);
             setError(null);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light"
+          aria-label="Add new portfolio project"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="size-4" />
           Add Project
         </button>
       </div>
 
       {/* Grid */}
       {items.length === 0 ? (
-        <div className="text-center py-20 text-neutral-400">
-          <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-40" />
-          <p className="font-medium">No portfolio projects yet</p>
-          <p className="text-sm mt-1">Add your first before/after project to showcase your work.</p>
+        <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 py-20 text-center">
+          <ImageIcon className="mx-auto mb-4 size-12 text-neutral-300" />
+          <p className="font-heading font-semibold text-neutral-700">No portfolio projects yet</p>
+          <p className="mt-1.5 text-sm text-neutral-500">
+            Add your first before/after project to showcase your work.
+          </p>
         </div>
       ) : (
         <DndContext
@@ -314,30 +319,31 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
 
       {/* Add Project Dialog */}
       {showAddDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                Add Project
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
+            <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-700">
+              <h2 className="font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                Add Portfolio Project
               </h2>
               <button
                 onClick={() => setShowAddDialog(false)}
-                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                className="rounded-lg p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
+                aria-label="Close dialog"
               >
-                <X className="w-5 h-5" />
+                <X className="size-5" />
               </button>
             </div>
 
-            <form onSubmit={handleAddSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleAddSubmit} className="space-y-4 p-6">
               {error && (
-                <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
+                <p className="rounded-lg bg-error-light px-3 py-2 text-sm text-error dark:bg-error/10 dark:text-error">
                   {error}
                 </p>
               )}
 
               <div>
                 <label className={labelClass}>
-                  Project Title <span className="text-red-500">*</span>
+                  Project Title <span className="text-error">*</span>
                 </label>
                 <input
                   type="text"
@@ -352,7 +358,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
               <div>
                 <label className={labelClass}>Description</label>
                 <textarea
-                  className={`${inputClass} resize-none h-20`}
+                  className={`${inputClass} h-20 resize-none`}
                   value={addForm.description}
                   onChange={(e) => setAddForm((f) => ({ ...f, description: e.target.value }))}
                   placeholder="Briefly describe the project..."
@@ -381,7 +387,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                   <input
                     type="file"
                     accept="image/*"
-                    className="w-full text-sm text-neutral-600 dark:text-neutral-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-neutral-100 dark:file:bg-neutral-700 file:text-neutral-700 dark:file:text-neutral-200 hover:file:bg-neutral-200 dark:hover:file:bg-neutral-600 cursor-pointer"
+                    className="w-full cursor-pointer text-sm text-neutral-600 file:mr-2 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-neutral-700 hover:file:bg-neutral-200 dark:text-neutral-400 dark:file:bg-neutral-700 dark:file:text-neutral-200 dark:hover:file:bg-neutral-600"
                     onChange={(e) =>
                       setAddForm((f) => ({ ...f, beforeFile: e.target.files?.[0] ?? null }))
                     }
@@ -392,7 +398,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                   <input
                     type="file"
                     accept="image/*"
-                    className="w-full text-sm text-neutral-600 dark:text-neutral-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-neutral-100 dark:file:bg-neutral-700 file:text-neutral-700 dark:file:text-neutral-200 hover:file:bg-neutral-200 dark:hover:file:bg-neutral-600 cursor-pointer"
+                    className="w-full cursor-pointer text-sm text-neutral-600 file:mr-2 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-neutral-700 hover:file:bg-neutral-200 dark:text-neutral-400 dark:file:bg-neutral-700 dark:file:text-neutral-200 dark:hover:file:bg-neutral-600"
                     onChange={(e) =>
                       setAddForm((f) => ({ ...f, afterFile: e.target.files?.[0] ?? null }))
                     }
@@ -404,14 +410,14 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowAddDialog(false)}
-                  className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex-1 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+                  className="flex-1 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light disabled:opacity-50"
                 >
                   {submitting ? "Adding..." : "Add Project"}
                 </button>
@@ -423,30 +429,31 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
 
       {/* Edit Dialog */}
       {editState && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl dark:bg-neutral-900">
+            <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-700">
+              <h2 className="font-heading text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                 Edit Project
               </h2>
               <button
                 onClick={() => setEditState(null)}
-                className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
+                className="rounded-lg p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
+                aria-label="Close dialog"
               >
-                <X className="w-5 h-5" />
+                <X className="size-5" />
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleEditSubmit} className="space-y-4 p-6">
               {error && (
-                <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
+                <p className="rounded-lg bg-error-light px-3 py-2 text-sm text-error dark:bg-error/10 dark:text-error">
                   {error}
                 </p>
               )}
 
               <div>
                 <label className={labelClass}>
-                  Project Title <span className="text-red-500">*</span>
+                  Project Title <span className="text-error">*</span>
                 </label>
                 <input
                   type="text"
@@ -460,7 +467,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
               <div>
                 <label className={labelClass}>Description</label>
                 <textarea
-                  className={`${inputClass} resize-none h-20`}
+                  className={`${inputClass} h-20 resize-none`}
                   value={editState.description}
                   onChange={(e) =>
                     setEditState((s) => s && { ...s, description: e.target.value })
@@ -488,14 +495,14 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                 <button
                   type="button"
                   onClick={() => setEditState(null)}
-                  className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex-1 rounded-xl border border-neutral-200 px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+                  className="flex-1 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light disabled:opacity-50"
                 >
                   {submitting ? "Saving..." : "Save Changes"}
                 </button>

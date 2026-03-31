@@ -21,13 +21,13 @@ function formatTime(isoString: string): string {
 function statusBadge(status: string): ReactNode {
   if (status === "in_progress") {
     return (
-      <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+      <span className="inline-flex items-center rounded-full bg-warning-light px-2.5 py-0.5 text-xs font-medium text-warning">
         In progress
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+    <span className="inline-flex items-center rounded-full bg-info-light px-2.5 py-0.5 text-xs font-medium text-info">
       Confirmed
     </span>
   );

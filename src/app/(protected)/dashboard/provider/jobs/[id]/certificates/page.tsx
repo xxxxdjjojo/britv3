@@ -34,10 +34,10 @@ const CERTIFICATE_TYPE_LABELS: Record<string, string> = {
 };
 
 const CERTIFICATE_TYPE_COLORS: Record<string, string> = {
-  gas_safe_cp12: "bg-orange-100 text-orange-800",
-  eic: "bg-blue-100 text-blue-800",
-  eicr: "bg-indigo-100 text-indigo-800",
-  minor_works: "bg-purple-100 text-purple-800",
+  gas_safe_cp12: "bg-warning-light text-warning",
+  eic: "bg-info-light text-info",
+  eicr: "bg-info-light text-info",
+  minor_works: "bg-brand-primary-lighter text-brand-primary",
   custom: "bg-neutral-100 text-neutral-700",
 };
 
@@ -76,7 +76,7 @@ function CertificateCard({ cert }: { cert: Certificate }) {
             <span className="font-mono text-sm text-neutral-700">#{cert.certificateNumber}</span>
           )}
           {expiring && (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+            <span className="rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning">
               Expiring soon
             </span>
           )}

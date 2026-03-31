@@ -25,14 +25,14 @@ function fmtBudget(minPence: number | null, maxPence: number | null): string {
 function statusBadge(status: string): ReactNode {
   if (status === "active" || status === "in_progress") {
     return (
-      <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+      <span className="inline-flex items-center rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning">
         In progress
       </span>
     );
   }
   if (status === "confirmed") {
     return (
-      <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+      <span className="inline-flex items-center rounded-full bg-info-light px-2 py-0.5 text-xs font-medium text-info">
         Confirmed
       </span>
     );
@@ -49,7 +49,7 @@ function LeadCard({ lead }: { lead: ProviderLead }) {
     <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="mb-1 flex items-start justify-between gap-2">
         <p className="text-base font-semibold text-neutral-900">{lead.serviceCategory}</p>
-        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+        <span className="inline-flex items-center rounded-full bg-success-light px-2 py-0.5 text-xs font-medium text-success">
           New lead
         </span>
       </div>
