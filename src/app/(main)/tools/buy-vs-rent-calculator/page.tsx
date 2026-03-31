@@ -14,6 +14,8 @@ import {
   Calculator,
   PiggyBank,
   Scale,
+  BookOpen,
+  BarChart2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -112,7 +114,6 @@ export default function BuyVsRentCalculatorPage() {
       const propertyValue = propertyPrice * Math.pow(1 + growthRate / 100, year);
       cumulativeMaintenance += maintenanceRate * propertyValue;
 
-      // Remaining mortgage balance after `year` years of payments
       const paymentsMade = year * 12;
       const remainingBalance =
         monthlyRate > 0
@@ -126,7 +127,6 @@ export default function BuyVsRentCalculatorPage() {
       const buyingCost =
         deposit + stampDuty + totalMortgagePaid + cumulativeMaintenance - equity;
 
-      // Rent with inflation
       let totalRentPaid = 0;
       for (let y = 0; y < year; y++) {
         totalRentPaid += monthlyRent * 12 * Math.pow(1 + rentInflation / 100, y);
@@ -170,61 +170,152 @@ export default function BuyVsRentCalculatorPage() {
   ]);
 
   const highlightYears = [1, 5, 10, 15, 25];
-  const tableRows = results.yearData.filter((d) =>
-    highlightYears.includes(d.year)
-  );
+  const tableRows = results.yearData.filter((d) => highlightYears.includes(d.year));
+
+  // Chart data — normalise bar heights for the visual bar chart
+  const chartYears = [1, 3, 5, 7, 10, 15, 20, 25];
+  const chartData = results.yearData.filter((d) => chartYears.includes(d.year));
+  const maxVal = Math.max(...chartData.flatMap((d) => [d.buyingCost, d.rentingCost]));
 
   return (
     <>
-      {/* Hero Section */}
-      <header className="bg-white dark:bg-neutral-900 pt-12 pb-8 border-b border-neutral-200 dark:border-neutral-800">
+      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      <header className="bg-brand-primary text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <nav className="flex mb-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-              <Link
-                href="/tools"
-                className="hover:text-brand-primary transition-colors"
-              >
-                Tools
-              </Link>
-              <span className="mx-2">/</span>
-              <span className="text-neutral-900 dark:text-white">
-                Buy vs Rent Calculator
-              </span>
-            </nav>
-            <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white mb-4 font-heading">
-              Buy vs. Rent
-            </h1>
-            <p className="text-lg text-neutral-600 dark:text-neutral-400">
-              Make a data-driven decision. Compare the long-term financial
-              impact of buying a home versus renting in today&apos;s market.
-            </p>
+          <div className="flex flex-col lg:flex-row min-h-[340px]">
+            {/* Left copy */}
+            <div className="flex-1 py-14 lg:py-20 pr-0 lg:pr-12">
+              <nav className="flex mb-6 text-xs font-semibold text-white/50 uppercase tracking-widest">
+                <Link href="/tools" className="hover:text-white transition-colors">
+                  Tools
+                </Link>
+                <span className="mx-2">/</span>
+                <span className="text-white/70">Buy vs Rent</span>
+              </nav>
+
+              <h1 className="text-5xl md:text-6xl font-bold font-heading leading-tight mb-5">
+                Is it better to<br />buy or rent?
+              </h1>
+              <p className="text-white/70 text-base max-w-md leading-relaxed">
+                A data-driven analysis using your real numbers — purchase costs, equity
+                projections, alternative investments, and capital growth — to give you
+                a definitive answer.
+              </p>
+            </div>
+
+            {/* Right decorative panel */}
+            <div className="hidden lg:flex lg:w-80 xl:w-96 items-stretch">
+              <div className="w-full bg-white/5 border-l border-white/10 flex flex-col items-center justify-center gap-4 px-8 py-12">
+                <div className="w-full aspect-video rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex flex-col items-center justify-center gap-2">
+                  <div className="grid grid-cols-3 gap-1.5 w-24">
+                    {[60, 85, 40, 70, 95, 55, 80, 45, 65].map((h, i) => (
+                      <div
+                        key={i}
+                        className="bg-white/30 rounded-sm"
+                        style={{ height: `${h * 0.4}px` }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-2">
+                    sanctuary
+                  </span>
+                </div>
+                <div className="text-center">
+                  <div className="text-white/40 text-xs font-semibold uppercase tracking-widest mb-1">
+                    Est. Net Gain (10yr)
+                  </div>
+                  <div className="text-3xl font-bold font-heading text-white">
+                    {formatCurrency(Math.abs(results.netGain10yr))}
+                  </div>
+                  <div className="text-white/40 text-xs mt-1">
+                    {results.netGain10yr > 0 ? "buying advantage" : "renting advantage"}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* ─── Verdict Banner ───────────────────────────────────────────────── */}
+      <section className="bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left">
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-2">
+                Our Analysis
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold font-heading text-neutral-900 dark:text-white">
+                {results.breakEvenYear ? (
+                  <>
+                    Buying becomes cheaper than renting after{" "}
+                    <span className="text-brand-primary">
+                      {results.breakEvenYear}{" "}
+                      {results.breakEvenYear === 1 ? "year" : "years"}.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Renting remains cheaper{" "}
+                    <span className="text-brand-primary">over 25 years.</span>
+                  </>
+                )}
+              </h2>
+              <p className="text-sm text-neutral-500 mt-3 max-w-lg">
+                {results.breakEvenYear
+                  ? `Based on current market growth and interest rates, equity gain outpaces rent and costs at the ${results.breakEvenYear * 12}-month mark.`
+                  : "With the current parameters, renting and investing your deposit produces better returns over the modelled period."}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-6 shrink-0">
+              <div className="text-center px-6 py-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">
+                  Break-even
+                </p>
+                <p className="text-4xl font-bold font-heading text-brand-primary">
+                  {results.breakEvenYear ?? "25+"}
+                </p>
+                <p className="text-xs text-neutral-400 mt-1">years</p>
+              </div>
+              <div className="text-center px-6 py-4 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">
+                  Net Advantage (10yr)
+                </p>
+                <p className="text-4xl font-bold font-heading text-brand-secondary">
+                  {formatCurrency(Math.abs(results.netGain10yr))}
+                </p>
+                <p className="text-xs text-neutral-400 mt-1">
+                  {results.netGain10yr > 0 ? "buying" : "renting"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Main Content Area */}
-          <div className="flex-1 space-y-8">
-            {/* Inputs Section */}
+          {/* ─── Main Content ──────────────────────────────────────────────── */}
+          <div className="flex-1 space-y-8 min-w-0">
+
+            {/* Variable Parameters Form */}
             <Card className="p-0 border-neutral-200 dark:border-neutral-800 shadow-sm">
               <CardContent className="p-6 md:p-8">
-                <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center gap-2 mb-7">
                   <SlidersHorizontal className="size-5 text-brand-primary" />
-                  <h2 className="text-xl font-bold font-heading">
-                    Your Parameters
-                  </h2>
+                  <h2 className="text-xl font-bold font-heading">Variable Parameters</h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Primary inputs row */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pb-6 border-b border-neutral-100 dark:border-neutral-800">
                   {/* Property Price */}
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                      <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                         Property Price
                       </Label>
-                      <span className="text-brand-primary font-bold">
+                      <span className="text-sm font-bold text-brand-primary">
                         {formatCurrency(propertyPrice)}
                       </span>
                     </div>
@@ -234,33 +325,27 @@ export default function BuyVsRentCalculatorPage() {
                       max={2000000}
                       step={10000}
                       value={propertyPrice}
-                      onChange={(e) =>
-                        setPropertyPrice(Number(e.target.value))
-                      }
-                      className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+                      onChange={(e) => setPropertyPrice(Number(e.target.value))}
+                      className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer accent-brand-primary"
                     />
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        &pound;
-                      </span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">£</span>
                       <Input
                         type="number"
                         value={propertyPrice}
-                        onChange={(e) =>
-                          setPropertyPrice(Number(e.target.value))
-                        }
-                        className="pl-7 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setPropertyPrice(Number(e.target.value))}
+                        className="pl-7 text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                     </div>
                   </div>
 
                   {/* Monthly Rent */}
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                        Current Monthly Rent
+                      <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                        Monthly Rent
                       </Label>
-                      <span className="text-brand-primary font-bold">
+                      <span className="text-sm font-bold text-brand-primary">
                         {formatCurrency(monthlyRent)}
                       </span>
                     </div>
@@ -270,39 +355,28 @@ export default function BuyVsRentCalculatorPage() {
                       max={10000}
                       step={50}
                       value={monthlyRent}
-                      onChange={(e) =>
-                        setMonthlyRent(Number(e.target.value))
-                      }
-                      className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+                      onChange={(e) => setMonthlyRent(Number(e.target.value))}
+                      className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer accent-brand-primary"
                     />
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        &pound;
-                      </span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">£</span>
                       <Input
                         type="number"
                         value={monthlyRent}
-                        onChange={(e) =>
-                          setMonthlyRent(Number(e.target.value))
-                        }
-                        className="pl-7 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setMonthlyRent(Number(e.target.value))}
+                        className="pl-7 text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                     </div>
                   </div>
 
                   {/* Annual Growth */}
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 flex items-center gap-1">
+                      <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider flex items-center gap-1">
                         Annual Growth
-                        <Info
-                          className="size-3.5 text-neutral-400 cursor-help"
-                          aria-label="Estimated annual property price appreciation"
-                        />
+                        <Info className="size-3 text-neutral-400" aria-label="Estimated annual property price appreciation" />
                       </Label>
-                      <span className="text-brand-primary font-bold">
-                        {growthRate}%
-                      </span>
+                      <span className="text-sm font-bold text-brand-primary">{growthRate}%</span>
                     </div>
                     <input
                       type="range"
@@ -310,215 +384,150 @@ export default function BuyVsRentCalculatorPage() {
                       max={10}
                       step={0.1}
                       value={growthRate}
-                      onChange={(e) =>
-                        setGrowthRate(Number(e.target.value))
-                      }
-                      className="w-full h-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+                      onChange={(e) => setGrowthRate(Number(e.target.value))}
+                      className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer accent-brand-primary"
                     />
                     <div className="relative">
                       <Input
                         type="number"
                         value={growthRate}
-                        onChange={(e) =>
-                          setGrowthRate(Number(e.target.value))
-                        }
-                        className="pr-8 text-right bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setGrowthRate(Number(e.target.value))}
+                        className="pr-8 text-right text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        %
-                      </span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-neutral-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {/* Deposit */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                {/* Advanced inputs row */}
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                       Deposit %
                     </Label>
                     <div className="relative">
                       <Input
                         type="number"
                         value={depositPercent}
-                        onChange={(e) =>
-                          setDepositPercent(Number(e.target.value))
-                        }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setDepositPercent(Number(e.target.value))}
+                        className="pr-7 text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        %
-                      </span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
                     </div>
                   </div>
 
-                  {/* Mortgage Rate */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                       Mortgage Rate
                     </Label>
                     <div className="relative">
                       <Input
                         type="number"
                         value={mortgageRate}
-                        onChange={(e) =>
-                          setMortgageRate(Number(e.target.value))
-                        }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setMortgageRate(Number(e.target.value))}
+                        className="pr-7 text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        %
-                      </span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
                     </div>
                   </div>
 
-                  {/* Rent Inflation */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                       Rent Inflation
                     </Label>
                     <div className="relative">
                       <Input
                         type="number"
                         value={rentInflation}
-                        onChange={(e) =>
-                          setRentInflation(Number(e.target.value))
-                        }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setRentInflation(Number(e.target.value))}
+                        className="pr-7 text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        %
-                      </span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
                     </div>
                   </div>
 
-                  {/* Investment Return */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                       Investment Return
                     </Label>
                     <div className="relative">
                       <Input
                         type="number"
                         value={investmentReturn}
-                        onChange={(e) =>
-                          setInvestmentReturn(Number(e.target.value))
-                        }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        onChange={(e) => setInvestmentReturn(Number(e.target.value))}
+                        className="pr-7 text-sm bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
-                        %
-                      </span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Verdict Card */}
-            <div className="bg-brand-primary text-white rounded-xl shadow-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
-              <div className="absolute -right-8 -bottom-8 opacity-10">
-                <TrendingUp className="size-24" />
-              </div>
-              <div className="relative z-10 flex flex-col items-center md:items-start text-center md:text-left">
-                <span className="bg-white/10 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3">
-                  Our Analysis
-                </span>
-                <h3 className="text-3xl md:text-4xl font-bold leading-tight font-heading">
-                  {results.breakEvenYear ? (
-                    <>
-                      Buying becomes cheaper
-                      <br />
-                      after{" "}
-                      <span className="text-brand-primary-lighter">
-                        {results.breakEvenYear}{" "}
-                        {results.breakEvenYear === 1 ? "year" : "years"}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      Renting remains cheaper
-                      <br />
-                      <span className="text-brand-primary-lighter">
-                        over 25 years
-                      </span>
-                    </>
-                  )}
-                </h3>
-                <p className="mt-3 text-brand-primary-lighter/80 max-w-sm">
-                  {results.breakEvenYear
-                    ? `Based on current market growth and interest rates, equity gain outpaces rent and costs at the ${results.breakEvenYear * 12}-month mark.`
-                    : "With the current parameters, renting and investing your deposit produces better returns over the modelled period."}
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 relative z-10 w-full md:w-auto min-w-[240px]">
-                <div className="flex justify-between items-end mb-4">
-                  <span className="text-sm font-medium text-brand-primary-lighter/80">
-                    Est. Net Gain (10yr)
-                  </span>
-                  <span className="text-2xl font-bold">
-                    {formatCurrency(Math.abs(results.netGain10yr))}
-                  </span>
-                </div>
-                <div className="w-full bg-white/20 h-2 rounded-full mb-1">
-                  <div
-                    className="bg-brand-primary-lighter h-2 rounded-full transition-all duration-500"
-                    style={{
-                      width: `${Math.min(100, Math.max(5, results.netGain10yr > 0 ? 75 : 25))}%`,
-                    }}
-                  />
-                </div>
-                <p className="text-[10px] text-brand-primary-lighter/60 uppercase tracking-wider">
-                  {results.netGain10yr > 0
-                    ? "Buying is favoured"
-                    : "Renting is favoured"}
-                </p>
-              </div>
-            </div>
-
-            {/* Comparison Table */}
+            {/* Bar Chart Comparison */}
             <Card className="p-0 border-neutral-200 dark:border-neutral-800 shadow-sm">
               <CardContent className="p-6 md:p-8">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                   <div className="flex items-center gap-2">
-                    <Scale className="size-5 text-brand-primary" />
-                    <h2 className="text-xl font-bold font-heading">
-                      Cost Comparison
-                    </h2>
+                    <BarChart2 className="size-5 text-brand-primary" />
+                    <h2 className="text-xl font-bold font-heading">Cost Comparison Over Time</h2>
                   </div>
-                  <div className="flex items-center gap-6 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-brand-primary" />
-                      <span className="font-medium text-neutral-600 dark:text-neutral-400">
-                        Buying
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-neutral-400" />
-                      <span className="font-medium text-neutral-600 dark:text-neutral-400">
-                        Renting
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-5 text-xs font-semibold uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-sm bg-brand-primary inline-block" />
+                      Buying
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-3 h-3 rounded-sm bg-brand-secondary inline-block" />
+                      Renting
+                    </span>
                   </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Bar chart */}
+                <div className="flex items-end gap-2 sm:gap-3 h-44 mb-3">
+                  {chartData.map((d) => {
+                    const buyH = maxVal > 0 ? Math.max(2, Math.round((d.buyingCost / maxVal) * 100)) : 2;
+                    const rentH = maxVal > 0 ? Math.max(2, Math.round((d.rentingCost / maxVal) * 100)) : 2;
+                    const buyFav = d.buyingCost <= d.rentingCost;
+                    return (
+                      <div key={d.year} className="flex-1 flex flex-col items-center gap-1">
+                        <div className="w-full flex items-end gap-0.5 h-40">
+                          <div
+                            className={`flex-1 rounded-t transition-all duration-500 ${buyFav ? "bg-brand-primary" : "bg-brand-primary/50"}`}
+                            style={{ height: `${buyH}%` }}
+                            title={`Buying: ${formatCurrency(d.buyingCost)}`}
+                          />
+                          <div
+                            className={`flex-1 rounded-t transition-all duration-500 ${!buyFav ? "bg-brand-secondary" : "bg-brand-secondary/50"}`}
+                            style={{ height: `${rentH}%` }}
+                            title={`Renting: ${formatCurrency(d.rentingCost)}`}
+                          />
+                        </div>
+                        <span className="text-[10px] font-medium text-neutral-400">Yr {d.year}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Comparison table */}
+                <div className="mt-8 overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-neutral-200 dark:border-neutral-700">
-                        <th className="text-left py-3 px-4 font-semibold text-neutral-500 uppercase tracking-wider text-xs">
+                        <th className="text-left py-2.5 px-3 font-bold text-neutral-400 uppercase tracking-wider text-xs">
                           Year
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-neutral-500 uppercase tracking-wider text-xs">
-                          Buying Cost
+                        <th className="text-right py-2.5 px-3 font-bold text-neutral-400 uppercase tracking-wider text-xs">
+                          Cum. Buying
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-neutral-500 uppercase tracking-wider text-xs">
-                          Renting Cost
+                        <th className="text-right py-2.5 px-3 font-bold text-neutral-400 uppercase tracking-wider text-xs">
+                          Cum. Renting
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-neutral-500 uppercase tracking-wider text-xs">
-                          Difference
+                        <th className="text-right py-2.5 px-3 font-bold text-neutral-400 uppercase tracking-wider text-xs">
+                          Net Benefit
                         </th>
-                        <th className="text-right py-3 px-4 font-semibold text-neutral-500 uppercase tracking-wider text-xs">
+                        <th className="text-right py-2.5 px-3 font-bold text-neutral-400 uppercase tracking-wider text-xs hidden sm:table-cell">
                           Property Value
                         </th>
                       </tr>
@@ -532,22 +541,33 @@ export default function BuyVsRentCalculatorPage() {
                             key={row.year}
                             className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
                           >
-                            <td className="py-3 px-4 font-bold text-neutral-900 dark:text-white">
-                              Year {row.year}
+                            <td className="py-3 px-3 font-bold text-neutral-900 dark:text-white">
+                              {row.year}yr
                             </td>
-                            <td className="py-3 px-4 text-right font-medium text-brand-primary">
+                            <td className="py-3 px-3 text-right font-medium text-brand-primary">
                               {formatCurrency(row.buyingCost)}
                             </td>
-                            <td className="py-3 px-4 text-right font-medium text-neutral-600 dark:text-neutral-400">
+                            <td className="py-3 px-3 text-right font-medium text-neutral-500">
                               {formatCurrency(row.rentingCost)}
                             </td>
                             <td
-                              className={`py-3 px-4 text-right font-bold ${buyingCheaper ? "text-success" : "text-error"}`}
+                              className={`py-3 px-3 text-right font-bold text-xs ${
+                                buyingCheaper
+                                  ? "text-brand-primary"
+                                  : "text-brand-secondary"
+                              }`}
                             >
-                              {buyingCheaper ? "+" : ""}
-                              {formatCurrency(diff)}
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                  buyingCheaper
+                                    ? "bg-brand-primary-lighter text-brand-primary"
+                                    : "bg-brand-secondary-light text-brand-secondary"
+                                }`}
+                              >
+                                {buyingCheaper ? "Buy" : "Rent"} +{formatCurrency(Math.abs(diff))}
+                              </span>
                             </td>
-                            <td className="py-3 px-4 text-right font-medium text-neutral-600 dark:text-neutral-400">
+                            <td className="py-3 px-3 text-right font-medium text-neutral-500 hidden sm:table-cell">
                               {formatCurrency(row.propertyValue)}
                             </td>
                           </tr>
@@ -556,33 +576,71 @@ export default function BuyVsRentCalculatorPage() {
                     </tbody>
                   </table>
                 </div>
-
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
-                    <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">
-                      Total Rent Paid (10yr)
-                    </h4>
-                    <p className="text-2xl font-bold font-heading">
-                      {formatCurrency(
-                        results.yearData.find((d) => d.year === 10)
-                          ?.totalRentPaid ?? 0
-                      )}
-                    </p>
-                  </div>
-                  <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
-                    <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">
-                      Mortgage Payments (10yr)
-                    </h4>
-                    <p className="text-2xl font-bold font-heading">
-                      {formatCurrency(
-                        results.yearData.find((d) => d.year === 10)
-                          ?.totalMortgagePaid ?? 0
-                      )}
-                    </p>
-                  </div>
-                </div>
               </CardContent>
             </Card>
+
+            {/* Two-col info section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Algorithmic Methodology */}
+              <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
+                <div className="flex items-center gap-2 mb-4">
+                  <BookOpen className="size-4 text-brand-primary" />
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-brand-primary">
+                    Algorithmic Methodology
+                  </h3>
+                </div>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-3">
+                  We use compounding mortgage amortisation against rent inflation to
+                  pinpoint the crossover year with mathematical precision.
+                </p>
+                <ul className="space-y-1 text-xs text-neutral-500">
+                  <li className="flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-brand-primary inline-block" />
+                    25-year repayment mortgage model
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-brand-primary inline-block" />
+                    SDLT at current standard residential rates
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-brand-primary inline-block" />
+                    Opportunity cost of deposit included
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-brand-primary inline-block" />
+                    Annual maintenance at 1% of property value
+                  </li>
+                </ul>
+              </div>
+
+              {/* Regional Market Intelligence */}
+              <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="size-4 text-brand-secondary" />
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-brand-secondary">
+                    Regional Market Intelligence
+                  </h3>
+                </div>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-3">
+                  UK property historically grows at 3–4% annually, but regional variation
+                  is significant and past performance does not predict future returns.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { region: "London", rate: "4.8%" },
+                    { region: "South East", rate: "3.9%" },
+                    { region: "North West", rate: "3.2%" },
+                    { region: "Scotland", rate: "3.5%" },
+                  ].map(({ region, rate }) => (
+                    <div key={region} className="bg-white dark:bg-neutral-800 rounded-lg p-3 border border-neutral-200 dark:border-neutral-700">
+                      <p className="text-xs text-neutral-500">{region}</p>
+                      <p className="text-lg font-bold text-neutral-900 dark:text-white font-heading">{rate}</p>
+                      <p className="text-[10px] text-neutral-400">avg annual growth</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {/* FAQ Section */}
             <Card className="p-0 border-neutral-200 dark:border-neutral-800 shadow-sm">
@@ -594,9 +652,7 @@ export default function BuyVsRentCalculatorPage() {
                   {FAQ_ITEMS.map((item, index) => (
                     <div key={index} className="py-4 first:pt-0 last:pb-0">
                       <button
-                        onClick={() =>
-                          setOpenFaq(openFaq === index ? null : index)
-                        }
+                        onClick={() => setOpenFaq(openFaq === index ? null : index)}
                         className="flex w-full items-center justify-between text-left gap-4"
                       >
                         <span className="text-sm font-semibold text-neutral-900 dark:text-white">
@@ -620,93 +676,89 @@ export default function BuyVsRentCalculatorPage() {
             </Card>
           </div>
 
-          {/* Sidebar */}
-          <aside className="w-full lg:w-80 space-y-6">
-            {/* Affordability Check */}
-            <div className="bg-brand-primary-lighter dark:bg-brand-primary/10 rounded-xl p-6 border border-brand-primary/10">
-              <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest mb-4">
-                Affordability Check
+          {/* ─── Sidebar ───────────────────────────────────────────────────── */}
+          <aside className="w-full lg:w-72 xl:w-80 space-y-6">
+            {/* Specialist Guidance */}
+            <div className="bg-brand-primary-lighter dark:bg-brand-primary/10 rounded-xl p-6 border border-brand-primary/20">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-5">
+                Specialist Guidance
               </h3>
-              <div className="space-y-4">
-                <div className="bg-white dark:bg-neutral-900 p-4 rounded-lg border border-brand-primary/10">
-                  <span className="text-[10px] text-neutral-500 font-bold uppercase">
-                    Estimated Monthly Payment
-                  </span>
-                  <p className="text-xl font-bold text-neutral-900 dark:text-white mt-1 font-heading">
-                    {formatCurrency(Math.round(results.monthlyMortgage))}
-                    <span className="text-xs text-neutral-400 font-normal">
-                      /mo
-                    </span>
-                  </p>
-                </div>
+              <div className="space-y-3">
                 <Link
-                  href={`/tools/mortgage-calculator?price=${propertyPrice}`}
-                  className="w-full text-sm font-bold text-brand-primary flex items-center justify-center gap-2 hover:translate-x-1 transition-transform"
+                  href="/tools/mortgage-calculator"
+                  className="group flex items-center gap-3 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-brand-primary/10 hover:border-brand-primary/30 transition-colors"
                 >
-                  See Mortgage Rates{" "}
-                  <ArrowRight className="size-4" />
+                  <div className="size-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+                    <Calculator className="size-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-brand-primary transition-colors">
+                      Financial Stress Testing
+                    </p>
+                    <p className="text-[10px] text-neutral-500 truncate">
+                      Mortgage affordability check
+                    </p>
+                  </div>
+                  <ArrowRight className="size-3.5 text-neutral-400 shrink-0" />
+                </Link>
+
+                <Link
+                  href="/tools/stamp-duty-calculator"
+                  className="group flex items-center gap-3 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-brand-primary/10 hover:border-brand-primary/30 transition-colors"
+                >
+                  <div className="size-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+                    <PiggyBank className="size-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-brand-primary transition-colors">
+                      Estate Value Tracker
+                    </p>
+                    <p className="text-[10px] text-neutral-500 truncate">
+                      Stamp duty & transaction costs
+                    </p>
+                  </div>
+                  <ArrowRight className="size-3.5 text-neutral-400 shrink-0" />
+                </Link>
+
+                <Link
+                  href="/tools/affordability-calculator"
+                  className="group flex items-center gap-3 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-brand-primary/10 hover:border-brand-primary/30 transition-colors"
+                >
+                  <div className="size-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+                    <Scale className="size-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-brand-primary transition-colors">
+                      Affordability Calculator
+                    </p>
+                    <p className="text-[10px] text-neutral-500 truncate">
+                      How much can you borrow?
+                    </p>
+                  </div>
+                  <ArrowRight className="size-3.5 text-neutral-400 shrink-0" />
                 </Link>
               </div>
             </div>
 
-            {/* Related Tools */}
-            <Card className="p-0 border-neutral-200 dark:border-neutral-800 shadow-sm">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold font-heading mb-6">
-                  Related Tools
-                </h3>
-                <div className="space-y-4">
-                  <Link
-                    href={`/tools/mortgage-calculator?price=${propertyPrice}`}
-                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
-                  >
-                    <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
-                      <Calculator className="size-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold group-hover:text-brand-primary transition-colors">
-                        Mortgage Calculator
-                      </h4>
-                      <span className="text-xs text-neutral-500">
-                        Calculate your monthly repayments
-                      </span>
-                    </div>
-                  </Link>
-                  <Link
-                    href={`/tools/stamp-duty-calculator?price=${propertyPrice}`}
-                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
-                  >
-                    <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
-                      <PiggyBank className="size-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold group-hover:text-brand-primary transition-colors">
-                        Stamp Duty Calculator
-                      </h4>
-                      <span className="text-xs text-neutral-500">
-                        Estimate your stamp duty costs
-                      </span>
-                    </div>
-                  </Link>
-                  <Link
-                    href="/tools/affordability-calculator"
-                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
-                  >
-                    <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
-                      <Home className="size-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold group-hover:text-brand-primary transition-colors">
-                        Affordability Calculator
-                      </h4>
-                      <span className="text-xs text-neutral-500">
-                        How much can you borrow?
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Mortgage quick stat */}
+            <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">
+                Est. Monthly Mortgage
+              </p>
+              <p className="text-3xl font-bold font-heading text-neutral-900 dark:text-white">
+                {formatCurrency(Math.round(results.monthlyMortgage))}
+                <span className="text-sm text-neutral-400 font-normal">/mo</span>
+              </p>
+              <p className="text-xs text-neutral-400 mt-2 mb-5">
+                {depositPercent}% deposit on {formatCurrency(propertyPrice)}
+              </p>
+              <Link
+                href={`/tools/mortgage-calculator?price=${propertyPrice}`}
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-primary hover:underline"
+              >
+                Explore mortgage rates <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
 
             {/* Property Alerts */}
             <div className="bg-neutral-900 rounded-xl p-6 text-white overflow-hidden relative">
@@ -714,29 +766,58 @@ export default function BuyVsRentCalculatorPage() {
                 <div className="bg-brand-primary/20 p-2 rounded-lg w-fit mb-4">
                   <Key className="size-5 text-brand-primary-light" />
                 </div>
-                <h3 className="text-xl font-bold mb-2 font-heading">
-                  Property Alerts
-                </h3>
-                <p className="text-sm text-neutral-400 mb-6">
-                  Be the first to see properties matching your comparison
-                  criteria in your favourite areas.
+                <h3 className="text-lg font-bold mb-2 font-heading">Property Alerts</h3>
+                <p className="text-sm text-neutral-400 mb-5">
+                  Be the first to see properties matching your comparison criteria.
                 </p>
                 <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
                   <Input
                     type="email"
                     placeholder="Email address"
-                    className="w-full px-4 py-3 bg-neutral-800 border-neutral-700 rounded-lg text-sm text-white placeholder:text-neutral-500"
+                    className="w-full bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 text-sm"
                   />
-                  <Button className="w-full bg-brand-primary hover:bg-brand-primary-light text-white font-bold py-3 rounded-lg transition-colors shadow-lg h-auto">
+                  <Button className="w-full bg-brand-primary hover:bg-brand-primary-light text-white font-bold rounded-lg h-10">
                     Set Alert
                   </Button>
                 </form>
-                <p className="text-[10px] text-neutral-500 mt-4 text-center italic">
-                  No spam, just tailored property matching.
+                <p className="text-[10px] text-neutral-500 mt-3 text-center italic">
+                  No spam. Unsubscribe any time.
                 </p>
               </div>
-              <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-brand-primary/10 rounded-full blur-3xl" />
+              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-primary/10 rounded-full blur-3xl" />
             </div>
+
+            {/* Related Tools — compact */}
+            <Card className="p-0 border-neutral-200 dark:border-neutral-800 shadow-sm">
+              <CardContent className="p-5">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4">
+                  Related Tools
+                </h3>
+                <div className="space-y-2">
+                  {[
+                    { href: `/tools/mortgage-calculator?price=${propertyPrice}`, label: "Mortgage Calculator", sub: "Monthly repayments", icon: Calculator },
+                    { href: `/tools/stamp-duty-calculator?price=${propertyPrice}`, label: "Stamp Duty Calculator", sub: "SDLT costs", icon: PiggyBank },
+                    { href: "/tools/affordability-calculator", label: "Affordability Calculator", sub: "Borrowing limits", icon: Home },
+                  ].map(({ href, label, sub, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      className="group flex items-center gap-3 p-2.5 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                    >
+                      <div className="size-8 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
+                        <Icon className="size-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold group-hover:text-brand-primary transition-colors">
+                          {label}
+                        </p>
+                        <p className="text-[10px] text-neutral-400">{sub}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </aside>
         </div>
       </main>
@@ -744,8 +825,7 @@ export default function BuyVsRentCalculatorPage() {
       {/* Disclaimer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
         <p className="text-xs text-neutral-400 text-center">
-          Calculations are estimates and do not constitute financial advice.
-          Always consult a qualified financial adviser.
+          Calculations are estimates and do not constitute financial advice. Always consult a qualified financial adviser.
         </p>
       </div>
     </>
