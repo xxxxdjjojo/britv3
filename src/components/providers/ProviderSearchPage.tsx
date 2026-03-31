@@ -130,15 +130,15 @@ function readFiltersFromSearchParams(
 
 function ProviderCardSkeleton() {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse">
-      <div className="flex-shrink-0 w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-700" />
+    <div className="flex flex-col sm:flex-row gap-4 p-6 bg-surface-container-low rounded-2xl shadow-sm animate-pulse">
+      <div className="flex-shrink-0 w-20 h-20 rounded-full bg-surface-container-highest" />
       <div className="flex-1 space-y-3">
-        <div className="h-5 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
-        <div className="h-4 w-1/3 rounded bg-slate-200 dark:bg-slate-700" />
-        <div className="h-4 w-2/3 rounded bg-slate-200 dark:bg-slate-700" />
+        <div className="h-5 w-1/2 rounded-xl bg-surface-container-highest" />
+        <div className="h-4 w-1/3 rounded-xl bg-surface-container-highest" />
+        <div className="h-4 w-2/3 rounded-xl bg-surface-container-highest" />
         <div className="flex gap-2 pt-2">
-          <div className="h-8 w-24 rounded-lg bg-slate-200 dark:bg-slate-700" />
-          <div className="h-8 w-24 rounded-lg bg-slate-200 dark:bg-slate-700" />
+          <div className="h-8 w-24 rounded-xl bg-surface-container-highest" />
+          <div className="h-8 w-24 rounded-xl bg-surface-container-highest" />
         </div>
       </div>
     </div>
@@ -170,7 +170,7 @@ function HeroSearchBar({ initialWhat, initialWhere, onSearch }: HeroSearchBarPro
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row gap-3"
+      className="flex flex-col sm:flex-row gap-2 bg-white/90 backdrop-blur-md rounded-2xl p-2 shadow-2xl shadow-brand-primary/20"
     >
       <div className="flex-1">
         <label htmlFor="hero-what" className="sr-only">
@@ -182,7 +182,7 @@ function HeroSearchBar({ initialWhat, initialWhere, onSearch }: HeroSearchBarPro
           placeholder="What service?"
           value={what}
           onChange={(e) => setWhat(e.target.value)}
-          className="h-11 w-full rounded-lg border border-input bg-background px-4 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+          className="h-12 w-full rounded-xl bg-transparent px-4 text-sm text-neutral-900 placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-brand-primary/30"
         />
       </div>
       <div className="flex-1">
@@ -195,12 +195,12 @@ function HeroSearchBar({ initialWhat, initialWhere, onSearch }: HeroSearchBarPro
           placeholder="Where? (postcode)"
           value={where}
           onChange={(e) => setWhere(e.target.value)}
-          className="h-11 w-full rounded-lg border border-input bg-background px-4 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+          className="h-12 w-full rounded-xl bg-transparent px-4 text-sm text-neutral-900 placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-brand-primary/30"
         />
       </div>
       <button
         type="submit"
-        className="h-11 shrink-0 rounded-lg bg-[#2563EB] px-6 text-sm font-semibold text-white hover:bg-[#1D4ED8] transition-colors"
+        className="h-12 min-w-[44px] shrink-0 rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white hover:bg-brand-primary/90 active:scale-95 transition-all"
       >
         Search
       </button>
@@ -287,19 +287,30 @@ export function ProviderSearchPage({
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-surface">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-12 px-4">
-        <div className="mx-auto max-w-5xl space-y-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-white">{pageTitle}</h1>
+      <div className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] py-16 px-4">
+        {/* Decorative blobs */}
+        <div className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-secondary/10 blur-3xl" />
+
+        <div className="relative mx-auto max-w-5xl space-y-5">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1
+              className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {pageTitle}
+            </h1>
             {specialistBadge && (
-              <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-slate-900">
+              <span className="rounded-full bg-brand-secondary px-3 py-1 text-xs font-bold text-brand-primary">
                 {specialistBadge} Regulated
               </span>
             )}
           </div>
-          <p className="text-slate-300 text-sm max-w-2xl">{pageSubtitle}</p>
+          <p className="max-w-2xl text-sm leading-relaxed text-white/70">
+            {pageSubtitle}
+          </p>
           <HeroSearchBar
             initialWhat={filters.search_query ?? ""}
             initialWhere={filters.postcode ?? ""}
@@ -324,14 +335,14 @@ export function ProviderSearchPage({
           <div className="flex-1 min-w-0 space-y-4">
             {/* Count + sort header */}
             <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{count}</span>{" "}
+              <p className="text-sm text-brand-primary/60">
+                <span className="font-semibold text-brand-primary">{count}</span>{" "}
                 provider{count !== 1 ? "s" : ""} found
               </p>
               <div className="flex items-center gap-2">
                 <label
                   htmlFor="sort-select"
-                  className="text-xs text-muted-foreground shrink-0"
+                  className="text-xs text-brand-primary/60 shrink-0"
                 >
                   Sort by:
                 </label>
@@ -339,7 +350,7 @@ export function ProviderSearchPage({
                   id="sort-select"
                   value={sort}
                   onChange={handleSortChange}
-                  className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                  className="h-9 rounded-xl bg-surface-container-low px-3 text-sm text-brand-primary outline-none focus:ring-2 focus:ring-brand-primary/20"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -358,9 +369,9 @@ export function ProviderSearchPage({
                 <ProviderCardSkeleton />
               </div>
             ) : providers.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
-                <p className="font-medium">No providers found</p>
-                <p className="text-sm mt-1">
+              <div className="rounded-2xl bg-surface-container-low py-20 text-center">
+                <p className="font-heading font-semibold text-brand-primary">No providers found</p>
+                <p className="text-sm mt-2 text-brand-primary/50">
                   Try adjusting your filters or search terms
                 </p>
               </div>

@@ -88,7 +88,7 @@ export function SearchFilters({
   return (
     <div
       className={cn(
-        "rounded-lg border border-border bg-card p-4 shadow-sm",
+        "rounded-2xl bg-[#f4f3f2] p-5 shadow-sm",
         className,
       )}
     >

@@ -126,17 +126,20 @@ function FaqSection({
   ];
 
   return (
-    <section className="mt-12 bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-8">
-      <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+    <section className="mt-12 bg-[#f4f3f2] rounded-2xl p-8">
+      <h2
+        className="font-heading text-xl font-bold text-[#1B4D3E] mb-6"
+        style={{ letterSpacing: "-0.01em" }}
+      >
         Frequently Asked Questions
       </h2>
       <div className="space-y-6">
         {faqs.map((faq) => (
           <div key={faq.q}>
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
+            <h3 className="font-semibold text-[#1B4D3E] mb-1">
               {faq.q}
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-sm text-[#1B4D3E]/60 leading-relaxed">
               {faq.a}
             </p>
           </div>
@@ -161,11 +164,11 @@ function Breadcrumb({
 }>) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-[#1B4D3E]/50">
         <li>
           <Link
             href="/"
-            className="hover:text-[#2563EB] transition-colors"
+            className="hover:text-[#1B4D3E] transition-colors"
           >
             Home
           </Link>
@@ -174,7 +177,7 @@ function Breadcrumb({
         <li>
           <Link
             href="/services/tradespeople"
-            className="hover:text-[#2563EB] transition-colors"
+            className="hover:text-[#1B4D3E] transition-colors"
           >
             Services
           </Link>
@@ -183,14 +186,14 @@ function Breadcrumb({
         <li>
           <Link
             href={`/services/tradespeople?category=${categorySlug}`}
-            className="hover:text-[#2563EB] transition-colors"
+            className="hover:text-[#1B4D3E] transition-colors"
           >
             {categoryDisplay}
           </Link>
         </li>
         <li aria-hidden="true">/</li>
         <li
-          className="text-slate-900 dark:text-white font-medium"
+          className="text-[#1B4D3E] font-medium"
           aria-current="page"
         >
           {locationDisplay}
@@ -231,14 +234,19 @@ export default async function CategoryLocationPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#faf9f8]">
       {/* Page header */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-12 px-4">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl font-bold text-white mb-2">
+      <div className="relative overflow-hidden bg-[#1B4D3E] py-14 px-4">
+        <div className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-[#D4A853]/10 blur-3xl" />
+        <div className="relative mx-auto max-w-5xl">
+          <h1
+            className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl mb-2"
+            style={{ letterSpacing: "-0.02em" }}
+          >
             {categoryDisplay} in {locationDisplay}
           </h1>
-          <p className="text-slate-300 text-sm max-w-2xl">
+          <p className="text-white/70 text-sm max-w-2xl">
             Find trusted, verified {categoryDisplay.toLowerCase()} in{" "}
             {locationDisplay}. Compare reviews and prices, then get free quotes.
           </p>
@@ -254,15 +262,15 @@ export default async function CategoryLocationPage({ params }: PageProps) {
 
         {/* Provider grid */}
         {providers.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
-            <p className="font-medium">
+          <div className="rounded-2xl bg-[#f4f3f2] py-16 text-center">
+            <p className="font-semibold text-[#1B4D3E]">
               No {categoryDisplay.toLowerCase()} found in {locationDisplay}
             </p>
-            <p className="text-sm mt-1">
+            <p className="text-sm mt-1 text-[#1B4D3E]/60">
               Try{" "}
               <Link
                 href="/services/tradespeople"
-                className="text-[#2563EB] hover:underline"
+                className="text-[#1B4D3E] font-semibold hover:underline"
               >
                 searching all tradespeople
               </Link>{" "}
@@ -271,8 +279,8 @@ export default async function CategoryLocationPage({ params }: PageProps) {
           </div>
         ) : (
           <>
-            <p className="text-sm text-muted-foreground mb-4">
-              <span className="font-semibold text-foreground">
+            <p className="text-sm text-[#1B4D3E]/60 mb-4">
+              <span className="font-semibold text-[#1B4D3E]">
                 {providers.length}
               </span>{" "}
               {categoryDisplay.toLowerCase()}
