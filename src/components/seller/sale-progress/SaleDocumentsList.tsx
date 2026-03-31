@@ -1,5 +1,5 @@
 
-import { CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle, Clock, AlertCircle, Eye, Download } from "lucide-react";
 import type { SaleProgressionStage, SaleProgressionDocument } from "@/types/seller";
 import { cn } from "@/lib/utils";
 
@@ -8,21 +8,18 @@ const STATUS_CONFIG = {
     icon: CheckCircle,
     label: "Uploaded",
     iconClass: "text-emerald-500",
-    bgClass: "bg-emerald-50",
     pillClass: "bg-emerald-100 text-emerald-700",
   },
   pending: {
     icon: Clock,
     label: "Pending",
     iconClass: "text-amber-500",
-    bgClass: "bg-amber-50",
     pillClass: "bg-amber-100 text-amber-700",
   },
   missing: {
     icon: AlertCircle,
     label: "Required",
     iconClass: "text-red-500",
-    bgClass: "bg-red-50",
     pillClass: "bg-red-100 text-red-600",
   },
 } as const;
@@ -51,16 +48,18 @@ export function SaleDocumentsList({ progression }: Props) {
   const uploadedPct = Math.round((uploaded / total) * 100);
 
   return (
-    <div className="bg-white rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-[--color-on-surface]">Documents</h3>
-        <span className="text-sm font-semibold text-[--color-on-surface]/50">
+    <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-emerald-900 text-lg">
+          Documents
+        </h3>
+        <span className="text-sm font-semibold text-stone-400">
           {uploaded}/{total}
         </span>
       </div>
 
-      {/* Doc progress bar */}
-      <div className="h-1.5 rounded-full bg-[--color-surface-container-highest] mb-5">
+      {/* Progress bar */}
+      <div className="h-1.5 rounded-full bg-stone-100 mb-6">
         <div
           className="h-full rounded-full bg-emerald-500 transition-all"
           style={{ width: `${uploadedPct}%` }}
@@ -74,42 +73,48 @@ export function SaleDocumentsList({ progression }: Props) {
           return (
             <li
               key={`${doc.name}-${doc.stage}`}
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-[--color-surface] transition-colors"
+              className="group flex items-center gap-3 p-4 rounded-xl hover:bg-stone-50 transition-colors"
             >
-              <span
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0",
-                  config.bgClass,
-                )}
-              >
+              <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-stone-100">
                 <Icon
-                  size={14}
+                  size={16}
                   className={config.iconClass}
-                  strokeWidth={1.25}
+                  strokeWidth={1.5}
                 />
-              </span>
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[--color-on-surface] truncate">
+                <p className="text-sm font-bold text-emerald-900 truncate">
                   {doc.name}
                 </p>
-                <p className="text-xs text-[--color-on-surface]/30">
+                <p className="text-[10px] text-stone-400 uppercase font-bold tracking-wider">
                   Stage {doc.stage}
                 </p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 {doc.url ? (
-                  <a
-                    href={doc.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-[--color-brand-primary] font-semibold hover:underline"
-                  >
-                    View
-                  </a>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-stone-400 hover:text-emerald-900 transition-colors"
+                      aria-label="View document"
+                    >
+                      <Eye size={16} strokeWidth={1.25} />
+                    </a>
+                    <a
+                      href={doc.url}
+                      download
+                      className="text-stone-400 hover:text-emerald-900 transition-colors"
+                      aria-label="Download document"
+                    >
+                      <Download size={16} strokeWidth={1.25} />
+                    </a>
+                  </div>
                 ) : (
                   <span
                     className={cn(
-                      "text-xs font-semibold px-2 py-0.5 rounded-full",
+                      "text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide",
                       config.pillClass,
                     )}
                   >

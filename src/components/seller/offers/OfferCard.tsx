@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import {
-  TrendingUp,
-  TrendingDown,
   BadgeCheck,
-  Link2Off,
   CheckCircle,
+  Link2Off,
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
@@ -17,13 +15,14 @@ import { OfferActionModal } from "./OfferActionModal";
 type Props = Readonly<{
   offer: SellerOffer;
   onUpdated: () => void;
+  featured?: boolean;
 }>;
 
 type ListingShape = {
   asking_price: number | null;
 } | null;
 
-export function OfferCard({ offer, onUpdated }: Props) {
+export function OfferCard({ offer, onUpdated, featured = false }: Props) {
   const [modalAction, setModalAction] = useState<
     "accept" | "counter" | "reject" | null
   >(null);
@@ -33,21 +32,21 @@ export function OfferCard({ offer, onUpdated }: Props) {
   const amount = offer.amount;
   const amountPounds = `£${(amount / 100).toLocaleString("en-GB")}`;
 
-  let amountColorClass = "text-[--color-on-surface]";
-  let TrendIcon: React.ElementType | null = null;
-  let percentageText = "";
+  let amountDiffLabel = "";
+  let amountDiffClass = "text-stone-500 text-sm font-medium";
 
   if (asking) {
-    const diff = ((amount - asking) / asking) * 100;
-    percentageText = `${diff >= 0 ? "+" : ""}${Math.round(diff * 10) / 10}% vs asking`;
+    const diff = amount - asking;
+    const diffPounds = Math.abs(Math.round(diff / 100));
+    const diffFormatted = `£${diffPounds.toLocaleString("en-GB")}`;
     if (diff > 0) {
-      amountColorClass = "text-emerald-600";
-      TrendIcon = TrendingUp;
-    } else if (diff < -1) {
-      amountColorClass = "text-red-500";
-      TrendIcon = TrendingDown;
+      amountDiffLabel = `${diffFormatted} over asking`;
+      amountDiffClass = "text-emerald-600 text-sm font-semibold";
+    } else if (diff < -100) {
+      amountDiffLabel = "Below asking";
+      amountDiffClass = "text-red-500 text-sm font-medium";
     } else {
-      amountColorClass = "text-[--color-on-surface]/60";
+      amountDiffLabel = "Asking price";
     }
   }
 
@@ -62,117 +61,176 @@ export function OfferCard({ offer, onUpdated }: Props) {
 
   return (
     <>
-      <div className="bg-[--color-surface] rounded-2xl p-6 hover:bg-[--color-surface-container-low] transition-colors">
-        <div className="flex items-start justify-between gap-4">
-          {/* Buyer info */}
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="h-11 w-11 rounded-full bg-gradient-to-br from-[#D4A853]/30 to-[#D4A853]/10 flex items-center justify-center text-[#D4A853] font-bold text-base flex-shrink-0">
+      <div
+        className={cn(
+          "bg-white rounded-2xl overflow-hidden transition-all hover:shadow-lg",
+          featured
+            ? "border-2 border-emerald-900 shadow-xl relative"
+            : "border border-stone-200 shadow-md",
+        )}
+      >
+        {featured && (
+          <div className="absolute top-4 right-4 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tight z-10">
+            Recommended
+          </div>
+        )}
+
+        <div className="p-6">
+          {/* Buyer avatar + name */}
+          <div className="flex items-center gap-4 mb-6">
+            <div
+              className={cn(
+                "h-12 w-12 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0",
+                featured
+                  ? "bg-emerald-50 text-emerald-900"
+                  : "bg-stone-100 text-stone-600",
+              )}
+            >
               {offer.buyer_name.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-bold text-[--color-on-surface] text-sm">
-                  {offer.buyer_name}
-                </p>
-                {offer.is_verified && (
-                  <BadgeCheck size={15} className="text-blue-500" />
-                )}
-              </div>
-              <div className="flex items-center gap-3 mt-1 flex-wrap">
-                <span
+                <h3
                   className={cn(
-                    "flex items-center gap-1 text-xs font-medium",
-                    offer.chain_status === "chain_free"
-                      ? "text-emerald-600"
-                      : "text-amber-600",
+                    "text-lg font-bold",
+                    featured ? "text-emerald-900" : "text-stone-900",
                   )}
                 >
-                  {offer.chain_status === "chain_free" ? (
-                    <CheckCircle size={11} />
-                  ) : (
-                    <Link2Off size={11} />
-                  )}
-                  {offer.chain_status === "chain_free"
-                    ? "Chain-free"
-                    : `In chain (${offer.chain_length ?? "?"})`}
-                </span>
-                {offer.buyer_type && (
-                  <span className="text-xs text-[--color-on-surface]/50 capitalize">
-                    {offer.buyer_type} buyer
-                  </span>
+                  {offer.buyer_name}
+                </h3>
+                {offer.is_verified && (
+                  <BadgeCheck size={15} className="text-blue-500 flex-shrink-0" />
                 )}
-                <span className="text-xs text-[--color-on-surface]/30">
-                  {new Date(offer.offered_at).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
               </div>
+              <p className="text-sm text-stone-400">
+                {new Date(offer.offered_at).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
             </div>
           </div>
 
-          {/* Amount + status */}
-          <div className="text-right flex-shrink-0">
-            <p className={cn("text-2xl font-black", amountColorClass)}>
+          {/* Amount */}
+          <div className="mb-6">
+            <span
+              className={cn(
+                "text-3xl font-bold",
+                featured ? "text-emerald-900" : "text-stone-900",
+              )}
+            >
               {amountPounds}
-            </p>
-            {percentageText && TrendIcon && (
-              <div className="flex items-center justify-end gap-1 mt-0.5">
-                <TrendIcon size={13} className={amountColorClass} />
-                <span className={cn("text-xs font-medium", amountColorClass)}>
-                  {percentageText}
-                </span>
+            </span>
+            {amountDiffLabel && (
+              <span className={cn("ml-2", amountDiffClass)}>
+                {amountDiffLabel}
+              </span>
+            )}
+          </div>
+
+          {/* Details rows */}
+          <div className="space-y-0 mb-8">
+            <div className="flex items-center justify-between py-2.5 border-b border-stone-100">
+              <span className="text-sm text-stone-400">Position</span>
+              <span
+                className={cn(
+                  "text-sm font-semibold flex items-center gap-1",
+                  offer.chain_status === "chain_free"
+                    ? "text-emerald-700"
+                    : "text-amber-700",
+                )}
+              >
+                {offer.chain_status === "chain_free" ? (
+                  <CheckCircle size={13} />
+                ) : (
+                  <Link2Off size={13} />
+                )}
+                {offer.chain_status === "chain_free"
+                  ? "Chain-free"
+                  : `Chain (${offer.chain_length ?? "?"})`}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-2.5 border-b border-stone-100">
+              <span className="text-sm text-stone-400">Funding</span>
+              <span className="text-sm font-semibold text-stone-900 capitalize">
+                {offer.buyer_type === "cash"
+                  ? "Cash Buyer"
+                  : offer.buyer_type === "mortgage"
+                    ? "Mortgage"
+                    : "—"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-2.5">
+              <span className="text-sm text-stone-400">Conditions</span>
+              <span
+                className={cn(
+                  "text-sm font-semibold text-stone-900",
+                  !offer.conditions && "italic text-stone-400",
+                )}
+              >
+                {offer.conditions ?? "None"}
+              </span>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="space-y-3">
+            {offer.status === "pending" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setModalAction("accept")}
+                  className={cn(
+                    "w-full py-3 text-sm font-bold rounded-xl transition-all",
+                    featured
+                      ? "bg-emerald-900 text-white hover:bg-emerald-800"
+                      : "border-2 border-emerald-900 text-emerald-900 hover:bg-emerald-50",
+                  )}
+                >
+                  Accept Offer
+                </button>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setModalAction("counter")}
+                    className="py-2.5 border border-stone-200 text-stone-700 font-semibold rounded-xl hover:bg-stone-50 transition-all text-sm"
+                  >
+                    Counter
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModalAction("reject")}
+                    className="py-2.5 border border-red-200 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition-all text-sm"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-between pt-2">
+                <span className={statusClass}>{offer.status}</span>
+                <Link
+                  href={`/dashboard/seller/offers/${offer.id}`}
+                  className="flex items-center gap-1 text-xs text-emerald-900 font-semibold hover:underline"
+                >
+                  View negotiation
+                  <ChevronRight size={13} />
+                </Link>
               </div>
             )}
-            <span className={cn("mt-2", statusClass)}>{offer.status}</span>
-          </div>
-        </div>
 
-        {offer.conditions && (
-          <div className="mt-4 pt-4 border-t border-[--color-on-surface]/5">
-            <p className="text-xs text-[--color-on-surface]/40 font-semibold uppercase tracking-wide">
-              Conditions
-            </p>
-            <p className="text-xs text-[--color-on-surface]/60 mt-1">{offer.conditions}</p>
+            {offer.status === "pending" && (
+              <Link
+                href={`/dashboard/seller/offers/${offer.id}`}
+                className="flex items-center justify-center gap-1 text-xs text-emerald-900 font-semibold hover:underline mt-1"
+              >
+                View full negotiation
+                <ChevronRight size={13} />
+              </Link>
+            )}
           </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex items-center gap-3 mt-5 pt-4 border-t border-[--color-on-surface]/5">
-          {offer.status === "pending" && (
-            <>
-              <button
-                type="button"
-                onClick={() => setModalAction("accept")}
-                className="flex-1 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] active:scale-95 transition-all"
-              >
-                Accept
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalAction("counter")}
-                className="flex-1 py-2.5 rounded-xl bg-[--color-surface] hover:bg-[--color-surface-container-highest] text-[--color-on-surface] text-sm font-semibold transition-colors"
-              >
-                Counter
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalAction("reject")}
-                className="py-2.5 px-4 rounded-xl text-red-500 text-sm font-semibold hover:bg-red-50 transition-colors"
-              >
-                Reject
-              </button>
-            </>
-          )}
-          <Link
-            href={`/dashboard/seller/offers/${offer.id}`}
-            className="ml-auto flex items-center gap-1 text-xs text-[--color-brand-primary] font-semibold hover:underline flex-shrink-0"
-          >
-            View full negotiation
-            <ChevronRight size={13} />
-          </Link>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Share2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Printer, Mail } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SaleProgressionStepper } from "@/components/seller/sale-progress/SaleProgressionStepper";
 import { SaleDocumentsList } from "@/components/seller/sale-progress/SaleDocumentsList";
@@ -22,16 +22,21 @@ type ListingShape = {
 
 function PageSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <Skeleton className="h-4 w-16" />
-        <Skeleton className="h-8 w-48 mt-2" />
-        <Skeleton className="h-4 w-64 mt-2" />
+        <Skeleton className="h-4 w-20 mb-3" />
+        <Skeleton className="h-10 w-64 mb-2" />
+        <Skeleton className="h-4 w-48" />
       </div>
-      <Skeleton className="h-24 rounded-2xl" />
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <Skeleton className="xl:col-span-2 h-64 rounded-2xl" />
-        <Skeleton className="h-48 rounded-2xl" />
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          <Skeleton className="h-48 rounded-2xl" />
+          <Skeleton className="h-64 rounded-2xl" />
+        </div>
+        <div className="col-span-12 lg:col-span-4 space-y-4">
+          <Skeleton className="h-48 rounded-2xl" />
+          <Skeleton className="h-32 rounded-2xl" />
+        </div>
       </div>
     </div>
   );
@@ -68,30 +73,35 @@ async function PageContent({ params }: Props) {
   const isComplete = progression.current_stage === 8;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <Link
-            href="/dashboard/seller/offers"
-            className="inline-flex items-center gap-1.5 text-sm text-[--color-on-surface]/50 hover:text-[--color-on-surface] transition-colors mb-2"
-          >
-            <ArrowLeft size={15} strokeWidth={1.5} />
-            Offers
-          </Link>
-          <h1 className="text-2xl font-bold text-[--color-on-surface] tracking-tight">
-            Sale Progression
+          <nav className="flex items-center gap-2 text-sm text-stone-400 mb-3">
+            <Link
+              href="/dashboard/seller/offers"
+              className="flex items-center gap-1.5 hover:text-emerald-900 transition-colors"
+            >
+              <ArrowLeft size={14} strokeWidth={1.5} />
+              Offers
+            </Link>
+            <span className="text-stone-300">/</span>
+            <span className="text-emerald-900 font-medium">{address}</span>
+          </nav>
+          <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-stone-900 tracking-tight">
+            Sale Progress Tracker
           </h1>
-          <p className="text-sm text-[--color-on-surface]/60 mt-0.5">
-            {address}
-            {offer && (
-              <span className="text-[--color-on-surface]/40"> · Buyer: {offer.buyer_name}</span>
-            )}
-          </p>
+          {offer && (
+            <p className="text-stone-500 mt-1">
+              Sale to{" "}
+              <span className="font-semibold text-emerald-900">
+                {offer.buyer_name}
+              </span>
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          {/* Completion badge */}
           {isComplete && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
               <CheckCircle2 size={13} />
@@ -100,40 +110,43 @@ async function PageContent({ params }: Props) {
           )}
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[--color-surface] hover:bg-[--color-surface-container-low] text-sm font-semibold text-[--color-on-surface] transition-colors"
+            className="px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-stone-50 transition-colors shadow-sm"
           >
-            <Share2 size={15} strokeWidth={1.25} />
-            Share
+            <Printer size={15} strokeWidth={1.25} />
+            Print Report
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 bg-emerald-900 text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800 transition-colors shadow-md"
+          >
+            <Mail size={15} strokeWidth={1.25} />
+            Contact Solicitor
           </button>
         </div>
       </div>
 
       {/* Progress overview pill */}
-      <div className="bg-[--color-surface] rounded-xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-[--color-on-surface]">
-            Overall progress
-          </span>
-          <span className="text-sm font-bold text-[--color-brand-primary]">
-            {completedStages}/{totalStages} stages
+      <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-emerald-900">
+            Live Conveyancing Timeline
+          </h2>
+          <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100 uppercase tracking-wider">
+            Status: {progressPct}% Complete
           </span>
         </div>
-        <div className="h-2 rounded-full bg-[--color-brand-primary]/10">
-          <div
-            className="h-full rounded-full bg-[--color-brand-primary] transition-all duration-700"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-        <p className="text-xs text-[--color-on-surface]/40 mt-2">{progressPct}% complete</p>
+        <SaleProgressionStepper progression={progression} />
       </div>
 
-      <SaleProgressionStepper progression={progression} />
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2">
+      {/* Bento grid */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* Left: documents */}
+        <div className="col-span-12 lg:col-span-8">
           <SaleDocumentsList progression={progression} />
         </div>
-        <div>
+
+        {/* Right: contacts */}
+        <div className="col-span-12 lg:col-span-4">
           <SaleContactsSidebar progression={progression} />
         </div>
       </div>
