@@ -37,8 +37,8 @@ function StarRating({ rating }: Readonly<{ rating: number | null }>) {
     );
   }
   return (
-    <span className="flex items-center gap-1 text-sm text-amber-500 font-medium">
-      <Star className="size-3.5 fill-amber-400 text-amber-400" />
+    <span className="flex items-center gap-1 text-sm text-warning font-medium">
+      <Star className="size-3.5 fill-warning text-warning" />
       {rating.toFixed(1)}
     </span>
   );

@@ -49,7 +49,7 @@ function ActiveJobRow({ job }: Readonly<{ job: ActiveJob }>) {
       <td className="py-3 px-4 text-sm text-neutral-600">{job.clientName}</td>
       <td className="py-3 px-4 text-sm text-neutral-500">{formatDate(job.scheduledDate)}</td>
       <td className="py-3 px-4">
-        <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`}>
+        <span className={["inline-block rounded-full px-2.5 py-0.5 text-xs font-medium", className].join(" ")}>
           {label}
         </span>
       </td>
@@ -81,7 +81,7 @@ function ActiveJobCard({ job }: Readonly<{ job: ActiveJob }>) {
           {job.title}
         </Link>
         <span
-          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`}
+          className={["shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium", className].join(" ")}
         >
           {label}
         </span>

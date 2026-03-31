@@ -96,7 +96,7 @@ function DeclineDialog(props: Readonly<{
           </Button>
           <Button
             size="sm"
-            className="flex-1 bg-red-600 text-white hover:bg-red-700"
+            className="flex-1 bg-error text-white hover:bg-error/90"
             onClick={() => props.onConfirm(reason)}
             disabled={props.loading}
           >
@@ -184,7 +184,7 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
 
           {/* Urgency badge — we show category as the label since urgency isn't in ProviderLead type */}
           <span
-            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.className}`}
+            className={["shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium", badge.className].join(" ")}
           >
             New Lead
           </span>

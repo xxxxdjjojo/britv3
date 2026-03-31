@@ -146,9 +146,9 @@ function StatusPanel({
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-4">
-      <h2 className="text-sm font-semibold text-neutral-900">Job Status</h2>
+      <h2 className="text-sm font-semibold font-heading text-neutral-900">Job Status</h2>
       <div>
-        <span className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${className}`}>
+        <span className={["inline-block rounded-full px-3 py-1 text-sm font-medium", className].join(" ")}>
           {label}
         </span>
       </div>
@@ -193,7 +193,7 @@ function QuoteSummary({
 }: Readonly<{ jobId: string; quote: JobSidebarData["quote"] }>) {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold text-neutral-900">Quote</h2>
+      <h2 className="text-sm font-semibold font-heading text-neutral-900">Quote</h2>
       {quote.exists ? (
         <div className="space-y-1">
           <p className="text-2xl font-bold text-neutral-900">
@@ -235,7 +235,7 @@ function InvoicePanel({
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold text-neutral-900">Invoice</h2>
+      <h2 className="text-sm font-semibold font-heading text-neutral-900">Invoice</h2>
       {invoice.exists ? (
         <div className="space-y-1">
           <p className="text-sm font-medium text-neutral-900">
@@ -288,7 +288,7 @@ function ReviewPanel({
             className={[
               "size-4",
               n <= rating
-                ? "fill-amber-400 text-amber-400"
+                ? "fill-warning text-warning"
                 : "fill-neutral-200 text-neutral-200",
             ].join(" ")}
           />
@@ -299,7 +299,7 @@ function ReviewPanel({
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3">
-      <h2 className="text-sm font-semibold text-neutral-900">Review</h2>
+      <h2 className="text-sm font-semibold font-heading text-neutral-900">Review</h2>
       {review.exists && review.rating != null ? (
         <div className="space-y-2">
           <StarRating rating={review.rating} />
@@ -366,7 +366,7 @@ export function JobDetailView({
                   Posted {formatDate(job.createdAt)}
                 </p>
               </div>
-              <span className={`rounded-full px-3 py-1 text-sm font-medium ${statusClass}`}>
+              <span className={["rounded-full px-3 py-1 text-sm font-medium", statusClass].join(" ")}>
                 {statusLabel}
               </span>
             </div>
@@ -374,7 +374,7 @@ export function JobDetailView({
 
           {/* Scope of Work */}
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm space-y-4">
-            <h2 className="text-base font-semibold text-neutral-900">Scope of Work</h2>
+            <h2 className="text-base font-semibold font-heading text-neutral-900">Scope of Work</h2>
 
             <p className="text-sm text-neutral-700 leading-relaxed">
               {job.description || "No description provided."}
@@ -441,7 +441,7 @@ export function JobDetailView({
 
           {/* Timeline */}
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-neutral-900">Job Timeline</h2>
+            <h2 className="mb-4 text-base font-semibold font-heading text-neutral-900">Job Timeline</h2>
             <JobTimeline status={job.status} timeline={job.timeline} />
           </div>
         </div>

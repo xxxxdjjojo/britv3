@@ -151,7 +151,7 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
 
       {/* Live indicator */}
       <p className="text-xs text-neutral-400 flex items-center gap-1.5">
-        <span className="inline-block h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+        <span className="inline-block h-2 w-2 rounded-full bg-success animate-pulse" />
         Listening for new leads in real time
       </p>
     </div>
