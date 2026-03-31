@@ -39,11 +39,11 @@ export default async function ServiceAreasPage() {
     <div className="space-y-6 p-6 max-w-5xl">
       {/* Page heading */}
       <div className="flex items-start gap-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
           <MapPin className="size-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Service Areas</h1>
+          <h1 className="font-heading text-2xl font-bold text-neutral-900">Service Areas</h1>
           <p className="mt-0.5 text-sm text-neutral-500">
             Draw the geographic zones where you offer your services. Clients
             searching in these areas will see your profile.
@@ -52,7 +52,7 @@ export default async function ServiceAreasPage() {
       </div>
 
       {/* Instructions */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="mb-3 text-sm font-semibold text-neutral-800">
           How to add a service area
         </h2>
@@ -72,7 +72,7 @@ export default async function ServiceAreasPage() {
       </div>
 
       {/* Map editor — wrapped in client component so dynamic ssr:false is permitted */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
         <ServiceAreaMapEditorWrapper initialAreas={safeAreas} />
       </div>
     </div>

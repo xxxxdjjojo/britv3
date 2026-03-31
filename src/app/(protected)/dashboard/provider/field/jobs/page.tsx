@@ -46,7 +46,7 @@ function statusBadge(status: string): ReactNode {
 
 function LeadCard({ lead }: { lead: ProviderLead }) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="mb-1 flex items-start justify-between gap-2">
         <p className="text-base font-semibold text-neutral-900">{lead.serviceCategory}</p>
         <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
@@ -66,7 +66,7 @@ function LeadCard({ lead }: { lead: ProviderLead }) {
       <div className="mt-3 flex gap-2">
         <Link
           href={`/dashboard/provider/jobs/${lead.id}?action=accept`}
-          className="flex-1 rounded-lg bg-[#1B4D3E] py-2.5 text-center text-sm font-semibold text-white hover:bg-[#163d31]"
+          className="flex-1 rounded-lg bg-brand-primary py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-primary/90"
         >
           Accept
         </Link>
@@ -83,7 +83,7 @@ function LeadCard({ lead }: { lead: ProviderLead }) {
 
 function ActiveJobCard({ job }: { job: ActiveJob }) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
       <div className="mb-1 flex items-start justify-between gap-2">
         <p className="text-base font-semibold text-neutral-900">{job.title}</p>
         {statusBadge(job.status)}
@@ -140,7 +140,7 @@ export default async function FieldJobsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="pt-2">
-        <h1 className="text-2xl font-bold text-neutral-900">Jobs</h1>
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Jobs</h1>
       </div>
 
       {/* Leads section */}
@@ -155,7 +155,7 @@ export default async function FieldJobsPage() {
         </div>
 
         {leads.length === 0 ? (
-          <div className="rounded-xl border border-neutral-200 bg-white px-6 py-8 text-center shadow-sm">
+          <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-8 text-center shadow-sm">
             <p className="text-sm text-neutral-500">No new leads right now.</p>
           </div>
         ) : (
@@ -179,7 +179,7 @@ export default async function FieldJobsPage() {
         </div>
 
         {activeJobs.length === 0 ? (
-          <div className="rounded-xl border border-neutral-200 bg-white px-6 py-8 text-center shadow-sm">
+          <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-8 text-center shadow-sm">
             <p className="text-sm text-neutral-500">No active jobs.</p>
           </div>
         ) : (

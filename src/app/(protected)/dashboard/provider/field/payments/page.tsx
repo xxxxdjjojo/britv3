@@ -61,7 +61,7 @@ export default async function FieldPaymentsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="pt-2">
-        <h1 className="text-2xl font-bold text-neutral-900">Payments</h1>
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Payments</h1>
       </div>
 
       {/* Cash position widget */}
@@ -81,11 +81,11 @@ export default async function FieldPaymentsPage() {
         </div>
 
         {sentInvoices.length === 0 ? (
-          <div className="rounded-xl border border-neutral-200 bg-white px-6 py-8 text-center shadow-sm">
+          <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-8 text-center shadow-sm">
             <p className="text-sm text-neutral-500">No invoices awaiting payment.</p>
             <Link
               href="/dashboard/provider/payments"
-              className="mt-3 inline-block text-sm font-medium text-[#1B4D3E] hover:underline"
+              className="mt-3 inline-block text-sm font-medium text-brand-primary hover:underline"
             >
               Create an invoice
             </Link>
@@ -100,7 +100,7 @@ export default async function FieldPaymentsPage() {
               return (
                 <div
                   key={invoice.id}
-                  className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm"
+                  className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -117,7 +117,7 @@ export default async function FieldPaymentsPage() {
 
                     <Link
                       href={`/dashboard/provider/payments/invoices/${invoice.id}`}
-                      className="min-h-10 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#163d31]"
+                      className="min-h-10 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary/90"
                     >
                       Collect
                     </Link>
@@ -132,7 +132,7 @@ export default async function FieldPaymentsPage() {
       {/* Link to full payments view */}
       <Link
         href="/dashboard/provider/payments"
-        className="block w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-center text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50"
+        className="block w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-center text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50"
       >
         View all payments
       </Link>

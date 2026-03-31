@@ -91,7 +91,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
   return (
     <div className="space-y-6 p-6 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Reviews</h1>
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Reviews</h1>
         <p className="mt-1 text-sm text-neutral-500">
           See what clients are saying and respond to feedback.
         </p>
@@ -112,7 +112,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
           href="/dashboard/provider/reviews"
           className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
             !ratingFilter
-              ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
+              ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
               : "border-border text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -124,7 +124,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
             href={`/dashboard/provider/reviews?rating=${star}`}
             className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
               ratingFilter === star
-                ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
+                ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
                 : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -136,7 +136,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
 
       {/* Review list */}
       {reviews.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-neutral-200 py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-neutral-200 py-16 text-center">
           <Star className="size-10 text-neutral-300" />
           <p className="text-sm font-medium text-neutral-500">
             {ratingFilter ? `No ${ratingFilter}-star reviews yet.` : "No reviews yet."}

@@ -67,13 +67,13 @@ export default async function FieldTodayPage() {
     <div className="space-y-4">
       {/* Header */}
       <div className="pt-2">
-        <h1 className="text-2xl font-bold text-neutral-900">Today</h1>
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Today</h1>
         <p className="text-sm text-neutral-500">{formatDate(today)}</p>
       </div>
 
       {/* Job cards */}
       {todayJobs.length === 0 ? (
-        <div className="rounded-xl border border-neutral-200 bg-white px-6 py-10 text-center shadow-sm">
+        <div className="rounded-2xl border border-neutral-200 bg-white px-6 py-10 text-center shadow-sm">
           <p className="text-base font-medium text-neutral-700">
             No jobs scheduled today
           </p>
@@ -82,7 +82,7 @@ export default async function FieldTodayPage() {
           </p>
           <Link
             href="/dashboard/provider/field/jobs"
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#1B4D3E] hover:underline"
+            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-primary hover:underline"
           >
             View leads <ArrowRight className="size-4" />
           </Link>
@@ -116,7 +116,7 @@ export default async function FieldTodayPage() {
                     rel="noopener noreferrer"
                     className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
                   >
-                    <MapPin className="size-4 text-[#1B4D3E]" aria-hidden="true" />
+                    <MapPin className="size-4 text-brand-primary" aria-hidden="true" />
                     Get directions
                   </a>
                 ) : null}
@@ -126,7 +126,7 @@ export default async function FieldTodayPage() {
                   href={`/dashboard/provider/jobs/${job.id}`}
                   className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
                 >
-                  <Phone className="size-4 text-[#1B4D3E]" aria-hidden="true" />
+                  <Phone className="size-4 text-brand-primary" aria-hidden="true" />
                   View details
                 </Link>
               </div>
@@ -139,7 +139,7 @@ export default async function FieldTodayPage() {
       <div className="pt-2">
         <Link
           href="/dashboard/provider/field/jobs"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4D3E] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#163d31] active:bg-[#123329]"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary/90 active:bg-brand-primary/80"
         >
           View leads <ArrowRight className="size-4" />
         </Link>

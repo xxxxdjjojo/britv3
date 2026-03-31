@@ -64,8 +64,8 @@ function CertificateCard({ cert }: { cert: Certificate }) {
 
   return (
     <div className="flex items-start gap-4 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE]">
-        <ShieldCheck className="size-5 text-[#1B4D3E]" />
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-lighter">
+        <ShieldCheck className="size-5 text-brand-primary" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex flex-wrap items-center gap-2">
@@ -93,7 +93,7 @@ function CertificateCard({ cert }: { cert: Certificate }) {
           <p className="mt-1 text-xs text-neutral-600 line-clamp-2">{cert.notes}</p>
         )}
         {cert.filePath && (
-          <p className="mt-1 flex items-center gap-1 text-xs text-[#1B4D3E]">
+          <p className="mt-1 flex items-center gap-1 text-xs text-brand-primary">
             <FileText className="size-3" />
             File attached
           </p>
@@ -157,7 +157,7 @@ export default async function CertificatesPage({ params }: Params) {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Job Certificates</h1>
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Job Certificates</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Issue and manage compliance certificates for this job.
         </p>
@@ -169,7 +169,7 @@ export default async function CertificatesPage({ params }: Params) {
           <CardTitle className="text-base font-semibold">
             Issued Certificates
             {certificates.length > 0 && (
-              <span className="ml-2 rounded-full bg-[#E8F5EE] px-2 py-0.5 text-xs font-medium text-[#1B4D3E]">
+              <span className="ml-2 rounded-full bg-brand-primary-lighter px-2 py-0.5 text-xs font-medium text-brand-primary">
                 {certificates.length}
               </span>
             )}
