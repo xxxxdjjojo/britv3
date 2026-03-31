@@ -52,7 +52,7 @@ function EarningsTooltip({ active, payload, label }: EarningsTooltipProps) {
   return (
     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 shadow-md">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className="text-sm font-semibold text-[#1B4D3E]">{formatPounds(value)}</p>
+      <p className="text-sm font-semibold text-brand-primary">{formatPounds(value)}</p>
     </div>
   );
 }
@@ -69,7 +69,7 @@ function CategoriesBarTooltip({ active, payload, label }: CategoriesBarTooltipPr
   return (
     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 shadow-md">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className="text-sm font-semibold text-[#1B4D3E]">{value} bookings</p>
+      <p className="text-sm font-semibold text-brand-primary">{value} bookings</p>
     </div>
   );
 }
@@ -87,21 +87,29 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
   return (
     <div className="space-y-8">
       {/* Period selector */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-neutral-900">Performance Overview</h2>
-          <p className="text-xs text-neutral-500 mt-0.5">Stats updated daily at 02:00 UTC</p>
+          <h2 className="font-heading text-lg font-semibold text-neutral-900">
+            Performance Overview
+          </h2>
+          <p className="mt-0.5 text-xs text-neutral-500">Stats updated daily at 02:00 UTC</p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-neutral-200 bg-neutral-50 p-1">
+        <div
+          className="flex gap-1 rounded-xl border border-neutral-200 bg-neutral-50 p-1"
+          role="group"
+          aria-label="Select time period"
+        >
           {PERIODS.map((p) => (
             <button
               key={p}
               onClick={() => onPeriodChange(p)}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              aria-pressed={period === p}
+              className={[
+                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                 period === p
-                  ? "bg-[#1B4D3E] text-white shadow-sm"
-                  : "text-neutral-600 hover:bg-neutral-100"
-              }`}
+                  ? "bg-brand-primary text-white shadow-sm"
+                  : "text-neutral-600 hover:bg-neutral-100",
+              ].join(" ")}
             >
               {PERIOD_LABELS[p]}
             </button>
@@ -110,8 +118,10 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
       </div>
 
       {/* Earnings Trend */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold text-neutral-700">Earnings Trend</h3>
+      <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-5 font-heading text-sm font-semibold text-neutral-800">
+          Earnings Trend
+        </h3>
         {earningsData.length === 0 ? (
           <div className="flex h-[280px] items-center justify-center text-sm text-neutral-400">
             No earnings data for this period
@@ -121,7 +131,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
             <AreaChart data={earningsData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="earningsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1B4D3E" stopOpacity={0.35} />
+                  <stop offset="0%" stopColor="#1B4D3E" stopOpacity={0.3} />
                   <stop offset="100%" stopColor="#1B4D3E" stopOpacity={0} />
                 </linearGradient>
               </defs>
@@ -144,7 +154,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
                 type="monotone"
                 dataKey="earnings"
                 stroke="#1B4D3E"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 fill="url(#earningsGradient)"
                 dot={false}
                 activeDot={{ r: 4, fill: "#1B4D3E", strokeWidth: 0 }}
@@ -155,8 +165,10 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
       </div>
 
       {/* Top Categories */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold text-neutral-700">Top Categories</h3>
+      <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-5 font-heading text-sm font-semibold text-neutral-800">
+          Revenue by Category
+        </h3>
         {categoriesData.length === 0 ? (
           <div className="flex h-[200px] items-center justify-center text-sm text-neutral-400">
             No category data available yet
@@ -184,7 +196,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
                 width={120}
               />
               <Tooltip content={<CategoriesBarTooltip />} />
-              <Bar dataKey="bookings" fill="#1B4D3E" radius={[0, 4, 4, 0]} barSize={20} />
+              <Bar dataKey="bookings" fill="#1B4D3E" radius={[0, 6, 6, 0]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
         )}

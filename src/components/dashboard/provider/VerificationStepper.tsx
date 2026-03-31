@@ -20,10 +20,10 @@ const STATUS_LABEL: Record<VerificationStep["status"], string> = {
 
 const STATUS_BADGE_CLASS: Record<VerificationStep["status"], string> = {
   not_started: "bg-neutral-100 text-neutral-500",
-  in_progress: "bg-[#FEF9C3] text-[#CA8A04]",
-  submitted: "bg-blue-50 text-blue-600",
-  approved: "bg-[#DCFCE7] text-[#16A34A]",
-  rejected: "bg-red-50 text-red-600",
+  in_progress: "bg-warning-light text-warning",
+  submitted: "bg-info-light text-info",
+  approved: "bg-success-light text-success",
+  rejected: "bg-error-light text-error",
 };
 
 type VerificationStepperProps = Readonly<{
@@ -52,15 +52,15 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
             {/* Circle indicator */}
             <div className="relative z-10 flex shrink-0 items-start pt-0.5">
               {isApproved ? (
-                <div className="flex size-10 items-center justify-center rounded-full bg-[#1B4D3E]">
+                <div className="flex size-10 items-center justify-center rounded-full bg-brand-primary">
                   <Check className="size-5 text-white" strokeWidth={2.5} />
                 </div>
               ) : isInProgress ? (
-                <div className="flex size-10 items-center justify-center rounded-full border-2 border-dashed border-[#1B4D3E] bg-white">
-                  <span className="text-xs font-bold text-[#1B4D3E]">{step.step_number}</span>
+                <div className="flex size-10 items-center justify-center rounded-full border-2 border-dashed border-brand-primary bg-white">
+                  <span className="text-xs font-bold text-brand-primary">{step.step_number}</span>
                 </div>
               ) : (
-                <div className="flex size-10 items-center justify-center rounded-full border-2 border-neutral-300 bg-white">
+                <div className="flex size-10 items-center justify-center rounded-full border-2 border-neutral-200 bg-white">
                   <span className="text-xs font-medium text-neutral-400">{step.step_number}</span>
                 </div>
               )}
@@ -72,7 +72,7 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
                 <span
                   className={[
                     "text-sm font-semibold",
-                    isApproved ? "text-[#1B4D3E]" : "text-neutral-900",
+                    isApproved ? "text-brand-primary" : "text-neutral-900",
                   ].join(" ")}
                 >
                   {step.label}
@@ -94,7 +94,7 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
               <p className="mt-1 text-sm text-neutral-500">{step.description}</p>
               {/* Rejection reason */}
               {step.status === "rejected" && step.rejectionReason && (
-                <div className="mt-2 rounded-md bg-red-50 border border-red-200 p-2 text-xs text-red-700">
+                <div className="mt-2 rounded-md bg-error-light border border-error/20 p-2 text-xs text-error">
                   <span className="font-medium">Reason:</span> {step.rejectionReason}
                 </div>
               )}
@@ -102,7 +102,7 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
                 <div className="mt-2 flex items-center gap-3">
                   <Link
                     href={href}
-                    className="inline-block text-xs font-semibold text-[#1B4D3E] hover:underline"
+                    className="inline-block text-xs font-semibold text-brand-primary hover:underline"
                   >
                     {step.status === "rejected" ? "Re-apply" : step.status === "not_started" ? "Get started" : "Continue"} &rarr;
                   </Link>

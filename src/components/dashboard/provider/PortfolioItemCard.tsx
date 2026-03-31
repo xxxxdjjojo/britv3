@@ -114,7 +114,7 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
               {item.title}
             </p>
             {item.category && (
-              <span className="inline-block mt-0.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium">
+              <span className="inline-block mt-0.5 text-xs bg-info-light text-info dark:bg-info/10 dark:text-info px-1.5 py-0.5 rounded-full font-medium">
                 {CATEGORY_LABELS[item.category] ?? item.category}
               </span>
             )}
@@ -133,11 +133,12 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
         <button
           onClick={() => onToggleFeatured(item.id, !item.is_featured)}
           title={item.is_featured ? "Remove featured" : "Set as featured"}
-          className={`p-1.5 rounded-lg transition-colors ${
+          className={[
+            "p-1.5 rounded-lg transition-colors",
             item.is_featured
-              ? "text-amber-500 hover:text-amber-600 bg-amber-50 dark:bg-amber-900/20"
-              : "text-neutral-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-          }`}
+              ? "text-warning hover:text-warning/80 bg-warning-light dark:bg-warning/10"
+              : "text-neutral-400 hover:text-warning hover:bg-warning-light dark:hover:bg-warning/10",
+          ].join(" ")}
         >
           {item.is_featured ? (
             <Star className="w-4 h-4 fill-current" />
@@ -149,7 +150,7 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
         <button
           onClick={() => onEdit(item)}
           title="Edit project"
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+          className="p-1.5 rounded-lg text-neutral-400 hover:text-info hover:bg-info-light dark:hover:bg-info/10 transition-colors"
         >
           <Pencil className="w-4 h-4" />
         </button>
@@ -157,7 +158,7 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
         <button
           onClick={() => onDelete(item.id)}
           title="Delete project"
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          className="p-1.5 rounded-lg text-neutral-400 hover:text-error hover:bg-error-light dark:hover:bg-error/10 transition-colors"
         >
           <Trash2 className="w-4 h-4" />
         </button>

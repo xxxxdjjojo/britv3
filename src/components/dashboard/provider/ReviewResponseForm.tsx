@@ -111,7 +111,7 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
       </div>
 
       {/* Guidelines */}
-      <div className="flex items-start gap-3 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      <div className="flex items-start gap-3 rounded-xl bg-warning-light px-4 py-3 text-sm text-warning">
         <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-500" />
         <p>
           <strong>Your response is public and cannot be edited.</strong> Keep it
@@ -136,20 +136,21 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
             onChange={(e) => setResponse(e.target.value)}
             disabled={submitting}
             maxLength={MAX_CHARS}
-            className="w-full resize-none rounded-lg border border-neutral-200 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 disabled:opacity-60"
+            className="w-full resize-none rounded-lg border border-neutral-200 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20 disabled:opacity-60"
           />
           <div className="mt-1 flex justify-between text-xs">
             <span className="text-neutral-400">
               Minimum {MIN_CHARS} characters
             </span>
             <span
-              className={`font-medium ${
+              className={[
+                "font-medium",
                 charsLeft < 50
                   ? charsLeft < 10
-                    ? "text-red-600"
-                    : "text-amber-600"
-                  : "text-neutral-400"
-              }`}
+                    ? "text-error"
+                    : "text-warning"
+                  : "text-neutral-400",
+              ].join(" ")}
             >
               {charsLeft} left
             </span>
@@ -157,7 +158,7 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
         </div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">
+          <p className="rounded-lg bg-error-light px-4 py-2 text-sm text-error">
             {error}
           </p>
         )}
@@ -175,7 +176,7 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
           <Button
             type="submit"
             disabled={!isValid || submitting}
-            className="flex-1 bg-[#1B4D3E] text-white hover:bg-[#163d31] sm:flex-none sm:min-w-[140px]"
+            className="flex-1 bg-brand-primary text-white hover:bg-brand-primary/90 sm:flex-none sm:min-w-[140px]"
           >
             <Send className="mr-1.5 size-4" />
             {submitting ? "Submitting…" : "Post Response"}

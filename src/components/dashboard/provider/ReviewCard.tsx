@@ -72,7 +72,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
         <div className="mt-4">
           <Link
             href={`/dashboard/provider/reviews/${review.id}/respond`}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1B4D3E] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-primary hover:underline"
           >
             <MessageSquarePlus className="size-3.5" />
             Reply to this review

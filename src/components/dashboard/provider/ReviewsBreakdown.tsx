@@ -54,7 +54,7 @@ export function ReviewsBreakdown({
                 <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-neutral-100">
                   {/* Filled bar */}
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-[#1B4D3E] transition-[width] duration-500"
+                    className="absolute inset-y-0 left-0 rounded-full bg-brand-primary transition-[width] duration-500"
                     style={{ width: `${pct}%` }}
                     role="progressbar"
                     aria-valuenow={Math.round(pct)}

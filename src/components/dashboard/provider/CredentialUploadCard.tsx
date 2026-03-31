@@ -24,22 +24,22 @@ const DOC_STATUS_CONFIG = {
   pending: {
     label: "Under review",
     icon: Clock,
-    className: "bg-[#FEF9C3] text-[#CA8A04]",
+    className: "bg-warning-light text-warning",
   },
   approved: {
     label: "Verified",
     icon: CheckCircle,
-    className: "bg-[#DCFCE7] text-[#16A34A]",
+    className: "bg-success-light text-success",
   },
   rejected: {
     label: "Rejected",
     icon: XCircle,
-    className: "bg-red-50 text-red-600",
+    className: "bg-error-light text-error",
   },
   more_info_required: {
     label: "More info needed",
     icon: XCircle,
-    className: "bg-orange-50 text-orange-600",
+    className: "bg-warning-light text-warning",
   },
 } as const;
 
@@ -126,7 +126,7 @@ export function CredentialUploadCard({
           </span>
         )}
         {uploadStatus === "success" && (
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2.5 py-0.5 text-xs font-medium text-[#16A34A]">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-success-light px-2.5 py-0.5 text-xs font-medium text-success">
             <CheckCircle className="size-3" />
             Uploaded
           </span>
@@ -160,10 +160,10 @@ export function CredentialUploadCard({
           className={[
             "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-5 text-center transition-colors",
             isDraggingOver
-              ? "border-[#1B4D3E] bg-[#E8F5EE]"
+              ? "border-brand-primary bg-brand-primary-lighter"
               : uploadStatus === "uploading"
                 ? "border-neutral-200 bg-neutral-50 opacity-60"
-                : "border-neutral-200 bg-neutral-50 hover:border-[#1B4D3E] hover:bg-[#E8F5EE]",
+                : "border-neutral-200 bg-neutral-50 hover:border-brand-primary hover:bg-brand-primary-lighter",
           ].join(" ")}
         >
           <Upload className="size-5 text-neutral-400" />
@@ -172,7 +172,7 @@ export function CredentialUploadCard({
               "Uploading…"
             ) : (
               <>
-                <span className="font-semibold text-[#1B4D3E]">Click to upload</span> or drag &amp;
+                <span className="font-semibold text-brand-primary">Click to upload</span> or drag &amp;
                 drop
                 <br />
                 PDF, JPEG or PNG — max 10 MB
@@ -193,7 +193,7 @@ export function CredentialUploadCard({
 
       {/* Error */}
       {errorMessage && (
-        <p className="mt-2 text-xs text-red-600">{errorMessage}</p>
+        <p className="mt-2 text-xs text-error">{errorMessage}</p>
       )}
     </div>
   );

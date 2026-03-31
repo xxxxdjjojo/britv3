@@ -39,7 +39,7 @@ function maskEmail(email: string): string {
 function StatusBadge({ status }: { status: ProviderReference["status"] }) {
   if (status === "verified") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-0.5 text-xs font-medium text-[#16A34A]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-success-light px-2 py-0.5 text-xs font-medium text-success">
         <CheckCircle className="size-3" />
         Verified
       </span>
@@ -47,14 +47,14 @@ function StatusBadge({ status }: { status: ProviderReference["status"] }) {
   }
   if (status === "submitted") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-[#DBEAFE] px-2 py-0.5 text-xs font-medium text-[#1D4ED8]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-info-light px-2 py-0.5 text-xs font-medium text-info">
         <Eye className="size-3" />
         Submitted
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-[#FEF9C3] px-2 py-0.5 text-xs font-medium text-[#CA8A04]">
+    <span className="inline-flex items-center gap-1 rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning">
       <Clock className="size-3" />
       Pending
     </span>
@@ -171,7 +171,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
             <div
               key={i}
               className={`h-2 w-8 rounded-full ${
-                i < submittedCount ? "bg-[#16A34A]" : "bg-neutral-200"
+                i < submittedCount ? "bg-success" : "bg-neutral-200"
               }`}
             />
           ))}
@@ -198,7 +198,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
                   })}
                 </p>
                 {ref.status === "verified" && ref.verified_at && (
-                  <p className="text-xs text-[#16A34A]">
+                  <p className="text-xs text-success">
                     Verified{" "}
                     {new Date(ref.verified_at).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -226,7 +226,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
                       <button
                         type="button"
                         onClick={() => setCancelConfirmId(ref.id)}
-                        className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                        className="inline-flex items-center gap-1 rounded-md border border-error/20 bg-white px-2.5 py-1 text-xs font-medium text-error hover:bg-error-light"
                       >
                         Cancel
                       </button>
@@ -319,7 +319,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
             </div>
 
             {error && (
-              <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
+              <p className="rounded-lg bg-error-light px-3 py-2 text-xs text-error">{error}</p>
             )}
           </div>
 
@@ -379,7 +379,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
                 type="button"
                 onClick={() => handleCancel(cancelConfirmId)}
                 disabled={cancelling === cancelConfirmId}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                className="rounded-lg bg-error px-4 py-2 text-sm font-medium text-white hover:bg-error/90 disabled:opacity-50"
               >
                 {cancelling === cancelConfirmId ? "Cancelling\u2026" : "Cancel Request"}
               </button>
