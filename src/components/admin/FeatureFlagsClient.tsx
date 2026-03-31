@@ -5,7 +5,6 @@ import type { FeatureFlag } from "@/services/admin/feature-flag-service";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -72,28 +71,31 @@ function FlagRow({ flag }: { flag: FeatureFlag }) {
   }
 
   return (
-    <div className="p-4 border border-neutral-200 rounded-lg bg-white">
+    <div className="rounded-xl bg-card p-5 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-mono text-sm font-medium text-neutral-900">
+            <span className="font-mono font-body text-sm font-medium text-foreground">
               {flag.key}
             </span>
             {flag.allowed_roles && flag.allowed_roles.length > 0 && (
               <div className="flex gap-1 flex-wrap">
                 {flag.allowed_roles.map((r) => (
-                  <Badge key={r} variant="secondary" className="text-xs">
+                  <span
+                    key={r}
+                    className="rounded-full bg-brand-primary-lighter px-2 py-0.5 font-body text-xs font-medium text-brand-primary"
+                  >
                     {r}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             )}
           </div>
           {flag.description && (
-            <p className="text-xs text-neutral-500 mb-3">{flag.description}</p>
+            <p className="font-body text-xs text-neutral-500 mb-3">{flag.description}</p>
           )}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500 w-20">
+            <span className="font-body text-xs text-neutral-500 w-20">
               Rollout: {displayPct}%
             </span>
             <div className="flex-1 max-w-xs">
@@ -110,16 +112,15 @@ function FlagRow({ flag }: { flag: FeatureFlag }) {
             {isDirty && (
               <Button
                 size="sm"
-                variant="outline"
                 onClick={handleSaveRollout}
                 disabled={savingRollout}
-                className="text-xs h-7 px-2"
+                className="rounded-lg bg-brand-primary px-3 py-1.5 font-body text-xs font-medium text-white hover:bg-brand-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2 h-auto"
               >
                 {savingRollout ? "Saving…" : "Save"}
               </Button>
             )}
           </div>
-          <p className="text-xs text-neutral-400 mt-2">
+          <p className="font-body text-xs text-neutral-400 mt-2">
             Last updated:{" "}
             {new Date(flag.updated_at).toLocaleDateString("en-GB", {
               day: "numeric",
@@ -145,10 +146,10 @@ export function FeatureFlagsClient({ flags }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-neutral-500">
+        <span className="font-body text-sm text-neutral-500">
           {flags.length} flag{flags.length !== 1 ? "s" : ""}
         </span>
-        <span className="text-sm text-neutral-500">
+        <span className="font-body text-sm text-neutral-500">
           {flags.filter((f) => f.enabled).length} enabled
         </span>
       </div>

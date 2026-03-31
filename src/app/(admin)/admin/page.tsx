@@ -63,18 +63,18 @@ async function ActivityFeed() {
   }
 
   return (
-    <ul className="divide-y divide-neutral-100">
+    <ul className="divide-y divide-neutral-100/60 dark:divide-neutral-700/60">
       {entries.map((entry) => (
         <li key={entry.id} className="py-3 flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-neutral-800 truncate">
+            <p className="font-body text-sm font-medium text-foreground truncate">
               {entry.action}
             </p>
-            <p className="text-xs text-neutral-500 mt-0.5">
+            <p className="font-body text-xs text-neutral-500 mt-0.5">
               {entry.target_type} &middot; {entry.target_id.slice(0, 8)}…
             </p>
           </div>
-          <time className="shrink-0 text-xs text-neutral-400">
+          <time className="shrink-0 font-body text-xs text-neutral-400">
             {new Date(entry.created_at).toLocaleString("en-GB", {
               day: "2-digit",
               month: "short",
@@ -126,29 +126,31 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
-            <h2
-              className="text-base font-semibold text-neutral-900 mb-4"
-              style={{ fontFamily: "Plus Jakarta Sans" }}
-            >
-              Platform Revenue (Mock)
-            </h2>
-            <Suspense fallback={<ChartSkeleton />}>
-              <AdminDashboardCharts />
-            </Suspense>
+          <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+            <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
+              <h2 className="font-heading text-base font-semibold text-foreground">
+                Platform Revenue (Mock)
+              </h2>
+            </div>
+            <div className="p-6">
+              <Suspense fallback={<ChartSkeleton />}>
+                <AdminDashboardCharts />
+              </Suspense>
+            </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
-          <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
-          >
-            Recent Activity
-          </h2>
-          <Suspense fallback={<ActivitySkeleton />}>
-            <ActivityFeed />
-          </Suspense>
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
+            <h2 className="font-heading text-base font-semibold text-foreground">
+              Recent Activity
+            </h2>
+          </div>
+          <div className="p-6">
+            <Suspense fallback={<ActivitySkeleton />}>
+              <ActivityFeed />
+            </Suspense>
+          </div>
         </div>
       </div>
     </div>

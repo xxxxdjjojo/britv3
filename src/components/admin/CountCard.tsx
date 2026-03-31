@@ -15,19 +15,19 @@ export function CountCard({ title, count, href, icon }: CountCardProps) {
   return (
     <Link
       href={href}
-      className="block rounded-lg border border-neutral-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+      className="block rounded-xl bg-card p-5 shadow-sm ring-1 ring-neutral-200/60 transition hover:shadow-md dark:ring-neutral-700/60"
     >
       <div className="flex items-center gap-3">
         {Icon ? (
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-primary-lighter">
-            <Icon className="h-5 w-5 text-brand-primary" />
+          <div className="rounded-lg bg-brand-primary-lighter p-2.5 dark:bg-brand-primary/20">
+            <Icon className="size-5 text-brand-primary" />
           </div>
         ) : null}
         <div>
-          <p className="text-3xl font-bold text-neutral-900">
+          <p className="font-body text-xs text-neutral-500">{title}</p>
+          <p className="font-heading text-2xl font-bold text-foreground">
             {count.toLocaleString()}
           </p>
-          <p className="text-sm font-medium text-neutral-500">{title}</p>
         </div>
       </div>
     </Link>
