@@ -66,11 +66,11 @@ const NINETY_DAYS_MS = 90 * 24 * 60 * 60 * 1000;
 
 function BadgeSkeleton() {
   return (
-    <div className="flex animate-pulse items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
-      <div className="size-8 shrink-0 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+    <div className="flex animate-pulse items-center gap-3 rounded-xl bg-card p-3 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+      <div className="size-8 shrink-0 rounded-full bg-neutral-100 dark:bg-neutral-800" />
       <div className="space-y-1.5">
-        <div className="h-3.5 w-14 rounded bg-neutral-200 dark:bg-neutral-700" />
-        <div className="h-2.5 w-20 rounded bg-neutral-200 dark:bg-neutral-700" />
+        <div className="h-3.5 w-14 rounded bg-neutral-100 dark:bg-neutral-800" />
+        <div className="h-2.5 w-20 rounded bg-neutral-100 dark:bg-neutral-800" />
       </div>
     </div>
   );
@@ -148,13 +148,13 @@ export default function SettingsLayout({
       {/* Back to dashboard */}
       <Link
         href="/dashboard"
-        className="mb-6 inline-flex items-center gap-1.5 font-body text-sm text-neutral-500 transition-colors hover:text-neutral-900"
+        className="mb-6 inline-flex items-center gap-1.5 font-body text-sm text-neutral-500 transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Back to Dashboard
       </Link>
 
-      <h1 className="mb-6 font-heading text-2xl font-bold text-neutral-900 dark:text-white">
+      <h1 className="mb-6 font-heading text-2xl font-bold tracking-tight text-foreground">
         Settings
       </h1>
 
@@ -175,7 +175,7 @@ export default function SettingsLayout({
                       "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-body text-sm transition-colors",
                       isActive
                         ? "bg-brand-primary/10 font-medium text-brand-primary"
-                        : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+                        : "text-neutral-600 hover:bg-neutral-100 hover:text-foreground",
                       tab.disabled &&
                         "pointer-events-none cursor-not-allowed opacity-40",
                     )}
@@ -192,7 +192,7 @@ export default function SettingsLayout({
               })}
             </nav>
             {/* Right fade gradient hinting at horizontal scroll — mobile only */}
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent dark:from-neutral-950 lg:hidden" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent lg:hidden" />
           </div>
 
           {/* Security & Privacy Badges — desktop only */}

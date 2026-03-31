@@ -168,7 +168,7 @@ export default function NotificationsSettingsPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           Notifications
         </h2>
         <p className="mt-1 font-body text-sm text-neutral-500">
@@ -178,10 +178,10 @@ export default function NotificationsSettingsPage() {
 
       {/* Security Alerts — always on, non-toggleable */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Security Alerts
         </h3>
-        <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <p className="font-body text-sm text-neutral-600 dark:text-neutral-400">
             Security notifications are always enabled and cannot be turned off.
             You will receive email alerts for:
@@ -198,13 +198,13 @@ export default function NotificationsSettingsPage() {
 
       {/* 5×4 Notification Matrix */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Notification Channels
         </h3>
 
-        <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           {/* Channel header row */}
-          <div className="hidden border-b border-neutral-100 px-4 py-3 dark:border-neutral-700 sm:flex sm:items-center sm:justify-between">
+          <div className="hidden border-b border-neutral-100/60 px-4 py-3 dark:border-neutral-700/60 sm:flex sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1" />
             <div className="flex shrink-0 items-center gap-4">
               {CHANNELS.map((ch) => {
@@ -232,14 +232,14 @@ export default function NotificationsSettingsPage() {
                 key={category.id}
                 className={
                   idx < CATEGORIES.length - 1
-                    ? "border-b border-neutral-100 dark:border-neutral-700"
+                    ? "border-b border-neutral-100/60 dark:border-neutral-700/60"
                     : ""
                 }
               >
                 <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                   {/* Category label */}
                   <div className="min-w-0 flex-1">
-                    <p className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                    <p className="font-body text-sm font-medium text-foreground">
                       {category.title}
                     </p>
                     <p className="font-body text-xs text-neutral-500">
@@ -286,18 +286,18 @@ export default function NotificationsSettingsPage() {
 
       {/* Marketing Unsubscribe — GDPR */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Marketing Preferences
         </h3>
 
-        <div className="rounded-lg border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-start gap-4">
             <div className="rounded-lg bg-amber-50 p-2 dark:bg-amber-900/20">
               <ShieldAlert className="size-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="flex-1 space-y-3">
               <div>
-                <p className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                <p className="font-body text-sm font-medium text-foreground">
                   Unsubscribe from Marketing
                 </p>
                 <p className="mt-1 font-body text-xs text-neutral-500">
@@ -309,7 +309,7 @@ export default function NotificationsSettingsPage() {
               <button
                 type="button"
                 onClick={handleUnsubscribeMarketing}
-                className="rounded-md bg-neutral-900 px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+                className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90"
               >
                 Unsubscribe from all marketing
               </button>

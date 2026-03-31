@@ -98,7 +98,7 @@ export function LoginHistoryTable({
             Loading login history...
           </div>
         ) : fallback ? (
-          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300">
+          <div className="flex items-center gap-2 rounded-lg bg-brand-primary/5 p-3 text-sm text-brand-primary ring-1 ring-brand-primary/20">
             <Info className="size-4 shrink-0" />
             Login history is not available for your account at this time.
           </div>
@@ -110,14 +110,14 @@ export function LoginHistoryTable({
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left text-xs text-muted-foreground">
+                <tr className="border-b border-neutral-100/60 text-left text-xs text-muted-foreground dark:border-neutral-700/60">
                   <th className="pb-2 pr-4 font-medium">Date</th>
                   <th className="pb-2 pr-4 font-medium">Device</th>
                   <th className="pb-2 pr-4 font-medium">IP Address</th>
                   <th className="pb-2 font-medium">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-neutral-100/60 dark:divide-neutral-700/60">
                 {entries.map((entry) => (
                   <tr key={entry.id}>
                     <td className="py-2 pr-4 whitespace-nowrap">

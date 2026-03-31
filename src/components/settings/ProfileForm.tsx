@@ -280,7 +280,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
             Change email address
           </button>
         ) : (
-          <div className="space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+          <div className="space-y-2 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200/60 dark:bg-neutral-800/50 dark:ring-neutral-700/60">
             <Label htmlFor="new-email" className="text-xs">
               New email address
             </Label>
@@ -362,7 +362,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
           maxLength={MAX_BIO_LENGTH}
           rows={3}
           placeholder="Tell us a bit about yourself"
-          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 font-body text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex min-h-[80px] w-full rounded-lg bg-neutral-50 px-3 py-2 font-body text-sm text-foreground ring-1 ring-neutral-200/60 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800/50 dark:ring-neutral-700/60"
         />
         <p
           className={
@@ -377,7 +377,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
 
       {/* Agent role fields */}
       {activeRole === "agent" && (
-        <fieldset className="space-y-4 border-t border-neutral-100 pt-4">
+        <fieldset className="space-y-4 pt-4">
           <legend className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
             Agency Details
           </legend>
@@ -415,7 +415,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
 
       {/* Provider role fields */}
       {activeRole === "service_provider" && (
-        <fieldset className="space-y-4 border-t border-neutral-100 pt-4">
+        <fieldset className="space-y-4 pt-4">
           <legend className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
             Business Details
           </legend>
@@ -459,7 +459,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
       )}
 
       {/* Save / Cancel bar */}
-      <div className="flex items-center justify-end gap-3 border-t border-neutral-100 pt-4">
+      <div className="flex items-center justify-end gap-3 pt-4">
         <Button
           type="button"
           variant="outline"

@@ -227,7 +227,7 @@ export default function PrivacySettingsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
+          <h2 className="font-heading text-xl font-semibold text-foreground">
             Privacy & Data
           </h2>
           <p className="mt-1 font-body text-sm text-neutral-500">
@@ -242,7 +242,7 @@ export default function PrivacySettingsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           Privacy & Data
         </h2>
         <p className="mt-1 font-body text-sm text-neutral-500">
@@ -252,7 +252,7 @@ export default function PrivacySettingsPage() {
 
       {/* Quick Privacy Mode */}
       <section className="space-y-3">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Quick Privacy Mode
         </h3>
         <p className="font-body text-sm text-neutral-500">
@@ -268,10 +268,10 @@ export default function PrivacySettingsPage() {
                 type="button"
                 onClick={() => void applyPrivacyMode(mode.id)}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 rounded-lg border-2 p-5 text-center transition-all",
+                  "relative flex flex-col items-center gap-2 rounded-xl p-5 text-center transition-all",
                   isActive
-                    ? "border-brand-primary bg-brand-primary/5 ring-1 ring-brand-primary/20"
-                    : "border-neutral-200 hover:border-neutral-300 dark:border-neutral-700",
+                    ? "bg-brand-primary/5 ring-2 ring-brand-primary"
+                    : "bg-card shadow-sm ring-1 ring-neutral-200/60 hover:ring-neutral-300 dark:ring-neutral-700/60 dark:hover:ring-neutral-600",
                 )}
               >
                 {isActive && (
@@ -281,7 +281,7 @@ export default function PrivacySettingsPage() {
                   "size-6",
                   isActive ? "text-brand-primary" : "text-neutral-500",
                 )} />
-                <span className="font-heading text-sm font-semibold text-neutral-900 dark:text-white">
+                <span className="font-heading text-sm font-semibold text-foreground">
                   {mode.label}
                 </span>
                 <span className="font-body text-xs text-neutral-500">
@@ -294,8 +294,8 @@ export default function PrivacySettingsPage() {
       </section>
 
       {/* Section 1: Profile Visibility */}
-      <section className="rounded-lg border border-neutral-200 p-6">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+      <section className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Profile Visibility
         </h3>
         <p className="mt-1 font-body text-sm text-neutral-500">
@@ -315,7 +315,7 @@ export default function PrivacySettingsPage() {
               <div className="-mt-0.5">
                 <Label
                   htmlFor="visibility-public"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                  className="font-body text-sm font-medium text-foreground cursor-pointer"
                 >
                   Public
                 </Label>
@@ -333,7 +333,7 @@ export default function PrivacySettingsPage() {
               <div className="-mt-0.5">
                 <Label
                   htmlFor="visibility-registered"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                  className="font-body text-sm font-medium text-foreground cursor-pointer"
                 >
                   Registered Users Only
                 </Label>
@@ -348,7 +348,7 @@ export default function PrivacySettingsPage() {
               <div className="-mt-0.5">
                 <Label
                   htmlFor="visibility-private"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                  className="font-body text-sm font-medium text-foreground cursor-pointer"
                 >
                   Private
                 </Label>
@@ -364,7 +364,7 @@ export default function PrivacySettingsPage() {
 
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="font-body text-sm font-medium text-neutral-900">
+            <p className="font-body text-sm font-medium text-foreground">
               Search Engine Indexing
             </p>
             <p className="font-body text-xs text-neutral-500">
@@ -384,8 +384,8 @@ export default function PrivacySettingsPage() {
       {/* 2-column grid: Data Sharing + Activity Visibility */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Section 2: Data Sharing */}
-        <section className="rounded-lg border border-neutral-200 p-6">
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <section className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <h3 className="font-heading text-base font-semibold text-foreground">
             Data Sharing
           </h3>
           <p className="mt-1 font-body text-sm text-neutral-500">
@@ -405,7 +405,7 @@ export default function PrivacySettingsPage() {
               <div>
                 <Label
                   htmlFor="anonymous-analytics"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                  className="font-body text-sm font-medium text-foreground cursor-pointer"
                 >
                   Anonymous Analytics
                 </Label>
@@ -427,7 +427,7 @@ export default function PrivacySettingsPage() {
               <div>
                 <Label
                   htmlFor="third-party-marketing"
-                  className="font-body text-sm font-medium text-neutral-900 cursor-pointer"
+                  className="font-body text-sm font-medium text-foreground cursor-pointer"
                 >
                   Third-party Marketing
                 </Label>
@@ -440,8 +440,8 @@ export default function PrivacySettingsPage() {
         </section>
 
         {/* Section 3: Activity Visibility */}
-        <section className="rounded-lg border border-neutral-200 p-6">
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <section className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <h3 className="font-heading text-base font-semibold text-foreground">
             Activity Visibility
           </h3>
           <p className="mt-1 font-body text-sm text-neutral-500">
@@ -451,7 +451,7 @@ export default function PrivacySettingsPage() {
           <div className="mt-4 space-y-5">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="font-body text-sm font-medium text-neutral-900">
+                <p className="font-body text-sm font-medium text-foreground">
                   Active Status
                 </p>
                 <p className="font-body text-xs text-neutral-500">
@@ -471,7 +471,7 @@ export default function PrivacySettingsPage() {
 
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="font-body text-sm font-medium text-neutral-900">
+                <p className="font-body text-sm font-medium text-foreground">
                   Last Viewed Properties
                 </p>
                 <p className="font-body text-xs text-neutral-500">
@@ -492,7 +492,7 @@ export default function PrivacySettingsPage() {
 
       {/* Section 4: Consent Preferences */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Consent Preferences
         </h3>
         <p className="font-body text-sm text-neutral-500">
@@ -503,14 +503,14 @@ export default function PrivacySettingsPage() {
 
       {/* Section 5: Your Data */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Your Data
         </h3>
-        <div className="flex items-start justify-between gap-4 rounded-lg border border-neutral-200 p-4">
+        <div className="flex items-start justify-between gap-4 rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-start gap-3">
             <Download className="mt-0.5 size-5 text-brand-primary" />
             <div>
-              <p className="font-body text-sm font-medium text-neutral-900">
+              <p className="font-body text-sm font-medium text-foreground">
                 Download your data
               </p>
               <p className="font-body text-xs text-neutral-500">
@@ -532,14 +532,14 @@ export default function PrivacySettingsPage() {
 
       {/* Section 6: Delete Account */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Delete Account
         </h3>
         <div className="rounded-lg border border-error/20 bg-error/5 p-4">
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 size-5 text-error" />
             <div className="space-y-2">
-              <p className="font-body text-sm font-medium text-neutral-900">
+              <p className="font-body text-sm font-medium text-foreground">
                 Permanently delete your account
               </p>
               <ul className="list-inside list-disc space-y-1 font-body text-xs text-neutral-600">

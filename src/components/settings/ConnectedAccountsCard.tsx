@@ -80,7 +80,7 @@ export function ConnectedAccountsCard({
                 {identities.map((identity) => (
                   <div
                     key={identity.identity_id}
-                    className="flex items-center gap-3 rounded-lg border p-3"
+                    className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200/60 dark:bg-neutral-800/50 dark:ring-neutral-700/60"
                   >
                     <Link2 className="size-5 text-muted-foreground" />
                     <div className="flex-1 min-w-0">
