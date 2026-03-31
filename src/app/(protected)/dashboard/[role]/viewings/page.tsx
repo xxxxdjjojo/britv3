@@ -3,11 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Calendar,
   Clock,
@@ -26,15 +22,6 @@ import type { Viewing } from "@/services/viewings/viewings-service";
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatDate(isoString: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(isoString));
-}
-
 function formatTime(isoString: string): string {
   return new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
@@ -42,183 +29,234 @@ function formatTime(isoString: string): string {
   }).format(new Date(isoString));
 }
 
-function getRelativeDay(isoString: string): string {
-  const date = new Date(isoString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(date);
-  target.setHours(0, 0, 0, 0);
-  const diff = (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
-  if (diff === -1) return "Yesterday";
-  return "";
+function formatDateShort(isoString: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(isoString));
 }
-
-type StatusConfig = {
-  label: string;
-  className: string;
-};
-
-const STATUS_CONFIG: Record<Viewing["status"], StatusConfig> = {
-  confirmed: {
-    label: "Confirmed",
-    className: "bg-success-light text-success border-0",
-  },
-  rescheduled: {
-    label: "Rescheduled",
-    className: "bg-warning-light text-warning border-0",
-  },
-  cancelled: {
-    label: "Cancelled",
-    className: "bg-error-light text-error border-0",
-  },
-  completed: {
-    label: "Completed",
-    className: "bg-neutral-100 text-neutral-600 border-0",
-  },
-};
 
 const ACTIVE_STATUSES = new Set<Viewing["status"]>(["confirmed", "rescheduled"]);
 const PAST_STATUSES = new Set<Viewing["status"]>(["completed", "cancelled"]);
 
+function statusBadge(status: Viewing["status"]): { label: string; className: string; dot: string } {
+  switch (status) {
+    case "confirmed":
+      return {
+        label: "Confirmed",
+        className: "bg-emerald-50 text-emerald-900",
+        dot: "bg-emerald-500",
+      };
+    case "rescheduled":
+      return {
+        label: "Pending",
+        className: "bg-amber-50 text-amber-700",
+        dot: "bg-amber-500",
+      };
+    case "completed":
+      return {
+        label: "Completed",
+        className: "bg-zinc-900/60 text-white",
+        dot: "bg-zinc-400",
+      };
+    case "cancelled":
+      return {
+        label: "Cancelled",
+        className: "bg-red-600 text-white",
+        dot: "bg-red-500",
+      };
+  }
+}
+
+function borderColor(status: Viewing["status"]): string {
+  if (status === "confirmed") return "border-emerald-900";
+  if (status === "rescheduled") return "border-amber-500";
+  return "border-zinc-300";
+}
+
 // ---------------------------------------------------------------------------
-// Sub-components
+// Upcoming viewing card (Stitch itinerary style)
 // ---------------------------------------------------------------------------
 
-function ViewingCard({
+function UpcomingViewingCard({
   viewing,
   role,
   onCancel,
   isCancelling,
-  isPast,
 }: Readonly<{
   viewing: Viewing;
   role: string;
   onCancel: (id: string) => void;
   isCancelling: boolean;
-  isPast: boolean;
 }>) {
-  const config = STATUS_CONFIG[viewing.status];
-  const relDay = getRelativeDay(viewing.scheduled_at);
+  const badge = statusBadge(viewing.status);
+  const border = borderColor(viewing.status);
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-card p-5 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-start sm:gap-6">
-      {/* Date column */}
-      <div className="flex shrink-0 flex-col items-center justify-center rounded-lg bg-brand-primary-lighter px-4 py-3 text-center sm:w-20">
-        <span className="text-xs font-medium text-brand-primary">
-          {new Intl.DateTimeFormat("en-GB", { month: "short" }).format(
-            new Date(viewing.scheduled_at),
-          )}
-        </span>
-        <span className="text-2xl font-bold leading-none text-brand-primary">
-          {new Date(viewing.scheduled_at).getDate()}
-        </span>
-        {relDay && (
-          <span className="mt-0.5 text-xs font-medium text-brand-primary">
-            {relDay}
-          </span>
-        )}
-      </div>
-
+    <div
+      className={`group bg-white rounded-xl p-6 flex flex-col md:flex-row items-start gap-6 shadow-[0_4px_24px_rgba(26,28,28,0.04)] hover:shadow-[0_8px_32px_rgba(26,28,28,0.08)] transition-all duration-300 border-l-4 ${border}`}
+    >
       {/* Details */}
-      <div className="flex flex-1 flex-col gap-2">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold text-neutral-900">
-            {viewing.property_address}
-          </h3>
+      <div className="flex-grow min-w-0">
+        <div className="flex flex-wrap items-center gap-2 mb-2">
           <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${config.className}`}
+            className={`text-[10px] font-bold px-2 py-0.5 rounded tracking-widest uppercase ${badge.className}`}
           >
-            {config.label}
+            {badge.label}
+          </span>
+          <span className="text-zinc-400 text-xs font-medium">
+            •{" "}
+            {viewing.type === "virtual" ? "Virtual Tour" : "In-person"}
           </span>
         </div>
-
-        <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-500">
-          <span className="flex items-center gap-1.5">
-            <Clock className="size-3.5" strokeWidth={1.25} />
-            {formatTime(viewing.scheduled_at)}
-          </span>
-          {viewing.type === "virtual" ? (
-            <span className="flex items-center gap-1.5">
-              <Video className="size-3.5" strokeWidth={1.25} />
-              Virtual Tour
+        <h3 className="font-['Plus_Jakarta_Sans'] text-lg font-bold mb-1 text-[#1a1c1c] group-hover:text-[#003629] transition-colors">
+          {viewing.property_address}
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+          <div>
+            <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+              Date &amp; Time
             </span>
-          ) : (
-            <span className="flex items-center gap-1.5">
-              <MapPin className="size-3.5" strokeWidth={1.25} />
-              In Person
+            <span className="text-sm font-semibold text-[#1a1c1c]">
+              {formatDateShort(viewing.scheduled_at)},{" "}
+              {formatTime(viewing.scheduled_at)}
             </span>
+          </div>
+          <div>
+            <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+              Type
+            </span>
+            <span className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-1">
+              {viewing.type === "virtual" ? (
+                <Video className="size-3.5 text-zinc-400" strokeWidth={1.25} />
+              ) : (
+                <MapPin className="size-3.5 text-zinc-400" strokeWidth={1.25} />
+              )}
+              {viewing.type === "virtual" ? "Virtual" : "In-person"}
+            </span>
+          </div>
+          <div>
+            <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+              Agent
+            </span>
+            <span className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-1">
+              <User className="size-3.5 text-zinc-400" strokeWidth={1.25} />
+              Estate Agent
+            </span>
+          </div>
+          {viewing.notes && (
+            <div>
+              <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+                Notes
+              </span>
+              <span className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
+                {viewing.notes}
+              </span>
+            </div>
           )}
-          <span className="flex items-center gap-1.5">
-            <User className="size-3.5" strokeWidth={1.25} />
-            Estate Agent
-          </span>
         </div>
-
-        {viewing.notes && (
-          <p className="rounded-md bg-neutral-50 px-3 py-2 text-xs text-neutral-600">
-            {viewing.notes}
-          </p>
-        )}
       </div>
 
       {/* Actions */}
-      {!isPast && (
-        <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end">
-          <Link href={`/dashboard/${role}/viewings/${viewing.id}/reschedule`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs"
-              aria-label="Reschedule viewing"
-            >
-              <RotateCcw className="mr-1.5 size-3.5" strokeWidth={1.25} />
-              Reschedule
-            </Button>
-          </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs text-neutral-500 hover:text-destructive"
-            onClick={() => onCancel(viewing.id)}
-            disabled={isCancelling}
-            aria-label="Cancel viewing"
+      <div className="flex md:flex-col gap-2 shrink-0">
+        <Link
+          href={`/dashboard/${role}/viewings/${viewing.id}/reschedule`}
+          aria-label="Reschedule viewing"
+        >
+          <button
+            className="p-3 bg-[#f4f3f2] rounded-lg hover:bg-[#eeeeed] transition-colors text-zinc-600"
+            aria-label="Reschedule viewing"
           >
-            <X className="mr-1.5 size-3.5" strokeWidth={1.25} />
-            Cancel
-          </Button>
-        </div>
-      )}
+            <RotateCcw className="size-5" strokeWidth={1.25} />
+          </button>
+        </Link>
+        <button
+          className="p-3 bg-[#f4f3f2] rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-zinc-600"
+          onClick={() => onCancel(viewing.id)}
+          disabled={isCancelling}
+          aria-label="Cancel viewing"
+        >
+          <X className="size-5" strokeWidth={1.25} />
+        </button>
+      </div>
     </div>
   );
 }
 
-function StatPill({
-  label,
-  value,
-  highlight,
-}: Readonly<{
-  label: string;
-  value: string | number;
-  highlight?: boolean;
-}>) {
+// ---------------------------------------------------------------------------
+// Past viewing card (Stitch grayscale grid style)
+// ---------------------------------------------------------------------------
+
+function PastViewingCard({
+  viewing,
+}: Readonly<{ viewing: Viewing }>) {
+  const badge = statusBadge(viewing.status);
+  const isCompleted = viewing.status === "completed";
+
   return (
-    <div
-      className={`flex flex-col items-center gap-0.5 rounded-xl px-6 py-4 ${
-        highlight
-          ? "bg-brand-primary text-white"
-          : "bg-card text-neutral-900 shadow-sm"
-      }`}
-    >
-      <span
-        className={`text-2xl font-bold ${highlight ? "text-white" : "text-neutral-900"}`}
-      >
-        {value}
-      </span>
-      <span className={`text-xs ${highlight ? "text-white/80" : "text-neutral-500"}`}>
-        {label}
-      </span>
+    <div className="bg-[#f4f3f2] rounded-xl overflow-hidden">
+      {/* Placeholder image area */}
+      <div className="h-40 relative bg-[#e3e2e1] flex items-center justify-center">
+        <div className="flex size-12 items-center justify-center rounded-full bg-white/40">
+          <Calendar className="size-6 text-zinc-400" strokeWidth={1.25} />
+        </div>
+        <div
+          className={`absolute top-4 left-4 text-[10px] font-bold px-2 py-1 rounded tracking-widest uppercase ${badge.className}`}
+        >
+          {badge.label}
+        </div>
+      </div>
+      <div className="p-5">
+        <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-base mb-1 text-[#1a1c1c]">
+          {viewing.property_address}
+        </h3>
+        <p className="text-zinc-500 text-xs mb-4">
+          {isCompleted ? "Visited on" : "Scheduled for"}{" "}
+          {formatDateShort(viewing.scheduled_at)}
+        </p>
+        {isCompleted ? (
+          <div className="bg-[#baeed9] text-[#002117] p-3 rounded-lg flex items-center justify-between group cursor-pointer hover:bg-[#003629] hover:text-white transition-colors">
+            <div className="flex items-center gap-2">
+              <Clock className="size-4" strokeWidth={1.25} />
+              <span className="text-xs font-bold uppercase tracking-widest">
+                Leave Feedback
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-[#e3e2e1] p-3 rounded-lg flex items-center gap-2 text-zinc-500">
+            <X className="size-4" strokeWidth={1.25} />
+            <span className="text-xs font-bold uppercase tracking-widest">
+              Cancelled
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton loaders
+// ---------------------------------------------------------------------------
+
+function UpcomingSkeletons() {
+  return (
+    <div className="space-y-6">
+      {[1, 2, 3].map((i) => (
+        <Skeleton key={i} className="h-32 rounded-xl" />
+      ))}
+    </div>
+  );
+}
+
+function PastSkeletons() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[1, 2, 3].map((i) => (
+        <Skeleton key={i} className="h-56 rounded-xl" />
+      ))}
     </div>
   );
 }
@@ -233,7 +271,7 @@ export default function ViewingsPage({
   const { role } = use(params);
   const { data: viewings, isLoading, error } = useViewings();
   const cancelViewing = useCancelViewing();
-  const [activeTab, setActiveTab] = useState("upcoming");
+  const [filterStatus, setFilterStatus] = useState<"all" | "confirmed" | "rescheduled">("all");
 
   const upcoming = (viewings ?? [])
     .filter((v) => ACTIVE_STATUSES.has(v.status))
@@ -251,6 +289,11 @@ export default function ViewingsPage({
 
   const nextViewing = upcoming[0];
 
+  const filteredUpcoming =
+    filterStatus === "all"
+      ? upcoming
+      : upcoming.filter((v) => v.status === filterStatus);
+
   const handleCancel = async (viewingId: string) => {
     try {
       await cancelViewing.mutateAsync({ viewingId });
@@ -261,220 +304,297 @@ export default function ViewingsPage({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
-            Viewings Schedule
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Manage your upcoming property viewings
-          </p>
+    <div className="min-h-screen bg-[#faf9f8] text-[#1a1c1c]">
+      {/* ── Editorial Header ─────────────────────────────────────── */}
+      <div className="mb-10">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="font-['Plus_Jakarta_Sans'] text-4xl font-bold tracking-tight text-[#1a1c1c] mb-2">
+              Viewings
+            </h1>
+            <p className="text-zinc-500 font-['Inter'] max-w-2xl">
+              Manage your upcoming property tours and revisit the details of
+              estates you&apos;ve already experienced.
+            </p>
+          </div>
+          <Link href={`/dashboard/${role}/viewings/book`}>
+            <button
+              className="shrink-0 flex items-center gap-2 px-5 py-3 bg-[#003629] text-white rounded-lg font-['Plus_Jakarta_Sans'] text-sm font-semibold hover:bg-[#1b4d3e] transition-colors shadow-sm"
+              aria-label="Book a viewing"
+            >
+              <Plus className="size-4" strokeWidth={1.25} />
+              Book Viewing
+            </button>
+          </Link>
         </div>
-        <Link href={`/dashboard/${role}/viewings/book`}>
-          <Button className="shrink-0 bg-brand-primary hover:bg-brand-primary-light">
-            <Plus className="mr-2 size-4" strokeWidth={1.25} />
-            Book Viewing
-          </Button>
-        </Link>
       </div>
 
-      {/* ── Stats ───────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {isLoading ? (
-          <>
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-20 rounded-xl" />
-            ))}
-          </>
-        ) : (
-          <>
-            <StatPill label="Upcoming" value={upcoming.length} highlight />
-            <StatPill
-              label="Completed"
-              value={past.filter((v) => v.status === "completed").length}
-            />
-            <StatPill
-              label="Rescheduled"
-              value={
-                (viewings ?? []).filter((v) => v.status === "rescheduled").length
-              }
-            />
-            <StatPill
-              label="Next Viewing"
-              value={
-                nextViewing
-                  ? getRelativeDay(nextViewing.scheduled_at) ||
-                    formatDate(nextViewing.scheduled_at)
-                  : "None"
-              }
-            />
-          </>
-        )}
-      </div>
-
-      {/* ── Error ───────────────────────────────────────────────────── */}
+      {/* ── Error ──────────────────────────────────────────────── */}
       {error && (
-        <div className="flex items-center gap-3 rounded-xl bg-error-light px-4 py-3 text-sm text-error">
+        <div className="flex items-center gap-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 mb-8">
           <AlertCircle className="size-4 shrink-0" strokeWidth={1.25} />
           Failed to load viewings. Please refresh the page.
         </div>
       )}
 
-      {/* ── Next viewing spotlight ──────────────────────────────────── */}
-      {!isLoading && nextViewing && (
-        <Card className="border-0 bg-neutral-50 shadow-none">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
-              <Calendar strokeWidth={1.25} className="size-4 text-brand-primary" />
-              Next Viewing
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex-1 space-y-1">
-                <p className="font-semibold text-neutral-900">
-                  {nextViewing.property_address}
-                </p>
-                <div className="flex items-center gap-4 text-xs text-neutral-500">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="size-3.5" strokeWidth={1.25} />
-                    {formatDate(nextViewing.scheduled_at)}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="size-3.5" strokeWidth={1.25} />
-                    {formatTime(nextViewing.scheduled_at)}
-                  </span>
-                  {nextViewing.type === "virtual" ? (
-                    <span className="flex items-center gap-1.5">
-                      <Video className="size-3.5" strokeWidth={1.25} />
-                      Virtual
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="size-3.5" strokeWidth={1.25} />
-                      In Person
-                    </span>
+      {/* ── Bento: Calendar + Next Viewing ────────────────────── */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-12">
+        {/* Calendar card */}
+        <section className="xl:col-span-8 bg-[#f4f3f2] rounded-xl p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-['Plus_Jakarta_Sans'] text-xl font-semibold text-[#1a1c1c]">
+              Calendar Schedule
+            </h2>
+            <div className="flex items-center bg-[#e3e2e1] rounded-full p-1">
+              <span className="px-5 py-1.5 rounded-full text-xs font-semibold bg-white shadow-sm text-[#1a1c1c]">
+                Month
+              </span>
+              <span className="px-5 py-1.5 rounded-full text-xs font-semibold text-zinc-500">
+                Week
+              </span>
+            </div>
+          </div>
+
+          {/* Day labels */}
+          <div className="grid grid-cols-7 text-center mb-3">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+              <div
+                key={d}
+                className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase pb-2"
+              >
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar grid — static layout matching Stitch */}
+          <div className="grid grid-cols-7 gap-px bg-zinc-200 rounded-lg overflow-hidden border border-zinc-200">
+            {/* Prev month days */}
+            {["28", "29", "30", "31"].map((d) => (
+              <div
+                key={`prev-${d}`}
+                className="aspect-square bg-white p-2 text-xs text-zinc-400"
+              >
+                {d}
+              </div>
+            ))}
+            {/* Current month days — highlight days with viewings */}
+            {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => {
+              const hasViewing =
+                !isLoading &&
+                upcoming.some(
+                  (v) => new Date(v.scheduled_at).getDate() === d,
+                );
+              const isPast =
+                !isLoading &&
+                past.some(
+                  (v) => new Date(v.scheduled_at).getDate() === d,
+                );
+              return (
+                <div
+                  key={`day-${d}`}
+                  className={`aspect-square bg-white p-1 text-xs font-semibold text-[#1a1c1c] relative ${
+                    hasViewing
+                      ? "bg-emerald-50 ring-1 ring-inset ring-emerald-900/20"
+                      : isPast
+                        ? "bg-zinc-50"
+                        : ""
+                  }`}
+                >
+                  {d}
+                  {hasViewing && (
+                    <div className="absolute inset-x-1 bottom-1 bg-emerald-100 text-[9px] p-0.5 rounded border-l-2 border-emerald-900 text-emerald-900 truncate leading-tight">
+                      Viewing
+                    </div>
                   )}
                 </div>
+              );
+            })}
+            {/* Fill remaining cells */}
+            {Array.from({ length: 4 }, (_, i) => i + 1).map((d) => (
+              <div
+                key={`next-${d}`}
+                className="aspect-square bg-white p-2 text-xs text-zinc-400"
+              >
+                {d}
               </div>
-              <Link href={`/dashboard/${role}/viewings/${nextViewing.id}/reschedule`}>
-                <Button variant="outline" size="sm">
-                  <RotateCcw className="mr-1.5 size-3.5" strokeWidth={1.25} />
-                  Reschedule
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            ))}
+          </div>
+        </section>
 
-      {/* ── Tabs ────────────────────────────────────────────────────── */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="h-10 bg-neutral-100 p-1">
-          <TabsTrigger value="upcoming" className="text-sm">
-            Upcoming
-            {upcoming.length > 0 && (
-              <span className="ml-2 rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
-                {upcoming.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="past" className="text-sm">
-            Past
-            {past.length > 0 && (
-              <span className="ml-2 rounded-full bg-neutral-300 px-2 py-0.5 text-xs font-medium text-neutral-700">
-                {past.length}
-              </span>
-            )}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="upcoming" className="mt-4">
-          {isLoading ? (
-            <div className="flex flex-col gap-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-28 rounded-xl" />
-              ))}
-            </div>
-          ) : upcoming.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl bg-neutral-50 py-16 text-center">
-              <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
-                <Calendar strokeWidth={1.25} className="size-7 text-neutral-400" />
-              </div>
-              <div>
-                <p className="font-medium text-neutral-900">No upcoming viewings</p>
-                <p className="mt-1 text-sm text-neutral-500">
-                  Book a viewing to get started
+        {/* Right sidebar */}
+        <aside className="xl:col-span-4 space-y-4">
+          {/* Next viewing card */}
+          <div className="bg-[#003629] text-white p-7 rounded-xl relative overflow-hidden">
+            <div className="relative z-10">
+              <h3 className="font-['Plus_Jakarta_Sans'] text-lg font-bold mb-1">
+                Next Viewing
+              </h3>
+              {isLoading ? (
+                <div className="space-y-2 mt-3">
+                  <Skeleton className="h-4 w-40 bg-white/10" />
+                  <Skeleton className="h-4 w-28 bg-white/10" />
+                </div>
+              ) : nextViewing ? (
+                <>
+                  <p className="text-[#8abda9] text-sm mb-5 leading-relaxed">
+                    {nextViewing.property_address}
+                  </p>
+                  <div className="flex items-center gap-5 mb-7">
+                    <div className="flex flex-col">
+                      <span className="text-[0.6875rem] font-bold tracking-widest opacity-60 uppercase">
+                        Date
+                      </span>
+                      <span className="font-semibold text-sm">
+                        {formatDateShort(nextViewing.scheduled_at)}
+                      </span>
+                    </div>
+                    <div className="w-px h-8 bg-white/20" />
+                    <div className="flex flex-col">
+                      <span className="text-[0.6875rem] font-bold tracking-widest opacity-60 uppercase">
+                        Time
+                      </span>
+                      <span className="font-semibold text-sm">
+                        {formatTime(nextViewing.scheduled_at)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      className="bg-white/10 hover:bg-white/20 transition-colors text-xs font-bold py-2 px-4 rounded-md border border-white/20"
+                      aria-label="Add to Google Calendar"
+                    >
+                      Google Cal
+                    </button>
+                    <button
+                      className="bg-white/10 hover:bg-white/20 transition-colors text-xs font-bold py-2 px-4 rounded-md border border-white/20"
+                      aria-label="Add to Apple Calendar"
+                    >
+                      Apple Cal
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="text-[#8abda9] text-sm mt-3">
+                  No upcoming viewings scheduled.
                 </p>
-              </div>
-              <Link href={`/dashboard/${role}/viewings/book`}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                >
-                  <Plus className="mr-1.5 size-4" strokeWidth={1.25} />
-                  Book your first viewing
-                </Button>
-              </Link>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {upcoming.map((v) => (
-                <ViewingCard
-                  key={v.id}
-                  viewing={v}
-                  role={role}
-                  onCancel={handleCancel}
-                  isCancelling={cancelViewing.isPending}
-                  isPast={false}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+          </div>
 
-        <TabsContent value="past" className="mt-4">
-          {isLoading ? (
-            <div className="flex flex-col gap-3">
-              {[1, 2].map((i) => (
-                <Skeleton key={i} className="h-28 rounded-xl" />
+          {/* Status legend */}
+          <div className="bg-[#f4f3f2] p-6 rounded-xl">
+            <h3 className="font-['Plus_Jakarta_Sans'] text-xs font-bold tracking-widest uppercase text-zinc-400 mb-5">
+              Viewing Status Keys
+            </h3>
+            <div className="space-y-3">
+              {[
+                { dot: "bg-emerald-500", label: "Confirmed" },
+                { dot: "bg-amber-500", label: "Pending Confirmation" },
+                { dot: "bg-zinc-400", label: "Completed" },
+                { dot: "bg-red-500", label: "Cancelled" },
+              ].map(({ dot, label }) => (
+                <div key={label} className="flex items-center gap-3">
+                  <span className={`w-2 h-2 rounded-full ${dot}`} />
+                  <span className="text-sm font-medium text-[#1a1c1c]">
+                    {label}
+                  </span>
+                </div>
               ))}
             </div>
-          ) : past.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl bg-neutral-50 py-16 text-center">
-              <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
-                <Clock strokeWidth={1.25} className="size-7 text-neutral-400" />
-              </div>
-              <p className="font-medium text-neutral-900">No past viewings</p>
-              <p className="text-sm text-neutral-500">
-                Completed and cancelled viewings will appear here
+          </div>
+        </aside>
+      </div>
+
+      {/* ── Scheduled Itinerary ───────────────────────────────── */}
+      <section className="mb-16">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="font-['Plus_Jakarta_Sans'] text-2xl font-bold text-[#1a1c1c]">
+              Scheduled Itinerary
+            </h2>
+            <p className="text-zinc-500 text-sm mt-1">
+              A chronological breakdown of your upcoming tours.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {(["all", "confirmed", "rescheduled"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setFilterStatus(s)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                  filterStatus === s
+                    ? "bg-[#003629] text-white"
+                    : "bg-[#f4f3f2] text-zinc-500 hover:bg-[#eeeeed]"
+                }`}
+                aria-label={`Filter by ${s}`}
+              >
+                {s === "all" ? "All" : s === "confirmed" ? "Confirmed" : "Pending"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {isLoading ? (
+          <UpcomingSkeletons />
+        ) : filteredUpcoming.length === 0 ? (
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-[#f4f3f2] py-20 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-[#eeeeed]">
+              <Calendar
+                strokeWidth={1.25}
+                className="size-7 text-zinc-400"
+              />
+            </div>
+            <div>
+              <p className="font-['Plus_Jakarta_Sans'] font-semibold text-[#1a1c1c]">
+                No upcoming viewings
+              </p>
+              <p className="mt-1 text-sm text-zinc-500">
+                Book a viewing to get started
               </p>
             </div>
+            <Link href={`/dashboard/${role}/viewings/book`}>
+              <button
+                className="mt-2 flex items-center gap-2 px-5 py-2.5 border border-[#003629]/20 rounded-lg text-sm font-semibold text-[#003629] hover:bg-[#003629]/5 transition-colors"
+                aria-label="Book your first viewing"
+              >
+                <Plus className="size-4" strokeWidth={1.25} />
+                Book your first viewing
+              </button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {filteredUpcoming.map((v) => (
+              <UpcomingViewingCard
+                key={v.id}
+                viewing={v}
+                role={role}
+                onCancel={handleCancel}
+                isCancelling={cancelViewing.isPending}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Past Viewings ──────────────────────────────────────── */}
+      {(isLoading || past.length > 0) && (
+        <section>
+          <h2 className="font-['Plus_Jakarta_Sans'] text-2xl font-bold text-[#1a1c1c] mb-8">
+            Past Viewings
+          </h2>
+          {isLoading ? (
+            <PastSkeletons />
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {past.map((v) => (
-                <ViewingCard
-                  key={v.id}
-                  viewing={v}
-                  role={role}
-                  onCancel={handleCancel}
-                  isCancelling={cancelViewing.isPending}
-                  isPast
-                />
+                <PastViewingCard key={v.id} viewing={v} />
               ))}
             </div>
           )}
-        </TabsContent>
-      </Tabs>
-
-      {/* ── Calendar link ───────────────────────────────────────────── */}
-      {!isLoading && upcoming.length > 0 && (
-        <p className="text-center text-xs text-neutral-400">
-          Add to calendar — viewings are synced automatically when booked
-        </p>
+        </section>
       )}
     </div>
   );

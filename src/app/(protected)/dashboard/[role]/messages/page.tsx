@@ -2,7 +2,8 @@
 
 /**
  * Buyer Dashboard — Messages Inbox
- * Embeds the full InboxPageClient inside the dashboard shell with a styled header.
+ * Two-pane layout: conversation list (left) + message thread (right).
+ * Styled to match Stitch buyer-messages design.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -14,26 +15,48 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useInbox } from "@/hooks/useInbox";
 import { cn } from "@/lib/utils";
-import { MessageSquare, ArrowLeft, Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Mail } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Unread count badge
 // ---------------------------------------------------------------------------
 
-function UnreadIndicator() {
+function UnreadBadge() {
   const { data } = useInbox({});
-  const unreadCount = data?.conversations.reduce(
-    (sum, c) => sum + (c.unread_count ?? 0),
-    0,
-  ) ?? 0;
+  const unreadCount =
+    data?.conversations.reduce(
+      (sum, c) => sum + (c.unread_count ?? 0),
+      0,
+    ) ?? 0;
 
   if (unreadCount === 0) return null;
 
   return (
-    <span className="ml-2 rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
+    <span className="ml-2 rounded-full bg-[#003629] px-2 py-0.5 text-xs font-medium text-white">
       {unreadCount > 99 ? "99+" : unreadCount}
     </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Empty thread placeholder
+// ---------------------------------------------------------------------------
+
+function NoConversationSelected() {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16 text-center">
+      <div className="flex size-16 items-center justify-center rounded-full bg-[#f4f3f2]">
+        <Mail className="size-8 text-zinc-400" strokeWidth={1.25} />
+      </div>
+      <div>
+        <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#1a1c1c]">
+          Select a conversation
+        </p>
+        <p className="mt-1 text-sm text-zinc-500 font-['Inter']">
+          Choose from the list on the left to start messaging
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -42,13 +65,17 @@ function UnreadIndicator() {
 // ---------------------------------------------------------------------------
 
 export default function MessagesPage() {
-  const [activeConversation, setActiveConversation] = useState<string | null>(null);
-  const [activeRecipientId, setActiveRecipientId] = useState<string | null>(null);
+  const [activeConversation, setActiveConversation] = useState<string | null>(
+    null,
+  );
+  const [activeRecipientId, setActiveRecipientId] = useState<string | null>(
+    null,
+  );
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const channelRef = useRef<RealtimeChannel | null>(null);
 
-  // Realtime subscription — mirrors InboxPageClient logic
+  // Realtime subscription — invalidates inbox on any conversation change
   useEffect(() => {
     if (!user?.id) return;
 
@@ -92,48 +119,56 @@ export default function MessagesPage() {
   }, [user?.id, queryClient]);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-brand-primary-lighter">
-          <MessageSquare className="size-4 stroke-[1.25] text-brand-primary" />
-        </div>
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+    <div className="min-h-screen bg-[#faf9f8] text-[#1a1c1c] flex flex-col gap-6">
+      {/* ── Page header ────────────────────────────────────────── */}
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-['Plus_Jakarta_Sans'] text-2xl font-bold tracking-tight text-[#1a1c1c] flex items-center">
             Messages
+            <UnreadBadge />
           </h1>
-          <UnreadIndicator />
+          <p className="text-sm text-zinc-500 font-['Inter'] mt-0.5">
+            Your conversations with agents and sellers
+          </p>
         </div>
-        <p className="ml-auto text-sm text-neutral-500">
-          Your conversations with agents and sellers
-        </p>
       </div>
 
-      {/* ── Messaging panel ─────────────────────────────────────────── */}
-      <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-card shadow-sm">
-        <div className="flex h-[calc(100vh-16rem)] min-h-96">
-          {/* Conversation list */}
+      {/* ── Two-pane messaging panel ───────────────────────────── */}
+      <div className="overflow-hidden rounded-2xl bg-[#faf9f8] shadow-[0_4px_24px_rgba(26,28,28,0.06)]">
+        <div className="flex h-[calc(100vh-16rem)] min-h-[400px]">
+          {/* ── Left pane: conversation list ────────────────── */}
           <div
             className={cn(
-              "w-full border-r border-neutral-200 bg-card sm:max-w-xs sm:flex-shrink-0",
+              "bg-[#f4f3f2] flex flex-col",
+              "w-full sm:w-96 sm:flex-shrink-0",
               activeConversation
-                ? "hidden sm:flex sm:flex-col"
-                : "flex flex-col",
+                ? "hidden sm:flex"
+                : "flex",
             )}
           >
-            <InboxList
-              activeId={activeConversation ?? undefined}
-              onSelectConversation={(id, recipientId) => {
-                setActiveConversation(id);
-                setActiveRecipientId(recipientId);
-              }}
-            />
+            {/* Pane header */}
+            <div className="px-5 pt-6 pb-3">
+              <p className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#1a1c1c] mb-5">
+                Messages
+              </p>
+            </div>
+
+            {/* InboxList fills remaining height */}
+            <div className="flex-1 overflow-hidden">
+              <InboxList
+                activeId={activeConversation ?? undefined}
+                onSelectConversation={(id, recipientId) => {
+                  setActiveConversation(id);
+                  setActiveRecipientId(recipientId);
+                }}
+              />
+            </div>
           </div>
 
-          {/* Message thread */}
+          {/* ── Right pane: message thread ──────────────────── */}
           <div
             className={cn(
-              "flex-1 min-w-0",
+              "flex-1 min-w-0 bg-[#faf9f8]",
               activeConversation
                 ? "flex flex-col"
                 : "hidden sm:flex sm:flex-col",
@@ -142,17 +177,15 @@ export default function MessagesPage() {
             {activeConversation ? (
               <div className="flex h-full flex-col">
                 {/* Mobile back button */}
-                <div className="flex items-center gap-2 border-b border-neutral-200 px-4 py-2 sm:hidden">
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                <div className="flex items-center gap-2 border-b border-[#eeeeed] px-4 py-3 sm:hidden bg-white/80 backdrop-blur-sm">
+                  <button
                     onClick={() => setActiveConversation(null)}
-                    className="text-neutral-600"
+                    className="flex items-center gap-1.5 text-sm text-zinc-600 hover:text-[#003629] transition-colors"
                     aria-label="Back to conversations"
                   >
-                    <ArrowLeft className="mr-1.5 size-4 stroke-[1.25]" />
+                    <ArrowLeft className="size-4" strokeWidth={1.25} />
                     Back
-                  </Button>
+                  </button>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <MessageThread
@@ -162,19 +195,7 @@ export default function MessagesPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16 text-center">
-                <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
-                  <Mail className="size-7 stroke-[1.25] text-neutral-400" />
-                </div>
-                <div>
-                  <p className="font-medium text-neutral-900">
-                    Select a conversation
-                  </p>
-                  <p className="mt-1 text-sm text-neutral-500">
-                    Choose from the list on the left to start messaging
-                  </p>
-                </div>
-              </div>
+              <NoConversationSelected />
             )}
           </div>
         </div>

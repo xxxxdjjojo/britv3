@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Home,
-  Clock,
-  TrendingUp,
   CheckCircle2,
-  XCircle,
   ArrowRight,
   ChevronRight,
+  FileText,
+  MessageSquare,
+  History,
+  TrendingUp,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -36,6 +39,9 @@ type BuyerOffer = Readonly<{
   status: OfferStatus;
   submitted_at: string;
   photo_url: string | null;
+  doc_count?: number;
+  message_count?: number;
+  version_count?: number;
 }>;
 
 // ---------------------------------------------------------------------------
@@ -43,7 +49,7 @@ type BuyerOffer = Readonly<{
 // ---------------------------------------------------------------------------
 
 const STATUS_LABELS: Record<OfferStatus, string> = {
-  submitted: "Submitted",
+  submitted: "Under Review",
   solicitors_instructed: "Solicitors Instructed",
   searches: "Searches",
   survey: "Survey",
@@ -62,6 +68,29 @@ const PROGRESSION: OfferStatus[] = [
   "mortgage_approved",
   "exchange",
   "completion",
+];
+
+const HISTORY_ITEMS = [
+  {
+    id: "h1",
+    title: "Hampshire Estate",
+    amount: "£3,200,000",
+    date: "Sept 24",
+    status: "accepted" as const,
+  },
+  {
+    id: "h2",
+    title: "Chelsea Penthouse",
+    amount: "£12,500,000",
+    date: "Aug 12",
+    status: "rejected" as const,
+  },
+];
+
+const PENDING_TASKS = [
+  { id: "t1", done: false, label: "Sign Anti-Money Laundering disclosure" },
+  { id: "t2", done: false, label: "Verify source of funds" },
+  { id: "t3", done: true, label: "Identity verification completed" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -94,7 +123,7 @@ function isActive(status: OfferStatus): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder data (replaced by real API data in Wave 1)
+// Mock data (replaced by real API data in production)
 // ---------------------------------------------------------------------------
 
 const MOCK_OFFERS: BuyerOffer[] = [
@@ -106,6 +135,9 @@ const MOCK_OFFERS: BuyerOffer[] = [
     status: "searches",
     submitted_at: "2026-03-01",
     photo_url: null,
+    doc_count: 3,
+    message_count: 12,
+    version_count: 4,
   },
   {
     id: 2,
@@ -115,6 +147,9 @@ const MOCK_OFFERS: BuyerOffer[] = [
     status: "submitted",
     submitted_at: "2026-03-10",
     photo_url: null,
+    doc_count: 1,
+    message_count: 2,
+    version_count: 1,
   },
   {
     id: 3,
@@ -131,119 +166,188 @@ const MOCK_OFFERS: BuyerOffer[] = [
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function StatusPill({ status }: Readonly<{ status: OfferStatus }>) {
-  const classes = cn(
-    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold",
-    status === "completion" && "bg-emerald-100 text-emerald-700",
-    status === "submitted" && "bg-amber-100 text-amber-700",
-    (status === "solicitors_instructed" ||
-      status === "searches" ||
-      status === "survey" ||
-      status === "mortgage_approved" ||
-      status === "exchange") &&
-      "bg-blue-100 text-blue-700",
-    status === "withdrawn" && "bg-stone-100 text-stone-500",
-    status === "rejected" && "bg-red-100 text-red-600",
-  );
-  return (
-    <span className={classes}>
-      {status === "completion" && <CheckCircle2 size={11} strokeWidth={1.25} />}
-      {status === "rejected" && <XCircle size={11} strokeWidth={1.25} />}
-      {STATUS_LABELS[status]}
-    </span>
-  );
-}
+function NegotiationProgress({ status }: Readonly<{ status: OfferStatus }>) {
+  if (isTerminal(status)) return null;
 
-function ProgressBar({ status }: Readonly<{ status: OfferStatus }>) {
-  if (isTerminal(status)) {
-    return <div className="h-1 rounded-full bg-[--color-surface-container-highest]" />;
-  }
   const step = getProgressStep(status);
-  const pct = Math.round((step / (PROGRESSION.length - 1)) * 100);
+  const stages = ["Sent", "Received", "Countered", "Finalized"] as const;
+  const mappedStep = Math.min(Math.floor((step / (PROGRESSION.length - 1)) * 3), 3);
+  const progressPct = (mappedStep / 3) * 100;
+
   return (
-    <div className="h-1 rounded-full bg-[--color-brand-primary]/10">
-      <div
-        className="h-full rounded-full bg-[--color-brand-primary] transition-all"
-        style={{ width: `${pct}%` }}
-      />
+    <div className="mb-8">
+      <div className="flex justify-between mb-2">
+        {stages.map((s, i) => (
+          <span
+            key={s}
+            className={cn(
+              "text-[10px] font-bold uppercase tracking-tighter",
+              i === mappedStep ? "text-emerald-700" : "text-stone-400",
+            )}
+          >
+            {s}
+          </span>
+        ))}
+      </div>
+      <div className="h-0.5 bg-stone-100 w-full relative">
+        <div
+          className="absolute h-full bg-emerald-700"
+          style={{ width: `${progressPct}%` }}
+        />
+        {stages.map((_, i) => {
+          const pct = (i / (stages.length - 1)) * 100;
+          const done = i <= mappedStep;
+          return (
+            <div
+              key={i}
+              className={cn(
+                "absolute -top-[3px] w-2 h-2 rounded-full",
+                done ? "bg-emerald-700" : "bg-stone-200",
+                i === mappedStep && "ring-4 ring-emerald-50",
+              )}
+              style={{ left: `${pct}%`, transform: "translateX(-50%)" }}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function OfferRow({ offer }: Readonly<{ offer: BuyerOffer }>) {
-  const priceDiff = offer.amount_pence - offer.asking_price_pence;
-  const pricePct = ((priceDiff / offer.asking_price_pence) * 100).toFixed(1);
-  const aboveAsking = priceDiff > 0;
-  const nextStepIdx = getProgressStep(offer.status) + 1;
-  const nextStep =
-    !isTerminal(offer.status) && nextStepIdx < PROGRESSION.length
-      ? STATUS_LABELS[PROGRESSION[nextStepIdx]]
-      : null;
+function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
+  const isCountered =
+    offer.status === "searches" || offer.status === "solicitors_instructed";
+  const isUnderReview = offer.status === "submitted";
+
+  const statusBadge = isTerminal(offer.status) ? (
+    offer.status === "rejected" ? (
+      <span className="bg-red-100 text-red-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+        Rejected
+      </span>
+    ) : (
+      <span className="bg-stone-100 text-stone-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+        Withdrawn
+      </span>
+    )
+  ) : isCountered ? (
+    <span className="bg-amber-100 text-amber-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+      Counter-Offer Received
+    </span>
+  ) : isUnderReview ? (
+    <span className="bg-blue-100 text-blue-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+      Under Review
+    </span>
+  ) : (
+    <span className="bg-emerald-100 text-emerald-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+      {STATUS_LABELS[offer.status]}
+    </span>
+  );
 
   return (
-    <div className="bg-[--color-surface] rounded-xl p-5 hover:bg-[--color-surface-container-low] transition-colors">
-      <div className="flex items-start gap-4">
-        <div className="h-14 w-14 rounded-lg bg-[--color-surface-container-highest] flex-shrink-0 overflow-hidden">
+    <article className="bg-white overflow-hidden group shadow-sm hover:shadow-md transition-all rounded-2xl">
+      <div className="flex flex-col md:flex-row gap-0 md:gap-8">
+        <div className="md:w-1/3 aspect-[4/5] relative overflow-hidden rounded-l-2xl bg-stone-100 flex-shrink-0">
           {offer.photo_url ? (
-            <img
+            <Image
               src={offer.photo_url}
-              alt=""
-              className="h-full w-full object-cover"
+              alt={offer.property_address}
+              fill
+              className="object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+              sizes="(max-width: 768px) 100vw, 33vw"
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center">
-              <Home size={20} className="text-[--color-on-surface]/30" />
+            <div className="w-full h-full flex items-center justify-center">
+              <Home size={32} className="text-stone-300" strokeWidth={1} />
             </div>
           )}
+          <div className="absolute top-4 left-4">{statusBadge}</div>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="font-semibold text-[--color-on-surface] truncate text-sm leading-tight">
+
+        <div className="md:w-2/3 py-6 pr-6 pl-6 md:pl-0 flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start mb-2">
+              <h2 className="text-xl font-bold tracking-tight text-stone-900 font-['Plus_Jakarta_Sans']">
                 {offer.property_address}
-              </p>
-              <div className="flex items-center gap-3 mt-1 flex-wrap">
-                <span className="text-lg font-bold text-[--color-on-surface]">
-                  {formatGBP(offer.amount_pence)}
-                </span>
-                {!isTerminal(offer.status) && (
-                  <span
-                    className={cn(
-                      "text-xs font-semibold flex items-center gap-0.5",
-                      aboveAsking ? "text-emerald-600" : "text-red-500",
-                    )}
-                  >
-                    <TrendingUp
-                      size={12}
-                      strokeWidth={1.25}
-                      className={aboveAsking ? "" : "rotate-180"}
-                    />
-                    {aboveAsking ? "+" : ""}
-                    {pricePct}% vs asking
-                  </span>
+              </h2>
+              <span className="text-emerald-900 font-bold text-lg flex-shrink-0 ml-4">
+                {formatGBP(offer.amount_pence)}
+              </span>
+            </div>
+            <p className="text-stone-400 text-sm mb-6">
+              Submitted {formatDate(offer.submitted_at)}
+            </p>
+
+            {!isTerminal(offer.status) && (
+              <NegotiationProgress status={offer.status} />
+            )}
+
+            {!isTerminal(offer.status) && (
+              <div className="flex gap-6 items-center mb-6">
+                {offer.doc_count !== undefined && (
+                  <div className="flex items-center gap-2 text-stone-500">
+                    <FileText size={15} strokeWidth={1.25} />
+                    <span className="text-[11px] font-medium">
+                      {offer.doc_count} Doc{offer.doc_count !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                )}
+                {offer.message_count !== undefined && (
+                  <div className="flex items-center gap-2 text-stone-500">
+                    <MessageSquare size={15} strokeWidth={1.25} />
+                    <span className="text-[11px] font-medium">
+                      {offer.message_count} Messages
+                    </span>
+                  </div>
+                )}
+                {offer.version_count !== undefined && (
+                  <div className="flex items-center gap-2 text-stone-500">
+                    <History size={15} strokeWidth={1.25} />
+                    <span className="text-[11px] font-medium">
+                      {offer.version_count} Version
+                      {offer.version_count !== 1 ? "s" : ""}
+                    </span>
+                  </div>
                 )}
               </div>
-            </div>
-            <StatusPill status={offer.status} />
-          </div>
-          <div className="mt-3">
-            <ProgressBar status={offer.status} />
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center gap-1 text-xs text-[--color-on-surface]/50">
-              <Clock size={11} strokeWidth={1.25} />
-              Submitted {formatDate(offer.submitted_at)}
-            </div>
-            {nextStep && (
-              <span className="text-xs text-[--color-brand-primary] font-medium flex items-center gap-1">
-                Next: {nextStep}
-                <ChevronRight size={12} strokeWidth={1.25} />
-              </span>
             )}
+          </div>
+
+          <div className="flex flex-wrap gap-3 pt-4 border-t border-stone-100">
+            {isCountered && (
+              <Link
+                href={`/dashboard/homebuyer/offers/${offer.id}`}
+                className="bg-emerald-900 text-white px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-emerald-800 transition-colors"
+              >
+                Respond to Counter
+              </Link>
+            )}
+            {!isTerminal(offer.status) && (
+              <Link
+                href={`/dashboard/homebuyer/offers/${offer.id}`}
+                className="text-stone-700 border border-stone-200 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-stone-50 transition-colors"
+              >
+                View Documents
+              </Link>
+            )}
+            {isUnderReview && (
+              <Link
+                href={`/dashboard/homebuyer/offers/${offer.id}`}
+                className="text-stone-700 border border-stone-200 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-stone-50 transition-colors"
+              >
+                Edit Offer
+              </Link>
+            )}
+            <Link
+              href={`/dashboard/homebuyer/offers/${offer.id}`}
+              className="text-stone-400 px-3 py-2.5 text-xs font-semibold tracking-wide hover:text-stone-900 transition-colors flex items-center gap-1"
+            >
+              Details
+              <ChevronRight size={12} strokeWidth={1.5} />
+            </Link>
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -266,9 +370,6 @@ export default function OffersPage() {
   const activeCount = MOCK_OFFERS.filter(
     (o) => isActive(o.status) && o.status !== "completion",
   ).length;
-  const progressingCount = MOCK_OFFERS.filter(
-    (o) => getProgressStep(o.status) > 0 && isActive(o.status),
-  ).length;
   const totalValue = MOCK_OFFERS.filter((o) => isActive(o.status)).reduce(
     (acc, o) => acc + o.amount_pence,
     0,
@@ -281,96 +382,225 @@ export default function OffersPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[--color-on-surface] tracking-tight font-['Plus_Jakarta_Sans']">
-          My Offers
-        </h1>
-        <p className="text-sm text-[--color-on-surface]/60 mt-0.5">
-          Track the progress of your submitted offers
-        </p>
-      </div>
+    <div className="space-y-12">
+      {/* Page Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tighter text-stone-900">
+            Active Proposals
+          </h1>
+          <p className="text-stone-500 text-base mt-2 leading-relaxed max-w-xl">
+            Manage your property acquisitions and track real-time negotiation
+            progress.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="bg-emerald-900 hover:bg-emerald-800 text-white px-8 py-4 rounded-lg font-['Plus_Jakarta_Sans'] font-semibold text-sm transition-all shadow-lg flex items-center gap-2 self-start md:self-auto flex-shrink-0"
+        >
+          <span className="text-lg leading-none">+</span>
+          Submit New Offer
+        </button>
+      </header>
 
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          {
-            label: "Total offers",
-            value: String(MOCK_OFFERS.length),
-            sub: "submitted",
-          },
-          { label: "Active", value: String(activeCount), sub: "in progress" },
-          {
-            label: "In progression",
-            value: String(progressingCount),
-            sub: "past submission",
-          },
-        ].map(({ label, value, sub }) => (
-          <div key={label} className="bg-[--color-surface] rounded-xl p-4">
-            <p className="text-xs text-[--color-on-surface]/50 font-medium">{label}</p>
-            <p className="text-2xl font-bold text-[--color-on-surface] mt-1">{value}</p>
-            <p className="text-xs text-[--color-on-surface]/40 mt-0.5">{sub}</p>
+      {/* Main grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-12 items-start">
+        {/* Left column */}
+        <div className="xl:col-span-2 space-y-6">
+          <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 w-fit">
+            {tabs.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setTab(key)}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+                  tab === key
+                    ? "bg-white text-stone-900 shadow-sm"
+                    : "text-stone-500 hover:text-stone-900",
+                )}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {activeCount > 0 && (
-        <div className="bg-[--color-brand-primary] rounded-xl p-5 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">
-                Active portfolio value
+          {filtered.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+              <Home
+                size={32}
+                strokeWidth={1.25}
+                className="mx-auto text-stone-200 mb-3"
+              />
+              <p className="text-stone-500 text-sm font-medium">
+                No offers here yet
               </p>
-              <p className="text-3xl font-bold mt-1">{formatGBP(totalValue)}</p>
+              <p className="text-stone-400 text-xs mt-1">
+                Start browsing properties to make your first offer
+              </p>
+              <Link
+                href="/search"
+                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-emerald-900 text-white text-sm font-semibold hover:bg-emerald-800 transition-colors"
+              >
+                Browse properties
+                <ArrowRight size={15} strokeWidth={1.25} />
+              </Link>
             </div>
-            <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center">
-              <TrendingUp size={22} strokeWidth={1.25} className="text-white" />
+          ) : (
+            <div className="space-y-10">
+              {filtered.map((offer) => (
+                <OfferCard key={offer.id} offer={offer} />
+              ))}
             </div>
-          </div>
+          )}
         </div>
-      )}
 
-      <div className="flex items-center gap-1 bg-[--color-surface-container-low] rounded-xl p-1 w-fit">
-        {tabs.map(({ key, label }) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setTab(key)}
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
-              tab === key
-                ? "bg-white text-[--color-on-surface] shadow-sm"
-                : "text-[--color-on-surface]/50 hover:text-[--color-on-surface]",
-            )}
-          >
-            {label}
-          </button>
-        ))}
+        {/* Right sidebar */}
+        <aside className="space-y-10">
+          {/* Market Insight */}
+          <section className="bg-emerald-900 text-white p-8 rounded-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-6">
+                <TrendingUp
+                  size={20}
+                  className="text-amber-300"
+                  strokeWidth={1.5}
+                />
+                <h3 className="text-lg font-bold tracking-tight">
+                  Market Insight
+                </h3>
+              </div>
+              <p className="text-sm leading-relaxed text-white/80 mb-6">
+                Your current offers are{" "}
+                <span className="text-white font-bold">
+                  4.2% more competitive
+                </span>{" "}
+                than the average for similar listings this quarter.
+              </p>
+              <div className="flex flex-col gap-4">
+                <div className="bg-white/5 p-4 rounded-lg">
+                  <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">
+                    Inventory Trend
+                  </p>
+                  <p className="text-xs font-medium text-white">
+                    Supply decreasing by 12%. Urgency recommended.
+                  </p>
+                </div>
+                <div className="bg-white/5 p-4 rounded-lg">
+                  <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">
+                    Interest Rate Impact
+                  </p>
+                  <p className="text-xs font-medium text-white">
+                    Stable through Q4. High-value transactions up by 8%.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Active portfolio value */}
+          {activeCount > 0 && (
+            <section className="bg-white rounded-xl p-6 shadow-sm">
+              <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-1">
+                Active Portfolio Value
+              </p>
+              <p className="text-3xl font-bold text-emerald-900">
+                {formatGBP(totalValue)}
+              </p>
+            </section>
+          )}
+
+          {/* Recent history */}
+          <section>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-stone-900">
+                Recent History
+              </h3>
+              <button
+                type="button"
+                className="text-[11px] font-bold text-emerald-800 hover:underline"
+              >
+                View All
+              </button>
+            </div>
+            <div className="space-y-5">
+              {HISTORY_ITEMS.map((h) => (
+                <div key={h.id} className="flex gap-4 items-center">
+                  <div className="w-16 h-16 bg-stone-100 shrink-0 overflow-hidden rounded-lg flex items-center justify-center">
+                    <Home
+                      size={20}
+                      className="text-stone-300"
+                      strokeWidth={1}
+                    />
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-xs font-bold text-stone-900 truncate pr-2">
+                        {h.title}
+                      </h4>
+                      <span
+                        className={cn(
+                          "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 flex-shrink-0",
+                          h.status === "accepted"
+                            ? "text-emerald-600 bg-emerald-50"
+                            : "text-red-600 bg-red-50",
+                        )}
+                      >
+                        {h.status === "accepted" ? "Accepted" : "Declined"}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-stone-400 mb-1.5">
+                      {h.amount} · {h.date}
+                    </p>
+                    <button
+                      type="button"
+                      className="text-[9px] font-bold text-stone-400 hover:text-emerald-900 flex items-center gap-1 uppercase tracking-widest transition-colors"
+                    >
+                      Archive Details
+                      <ChevronRight size={11} strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Pending tasks */}
+          <section className="bg-stone-50 p-6 rounded-xl">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">
+              Pending Tasks
+            </h3>
+            <ul className="space-y-3">
+              {PENDING_TASKS.map((task) => (
+                <li
+                  key={task.id}
+                  className={cn(
+                    "flex items-center gap-3 text-xs font-medium",
+                    task.done
+                      ? "text-stone-400 line-through"
+                      : "text-stone-800",
+                  )}
+                >
+                  {task.done ? (
+                    <CheckCircle2
+                      size={14}
+                      className="text-emerald-600 flex-shrink-0"
+                    />
+                  ) : (
+                    <AlertCircle
+                      size={14}
+                      className="text-amber-500 flex-shrink-0"
+                      strokeWidth={1.5}
+                    />
+                  )}
+                  {task.label}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </aside>
       </div>
-
-      {filtered.length === 0 ? (
-        <div className="text-center py-20 bg-[--color-surface] rounded-2xl">
-          <Home size={32} strokeWidth={1.25} className="mx-auto text-[--color-on-surface]/20 mb-3" />
-          <p className="text-[--color-on-surface]/50 text-sm font-medium">
-            No offers here yet
-          </p>
-          <p className="text-[--color-on-surface]/30 text-xs mt-1">
-            Start browsing properties to make your first offer
-          </p>
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] transition-colors"
-          >
-            Browse properties
-            <ArrowRight size={15} strokeWidth={1.25} />
-          </Link>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filtered.map((offer) => (
-            <OfferRow key={offer.id} offer={offer} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
