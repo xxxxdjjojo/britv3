@@ -25,10 +25,10 @@ export default function BrokerDashboardPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
+        <h1 className="font-heading text-xl font-semibold text-foreground">
           Mortgage Broker Dashboard
         </h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Here&apos;s an overview of your mortgage business today.
         </p>
       </div>
@@ -63,15 +63,17 @@ export default function BrokerDashboardPage() {
       {/* Two-Column Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">Recent Activity</h2>
-          <div className="space-y-3">
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 overflow-hidden">
+          <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
+            <h2 className="font-heading text-base font-semibold text-foreground">Recent Activity</h2>
+          </div>
+          <div className="divide-y divide-neutral-100/60 dark:divide-neutral-700/60">
             {RECENT_ACTIVITY.map((item) => (
-              <div key={item.id} className="flex items-start gap-3">
-                <div className="mt-1.5 size-2 shrink-0 rounded-full bg-[#1B4D3E]" />
+              <div key={item.id} className="px-6 py-3 flex items-start gap-3">
+                <div className="mt-1 size-2 shrink-0 rounded-full bg-brand-primary" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-neutral-700 truncate">{item.text}</p>
-                  <p className="text-xs text-neutral-400">{item.time}</p>
+                  <p className="font-body text-sm text-foreground truncate">{item.text}</p>
+                  <p className="font-body text-xs text-neutral-400">{item.time}</p>
                 </div>
               </div>
             ))}
@@ -79,17 +81,17 @@ export default function BrokerDashboardPage() {
         </div>
 
         {/* Pipeline Summary */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-neutral-900">Pipeline Summary</h2>
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 overflow-hidden">
+          <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4 flex items-center justify-between">
+            <h2 className="font-heading text-base font-semibold text-foreground">Pipeline Summary</h2>
             <Link
               href="/dashboard/broker/pipeline"
-              className="text-xs font-medium text-[#1B4D3E] hover:underline"
+              className="font-body text-sm text-neutral-500 hover:text-foreground transition-colors"
             >
               View all
             </Link>
           </div>
-          <div className="space-y-3">
+          <div className="p-6 space-y-3">
             {[
               { stage: "New Lead", count: 4, color: "bg-blue-500" },
               { stage: "Initial Consultation", count: 3, color: "bg-amber-500" },
@@ -101,9 +103,9 @@ export default function BrokerDashboardPage() {
               <div key={item.stage} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`size-2.5 rounded-full ${item.color}`} />
-                  <span className="text-sm text-neutral-700">{item.stage}</span>
+                  <span className="font-body text-sm text-foreground">{item.stage}</span>
                 </div>
-                <span className="text-sm font-semibold text-neutral-900">{item.count}</span>
+                <span className="font-body text-sm font-semibold text-foreground">{item.count}</span>
               </div>
             ))}
           </div>
@@ -111,23 +113,25 @@ export default function BrokerDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <h2 className="mb-4 text-base font-semibold text-neutral-900">Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 overflow-hidden">
+        <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
+          <h2 className="font-heading text-base font-semibold text-foreground">Quick Actions</h2>
+        </div>
+        <div className="p-6 flex flex-wrap gap-3">
           <Link href="/dashboard/broker/leads">
-            <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+            <Button className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
               <Inbox className="mr-2 size-4" />
               View Leads
             </Button>
           </Link>
           <Link href="/dashboard/broker/products">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="rounded-lg border-neutral-200 font-body text-sm text-neutral-600 hover:bg-neutral-100 hover:text-foreground transition-colors dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800">
               <PackageSearch className="mr-2 size-4" />
               Compare Products
             </Button>
           </Link>
           <Link href="/dashboard/broker/fca-verification">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="rounded-lg border-neutral-200 font-body text-sm text-neutral-600 hover:bg-neutral-100 hover:text-foreground transition-colors dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800">
               <ShieldCheck className="mr-2 size-4" />
               FCA Status
               <ArrowRight className="ml-1.5 size-4" />
