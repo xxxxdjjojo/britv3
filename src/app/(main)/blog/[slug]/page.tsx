@@ -155,25 +155,25 @@ export default async function BlogPostPage({
   const post = MOCK_ARTICLE;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-sm text-neutral-500 mb-8 flex-wrap" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-brand-primary transition-colors">
+      <nav className="mb-8 flex flex-wrap items-center gap-2 font-body text-sm text-neutral-500" aria-label="Breadcrumb">
+        <Link href="/" className="transition-colors hover:text-brand-primary">
           Home
         </Link>
         <span aria-hidden="true">/</span>
-        <Link href="/blog" className="hover:text-brand-primary transition-colors">
+        <Link href="/blog" className="transition-colors hover:text-brand-primary">
           Blog
         </Link>
         <span aria-hidden="true">/</span>
         <Link
           href={`/blog?category=${encodeURIComponent(post.category)}`}
-          className="hover:text-brand-primary transition-colors"
+          className="transition-colors hover:text-brand-primary"
         >
           {post.category}
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="text-neutral-900 font-medium line-clamp-1 max-w-[220px]">
+        <span className="line-clamp-1 max-w-[220px] font-medium text-foreground">
           {post.title}
         </span>
       </nav>
@@ -183,77 +183,77 @@ export default async function BlogPostPage({
         <div className="min-w-0">
           {/* Article Header */}
           <header className="mb-8">
-            <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
+            <span className="inline-block rounded-full bg-brand-primary-lighter px-3 py-1 font-body text-xs font-medium text-brand-primary">
               {post.category}
             </span>
-            <h1 className="text-3xl lg:text-4xl font-bold text-neutral-900 font-heading leading-snug mb-4">
+            <h1 className="mt-3 font-heading text-2xl font-bold text-foreground leading-snug lg:text-3xl">
               {post.title}
             </h1>
-            <p className="text-lg text-neutral-600 leading-relaxed mb-6">
+            <p className="mt-2 font-body text-base text-neutral-500 leading-relaxed">
               {post.excerpt}
             </p>
 
             {/* Author + meta row */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-neutral-50 rounded-xl border border-neutral-100">
-              <span className="size-12 rounded-full bg-brand-primary text-white font-bold text-sm flex items-center justify-center shrink-0">
+            <div className="mt-5 flex flex-col gap-4 rounded-xl bg-muted/30 p-4 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 sm:flex-row sm:items-center">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-primary font-bold text-sm text-white">
                 {post.author.initials}
               </span>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-neutral-900">{post.author.name}</div>
-                <div className="text-sm text-neutral-500">{post.author.title}</div>
+              <div className="min-w-0 flex-1">
+                <div className="font-heading text-sm font-semibold text-foreground">{post.author.name}</div>
+                <div className="font-body text-xs text-neutral-500">{post.author.title}</div>
               </div>
-              <div className="flex items-center gap-4 text-sm text-neutral-500 shrink-0">
+              <div className="flex shrink-0 items-center gap-4 font-body text-xs text-neutral-500">
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="size-4 shrink-0" />
+                  <Calendar className="size-3.5 shrink-0" />
                   <span>{post.date}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Clock className="size-4 shrink-0" />
+                  <Clock className="size-3.5 shrink-0" />
                   <span>{post.readTime}</span>
                 </div>
               </div>
             </div>
 
             {/* Share buttons */}
-            <div className="flex items-center gap-3 mt-5 flex-wrap">
-              <span className="text-sm font-medium text-neutral-600">Share:</span>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="font-body text-sm font-medium text-neutral-500">Share:</span>
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 text-neutral-700 text-sm font-medium hover:border-brand-primary hover:text-brand-primary transition-colors bg-white"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-card px-3 py-1.5 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 transition-colors hover:text-brand-primary hover:ring-brand-primary dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
-                <Twitter className="size-4" />
+                <Twitter className="size-3.5" />
                 Share on Twitter
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://britestate.co.uk/blog/${post.slug}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 text-neutral-700 text-sm font-medium hover:border-brand-primary hover:text-brand-primary transition-colors bg-white"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-card px-3 py-1.5 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 transition-colors hover:text-brand-primary hover:ring-brand-primary dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
-                <Linkedin className="size-4" />
+                <Linkedin className="size-3.5" />
                 Share on LinkedIn
               </a>
               <Link
                 href="#"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 text-neutral-700 text-sm font-medium hover:border-brand-primary hover:text-brand-primary transition-colors bg-white"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-card px-3 py-1.5 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 transition-colors hover:text-brand-primary hover:ring-brand-primary dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
-                <Link2 className="size-4" />
+                <Link2 className="size-3.5" />
                 Copy Link
               </Link>
             </div>
           </header>
 
           {/* Hero Image Placeholder */}
-          <div className="aspect-[16/9] w-full bg-neutral-200 rounded-2xl mb-8" aria-hidden="true" />
+          <div className="mb-8 aspect-[16/9] w-full rounded-xl bg-muted/30" aria-hidden="true" />
 
           {/* Article Body */}
-          <div className="prose-neutral max-w-none mb-12">
+          <div className="prose prose-neutral dark:prose-invert max-w-none mb-12">
             {post.body.map((block, i) => {
               if (block.type === "paragraph") {
                 return (
-                  <p key={i} className="text-neutral-700 leading-relaxed mb-5 text-base">
+                  <p key={i} className="mb-5 font-body text-base leading-relaxed text-foreground">
                     {block.text}
                   </p>
                 );
@@ -262,7 +262,7 @@ export default async function BlogPostPage({
                 return (
                   <h2
                     key={i}
-                    className="text-2xl font-bold text-neutral-900 font-heading mt-10 mb-4"
+                    className="mb-4 mt-10 font-heading text-xl font-semibold text-foreground"
                   >
                     {block.text}
                   </h2>
@@ -272,7 +272,7 @@ export default async function BlogPostPage({
                 return (
                   <h3
                     key={i}
-                    className="text-xl font-bold text-neutral-900 font-heading mt-8 mb-3"
+                    className="mb-3 mt-8 font-heading text-lg font-semibold text-foreground"
                   >
                     {block.text}
                   </h3>
@@ -282,7 +282,7 @@ export default async function BlogPostPage({
                 return (
                   <blockquote
                     key={i}
-                    className="border-l-4 border-brand-primary bg-brand-primary-lighter rounded-r-xl px-6 py-4 my-6 text-brand-primary font-medium italic leading-relaxed"
+                    className="my-6 rounded-r-xl border-l-4 border-brand-primary bg-brand-primary-lighter px-6 py-4 font-body text-sm font-medium italic leading-relaxed text-brand-primary"
                   >
                     &ldquo;{block.text}&rdquo;
                   </blockquote>
@@ -290,7 +290,7 @@ export default async function BlogPostPage({
               }
               if (block.type === "list") {
                 return (
-                  <ul key={i} className="list-disc list-inside space-y-2 mb-5 text-neutral-700">
+                  <ul key={i} className="mb-5 list-inside list-disc space-y-2 font-body text-sm text-foreground">
                     {block.items.map((item, j) => (
                       <li key={j} className="leading-relaxed">
                         {item}
@@ -304,47 +304,47 @@ export default async function BlogPostPage({
           </div>
 
           {/* Author Bio */}
-          <div className="border border-neutral-100 bg-white rounded-2xl p-6 mb-12 flex gap-5">
-            <span className="size-16 rounded-full bg-brand-primary text-white font-bold text-lg flex items-center justify-center shrink-0">
+          <div className="mb-12 flex gap-5 rounded-xl bg-card p-6 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+            <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-brand-primary font-bold text-lg text-white">
               {post.author.initials}
             </span>
             <div>
-              <div className="font-bold text-neutral-900 text-lg mb-0.5">{post.author.name}</div>
-              <div className="text-sm text-brand-primary font-medium mb-3">{post.author.title}</div>
-              <p className="text-sm text-neutral-600 leading-relaxed">{post.author.bio}</p>
+              <div className="font-heading text-base font-semibold text-foreground">{post.author.name}</div>
+              <div className="font-body text-xs font-medium text-brand-primary">{post.author.title}</div>
+              <p className="mt-2 font-body text-sm leading-relaxed text-neutral-500">{post.author.bio}</p>
             </div>
           </div>
 
           {/* More from Category */}
           <section>
-            <h2 className="text-2xl font-bold text-neutral-900 font-heading mb-6">
+            <h2 className="mb-6 font-heading text-lg font-semibold text-foreground">
               More from {post.category}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {MORE_FROM_CATEGORY.map((item) => (
                 <article
                   key={item.slug}
-                  className="bg-white border border-neutral-100 rounded-2xl overflow-hidden group hover:shadow-md transition-shadow flex flex-col"
+                  className="group flex flex-col overflow-hidden rounded-xl bg-card ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 hover:shadow-md transition-shadow"
                 >
-                  <div className="aspect-[16/9] bg-neutral-200" aria-hidden="true" />
-                  <div className="p-4 flex flex-col flex-1">
-                    <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-2 w-fit">
+                  <div className="aspect-[16/9] bg-muted/30" aria-hidden="true" />
+                  <div className="flex flex-1 flex-col p-4">
+                    <span className="inline-block w-fit rounded-full bg-brand-primary-lighter px-2.5 py-0.5 font-body text-xs font-medium text-brand-primary">
                       {item.category}
                     </span>
-                    <h3 className="text-sm font-bold text-neutral-900 font-heading leading-snug mb-3 group-hover:text-brand-primary transition-colors line-clamp-2 flex-1">
+                    <h3 className="mt-2 flex-1 font-heading text-sm font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors">
                       {item.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs text-neutral-500 mt-auto">
-                      <span className="size-6 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="mt-auto flex items-center gap-2 font-body text-xs text-neutral-500">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
                         {item.author.initials}
                       </span>
-                      <span className="font-medium text-neutral-700 truncate">{item.author.name}</span>
+                      <span className="truncate font-medium text-foreground">{item.author.name}</span>
                       <span aria-hidden="true">·</span>
                       <span className="shrink-0">{item.readTime}</span>
                     </div>
                     <Link
                       href={`/blog/${item.slug}`}
-                      className="inline-flex items-center gap-1 text-brand-primary font-semibold text-xs mt-3 hover:underline"
+                      className="mt-3 inline-flex items-center gap-1 font-body text-xs font-semibold text-brand-primary hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                     >
                       Read more <ArrowRight className="size-3" />
                     </Link>
@@ -359,24 +359,24 @@ export default async function BlogPostPage({
         <aside className="hidden lg:block">
           <div className="sticky top-8 flex flex-col gap-6">
             {/* Related Articles */}
-            <div className="bg-white border border-neutral-100 rounded-2xl p-5">
-              <h3 className="text-base font-bold text-neutral-900 font-heading mb-4">
+            <div className="rounded-xl bg-card p-5 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+              <h3 className="mb-4 font-heading text-base font-semibold text-foreground">
                 Related Articles
               </h3>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 {RELATED_ARTICLES.map((article) => (
                   <Link
                     key={article.slug}
                     href={`/blog/${article.slug}`}
-                    className="group flex flex-col gap-1 p-3 rounded-xl hover:bg-neutral-50 transition-colors"
+                    className="group flex flex-col gap-1 rounded-lg p-3 transition-colors hover:bg-muted/30 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                   >
-                    <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-semibold px-2 py-0.5 rounded-full w-fit mb-1">
+                    <span className="inline-block w-fit rounded-full bg-brand-primary-lighter px-2 py-0.5 font-body text-xs font-medium text-brand-primary">
                       {article.category}
                     </span>
-                    <span className="text-sm font-semibold text-neutral-900 group-hover:text-brand-primary transition-colors leading-snug">
+                    <span className="font-heading text-sm font-semibold text-foreground leading-snug group-hover:text-brand-primary transition-colors">
                       {article.title}
                     </span>
-                    <span className="text-xs text-neutral-400 flex items-center gap-1">
+                    <span className="flex items-center gap-1 font-body text-xs text-neutral-500">
                       <Clock className="size-3" />
                       {article.readTime}
                     </span>
@@ -386,14 +386,14 @@ export default async function BlogPostPage({
             </div>
 
             {/* Newsletter Widget */}
-            <div className="bg-brand-primary-lighter border border-brand-primary/10 rounded-2xl p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <Mail className="size-5 text-brand-primary" />
-                <h3 className="text-base font-bold text-brand-primary font-heading">
+            <div className="rounded-xl bg-brand-primary-lighter p-5 ring-1 ring-brand-primary/10">
+              <div className="mb-2 flex items-center gap-2">
+                <Mail className="size-4 text-brand-primary" />
+                <h3 className="font-heading text-base font-semibold text-brand-primary">
                   Property insights, weekly
                 </h3>
               </div>
-              <p className="text-sm text-neutral-700 mb-4 leading-relaxed">
+              <p className="mb-4 font-body text-sm leading-relaxed text-neutral-500">
                 Get expert guidance for every stage of your property journey, straight to your inbox.
               </p>
               <label htmlFor="sidebar-email" className="sr-only">
@@ -403,9 +403,9 @@ export default async function BlogPostPage({
                 id="sidebar-email"
                 type="email"
                 placeholder="Your email address"
-                className="w-full px-3 py-2.5 text-sm rounded-lg border border-brand-primary/20 bg-white outline-none focus:ring-2 focus:ring-brand-primary/20 text-neutral-900 placeholder:text-neutral-400 mb-3"
+                className="mb-3 w-full rounded-lg border border-brand-primary/20 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-brand-primary/30"
               />
-              <Button className="w-full bg-brand-primary text-white hover:bg-brand-primary-light text-sm font-semibold">
+              <Button className="w-full bg-brand-primary font-body text-sm font-medium text-white hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
                 Subscribe
               </Button>
             </div>

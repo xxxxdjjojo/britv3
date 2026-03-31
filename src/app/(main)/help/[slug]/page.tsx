@@ -44,17 +44,17 @@ export default async function HelpArticlePage({ params }: Props) {
 
   if (fetchError || !article) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <div className="rounded-xl border border-neutral-200 p-8 text-center">
-          <h1 className="font-heading text-2xl font-bold text-neutral-900">
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="rounded-xl bg-card p-8 text-center ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Article Not Found
           </h1>
-          <p className="mt-2 text-sm text-neutral-500">
+          <p className="mt-2 font-body text-sm text-neutral-500">
             We could not find the help article you are looking for.
           </p>
           <Link
             href="/help"
-            className="mt-4 inline-block text-sm text-brand-primary underline-offset-4 hover:underline"
+            className="mt-4 inline-block font-body text-sm text-brand-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
           >
             Back to Help Centre
           </Link>
@@ -64,19 +64,19 @@ export default async function HelpArticlePage({ params }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       <Link
         href="/help"
-        className="text-sm text-brand-primary underline-offset-4 hover:underline"
+        className="font-body text-sm text-brand-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
       >
         &larr; Back to Help Centre
       </Link>
 
-      <h1 className="mt-6 font-heading text-3xl font-bold text-neutral-900 sm:text-4xl">
+      <h1 className="mt-6 font-heading text-2xl font-bold text-foreground sm:text-3xl">
         {article.title}
       </h1>
 
-      <SafeHTML html={article.content} className="prose prose-neutral mt-8 max-w-none" />
+      <SafeHTML html={article.content} className="prose prose-neutral dark:prose-invert mt-8 max-w-none" />
     </div>
   );
 }

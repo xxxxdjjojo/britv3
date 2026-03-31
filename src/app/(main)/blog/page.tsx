@@ -132,65 +132,63 @@ export default function BlogPage({
   void searchParams;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-sm text-neutral-500 mb-8" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-brand-primary transition-colors">
+      <nav className="mb-8 flex items-center gap-2 font-body text-sm text-neutral-500" aria-label="Breadcrumb">
+        <Link href="/" className="transition-colors hover:text-brand-primary">
           Home
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="text-neutral-900 font-medium">Blog</span>
+        <span className="font-medium text-foreground">Blog</span>
       </nav>
 
       {/* Hero */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl lg:text-5xl font-bold text-neutral-900 font-heading tracking-tight mb-4">
+      <div className="mb-10 text-center">
+        <h1 className="font-heading text-2xl font-bold text-foreground">
           Britestate Advice &amp; Insights
         </h1>
-        <p className="text-lg text-neutral-600 max-w-2xl mx-auto mb-8">
+        <p className="mx-auto mt-2 max-w-2xl font-body text-base text-neutral-500">
           Expert guidance for every stage of your property journey.
         </p>
         {/* Newsletter signup */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+        <div className="mx-auto mt-6 flex max-w-md items-center overflow-hidden rounded-lg bg-card ring-1 ring-neutral-200/60 shadow-sm dark:ring-neutral-700/60">
+          <div className="flex items-center pl-3 text-neutral-400">
+            <Mail className="size-4" />
+          </div>
           <label htmlFor="hero-email" className="sr-only">
             Email address
           </label>
-          <div className="flex w-full rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
-            <div className="flex items-center pl-4 text-neutral-400">
-              <Mail className="size-5" />
-            </div>
-            <input
-              id="hero-email"
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-3 py-3 text-sm bg-transparent outline-none text-neutral-900 placeholder:text-neutral-400"
-            />
-            <Button className="rounded-none rounded-r-xl bg-brand-primary text-white hover:bg-brand-primary-light px-5 text-sm font-semibold">
-              Subscribe
-            </Button>
-          </div>
+          <input
+            id="hero-email"
+            type="email"
+            placeholder="Enter your email"
+            className="flex-1 bg-transparent px-3 py-2.5 font-body text-sm text-foreground placeholder:text-neutral-400 outline-none"
+          />
+          <Button className="rounded-none rounded-r-lg bg-brand-primary px-5 font-body text-sm font-medium text-white hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
+            Subscribe
+          </Button>
         </div>
       </div>
 
       {/* Featured Post */}
-      <article className="mb-12 bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden group hover:shadow-md transition-shadow">
+      <article className="mb-10 overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 group hover:shadow-md transition-shadow">
         <div className="grid lg:grid-cols-2">
-          <div className="aspect-[16/9] lg:aspect-auto bg-neutral-200 min-h-[260px]" aria-hidden="true" />
-          <div className="p-8 lg:p-10 flex flex-col justify-center">
-            <span className="inline-block bg-brand-primary text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4 w-fit">
+          <div className="aspect-[16/9] lg:aspect-auto min-h-[260px] bg-muted/30" aria-hidden="true" />
+          <div className="flex flex-col justify-center p-8 lg:p-10">
+            <span className="inline-block w-fit rounded-full bg-brand-primary-lighter px-3 py-1 font-body text-xs font-medium text-brand-primary">
               {featuredPost.category}
             </span>
-            <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 font-heading leading-snug mb-4 group-hover:text-brand-primary transition-colors">
+            <h2 className="mt-3 font-heading text-xl font-semibold text-foreground leading-snug group-hover:text-brand-primary transition-colors">
               {featuredPost.title}
             </h2>
-            <p className="text-neutral-600 leading-relaxed mb-6 line-clamp-3">
+            <p className="mt-2 font-body text-sm text-neutral-500 leading-relaxed line-clamp-3">
               {featuredPost.excerpt}
             </p>
-            <div className="flex items-center gap-3 text-sm text-neutral-500 mb-6">
-              <span className="size-8 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
+            <div className="mt-4 flex items-center gap-3 font-body text-sm text-neutral-500">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
                 {featuredPost.author.initials}
               </span>
-              <span className="font-medium text-neutral-700">{featuredPost.author.name}</span>
+              <span className="font-medium text-foreground">{featuredPost.author.name}</span>
               <span aria-hidden="true">·</span>
               <span>{featuredPost.date}</span>
               <span aria-hidden="true">·</span>
@@ -198,7 +196,7 @@ export default function BlogPage({
             </div>
             <Link
               href={`/blog/${featuredPost.slug}`}
-              className="inline-flex items-center gap-2 text-brand-primary font-semibold hover:underline"
+              className="mt-5 inline-flex items-center gap-2 font-body text-sm font-semibold text-brand-primary hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             >
               Read Article <ArrowRight className="size-4" />
             </Link>
@@ -207,12 +205,12 @@ export default function BlogPage({
       </article>
 
       {/* Category Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 mb-10">
+      <div className="mb-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {CATEGORIES.map((cat) => (
           <Link
             key={cat}
             href={cat === "All" ? "/blog" : `/blog?category=${encodeURIComponent(cat)}`}
-            className="shrink-0 px-4 py-2 rounded-full text-sm font-medium border border-neutral-200 bg-white text-neutral-700 hover:border-brand-primary hover:text-brand-primary transition-colors whitespace-nowrap"
+            className="shrink-0 rounded-full bg-card px-4 py-1.5 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 transition-colors hover:bg-muted hover:text-brand-primary whitespace-nowrap dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
           >
             {cat}
           </Link>
@@ -220,28 +218,28 @@ export default function BlogPage({
       </div>
 
       {/* Blog Card Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {gridPosts.map((post) => (
           <article
             key={post.slug}
-            className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300 flex flex-col"
+            className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 hover:shadow-md transition-all duration-300"
           >
-            <div className="aspect-[16/9] bg-neutral-200 w-full" aria-hidden="true" />
-            <div className="flex flex-col flex-1 p-5">
-              <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full mb-3 w-fit">
+            <div className="aspect-[16/9] w-full bg-muted/30" aria-hidden="true" />
+            <div className="flex flex-1 flex-col p-5">
+              <span className="inline-block w-fit rounded-full bg-brand-primary-lighter px-2.5 py-0.5 font-body text-xs font-medium text-brand-primary">
                 {post.category}
               </span>
-              <h3 className="text-lg font-bold text-neutral-900 font-heading leading-snug mb-2 line-clamp-2 group-hover:text-brand-primary transition-colors">
+              <h3 className="mt-2 font-heading text-base font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors">
                 {post.title}
               </h3>
-              <p className="text-sm text-neutral-600 leading-relaxed mb-4 line-clamp-2 flex-1">
+              <p className="mt-1 flex-1 font-body text-xs text-neutral-500 leading-relaxed line-clamp-2">
                 {post.excerpt}
               </p>
-              <div className="flex items-center gap-2 text-xs text-neutral-500 mt-auto pt-3 border-t border-neutral-100">
-                <span className="size-7 rounded-full bg-brand-primary-lighter text-brand-primary font-bold text-xs flex items-center justify-center shrink-0">
+              <div className="mt-auto flex items-center gap-2 border-t border-neutral-100 pt-3 font-body text-xs text-neutral-500 dark:border-neutral-800">
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
                   {post.author.initials}
                 </span>
-                <span className="font-medium text-neutral-700 truncate">{post.author.name}</span>
+                <span className="truncate font-medium text-foreground">{post.author.name}</span>
                 <span aria-hidden="true" className="shrink-0">·</span>
                 <span className="shrink-0">{post.date}</span>
                 <span aria-hidden="true" className="shrink-0">·</span>
@@ -249,7 +247,7 @@ export default function BlogPage({
               </div>
               <Link
                 href={`/blog/${post.slug}`}
-                className="inline-flex items-center gap-1 text-brand-primary font-semibold text-sm mt-4 hover:underline"
+                className="mt-4 inline-flex items-center gap-1 font-body text-sm font-semibold text-brand-primary hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
                 Read more <ArrowRight className="size-3.5" />
               </Link>
@@ -260,9 +258,28 @@ export default function BlogPage({
 
       {/* Load More */}
       <div className="flex justify-center">
-        <Button variant="outline" className="px-8 py-3 border-neutral-300 text-neutral-700 hover:border-brand-primary hover:text-brand-primary font-semibold">
+        <Button
+          variant="outline"
+          className="px-8 py-3 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 hover:text-brand-primary hover:ring-brand-primary dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+        >
           Load More Articles
         </Button>
+      </div>
+
+      {/* Newsletter CTA */}
+      <div className="mt-12 rounded-xl bg-brand-primary p-8 text-center text-white">
+        <h2 className="font-heading text-xl font-semibold">Subscribe to our newsletter</h2>
+        <p className="mt-2 font-body text-sm text-white/70">Stay updated with the latest property insights.</p>
+        <div className="mt-4 flex justify-center gap-2">
+          <input
+            type="email"
+            placeholder="Your email address"
+            className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 font-body text-sm text-white placeholder:text-white/50 outline-none focus:ring-2 focus:ring-white/30"
+          />
+          <button className="rounded-lg bg-white px-4 py-2 font-body text-sm font-medium text-brand-primary hover:bg-white/90 focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2">
+            Subscribe
+          </button>
+        </div>
       </div>
     </div>
   );
