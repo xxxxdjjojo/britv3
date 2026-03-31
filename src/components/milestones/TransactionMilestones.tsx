@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { MilestoneTracker } from "./MilestoneTracker";
 import type { MilestoneStep } from "./MilestoneTracker";
 import type { MilestoneStatus } from "@/types/milestones";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type TransactionMilestonesProps = Readonly<{
   transactionId: string;
@@ -97,10 +96,14 @@ export function TransactionMilestones({
   if (loading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-full" />
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
+          <div key={i} className="flex gap-4 animate-pulse">
+            <div className="size-8 rounded-full bg-neutral-100 dark:bg-neutral-800" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-1/3 rounded bg-neutral-100 dark:bg-neutral-800" />
+              <div className="h-3 w-2/3 rounded bg-neutral-100 dark:bg-neutral-800" />
+            </div>
+          </div>
         ))}
       </div>
     );

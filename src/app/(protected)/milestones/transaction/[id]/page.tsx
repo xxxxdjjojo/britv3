@@ -13,9 +13,16 @@ export default async function TransactionMilestonePage({ params }: PageProps) {
   const { id } = await params;
 
   return (
-    <div className="container max-w-2xl py-8">
-      <h1 className="text-2xl font-bold mb-6">Transaction Milestones</h1>
-      <TransactionMilestones transactionId={id} />
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <h1 className="font-heading text-xl font-semibold text-foreground">
+        Transaction Milestones
+      </h1>
+      <p className="mt-1 font-body text-sm text-neutral-500">
+        Track the progress of your property transaction.
+      </p>
+      <div className="mt-6">
+        <TransactionMilestones transactionId={id} />
+      </div>
     </div>
   );
 }

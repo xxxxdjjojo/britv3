@@ -6,20 +6,8 @@
  */
 
 import { useState } from "react";
-import { CheckCircle, Circle, CircleDot } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Check, Clock, Circle } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { MilestoneStatus } from "@/types/milestones";
 
 // ---------------------------------------------------------------------------
@@ -47,29 +35,36 @@ type MilestoneTrackerProps = Readonly<{
 // Status helpers
 // ---------------------------------------------------------------------------
 
-const STATUS_CONFIG = {
-  completed: {
-    icon: CheckCircle,
-    color: "text-green-600 dark:text-green-400",
-    lineColor: "bg-green-500",
-    badge: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-    label: "Completed",
-  },
-  in_progress: {
-    icon: CircleDot,
-    color: "text-amber-600 dark:text-amber-400",
-    lineColor: "bg-amber-500",
-    badge: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-    label: "In Progress",
-  },
-  not_started: {
-    icon: Circle,
-    color: "text-gray-400 dark:text-gray-500",
-    lineColor: "bg-gray-200 dark:bg-gray-700",
-    badge: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
-    label: "Not Started",
-  },
-} as const;
+function StatusDot({ status }: { status: MilestoneStatus }) {
+  if (status === "completed") {
+    return (
+      <div className="flex size-8 items-center justify-center rounded-full bg-brand-primary text-white">
+        <Check className="size-4" />
+      </div>
+    );
+  }
+  if (status === "in_progress") {
+    return (
+      <div className="flex size-8 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary ring-2 ring-brand-primary">
+        <Circle className="size-3 fill-current" />
+      </div>
+    );
+  }
+  // not_started / pending
+  return (
+    <div className="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500">
+      <Clock className="size-4" />
+    </div>
+  );
+}
+
+function statusLabel(status: MilestoneStatus): string {
+  switch (status) {
+    case "completed": return "Completed";
+    case "in_progress": return "In Progress";
+    default: return "Not Started";
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -107,130 +102,147 @@ export function MilestoneTracker({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        <div className="flex items-center gap-3 mt-2">
-          <Progress value={percentage} className="flex-1" />
-          <span className="text-sm text-muted-foreground whitespace-nowrap">
+    <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 overflow-hidden">
+      {/* Header */}
+      <div className="border-b border-neutral-100/60 dark:border-neutral-700/60 px-6 py-4">
+        <h2 className="font-heading text-base font-semibold text-foreground">{title}</h2>
+        <div className="mt-2 flex items-center gap-3">
+          {/* Progress bar */}
+          <div className="flex-1 h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-brand-primary transition-all duration-300"
+              style={{ width: `${percentage}%` }}
+            />
+          </div>
+          <span className="font-body text-xs text-neutral-500 whitespace-nowrap">
             {completedCount}/{total} completed
           </span>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="relative">
-          {milestones.map((milestone, index) => {
-            const config = STATUS_CONFIG[milestone.status];
-            const Icon = config.icon;
-            const isLast = index === milestones.length - 1;
-            const isExpanded = expandedId === milestone.id;
+      </div>
 
-            return (
-              <div key={milestone.id} className="relative flex gap-4">
-                {/* Vertical line + icon */}
-                <div className="flex flex-col items-center">
+      {/* Steps */}
+      <div className="px-6 py-4">
+        {milestones.map((milestone, index) => {
+          const isLast = index === milestones.length - 1;
+          const isExpanded = expandedId === milestone.id;
+          const canEdit = !readOnly && !!onUpdate;
+
+          return (
+            <div key={milestone.id} className="flex gap-4">
+              {/* Timeline column */}
+              <div className="flex flex-col items-center">
+                <div
+                  className={cn(canEdit && "cursor-pointer")}
+                  onClick={() => handleExpand(milestone)}
+                >
+                  <StatusDot status={milestone.status} />
+                </div>
+                {!isLast && (
                   <div
-                    className={`z-10 ${!readOnly && onUpdate ? "cursor-pointer" : ""}`}
+                    className={cn(
+                      "w-0.5 flex-1 my-1",
+                      milestone.status === "completed"
+                        ? "bg-brand-primary"
+                        : "bg-neutral-200 dark:bg-neutral-700",
+                    )}
+                  />
+                )}
+              </div>
+
+              {/* Content column */}
+              <div className={cn("flex-1", isLast ? "pb-0" : "pb-6")}>
+                <div className="flex items-start justify-between gap-2">
+                  <div
+                    className={cn(canEdit && "cursor-pointer")}
                     onClick={() => handleExpand(milestone)}
                   >
-                    <Icon className={`h-6 w-6 ${config.color}`} />
+                    <p className="font-body text-sm font-medium text-foreground">
+                      {milestone.label}
+                    </p>
+                    <p className="font-body text-xs text-neutral-500 line-clamp-1">
+                      {milestone.description}
+                    </p>
                   </div>
-                  {!isLast && (
-                    <div
-                      className={`w-0.5 flex-1 min-h-8 ${config.lineColor}`}
-                    />
-                  )}
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full px-2 py-0.5 font-body text-xs font-medium",
+                      milestone.status === "completed" &&
+                        "bg-brand-primary/10 text-brand-primary",
+                      milestone.status === "in_progress" &&
+                        "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+                      milestone.status === "not_started" &&
+                        "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
+                    )}
+                  >
+                    {statusLabel(milestone.status)}
+                  </span>
                 </div>
 
-                {/* Content */}
-                <div className={`pb-6 flex-1 ${isLast ? "pb-0" : ""}`}>
-                  <div className="flex items-start justify-between gap-2">
+                {milestone.status === "completed" && milestone.completedDate && (
+                  <p className="mt-1 font-body text-xs text-brand-primary">
+                    Completed {milestone.completedDate}
+                  </p>
+                )}
+
+                {milestone.notes && !isExpanded && (
+                  <div className="mt-2 rounded-lg bg-muted/50 p-3 font-body text-xs text-neutral-600 dark:text-neutral-400">
+                    {milestone.notes}
+                  </div>
+                )}
+
+                {/* Inline edit panel */}
+                {isExpanded && (
+                  <div className="mt-3 space-y-3 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-muted/50 p-3">
                     <div>
-                      <p className="font-medium text-sm">{milestone.label}</p>
-                      <Tooltip>
-                        <TooltipTrigger
-                          render={<p className="text-xs text-muted-foreground line-clamp-1" />}
-                        >
-                          {milestone.description}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">{milestone.description}</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      <label className="font-body text-xs font-medium text-foreground mb-1 block">
+                        Status
+                      </label>
+                      <select
+                        value={editStatus}
+                        onChange={(e) => setEditStatus(e.target.value as MilestoneStatus)}
+                        className="w-full rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-1.5 font-body text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                      >
+                        <option value="not_started">Not Started</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                      </select>
                     </div>
-                    <Badge variant="outline" className={`text-xs shrink-0 ${config.badge}`}>
-                      {config.label}
-                    </Badge>
+                    <div>
+                      <label className="font-body text-xs font-medium text-foreground mb-1 block">
+                        Notes
+                      </label>
+                      <textarea
+                        value={editNotes}
+                        onChange={(e) => setEditNotes(e.target.value)}
+                        placeholder="Add notes..."
+                        maxLength={500}
+                        rows={3}
+                        className="w-full rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 resize-none"
+                      />
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedId(null)}
+                        className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-1.5 font-body text-xs font-medium text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSave(milestone.id)}
+                        className="rounded-lg bg-brand-primary px-3 py-1.5 font-body text-xs font-medium text-white hover:bg-brand-primary/90 transition-colors"
+                      >
+                        Save
+                      </button>
+                    </div>
                   </div>
-
-                  {milestone.status === "completed" && milestone.completedDate && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Completed: {milestone.completedDate}
-                    </p>
-                  )}
-
-                  {milestone.notes && !isExpanded && (
-                    <p className="text-xs text-muted-foreground mt-1 italic">
-                      {milestone.notes}
-                    </p>
-                  )}
-
-                  {/* Inline edit panel */}
-                  {isExpanded && (
-                    <div className="mt-3 space-y-3 p-3 rounded-md border bg-muted/50">
-                      <div>
-                        <label className="text-xs font-medium mb-1 block">
-                          Status
-                        </label>
-                        <Select
-                          value={editStatus}
-                          onValueChange={(v) => setEditStatus(v as MilestoneStatus)}
-                        >
-                          <SelectTrigger className="h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="not_started">Not Started</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <label className="text-xs font-medium mb-1 block">
-                          Notes
-                        </label>
-                        <Textarea
-                          value={editNotes}
-                          onChange={(e) => setEditNotes(e.target.value)}
-                          placeholder="Add notes..."
-                          className="text-xs min-h-16"
-                          maxLength={500}
-                        />
-                      </div>
-                      <div className="flex gap-2 justify-end">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setExpandedId(null)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleSave(milestone.id)}
-                        >
-                          Save
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
