@@ -66,7 +66,7 @@ async function PageContent() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           Profile
         </h2>
         <p className="mt-1 font-body text-sm text-neutral-500">
@@ -76,7 +76,7 @@ async function PageContent() {
 
       {/* Avatar section */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Profile Photo
         </h3>
         <AvatarUploader
@@ -89,7 +89,7 @@ async function PageContent() {
 
       {/* Identity & contact section */}
       <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+        <h3 className="font-heading text-base font-semibold text-foreground">
           Identity &amp; Contact
         </h3>
         <ProfileForm

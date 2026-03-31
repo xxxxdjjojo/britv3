@@ -133,7 +133,7 @@ export function TotpEnrollmentCard({
                   <img
                     src={totpData.qr_code}
                     alt="QR code for authenticator app"
-                    className="h-40 w-40 rounded-md border"
+                    className="h-40 w-40 rounded-lg ring-1 ring-neutral-200/60 dark:ring-neutral-700/60"
                   />
                   <div className="flex-1 space-y-1">
                     <p className="text-xs text-muted-foreground">

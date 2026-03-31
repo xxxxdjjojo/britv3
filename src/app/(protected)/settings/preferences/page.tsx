@@ -173,7 +173,7 @@ export default function PreferencesSettingsPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           Preferences
         </h2>
         <p className="mt-1 font-body text-sm text-neutral-500">
@@ -185,12 +185,12 @@ export default function PreferencesSettingsPage() {
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <Globe className="size-5 text-brand-primary" />
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          <h3 className="font-heading text-base font-semibold text-foreground">
             Language &amp; Region
           </h3>
         </div>
 
-        <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           {loading ? (
             <div className="p-6">
               <PreferencesSkeleton />
@@ -200,7 +200,7 @@ export default function PreferencesSettingsPage() {
               {/* Locale */}
               <div className="flex items-center justify-between gap-4 p-4">
                 <div>
-                  <Label className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                  <Label className="font-body text-sm font-medium text-foreground">
                     Language
                   </Label>
                   <p className="font-body text-xs text-neutral-500">
@@ -227,7 +227,7 @@ export default function PreferencesSettingsPage() {
               {/* Date format */}
               <div className="flex items-center justify-between gap-4 p-4">
                 <div>
-                  <Label className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                  <Label className="font-body text-sm font-medium text-foreground">
                     Date Format
                   </Label>
                   <p className="font-body text-xs text-neutral-500">
@@ -254,7 +254,7 @@ export default function PreferencesSettingsPage() {
               {/* Currency */}
               <div className="flex items-center justify-between gap-4 p-4">
                 <div>
-                  <Label className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                  <Label className="font-body text-sm font-medium text-foreground">
                     Currency
                   </Label>
                   <p className="font-body text-xs text-neutral-500">
@@ -281,7 +281,7 @@ export default function PreferencesSettingsPage() {
               {/* Timezone */}
               <div className="flex items-center justify-between gap-4 p-4">
                 <div>
-                  <Label className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                  <Label className="font-body text-sm font-medium text-foreground">
                     Timezone
                   </Label>
                   <p className="font-body text-xs text-neutral-500">
@@ -313,12 +313,12 @@ export default function PreferencesSettingsPage() {
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <Accessibility className="size-5 text-brand-primary" />
-          <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          <h3 className="font-heading text-base font-semibold text-foreground">
             Accessibility
           </h3>
         </div>
 
-        <div className="rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           {loading ? (
             <div className="p-6">
               <PreferencesSkeleton />
@@ -327,7 +327,7 @@ export default function PreferencesSettingsPage() {
             <div className="divide-y divide-neutral-100 dark:divide-neutral-700">
               {/* Font size */}
               <div className="p-4">
-                <Label className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                <Label className="font-body text-sm font-medium text-foreground">
                   Font Size
                 </Label>
                 <p className="mb-3 font-body text-xs text-neutral-500">
@@ -362,7 +362,7 @@ export default function PreferencesSettingsPage() {
                 <div>
                   <Label
                     htmlFor="reduced-motion"
-                    className="font-body text-sm font-medium text-neutral-900 dark:text-white"
+                    className="font-body text-sm font-medium text-foreground"
                   >
                     Reduced Motion
                   </Label>
@@ -384,7 +384,7 @@ export default function PreferencesSettingsPage() {
                 <div>
                   <Label
                     htmlFor="high-contrast"
-                    className="font-body text-sm font-medium text-neutral-900 dark:text-white"
+                    className="font-body text-sm font-medium text-foreground"
                   >
                     High Contrast
                   </Label>
@@ -403,7 +403,7 @@ export default function PreferencesSettingsPage() {
 
               {/* Dark mode */}
               <div className="p-4">
-                <Label className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+                <Label className="font-body text-sm font-medium text-foreground">
                   Appearance
                 </Label>
                 <p className="mb-3 font-body text-xs text-neutral-500">
@@ -442,7 +442,7 @@ export default function PreferencesSettingsPage() {
                 <div>
                   <Label
                     htmlFor="screen-reader-hints"
-                    className="font-body text-sm font-medium text-neutral-900 dark:text-white"
+                    className="font-body text-sm font-medium text-foreground"
                   >
                     Screen Reader Hints
                   </Label>

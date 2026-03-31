@@ -67,7 +67,7 @@ export function PrivacyShieldBadge(props: PrivacyShieldProps) {
   const Icon = level === "Low" ? ShieldAlert : ShieldCheck;
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+    <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <Icon className={`size-8 shrink-0 ${iconColor}`} aria-hidden="true" />
       <div className="min-w-0">
         <p className={`font-heading text-sm font-bold leading-tight ${color}`}>

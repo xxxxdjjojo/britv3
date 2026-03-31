@@ -34,7 +34,7 @@ export function SecurityScoreBadge({
   const dashOffset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+    <div className="flex items-center gap-3 rounded-xl bg-card p-3 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <svg
         width={RING_SIZE}
         height={RING_SIZE}

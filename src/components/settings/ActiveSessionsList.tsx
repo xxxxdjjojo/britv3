@@ -107,7 +107,7 @@ export function ActiveSessionsList({
             Loading sessions…
           </div>
         ) : sessions.length === 0 ? (
-          <div className="flex items-center gap-3 rounded-lg border p-3">
+          <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200/60 dark:bg-neutral-800/50 dark:ring-neutral-700/60">
             <Monitor className="size-5 text-success" />
             <div className="flex-1">
               <p className="text-sm font-medium">Current Device</p>
@@ -121,7 +121,7 @@ export function ActiveSessionsList({
             {sessions.map((session) => (
               <div
                 key={session.id}
-                className="flex items-center gap-3 rounded-lg border p-3"
+                className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3 ring-1 ring-neutral-200/60 dark:bg-neutral-800/50 dark:ring-neutral-700/60"
               >
                 {deviceIcon(session.user_agent)}
                 <div className="flex-1 min-w-0">

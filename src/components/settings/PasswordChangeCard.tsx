@@ -62,7 +62,7 @@ export function PasswordChangeCard({
       </CardHeader>
       <CardContent>
         {!hasPassword && (
-          <div className="mb-4 flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-200">
+          <div className="mb-4 flex items-start gap-2 rounded-lg bg-brand-primary/5 p-3 text-sm text-brand-primary ring-1 ring-brand-primary/20">
             <Info className="mt-0.5 size-4 shrink-0" />
             <p>
               Your account uses Google Sign-In. Set a password to enable
