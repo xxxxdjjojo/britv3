@@ -82,43 +82,31 @@ async function DashboardContent() {
 
   return (
     <div className="space-y-8 p-6 md:p-8">
-      {/* Welcome Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-brand-primary p-8 text-white shadow-lg md:p-10">
-        <div className="relative z-10 max-w-2xl">
-          <p className="mb-1 text-sm font-medium text-white/70 uppercase tracking-widest">Landlord Dashboard</p>
-          <h2 className="font-heading mb-3 text-3xl font-bold tracking-tight md:text-4xl">
+      {/* Page Heading */}
+      <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p className="text-sm font-medium text-neutral-500 uppercase tracking-widest">Landlord Dashboard</p>
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
             Portfolio Overview
           </h2>
-          <p className="mb-7 text-base leading-relaxed text-white/80">
-            {kpis.total_properties === 0
-              ? "Get started by adding your first rental property."
-              : `Managing ${kpis.total_properties} propert${kpis.total_properties === 1 ? "y" : "ies"}.${
-                  kpis.compliance_alerts > 0
-                    ? ` You have ${kpis.compliance_alerts} compliance item${kpis.compliance_alerts > 1 ? "s" : ""} requiring attention.`
-                    : " All compliance certificates are up to date."
-                }`}
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/dashboard/landlord/properties/add"
-              aria-label="Add a new property"
-              className="flex items-center gap-2 rounded-xl bg-white/15 border border-white/25 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
-            >
-              <Plus className="size-4" />
-              Add Property
-            </Link>
-            <Link
-              href="/dashboard/landlord/compliance"
-              aria-label="View compliance status"
-              className="flex items-center gap-2 rounded-xl bg-white/15 border border-white/25 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
-            >
-              <ShieldCheck className="size-4" />
-              Compliance
-            </Link>
-          </div>
         </div>
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/3 opacity-[0.07]">
-          <Building2 className="h-full w-full translate-x-1/4 -translate-y-1/4" />
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/dashboard/landlord/properties/add"
+            aria-label="Add a new property"
+            className="flex items-center gap-2 rounded-xl bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-primary-light"
+          >
+            <Plus className="size-4" />
+            Add Property
+          </Link>
+          <Link
+            href="/dashboard/landlord/compliance"
+            aria-label="View compliance status"
+            className="flex items-center gap-2 rounded-xl bg-brand-secondary px-5 py-2.5 text-sm font-semibold text-neutral-950 shadow-sm transition-colors hover:bg-brand-secondary/90"
+          >
+            <ShieldCheck className="size-4" />
+            Quick Actions
+          </Link>
         </div>
       </section>
 
@@ -262,7 +250,7 @@ async function DashboardContent() {
 function DashboardSkeleton() {
   return (
     <div className="space-y-8 p-6 md:p-8">
-      <Skeleton className="h-44 w-full rounded-2xl" />
+      <Skeleton className="h-16 w-full rounded-2xl" />
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-32 rounded-2xl" />
