@@ -61,18 +61,15 @@ export function AdminConfirmModal({
     <Dialog open={open} onOpenChange={(o) => !o && handleCancel()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle
-            className="font-semibold text-lg"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
-          >
+          <DialogTitle className="font-heading text-base font-semibold text-foreground">
             {title}
           </DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription className="font-body text-sm text-neutral-500">{description}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-1.5">
-            <Label htmlFor="reason">
+            <Label htmlFor="reason" className="font-body text-sm font-medium text-foreground">
               Reason <span className="text-red-500">*</span>
             </Label>
             <Select value={reason} onValueChange={(v) => setReason(v ?? "")}>
@@ -90,9 +87,9 @@ export function AdminConfirmModal({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="notes">
+            <Label htmlFor="notes" className="font-body text-sm font-medium text-foreground">
               Notes{" "}
-              <span className="text-neutral-400 text-sm">(optional)</span>
+              <span className="font-body text-xs text-neutral-400">(optional)</span>
             </Label>
             <Textarea
               id="notes"
@@ -105,11 +102,17 @@ export function AdminConfirmModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+          <Button
+            variant="outline"
+            className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 font-body text-sm font-medium text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <Button
             variant="destructive"
+            className="rounded-lg bg-destructive font-body text-sm font-medium text-white hover:bg-destructive/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={handleConfirm}
             disabled={!reason || isLoading}
           >

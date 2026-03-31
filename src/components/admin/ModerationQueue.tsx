@@ -17,15 +17,15 @@ type Props = Readonly<{
 }>;
 
 const SEVERITY_STYLES: Record<string, string> = {
-  high: "bg-error-light text-error",
-  medium: "bg-warning-light text-warning",
-  low: "bg-neutral-100 text-neutral-600",
+  high: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+  medium: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+  low: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
 };
 
 export function ModerationQueue({ listings, onApprove, onReject }: Props) {
   if (listings.length === 0) {
     return (
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-sm text-neutral-500">
+      <div className="rounded-xl bg-card p-8 text-center font-body text-sm text-neutral-500 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
         No items to review. All listings are clear.
       </div>
     );
@@ -36,16 +36,16 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
       {listings.map((listing) => (
         <div
           key={listing.id}
-          className="rounded-lg border border-neutral-200 bg-white p-4"
+          className="rounded-xl bg-card p-4 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 hover:shadow-md transition-shadow"
         >
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
-              <h3 className="font-medium text-neutral-900">{listing.title}</h3>
+              <h3 className="font-body text-sm font-medium text-foreground">{listing.title}</h3>
               {listing.address && (
-                <p className="mt-0.5 text-sm text-neutral-500">{listing.address}</p>
+                <p className="mt-0.5 font-body text-xs text-neutral-500">{listing.address}</p>
               )}
               {listing.created_at && (
-                <p className="mt-0.5 text-xs text-neutral-400">
+                <p className="mt-0.5 font-body text-xs text-neutral-500">
                   Listed {new Date(listing.created_at).toLocaleDateString("en-GB")}
                 </p>
               )}
@@ -53,13 +53,13 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
             <div className="flex gap-2">
               <button
                 onClick={() => onApprove(listing.id)}
-                className="rounded bg-success px-3 py-1.5 text-xs font-medium text-white hover:bg-success"
+                className="rounded-lg bg-brand-primary px-3 py-1.5 font-body text-xs font-medium text-white hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
                 Approve
               </button>
               <button
                 onClick={() => onReject(listing.id)}
-                className="rounded bg-error px-3 py-1.5 text-xs font-medium text-white hover:bg-error"
+                className="rounded-lg bg-destructive px-3 py-1.5 font-body text-xs font-medium text-white hover:bg-destructive/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
                 Reject
               </button>
@@ -67,7 +67,7 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
                 href={`/properties/${listing.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 font-body text-xs font-medium text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
                 View listing
               </a>
@@ -78,13 +78,13 @@ export function ModerationQueue({ listings, onApprove, onReject }: Props) {
             {listing.flags.map((flag, i) => (
               <div key={i} className="flex items-center gap-1.5">
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    SEVERITY_STYLES[flag.severity] ?? "bg-neutral-100 text-neutral-700"
+                  className={`rounded-full px-2 py-0.5 font-body text-xs font-medium ${
+                    SEVERITY_STYLES[flag.severity] ?? "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
                   }`}
                 >
                   {flag.reason.replace("_", " ")}
                 </span>
-                <span className="text-xs text-neutral-500">{flag.details}</span>
+                <span className="font-body text-xs text-neutral-500">{flag.details}</span>
               </div>
             ))}
           </div>

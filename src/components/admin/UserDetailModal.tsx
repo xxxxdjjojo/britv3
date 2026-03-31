@@ -18,12 +18,12 @@ export function UserDetailModal({ user, open, onClose }: Props) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="relative w-full max-w-md rounded-xl bg-card p-6 shadow-xl ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-900">User Details</h2>
+          <h2 className="font-heading text-base font-semibold text-foreground">User Details</h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600"
+            className="rounded-lg p-1 text-neutral-400 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             aria-label="Close"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,27 +32,27 @@ export function UserDetailModal({ user, open, onClose }: Props) {
           </button>
         </div>
 
-        <dl className="space-y-3 text-sm">
+        <dl className="space-y-3">
           <div>
-            <dt className="font-medium text-neutral-500">Name</dt>
-            <dd className="mt-0.5 text-neutral-900">{user.display_name ?? "—"}</dd>
+            <dt className="font-body text-sm font-medium text-neutral-500">Name</dt>
+            <dd className="mt-0.5 font-body text-sm text-foreground">{user.display_name ?? "—"}</dd>
           </div>
           <div>
-            <dt className="font-medium text-neutral-500">Email</dt>
-            <dd className="mt-0.5 text-neutral-900">{user.email ?? "—"}</dd>
+            <dt className="font-body text-sm font-medium text-neutral-500">Email</dt>
+            <dd className="mt-0.5 font-body text-sm text-foreground">{user.email ?? "—"}</dd>
           </div>
           <div>
-            <dt className="font-medium text-neutral-500">Role</dt>
-            <dd className="mt-0.5 text-neutral-900">{user.active_role ?? "—"}{user.is_admin ? " (Admin)" : ""}</dd>
+            <dt className="font-body text-sm font-medium text-neutral-500">Role</dt>
+            <dd className="mt-0.5 font-body text-sm text-foreground">{user.active_role ?? "—"}{user.is_admin ? " (Admin)" : ""}</dd>
           </div>
           <div>
-            <dt className="font-medium text-neutral-500">Status</dt>
+            <dt className="font-body text-sm font-medium text-neutral-500">Status</dt>
             <dd className="mt-0.5">
               <span
-                className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium ${
                   user.is_suspended
-                    ? "bg-error-light text-error"
-                    : "bg-success-light text-success"
+                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                    : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
                 }`}
               >
                 {user.is_suspended ? "Suspended" : "Active"}
@@ -60,12 +60,12 @@ export function UserDetailModal({ user, open, onClose }: Props) {
             </dd>
           </div>
           <div>
-            <dt className="font-medium text-neutral-500">User ID</dt>
-            <dd className="mt-0.5 font-mono text-xs text-neutral-600">{user.id}</dd>
+            <dt className="font-body text-sm font-medium text-neutral-500">User ID</dt>
+            <dd className="mt-0.5 font-mono text-xs text-neutral-500">{user.id}</dd>
           </div>
           <div>
-            <dt className="font-medium text-neutral-500">Created</dt>
-            <dd className="mt-0.5 text-neutral-900">
+            <dt className="font-body text-sm font-medium text-neutral-500">Created</dt>
+            <dd className="mt-0.5 font-body text-sm text-foreground">
               {user.created_at
                 ? new Date(user.created_at).toLocaleString("en-GB")
                 : "—"}

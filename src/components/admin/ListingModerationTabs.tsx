@@ -54,17 +54,17 @@ function ListingRow({
   isPending: boolean;
 }) {
   return (
-    <tr className="border-b border-neutral-100 last:border-0">
+    <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60 hover:bg-muted/30 transition-colors last:border-0">
       <td className="py-3 pr-4">
-        <p className="text-sm font-medium text-neutral-900 truncate max-w-xs">
+        <p className="font-body text-sm font-medium text-foreground truncate max-w-xs">
           {listing.title ?? "Untitled"}
         </p>
-        <p className="text-xs text-neutral-400 mt-0.5">{listing.id.slice(0, 8)}…</p>
+        <p className="font-body text-xs text-neutral-500 mt-0.5">{listing.id.slice(0, 8)}…</p>
       </td>
       <td className="py-3 pr-4">
         <StatusBadge status={listing.status ?? "unknown"} />
       </td>
-      <td className="py-3 pr-4 text-sm text-neutral-500">
+      <td className="py-3 pr-4 font-body text-sm text-neutral-500">
         {listing.created_at
           ? new Date(listing.created_at).toLocaleDateString("en-GB", {
               day: "2-digit",
@@ -78,7 +78,7 @@ function ListingRow({
           <Button
             size="sm"
             variant="outline"
-            className="text-green-700 border-green-200 hover:bg-green-50 text-xs"
+            className="rounded-lg border border-green-200/60 dark:border-green-700/60 font-body text-xs font-medium text-green-700 hover:bg-green-50 dark:text-green-300 dark:hover:bg-green-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={() => onApprove(listing.id)}
             disabled={isPending}
           >
@@ -87,7 +87,7 @@ function ListingRow({
           <Button
             size="sm"
             variant="outline"
-            className="text-red-700 border-red-200 hover:bg-red-50 text-xs"
+            className="rounded-lg border border-red-200/60 dark:border-red-700/60 font-body text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={() => onReject(listing.id)}
             disabled={isPending}
           >
@@ -96,7 +96,7 @@ function ListingRow({
           <Button
             size="sm"
             variant="outline"
-            className="text-amber-700 border-amber-200 hover:bg-amber-50 text-xs"
+            className="rounded-lg border border-amber-200/60 dark:border-amber-700/60 font-body text-xs font-medium text-amber-700 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={() => onFlag(listing.id)}
             disabled={isPending}
           >
@@ -138,20 +138,20 @@ function ListingTable({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <table className="w-full text-left">
         <thead>
-          <tr className="border-b border-neutral-200">
-            <th className="pb-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+          <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60 bg-muted/40">
+            <th className="px-4 pb-3 pt-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Title
             </th>
-            <th className="pb-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+            <th className="pb-3 pt-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Status
             </th>
-            <th className="pb-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+            <th className="pb-3 pt-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Created
             </th>
-            <th className="pb-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide text-right">
+            <th className="pb-3 pr-4 pt-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
               Actions
             </th>
           </tr>
@@ -224,19 +224,19 @@ export function ListingModerationTabs({
     <>
       <Tabs defaultValue="pending">
         <TabsList className="mb-6">
-          <TabsTrigger value="pending">
+          <TabsTrigger value="pending" className="font-body text-sm font-medium">
             Pending Review
             {pendingListings.length > 0 && (
-              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 font-body text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
                 {pendingListings.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="all">All Listings</TabsTrigger>
-          <TabsTrigger value="flagged">
+          <TabsTrigger value="all" className="font-body text-sm font-medium">All Listings</TabsTrigger>
+          <TabsTrigger value="flagged" className="font-body text-sm font-medium">
             Flagged
             {flaggedListings.length > 0 && (
-              <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+              <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 font-body text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">
                 {flaggedListings.length}
               </span>
             )}

@@ -60,17 +60,17 @@ export function UserManagementClient({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or email…"
-          className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
+          className="flex-1 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary/30"
         />
         <button
           type="submit"
-          className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+          className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
         >
           Search
         </button>
       </form>
 
-      <p className="text-sm text-neutral-500">
+      <p className="font-body text-sm text-neutral-500">
         {total} user{total !== 1 ? "s" : ""} found
       </p>
 
@@ -82,15 +82,15 @@ export function UserManagementClient({
       />
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-neutral-500">
+        <div className="flex items-center justify-between">
+          <span className="font-body text-sm text-neutral-500">
             Page {page + 1} of {totalPages}
           </span>
           <div className="flex gap-2">
             {page > 0 && (
               <a
                 href={buildPageHref(page - 1)}
-                className="rounded border border-neutral-300 px-3 py-1 hover:bg-neutral-50"
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 font-body text-sm font-medium text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
                 Previous
               </a>
@@ -98,7 +98,7 @@ export function UserManagementClient({
             {page + 1 < totalPages && (
               <a
                 href={buildPageHref(page + 1)}
-                className="rounded border border-neutral-300 px-3 py-1 hover:bg-neutral-50"
+                className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 font-body text-sm font-medium text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               >
                 Next
               </a>

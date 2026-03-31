@@ -86,46 +86,46 @@ export function ReportedContentClient({ reports }: Props) {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-neutral-200 bg-neutral-50">
-              <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+            <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60 bg-muted/40">
+              <th className="px-4 py-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Entity Type
               </th>
-              <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+              <th className="px-4 py-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Entity ID
               </th>
-              <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+              <th className="px-4 py-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Reason
               </th>
-              <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+              <th className="px-4 py-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Status
               </th>
-              <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+              <th className="px-4 py-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Reported At
               </th>
-              <th className="px-4 py-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide text-right">
+              <th className="px-4 py-3 font-body text-xs font-semibold uppercase tracking-wide text-muted-foreground text-right">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
             {reports.map((report) => (
-              <tr key={report.id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3 text-sm font-medium text-neutral-900 capitalize">
+              <tr key={report.id} className="border-b border-neutral-100/60 dark:border-neutral-700/60 hover:bg-muted/30 transition-colors last:border-0">
+                <td className="px-4 py-3 font-body text-sm font-medium text-foreground capitalize">
                   {report.entity_type ?? "—"}
                 </td>
-                <td className="px-4 py-3 text-sm text-neutral-500 font-mono">
+                <td className="px-4 py-3 font-mono text-xs text-neutral-500">
                   {report.entity_id ? `${report.entity_id.slice(0, 8)}…` : "—"}
                 </td>
-                <td className="px-4 py-3 text-sm text-neutral-700">
+                <td className="px-4 py-3 font-body text-sm text-foreground">
                   {report.reason ?? "—"}
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={report.status ?? "open"} />
                 </td>
-                <td className="px-4 py-3 text-sm text-neutral-500">
+                <td className="px-4 py-3 font-body text-sm text-neutral-500">
                   {report.created_at
                     ? new Date(report.created_at).toLocaleDateString("en-GB", {
                         day: "2-digit",
@@ -139,7 +139,7 @@ export function ReportedContentClient({ reports }: Props) {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-neutral-700 text-xs"
+                      className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 font-body text-xs font-medium text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                       onClick={() => setModal({ type: "dismiss", reportId: report.id })}
                       disabled={isPending}
                     >
@@ -148,7 +148,7 @@ export function ReportedContentClient({ reports }: Props) {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-red-700 border-red-200 hover:bg-red-50 text-xs"
+                      className="rounded-lg border border-red-200/60 dark:border-red-700/60 font-body text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                       onClick={() => setModal({ type: "remove", reportId: report.id })}
                       disabled={isPending}
                     >
@@ -157,7 +157,7 @@ export function ReportedContentClient({ reports }: Props) {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-amber-700 border-amber-200 hover:bg-amber-50 text-xs"
+                      className="rounded-lg border border-amber-200/60 dark:border-amber-700/60 font-body text-xs font-medium text-amber-700 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                       onClick={() => setModal({ type: "warn", reportId: report.id })}
                       disabled={isPending}
                     >
