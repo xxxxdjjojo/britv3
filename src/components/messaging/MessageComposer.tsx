@@ -133,7 +133,7 @@ export default function MessageComposer(
             <button
               key={suggestion}
               type="button"
-              className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+              className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
               onClick={() => setContent(suggestion)}
             >
               {suggestion}
@@ -148,7 +148,7 @@ export default function MessageComposer(
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 rounded-lg p-2 text-neutral-400 hover:text-foreground transition-colors"
+          className="shrink-0 rounded-lg p-2 text-neutral-400 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
           title="Attach file"
         >
           <svg
@@ -203,7 +203,7 @@ export default function MessageComposer(
           disabled={
             sendMutation.isPending || isUploading || (!content.trim() && !selectedFile)
           }
-          className="shrink-0 rounded-lg bg-brand-primary p-2 text-white hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
+          className="shrink-0 rounded-lg bg-brand-primary p-2 text-white hover:bg-brand-primary/90 transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="22" y1="2" x2="11" y2="13" />

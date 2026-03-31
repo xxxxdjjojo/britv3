@@ -293,7 +293,7 @@ export default function NotificationCentreClient() {
           type="button"
           onClick={handleMarkAllRead}
           disabled={isLoading || markAllRead.isPending}
-          className="rounded-lg border border-neutral-200/60 px-3 py-1.5 font-body text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50 dark:border-neutral-700/60"
+          className="rounded-lg border border-neutral-200/60 px-3 py-1.5 font-body text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50 dark:border-neutral-700/60 focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
         >
           Mark all as read
         </button>
@@ -307,7 +307,7 @@ export default function NotificationCentreClient() {
             type="button"
             onClick={() => setActiveTab(tab)}
             className={cn(
-              "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors",
+              "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2",
               activeTab === tab
                 ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-neutral-500 hover:text-foreground",

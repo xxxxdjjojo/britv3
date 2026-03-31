@@ -190,8 +190,8 @@ export default function BookingDetailPage({ params }: PageProps) {
                   onClick={() => handleTransition(status)}
                   className={
                     status === "cancelled" || status === "declined"
-                      ? "rounded-lg bg-destructive px-3 py-1.5 font-body text-sm font-medium capitalize text-white transition-colors hover:bg-destructive/90 disabled:opacity-50"
-                      : "rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium capitalize text-white transition-colors hover:bg-brand-primary/90 disabled:opacity-50"
+                      ? "rounded-lg bg-destructive px-3 py-1.5 font-body text-sm font-medium capitalize text-white transition-colors hover:bg-destructive/90 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-destructive/30 focus-visible:ring-offset-2"
+                      : "rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium capitalize text-white transition-colors hover:bg-brand-primary/90 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                   }
                 >
                   {status.replace(/_/g, " ")}

@@ -420,7 +420,7 @@ export default function EmailSubscriptionsPage() {
               <button
                 type="button"
                 onClick={handleUnsubscribeAll}
-                className="rounded-lg border border-neutral-200 bg-card px-4 py-2 font-body text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                className="rounded-lg border border-neutral-200 bg-card px-4 py-2 font-body text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
               >
                 Unsubscribe from all marketing emails
               </button>
@@ -439,7 +439,7 @@ export default function EmailSubscriptionsPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
           >
             {saving ? "Saving…" : "Save preferences"}
           </button>

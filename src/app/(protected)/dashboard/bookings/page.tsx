@@ -134,7 +134,7 @@ export default function BookingsPage() {
             <button
               onClick={() => setActiveTab("all")}
               className={cn(
-                "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors whitespace-nowrap",
+                "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors whitespace-nowrap focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2",
                 activeTab === "all"
                   ? "border-brand-primary text-brand-primary"
                   : "border-transparent text-neutral-500 hover:text-foreground",
@@ -147,7 +147,7 @@ export default function BookingsPage() {
                 key={status}
                 onClick={() => setActiveTab(status)}
                 className={cn(
-                  "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors whitespace-nowrap",
+                  "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors whitespace-nowrap focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2",
                   activeTab === status
                     ? "border-brand-primary text-brand-primary"
                     : "border-transparent text-neutral-500 hover:text-foreground",

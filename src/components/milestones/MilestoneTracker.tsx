@@ -224,14 +224,14 @@ export function MilestoneTracker({
                       <button
                         type="button"
                         onClick={() => setExpandedId(null)}
-                        className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-1.5 font-body text-xs font-medium text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                        className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card px-3 py-1.5 font-body text-xs font-medium text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSave(milestone.id)}
-                        className="rounded-lg bg-brand-primary px-3 py-1.5 font-body text-xs font-medium text-white hover:bg-brand-primary/90 transition-colors"
+                        className="rounded-lg bg-brand-primary px-3 py-1.5 font-body text-xs font-medium text-white hover:bg-brand-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                       >
                         Save
                       </button>

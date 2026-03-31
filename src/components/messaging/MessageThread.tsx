@@ -77,13 +77,13 @@ function ThreadHeader(
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <button type="button" aria-label="Call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors">
+        <button type="button" aria-label="Call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2">
           <Phone className="h-4 w-4" />
         </button>
-        <button type="button" aria-label="Video call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors">
+        <button type="button" aria-label="Video call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2">
           <Video className="h-4 w-4" />
         </button>
-        <button type="button" aria-label="More options" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors">
+        <button type="button" aria-label="More options" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2">
           <MoreVertical className="h-4 w-4" />
         </button>
       </div>
@@ -183,7 +183,7 @@ function QuickActionsBar() {
           <button
             key={action.label}
             type="button"
-            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
           >
             <Icon className="h-3.5 w-3.5" />
             {action.label}

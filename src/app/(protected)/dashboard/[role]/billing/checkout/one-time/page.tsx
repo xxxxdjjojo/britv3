@@ -242,7 +242,7 @@ function OneTimeCheckoutContent() {
         <button
           onClick={() => void handleCheckout()}
           disabled={!selectedBoost || isLoading || !stripePromise}
-          className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center gap-2"
+          className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
         >
           {isLoading ? (
             <><Loader2 size={14} className="animate-spin" />Loading checkout…</>
