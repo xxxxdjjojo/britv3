@@ -55,7 +55,7 @@ function ThreadHeader(
     .toUpperCase();
 
   return (
-    <div className="flex items-center justify-between border-b px-4 py-3">
+    <div className="flex items-center justify-between border-b border-neutral-100/60 dark:border-neutral-700/60 px-4 py-3 bg-card">
       <div className="flex items-center gap-3">
         <div className="relative">
           <Avatar>
@@ -65,27 +65,27 @@ function ThreadHeader(
           </Avatar>
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">{displayName}</p>
+          <p className="font-heading text-base font-semibold text-foreground">{displayName}</p>
           {propertyInfo && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground border rounded-lg px-2 py-1 bg-muted/30 mt-1">
+            <div className="flex items-center gap-2 font-body text-xs text-neutral-500 border border-neutral-200/60 dark:border-neutral-700/60 rounded-lg px-2 py-1 bg-muted/30 mt-1">
               <span className="font-medium truncate max-w-48">{propertyInfo.address}</span>
               {propertyInfo.price && (
-                <span className="text-primary font-semibold">{propertyInfo.price}</span>
+                <span className="text-brand-primary font-semibold">{propertyInfo.price}</span>
               )}
             </div>
           )}
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" aria-label="Call">
+        <button type="button" aria-label="Call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors">
           <Phone className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="Video call">
+        </button>
+        <button type="button" aria-label="Video call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors">
           <Video className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" aria-label="More options">
+        </button>
+        <button type="button" aria-label="More options" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors">
           <MoreVertical className="h-4 w-4" />
-        </Button>
+        </button>
       </div>
     </div>
   );
@@ -94,9 +94,9 @@ function ThreadHeader(
 function DateSeparator(props: Readonly<{ label: string }>) {
   return (
     <div className="flex items-center gap-3 py-4">
-      <div className="flex-1 h-px bg-border" />
-      <span className="text-xs text-muted-foreground">{props.label}</span>
-      <div className="flex-1 h-px bg-border" />
+      <div className="flex-1 h-px bg-neutral-100/60 dark:bg-neutral-700/60" />
+      <span className="font-body text-xs text-neutral-400">{props.label}</span>
+      <div className="flex-1 h-px bg-neutral-100/60 dark:bg-neutral-700/60" />
     </div>
   );
 }
@@ -138,10 +138,10 @@ function MessageBubble(
       >
         <div
           className={cn(
-            "rounded-2xl px-4 py-2.5 text-sm",
+            "rounded-2xl px-4 py-2 font-body text-sm",
             isOwn
-              ? "bg-primary text-primary-foreground rounded-br-none"
-              : "bg-card border rounded-bl-none",
+              ? "bg-brand-primary text-white rounded-br-sm"
+              : "bg-muted text-foreground rounded-bl-sm",
           )}
         >
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
@@ -166,7 +166,7 @@ function MessageBubble(
             </div>
           )}
         </div>
-        <span className="text-[10px] text-muted-foreground mt-1">
+        <span className="font-body text-xs text-neutral-400 mt-1">
           {time}
         </span>
       </div>
@@ -176,19 +176,18 @@ function MessageBubble(
 
 function QuickActionsBar() {
   return (
-    <div className="flex gap-2 px-4 py-2 border-t overflow-x-auto">
+    <div className="flex gap-2 px-4 py-2 border-t border-neutral-100/60 dark:border-neutral-700/60 overflow-x-auto">
       {QUICK_ACTIONS.map((action) => {
         const Icon = action.icon;
         return (
-          <Button
+          <button
             key={action.label}
-            variant="outline"
-            size="sm"
-            className="rounded-full shrink-0 text-xs gap-1.5"
+            type="button"
+            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
           >
             <Icon className="h-3.5 w-3.5" />
             {action.label}
-          </Button>
+          </button>
         );
       })}
     </div>
@@ -368,7 +367,7 @@ export default function MessageThread(
 
       <QuickActionsBar />
       {isOtherTyping && (
-        <div className="px-4 py-1 text-xs text-muted-foreground italic flex items-center gap-1">
+        <div className="px-4 py-1 font-body text-xs text-neutral-400 italic flex items-center gap-1">
           <span className="inline-flex gap-0.5">
             <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
             <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>

@@ -157,8 +157,8 @@ function ConversationRow(
         onSelect(conv.id, otherUserId);
       }}
       className={cn(
-        "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
-        isActive && "bg-muted border-l-2 border-primary",
+        "flex items-center gap-3 w-full text-left px-4 py-3 cursor-pointer transition-colors hover:bg-muted/50",
+        isActive && "bg-brand-primary/5 border-l-2 border-brand-primary",
       )}
     >
       <div className="relative">
@@ -168,7 +168,7 @@ function ConversationRow(
           </AvatarFallback>
         </Avatar>
         {hasUnread && (
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-card" />
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-brand-primary border-2 border-card" />
         )}
       </div>
 
@@ -176,17 +176,17 @@ function ConversationRow(
         <div className="flex items-center justify-between gap-2">
           <span
             className={cn(
-              "text-sm truncate text-foreground",
+              "font-body text-sm truncate text-foreground",
               hasUnread ? "font-bold" : "font-medium",
             )}
           >
             {name}
           </span>
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
+          <span className="font-body text-xs text-neutral-400 whitespace-nowrap">
             {timestamp}
           </span>
         </div>
-        <p className="text-xs truncate mt-0.5 text-muted-foreground">
+        <p className="font-body text-xs truncate mt-0.5 text-neutral-500">
           {lastMessage}
         </p>
       </div>
@@ -284,10 +284,10 @@ export default function InboxList(
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold text-foreground mb-3">Messages</h2>
+      <div className="p-4 border-b border-neutral-100/60 dark:border-neutral-700/60">
+        <h2 className="font-heading text-xl font-semibold text-foreground mb-3">Messages</h2>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
           <Input
             placeholder="Search conversations..."
             value={search}
@@ -314,13 +314,13 @@ export default function InboxList(
           )}
 
           {!isLoading && error && (
-            <div className="p-6 text-center text-sm text-destructive">
+            <div className="p-6 text-center font-body text-sm text-destructive">
               Failed to load conversations
             </div>
           )}
 
           {!isLoading && !error && conversations.length === 0 && (
-            <div className="p-6 text-center text-sm text-muted-foreground">
+            <div className="p-6 text-center font-body text-sm text-neutral-500">
               No conversations found
             </div>
           )}

@@ -12,7 +12,6 @@ import { createClient } from "@/lib/supabase/client";
 import { uploadAttachment } from "@/services/messaging/attachment-service";
 import { getSuggestedReplies } from "@/services/smart-replies/smart-replies";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import AttachmentPreview from "@/components/messaging/AttachmentPreview";
 
 const MAX_CHARS = 5000;
@@ -118,7 +117,7 @@ export default function MessageComposer(
   const charCount = content.length;
 
   return (
-    <div className="border-t bg-background p-3 space-y-2">
+    <div className="border-t border-neutral-100/60 dark:border-neutral-700/60 bg-card px-4 py-3 space-y-2">
       {/* Attachment preview */}
       {selectedFile && (
         <AttachmentPreview
@@ -131,16 +130,14 @@ export default function MessageComposer(
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {suggestions.map((suggestion) => (
-            <Button
+            <button
               key={suggestion}
               type="button"
-              variant="ghost"
-              size="sm"
-              className="rounded-full text-xs border"
+              className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
               onClick={() => setContent(suggestion)}
             >
               {suggestion}
-            </Button>
+            </button>
           ))}
         </div>
       )}
@@ -148,12 +145,10 @@ export default function MessageComposer(
       {/* Composer row */}
       <div className="flex items-end gap-2">
         {/* Attach button */}
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={() => fileInputRef.current?.click()}
-          className="shrink-0"
+          className="shrink-0 rounded-lg p-2 text-neutral-400 hover:text-foreground transition-colors"
           title="Attach file"
         >
           <svg
@@ -169,7 +164,7 @@ export default function MessageComposer(
           >
             <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
           </svg>
-        </Button>
+        </button>
 
         <input
           ref={fileInputRef}
@@ -180,7 +175,7 @@ export default function MessageComposer(
         />
 
         {/* Message input */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative rounded-xl bg-muted/50 border border-neutral-200/60 dark:border-neutral-700/60">
           <Textarea
             placeholder="Type a message... (Ctrl+Enter to send)"
             value={content}
@@ -194,24 +189,30 @@ export default function MessageComposer(
             }}
             onKeyDown={handleKeyDown}
             rows={1}
-            className="pr-16 min-h-10 max-h-32 resize-none"
+            className="pr-16 min-h-10 max-h-32 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
           />
-          <span className="absolute right-2 bottom-1 text-[10px] text-muted-foreground">
+          <span className="absolute right-2 bottom-1 font-body text-[10px] text-neutral-400">
             {charCount}/{MAX_CHARS}
           </span>
         </div>
 
         {/* Send button */}
-        <Button
-          size="sm"
+        <button
+          type="button"
           onClick={() => void handleSend()}
           disabled={
             sendMutation.isPending || isUploading || (!content.trim() && !selectedFile)
           }
-          className="shrink-0"
+          className="shrink-0 rounded-lg bg-brand-primary p-2 text-white hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
         >
-          {isUploading ? "Uploading..." : sendMutation.isPending ? "Sending..." : "Send"}
-        </Button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          <span className="sr-only">
+            {isUploading ? "Uploading..." : sendMutation.isPending ? "Sending..." : "Send"}
+          </span>
+        </button>
       </div>
     </div>
   );
