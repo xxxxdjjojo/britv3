@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { FileEdit, PiggyBank } from "lucide-react";
+import { TrendingDown, Clock, Calendar, Percent, ChevronRight } from "lucide-react";
 import { calculateMonthlyPayment } from "@/lib/calculators/mortgage";
 
 const formatCurrency = (value: number) =>
@@ -21,7 +21,7 @@ const formatMonths = (months: number): string => {
   const remainder = months % 12;
   if (years === 0) return `${remainder}m`;
   if (remainder === 0) return `${years}y`;
-  return `${years}y ${remainder}m`;
+  return `${years}y${remainder}m`;
 };
 
 /**
@@ -119,13 +119,9 @@ export function OverpaymentCalculator({ initialLoan }: OverpaymentCalculatorProp
   const interestSaved = baseResult.totalInterest - overpayResult.totalInterest;
   const monthsSaved = baseResult.months - overpayResult.months;
 
-  // Donut: interest saved proportion
-  const savedRatio =
-    baseResult.totalInterest > 0
-      ? Math.min(1, interestSaved / baseResult.totalInterest)
-      : 0;
-  const circumference = 2 * Math.PI * 70;
-  const dashOffset = circumference * (1 - savedRatio);
+  // Mortgage-free year
+  const currentYear = new Date().getFullYear();
+  const mortgageFreeYear = currentYear + Math.ceil(overpayResult.months / 12);
 
   // Build a simple year-by-year balance comparison (every 5 years)
   const milestones: Array<{ year: number; baseBalance: number; overBalance: number }> = useMemo(() => {
@@ -139,13 +135,15 @@ export function OverpaymentCalculator({ initialLoan }: OverpaymentCalculatorProp
     let baseBal = loanAmount;
     let overBal = loanAmount;
     let yearOverpaid = 0;
-    let currentYear = 0;
-    const points: Array<{ year: number; baseBalance: number; overBalance: number }> = [];
+    let currentYearIdx = 0;
+    const points: Array<{ year: number; baseBalance: number; overBalance: number }> = [
+      { year: 0, baseBalance: loanAmount, overBalance: loanAmount },
+    ];
 
     for (let m = 0; m < maxMonths; m++) {
       const thisYear = Math.floor(m / 12);
-      if (thisYear > currentYear) {
-        currentYear = thisYear;
+      if (thisYear > currentYearIdx) {
+        currentYearIdx = thisYear;
         yearOverpaid = 0;
         if (thisYear % 5 === 0) {
           points.push({
@@ -181,310 +179,349 @@ export function OverpaymentCalculator({ initialLoan }: OverpaymentCalculatorProp
 
   const maxBalance = loanAmount;
 
+  // SVG line chart dimensions
+  const chartW = 400;
+  const chartH = 120;
+  const padL = 0;
+  const padT = 8;
+  const padB = 20;
+  const plotH = chartH - padT - padB;
+
+  const toX = (year: number) => {
+    if (milestones.length < 2) return padL;
+    const maxY = milestones[milestones.length - 1]?.year ?? termYears;
+    return padL + (year / maxY) * chartW;
+  };
+  const toY = (bal: number) => padT + plotH - (bal / maxBalance) * plotH;
+
+  const basePath = milestones
+    .map((m, i) => `${i === 0 ? "M" : "L"} ${toX(m.year).toFixed(1)} ${toY(m.baseBalance).toFixed(1)}`)
+    .join(" ");
+
+  const overPath = milestones
+    .map((m, i) => `${i === 0 ? "M" : "L"} ${toX(m.year).toFixed(1)} ${toY(m.overBalance).toFixed(1)}`)
+    .join(" ");
+
   return (
-    <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-9">
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
       {/* Left Column: Inputs */}
-      <Card className="lg:col-span-4">
-        <CardContent className="p-8">
-          <h2 className="mb-6 flex items-center gap-2 text-xl font-bold">
-            <FileEdit className="h-5 w-5 text-brand-primary" strokeWidth={1.25} />
-            Mortgage Details
-          </h2>
-
-          <div className="space-y-6">
-            {/* Loan Amount */}
-            <div className="space-y-2">
-              <Label htmlFor="op-loan" className="text-sm font-semibold">
-                Outstanding Mortgage Balance
-              </Label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
-                  &pound;
-                </span>
-                <Input
-                  id="op-loan"
-                  type="number"
-                  min={0}
-                  step={1000}
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(Number(e.target.value))}
-                  className="pl-8"
-                />
-              </div>
-            </div>
-
-            {/* Annual Rate */}
-            <div className="space-y-2">
-              <Label htmlFor="op-rate" className="text-sm font-semibold">
-                Interest Rate{" "}
-                <span className="font-normal text-neutral-400">(illustrative)</span>
-              </Label>
-              <div className="relative">
-                <Input
-                  id="op-rate"
-                  type="number"
-                  min={0}
-                  max={20}
-                  step={0.1}
-                  value={annualRate}
-                  onChange={(e) => setAnnualRate(Number(e.target.value))}
-                  className="pr-8"
-                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
-                  %
-                </span>
-              </div>
-            </div>
-
-            {/* Term */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-semibold">Remaining Term</Label>
-                <span className="font-bold text-brand-primary">{termYears} Years</span>
-              </div>
-              <Slider
-                min={1}
-                max={40}
-                step={1}
-                value={[termYears]}
-                onValueChange={(val) =>
-                  setTermYears(Array.isArray(val) ? val[0] : val)
-                }
-              />
-              <div className="flex justify-between text-[10px] font-medium text-neutral-400">
-                <span>1Y</span>
-                <span>20Y</span>
-                <span>40Y</span>
-              </div>
-            </div>
-
-            {/* Monthly Overpayment */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-semibold">Monthly Overpayment</Label>
-                <span className="font-bold text-brand-primary">
-                  {formatCurrency(monthlyOverpayment)}/mo
-                </span>
-              </div>
-              <Slider
-                min={0}
-                max={2000}
-                step={50}
-                value={[monthlyOverpayment]}
-                onValueChange={(val) =>
-                  setMonthlyOverpayment(Array.isArray(val) ? val[0] : val)
-                }
-              />
-              <div className="flex justify-between text-[10px] font-medium text-neutral-400">
-                <span>£0</span>
-                <span>£1,000</span>
-                <span>£2,000</span>
-              </div>
-            </div>
-
-            {/* Annual Cap */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-sm font-semibold">
-                  ERC-Free Annual Cap
-                </Label>
-                <span className="font-bold text-brand-primary">{annualCapPct}%</span>
-              </div>
-              <Slider
-                min={0}
-                max={20}
-                step={1}
-                value={[annualCapPct]}
-                onValueChange={(val) =>
-                  setAnnualCapPct(Array.isArray(val) ? val[0] : val)
-                }
-              />
-              <p className="text-xs text-neutral-400">
-                Most UK lenders allow up to 10% of original balance per year without Early Repayment Charge (ERC).
-              </p>
-            </div>
-
-            {/* Base Payment Info */}
-            <div className="rounded-xl border border-neutral-200 p-4 dark:border-neutral-700">
-              <div className="flex items-center gap-2 mb-2">
-                <PiggyBank className="h-4 w-4 text-brand-primary" strokeWidth={1.25} />
-                <p className="text-sm font-bold">Standard Monthly Payment</p>
-              </div>
-              <p className="text-2xl font-black text-neutral-900 dark:text-white">
-                {formatCurrency(basePayment)}/mo
-              </p>
-              <p className="text-xs text-neutral-400 mt-1">
-                Total with overpayment:{" "}
-                <span className="font-semibold">
-                  {formatCurrency(basePayment + monthlyOverpayment)}/mo
-                </span>
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Right Column: Results */}
-      <div className="space-y-6 lg:col-span-5">
-        <Card className="relative overflow-hidden shadow-xl">
-          <div className="absolute -mr-16 -mt-16 right-0 top-0 h-32 w-32 rounded-full bg-brand-primary/5" />
-          <CardContent className="p-8">
-            <h2 className="mb-2 text-sm font-bold uppercase tracking-widest text-neutral-400">
-              Interest Saved
+      <div className="space-y-6">
+        {/* Current Mortgage Details */}
+        <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="font-heading mb-5 text-base font-bold text-neutral-900 dark:text-white">
+              Current Mortgage Details
             </h2>
-            <div className="mb-8 flex items-baseline gap-2">
-              <span className="text-5xl font-black text-neutral-900 dark:text-white">
-                {formatCurrency(interestSaved)}
-              </span>
-              <span className="font-medium text-neutral-500">saved</span>
-            </div>
 
-            {/* Donut */}
-            <div className="flex flex-col items-center gap-8 border-t border-neutral-100 pt-8 md:flex-row dark:border-neutral-800">
-              <div className="relative h-40 w-40 flex-shrink-0">
-                <svg className="h-full w-full -rotate-90" viewBox="0 0 160 160">
-                  <circle
-                    cx="80"
-                    cy="80"
-                    r="70"
-                    fill="transparent"
-                    stroke="currentColor"
-                    strokeWidth="20"
-                    className="text-neutral-100 dark:text-neutral-800"
-                  />
-                  <circle
-                    cx="80"
-                    cy="80"
-                    r="70"
-                    fill="transparent"
-                    stroke="currentColor"
-                    strokeWidth="20"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={dashOffset}
-                    className="text-brand-primary"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[10px] font-bold uppercase text-neutral-400">
-                    Saving
+            <div className="space-y-5">
+              {/* Loan Amount */}
+              <div className="space-y-1.5">
+                <Label htmlFor="op-loan" className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  Outstanding Balance
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-400">
+                    £
                   </span>
-                  <span className="text-sm font-bold">
-                    {(savedRatio * 100).toFixed(0)}%
-                  </span>
+                  <Input
+                    id="op-loan"
+                    type="number"
+                    min={0}
+                    step={1000}
+                    value={loanAmount}
+                    onChange={(e) => setLoanAmount(Number(e.target.value))}
+                    className="pl-7 h-10 text-sm border-neutral-200 dark:border-neutral-700 rounded-lg"
+                  />
                 </div>
               </div>
 
-              <div className="w-full flex-1 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-brand-primary" />
-                    <span className="text-sm font-medium">Saved Interest</span>
-                  </div>
-                  <span className="text-sm font-bold">
-                    {formatCurrency(interestSaved)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-neutral-200 dark:bg-neutral-700" />
-                    <span className="text-sm font-medium text-neutral-500">
-                      Remaining Interest
+              {/* Rate + Term in a 2-col grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="op-rate" className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                    Interest Rate
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="op-rate"
+                      type="number"
+                      min={0}
+                      max={20}
+                      step={0.1}
+                      value={annualRate}
+                      onChange={(e) => setAnnualRate(Number(e.target.value))}
+                      className="pr-7 h-10 text-sm border-neutral-200 dark:border-neutral-700 rounded-lg"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-400">
+                      %
                     </span>
                   </div>
-                  <span className="text-sm font-bold">
-                    {formatCurrency(overpayResult.totalInterest)}
-                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                    Remaining Term
+                  </Label>
+                  <div
+                    className="flex h-10 items-center justify-between rounded-lg border border-neutral-200 px-3 dark:border-neutral-700"
+                  >
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      {termYears} years
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Stats Grid */}
-            <div className="mt-8 grid grid-cols-2 gap-4 border-t border-neutral-100 pt-8 dark:border-neutral-800">
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Original Term
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {formatMonths(baseResult.months)}
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  New Term (with overpay)
-                </p>
-                <p className="text-xl font-bold text-brand-primary">
-                  {formatMonths(overpayResult.months)}
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Time Saved
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {formatMonths(monthsSaved)}
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-medium text-neutral-400">
-                  Total Interest (no overpay)
-                </p>
-                <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                  {formatCurrency(baseResult.totalInterest)}
-                </p>
+              {/* Term Slider */}
+              <div className="space-y-2">
+                <Slider
+                  min={1}
+                  max={40}
+                  step={1}
+                  value={[termYears]}
+                  onValueChange={(val) =>
+                    setTermYears(Array.isArray(val) ? val[0] : val)
+                  }
+                />
+                <div className="flex justify-between text-[10px] font-medium text-neutral-400">
+                  <span>1 year</span>
+                  <span>20 years</span>
+                  <span>40 years</span>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Balance Comparison Chart */}
-        {milestones.length > 1 && (
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="mb-4 text-sm font-bold">Outstanding Balance Over Time</h3>
-              <div className="space-y-3">
-                {milestones.map((m) => (
-                  <div key={m.year} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs text-neutral-500">
-                      <span>Year {m.year}</span>
-                      <div className="flex gap-4">
-                        <span className="text-neutral-400">
-                          Base: {formatCurrency(m.baseBalance)}
-                        </span>
-                        <span className="font-semibold text-brand-primary">
-                          +Overpay: {formatCurrency(m.overBalance)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="relative h-4 w-full rounded-full bg-neutral-100 dark:bg-neutral-800">
-                      {/* Base bar */}
-                      <div
-                        className="absolute h-4 rounded-full bg-neutral-300 dark:bg-neutral-600"
-                        style={{ width: `${(m.baseBalance / maxBalance) * 100}%` }}
-                      />
-                      {/* Overpayment bar */}
-                      <div
-                        className="absolute h-4 rounded-full bg-brand-primary/70"
-                        style={{ width: `${(m.overBalance / maxBalance) * 100}%` }}
-                      />
-                    </div>
+        {/* Overpayment Strategy */}
+        <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="font-heading mb-5 text-base font-bold text-neutral-900 dark:text-white">
+              Overpayment Strategy
+            </h2>
+
+            <div className="space-y-5">
+              {/* Monthly Overpayment */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                    Monthly Overpayment
+                  </Label>
+                  <span
+                    className="text-sm font-bold"
+                    style={{ color: "var(--color-brand-primary)" }}
+                  >
+                    {formatCurrency(monthlyOverpayment)}/mo
+                  </span>
+                </div>
+                <Slider
+                  min={0}
+                  max={2000}
+                  step={50}
+                  value={[monthlyOverpayment]}
+                  onValueChange={(val) =>
+                    setMonthlyOverpayment(Array.isArray(val) ? val[0] : val)
+                  }
+                />
+                <div className="flex justify-between text-[10px] font-medium text-neutral-400">
+                  <span>£0</span>
+                  <span>£1,000</span>
+                  <span>£2,000</span>
+                </div>
+              </div>
+
+              {/* Lump sum input alternative */}
+              <div className="rounded-lg border border-neutral-200 p-3 dark:border-neutral-700">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  ERC-Free Annual Cap
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
+                      Most UK lenders allow up to 10% per year without Early Repayment Charges
+                    </span>
+                    <span
+                      className="ml-4 flex-shrink-0 text-sm font-bold"
+                      style={{ color: "var(--color-brand-primary)" }}
+                    >
+                      {annualCapPct}%
+                    </span>
                   </div>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center gap-6 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-6 rounded-full bg-neutral-300 dark:bg-neutral-600" />
-                  <span>Without overpayment</span>
+                  <Slider
+                    min={0}
+                    max={20}
+                    step={1}
+                    value={[annualCapPct]}
+                    onValueChange={(val) =>
+                      setAnnualCapPct(Array.isArray(val) ? val[0] : val)
+                    }
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-6 rounded-full bg-brand-primary/70" />
-                  <span>With overpayment</span>
+              </div>
+
+              {/* Base payment summary */}
+              <div
+                className="rounded-xl p-4"
+                style={{ backgroundColor: "color-mix(in srgb, var(--color-brand-primary) 6%, transparent)" }}
+              >
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  Monthly Repayment Summary
+                </p>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p
+                      className="text-2xl font-black tabular-nums"
+                      style={{ color: "var(--color-brand-primary)" }}
+                    >
+                      {formatCurrency(basePayment + monthlyOverpayment)}
+                    </p>
+                    <p className="text-xs text-neutral-500 mt-0.5">
+                      Base {formatCurrency(basePayment)} + {formatCurrency(monthlyOverpayment)} overpayment
+                    </p>
+                  </div>
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Right Column: Results */}
+      <div className="space-y-6">
+        {/* Dark green hero card */}
+        <div
+          className="rounded-2xl p-6 text-white"
+          style={{ backgroundColor: "var(--color-brand-primary)" }}
+        >
+          {/* Top: two hero stats */}
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <div className="mb-1 text-xs font-semibold uppercase tracking-widest opacity-70">
+                Interest Saved
+              </div>
+              <div className="font-heading text-4xl font-black leading-none">
+                {formatCurrency(interestSaved)}
+              </div>
+              {baseResult.totalInterest > 0 && (
+                <div className="mt-1 text-xs opacity-70">
+                  of {formatCurrency(baseResult.totalInterest)} total
+                </div>
+              )}
+            </div>
+            {/* Time saved badge */}
+            <div className="flex-shrink-0 rounded-xl bg-white/15 px-4 py-3 text-center">
+              <div className="text-[10px] font-semibold uppercase tracking-wide opacity-80">
+                Time Saved
+              </div>
+              <div className="font-heading text-2xl font-black leading-tight">
+                {formatMonths(monthsSaved)}
+              </div>
+            </div>
+          </div>
+
+          {/* Balance Projection SVG line chart */}
+          {milestones.length > 1 && (
+            <div className="mb-4">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wide opacity-60">
+                Mortgage Balance Projection
+              </div>
+              <div className="relative overflow-hidden rounded-xl bg-white/10 px-3 pb-2 pt-3">
+                <svg
+                  viewBox={`0 0 ${chartW} ${chartH}`}
+                  className="w-full"
+                  style={{ height: "100px" }}
+                  preserveAspectRatio="none"
+                >
+                  {/* Base line */}
+                  <path
+                    d={basePath}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.35)"
+                    strokeWidth="2"
+                    strokeDasharray="5 3"
+                  />
+                  {/* Overpayment line */}
+                  <path
+                    d={overPath}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.9)"
+                    strokeWidth="2.5"
+                  />
+                </svg>
+                {/* Legend */}
+                <div className="flex items-center gap-4 text-[10px] font-medium opacity-80">
+                  <div className="flex items-center gap-1.5">
+                    <span className="block h-px w-4 border-t-2 border-dashed border-white/50" />
+                    <span>Standard</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="block h-px w-4 bg-white" />
+                    <span>Overpayment</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 4-stat row */}
+          <div className="grid grid-cols-2 gap-3 border-t border-white/20 pt-4 sm:grid-cols-4">
+            {[
+              { icon: TrendingDown, label: "Monthly Repayment", value: formatCurrency(basePayment) },
+              { icon: Percent, label: "Total Interest", value: formatCurrency(overpayResult.totalInterest) },
+              { icon: Clock, label: "Interest Rate", value: `${annualRate}%` },
+              { icon: Calendar, label: "Mortgage Free", value: `${mortgageFreeYear}` },
+            ].map(({ icon: Icon, label, value }) => (
+              <div key={label} className="text-center">
+                <Icon className="mx-auto mb-1 h-3 w-3 opacity-60" strokeWidth={1.5} />
+                <div className="font-heading text-sm font-black">{value}</div>
+                <div className="text-[9px] font-medium uppercase tracking-wide opacity-60">{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Could you get a better rate? CTA */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Card className="border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
+            <CardContent className="p-5">
+              <p className="mb-1 text-xs font-bold uppercase tracking-wide text-neutral-500">
+                Better Rate?
+              </p>
+              <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                Could you be getting a lower rate? Our brokers check the whole market.
+              </p>
+              <button
+                type="button"
+                className="flex items-center gap-1 text-xs font-bold transition-opacity hover:opacity-70"
+                style={{ color: "var(--color-brand-primary)" }}
+              >
+                Compare Today&apos;s Best Rates
+                <ChevronRight className="h-3 w-3" />
+              </button>
             </CardContent>
           </Card>
-        )}
 
-        <p className="text-xs text-neutral-400 px-1">
+          <div
+            className="flex flex-col justify-between rounded-xl p-5 text-white"
+            style={{ backgroundColor: "var(--color-brand-primary)" }}
+          >
+            <div>
+              <p className="mb-1 text-xs font-bold uppercase tracking-wide opacity-70">
+                Need a custom plan?
+              </p>
+              <p className="text-sm font-medium opacity-90">
+                Get expert advice tailored to your mortgage.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-white/15 px-3 py-2 text-xs font-bold transition-colors hover:bg-white/25"
+            >
+              Schedule Call
+            </button>
+          </div>
+        </div>
+
+        <p className="px-1 text-[11px] leading-relaxed text-neutral-400">
           Illustrative only. Based on standard repayment amortisation. Does not account
           for fixed rate deal end dates, ERC costs, or changes in interest rate.
           Always confirm overpayment limits with your lender.
