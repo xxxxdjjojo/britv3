@@ -74,18 +74,18 @@ async function PageContent({ params }: Props) {
         <div>
           <Link
             href="/dashboard/seller/offers"
-            className="inline-flex items-center gap-1.5 text-sm text-[#1a1c1c]/50 hover:text-[#1a1c1c] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-sm text-[--color-on-surface]/50 hover:text-[--color-on-surface] transition-colors mb-2"
           >
             <ArrowLeft size={15} strokeWidth={1.5} />
             Offers
           </Link>
-          <h1 className="text-2xl font-bold text-[#1a1c1c] tracking-tight">
+          <h1 className="text-2xl font-bold text-[--color-on-surface] tracking-tight">
             Sale Progression
           </h1>
-          <p className="text-sm text-[#1a1c1c]/60 mt-0.5">
+          <p className="text-sm text-[--color-on-surface]/60 mt-0.5">
             {address}
             {offer && (
-              <span className="text-[#1a1c1c]/40"> · Buyer: {offer.buyer_name}</span>
+              <span className="text-[--color-on-surface]/40"> · Buyer: {offer.buyer_name}</span>
             )}
           </p>
         </div>
@@ -100,7 +100,7 @@ async function PageContent({ params }: Props) {
           )}
           <button
             type="button"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#faf9f8] hover:bg-[#f4f3f2] text-sm font-semibold text-[#1a1c1c] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[--color-surface] hover:bg-[--color-surface-container-low] text-sm font-semibold text-[--color-on-surface] transition-colors"
           >
             <Share2 size={15} strokeWidth={1.25} />
             Share
@@ -109,22 +109,22 @@ async function PageContent({ params }: Props) {
       </div>
 
       {/* Progress overview pill */}
-      <div className="bg-[#faf9f8] rounded-xl p-4">
+      <div className="bg-[--color-surface] rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-[#1a1c1c]">
+          <span className="text-sm font-semibold text-[--color-on-surface]">
             Overall progress
           </span>
-          <span className="text-sm font-bold text-[#1B4D3E]">
+          <span className="text-sm font-bold text-[--color-brand-primary]">
             {completedStages}/{totalStages} stages
           </span>
         </div>
-        <div className="h-2 rounded-full bg-[#1B4D3E]/10">
+        <div className="h-2 rounded-full bg-[--color-brand-primary]/10">
           <div
-            className="h-full rounded-full bg-[#1B4D3E] transition-all duration-700"
+            className="h-full rounded-full bg-[--color-brand-primary] transition-all duration-700"
             style={{ width: `${progressPct}%` }}
           />
         </div>
-        <p className="text-xs text-[#1a1c1c]/40 mt-2">{progressPct}% complete</p>
+        <p className="text-xs text-[--color-on-surface]/40 mt-2">{progressPct}% complete</p>
       </div>
 
       <SaleProgressionStepper progression={progression} />

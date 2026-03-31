@@ -52,7 +52,7 @@ const ALLOWED_MIME_TYPES = new Set([
 type DocTypeConfig = {
   label: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 };
 
 const DOCUMENT_TYPES: Record<DocumentType, DocTypeConfig> = {
@@ -81,7 +81,7 @@ const DOCUMENT_TYPES: Record<DocumentType, DocTypeConfig> = {
 type StatusConfig = {
   label: string;
   badgeClass: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
 };
 
 const STATUS_CONFIG: Record<UserDocument["status"], StatusConfig> = {
@@ -150,7 +150,7 @@ function DocumentCard({
     <div className="flex items-start gap-4 rounded-xl bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
       {/* File icon */}
       <div className="flex size-12 shrink-0 flex-col items-center justify-center rounded-lg bg-neutral-50">
-        <FileText className="size-5 stroke-[1.25] text-neutral-400" />
+        <FileText strokeWidth={1.25} className="size-5 text-neutral-400" />
         <span className="mt-0.5 text-[9px] font-bold uppercase text-neutral-400">
           {ext}
         </span>
@@ -163,7 +163,7 @@ function DocumentCard({
         </p>
         <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-500">
           <span className="flex items-center gap-1">
-            <Clock className="size-3.5 stroke-[1.25]" />
+            <Clock className="size-3.5" strokeWidth={1.25} />
             {formatDate(doc.created_at)}
           </span>
           <span>{formatBytes(doc.file_size_bytes)}</span>
@@ -178,7 +178,7 @@ function DocumentCard({
         <span
           className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${statusConfig.badgeClass}`}
         >
-          <StatusIcon className="size-3 stroke-[1.25]" />
+          <StatusIcon className="size-3" strokeWidth={1.25} />
           {statusConfig.label}
         </span>
 
@@ -189,7 +189,7 @@ function DocumentCard({
             className="size-7"
             aria-label={`View ${doc.file_name}`}
           >
-            <Eye className="size-3.5 stroke-[1.25]" />
+            <Eye className="size-3.5" strokeWidth={1.25} />
           </Button>
           <Button
             variant="ghost"
@@ -199,7 +199,7 @@ function DocumentCard({
             onClick={() => onDelete(doc.id, doc.file_name)}
             disabled={isDeleting}
           >
-            <Trash2 className="size-3.5 stroke-[1.25]" />
+            <Trash2 className="size-3.5" strokeWidth={1.25} />
           </Button>
         </div>
       </div>
@@ -214,7 +214,7 @@ function EmptyCategory({ type }: Readonly<{ type: DocumentType }>) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl bg-neutral-50 py-14 text-center">
       <div className="flex size-12 items-center justify-center rounded-full bg-neutral-100">
-        <Icon className="size-6 stroke-[1.25] text-neutral-400" />
+        <Icon className="size-6 text-neutral-400" strokeWidth={1.25} />
       </div>
       <div>
         <p className="font-medium text-neutral-900">No {config.label} documents</p>
@@ -304,7 +304,7 @@ export default function DocumentsPage() {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
             Document Vault
           </h1>
           <p className="text-sm text-neutral-500">
@@ -332,9 +332,9 @@ export default function DocumentsPage() {
             className="bg-brand-primary hover:bg-brand-primary-light"
           >
             {isUploading ? (
-              <Loader2 className="mr-2 size-4 animate-spin stroke-[1.25]" />
+              <Loader2 className="mr-2 size-4 animate-spin" strokeWidth={1.25} />
             ) : (
-              <Upload className="mr-2 size-4 stroke-[1.25]" />
+              <Upload className="mr-2 size-4" strokeWidth={1.25} />
             )}
             {isUploading ? "Uploading…" : "Upload"}
           </Button>
@@ -354,7 +354,7 @@ export default function DocumentsPage() {
         <Card className="border-0 shadow-sm">
           <CardContent className="flex items-start gap-3 p-4">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50">
-              <FolderOpen className="size-4 stroke-[1.25] text-neutral-500" />
+              <FolderOpen strokeWidth={1.25} className="size-4 text-neutral-500" />
             </div>
             <div>
               <p className="text-xs text-neutral-500">Total</p>
@@ -370,7 +370,7 @@ export default function DocumentsPage() {
         <Card className="border-0 shadow-sm">
           <CardContent className="flex items-start gap-3 p-4">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-success-light">
-              <CheckCircle2 className="size-4 stroke-[1.25] text-success" />
+              <CheckCircle2 strokeWidth={1.25} className="size-4 text-success" />
             </div>
             <div>
               <p className="text-xs text-neutral-500">Verified</p>
@@ -386,7 +386,7 @@ export default function DocumentsPage() {
         <Card className="border-0 shadow-sm">
           <CardContent className="flex items-start gap-3 p-4">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-warning-light">
-              <Clock className="size-4 stroke-[1.25] text-warning" />
+              <Clock strokeWidth={1.25} className="size-4 text-warning" />
             </div>
             <div>
               <p className="text-xs text-neutral-500">Pending</p>
@@ -402,7 +402,7 @@ export default function DocumentsPage() {
         <Card className="border-0 shadow-sm">
           <CardContent className="flex items-start gap-3 p-4">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-error-light">
-              <XCircle className="size-4 stroke-[1.25] text-error" />
+              <XCircle strokeWidth={1.25} className="size-4 text-error" />
             </div>
             <div>
               <p className="text-xs text-neutral-500">Rejected</p>
@@ -418,7 +418,7 @@ export default function DocumentsPage() {
 
       {/* ── Security notice ─────────────────────────────────────────── */}
       <div className="flex items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3">
-        <Lock className="size-4 shrink-0 stroke-[1.25] text-neutral-400" />
+        <Lock className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
         <p className="text-xs text-neutral-500">
           All documents are end-to-end encrypted and stored securely. Only you and
           authorised parties can access them.
@@ -428,7 +428,7 @@ export default function DocumentsPage() {
       {/* ── Error ───────────────────────────────────────────────────── */}
       {error && (
         <div className="flex items-center gap-3 rounded-xl bg-error-light px-4 py-3 text-sm text-error">
-          <AlertCircle className="size-4 shrink-0 stroke-[1.25]" />
+          <AlertCircle className="size-4 shrink-0" strokeWidth={1.25} />
           Failed to load documents. Please refresh the page.
         </div>
       )}
@@ -469,7 +469,7 @@ export default function DocumentsPage() {
           ) : allDocs.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-2xl bg-neutral-50 py-16 text-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
-                <FolderOpen className="size-7 stroke-[1.25] text-neutral-400" />
+                <FolderOpen strokeWidth={1.25} className="size-7 text-neutral-400" />
               </div>
               <div>
                 <p className="font-medium text-neutral-900">No documents yet</p>
@@ -483,7 +483,7 @@ export default function DocumentsPage() {
                 className="mt-2"
                 onClick={handleUploadClick}
               >
-                <Upload className="mr-1.5 size-4 stroke-[1.25]" />
+                <Upload className="mr-1.5 size-4" strokeWidth={1.25} />
                 Upload your first document
               </Button>
             </div>

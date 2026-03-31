@@ -136,22 +136,22 @@ function ViewingCard({
 
         <div className="flex flex-wrap items-center gap-4 text-xs text-neutral-500">
           <span className="flex items-center gap-1.5">
-            <Clock className="size-3.5 stroke-[1.25]" />
+            <Clock className="size-3.5" strokeWidth={1.25} />
             {formatTime(viewing.scheduled_at)}
           </span>
           {viewing.type === "virtual" ? (
             <span className="flex items-center gap-1.5">
-              <Video className="size-3.5 stroke-[1.25]" />
+              <Video className="size-3.5" strokeWidth={1.25} />
               Virtual Tour
             </span>
           ) : (
             <span className="flex items-center gap-1.5">
-              <MapPin className="size-3.5 stroke-[1.25]" />
+              <MapPin className="size-3.5" strokeWidth={1.25} />
               In Person
             </span>
           )}
           <span className="flex items-center gap-1.5">
-            <User className="size-3.5 stroke-[1.25]" />
+            <User className="size-3.5" strokeWidth={1.25} />
             Estate Agent
           </span>
         </div>
@@ -173,7 +173,7 @@ function ViewingCard({
               className="text-xs"
               aria-label="Reschedule viewing"
             >
-              <RotateCcw className="mr-1.5 size-3.5 stroke-[1.25]" />
+              <RotateCcw className="mr-1.5 size-3.5" strokeWidth={1.25} />
               Reschedule
             </Button>
           </Link>
@@ -185,7 +185,7 @@ function ViewingCard({
             disabled={isCancelling}
             aria-label="Cancel viewing"
           >
-            <X className="mr-1.5 size-3.5 stroke-[1.25]" />
+            <X className="mr-1.5 size-3.5" strokeWidth={1.25} />
             Cancel
           </Button>
         </div>
@@ -265,7 +265,7 @@ export default function ViewingsPage({
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
             Viewings Schedule
           </h1>
           <p className="text-sm text-neutral-500">
@@ -274,7 +274,7 @@ export default function ViewingsPage({
         </div>
         <Link href={`/dashboard/${role}/viewings/book`}>
           <Button className="shrink-0 bg-brand-primary hover:bg-brand-primary-light">
-            <Plus className="mr-2 size-4 stroke-[1.25]" />
+            <Plus className="mr-2 size-4" strokeWidth={1.25} />
             Book Viewing
           </Button>
         </Link>
@@ -317,7 +317,7 @@ export default function ViewingsPage({
       {/* ── Error ───────────────────────────────────────────────────── */}
       {error && (
         <div className="flex items-center gap-3 rounded-xl bg-error-light px-4 py-3 text-sm text-error">
-          <AlertCircle className="size-4 shrink-0 stroke-[1.25]" />
+          <AlertCircle className="size-4 shrink-0" strokeWidth={1.25} />
           Failed to load viewings. Please refresh the page.
         </div>
       )}
@@ -327,7 +327,7 @@ export default function ViewingsPage({
         <Card className="border-0 bg-neutral-50 shadow-none">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
-              <Calendar className="size-4 stroke-[1.25] text-brand-primary" />
+              <Calendar strokeWidth={1.25} className="size-4 text-brand-primary" />
               Next Viewing
             </CardTitle>
           </CardHeader>
@@ -339,21 +339,21 @@ export default function ViewingsPage({
                 </p>
                 <div className="flex items-center gap-4 text-xs text-neutral-500">
                   <span className="flex items-center gap-1.5">
-                    <Calendar className="size-3.5 stroke-[1.25]" />
+                    <Calendar className="size-3.5" strokeWidth={1.25} />
                     {formatDate(nextViewing.scheduled_at)}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Clock className="size-3.5 stroke-[1.25]" />
+                    <Clock className="size-3.5" strokeWidth={1.25} />
                     {formatTime(nextViewing.scheduled_at)}
                   </span>
                   {nextViewing.type === "virtual" ? (
                     <span className="flex items-center gap-1.5">
-                      <Video className="size-3.5 stroke-[1.25]" />
+                      <Video className="size-3.5" strokeWidth={1.25} />
                       Virtual
                     </span>
                   ) : (
                     <span className="flex items-center gap-1.5">
-                      <MapPin className="size-3.5 stroke-[1.25]" />
+                      <MapPin className="size-3.5" strokeWidth={1.25} />
                       In Person
                     </span>
                   )}
@@ -361,7 +361,7 @@ export default function ViewingsPage({
               </div>
               <Link href={`/dashboard/${role}/viewings/${nextViewing.id}/reschedule`}>
                 <Button variant="outline" size="sm">
-                  <RotateCcw className="mr-1.5 size-3.5 stroke-[1.25]" />
+                  <RotateCcw className="mr-1.5 size-3.5" strokeWidth={1.25} />
                   Reschedule
                 </Button>
               </Link>
@@ -401,7 +401,7 @@ export default function ViewingsPage({
           ) : upcoming.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl bg-neutral-50 py-16 text-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
-                <Calendar className="size-7 stroke-[1.25] text-neutral-400" />
+                <Calendar strokeWidth={1.25} className="size-7 text-neutral-400" />
               </div>
               <div>
                 <p className="font-medium text-neutral-900">No upcoming viewings</p>
@@ -415,7 +415,7 @@ export default function ViewingsPage({
                   size="sm"
                   className="mt-2"
                 >
-                  <Plus className="mr-1.5 size-4 stroke-[1.25]" />
+                  <Plus className="mr-1.5 size-4" strokeWidth={1.25} />
                   Book your first viewing
                 </Button>
               </Link>
@@ -446,7 +446,7 @@ export default function ViewingsPage({
           ) : past.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl bg-neutral-50 py-16 text-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
-                <Clock className="size-7 stroke-[1.25] text-neutral-400" />
+                <Clock strokeWidth={1.25} className="size-7 text-neutral-400" />
               </div>
               <p className="font-medium text-neutral-900">No past viewings</p>
               <p className="text-sm text-neutral-500">

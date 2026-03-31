@@ -15,18 +15,18 @@ type Props = Readonly<{
 function ContactCard({ contact }: Readonly<{ contact: Contact }>) {
   if (!contact.name && !contact.email) return null;
   return (
-    <div className="bg-[#faf9f8] rounded-xl p-4">
-      <p className="text-xs font-semibold text-[#1a1c1c]/40 uppercase tracking-wide">
+    <div className="bg-[--color-surface] rounded-xl p-4">
+      <p className="text-xs font-semibold text-[--color-on-surface]/40 uppercase tracking-wide">
         {contact.role}
       </p>
       {contact.name && (
-        <p className="text-sm font-bold text-[#1a1c1c] mt-1">{contact.name}</p>
+        <p className="text-sm font-bold text-[--color-on-surface] mt-1">{contact.name}</p>
       )}
       <div className="flex flex-col gap-1.5 mt-2">
         {contact.email && (
           <a
             href={`mailto:${contact.email}`}
-            className="flex items-center gap-2 text-xs text-[#1B4D3E] hover:underline"
+            className="flex items-center gap-2 text-xs text-[--color-brand-primary] hover:underline"
           >
             <Mail size={12} strokeWidth={1.25} />
             {contact.email}
@@ -35,7 +35,7 @@ function ContactCard({ contact }: Readonly<{ contact: Contact }>) {
         {contact.phone && (
           <a
             href={`tel:${contact.phone}`}
-            className="flex items-center gap-2 text-xs text-[#1a1c1c]/60 hover:text-[#1a1c1c] transition-colors"
+            className="flex items-center gap-2 text-xs text-[--color-on-surface]/60 hover:text-[--color-on-surface] transition-colors"
           >
             <Phone size={12} strokeWidth={1.25} />
             {contact.phone}
@@ -68,16 +68,16 @@ export function SaleContactsSidebar({ progression }: Props) {
 
   return (
     <div className="bg-white rounded-2xl p-6">
-      <h3 className="font-semibold text-[#1a1c1c] mb-4">Key Contacts</h3>
+      <h3 className="font-semibold text-[--color-on-surface] mb-4">Key Contacts</h3>
       {contacts.length === 0 ? (
         <div className="text-center py-10">
           <Users
             size={28}
-            className="mx-auto text-[#1a1c1c]/20 mb-2"
+            className="mx-auto text-[--color-on-surface]/20 mb-2"
             strokeWidth={1.25}
           />
-          <p className="text-sm text-[#1a1c1c]/40">No contacts added yet</p>
-          <p className="text-xs text-[#1a1c1c]/25 mt-1">
+          <p className="text-sm text-[--color-on-surface]/40">No contacts added yet</p>
+          <p className="text-xs text-[--color-on-surface]/25 mt-1">
             Add your solicitor details when you have them
           </p>
         </div>

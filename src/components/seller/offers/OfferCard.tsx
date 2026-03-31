@@ -33,7 +33,7 @@ export function OfferCard({ offer, onUpdated }: Props) {
   const amount = offer.amount;
   const amountPounds = `£${(amount / 100).toLocaleString("en-GB")}`;
 
-  let amountColorClass = "text-[#1a1c1c]";
+  let amountColorClass = "text-[--color-on-surface]";
   let TrendIcon: React.ElementType | null = null;
   let percentageText = "";
 
@@ -47,7 +47,7 @@ export function OfferCard({ offer, onUpdated }: Props) {
       amountColorClass = "text-red-500";
       TrendIcon = TrendingDown;
     } else {
-      amountColorClass = "text-[#1a1c1c]/60";
+      amountColorClass = "text-[--color-on-surface]/60";
     }
   }
 
@@ -62,7 +62,7 @@ export function OfferCard({ offer, onUpdated }: Props) {
 
   return (
     <>
-      <div className="bg-[#faf9f8] rounded-2xl p-6 hover:bg-[#f4f3f2] transition-colors">
+      <div className="bg-[--color-surface] rounded-2xl p-6 hover:bg-[--color-surface-container-low] transition-colors">
         <div className="flex items-start justify-between gap-4">
           {/* Buyer info */}
           <div className="flex items-start gap-3 min-w-0">
@@ -71,7 +71,7 @@ export function OfferCard({ offer, onUpdated }: Props) {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-bold text-[#1a1c1c] text-sm">
+                <p className="font-bold text-[--color-on-surface] text-sm">
                   {offer.buyer_name}
                 </p>
                 {offer.is_verified && (
@@ -97,11 +97,11 @@ export function OfferCard({ offer, onUpdated }: Props) {
                     : `In chain (${offer.chain_length ?? "?"})`}
                 </span>
                 {offer.buyer_type && (
-                  <span className="text-xs text-[#1a1c1c]/50 capitalize">
+                  <span className="text-xs text-[--color-on-surface]/50 capitalize">
                     {offer.buyer_type} buyer
                   </span>
                 )}
-                <span className="text-xs text-[#1a1c1c]/30">
+                <span className="text-xs text-[--color-on-surface]/30">
                   {new Date(offer.offered_at).toLocaleDateString("en-GB", {
                     day: "numeric",
                     month: "short",
@@ -131,29 +131,29 @@ export function OfferCard({ offer, onUpdated }: Props) {
         </div>
 
         {offer.conditions && (
-          <div className="mt-4 pt-4 border-t border-[#1a1c1c]/5">
-            <p className="text-xs text-[#1a1c1c]/40 font-semibold uppercase tracking-wide">
+          <div className="mt-4 pt-4 border-t border-[--color-on-surface]/5">
+            <p className="text-xs text-[--color-on-surface]/40 font-semibold uppercase tracking-wide">
               Conditions
             </p>
-            <p className="text-xs text-[#1a1c1c]/60 mt-1">{offer.conditions}</p>
+            <p className="text-xs text-[--color-on-surface]/60 mt-1">{offer.conditions}</p>
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex items-center gap-3 mt-5 pt-4 border-t border-[#1a1c1c]/5">
+        <div className="flex items-center gap-3 mt-5 pt-4 border-t border-[--color-on-surface]/5">
           {offer.status === "pending" && (
             <>
               <button
                 type="button"
                 onClick={() => setModalAction("accept")}
-                className="flex-1 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] active:scale-95 transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] active:scale-95 transition-all"
               >
                 Accept
               </button>
               <button
                 type="button"
                 onClick={() => setModalAction("counter")}
-                className="flex-1 py-2.5 rounded-xl bg-[#faf9f8] hover:bg-[#e3e2e1] text-[#1a1c1c] text-sm font-semibold transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-[--color-surface] hover:bg-[--color-surface-container-highest] text-[--color-on-surface] text-sm font-semibold transition-colors"
               >
                 Counter
               </button>
@@ -168,7 +168,7 @@ export function OfferCard({ offer, onUpdated }: Props) {
           )}
           <Link
             href={`/dashboard/seller/offers/${offer.id}`}
-            className="ml-auto flex items-center gap-1 text-xs text-[#1B4D3E] font-semibold hover:underline flex-shrink-0"
+            className="ml-auto flex items-center gap-1 text-xs text-[--color-brand-primary] font-semibold hover:underline flex-shrink-0"
           >
             View full negotiation
             <ChevronRight size={13} />

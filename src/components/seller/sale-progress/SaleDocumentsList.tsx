@@ -53,14 +53,14 @@ export function SaleDocumentsList({ progression }: Props) {
   return (
     <div className="bg-white rounded-2xl p-6">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-[#1a1c1c]">Documents</h3>
-        <span className="text-sm font-semibold text-[#1a1c1c]/50">
+        <h3 className="font-semibold text-[--color-on-surface]">Documents</h3>
+        <span className="text-sm font-semibold text-[--color-on-surface]/50">
           {uploaded}/{total}
         </span>
       </div>
 
       {/* Doc progress bar */}
-      <div className="h-1.5 rounded-full bg-[#e3e2e1] mb-5">
+      <div className="h-1.5 rounded-full bg-[--color-surface-container-highest] mb-5">
         <div
           className="h-full rounded-full bg-emerald-500 transition-all"
           style={{ width: `${uploadedPct}%` }}
@@ -74,7 +74,7 @@ export function SaleDocumentsList({ progression }: Props) {
           return (
             <li
               key={`${doc.name}-${doc.stage}`}
-              className="flex items-center gap-3 p-3 rounded-xl hover:bg-[#faf9f8] transition-colors"
+              className="flex items-center gap-3 p-3 rounded-xl hover:bg-[--color-surface] transition-colors"
             >
               <span
                 className={cn(
@@ -89,10 +89,10 @@ export function SaleDocumentsList({ progression }: Props) {
                 />
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[#1a1c1c] truncate">
+                <p className="text-sm font-medium text-[--color-on-surface] truncate">
                   {doc.name}
                 </p>
-                <p className="text-xs text-[#1a1c1c]/30">
+                <p className="text-xs text-[--color-on-surface]/30">
                   Stage {doc.stage}
                 </p>
               </div>
@@ -102,7 +102,7 @@ export function SaleDocumentsList({ progression }: Props) {
                     href={doc.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-[#1B4D3E] font-semibold hover:underline"
+                    className="text-xs text-[--color-brand-primary] font-semibold hover:underline"
                   >
                     View
                   </a>

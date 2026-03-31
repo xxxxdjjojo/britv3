@@ -19,14 +19,14 @@ export function OfferActionButtons({ offer }: Props) {
         <button
           type="button"
           onClick={() => setModalAction("accept")}
-          className="flex-1 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] active:scale-95 transition-all"
+          className="flex-1 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] active:scale-95 transition-all"
         >
           Accept offer
         </button>
         <button
           type="button"
           onClick={() => setModalAction("counter")}
-          className="flex-1 py-2.5 rounded-xl bg-[#faf9f8] hover:bg-[#e3e2e1] text-[#1a1c1c] text-sm font-semibold transition-colors"
+          className="flex-1 py-2.5 rounded-xl bg-[--color-surface] hover:bg-[--color-surface-container-highest] text-[--color-on-surface] text-sm font-semibold transition-colors"
         >
           Counter
         </button>

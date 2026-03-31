@@ -36,7 +36,7 @@ function ExpectedDateBadge({
   const days = daysUntil(expectedDate);
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E]">
+      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[--color-brand-primary]/10 text-[--color-brand-primary]">
         By{" "}
         {new Date(expectedDate).toLocaleDateString("en-GB", {
           day: "numeric",
@@ -61,13 +61,13 @@ export function SaleProgressionStepper({ progression }: Props) {
 
   return (
     <div className="bg-white rounded-2xl p-6">
-      <h2 className="font-semibold text-[#1a1c1c] mb-6">Sale stages</h2>
+      <h2 className="font-semibold text-[--color-on-surface] mb-6">Sale stages</h2>
 
       <div className="relative">
         {/* Progress track */}
-        <div className="absolute top-5 left-5 right-5 h-1 bg-[#e3e2e1] rounded-full z-0">
+        <div className="absolute top-5 left-5 right-5 h-1 bg-[--color-surface-container-highest] rounded-full z-0">
           <div
-            className="h-full bg-[#1B4D3E] rounded-full transition-all duration-700"
+            className="h-full bg-[--color-brand-primary] rounded-full transition-all duration-700"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -89,8 +89,8 @@ export function SaleProgressionStepper({ progression }: Props) {
                       "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300",
                       isCompleted && "bg-emerald-500",
                       isCurrent &&
-                        "bg-[#1B4D3E] ring-4 ring-[#1B4D3E]/20",
-                      isFuture && "bg-[#e3e2e1] opacity-60",
+                        "bg-[--color-brand-primary] ring-4 ring-[--color-brand-primary]/20",
+                      isFuture && "bg-[--color-surface-container-highest] opacity-60",
                     )}
                   >
                     {isCompleted ? (
@@ -101,7 +101,7 @@ export function SaleProgressionStepper({ progression }: Props) {
                         className="text-white animate-spin"
                       />
                     ) : (
-                      <span className="text-xs font-bold text-[#1a1c1c]/30">
+                      <span className="text-xs font-bold text-[--color-on-surface]/30">
                         {stage}
                       </span>
                     )}
@@ -111,22 +111,22 @@ export function SaleProgressionStepper({ progression }: Props) {
                     className={cn(
                       "text-center text-[10px] font-medium leading-tight max-w-[70px]",
                       isCompleted && "text-emerald-700",
-                      isCurrent && "text-[#1B4D3E] font-bold",
-                      isFuture && "text-[#1a1c1c]/30",
+                      isCurrent && "text-[--color-brand-primary] font-bold",
+                      isFuture && "text-[--color-on-surface]/30",
                     )}
                   >
                     {STAGE_LABELS[stage]}
                   </p>
 
                   {completedDate ? (
-                    <p className="text-[9px] text-[#1a1c1c]/30">
+                    <p className="text-[9px] text-[--color-on-surface]/30">
                       {new Date(completedDate).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                       })}
                     </p>
                   ) : expectedDate && isCurrent ? (
-                    <p className="text-[9px] text-[#1B4D3E]/60">
+                    <p className="text-[9px] text-[--color-brand-primary]/60">
                       Est.{" "}
                       {new Date(expectedDate).toLocaleDateString("en-GB", {
                         day: "numeric",
@@ -142,13 +142,13 @@ export function SaleProgressionStepper({ progression }: Props) {
       </div>
 
       {/* Current stage detail */}
-      <div className="mt-8 bg-[#1B4D3E]/5 rounded-xl p-5">
+      <div className="mt-8 bg-[--color-brand-primary]/5 rounded-xl p-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-xs font-semibold text-[#1B4D3E]/60 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-[--color-brand-primary]/60 uppercase tracking-wide">
               Current Stage
             </p>
-            <h3 className="text-lg font-bold text-[#1B4D3E] mt-1">
+            <h3 className="text-lg font-bold text-[--color-brand-primary] mt-1">
               {STAGE_LABELS[current]}
             </h3>
           </div>
@@ -159,7 +159,7 @@ export function SaleProgressionStepper({ progression }: Props) {
           )}
         </div>
         {progression.notes && (
-          <p className="text-sm text-[#1a1c1c]/70 mt-3">{progression.notes}</p>
+          <p className="text-sm text-[--color-on-surface]/70 mt-3">{progression.notes}</p>
         )}
       </div>
     </div>

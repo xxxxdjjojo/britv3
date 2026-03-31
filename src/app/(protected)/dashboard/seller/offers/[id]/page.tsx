@@ -115,7 +115,7 @@ function TimelineBubble({ event, askingPrice }: TimelineBubbleProps) {
     labelClass = "text-red-600";
   } else {
     label = "Message";
-    labelClass = "text-[#1a1c1c]/60";
+    labelClass = "text-[--color-on-surface]/60";
   }
 
   const priceDiff =
@@ -130,7 +130,7 @@ function TimelineBubble({ event, askingPrice }: TimelineBubbleProps) {
     <div className={`flex gap-3 ${isSeller ? "flex-row-reverse" : "flex-row"}`}>
       {/* Avatar */}
       <div
-        className={`h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white ${isSeller ? "bg-[#1B4D3E]" : "bg-[#D4A853]"}`}
+        className={`h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white ${isSeller ? "bg-[--color-brand-primary]" : "bg-[#D4A853]"}`}
       >
         {isSeller ? "S" : "B"}
       </div>
@@ -139,20 +139,20 @@ function TimelineBubble({ event, askingPrice }: TimelineBubbleProps) {
       <div
         className={`max-w-sm rounded-2xl p-4 ${
           isSeller
-            ? "bg-[#1B4D3E]/5 rounded-tr-sm"
-            : "bg-[#faf9f8] rounded-tl-sm"
+            ? "bg-[--color-brand-primary]/5 rounded-tr-sm"
+            : "bg-[--color-surface] rounded-tl-sm"
         }`}
       >
         <div className="flex items-center gap-2 mb-2">
           <span className={`text-xs font-semibold ${labelClass}`}>{label}</span>
-          <span className="text-xs text-[#1a1c1c]/30">
+          <span className="text-xs text-[--color-on-surface]/30">
             {isSeller ? "You" : "Buyer"}
           </span>
         </div>
 
         {event.amount !== null && (
           <div className="mb-2">
-            <p className="text-2xl font-bold text-[#1a1c1c]">
+            <p className="text-2xl font-bold text-[--color-on-surface]">
               {formatGBP(event.amount)}
             </p>
             {pricePct && (
@@ -179,12 +179,12 @@ function TimelineBubble({ event, askingPrice }: TimelineBubbleProps) {
         )}
 
         {event.message && (
-          <div className="mt-2 pt-2 border-t border-[#1a1c1c]/5">
-            <p className="text-sm text-[#1a1c1c]/70">{event.message}</p>
+          <div className="mt-2 pt-2 border-t border-[--color-on-surface]/5">
+            <p className="text-sm text-[--color-on-surface]/70">{event.message}</p>
           </div>
         )}
 
-        <p className="text-xs text-[#1a1c1c]/30 mt-2">
+        <p className="text-xs text-[--color-on-surface]/30 mt-2">
           {formatDateTime(event.occurred_at)}
         </p>
       </div>
@@ -262,15 +262,15 @@ export default async function NegotiationHubPage({ params }: Props) {
         <div>
           <Link
             href="/dashboard/seller/offers"
-            className="inline-flex items-center gap-1.5 text-sm text-[#1a1c1c]/50 hover:text-[#1a1c1c] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-sm text-[--color-on-surface]/50 hover:text-[--color-on-surface] transition-colors mb-2"
           >
             <ArrowLeft size={15} strokeWidth={1.5} />
             Offers
           </Link>
-          <h1 className="text-2xl font-bold text-[#1a1c1c] tracking-tight">
+          <h1 className="text-2xl font-bold text-[--color-on-surface] tracking-tight">
             Negotiation Hub
           </h1>
-          <p className="text-sm text-[#1a1c1c]/60 mt-0.5">{address}</p>
+          <p className="text-sm text-[--color-on-surface]/60 mt-0.5">{address}</p>
         </div>
         <span
           className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0 ${statusClass}`}
@@ -280,18 +280,18 @@ export default async function NegotiationHubPage({ params }: Props) {
       </div>
 
       {/* Buyer info card */}
-      <div className="bg-[#faf9f8] rounded-xl p-5 flex items-start gap-4">
+      <div className="bg-[--color-surface] rounded-xl p-5 flex items-start gap-4">
         <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#D4A853]/30 to-[#D4A853]/10 flex items-center justify-center text-[#D4A853] font-bold text-lg flex-shrink-0">
           {offer.buyer_name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-bold text-[#1a1c1c]">{offer.buyer_name}</p>
+            <p className="font-bold text-[--color-on-surface]">{offer.buyer_name}</p>
             {offer.is_verified && (
               <BadgeCheck size={16} className="text-blue-500" />
             )}
           </div>
-          <p className="text-xs text-[#1a1c1c]/50 mt-0.5">{offer.buyer_email}</p>
+          <p className="text-xs text-[--color-on-surface]/50 mt-0.5">{offer.buyer_email}</p>
           <div className="flex items-center gap-4 mt-2 flex-wrap">
             <span
               className={`flex items-center gap-1.5 text-xs font-medium ${offer.chain_status === "chain_free" ? "text-emerald-600" : "text-amber-600"}`}
@@ -306,7 +306,7 @@ export default async function NegotiationHubPage({ params }: Props) {
                 : `In chain (${offer.chain_length ?? "?"})`}
             </span>
             {offer.buyer_type && (
-              <span className="text-xs text-[#1a1c1c]/50 capitalize">
+              <span className="text-xs text-[--color-on-surface]/50 capitalize">
                 {offer.buyer_type} buyer
               </span>
             )}
@@ -314,8 +314,8 @@ export default async function NegotiationHubPage({ params }: Props) {
         </div>
         {askingPrice && (
           <div className="text-right flex-shrink-0">
-            <p className="text-xs text-[#1a1c1c]/40 font-medium">Asking</p>
-            <p className="text-lg font-bold text-[#1a1c1c]">
+            <p className="text-xs text-[--color-on-surface]/40 font-medium">Asking</p>
+            <p className="text-lg font-bold text-[--color-on-surface]">
               {formatGBP(askingPrice)}
             </p>
           </div>
@@ -325,8 +325,8 @@ export default async function NegotiationHubPage({ params }: Props) {
       {/* Timeline */}
       <div className="bg-white rounded-2xl p-6">
         <div className="flex items-center gap-2 mb-6">
-          <MessageSquare size={18} strokeWidth={1.25} className="text-[#1a1c1c]/40" />
-          <h2 className="font-semibold text-[#1a1c1c] text-sm">
+          <MessageSquare size={18} strokeWidth={1.25} className="text-[--color-on-surface]/40" />
+          <h2 className="font-semibold text-[--color-on-surface] text-sm">
             Negotiation timeline
           </h2>
         </div>
@@ -344,8 +344,8 @@ export default async function NegotiationHubPage({ params }: Props) {
 
       {/* Action bar — only when pending */}
       {isPending && (
-        <div className="bg-[#faf9f8] rounded-2xl p-5">
-          <p className="text-sm font-semibold text-[#1a1c1c] mb-4">
+        <div className="bg-[--color-surface] rounded-2xl p-5">
+          <p className="text-sm font-semibold text-[--color-on-surface] mb-4">
             Respond to this offer
           </p>
           <OfferActionButtons offer={offer} />
@@ -354,7 +354,7 @@ export default async function NegotiationHubPage({ params }: Props) {
 
       {/* Sale progress CTA */}
       {hasProgressed && (
-        <div className="bg-[#1B4D3E] rounded-xl p-5 text-white flex items-center justify-between gap-4">
+        <div className="bg-[--color-brand-primary] rounded-xl p-5 text-white flex items-center justify-between gap-4">
           <div>
             <p className="font-bold text-lg">Sale agreed!</p>
             <p className="text-white/70 text-sm mt-0.5">
@@ -363,7 +363,7 @@ export default async function NegotiationHubPage({ params }: Props) {
           </div>
           <Link
             href={`/dashboard/seller/sale-progress/${offer.id}`}
-            className="flex-shrink-0 px-5 py-2.5 rounded-xl bg-white text-[#1B4D3E] text-sm font-bold hover:bg-white/90 transition-colors"
+            className="flex-shrink-0 px-5 py-2.5 rounded-xl bg-white text-[--color-brand-primary] text-sm font-bold hover:bg-white/90 transition-colors"
           >
             View progress
           </Link>

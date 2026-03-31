@@ -147,8 +147,8 @@ function StatusPill({ status }: Readonly<{ status: OfferStatus }>) {
   );
   return (
     <span className={classes}>
-      {status === "completion" && <CheckCircle2 size={11} />}
-      {status === "rejected" && <XCircle size={11} />}
+      {status === "completion" && <CheckCircle2 size={11} strokeWidth={1.25} />}
+      {status === "rejected" && <XCircle size={11} strokeWidth={1.25} />}
       {STATUS_LABELS[status]}
     </span>
   );
@@ -156,14 +156,14 @@ function StatusPill({ status }: Readonly<{ status: OfferStatus }>) {
 
 function ProgressBar({ status }: Readonly<{ status: OfferStatus }>) {
   if (isTerminal(status)) {
-    return <div className="h-1 rounded-full bg-[#e3e2e1]" />;
+    return <div className="h-1 rounded-full bg-[--color-surface-container-highest]" />;
   }
   const step = getProgressStep(status);
   const pct = Math.round((step / (PROGRESSION.length - 1)) * 100);
   return (
-    <div className="h-1 rounded-full bg-[#1B4D3E]/10">
+    <div className="h-1 rounded-full bg-[--color-brand-primary]/10">
       <div
-        className="h-full rounded-full bg-[#1B4D3E] transition-all"
+        className="h-full rounded-full bg-[--color-brand-primary] transition-all"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -181,9 +181,9 @@ function OfferRow({ offer }: Readonly<{ offer: BuyerOffer }>) {
       : null;
 
   return (
-    <div className="bg-[#faf9f8] rounded-xl p-5 hover:bg-[#f4f3f2] transition-colors">
+    <div className="bg-[--color-surface] rounded-xl p-5 hover:bg-[--color-surface-container-low] transition-colors">
       <div className="flex items-start gap-4">
-        <div className="h-14 w-14 rounded-lg bg-[#e3e2e1] flex-shrink-0 overflow-hidden">
+        <div className="h-14 w-14 rounded-lg bg-[--color-surface-container-highest] flex-shrink-0 overflow-hidden">
           {offer.photo_url ? (
             <img
               src={offer.photo_url}
@@ -192,18 +192,18 @@ function OfferRow({ offer }: Readonly<{ offer: BuyerOffer }>) {
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center">
-              <Home size={20} className="text-[#1a1c1c]/30" />
+              <Home size={20} className="text-[--color-on-surface]/30" />
             </div>
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-semibold text-[#1a1c1c] truncate text-sm leading-tight">
+              <p className="font-semibold text-[--color-on-surface] truncate text-sm leading-tight">
                 {offer.property_address}
               </p>
               <div className="flex items-center gap-3 mt-1 flex-wrap">
-                <span className="text-lg font-bold text-[#1a1c1c]">
+                <span className="text-lg font-bold text-[--color-on-surface]">
                   {formatGBP(offer.amount_pence)}
                 </span>
                 {!isTerminal(offer.status) && (
@@ -215,6 +215,7 @@ function OfferRow({ offer }: Readonly<{ offer: BuyerOffer }>) {
                   >
                     <TrendingUp
                       size={12}
+                      strokeWidth={1.25}
                       className={aboveAsking ? "" : "rotate-180"}
                     />
                     {aboveAsking ? "+" : ""}
@@ -229,14 +230,14 @@ function OfferRow({ offer }: Readonly<{ offer: BuyerOffer }>) {
             <ProgressBar status={offer.status} />
           </div>
           <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center gap-1 text-xs text-[#1a1c1c]/50">
-              <Clock size={11} />
+            <div className="flex items-center gap-1 text-xs text-[--color-on-surface]/50">
+              <Clock size={11} strokeWidth={1.25} />
               Submitted {formatDate(offer.submitted_at)}
             </div>
             {nextStep && (
-              <span className="text-xs text-[#1B4D3E] font-medium flex items-center gap-1">
+              <span className="text-xs text-[--color-brand-primary] font-medium flex items-center gap-1">
                 Next: {nextStep}
-                <ChevronRight size={12} />
+                <ChevronRight size={12} strokeWidth={1.25} />
               </span>
             )}
           </div>
@@ -282,10 +283,10 @@ export default function OffersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#1a1c1c] tracking-tight">
+        <h1 className="text-2xl font-bold text-[--color-on-surface] tracking-tight font-['Plus_Jakarta_Sans']">
           My Offers
         </h1>
-        <p className="text-sm text-[#1a1c1c]/60 mt-0.5">
+        <p className="text-sm text-[--color-on-surface]/60 mt-0.5">
           Track the progress of your submitted offers
         </p>
       </div>
@@ -304,16 +305,16 @@ export default function OffersPage() {
             sub: "past submission",
           },
         ].map(({ label, value, sub }) => (
-          <div key={label} className="bg-[#faf9f8] rounded-xl p-4">
-            <p className="text-xs text-[#1a1c1c]/50 font-medium">{label}</p>
-            <p className="text-2xl font-bold text-[#1a1c1c] mt-1">{value}</p>
-            <p className="text-xs text-[#1a1c1c]/40 mt-0.5">{sub}</p>
+          <div key={label} className="bg-[--color-surface] rounded-xl p-4">
+            <p className="text-xs text-[--color-on-surface]/50 font-medium">{label}</p>
+            <p className="text-2xl font-bold text-[--color-on-surface] mt-1">{value}</p>
+            <p className="text-xs text-[--color-on-surface]/40 mt-0.5">{sub}</p>
           </div>
         ))}
       </div>
 
       {activeCount > 0 && (
-        <div className="bg-[#1B4D3E] rounded-xl p-5 text-white">
+        <div className="bg-[--color-brand-primary] rounded-xl p-5 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold text-white/60 uppercase tracking-wider">
@@ -322,13 +323,13 @@ export default function OffersPage() {
               <p className="text-3xl font-bold mt-1">{formatGBP(totalValue)}</p>
             </div>
             <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center">
-              <TrendingUp size={22} className="text-white" />
+              <TrendingUp size={22} strokeWidth={1.25} className="text-white" />
             </div>
           </div>
         </div>
       )}
 
-      <div className="flex items-center gap-1 bg-[#f4f3f2] rounded-xl p-1 w-fit">
+      <div className="flex items-center gap-1 bg-[--color-surface-container-low] rounded-xl p-1 w-fit">
         {tabs.map(({ key, label }) => (
           <button
             key={key}
@@ -337,8 +338,8 @@ export default function OffersPage() {
             className={cn(
               "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
               tab === key
-                ? "bg-white text-[#1a1c1c] shadow-sm"
-                : "text-[#1a1c1c]/50 hover:text-[#1a1c1c]",
+                ? "bg-white text-[--color-on-surface] shadow-sm"
+                : "text-[--color-on-surface]/50 hover:text-[--color-on-surface]",
             )}
           >
             {label}
@@ -347,20 +348,20 @@ export default function OffersPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 bg-[#faf9f8] rounded-2xl">
-          <Home size={32} className="mx-auto text-[#1a1c1c]/20 mb-3" />
-          <p className="text-[#1a1c1c]/50 text-sm font-medium">
+        <div className="text-center py-20 bg-[--color-surface] rounded-2xl">
+          <Home size={32} strokeWidth={1.25} className="mx-auto text-[--color-on-surface]/20 mb-3" />
+          <p className="text-[--color-on-surface]/50 text-sm font-medium">
             No offers here yet
           </p>
-          <p className="text-[#1a1c1c]/30 text-xs mt-1">
+          <p className="text-[--color-on-surface]/30 text-xs mt-1">
             Start browsing properties to make your first offer
           </p>
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors"
+            className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-[--color-brand-primary] text-white text-sm font-semibold hover:bg-[--color-brand-primary-light] transition-colors"
           >
             Browse properties
-            <ArrowRight size={15} />
+            <ArrowRight size={15} strokeWidth={1.25} />
           </Link>
         </div>
       ) : (

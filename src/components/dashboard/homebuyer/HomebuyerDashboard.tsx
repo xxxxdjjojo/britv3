@@ -201,7 +201,7 @@ export function HomebuyerDashboard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-brand-secondary" strokeWidth={1.25} />
-            <h2 className="font-heading text-lg font-semibold tracking-tight text-neutral-900">
+            <h2 className="font-heading text-lg font-semibold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
               New Properties For You
             </h2>
           </div>
@@ -305,7 +305,7 @@ export function HomebuyerDashboard({
               {MOCK_ACTIVITY.map((item, idx) => (
                 <div
                   key={item.id}
-                  className={`flex gap-4 py-4 ${idx !== 0 ? "border-t border-neutral-100" : ""}`}
+                  className={`flex gap-4 py-4 ${idx !== 0 ? "mt-0" : ""}`}
                 >
                   <div
                     className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${item.iconBg}`}
@@ -335,7 +335,7 @@ export function HomebuyerDashboard({
 
       {/* ── 5. Recommended Services ───────────────────────────────────── */}
       <section className="flex flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold tracking-tight text-neutral-900">
+        <h2 className="font-heading text-lg font-semibold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
           Recommended Services
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -473,7 +473,7 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
           <MapPin className="size-3 shrink-0" strokeWidth={1.25} />
           <span className="truncate">{property.location}</span>
         </p>
-        <div className="flex items-center gap-3 border-t border-neutral-100 pt-2 text-xs text-neutral-500">
+        <div className="flex items-center gap-3 pt-2 text-xs text-neutral-500">
           <span className="flex items-center gap-1">
             <Bed className="size-3" strokeWidth={1.25} />
             {property.beds}
