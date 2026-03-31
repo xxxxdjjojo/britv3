@@ -45,13 +45,14 @@ function BadgeCard({ badge }: { badge: ProviderBadge }) {
 
   return (
     <div
-      className={`relative flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm ${
-        expired ? "grayscale opacity-60" : ""
-      }`}
+      className={[
+        "relative flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md",
+        expired ? "opacity-60 grayscale" : "",
+      ].join(" ")}
     >
       {/* Expired overlay label */}
       {expired && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-white/70">
+        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white/70">
           <span className="rounded-full bg-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-500">
             Expired
           </span>
@@ -60,8 +61,8 @@ function BadgeCard({ badge }: { badge: ProviderBadge }) {
 
       {/* Expiry warning banner */}
       {expiringSoon && (
-        <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-1.5 text-xs font-medium text-amber-700">
-          Expires soon — renew before{" "}
+        <div className="rounded-xl border border-warning-light bg-warning-light px-3 py-1.5 text-xs font-medium text-warning">
+          Expires soon &mdash; renew before{" "}
           {new Date(badge.expires_at!).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
@@ -71,20 +72,24 @@ function BadgeCard({ badge }: { badge: ProviderBadge }) {
       )}
 
       {/* Icon + label */}
-      <div className="flex items-center gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
-          <Icon className="size-5" />
+      <div className="flex items-start gap-3">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-primary-lighter text-brand-primary">
+          <Icon className="size-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-neutral-900">{badge.badge_label}</p>
+          <p className="font-heading text-sm font-semibold text-neutral-900">
+            {badge.badge_label}
+          </p>
           {badge.description && (
-            <p className="text-xs text-neutral-500 mt-0.5">{badge.description}</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-neutral-500">
+              {badge.description}
+            </p>
           )}
         </div>
       </div>
 
       {/* Dates */}
-      <div className="space-y-0.5 text-xs text-neutral-400">
+      <div className="space-y-0.5 border-t border-neutral-100 pt-3 text-xs text-neutral-400">
         <p>
           Earned{" "}
           {new Date(badge.earned_at).toLocaleDateString("en-GB", {
@@ -94,7 +99,15 @@ function BadgeCard({ badge }: { badge: ProviderBadge }) {
           })}
         </p>
         {badge.expires_at && (
-          <p className={expired ? "text-red-400" : expiringSoon ? "text-amber-600" : ""}>
+          <p
+            className={
+              expired
+                ? "text-error"
+                : expiringSoon
+                  ? "text-warning"
+                  : ""
+            }
+          >
             Expires{" "}
             {new Date(badge.expires_at).toLocaleDateString("en-GB", {
               day: "numeric",
@@ -114,9 +127,11 @@ export function BadgeGallery({ badges }: Props) {
 
   if (badges.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-8 text-center">
-        <Award className="mx-auto mb-3 size-8 text-neutral-300" />
-        <p className="text-sm font-medium text-neutral-500">No badges earned yet</p>
+      <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-10 text-center">
+        <Award className="mx-auto mb-4 size-9 text-neutral-300" aria-hidden="true" />
+        <p className="font-heading text-sm font-semibold text-neutral-600">
+          No badges earned yet
+        </p>
         <p className="mt-1 text-xs text-neutral-400">
           Complete your verification steps to start earning trust badges.
         </p>
@@ -127,10 +142,13 @@ export function BadgeGallery({ badges }: Props) {
   return (
     <div className="space-y-8">
       {activeBadges.length > 0 && (
-        <section>
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">
+        <section aria-labelledby="active-badges-heading">
+          <h2
+            id="active-badges-heading"
+            className="mb-4 font-heading text-base font-semibold text-neutral-900"
+          >
             Active Badges
-            <span className="ml-2 rounded-full bg-[#DCFCE7] px-2 py-0.5 text-xs font-medium text-[#16A34A]">
+            <span className="ml-2 rounded-full bg-success-light px-2.5 py-0.5 text-xs font-medium text-success">
               {activeBadges.length}
             </span>
           </h2>
@@ -143,10 +161,13 @@ export function BadgeGallery({ badges }: Props) {
       )}
 
       {expiredBadges.length > 0 && (
-        <section>
-          <h2 className="mb-4 text-base font-semibold text-neutral-500">
+        <section aria-labelledby="expired-badges-heading">
+          <h2
+            id="expired-badges-heading"
+            className="mb-4 font-heading text-base font-semibold text-neutral-500"
+          >
             Expired Badges
-            <span className="ml-2 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-400">
+            <span className="ml-2 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-400">
               {expiredBadges.length}
             </span>
           </h2>

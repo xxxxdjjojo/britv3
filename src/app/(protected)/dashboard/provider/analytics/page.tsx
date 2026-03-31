@@ -39,7 +39,9 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900">Analytics</h1>
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">
+          Performance Analytics
+        </h1>
         <p className="mt-1 text-sm text-neutral-500">
           Track your performance, earnings, and conversion metrics.
         </p>

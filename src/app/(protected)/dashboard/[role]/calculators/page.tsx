@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { InvestmentCalculator } from "@/components/calculators/InvestmentCalculator";
+import { LtvCalculator } from "@/components/calculators/LtvCalculator";
+import { MovingCostCalculator } from "@/components/calculators/MovingCostCalculator";
+import { OverpaymentCalculator } from "@/components/calculators/OverpaymentCalculator";
 import {
   Card,
   CardContent,
@@ -389,14 +393,18 @@ export default function CalculatorsPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Calculators</h1>
         <p className="text-muted-foreground mt-1">
-          Estimate your affordability and compare indicative mortgage rates.
+          Estimate affordability, compare rates, analyse investment yields, calculate LTV, and more.
         </p>
       </div>
 
       <Tabs defaultValue="affordability" className="space-y-6">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto gap-1">
           <TabsTrigger value="affordability">Affordability</TabsTrigger>
           <TabsTrigger value="mortgage-rates">Mortgage Rates</TabsTrigger>
+          <TabsTrigger value="investment">Investment Yield</TabsTrigger>
+          <TabsTrigger value="ltv">LTV</TabsTrigger>
+          <TabsTrigger value="moving-cost">Moving Costs</TabsTrigger>
+          <TabsTrigger value="overpayment">Overpayment</TabsTrigger>
         </TabsList>
 
         <TabsContent value="affordability">
@@ -405,6 +413,22 @@ export default function CalculatorsPage() {
 
         <TabsContent value="mortgage-rates">
           <MortgageComparison />
+        </TabsContent>
+
+        <TabsContent value="investment">
+          <InvestmentCalculator />
+        </TabsContent>
+
+        <TabsContent value="ltv">
+          <LtvCalculator />
+        </TabsContent>
+
+        <TabsContent value="moving-cost">
+          <MovingCostCalculator />
+        </TabsContent>
+
+        <TabsContent value="overpayment">
+          <OverpaymentCalculator />
         </TabsContent>
       </Tabs>
     </div>

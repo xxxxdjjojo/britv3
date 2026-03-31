@@ -97,6 +97,13 @@
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.03);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.03);
 
+  /* --- Surface Hierarchy (Invisible Estate design system) --- */
+  --color-surface: #faf9f8;
+  --color-surface-container-low: #f4f3f2;
+  --color-surface-container: #eeedec;
+  --color-surface-container-high: #e8e7e6;
+  --color-surface-container-highest: #e3e2e1;
+
   /* --- Custom Breakpoints (britestatestyle.txt) --- */
   --breakpoint-xs: 375px;
   /* sm (640px), md (768px), lg (1024px), xl (1280px), 2xl (1536px) are Tailwind defaults */

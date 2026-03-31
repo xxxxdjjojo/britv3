@@ -66,7 +66,7 @@ function Section({
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
       <div className="bg-neutral-50 px-6 py-4">
-        <p className="font-semibold text-neutral-900">{title}</p>
+        <p className="font-heading font-semibold text-foreground">{title}</p>
         {description && (
           <p className="mt-0.5 text-xs text-neutral-500">{description}</p>
         )}
@@ -209,7 +209,7 @@ export function AgencyBrandingForm({ profile }: Props) {
       {/* Live preview */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
         <div className="bg-neutral-50 px-6 py-4">
-          <p className="font-semibold text-neutral-900">Preview</p>
+          <p className="font-heading font-semibold text-foreground">Preview</p>
           <p className="mt-0.5 text-xs text-neutral-500">
             How your brand appears across the platform
           </p>
@@ -231,7 +231,7 @@ export function AgencyBrandingForm({ profile }: Props) {
                 className="flex size-16 items-center justify-center rounded-xl shadow-sm"
                 style={{ backgroundColor: secondaryColour }}
               >
-                <Building className="size-7 text-white" />
+                <Building className="size-7 text-white" strokeWidth={1.25} />
               </div>
             )}
             <div>
@@ -263,7 +263,7 @@ export function AgencyBrandingForm({ profile }: Props) {
               onClick={() => fileInputRef.current?.click()}
               className="flex size-24 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-brand-primary/30 bg-brand-primary-lighter text-brand-primary transition-all hover:border-brand-primary hover:bg-brand-primary-lighter/70"
             >
-              <Upload className="size-6" />
+              <Upload className="size-6" strokeWidth={1.25} />
               <span className="text-[10px] font-semibold">Upload</span>
             </button>
           )}
@@ -275,7 +275,7 @@ export function AgencyBrandingForm({ profile }: Props) {
               disabled={uploading}
               onClick={() => fileInputRef.current?.click()}
             >
-              <Upload className="mr-2 size-4" />
+              <Upload className="mr-2 size-4" strokeWidth={1.25} />
               {uploading ? "Uploading…" : "Choose file"}
             </Button>
             {logoUrl && (
@@ -382,7 +382,7 @@ export function AgencyBrandingForm({ profile }: Props) {
             style={{ backgroundColor: secondaryColour }}
           />
           <div className="flex size-10 items-center justify-center rounded-xl bg-neutral-100">
-            <Palette className="size-5 text-neutral-400" />
+            <Palette className="size-5 text-neutral-400" strokeWidth={1.25} />
           </div>
         </div>
       </Section>
@@ -433,7 +433,7 @@ export function AgencyBrandingForm({ profile }: Props) {
               </Label>
               <div className="relative mt-1.5">
                 <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                  <Icon className="size-4 text-neutral-400" />
+                  <Icon className="size-4 text-neutral-400" strokeWidth={1.25} />
                 </div>
                 <Input
                   id={id}

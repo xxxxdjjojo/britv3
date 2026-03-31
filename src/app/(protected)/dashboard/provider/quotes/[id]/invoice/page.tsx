@@ -65,13 +65,17 @@ export default async function InvoicePage({ params }: Props) {
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Generate Invoice</h1>
+          <h1 className="font-heading text-2xl font-bold text-foreground">
+            Generate Invoice
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Based on quote{" "}
-            <span className="font-medium text-foreground">{quote.quote_number}</span>
+            <span className="font-medium text-foreground">
+              {quote.quote_number}
+            </span>
           </p>
         </div>
       </div>

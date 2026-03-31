@@ -139,7 +139,7 @@ export function OffersDashboard({
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400" />
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400" strokeWidth={1.25} />
           <Input
             className="rounded-lg bg-neutral-50 pl-9 text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary"
             placeholder="Search by buyer name…"
@@ -168,9 +168,9 @@ export function OffersDashboard({
       {totalOffers === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
           <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-            <Building2 className="size-7 text-brand-primary" />
+            <Building2 className="size-7 text-brand-primary" strokeWidth={1.25} />
           </div>
-          <p className="font-semibold text-neutral-900">No offers found</p>
+          <p className="font-heading font-semibold text-foreground">No offers found</p>
           <p className="mt-1 text-sm text-neutral-500">
             {Object.keys(grouped).length === 0
               ? "No offers have been received yet."
@@ -188,7 +188,7 @@ export function OffersDashboard({
               <div className="flex items-center justify-between gap-2 bg-neutral-50 px-5 py-3.5">
                 <div className="flex items-center gap-2.5">
                   <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary-lighter">
-                    <Building2 className="size-4 text-brand-primary" />
+                    <Building2 className="size-4 text-brand-primary" strokeWidth={1.25} />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
@@ -200,7 +200,7 @@ export function OffersDashboard({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="size-3.5 text-brand-primary" />
+                  <TrendingUp className="size-3.5 text-brand-primary" strokeWidth={1.25} />
                   <span className="text-sm font-semibold text-brand-primary">
                     {offers.length} offer{offers.length !== 1 ? "s" : ""}
                   </span>

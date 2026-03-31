@@ -123,13 +123,13 @@ function SortableCard({
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab rounded-xl bg-white p-3.5 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing"
+      className="cursor-grab rounded-xl bg-card p-3.5 shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md active:cursor-grabbing"
       onClick={() => onOpen(progression)}
       onKeyDown={(e) => e.key === "Enter" && onOpen(progression)}
       role="button"
       tabIndex={0}
     >
-      <p className="truncate text-xs font-semibold text-neutral-800">
+      <p className="truncate text-xs font-semibold text-foreground">
         {progression.property_id.substring(0, 8)}…
       </p>
       <div className="mt-2 flex items-center justify-between gap-2">
@@ -188,10 +188,10 @@ function DroppableColumn({
       <div className="mb-1 px-1">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <meta.Icon className="size-3.5 text-neutral-500 shrink-0" strokeWidth={1.5} />
-            <p className="text-xs font-semibold text-neutral-800">{meta.label}</p>
+            <meta.Icon className="size-3.5 text-neutral-500 shrink-0" strokeWidth={1.25} />
+            <p className="text-xs font-semibold text-foreground">{meta.label}</p>
           </div>
-          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold text-neutral-500 shadow-sm">
+          <span className="rounded-full bg-card px-2 py-0.5 text-[10px] font-semibold text-neutral-500 shadow-sm ring-1 ring-border/40">
             {progressions.length}
           </span>
         </div>
@@ -208,7 +208,7 @@ function DroppableColumn({
             <SortableCard key={p.id} progression={p} onOpen={onOpen} />
           ))}
           {progressions.length === 0 && (
-            <div className="rounded-xl border-2 border-dashed border-neutral-200 py-8 text-center">
+            <div className="rounded-xl border-[1.5px] border-dashed border-border py-8 text-center">
               <p className="text-[10px] text-neutral-400">Drop here</p>
             </div>
           )}
@@ -251,7 +251,7 @@ function ProgressionDialog({
           {/* Stage pill + health */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary-lighter px-3 py-1 text-xs font-semibold text-brand-primary">
-              {(() => { const { Icon } = STAGE_LABELS[progression.stage]; return <Icon className="size-3 shrink-0" strokeWidth={1.5} />; })()}
+              {(() => { const { Icon } = STAGE_LABELS[progression.stage]; return <Icon className="size-3 shrink-0" strokeWidth={1.25} />; })()}
               {STAGE_LABELS[progression.stage].label}
             </span>
             <span
@@ -467,12 +467,12 @@ export function SaleProgressionKanban({
 
         <DragOverlay>
           {activeProgression ? (
-            <div className="w-[220px] cursor-grabbing rounded-xl bg-white p-3.5 shadow-xl">
-              <p className="truncate text-xs font-semibold text-neutral-800">
+            <div className="w-[220px] cursor-grabbing rounded-xl bg-card p-3.5 shadow-xl ring-1 ring-border/60">
+              <p className="truncate text-xs font-semibold text-foreground">
                 {activeProgression.property_id.substring(0, 8)}…
               </p>
               <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-brand-primary-lighter px-2 py-0.5 text-[10px] font-semibold text-brand-primary">
-                {(() => { const { Icon } = STAGE_LABELS[activeProgression.stage]; return <Icon className="size-2.5 shrink-0" strokeWidth={1.5} />; })()}
+                {(() => { const { Icon } = STAGE_LABELS[activeProgression.stage]; return <Icon className="size-2.5 shrink-0" strokeWidth={1.25} />; })()}
                 {STAGE_LABELS[activeProgression.stage].label}
               </span>
             </div>

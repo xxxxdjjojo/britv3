@@ -88,7 +88,7 @@ export function SearchFilters({
   return (
     <div
       className={cn(
-        "rounded-2xl bg-[#f4f3f2] p-5 shadow-sm",
+        "rounded-2xl bg-surface-container-low p-5 shadow-sm",
         className,
       )}
     >
@@ -111,7 +111,7 @@ export function SearchFilters({
                   (e.target.value || undefined) as ServiceCategory | undefined,
                 )
               }
-              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+              className="h-9 w-full rounded-xl bg-surface text-sm text-brand-primary outline-none px-2.5 focus:ring-2 focus:ring-brand-primary/20"
             >
               <option value="">All services</option>
               {Object.entries(CATEGORY_LABELS).map(([value, label]) => (

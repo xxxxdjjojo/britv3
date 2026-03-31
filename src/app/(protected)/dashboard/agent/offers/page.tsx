@@ -44,8 +44,8 @@ async function PageContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Offers</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">Offers</h1>
+        <p className="mt-0.5 text-sm text-muted-foreground">
           Review and manage buyer offers on your listings
         </p>
       </div>

@@ -40,11 +40,11 @@ export default async function VerificationOverviewPage() {
   const trustScore = computeTrustScore(steps);
 
   return (
-    <div className="space-y-8 p-6 max-w-5xl">
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
-          Verification &amp; Trust Centre
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">
+          Verification Hub
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
           Complete each step below to unlock full platform features and build
@@ -53,29 +53,29 @@ export default async function VerificationOverviewPage() {
       </div>
 
       {/* Two-column layout: stepper (left) + trust score (right) */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_288px]">
         {/* Stepper */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-6 text-base font-semibold text-neutral-900">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-6 font-heading text-base font-semibold text-neutral-900">
             Verification Steps
           </h2>
           <VerificationStepper steps={steps} />
         </div>
 
         {/* Trust score + badge summary */}
-        <div className="flex flex-col gap-6">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-5">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
             <TrustScoreGauge score={trustScore} />
           </div>
 
           {/* Badge count summary */}
-          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-brand-primary-lighter text-brand-primary">
                 <Award className="size-5" />
               </div>
               <div>
-                <p className="text-xs text-neutral-500">Active Badges</p>
+                <p className="text-xs font-medium text-neutral-500">Active Badges</p>
                 <p className="text-2xl font-black text-neutral-900">
                   {badges.length}
                 </p>
@@ -87,18 +87,18 @@ export default async function VerificationOverviewPage() {
 
       {/* Badge gallery */}
       {badges.length > 0 && (
-        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 font-heading text-base font-semibold text-neutral-900">
             Your Badges
           </h2>
-          <ul className="flex flex-wrap gap-3">
+          <ul className="flex flex-wrap gap-3" role="list" aria-label="Earned badges">
             {badges.map((badge) => (
               <li
                 key={badge.id}
-                className="flex items-center gap-2 rounded-full border border-[#1B4D3E]/20 bg-[#E8F5EE] px-4 py-2"
+                className="flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary-lighter px-4 py-2"
               >
-                <Award className="size-4 text-[#1B4D3E]" />
-                <span className="text-sm font-semibold text-[#1B4D3E]">
+                <Award className="size-4 text-brand-primary" aria-hidden="true" />
+                <span className="text-sm font-semibold text-brand-primary">
                   {badge.badge_label}
                 </span>
                 {badge.expires_at && (
@@ -118,9 +118,9 @@ export default async function VerificationOverviewPage() {
       )}
 
       {badges.length === 0 && (
-        <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-8 text-center">
-          <Award className="mx-auto mb-3 size-8 text-neutral-300" />
-          <p className="text-sm font-medium text-neutral-500">
+        <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-10 text-center">
+          <Award className="mx-auto mb-4 size-9 text-neutral-300" aria-hidden="true" />
+          <p className="font-heading text-sm font-semibold text-neutral-600">
             No badges earned yet
           </p>
           <p className="mt-1 text-xs text-neutral-400">

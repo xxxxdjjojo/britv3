@@ -56,9 +56,16 @@ export default async function QuoteBuilderPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 max-w-7xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">New Quote</h1>
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-foreground">
+            New Quote
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Build and send a professional quote to your client.
+          </p>
+        </div>
       </div>
 
       <QuoteBuilderForm

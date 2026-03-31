@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { AgentPublicProfile } from "@/types/providers";
 import { sanitizePostgrestInput } from "@/lib/validation/sanitize";
+import { Search, MapPin, Star, ArrowRight, UserPlus } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Find an Estate Agent Near You | Britestate",
@@ -59,7 +60,9 @@ export default async function AgentsPage({ searchParams }: Props) {
 
       // Fetch rating data for returned agents
       if (agents.length > 0) {
-        const agentIds = agents.map((a) => (a as unknown as { user_id?: string }).user_id ?? a.id).filter(Boolean);
+        const agentIds = agents
+          .map((a) => (a as unknown as { user_id?: string }).user_id ?? a.id)
+          .filter(Boolean);
         const { data: reviewData } = await supabase
           .from("reviews")
           .select("provider_id, overall_rating")
@@ -69,14 +72,18 @@ export default async function AgentsPage({ searchParams }: Props) {
         if (reviewData && reviewData.length > 0) {
           const ratingMap = new Map<string, { sum: number; count: number }>();
           for (const r of reviewData) {
-            const existing = ratingMap.get(r.provider_id) ?? { sum: 0, count: 0 };
+            const existing = ratingMap.get(r.provider_id) ?? {
+              sum: 0,
+              count: 0,
+            };
             existing.sum += r.overall_rating;
             existing.count += 1;
             ratingMap.set(r.provider_id, existing);
           }
 
           agents = agents.map((a) => {
-            const key = (a as unknown as { user_id?: string }).user_id ?? a.id;
+            const key =
+              (a as unknown as { user_id?: string }).user_id ?? a.id;
             const stats = ratingMap.get(key);
             return Object.assign({}, a, {
               avg_rating: stats ? stats.sum / stats.count : null,
@@ -90,15 +97,12 @@ export default async function AgentsPage({ searchParams }: Props) {
   }
 
   // Client-side rating filter (dataset is small, max 20 results from DB)
-  // avg_rating is not returned in this query so we treat all as unrated for now;
-  // the filter is surfaced in UI so it works once the JOIN is extended.
   const minRatingNum = minRating ? parseFloat(minRating) : null;
   const filteredAgents =
     minRatingNum !== null
       ? agents.filter((a) => {
           const rating =
             (a as unknown as { avg_rating?: number | null }).avg_rating ?? null;
-          // If no rating data, exclude when a min_rating filter is active
           if (rating === null) return false;
           return rating >= minRatingNum;
         })
@@ -107,38 +111,46 @@ export default async function AgentsPage({ searchParams }: Props) {
   const hasFilters = q || area || minRating;
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] pb-20">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-[#1B4D3E] py-16 px-6 text-white">
-        {/* Decorative blobs */}
-        <div className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-[#D4A853]/10 blur-3xl" />
+    <div className="min-h-screen bg-surface pb-28">
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] py-20 px-6">
+        <div className="pointer-events-none absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-white/5 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-brand-secondary/10 blur-3xl" />
 
-        <div className="relative max-w-4xl mx-auto text-center">
+        <div className="relative mx-auto max-w-4xl text-center">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/90 backdrop-blur-sm">
+            Find Your Perfect Agent
+          </span>
           <h1
-            className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl mb-4"
+            className="font-heading text-4xl font-bold text-white sm:text-5xl"
             style={{ letterSpacing: "-0.02em" }}
           >
             Find an Estate Agent
           </h1>
-          <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-white/70">
             Compare local estate agents — check reviews, sold prices, and fees
             before choosing.
           </p>
+
+          {/* Glassmorphism search bar */}
           <form
             action="/agents"
             method="get"
-            className="flex flex-col sm:flex-row gap-2 bg-white/90 backdrop-blur-md rounded-2xl p-2 max-w-xl mx-auto shadow-2xl shadow-[#1B4D3E]/20"
+            className="mt-8 flex flex-col sm:flex-row gap-2 bg-white/90 backdrop-blur-md rounded-2xl p-2 max-w-xl mx-auto shadow-2xl shadow-brand-primary/20"
           >
-            <input
-              name="q"
-              defaultValue={q}
-              placeholder="Search by agency name..."
-              className="flex-1 h-12 px-4 rounded-xl bg-transparent text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 text-sm"
-            />
+            <div className="flex-1 flex items-center gap-2 px-3">
+              <Search className="h-4 w-4 text-neutral-400 shrink-0" />
+              <input
+                name="q"
+                defaultValue={q}
+                placeholder="Search by agency name..."
+                className="flex-1 h-12 bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none"
+                aria-label="Search by agency name"
+              />
+            </div>
             <button
               type="submit"
-              className="min-h-[44px] h-12 px-6 bg-[#1B4D3E] text-white font-semibold rounded-xl hover:bg-[#163d32] transition-colors text-sm shrink-0"
+              className="h-12 rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white hover:bg-brand-primary/90 active:scale-95 transition-all shrink-0 min-w-[44px]"
             >
               Search
             </button>
@@ -146,63 +158,66 @@ export default async function AgentsPage({ searchParams }: Props) {
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="bg-[#f4f3f2]">
-        <div className="max-w-6xl mx-auto px-6 py-5">
+      {/* ── Filters ── */}
+      <section className="bg-surface-container-low">
+        <div className="mx-auto max-w-6xl px-6 py-5">
           <form
             action="/agents"
             method="get"
             className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-end gap-4"
           >
-            {/* Preserve the text search param */}
             {q ? <input type="hidden" name="q" value={q} /> : null}
 
             {/* Area filter */}
             <div className="flex flex-col gap-1.5 min-w-0">
               <label
                 htmlFor="area-filter"
-                className="text-xs font-semibold text-[#1B4D3E]/60 uppercase tracking-wide"
+                className="text-xs font-semibold text-brand-primary/50 uppercase tracking-wide"
               >
                 Area
               </label>
-              <input
-                id="area-filter"
-                name="area"
-                defaultValue={area}
-                placeholder="e.g. Manchester, SW1A"
-                className="px-3 py-2 text-sm rounded-xl bg-white text-[#1B4D3E] placeholder:text-[#1B4D3E]/40 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 w-52"
-              />
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-brand-primary/40" />
+                <input
+                  id="area-filter"
+                  name="area"
+                  defaultValue={area}
+                  placeholder="e.g. Manchester, SW1A"
+                  className="pl-8 pr-3 py-2 text-sm rounded-xl bg-surface text-brand-primary placeholder:text-brand-primary/30 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 w-52"
+                />
+              </div>
             </div>
 
             {/* Min rating filter */}
             <fieldset className="flex flex-col gap-1.5">
-              <legend className="text-xs font-semibold text-[#1B4D3E]/60 uppercase tracking-wide">
+              <legend className="text-xs font-semibold text-brand-primary/50 uppercase tracking-wide">
                 Min Rating
               </legend>
               <div className="flex items-center gap-3">
                 {MIN_RATING_OPTIONS.map((opt) => (
                   <label
                     key={opt.value}
-                    className="flex items-center gap-1.5 cursor-pointer text-sm text-[#1B4D3E]"
+                    className="flex items-center gap-1.5 cursor-pointer text-sm text-brand-primary"
                   >
                     <input
                       type="radio"
                       name="min_rating"
                       value={opt.value}
                       defaultChecked={minRating === opt.value}
-                      className="accent-[#1B4D3E]"
+                      className="accent-brand-primary"
                     />
+                    <Star className="h-3 w-3 fill-brand-secondary text-brand-secondary" />
                     {opt.label}
                   </label>
                 ))}
                 {minRating ? (
-                  <label className="flex items-center gap-1.5 cursor-pointer text-sm text-[#1B4D3E]/50">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-sm text-brand-primary/40">
                     <input
                       type="radio"
                       name="min_rating"
                       value=""
                       defaultChecked={!minRating}
-                      className="accent-[#1B4D3E]"
+                      className="accent-brand-primary"
                     />
                     Any
                   </label>
@@ -213,7 +228,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             {/* Submit */}
             <button
               type="submit"
-              className="min-h-[44px] px-5 py-2.5 bg-[#1B4D3E] text-white text-sm font-semibold rounded-xl hover:bg-[#163d32] transition-colors self-end"
+              className="px-5 py-2.5 bg-brand-primary text-white text-sm font-semibold rounded-xl hover:bg-brand-primary/90 active:scale-95 transition-all self-end min-h-[44px]"
             >
               Apply Filters
             </button>
@@ -222,7 +237,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             {hasFilters ? (
               <Link
                 href="/agents"
-                className="min-h-[44px] px-5 py-2.5 text-sm text-[#1B4D3E]/60 hover:text-[#1B4D3E] self-end inline-flex items-center"
+                className="px-4 py-2.5 text-sm text-brand-primary/50 hover:text-brand-primary self-end min-h-[44px] flex items-center"
               >
                 Clear
               </Link>
@@ -231,10 +246,10 @@ export default async function AgentsPage({ searchParams }: Props) {
         </div>
       </section>
 
-      {/* Results */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <p className="text-[#1B4D3E]/60 mb-6 text-sm">
-          <span className="font-semibold text-[#1B4D3E]">
+      {/* ── Results ── */}
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        <p className="text-brand-primary/60 mb-8 text-sm">
+          <span className="font-semibold text-brand-primary">
             {filteredAgents.length}
           </span>{" "}
           estate agent{filteredAgents.length !== 1 ? "s" : ""} found
@@ -242,7 +257,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             <>
               {" "}
               for{" "}
-              <span className="font-semibold text-[#1B4D3E]">
+              <span className="font-semibold text-brand-primary">
                 &ldquo;{q}&rdquo;
               </span>
             </>
@@ -251,14 +266,14 @@ export default async function AgentsPage({ searchParams }: Props) {
             <>
               {" "}
               in{" "}
-              <span className="font-semibold text-[#1B4D3E]">{area}</span>
+              <span className="font-semibold text-brand-primary">{area}</span>
             </>
           ) : null}
           {minRating ? (
             <>
               {" "}
               rated{" "}
-              <span className="font-semibold text-[#1B4D3E]">
+              <span className="font-semibold text-brand-primary">
                 {minRating}+
               </span>
             </>
@@ -266,30 +281,32 @@ export default async function AgentsPage({ searchParams }: Props) {
         </p>
 
         {filteredAgents.length === 0 ? (
-          <div className="rounded-2xl bg-[#f4f3f2] py-16 text-center">
-            <p className="text-[#1B4D3E]/60 text-lg mb-4">
-              No estate agents found. Try adjusting your filters.
+          <div className="rounded-2xl bg-surface-container-low py-20 text-center">
+            <p className="font-heading font-semibold text-brand-primary text-lg">
+              No estate agents found
+            </p>
+            <p className="text-brand-primary/50 mt-2 mb-6">
+              Try adjusting your filters or search terms.
             </p>
             <Link
               href="/agents"
-              className="text-[#1B4D3E] font-semibold hover:underline"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition-colors"
             >
               View all estate agents
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredAgents.map((agent) => {
-              // Use actual agent_agency_profiles columns
               const raw = agent as unknown as Record<string, unknown>;
               const agencyName =
                 (raw.agency_name as string | null) ??
                 agent.display_name ??
                 "Agency";
-              const logoUrl =
-                (raw.logo_url as string | null) ?? null;
-              const city =
-                (raw.city as string | null) ?? null;
+              const logoUrl = (raw.logo_url as string | null) ?? null;
+              const city = (raw.city as string | null) ?? null;
+              const avgRating = (raw.avg_rating as number | null) ?? null;
 
               const areasCovered =
                 (raw.coverage_areas as string[] | null) ??
@@ -299,11 +316,11 @@ export default async function AgentsPage({ searchParams }: Props) {
               return (
                 <div
                   key={agent.id}
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+                  className="bg-surface rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden"
                 >
                   {/* Card header */}
                   <div className="p-6 flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-[#f4f3f2] flex-shrink-0 overflow-hidden flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-2xl bg-surface-container-low flex-shrink-0 overflow-hidden flex items-center justify-center">
                       {logoUrl ? (
                         <Image
                           src={logoUrl}
@@ -313,22 +330,33 @@ export default async function AgentsPage({ searchParams }: Props) {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-2xl font-bold text-[#1B4D3E]/40">
+                        <span className="text-2xl font-bold text-brand-primary/30">
                           {agencyName.charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <h2 className="font-heading font-semibold text-[#1B4D3E] truncate">
+                    <div className="min-w-0 flex-1">
+                      <h2
+                        className="font-heading font-semibold text-brand-primary truncate"
+                        style={{ letterSpacing: "-0.01em" }}
+                      >
                         {agencyName}
                       </h2>
-                      <p className="text-sm text-[#1B4D3E]/60 truncate">
+                      <p className="text-sm text-brand-primary/60 truncate mt-0.5">
                         {agent.display_name}
                       </p>
                       {city ? (
-                        <p className="text-xs text-[#1B4D3E]/40 mt-0.5 truncate">
+                        <p className="text-xs text-brand-primary/40 mt-0.5 truncate">
                           {city}
                         </p>
+                      ) : null}
+                      {avgRating !== null ? (
+                        <div className="mt-1 flex items-center gap-1">
+                          <Star className="h-3.5 w-3.5 fill-brand-secondary text-brand-secondary" />
+                          <span className="text-xs font-semibold text-brand-primary">
+                            {avgRating.toFixed(1)}
+                          </span>
+                        </div>
                       ) : null}
                     </div>
                   </div>
@@ -339,13 +367,13 @@ export default async function AgentsPage({ searchParams }: Props) {
                       {areasCovered.slice(0, 3).map((a) => (
                         <span
                           key={a}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#1B4D3E]/8 text-[#1B4D3E]"
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-primary-lighter text-brand-primary"
                         >
                           {a}
                         </span>
                       ))}
                       {areasCovered.length > 3 ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f4f3f2] text-[#1B4D3E]/60">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-low text-brand-primary/50">
                           +{areasCovered.length - 3} more
                         </span>
                       ) : null}
@@ -353,10 +381,10 @@ export default async function AgentsPage({ searchParams }: Props) {
                   ) : null}
 
                   {/* Card footer */}
-                  <div className="mt-auto bg-[#faf9f8] p-4">
+                  <div className="mt-auto bg-surface-container-low p-4">
                     <Link
                       href={`/agents/${agent.slug}`}
-                      className="block w-full text-center min-h-[44px] py-2.5 px-4 bg-[#1B4D3E] text-white text-sm font-semibold rounded-xl hover:bg-[#163d32] transition-colors"
+                      className="flex items-center justify-center w-full py-2.5 px-4 bg-brand-primary text-white text-sm font-semibold rounded-xl hover:bg-brand-primary/90 active:scale-95 transition-all min-h-[44px]"
                     >
                       View Profile
                     </Link>
@@ -368,24 +396,31 @@ export default async function AgentsPage({ searchParams }: Props) {
         )}
       </section>
 
-      {/* Bottom CTA */}
-      <section className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="bg-[#1B4D3E] rounded-2xl p-10 text-center text-white">
-          <h2
-            className="font-heading text-3xl font-bold tracking-tight mb-3"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Are you an estate agent?
-          </h2>
-          <p className="text-white/70 text-lg mb-6 max-w-lg mx-auto">
-            Join Britestate and showcase your listings, team and reviews.
-          </p>
-          <Link
-            href="/register"
-            className="inline-block min-h-[44px] px-8 py-3 bg-white text-[#1B4D3E] font-semibold rounded-xl hover:bg-[#f4f3f2] transition-colors"
-          >
-            Create Your Agent Profile
-          </Link>
+      {/* ── Bottom CTA ── */}
+      <section className="mx-auto max-w-6xl px-6">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] p-10 text-center text-white">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand-secondary/10 blur-3xl" />
+          <div className="relative">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
+              <UserPlus className="h-7 w-7 text-white" />
+            </div>
+            <h2
+              className="font-heading text-3xl font-bold"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              Are you an estate agent?
+            </h2>
+            <p className="text-white/70 text-lg mt-3 mb-7">
+              Join Britestate and showcase your listings, team and reviews.
+            </p>
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 font-semibold text-brand-primary hover:bg-surface-container-low active:scale-95 transition-all"
+            >
+              Create Your Agent Profile
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
     </div>

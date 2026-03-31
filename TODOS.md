@@ -608,3 +608,33 @@ _From /cso daily audit. 4 findings, all VERIFIED. Report at `.gstack/security-re
 **What:** Build a UI banner that prompts existing users to re-accept updated Terms when material changes are published.
 **Where:** Global layout or middleware + user profile `terms_accepted_at` timestamp
 **Why:** Updated ToS section 17 promises 14-day notice + continued use = acceptance, but a re-acceptance banner is stronger evidence of informed consent.
+
+## PPD Data Integration — Deferred TODOs
+
+### UPRN Integration for Property Matching (P2)
+**What:** Link PPD records to properties table via Unique Property Reference Numbers (UPRNs) for exact property-level matching.
+**Why:** Currently PPD matching is by postcode+PAON (house number). UPRNs would give definitive matching — "this exact property sold for £X in 2018" without fuzzy address comparison. NLIS 2.0 is bringing full UPRN integration in 2026.
+**Effort:** L (human) → M (CC) | **Priority:** P2
+**Depends on:** PPD data loaded (done), UPRN dataset becoming freely available via NLIS 2.0.
+**Where to start:** Download AddressBase dataset, create `uprn_mappings` table, join to `price_paid_transactions` by address matching.
+
+### AI-Powered Automated Valuation Model (P3)
+**What:** Use PPD data + property features to train an ML model that estimates current property values. The `estimatedValue` field already exists in the `SoldPriceDetail` type.
+**Why:** With 28M+ transactions + property attributes, we have the training data for price prediction. This is what Zoopla charges for.
+**Effort:** XL (human) → L (CC) | **Priority:** P3
+**Depends on:** PPD data loaded (done), EPC data integration for floor area/energy features.
+**Where to start:** Feature engineering from PPD (price, date, type, area) + EPC (floor area, energy rating). Train regression model. Add disclaimer for regulatory compliance.
+
+### EPC Data Cross-Reference (P2)
+**What:** Download domestic EPC certificates dataset (free, Open Government Licence) and link to PPD records by address matching. Enriches every sold price with energy rating, floor area, heating type.
+**Why:** EPC data + PPD data together unlocks price-per-sqft analytics and energy efficiency impact on price. The Stitch design shows "EPC Rating: B" in property insights.
+**Effort:** L (human) → M (CC) | **Priority:** P2
+**Depends on:** PPD data loaded (done).
+**Where to start:** Download from opendatacommunities.org, create `epc_certificates` table, address-match to PPD records. Add EPC fields to property detail page.
+
+### Load Remaining Historical PPD Data (P3)
+**What:** Load the remaining ~20M historical records (1995-2017) that weren't loaded in the initial batch. Currently 11M rows covering ~2018-2026 are in the database.
+**Why:** Complete historical coverage enables long-term price trend analysis and more accurate area statistics.
+**Effort:** S (human) → S (CC) | **Priority:** P3
+**Depends on:** Database connection string access for psql COPY (faster than REST API).
+**Where to start:** Run `scripts/load-ppd-initial.sh` with DATABASE_URL, or improve the REST loader to skip past loaded rows efficiently.

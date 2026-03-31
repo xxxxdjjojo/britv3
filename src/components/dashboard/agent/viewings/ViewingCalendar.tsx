@@ -126,7 +126,7 @@ function PublishAvailabilityDialog() {
           size="sm"
           className="rounded-xl bg-brand-primary text-white hover:bg-brand-primary/90"
         >
-          <Plus className="mr-1.5 size-4" />
+          <Plus className="mr-1.5 size-4" strokeWidth={1.25} />
           Publish Availability
         </Button>
       </DialogTrigger>
@@ -239,7 +239,7 @@ function DaySlotList({
   if (daySlots.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <CalendarDays className="mb-3 size-8 text-neutral-300" />
+        <CalendarDays className="mb-3 size-8 text-neutral-300" strokeWidth={1.25} />
         <p className="text-sm text-neutral-400">No slots for this day.</p>
       </div>
     );
@@ -261,6 +261,7 @@ function DaySlotList({
           >
             <Clock
               className={`size-4 ${slot.is_booked ? "text-info" : "text-success"}`}
+              strokeWidth={1.25}
             />
           </div>
           <div className="min-w-0 flex-1 space-y-1">
@@ -279,7 +280,7 @@ function DaySlotList({
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-neutral-400">
-              <Home className="size-3" />
+              <Home className="size-3" strokeWidth={1.25} />
               <span className="truncate">{slot.property_id}</span>
             </div>
             {slot.is_booked && slot.booked_by && (
@@ -406,7 +407,7 @@ export function ViewingCalendar({
             onClick={handlePrev}
             aria-label="Previous period"
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-4" strokeWidth={1.25} />
           </Button>
           <span className="min-w-44 text-center text-sm font-semibold text-neutral-800">
             {viewLabel}
@@ -418,7 +419,7 @@ export function ViewingCalendar({
             onClick={handleNext}
             aria-label="Next period"
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-4" strokeWidth={1.25} />
           </Button>
         </div>
 
@@ -478,7 +479,7 @@ export function ViewingCalendar({
       )}
 
       {viewMode === "week" && (
-        <div className="overflow-hidden rounded-2xl bg-white p-4 shadow-sm">
+        <div className="overflow-hidden rounded-2xl bg-card p-4 shadow-sm ring-1 ring-border/60">
           <WeekView
             slots={slots}
             selectedDate={selectedDate}
@@ -491,7 +492,7 @@ export function ViewingCalendar({
       {(viewMode === "day" || viewMode === "month") && (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="bg-neutral-50 px-5 py-4">
-            <p className="font-semibold text-neutral-900">
+            <p className="font-heading font-semibold text-foreground">
               {viewMode === "day"
                 ? "Today's slots"
                 : `Slots for ${selectedDate.toLocaleDateString("en-GB", {

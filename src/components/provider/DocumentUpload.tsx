@@ -53,22 +53,22 @@ const STATUS_CONFIG: Record<
   pending: {
     icon: Clock,
     label: "Pending",
-    className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+    className: "bg-warning-light text-warning",
   },
   approved: {
     icon: Check,
     label: "Approved",
-    className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+    className: "bg-success-light text-success",
   },
   rejected: {
     icon: AlertTriangle,
     label: "Rejected",
-    className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    className: "bg-error-light text-error",
   },
   more_info_required: {
     icon: AlertTriangle,
     label: "More Info Required",
-    className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+    className: "bg-warning-light text-warning",
   },
 };
 
@@ -217,19 +217,25 @@ export function DocumentUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+        aria-label="Upload document — click or drag files here"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+        }}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+          "flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition-colors",
           isDragging
-            ? "border-primary bg-primary/5"
-            : "border-border hover:border-primary/50",
+            ? "border-brand-primary bg-brand-primary-lighter"
+            : "border-neutral-200 hover:border-brand-primary/40 hover:bg-neutral-50",
         )}
       >
-        <Upload className="mb-3 size-8 text-muted-foreground" />
-        <p className="text-sm font-medium text-foreground">
+        <Upload className="mb-3 size-8 text-neutral-400" aria-hidden="true" />
+        <p className="text-sm font-medium text-neutral-800">
           Drop files here or click to browse
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          PDF, JPEG, PNG, WebP -- max 10MB per file
+        <p className="mt-1 text-xs text-neutral-500">
+          PDF, JPEG, PNG, WebP &mdash; max 10 MB per file
         </p>
         <input
           ref={fileInputRef}

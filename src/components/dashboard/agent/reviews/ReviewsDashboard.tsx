@@ -108,7 +108,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
           Reviews
         </h1>
         <p className="mt-0.5 text-sm text-neutral-500">
@@ -124,7 +124,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
         <div className="p-6">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-8 sm:items-start">
             <div className="text-center sm:text-left">
-              <p className="font-heading text-6xl font-bold tabular-nums text-neutral-900">
+              <p className="font-heading text-6xl font-bold tabular-nums text-foreground">
                 {stats.overall_avg.toFixed(1)}
               </p>
               <StarDisplay rating={stats.overall_avg} size="lg" />
@@ -168,7 +168,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
       {trendData.length > 1 && (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
           <div className="bg-neutral-50 px-5 py-4">
-            <p className="font-semibold text-neutral-900">Rating Trend</p>
+            <p className="font-heading font-semibold text-foreground">Rating Trend</p>
           </div>
           <div className="p-5">
             <ResponsiveContainer width="100%" height={200}>
@@ -246,9 +246,9 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
         {filteredReviews.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
             <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-              <StarIcon className="size-7 text-brand-primary" />
+              <StarIcon className="size-7 text-brand-primary" strokeWidth={1.25} />
             </div>
-            <p className="font-semibold text-neutral-800">No reviews found</p>
+            <p className="font-heading font-semibold text-foreground">No reviews found</p>
             <p className="mt-1 text-sm text-neutral-500">
               No reviews match your current filters.
             </p>
@@ -276,7 +276,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold text-neutral-900">
+                      <p className="font-semibold text-foreground">
                         {review.reviewer_name ?? "Anonymous"}
                       </p>
                       <StarDisplay rating={review.rating} size="sm" />
@@ -301,7 +301,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
                       <Link
                         href={`/dashboard/agent/reviews/${review.id}/respond`}
                       >
-                        <MessageSquare className="mr-1.5 size-3.5" />
+                        <MessageSquare className="mr-1.5 size-3.5" strokeWidth={1.25} />
                         Respond
                       </Link>
                     </Button>

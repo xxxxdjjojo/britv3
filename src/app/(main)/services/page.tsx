@@ -77,19 +77,23 @@ export default async function ServicesPage() {
   const counts = categoryCounts && Object.keys(categoryCounts).length > 0 ? categoryCounts : FALLBACK_COUNTS;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface">
       {/* ── Section 1: Hero + Search Bar ── */}
-      <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-primary/5 via-white to-white py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-secondary/20 bg-brand-secondary/10 px-4 py-1.5 text-sm font-semibold text-brand-secondary">
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] py-28 sm:py-36">
+        {/* Decorative blobs */}
+        <div className="pointer-events-none absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-white/5 blur-3xl" />
+        <div className="pointer-events-none absolute -right-32 bottom-0 h-[400px] w-[400px] rounded-full bg-brand-secondary/10 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl px-6 text-center">
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/90 backdrop-blur-sm">
             World-Class Trade Marketplace
           </span>
-          <h1 className="font-heading text-4xl font-bold tracking-tight text-brand-primary sm:text-5xl lg:text-6xl">
+          <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" style={{ letterSpacing: "-0.02em" }}>
             Find Trusted{" "}
             <span className="italic text-brand-secondary">Tradespeople</span>{" "}
             Near You
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-brand-primary/60">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">
             Connect with over 5,000+ verified professionals across every trade.
             All vetted through our rigorous 3+3 verification process.
           </p>
@@ -100,11 +104,11 @@ export default async function ServicesPage() {
       </section>
 
       {/* ── Section 2: Popular Categories Grid ── */}
-      <section className="py-20">
+      <section className="py-28">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl">
+              <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl" style={{ letterSpacing: "-0.02em" }}>
                 Popular Categories
               </h2>
               <p className="mt-2 text-brand-primary/60">
@@ -128,9 +132,9 @@ export default async function ServicesPage() {
                 <Link
                   key={category.key}
                   href={category.href}
-                  className="group flex flex-col items-center gap-3 rounded-2xl border border-brand-primary/5 bg-white p-6 text-center transition-all hover:-translate-y-1 hover:border-brand-primary/15 hover:shadow-lg hover:shadow-brand-primary/5"
+                  className="group flex flex-col items-center gap-3 rounded-2xl bg-surface-container-low p-6 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md hover:shadow-brand-primary/5"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-primary/5 transition-colors group-hover:bg-brand-primary/10">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-highest transition-colors group-hover:bg-brand-primary/10">
                     <Icon className="h-7 w-7 text-brand-primary" />
                   </div>
                   <div>
@@ -162,10 +166,10 @@ export default async function ServicesPage() {
       <TopRatedCarousel providers={providers} />
 
       {/* ── Section 4: How It Works ── */}
-      <section className="bg-gray-50 py-24">
+      <section className="bg-surface-container-low py-28">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
-            <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl">
+            <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl" style={{ letterSpacing: "-0.02em" }}>
               Simple, Seamless, Secure
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-brand-primary/60">
@@ -186,7 +190,7 @@ export default async function ServicesPage() {
                   className={`relative z-10 mb-6 flex h-16 w-16 items-center justify-center rounded-full text-lg font-bold ${
                     item.highlighted
                       ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/30"
-                      : "border-2 border-brand-primary/20 bg-white text-brand-primary"
+                      : "bg-surface text-brand-primary shadow-sm"
                   }`}
                 >
                   {item.highlighted ? (
@@ -208,7 +212,7 @@ export default async function ServicesPage() {
       </section>
 
       {/* ── Section 5: Trust / 3+3 Verification ── */}
-      <section className="bg-white py-24">
+      <section className="bg-surface py-28">
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             {/* Left column: content */}
@@ -216,7 +220,7 @@ export default async function ServicesPage() {
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-primary/10">
                 <ShieldCheck className="h-7 w-7 text-brand-primary" />
               </div>
-              <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl">
+              <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl" style={{ letterSpacing: "-0.02em" }}>
                 The Britestate 3+3 Verification Standard
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-brand-primary/60">
@@ -250,18 +254,17 @@ export default async function ServicesPage() {
             </div>
 
             {/* Right column: decorative placeholder */}
-            <div className="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/5 p-16 lg:p-24">
+            <div className="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-brand-primary/8 to-brand-primary/4 p-16 lg:p-24">
               <ShieldCheck className="h-32 w-32 text-brand-primary/20" />
-              <div className="absolute inset-0 rounded-3xl border border-brand-primary/5" />
             </div>
           </div>
         </div>
       </section>
 
       {/* ── Section 6: Bottom CTA ── */}
-      <section className="px-6 pb-20">
-        <div className="mx-auto max-w-7xl rounded-3xl bg-gradient-to-r from-brand-primary to-brand-primary/80 p-12 text-center sm:p-16">
-          <h2 className="font-heading text-3xl font-bold text-white sm:text-4xl">
+      <section className="px-6 pb-28">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] p-12 text-center sm:p-16">
+          <h2 className="font-heading text-3xl font-bold text-white sm:text-4xl" style={{ letterSpacing: "-0.02em" }}>
             Post a Job — Get Free Quotes
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/70">
@@ -270,7 +273,7 @@ export default async function ServicesPage() {
           </p>
           <Link
             href="/post-a-job"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-10 py-4 font-bold text-brand-primary transition-colors hover:bg-gray-100"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-10 py-4 font-bold text-brand-primary transition-all hover:bg-surface-container-low hover:scale-[1.02]"
           >
             Post a Job Free
             <ArrowRight className="h-4 w-4" />

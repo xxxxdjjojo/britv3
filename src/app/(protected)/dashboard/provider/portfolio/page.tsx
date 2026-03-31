@@ -37,7 +37,7 @@ export default async function ProviderPortfolioPage() {
   }
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <PortfolioGrid initialItems={items} providerId={providerId} />
     </div>
   );

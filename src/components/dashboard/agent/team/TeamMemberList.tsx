@@ -267,7 +267,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           className="rounded-xl bg-brand-primary text-white hover:bg-brand-primary/90"
           onClick={() => setInviteOpen(true)}
         >
-          <UserPlus className="mr-2 size-4" />
+          <UserPlus className="mr-2 size-4" strokeWidth={1.25} />
           Invite Member
         </Button>
       </div>
@@ -328,7 +328,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
           <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-            <Users className="size-7 text-brand-primary" />
+            <Users className="size-7 text-brand-primary" strokeWidth={1.25} />
           </div>
           <p className="font-semibold text-neutral-800">No team members found</p>
           <p className="mt-1 text-sm text-neutral-500">
@@ -369,7 +369,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                         size="icon"
                         className="size-8 shrink-0 rounded-lg"
                       >
-                        <MoreVertical className="size-4" />
+                        <MoreVertical className="size-4" strokeWidth={1.25} />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl">
@@ -441,7 +441,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 Full Name *
               </label>
               <input
-                className="w-full rounded-lg border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-neutral-200 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="w-full rounded-lg border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
                 placeholder="Full name"
@@ -452,7 +452,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 Email *
               </label>
               <input
-                className="w-full rounded-lg border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-neutral-200 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="w-full rounded-lg border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}

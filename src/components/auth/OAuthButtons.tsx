@@ -82,7 +82,7 @@ function OAuthButtonsInner() {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-2 gap-3">
       <Button
         variant="outline"
         size="lg"
@@ -96,7 +96,7 @@ function OAuthButtonsInner() {
         ) : (
           <GoogleIcon />
         )}
-        Continue with Google
+        Google
       </Button>
 
       <Button
@@ -112,7 +112,7 @@ function OAuthButtonsInner() {
         ) : (
           <AppleIcon />
         )}
-        Continue with Apple
+        Apple
       </Button>
     </div>
   );
@@ -122,7 +122,7 @@ export function OAuthButtons() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <Button
             variant="outline"
             size="lg"
@@ -131,7 +131,7 @@ export function OAuthButtons() {
             aria-label="Loading Google sign-in"
           >
             <GoogleIcon />
-            Continue with Google
+            Google
           </Button>
           <Button
             variant="outline"
@@ -141,7 +141,7 @@ export function OAuthButtons() {
             aria-label="Loading Apple sign-in"
           >
             <AppleIcon />
-            Continue with Apple
+            Apple
           </Button>
         </div>
       }

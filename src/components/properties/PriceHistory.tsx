@@ -26,9 +26,15 @@ type HistoryEntry = {
   event?: string;
 };
 
+type RegionalAverageEntry = {
+  date: string;
+  price: number;
+};
+
 type PriceHistoryProps = Readonly<{
   history: HistoryEntry[];
   comparables?: LandRegistryComparable[] | null;
+  regionalAverage?: RegionalAverageEntry[];
   className?: string;
 }>;
 
@@ -167,7 +173,7 @@ function ComparablesTable({
 
   return (
     <div className="rounded-xl border divide-y text-sm overflow-hidden">
-      {comparables.map((row, i) => (
+      {comparables.map((row) => (
         <div
           key={`${row.address}-${row.date}`}
           className="flex items-center justify-between px-4 py-3 gap-4"
@@ -216,7 +222,7 @@ function MarketInsights() {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function PriceHistory({ history, comparables, className }: PriceHistoryProps) {
+export function PriceHistory({ history, comparables, regionalAverage, className }: PriceHistoryProps) {
   const [activeTab, setActiveTab] = useState<Tab>("history");
 
   if (history.length === 0 && !comparables?.length) {
@@ -231,8 +237,15 @@ export function PriceHistory({ history, comparables, className }: PriceHistoryPr
   const isUp = change > 0;
   const isFlat = change === 0;
 
-  // Recharts needs plain objects
-  const chartData = history.map((h) => ({ ...h }));
+  // Recharts needs plain objects — merge regional average into the same array
+  const avgByDate = new Map(
+    (regionalAverage ?? []).map((a) => [a.date, a.price]),
+  );
+  const chartData = history.map((h) => ({
+    ...h,
+    ...(avgByDate.has(h.date) ? { avgPrice: avgByDate.get(h.date) } : {}),
+  }));
+  const hasRegionalAverage = (regionalAverage ?? []).length > 0;
 
   // Identify event entries for ReferenceLine vertical markers
   const eventEntries = history.filter((h) => h.event);
@@ -350,6 +363,19 @@ export function PriceHistory({ history, comparables, className }: PriceHistoryPr
                       dot={<EventDot />}
                       activeDot={{ r: 6, stroke: "white", strokeWidth: 2 }}
                     />
+
+                    {hasRegionalAverage && (
+                      <Line
+                        type="monotone"
+                        dataKey="avgPrice"
+                        stroke="#9ca3af"
+                        strokeWidth={1.5}
+                        strokeDasharray="6 3"
+                        dot={false}
+                        activeDot={false}
+                        connectNulls
+                      />
+                    )}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -365,6 +391,15 @@ export function PriceHistory({ history, comparables, className }: PriceHistoryPr
                     <span className="text-muted-foreground">{ev}</span>
                   </div>
                 ))}
+                {hasRegionalAverage && (
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className="size-3 rounded-full"
+                      style={{ background: "#9ca3af" }}
+                    />
+                    <span className="text-muted-foreground">Regional Average</span>
+                  </div>
+                )}
               </div>
             </>
           ) : (

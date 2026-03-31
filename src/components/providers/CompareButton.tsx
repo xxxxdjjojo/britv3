@@ -14,7 +14,7 @@ export function CompareButton({
     return (
       <button
         onClick={() => remove(providerId)}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#1B4D3E] text-white hover:bg-[#1B4D3E]/80 transition-colors"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-brand-primary text-white hover:bg-brand-primary/80 transition-colors min-h-[44px]"
         aria-label={`Remove ${providerName} from comparison`}
       >
         <X className="w-3 h-3" /> Remove from Compare
@@ -26,7 +26,7 @@ export function CompareButton({
     return (
       <button
         disabled
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-surface-container-low text-brand-primary/30 cursor-not-allowed min-h-[44px]"
       >
         <CheckCheck className="w-3 h-3" /> Compare Full
       </button>
@@ -36,7 +36,7 @@ export function CompareButton({
   return (
     <button
       onClick={() => add(providerId)}
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-600 hover:border-[#1B4D3E] hover:text-[#1B4D3E] transition-colors"
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-surface-container-low text-brand-primary hover:bg-surface-container transition-colors min-h-[44px]"
       aria-label={`Add ${providerName} to comparison`}
     >
       <GitCompareArrows className="w-3 h-3" /> Compare

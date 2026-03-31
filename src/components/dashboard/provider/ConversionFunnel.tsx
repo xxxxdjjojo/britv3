@@ -32,28 +32,28 @@ export function ConversionFunnel({ funnel }: Props) {
       label: "Enquiries",
       count: funnel.enquired,
       rate: calcRate(funnel.enquired, funnel.viewed),
-      colorClass: "bg-[#d1e8e2]",
-      labelColorClass: "text-[#1B4D3E]",
+      colorClass: "bg-brand-primary-lighter",
+      labelColorClass: "text-brand-primary",
     },
     {
       label: "Quotes Sent",
       count: funnel.quoted,
       rate: calcRate(funnel.quoted, funnel.enquired),
-      colorClass: "bg-[#1B4D3E]/60",
+      colorClass: "bg-brand-primary/60",
       labelColorClass: "text-white",
     },
     {
       label: "Bookings",
       count: funnel.booked,
       rate: calcRate(funnel.booked, funnel.quoted),
-      colorClass: "bg-[#1B4D3E]",
+      colorClass: "bg-brand-primary",
       labelColorClass: "text-white",
     },
   ];
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-      <h3 className="mb-5 text-sm font-semibold text-neutral-700">Conversion Funnel</h3>
+    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+      <h3 className="mb-5 font-heading text-sm font-semibold text-neutral-800">Conversion Funnel</h3>
 
       {isEmpty ? (
         <div className="flex min-h-[120px] items-center justify-center text-sm text-neutral-400">
