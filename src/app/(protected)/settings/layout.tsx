@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, Shield, Bell, Lock, User, Settings2 } from "lucide-react";
+import { ArrowLeft, Shield, Bell, Lock, User, Settings2, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { SecurityScoreBadge } from "@/components/settings/SecurityScoreBadge";
@@ -31,6 +31,11 @@ const SETTINGS_TABS: readonly SettingsTab[] = [
     label: "Notifications",
     href: "/settings/notifications",
     icon: Bell,
+  },
+  {
+    label: "Email",
+    href: "/settings/email-subscriptions",
+    icon: Mail,
   },
   {
     label: "Account",
