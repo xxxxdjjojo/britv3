@@ -147,7 +147,7 @@ export default function TenancyDetailPage() {
           </button>
         </div>
         <h1 className="text-2xl font-bold font-heading tracking-tight">Edit Tenancy</h1>
-        <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+        <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
           <CardContent className="pt-6">
             <TenancyForm
               propertyId={params.id}
@@ -203,13 +203,13 @@ export default function TenancyDetailPage() {
 
       {/* Expired banner */}
       {expired && tenancy.lease_end_date && (
-        <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 dark:border-red-800/30 dark:bg-red-900/10 p-4">
-          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" />
+        <div className="flex items-start gap-3 rounded-2xl border border-error/30 bg-error-light dark:border-error/20 dark:bg-error/10 p-4">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-error" />
           <div className="flex-1">
-            <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+            <p className="text-sm font-semibold text-error">
               Tenancy expired on {formatDate(tenancy.lease_end_date)}
             </p>
-            <p className="mt-0.5 text-xs text-red-600 dark:text-red-400">
+            <p className="mt-0.5 text-xs text-error/80">
               Please renew the lease or formally end the tenancy to keep your records up to date.
             </p>
           </div>
@@ -225,7 +225,7 @@ export default function TenancyDetailPage() {
       )}
 
       {/* Tenant hero card */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-6">
+      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-card p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             {/* Avatar */}
@@ -300,7 +300,7 @@ export default function TenancyDetailPage() {
 
       {/* Key metrics row */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-4">
+        <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Monthly Rent
           </p>
@@ -313,7 +313,7 @@ export default function TenancyDetailPage() {
         </div>
 
         {tenancy.deposit_amount != null && (
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-4">
+          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-card p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Deposit
             </p>
@@ -321,7 +321,7 @@ export default function TenancyDetailPage() {
               {formatGBP(tenancy.deposit_amount)}
             </p>
             {tenancy.deposit_scheme && (
-              <p className="mt-0.5 text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <p className="mt-0.5 text-xs text-success flex items-center gap-1">
                 <CheckCircle2 className="size-3" />
                 {tenancy.deposit_scheme}
               </p>
@@ -329,7 +329,7 @@ export default function TenancyDetailPage() {
           </div>
         )}
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-4">
+        <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Lease Start
           </p>
@@ -341,18 +341,18 @@ export default function TenancyDetailPage() {
         <div
           className={`rounded-2xl border p-4 ${
             daysRemaining !== null && daysRemaining <= 60 && daysRemaining > 0
-              ? "border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-900/10"
+              ? "border-warning/30 dark:border-warning/20 bg-warning-light dark:bg-warning/10"
               : expired
-                ? "border-red-200 dark:border-red-800/30 bg-red-50 dark:bg-red-900/10"
-                : "border-slate-200 dark:border-slate-700 bg-card"
+                ? "border-error/30 dark:border-error/20 bg-error-light dark:bg-error/10"
+                : "border-neutral-200 dark:border-neutral-700 bg-card"
           }`}
         >
           <p
             className={`text-xs font-medium uppercase tracking-wide ${
               daysRemaining !== null && daysRemaining <= 60 && daysRemaining > 0
-                ? "text-amber-600 dark:text-amber-400"
+                ? "text-warning"
                 : expired
-                  ? "text-red-600 dark:text-red-400"
+                  ? "text-error"
                   : "text-muted-foreground"
             }`}
           >
@@ -361,9 +361,9 @@ export default function TenancyDetailPage() {
           <p
             className={`mt-1.5 text-sm font-semibold leading-snug ${
               daysRemaining !== null && daysRemaining <= 60 && daysRemaining > 0
-                ? "text-amber-700 dark:text-amber-400"
+                ? "text-warning"
                 : expired
-                  ? "text-red-700 dark:text-red-400"
+                  ? "text-error"
                   : "text-foreground"
             }`}
           >
@@ -381,7 +381,7 @@ export default function TenancyDetailPage() {
       {/* Details grid */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Tenancy details */}
-        <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+        <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-heading flex items-center gap-2">
               <Home className="size-4 text-[color:var(--color-brand-primary)]" />
@@ -390,14 +390,14 @@ export default function TenancyDetailPage() {
           </CardHeader>
           <CardContent>
             <dl className="space-y-0 text-sm">
-              <div className="flex items-start justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-start justify-between gap-4 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
                 <dt className="text-muted-foreground flex items-center gap-2 shrink-0">
                   <User className="size-3.5" />
                   Tenant
                 </dt>
                 <dd className="font-medium text-foreground text-right">{tenancy.tenant_name}</dd>
               </div>
-              <div className="flex items-start justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-start justify-between gap-4 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
                 <dt className="text-muted-foreground flex items-center gap-2 shrink-0">
                   <Calendar className="size-3.5" />
                   Lease Period
@@ -407,7 +407,7 @@ export default function TenancyDetailPage() {
                   {tenancy.lease_end_date ? formatDate(tenancy.lease_end_date) : "Periodic"}
                 </dd>
               </div>
-              <div className="flex items-start justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-start justify-between gap-4 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
                 <dt className="text-muted-foreground flex items-center gap-2 shrink-0">
                   <PoundSterling className="size-3.5" />
                   Rent
@@ -425,7 +425,7 @@ export default function TenancyDetailPage() {
                   <dd className="font-medium text-foreground text-right">
                     {formatGBP(tenancy.deposit_amount)}
                     {tenancy.deposit_scheme && (
-                      <span className="ml-1 text-xs text-emerald-600 dark:text-emerald-400">
+                      <span className="ml-1 text-xs text-success">
                         ({tenancy.deposit_scheme})
                       </span>
                     )}
@@ -437,7 +437,7 @@ export default function TenancyDetailPage() {
         </Card>
 
         {/* Documents & actions */}
-        <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+        <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-heading flex items-center gap-2">
               <FileText className="size-4 text-[color:var(--color-brand-primary)]" />
@@ -479,7 +479,7 @@ export default function TenancyDetailPage() {
 
       {/* Notes */}
       {tenancy.notes && (
-        <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+        <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-heading">Notes</CardTitle>
           </CardHeader>

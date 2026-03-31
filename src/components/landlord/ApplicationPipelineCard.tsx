@@ -3,75 +3,32 @@
 import Link from "next/link";
 import { Mail, Briefcase, ArrowRight, PoundSterling } from "lucide-react";
 
-import type { TenantApplication, TenantApplicationStatus, CreditCheckStatus, ReferencesStatus } from "@/types/landlord";
+import type { TenantApplication, CreditCheckStatus, ReferencesStatus } from "@/types/landlord";
 import { Button } from "@/components/ui/button";
-
-// -- Status badge config ------------------------------------------------------
-
-const STATUS_STYLES: Record<
-  TenantApplicationStatus,
-  { bg: string; text: string; dot: string; label: string }
-> = {
-  received: {
-    bg: "bg-slate-100 dark:bg-slate-800/40",
-    text: "text-slate-700 dark:text-slate-300",
-    dot: "bg-slate-400",
-    label: "Received",
-  },
-  shortlisted: {
-    bg: "bg-blue-100 dark:bg-blue-900/30",
-    text: "text-blue-700 dark:text-blue-400",
-    dot: "bg-blue-500",
-    label: "Shortlisted",
-  },
-  referencing: {
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    text: "text-amber-700 dark:text-amber-400",
-    dot: "bg-amber-500",
-    label: "Referencing",
-  },
-  approved: {
-    bg: "bg-emerald-100 dark:bg-emerald-900/30",
-    text: "text-emerald-700 dark:text-emerald-400",
-    dot: "bg-emerald-500",
-    label: "Approved",
-  },
-  rejected: {
-    bg: "bg-red-100 dark:bg-red-900/30",
-    text: "text-red-700 dark:text-red-400",
-    dot: "bg-red-500",
-    label: "Rejected",
-  },
-  withdrawn: {
-    bg: "bg-slate-100 dark:bg-slate-800/40",
-    text: "text-slate-600 dark:text-slate-400",
-    dot: "bg-slate-400",
-    label: "Withdrawn",
-  },
-};
+import { STATUS_STYLES } from "@/lib/tenant-status-styles";
 
 const CREDIT_STYLES: Record<
   CreditCheckStatus,
   { bg: string; text: string; label: string }
 > = {
   pending: {
-    bg: "bg-slate-100 dark:bg-slate-800/40",
-    text: "text-slate-600 dark:text-slate-400",
+    bg: "bg-neutral-100 dark:bg-neutral-800/40",
+    text: "text-neutral-600 dark:text-neutral-400",
     label: "Credit: Pending",
   },
   passed: {
-    bg: "bg-emerald-100 dark:bg-emerald-900/30",
-    text: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-success/10 dark:bg-success/20",
+    text: "text-success dark:text-success",
     label: "Credit: Passed",
   },
   failed: {
-    bg: "bg-red-100 dark:bg-red-900/30",
-    text: "text-red-700 dark:text-red-400",
+    bg: "bg-error/10 dark:bg-error/20",
+    text: "text-error dark:text-error",
     label: "Credit: Failed",
   },
   not_run: {
-    bg: "bg-slate-100 dark:bg-slate-800/40",
-    text: "text-slate-500 dark:text-slate-500",
+    bg: "bg-neutral-100 dark:bg-neutral-800/40",
+    text: "text-neutral-500 dark:text-neutral-500",
     label: "Credit: Not run",
   },
 };
@@ -81,18 +38,18 @@ const REF_STYLES: Record<
   { bg: string; text: string; label: string }
 > = {
   pending: {
-    bg: "bg-slate-100 dark:bg-slate-800/40",
-    text: "text-slate-600 dark:text-slate-400",
+    bg: "bg-neutral-100 dark:bg-neutral-800/40",
+    text: "text-neutral-600 dark:text-neutral-400",
     label: "Refs: Pending",
   },
   received: {
-    bg: "bg-blue-100 dark:bg-blue-900/30",
-    text: "text-blue-700 dark:text-blue-400",
+    bg: "bg-brand-accent/10 dark:bg-brand-accent/20",
+    text: "text-brand-accent dark:text-brand-accent",
     label: "Refs: Received",
   },
   verified: {
-    bg: "bg-emerald-100 dark:bg-emerald-900/30",
-    text: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-success/10 dark:bg-success/20",
+    text: "text-success dark:text-success",
     label: "Refs: Verified",
   },
 };
@@ -122,7 +79,7 @@ export function ApplicationPipelineCard({
     .toUpperCase();
 
   return (
-    <div className="mb-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3.5 shadow-sm hover:shadow-md hover:border-[color:var(--color-brand-primary)]/30 transition-all duration-150">
+    <div className="mb-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-3.5 shadow-sm hover:shadow-md hover:border-brand-primary/30 transition-all duration-150">
       {/* Header: avatar + name */}
       <div className="flex items-start gap-2.5">
         <div className="size-8 shrink-0 rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-xs">

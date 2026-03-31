@@ -86,6 +86,8 @@ export type MaintenanceRequestWithProperty = MaintenanceRequest &
     property_address: string;
     property_postcode: string;
     tenant_name: string | null;
+    tenant_email: string | null;
+    tenant_phone: string | null;
   }>;
 
 /**
@@ -141,6 +143,8 @@ export async function getPortfolioMaintenanceRequests(
       tenant_name: activeTenancy
         ? String(activeTenancy.tenant_name)
         : null,
+      tenant_email: null,
+      tenant_phone: null,
     } as MaintenanceRequestWithProperty;
   });
 }
@@ -181,6 +185,12 @@ export async function getMaintenanceRequestById(
     property_address: prop ? String(prop.address_line1) : "Unknown address",
     property_postcode: prop ? String(prop.postcode) : "",
     tenant_name: activeTenancy ? String(activeTenancy.tenant_name) : null,
+    tenant_email: activeTenancy?.tenant_email
+      ? String(activeTenancy.tenant_email)
+      : null,
+    tenant_phone: activeTenancy?.tenant_phone
+      ? String(activeTenancy.tenant_phone)
+      : null,
   } as MaintenanceRequestWithProperty;
 }
 

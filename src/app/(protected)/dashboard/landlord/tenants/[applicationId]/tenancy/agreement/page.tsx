@@ -88,7 +88,7 @@ async function PageContent({ params }: Props) {
       </nav>
 
       {/* Page header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-6">
+      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-card p-6">
         <div className="flex items-start gap-4">
           <div className="size-12 rounded-2xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 flex items-center justify-center shrink-0">
             <FileText className="size-6 text-[color:var(--color-brand-primary)]" />
@@ -107,7 +107,7 @@ async function PageContent({ params }: Props) {
       </div>
 
       {/* Tenancy summary card */}
-      <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+      <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-heading flex items-center gap-2">
             <ShieldCheck className="size-4 text-[color:var(--color-brand-primary)]" />
@@ -161,7 +161,7 @@ async function PageContent({ params }: Props) {
       </Card>
 
       {/* Section 1: Upload existing agreement */}
-      <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+      <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
         <CardHeader className="pb-3">
           <div className="flex items-start gap-3">
             <div className="size-9 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center shrink-0">

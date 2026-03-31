@@ -43,10 +43,10 @@ const CREDIT_LABELS: Record<CreditCheckStatus, string> = {
 };
 
 const CREDIT_STYLES: Record<CreditCheckStatus, string> = {
-  pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  passed: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  failed: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  not_run: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+  pending: "bg-warning/10 text-warning dark:bg-warning/20",
+  passed: "bg-success/10 text-success dark:bg-success/20",
+  failed: "bg-error/10 text-error dark:bg-error/20",
+  not_run: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
 };
 
 const PIPELINE_STEPS: TenantApplicationStatus[] = [
@@ -110,7 +110,7 @@ async function PageContent({ params }: Props) {
       </div>
 
       {/* Applicant hero card */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-card p-6">
+      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-card p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             {/* Avatar */}
@@ -152,10 +152,10 @@ async function PageContent({ params }: Props) {
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${
                 application.status === "approved"
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  ? "bg-success/10 text-success dark:bg-success/20"
                   : application.status === "rejected"
-                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                    ? "bg-error/10 text-error dark:bg-error/20"
+                    : "bg-brand-accent/10 text-brand-accent dark:bg-brand-accent/20"
               }`}
             >
               <span className="size-1.5 rounded-full bg-current" />
@@ -178,7 +178,7 @@ async function PageContent({ params }: Props) {
         {/* Left column: screening + income */}
         <div className="lg:col-span-2 space-y-5">
           {/* Screening results */}
-          <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+          <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 <TrendingUp className="size-4 text-[color:var(--color-brand-primary)]" />
@@ -188,7 +188,7 @@ async function PageContent({ params }: Props) {
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 {/* Credit check */}
-                <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 p-4">
+                <div className="rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/30 p-4">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Credit Check
                   </p>
@@ -202,12 +202,12 @@ async function PageContent({ params }: Props) {
                 </div>
 
                 {/* References */}
-                <div className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 p-4">
+                <div className="rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/30 p-4">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     References
                   </p>
                   <div className="mt-2">
-                    <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                    <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300">
                       {application.references_status
                         ? application.references_status.charAt(0).toUpperCase() +
                           application.references_status.slice(1)
@@ -218,7 +218,7 @@ async function PageContent({ params }: Props) {
 
                 {/* Income affordability */}
                 {application.monthly_income != null && (
-                  <div className="col-span-2 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 p-4">
+                  <div className="col-span-2 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/30 p-4">
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                       Monthly Income
                     </p>
@@ -251,7 +251,7 @@ async function PageContent({ params }: Props) {
           )}
 
           {/* Notes */}
-          <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+          <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 <MessageSquare className="size-4 text-muted-foreground" />
@@ -269,7 +269,7 @@ async function PageContent({ params }: Props) {
         {/* Right column: pipeline + actions */}
         <div className="space-y-5">
           {/* Pipeline stepper */}
-          <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+          <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 <ClipboardCheck className="size-4 text-[color:var(--color-brand-primary)]" />
@@ -290,14 +290,14 @@ async function PageContent({ params }: Props) {
                       ) : isActive ? (
                         <CircleDot className="size-5 shrink-0 text-[color:var(--color-brand-primary)]" />
                       ) : (
-                        <Circle className="size-5 shrink-0 text-slate-300 dark:text-slate-600" />
+                        <Circle className="size-5 shrink-0 text-neutral-300 dark:text-neutral-600" />
                       )}
                       <span
                         className={`text-sm font-medium ${
                           isActive
                             ? "text-[color:var(--color-brand-primary)] dark:text-emerald-400"
                             : isPast
-                              ? "text-slate-600 dark:text-slate-300"
+                              ? "text-neutral-600 dark:text-neutral-300"
                               : isFuture
                                 ? "text-muted-foreground"
                                 : ""
@@ -321,7 +321,7 @@ async function PageContent({ params }: Props) {
           <ApplicationDetailActions application={application} />
 
           {/* Quick links */}
-          <Card className="rounded-2xl border-slate-200 dark:border-slate-700">
+          <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-heading flex items-center gap-2">
                 <FileText className="size-4 text-muted-foreground" />

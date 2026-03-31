@@ -183,6 +183,7 @@ export function MaintenanceRequestDetailClient({
                     type="button"
                     disabled={isUpdatingStatus}
                     onClick={() => handleStatusChange(s)}
+                    aria-label={`Move request to ${s.replace("_", " ")}`}
                     className="rounded-lg border border-brand-primary px-3 py-1.5 text-xs font-semibold text-brand-primary hover:bg-brand-primary hover:text-white transition-colors disabled:opacity-50"
                   >
                     {s.replace("_", " ").replace(/^\w/, (c) => c.toUpperCase())}
@@ -425,28 +426,34 @@ export function MaintenanceRequestDetailClient({
             </div>
           )}
 
-        {/* Quick actions */}
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            Quick Actions
-          </h2>
-          <div className="space-y-2">
-            <a
-              href="tel:"
-              className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-            >
-              <Phone className="size-4 text-muted-foreground" />
-              Call tenant
-            </a>
-            <a
-              href="mailto:"
-              className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
-            >
-              <Mail className="size-4 text-muted-foreground" />
-              Email tenant
-            </a>
+        {/* Quick actions — only rendered when contact info is available */}
+        {(request.tenant_phone || request.tenant_email) && (
+          <div className="rounded-xl border bg-card p-5 shadow-sm">
+            <h2 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Quick Actions
+            </h2>
+            <div className="space-y-2">
+              {request.tenant_phone && (
+                <a
+                  href={`tel:${request.tenant_phone}`}
+                  className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <Phone className="size-4 text-muted-foreground" />
+                  Call tenant
+                </a>
+              )}
+              {request.tenant_email && (
+                <a
+                  href={`mailto:${request.tenant_email}`}
+                  className="flex items-center gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <Mail className="size-4 text-muted-foreground" />
+                  Email tenant
+                </a>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

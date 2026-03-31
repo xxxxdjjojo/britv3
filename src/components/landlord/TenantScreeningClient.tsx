@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
+import { STATUS_STYLES } from "@/lib/tenant-status-styles";
 
 // -- Kanban column config -----------------------------------------------------
 
@@ -56,52 +57,41 @@ const COLUMNS: KanbanColumn[] = [
   {
     status: "received",
     label: "Received",
-    headerClass: "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700",
-    countClass: "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300",
-    dotClass: "bg-slate-400",
+    headerClass: "bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700",
+    countClass: "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300",
+    dotClass: "bg-neutral-400",
   },
   {
     status: "shortlisted",
     label: "Shortlisted",
-    headerClass: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800/30",
-    countClass: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300",
-    dotClass: "bg-blue-500",
+    headerClass: "bg-brand-accent/5 dark:bg-brand-accent/10 border-brand-accent/20 dark:border-brand-accent/20",
+    countClass: "bg-brand-accent/10 dark:bg-brand-accent/20 text-brand-accent dark:text-brand-accent",
+    dotClass: "bg-brand-accent",
   },
   {
     status: "referencing",
     label: "Referencing",
-    headerClass: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/30",
-    countClass: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
-    dotClass: "bg-amber-500",
+    headerClass: "bg-warning-light dark:bg-warning/10 border-warning/30 dark:border-warning/20",
+    countClass: "bg-warning/10 dark:bg-warning/20 text-warning dark:text-warning",
+    dotClass: "bg-warning",
   },
   {
     status: "approved",
     label: "Approved",
-    headerClass: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/30",
-    countClass: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
-    dotClass: "bg-emerald-500",
+    headerClass: "bg-success-light dark:bg-success/10 border-success/30 dark:border-success/20",
+    countClass: "bg-success/10 dark:bg-success/20 text-success dark:text-success",
+    dotClass: "bg-success",
   },
   {
     status: "rejected",
     label: "Rejected",
-    headerClass: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800/30",
-    countClass: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
-    dotClass: "bg-red-500",
+    headerClass: "bg-error-light dark:bg-error/10 border-error/30 dark:border-error/20",
+    countClass: "bg-error/10 dark:bg-error/20 text-error dark:text-error",
+    dotClass: "bg-error",
   },
 ];
 
-// Status styles for list view
-const STATUS_STYLES: Record<
-  TenantApplicationStatus,
-  { bg: string; text: string; dot: string; label: string }
-> = {
-  received: { bg: "bg-slate-100 dark:bg-slate-800/40", text: "text-slate-700 dark:text-slate-300", dot: "bg-slate-400", label: "Received" },
-  shortlisted: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-700 dark:text-blue-400", dot: "bg-blue-500", label: "Shortlisted" },
-  referencing: { bg: "bg-amber-100 dark:bg-amber-900/30", text: "text-amber-700 dark:text-amber-400", dot: "bg-amber-500", label: "Referencing" },
-  approved: { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-400", dot: "bg-emerald-500", label: "Approved" },
-  rejected: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-700 dark:text-red-400", dot: "bg-red-500", label: "Rejected" },
-  withdrawn: { bg: "bg-slate-100 dark:bg-slate-800/40", text: "text-slate-600 dark:text-slate-400", dot: "bg-slate-400", label: "Withdrawn" },
-};
+// STATUS_STYLES is imported from @/lib/tenant-status-styles (shared with ApplicationPipelineCard)
 
 // Active statuses (pipeline in progress)
 const ACTIVE_STATUSES: TenantApplicationStatus[] = ["received", "shortlisted", "referencing", "approved"];
@@ -183,7 +173,7 @@ function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>)
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className="bg-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-light)] text-white font-medium">
+        <Button className="bg-brand-primary hover:bg-[color:var(--color-brand-primary-light)] text-white font-medium">
           <Plus className="mr-2 size-4" />
           Add Application
         </Button>
@@ -250,7 +240,7 @@ function AddApplicationSheet({ onSuccess }: Readonly<{ onSuccess: () => void }>)
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-light)] text-white"
+            className="w-full bg-brand-primary hover:bg-[color:var(--color-brand-primary-light)] text-white"
           >
             {submitting ? "Adding..." : "Add Application"}
           </Button>
@@ -272,9 +262,9 @@ function ApplicationListCard({ application }: Readonly<{ application: TenantAppl
     .toUpperCase();
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:shadow-sm hover:border-[color:var(--color-brand-primary)]/30 transition-all duration-150">
+    <div className="flex items-center gap-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-4 hover:shadow-sm hover:border-brand-primary/30 transition-all duration-150">
       {/* Avatar */}
-      <div className="size-10 shrink-0 rounded-xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-sm font-heading">
+      <div className="size-10 shrink-0 rounded-xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-brand-primary/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-sm font-heading">
         {initials}
       </div>
 
@@ -385,7 +375,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
 
       {/* Summary metrics */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-card p-4">
+        <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-card p-4">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             Total
           </p>
@@ -393,19 +383,19 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
             {totalApplications}
           </p>
         </div>
-        <div className="rounded-xl border border-emerald-200 dark:border-emerald-800/30 bg-emerald-50 dark:bg-emerald-900/10 p-4">
-          <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
+        <div className="rounded-xl border border-success/30 dark:border-success/20 bg-success-light dark:bg-success/10 p-4">
+          <p className="text-xs font-medium text-success uppercase tracking-wide">
             Approved
           </p>
-          <p className="mt-1.5 text-2xl font-bold font-heading text-emerald-700 dark:text-emerald-400">
+          <p className="mt-1.5 text-2xl font-bold font-heading text-success">
             {approvedCount}
           </p>
         </div>
-        <div className="rounded-xl border border-amber-200 dark:border-amber-800/30 bg-amber-50 dark:bg-amber-900/10 p-4">
-          <p className="text-xs font-medium text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+        <div className="rounded-xl border border-warning/30 dark:border-warning/20 bg-warning-light dark:bg-warning/10 p-4">
+          <p className="text-xs font-medium text-warning uppercase tracking-wide">
             Referencing
           </p>
-          <p className="mt-1.5 text-2xl font-bold font-heading text-amber-700 dark:text-amber-400">
+          <p className="mt-1.5 text-2xl font-bold font-heading text-warning">
             {referencingCount}
           </p>
         </div>
@@ -428,7 +418,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
             Filter
           </Button>
           {/* View toggle */}
-          <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5">
+          <div className="flex items-center rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 p-0.5">
             <button
               onClick={() => setViewMode("kanban")}
               className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
@@ -478,7 +468,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
                 </div>
 
                 {/* Column body */}
-                <div className="flex-1 min-h-[140px] rounded-b-xl border border-t-0 border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20 p-2">
+                <div className="flex-1 min-h-[140px] rounded-b-xl border border-t-0 border-neutral-200 dark:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-800/20 p-2">
                   {colApps.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-[120px] gap-1">
                       <Users className="size-5 text-muted-foreground/40" />
@@ -505,7 +495,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
             <TabsTrigger value="active" className="rounded-lg px-4">
               Active
               {activeApps.length > 0 && (
-                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 min-w-[1.25rem] px-1.5 py-0.5 text-xs font-bold">
+                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-brand-primary/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 min-w-[1.25rem] px-1.5 py-0.5 text-xs font-bold">
                   {activeApps.length}
                 </span>
               )}
@@ -513,7 +503,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
             <TabsTrigger value="archived" className="rounded-lg px-4">
               Archived
               {archivedApps.length > 0 && (
-                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 min-w-[1.25rem] px-1.5 py-0.5 text-xs font-bold">
+                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 min-w-[1.25rem] px-1.5 py-0.5 text-xs font-bold">
                   {archivedApps.length}
                 </span>
               )}

@@ -26,6 +26,12 @@ import type { PortfolioKPIs } from "@/types/landlord";
 import type { PortfolioProperty } from "@/services/landlord/portfolio-service";
 import type { FinancialEntry } from "@/types/landlord";
 
+// Recharts requires raw CSS hex values — CSS custom properties are not supported
+// inside SVG fill/stroke attributes. These map to the design tokens:
+//   #1B4D3E → --color-brand-primary
+//   #D4A853 → --color-brand-accent (gold)
+//   #3B82F6 → --color-info
+//   #6B7280 → --color-neutral-500
 const CHART_COLOURS = ["#1B4D3E", "#D4A853", "#3B82F6", "#6B7280"];
 
 // -- Data derivation helpers --------------------------------------------------
@@ -116,9 +122,9 @@ type IncomeTooltipProps = Readonly<{
 function IncomeTooltip({ active, payload, label }: IncomeTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-xs shadow">
-      <p className="font-medium text-gray-700">{label}</p>
-      <p className="text-green-700">
+    <div className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-xs shadow">
+      <p className="font-medium text-neutral-700">{label}</p>
+      <p className="text-success">
         Income: £{(payload[0]?.value ?? 0).toLocaleString("en-GB")}
       </p>
     </div>
@@ -134,9 +140,9 @@ type OccupancyTooltipProps = Readonly<{
 function OccupancyTooltip({ active, payload, label }: OccupancyTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-md border border-gray-200 bg-white px-3 py-2 text-xs shadow">
-      <p className="font-medium text-gray-700">{label}</p>
-      <p className="text-green-700">Occupancy: {payload[0]?.value ?? 0}%</p>
+    <div className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-xs shadow">
+      <p className="font-medium text-neutral-700">{label}</p>
+      <p className="text-success">Occupancy: {payload[0]?.value ?? 0}%</p>
     </div>
   );
 }

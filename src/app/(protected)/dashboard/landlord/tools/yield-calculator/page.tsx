@@ -24,15 +24,15 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 function yieldColour(yieldPct: number): string {
-  if (yieldPct >= 5) return "text-emerald-700 dark:text-emerald-400";
-  if (yieldPct >= 3) return "text-amber-600 dark:text-amber-400";
-  return "text-red-600 dark:text-red-400";
+  if (yieldPct >= 5) return "text-success";
+  if (yieldPct >= 3) return "text-warning";
+  return "text-error";
 }
 
 function yieldBg(yieldPct: number): string {
-  if (yieldPct >= 5) return "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800";
-  if (yieldPct >= 3) return "bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800";
-  return "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800";
+  if (yieldPct >= 5) return "bg-success-light border-success/30 dark:bg-success/10 dark:border-success/20";
+  if (yieldPct >= 3) return "bg-warning-light border-warning/30 dark:bg-warning/10 dark:border-warning/20";
+  return "bg-error-light border-error/30 dark:bg-error/10 dark:border-error/20";
 }
 
 type FieldProps = Readonly<{
@@ -227,8 +227,8 @@ export default function YieldCalculatorPage() {
                   className={cn(
                     "font-bold",
                     result.annualNet >= 0
-                      ? "text-emerald-700 dark:text-emerald-400"
-                      : "text-destructive",
+                      ? "text-success"
+                      : "text-error",
                   )}
                 >
                   £{result.annualNet.toLocaleString("en-GB")}
@@ -244,9 +244,9 @@ export default function YieldCalculatorPage() {
             </h3>
             <div className="space-y-3">
               {[
-                { label: "Strong (≥5%)", threshold: 5, colour: "bg-emerald-500" },
-                { label: "Moderate (3–5%)", threshold: 3, colour: "bg-amber-500" },
-                { label: "Low (<3%)", threshold: 0, colour: "bg-red-500" },
+                { label: "Strong (≥5%)", threshold: 5, colour: "bg-success" },
+                { label: "Moderate (3–5%)", threshold: 3, colour: "bg-warning" },
+                { label: "Low (<3%)", threshold: 0, colour: "bg-error" },
               ].map((tier) => (
                 <div key={tier.label} className="flex items-center gap-3 text-xs">
                   <div className={cn("size-2.5 rounded-full shrink-0", tier.colour)} />
@@ -263,14 +263,14 @@ export default function YieldCalculatorPage() {
           </div>
 
           {/* UK benchmark info panel */}
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+          <div className="rounded-2xl border border-warning/30 bg-warning-light p-4 dark:border-warning/20 dark:bg-warning/10">
             <div className="flex items-start gap-2.5">
-              <Info className="size-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+              <Info className="size-4 text-warning shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-300 mb-1.5">
+                <h3 className="text-sm font-semibold text-warning mb-1.5">
                   UK Benchmarks (2025)
                 </h3>
-                <ul className="space-y-1 text-xs text-amber-800 dark:text-amber-400">
+                <ul className="space-y-1 text-xs text-warning/80">
                   <li>Average UK gross yield: 5.8%</li>
                   <li>Average UK net yield: 3.2–4.5%</li>
                   <li>Target varies by strategy and market</li>

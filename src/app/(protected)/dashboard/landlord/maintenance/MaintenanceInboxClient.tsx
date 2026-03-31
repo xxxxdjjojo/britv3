@@ -135,6 +135,8 @@ export function MaintenanceInboxClient(
                 key={p}
                 type="button"
                 onClick={() => setPriorityFilter(p)}
+                aria-label={`Filter by priority: ${p === "all" ? "all priorities" : p}`}
+                aria-pressed={priorityFilter === p}
                 className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                   priorityFilter === p
                     ? "bg-brand-primary text-white shadow-sm"
@@ -156,6 +158,8 @@ export function MaintenanceInboxClient(
               key={s}
               type="button"
               onClick={() => setStatusFilter(s)}
+              aria-label={`Filter by status: ${s === "all" ? "all statuses" : s.replace("_", " ")}`}
+              aria-pressed={statusFilter === s}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 statusFilter === s
                   ? "bg-brand-primary text-white shadow-sm"
