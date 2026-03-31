@@ -112,7 +112,7 @@ async function PageContent() {
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
             Deposit Management
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

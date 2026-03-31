@@ -36,13 +36,19 @@ async function PageContent() {
     <div className="space-y-6 p-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-            Rent Collection
+          <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            Rent Collection Overview
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Track and manage rent payments across your portfolio
+            Stay on top of your rental income
           </p>
         </div>
+        <button
+          type="button"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm hover:bg-muted transition-colors"
+        >
+          Export Report
+        </button>
       </div>
 
       <RentCollectionClient initialData={rentGroups} />

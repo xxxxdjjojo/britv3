@@ -86,26 +86,37 @@ export function MaintenanceInboxClient(
       {/* Page header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Maintenance Management
+          </p>
           <div className="flex items-center gap-3">
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-              Maintenance Requests
+            <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+              Inbox
             </h1>
             <span className="rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-sm font-bold text-brand-primary">
               {props.initialData.length}
             </span>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage repairs and coordinate with verified professionals across
-            your portfolio.
+            Oversee requests, manage contractors, and maintain property value
           </p>
         </div>
-        <Link
-          href="/dashboard/landlord/maintenance/new"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary-light transition-colors"
-        >
-          <Plus className="size-4" />
-          New Request
-        </Link>
+        <div className="flex shrink-0 items-center gap-3">
+          <Link
+            href="/dashboard/landlord/maintenance/new?priority=emergency"
+            className="inline-flex items-center gap-2 rounded-lg bg-warning px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-warning/90 transition-colors"
+          >
+            <AlertTriangle className="size-4" />
+            Report Emergency
+          </Link>
+          <Link
+            href="/dashboard/landlord/maintenance/new"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-primary-light transition-colors"
+          >
+            <Plus className="size-4" />
+            New Request
+          </Link>
+        </div>
       </div>
 
       {/* Urgent alert */}

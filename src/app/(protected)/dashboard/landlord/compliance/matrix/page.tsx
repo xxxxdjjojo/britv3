@@ -31,14 +31,21 @@ export default function ComplianceMatrixPage() {
       </div>
 
       {/* Page header */}
-      <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-          Compliance Matrix
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Property × requirement status at a glance — green is valid, amber is
-          expiring, red is expired
-        </p>
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            Compliance Matrix
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage certificates across your portfolio
+          </p>
+        </div>
+        <button
+          type="button"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm hover:bg-muted transition-colors"
+        >
+          Export Report
+        </button>
       </div>
 
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}>

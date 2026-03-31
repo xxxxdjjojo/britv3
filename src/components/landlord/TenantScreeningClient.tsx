@@ -363,11 +363,11 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-heading font-bold tracking-tight text-foreground">
-            Tenant Screening
+          <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            Tenants
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage rental applications across your portfolio
+            Managing all active tenancies across your London portfolio.
           </p>
         </div>
         <AddApplicationSheet onSuccess={() => router.refresh()} />

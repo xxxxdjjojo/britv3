@@ -112,13 +112,15 @@ async function PageContent() {
   return (
     <div className="space-y-6 p-6">
       {/* Page header */}
-      <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-          Portfolio Analytics
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Charts and KPIs across your entire rental portfolio
-        </p>
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            Landlord Analytics
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Real-time performance metrics for your UK property portfolio.
+          </p>
+        </div>
       </div>
 
       {/* Portfolio KPI Summary */}
