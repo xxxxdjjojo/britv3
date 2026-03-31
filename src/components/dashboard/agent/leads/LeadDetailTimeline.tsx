@@ -48,9 +48,9 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 
 const STAGE_COLORS: Record<LeadStage, string> = {
   new_enquiry: "bg-muted text-muted-foreground",
-  qualified: "bg-info-light text-info",
-  viewing_booked: "bg-warning-light text-warning",
-  offer_made: "bg-success-light text-success",
+  qualified: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+  viewing_booked: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+  offer_made: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
   closed: "bg-muted text-muted-foreground",
 };
 
@@ -238,7 +238,7 @@ export function LeadDetailTimeline({
             <CardContent>
               {localActivities.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mb-3">
+                  <div className="size-14 rounded-full bg-muted flex items-center justify-center mb-3">
                     <MessageSquare className="size-6 text-muted-foreground" strokeWidth={1.25} />
                   </div>
                   <p className="text-sm font-medium text-foreground">No activity yet</p>
@@ -309,7 +309,7 @@ export function LeadDetailTimeline({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                   Stage
                 </p>
                 <Select
@@ -330,7 +330,7 @@ export function LeadDetailTimeline({
               </div>
 
               <div className="space-y-1.5">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                   Assigned to
                 </p>
                 <Select

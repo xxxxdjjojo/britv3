@@ -256,10 +256,10 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
             Team Members
           </h1>
-          <p className="mt-0.5 text-sm text-neutral-500">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {members.length} member{members.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -278,7 +278,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           value={filter.branch}
           onValueChange={(v) => setFilter((f) => ({ ...f, branch: v ?? "" }))}
         >
-          <SelectTrigger className="w-44 rounded-lg bg-neutral-50">
+          <SelectTrigger className="w-44 rounded-xl bg-neutral-50">
             <SelectValue placeholder="All Branches" />
           </SelectTrigger>
           <SelectContent>
@@ -295,7 +295,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           value={filter.role}
           onValueChange={(v) => setFilter((f) => ({ ...f, role: v ?? "" }))}
         >
-          <SelectTrigger className="w-44 rounded-lg bg-neutral-50">
+          <SelectTrigger className="w-44 rounded-xl bg-neutral-50">
             <SelectValue placeholder="All Roles" />
           </SelectTrigger>
           <SelectContent>
@@ -312,7 +312,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
           value={filter.status}
           onValueChange={(v) => setFilter((f) => ({ ...f, status: v ?? "" }))}
         >
-          <SelectTrigger className="w-44 rounded-lg bg-neutral-50">
+          <SelectTrigger className="w-44 rounded-xl bg-neutral-50">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -327,11 +327,11 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
       {/* Members grid */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
-          <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-            <Users className="size-7 text-brand-primary" strokeWidth={1.25} />
+          <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-muted">
+            <Users className="size-6 text-muted-foreground" strokeWidth={1.25} />
           </div>
-          <p className="font-semibold text-neutral-800">No team members found</p>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="font-heading font-semibold text-foreground">No team members found</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             Invite your first team member to get started.
           </p>
         </div>
@@ -346,7 +346,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md"
               >
                 {/* Card top */}
-                <div className="flex items-start justify-between gap-3 bg-neutral-50 px-4 py-4">
+                <div className="flex items-start justify-between gap-3 bg-muted/30 px-4 py-4">
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex size-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${roleCfg.bg} ${roleCfg.text}`}
@@ -441,7 +441,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 Full Name *
               </label>
               <input
-                className="w-full rounded-lg border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="w-full rounded-xl border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
                 placeholder="Full name"
@@ -452,7 +452,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 Email *
               </label>
               <input
-                className="w-full rounded-lg border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="w-full rounded-xl border-0 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-900 ring-1 ring-border focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
@@ -467,7 +467,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 value={inviteRole}
                 onValueChange={(v) => setInviteRole(v as TeamRole)}
               >
-                <SelectTrigger className="rounded-lg bg-neutral-50">
+                <SelectTrigger className="rounded-xl bg-neutral-50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -487,7 +487,7 @@ export function TeamMemberList({ members: initialMembers, branches }: Props) {
                 value={inviteBranch}
                 onValueChange={(v) => setInviteBranch(v ?? "")}
               >
-                <SelectTrigger className="rounded-lg bg-neutral-50">
+                <SelectTrigger className="rounded-xl bg-neutral-50">
                   <SelectValue placeholder="No branch" />
                 </SelectTrigger>
                 <SelectContent>

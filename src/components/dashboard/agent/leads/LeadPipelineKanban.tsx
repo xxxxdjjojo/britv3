@@ -50,19 +50,19 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 
 // Column background shades using design-system tokens
 const STAGE_BG: Record<LeadStage, string> = {
-  new_enquiry: "bg-muted/40",
-  qualified: "bg-info-light/30",
-  viewing_booked: "bg-warning-light/30",
-  offer_made: "bg-success-light/30",
-  closed: "bg-muted/60",
+  new_enquiry: "bg-muted/30",
+  qualified: "bg-blue-50/60 dark:bg-blue-900/10",
+  viewing_booked: "bg-amber-50/60 dark:bg-amber-900/10",
+  offer_made: "bg-emerald-50/60 dark:bg-emerald-900/10",
+  closed: "bg-muted/20",
 };
 
 // Status pill using design-system semantic tokens
 const STAGE_PILL: Record<LeadStage, string> = {
   new_enquiry: "bg-muted text-muted-foreground",
-  qualified: "bg-info-light text-info",
-  viewing_booked: "bg-warning-light text-warning",
-  offer_made: "bg-success-light text-success",
+  qualified: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+  viewing_booked: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+  offer_made: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
   closed: "bg-muted text-muted-foreground",
 };
 
@@ -77,7 +77,7 @@ function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[200px] rounded-xl p-2.5 transition-colors duration-150 ${STAGE_BG[stage]} ${
+      className={`min-h-[200px] rounded-2xl p-3 transition-colors duration-150 ${STAGE_BG[stage]} ${
         isOver ? "ring-2 ring-brand-primary/40 ring-inset" : ""
       }`}
     >
@@ -340,7 +340,7 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
               <div key={stage} className="flex-shrink-0 w-64">
                 {/* Column header */}
                 <div className="flex items-center justify-between mb-2 px-1">
-                  <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                  <h3 className="font-heading text-xs font-semibold text-foreground uppercase tracking-widest">
                     {STAGE_LABELS[stage]}
                   </h3>
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STAGE_PILL[stage]}`}>
@@ -373,7 +373,7 @@ export function LeadPipelineKanban({ initialLeads }: Props) {
 
         <DragOverlay>
           {activeLeadData ? (
-            <div className="w-64 bg-card rounded-xl shadow-xl ring-2 ring-brand-primary/20 p-3 opacity-95 rotate-1">
+            <div className="w-64 bg-card rounded-2xl shadow-xl ring-2 ring-brand-primary/20 p-4 opacity-95 rotate-1">
               <div className="flex items-start gap-2.5">
                 <div className="size-8 rounded-full bg-accent flex items-center justify-center shrink-0 text-accent-foreground font-semibold text-xs">
                   {activeLeadData.contact_name

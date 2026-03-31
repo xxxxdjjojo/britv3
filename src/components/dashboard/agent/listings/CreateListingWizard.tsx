@@ -468,7 +468,7 @@ export function CreateListingWizard() {
       case 6:
         return (
           <div className="flex flex-col gap-6">
-            <div className="rounded-xl bg-muted/40 px-1 py-1">
+            <div className="rounded-2xl bg-muted/40 px-1 py-1">
               {[
                 ["Address", [values.address_line_1, values.city, values.postcode].filter(Boolean).join(", ")],
                 ["Type", values.property_type || "Not set"],
@@ -504,7 +504,7 @@ export function CreateListingWizard() {
             </div>
 
             {values.description && (
-              <div className="rounded-xl bg-card p-4 ring-1 ring-border/60">
+              <div className="rounded-2xl bg-card p-4 ring-1 ring-border/60">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Description preview
                 </p>
@@ -514,7 +514,7 @@ export function CreateListingWizard() {
               </div>
             )}
 
-            <div className="rounded-xl bg-brand-primary/5 p-4 ring-1 ring-brand-primary/20">
+            <div className="rounded-2xl bg-brand-primary/5 p-4 ring-1 ring-brand-primary/20">
               <p className="text-sm font-medium text-brand-primary">
                 Ready to publish?
               </p>

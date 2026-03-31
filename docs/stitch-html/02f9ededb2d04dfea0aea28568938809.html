@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How It Works | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#b4c5ff",
+              "surface-container-highest": "#e3e2e1",
+              "secondary-fixed": "#ffdea6",
+              "background": "#faf9f8",
+              "surface-container-lowest": "#ffffff",
+              "outline-variant": "#c0c9c3",
+              "on-secondary": "#ffffff",
+              "on-surface": "#1a1c1c",
+              "on-background": "#1a1c1c",
+              "on-primary-fixed-variant": "#1d4f40",
+              "on-primary-fixed": "#002117",
+              "surface-dim": "#dadad9",
+              "secondary-container": "#fdcd74",
+              "tertiary-container": "#003ca3",
+              "surface-container": "#eeeeed",
+              "outline": "#707974",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-primary-container": "#8abda9",
+              "primary": "#003629",
+              "on-primary": "#ffffff",
+              "on-tertiary-container": "#96afff",
+              "tertiary": "#002873",
+              "surface-bright": "#faf9f8",
+              "surface": "#faf9f8",
+              "on-secondary-container": "#785601",
+              "error": "#ba1a1a",
+              "primary-container": "#1b4d3e",
+              "inverse-surface": "#2f3130",
+              "surface-container-low": "#f4f3f2",
+              "secondary-fixed-dim": "#eec068",
+              "inverse-on-surface": "#f1f0f0",
+              "surface-tint": "#376757",
+              "secondary": "#7b5804",
+              "on-secondary-fixed-variant": "#5d4200",
+              "tertiary-fixed": "#dbe1ff",
+              "on-tertiary-fixed": "#00174b",
+              "error-container": "#ffdad6",
+              "surface-variant": "#e3e2e1",
+              "surface-container-high": "#e9e8e7",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-error": "#ffffff",
+              "inverse-primary": "#9ed1bd",
+              "on-tertiary": "#ffffff",
+              "primary-fixed": "#baeed9",
+              "on-secondary-fixed": "#271900",
+              "on-error-container": "#93000a",
+              "on-surface-variant": "#404945"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        font-size: 1.5rem;
+      }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar Component -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_20px_50px_rgba(26,28,28,0.05)]">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto font-['Plus_Jakarta_Sans'] antialiased tracking-tight">
+<div class="text-2xl font-bold tracking-tighter text-emerald-950 dark:text-emerald-50">
+                The Invisible Estate
+            </div>
+<div class="hidden md:flex items-center space-x-10">
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Buy</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Rent</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Sell</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Find Trades</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 transition-colors text-sm font-medium">Login</button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-md text-sm font-semibold hover:bg-primary-container transition-all active:scale-95 duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">Account</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-20">
+<!-- Hero Section -->
+<section class="max-w-screen-xl mx-auto px-8 mb-24">
+<div class="max-w-3xl">
+<span class="text-[0.6875rem] font-label tracking-[0.1em] text-primary uppercase mb-4 block">TRANSFORMING REAL ESTATE</span>
+<h1 class="text-[3.5rem] font-headline font-extrabold leading-[1.1] tracking-tighter text-on-surface mb-8">
+                    An effortless path <br/><span class="text-outline">to your next chapter.</span>
+</h1>
+<p class="text-lg text-on-surface-variant leading-relaxed font-light">
+                    We've distilled the complex British property journey into a seamless, 4-click experience. Select your role below to see how we prioritize your sanctuary.
+                </p>
+</div>
+</section>
+<!-- User Type Tabs -->
+<section class="max-w-screen-xl mx-auto px-8 mb-16">
+<div class="flex items-center space-x-2 p-1 bg-surface-container-low rounded-xl w-fit overflow-x-auto hide-scrollbar">
+<button class="px-8 py-3 rounded-lg text-sm font-semibold transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] bg-surface-container-lowest text-primary shadow-sm">Buyers</button>
+<button class="px-8 py-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary transition-all">Sellers</button>
+<button class="px-8 py-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary transition-all">Landlords</button>
+<button class="px-8 py-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary transition-all">Tenants</button>
+<button class="px-8 py-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary transition-all">Tradespeople</button>
+</div>
+<!-- Dynamic Content Area -->
+<section class="max-w-screen-xl mx-auto px-8">
+<div class="grid lg:grid-cols-12 gap-20 items-start">
+<!-- Vertical Timeline -->
+<div class="lg:col-span-7 space-y-24">
+<!-- Step 1 -->
+<div class="group flex gap-10">
+<div class="flex flex-col items-center">
+<div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-on-primary font-headline font-bold text-xl shrink-0 group-hover:scale-110 transition-transform duration-600">
+                                1
+                            </div>
+<div class="w-px h-full bg-surface-container-highest mt-4"></div>
+</div>
+<div class="pt-2">
+<h3 class="text-2xl font-headline font-bold mb-4">Curated Discovery</h3>
+<p class="text-on-surface-variant leading-relaxed mb-6">
+                                Bypass the noise. Our algorithms match you with properties that align with your lifestyle, not just your budget. Every listing is verified for transparency.
+                            </p>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-5 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary mb-3" data-icon="filter_list">filter_list</span>
+<p class="text-sm font-medium">Bespoke Filters</p>
+</div>
+<div class="p-5 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary mb-3" data-icon="verified">verified</span>
+<p class="text-sm font-medium">Verified History</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="group flex gap-10">
+<div class="flex flex-col items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary font-headline font-bold text-xl shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-all duration-600">
+                                2
+                            </div>
+<div class="w-px h-full bg-surface-container-highest mt-4"></div>
+</div>
+<div class="pt-2">
+<h3 class="text-2xl font-headline font-bold mb-4">The Invisible Viewing</h3>
+<p class="text-on-surface-variant leading-relaxed mb-6">
+                                Book private viewings instantly. Our "No-Interruption" policy ensures you explore homes at your own pace, supported by digital architectural insights.
+                            </p>
+<img class="w-full aspect-video object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-700 shadow-sm" data-alt="Minimalist modern living room with large glass windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtzmTU5klUvf_544Mxol3qJyRrxmpUUCgYNvUpNrmsRnnXluGxuWphDOXYJC5UC3Rn9zo_F6n1JWB7HTofWJcYtlSpTYaiMFVdXN2HM7ZzFHD3w3lZPuekapN0fRYyW-i4oiC2wEleQyHr7rjVPmxUl5bJI3tp4LCGz9xkWUx6mYfN9iO9-kMyc-Oubd8nIt9nhEb6VDGBeA4b6ZjcrxdIFNDJJryzt6pX_l0sRNd_Es9DeicWanr5RuypLXqoRtMUhVg_FZ2ZRSGT"/>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="group flex gap-10">
+<div class="flex flex-col items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary font-headline font-bold text-xl shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-all duration-600">
+                                3
+                            </div>
+<div class="w-px h-full bg-surface-container-highest mt-4"></div>
+</div>
+<div class="pt-2">
+<h3 class="text-2xl font-headline font-bold mb-4">Frictionless Offers</h3>
+<p class="text-on-surface-variant leading-relaxed mb-6">
+                                Submit and negotiate offers through our secure portal. Real-time notifications and legal pre-checks mean you're never left in the dark.
+                            </p>
+<div class="p-8 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-between">
+<div>
+<p class="font-headline font-bold text-xl mb-1">98% Success Rate</p>
+<p class="text-sm opacity-80">On accepted offers through our platform.</p>
+</div>
+<span class="material-symbols-outlined text-4xl" data-icon="trending_up">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="group flex gap-10">
+<div class="flex flex-col items-center">
+<div class="w-14 h-14 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary font-headline font-bold text-xl shrink-0 group-hover:bg-primary group-hover:text-on-primary transition-all duration-600">
+                                4
+                            </div>
+</div>
+<div class="pt-2">
+<h3 class="text-2xl font-headline font-bold mb-4">Digital Key Handover</h3>
+<p class="text-on-surface-variant leading-relaxed mb-4">
+                                Complete your transaction with our integrated legal and finance partners. Your new sanctuary is just a signature away.
+                            </p>
+<button class="bg-secondary-fixed-dim text-on-secondary-fixed px-8 py-4 rounded-md font-bold text-lg hover:bg-secondary-container transition-colors active:scale-95">Get Started as a Buyer</button>
+</div>
+</div>
+</div>
+<!-- Sticky Sidebar Info -->
+<div class="lg:col-span-5 lg:sticky lg:top-32">
+<div class="bg-surface-container-low p-10 rounded-2xl">
+<h4 class="font-headline font-bold text-xl mb-6">The 4-Click Guarantee</h4>
+<p class="text-sm text-on-surface-variant mb-8 leading-relaxed">
+                            We believe luxury is simplicity. Every primary action on our platform—from finding a home to booking a trade—is never more than four clicks away.
+                        </p>
+<div class="space-y-8">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded bg-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="speed">speed</span>
+</div>
+<div>
+<p class="font-semibold text-sm mb-1">Zero Redundancy</p>
+<p class="text-xs text-on-surface-variant">We only ask for data once. Your profile travels with you.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded bg-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="security">security</span>
+</div>
+<div>
+<p class="font-semibold text-sm mb-1">Encrypted Escrow</p>
+<p class="text-xs text-on-surface-variant">All funds are held in secure, UK-regulated accounts.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded bg-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<p class="font-semibold text-sm mb-1">Human-at-the-End</p>
+<p class="text-xs text-on-surface-variant">Concierge support available for high-value negotiations.</p>
+</div>
+</div>
+</div>
+<div class="mt-12 p-6 bg-white rounded-xl border-l-4 border-primary">
+<p class="italic text-on-surface-variant text-sm mb-4">"The Invisible Estate turned what was usually a 6-month nightmare into a 3-week breeze. Truly architectural UI."</p>
+<p class="text-xs font-bold uppercase tracking-widest">— Sarah J., London</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Secondary CTA Section -->
+<section class="max-w-screen-xl mx-auto px-8 mt-32">
+<div class="relative overflow-hidden bg-primary rounded-3xl p-16 lg:p-24 text-center">
+<div class="relative z-10 max-w-2xl mx-auto">
+<h2 class="text-4xl md:text-5xl font-headline font-bold text-on-primary mb-8 tracking-tight">Ready to experience <br/>property differently?</h2>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="bg-on-primary text-primary px-10 py-4 rounded-md font-bold hover:bg-primary-fixed transition-colors active:scale-95">Explore Listings</button>
+<button class="border border-on-primary/30 text-on-primary px-10 py-4 rounded-md font-bold hover:bg-on-primary/10 transition-colors active:scale-95">Book a Consultation</button>
+</div>
+</div>
+<!-- Abstract Decorative Elements -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container rounded-full blur-[100px] -mr-32 -mt-32 opacity-50"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-container rounded-full blur-[100px] -ml-32 -mb-32 opacity-20"></div>
+</div>
+</section>
+</section></main>
+<!-- Footer Component -->
+<footer class="bg-stone-100 dark:bg-stone-950 font-['Inter'] text-sm tracking-wide">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 px-12 py-20 w-full max-w-screen-2xl mx-auto">
+<div class="col-span-2 lg:col-span-2">
+<div class="text-xl font-bold text-emerald-950 dark:text-emerald-50 mb-6">The Invisible Estate</div>
+<p class="text-stone-500 dark:text-stone-400 max-w-xs mb-8">
+                    Redefining the UK property landscape through editorial precision and technological clarity.
+                </p>
+</div>
+<div>
+<h5 class="text-emerald-900 dark:text-emerald-500 font-bold mb-6">Platform</h5>
+<ul class="space-y-4">
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">About Us</a></li>
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Careers</a></li>
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Press</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-emerald-900 dark:text-emerald-500 font-bold mb-6">Resources</h5>
+<ul class="space-y-4">
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Blog</a></li>
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Help Centre</a></li>
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-emerald-900 dark:text-emerald-500 font-bold mb-6">Social</h5>
+<ul class="space-y-4">
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Instagram</a></li>
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">LinkedIn</a></li>
+<li><a class="text-stone-500 dark:text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-300 opacity-80 hover:opacity-100" href="#">Twitter</a></li>
+</ul>
+</div>
+</div>
+<div class="px-12 py-8 border-t border-stone-200 dark:border-stone-800 flex justify-between items-center text-stone-500 text-xs">
+<span>© 2024 The Invisible Estate. All rights reserved.</span>
+<div class="flex gap-8">
+<a class="hover:text-emerald-900 transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-emerald-900 transition-colors" href="#">Cookie Settings</a>
+</div>
+</div>
+</footer>
+</body></html>

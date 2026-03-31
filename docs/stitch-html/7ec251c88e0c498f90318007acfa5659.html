@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-primary-fixed": "#002117",
+              "on-surface": "#1a1c1c",
+              "primary-container": "#1b4d3e",
+              "surface-tint": "#376757",
+              "on-tertiary-fixed": "#00174b",
+              "secondary-fixed": "#ffdea6",
+              "error": "#ba1a1a",
+              "outline": "#707974",
+              "surface-bright": "#faf9f8",
+              "tertiary": "#002873",
+              "inverse-surface": "#2f3130",
+              "surface-variant": "#e3e2e1",
+              "surface-dim": "#dadad9",
+              "on-secondary-fixed": "#271900",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "secondary-fixed-dim": "#eec068",
+              "secondary-container": "#fdcd74",
+              "primary": "#003629",
+              "surface-container-low": "#f4f3f2",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-tertiary-container": "#96afff",
+              "on-surface-variant": "#404945",
+              "surface-container": "#eeeeed",
+              "on-error": "#ffffff",
+              "inverse-primary": "#9ed1bd",
+              "on-secondary": "#ffffff",
+              "on-primary-fixed-variant": "#1d4f40",
+              "surface": "#faf9f8",
+              "surface-container-highest": "#e3e2e1",
+              "tertiary-container": "#003ca3",
+              "secondary": "#7b5804",
+              "surface-container-lowest": "#ffffff",
+              "on-background": "#1a1c1c",
+              "on-secondary-fixed-variant": "#5d4200",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e9e8e7",
+              "tertiary-fixed": "#dbe1ff",
+              "background": "#faf9f8",
+              "outline-variant": "#c0c9c3",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-secondary-container": "#785601",
+              "primary-fixed": "#baeed9",
+              "on-primary-container": "#8abda9",
+              "inverse-on-surface": "#f1f0f0"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            font-size: 1.25rem;
+        }
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 3rem;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-[0_20px_50px_rgba(26,28,28,0.05)]">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-emerald-900 dark:text-emerald-50 font-['Plus_Jakarta_Sans']">The Invisible Estate</span>
+<div class="hidden md:flex items-center gap-6 font-['Plus_Jakarta_Sans'] tracking-tight">
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors" href="#">Discover</a>
+<a class="text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-900 dark:border-emerald-400 pb-1" href="#">Listings</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors" href="#">Advisory</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors" href="#">Journal</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-all duration-600 scale-95 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<span class="material-symbols-outlined text-emerald-900" data-icon="map">map</span>
+</button>
+<button class="p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-all duration-600 scale-95 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<span class="material-symbols-outlined text-emerald-900" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-all duration-600 scale-95 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<span class="material-symbols-outlined text-emerald-900" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-8 max-w-screen-2xl mx-auto min-h-screen">
+<!-- Results Header & Sorting -->
+<header class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-xl">
+<span class="font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline mb-3 block">SEARCH RESULTS</span>
+<h1 class="font-headline text-[3.5rem] font-extrabold tracking-tighter leading-tight text-primary">Found 12 Estates.</h1>
+<p class="text-on-surface-variant font-body mt-2">Curated selection of modern sanctuaries in the British countryside.</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">SORT BY</label>
+<select class="appearance-none bg-surface-container-low border-none rounded-lg px-4 py-3 pr-10 text-sm font-medium focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all">
+<option>Price High to Low</option>
+<option>Newest Arrivals</option>
+<option>Most Exclusive</option>
+<option>Sq Ft (Largest)</option>
+</select>
+</div>
+<button class="bg-primary text-on-primary h-12 px-6 rounded-md font-medium flex items-center gap-2 hover:bg-primary-container transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="tune">tune</span>
+                    Filters
+                </button>
+</div>
+</header>
+<!-- Listing Grid -->
+<section class="editorial-grid">
+<!-- Card 1 -->
+<article class="group relative flex flex-col bg-surface-container-lowest transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low relative">
+<img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Modern architectural home with floor to ceiling windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLMW0LztLmqQauuP41KDsplUTJN60N34X-afyzh9vBjGl3ie3X8Do-XXZwhU1pQYW5t4QdPDrhS2wYMIkY3rXiY4rqqs9n0NSTC2X4BYxanqhx0lhFEUCi2ntzeTDgLG5mKcQYVIB6FZoItNCmxJvZkznvpvpqi88cmMpfa1WbdqVO6kv5LB_KWQl1sVJv7WUB2Ndr6ZV3AFfjWiMFp_IxcnsUh8uo4GUDppxcmV0a-xF78s4n-e58f2qc5zoOyJcD-CX-H7h6zrBc"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container font-label text-[0.6875rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm">Certified Sanctuary</span>
+</div>
+<button class="absolute top-4 right-4 text-white hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="pt-8 pb-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-primary group-hover:text-primary-container transition-colors">Elowen Manor</h3>
+<span class="font-headline text-xl font-semibold text-primary">£4,250,000</span>
+</div>
+<p class="text-on-surface-variant mb-6">Cotswolds, United Kingdom</p>
+<div class="flex items-center gap-12 font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">5 BEDROOMS</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">6,400 SQ FT</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">EPC RATING A</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="group relative flex flex-col bg-surface-container-lowest transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low relative">
+<img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Contemporary concrete and wood mansion by lake" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3u75BUKOzk4Mo-Wzjf8B_1MkbuTfC202-fRSPBIxcZ2iTmFUuw2uz_A0EogOpqNV0q3su5d5dy4IEQVezMMSnX2wnDrpy38hltDasHMkjwPq1ObYP8TSyf5xuV_OeY4BcIF9f_Pv480BkkjtUxYYVq-FHS0-43fkkPfBnx_S1LtouLd06kacpdSHzAC0Lgb6aRWnMdKlNgvHmZtiJJMqN24R5XRLq2eWeIauIGsRGsMuiy6Bfmmc1jmrGt3nx55IWXum6RAVqD9U_"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container font-label text-[0.6875rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm">Exclusive Listing</span>
+</div>
+<button class="absolute top-4 right-4 text-white hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="pt-8 pb-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-primary group-hover:text-primary-container transition-colors">The Obsidian Float</h3>
+<span class="font-headline text-xl font-semibold text-primary">£8,900,000</span>
+</div>
+<p class="text-on-surface-variant mb-6">Lake District, Cumbria</p>
+<div class="flex items-center gap-12 font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">4 BEDROOMS</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">8,200 SQ FT</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">OFF-MARKET</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="group relative flex flex-col bg-surface-container-lowest transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low relative">
+<img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Traditional stone villa with modern glass extension" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwGzyvCnlVrp2W3KOrAOswz42ba66iaxYrr0WWzNYbOZIGEgXXol-QW1TWOAh2nG-ckOmbiozNGrj9scU-KCBhzReO09iu4RUAV4nvU9XHzk8X8pEk_M_xMlaZH2C167vLKVs0QqVx3kEcm9T5Sl4sjBF1SveWQk7WUk_6pkL-28cQLAYs4neeczrVmnDRolaTECseoS_FiGSIs53uRIplm5EzpQtwxPO857QtWunEVJF0HIAS9EOv7hXOFEYHzJXyJX6IsaVFLFd0"/>
+<button class="absolute top-4 right-4 text-white hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="pt-8 pb-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-primary group-hover:text-primary-container transition-colors">Arden Vale</h3>
+<span class="font-headline text-xl font-semibold text-primary">£2,150,000</span>
+</div>
+<p class="text-on-surface-variant mb-6">Surrey Hills, UK</p>
+<div class="flex items-center gap-12 font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">6 BEDROOMS</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">4,800 SQ FT</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">HISTORIC</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="group relative flex flex-col bg-surface-container-lowest transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low relative">
+<img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Minimalist timber cabin with luxury finishes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1ZElKG5QrBZ1AyDdcQoEg-qfw0p30fyL-pa5i1DtvKNRefVaB8iMX92IdHzVN9ACp8Bs0wfCOsoZgd62DSLFo9EotqFNXCKMVYl1ohCPOqy9LgXFW-jK03Yv1jvnrXnfcvT2BR64Pg_WZtPocuq_1HznkQtbV-X6pSicJzOvJpaf-iEtT_KhjXkUFjLgsEjWdYDLjGGcRvjX6G1J20vTpT7tXqZRZpvbdRzSe4MGsRW-UaG89JLuAkP8QBYaA-5ZC1H0MdewHN7fx"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container font-label text-[0.6875rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm">New Architecture</span>
+</div>
+<button class="absolute top-4 right-4 text-white hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="pt-8 pb-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-primary group-hover:text-primary-container transition-colors">The Wood Shed</h3>
+<span class="font-headline text-xl font-semibold text-primary">£1,850,000</span>
+</div>
+<p class="text-on-surface-variant mb-6">Isle of Skye, Scotland</p>
+<div class="flex items-center gap-12 font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">3 BEDROOMS</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">2,400 SQ FT</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">PASSIVHAUS</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="group relative flex flex-col bg-surface-container-lowest transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low relative">
+<img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="High-end white mediterranean style villa" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClO0_NHQeYqPrjaJW-4j9t53VVcex8C77VHRVW8D9sgIi-06ySgYCD0rlAVTWbzClRhIykddN9MiEumcfMf2wL7HLMLuLbqjxRoysNv1bzUJ7mM27idMRcWWMqekPWc_xkRK-obJT_6R8g-zKPHqM81wOadEnq813nbax762Q4LWGr79xnJTzLxw5QuCM-Hj6wK2ddBTZAGIdnrZEd8Kt81WbhxRRHx3vEaZOzibr3rERnIq41RgpCmDDSz7L0brYNbQLWQQrkVlu4"/>
+<button class="absolute top-4 right-4 text-white hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="pt-8 pb-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-primary group-hover:text-primary-container transition-colors">Lumina Point</h3>
+<span class="font-headline text-xl font-semibold text-primary">£12,000,000</span>
+</div>
+<p class="text-on-surface-variant mb-6">Sandbanks, Dorset</p>
+<div class="flex items-center gap-12 font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">7 BEDROOMS</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">12,500 SQ FT</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">WATERFRONT</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 6 -->
+<article class="group relative flex flex-col bg-surface-container-lowest transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low relative">
+<img alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="English country cottage with rose garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA19277gLQXoztRt_0TM4Dp81bHdZThLx6tuUI-w_dpbjTy6by7j6okhIS9ga39gTXbGL65L_ejG0UKQaMTuu-pzTt2DkZigJA3KGGIbiqM0ecxE7GXDQ5M0uBMpMWRwvBqm9LriUa_kkb9zd-QoYctE5H2_Od-1Z9J0_9wyQtzCuYqB9GR8KC7ZXxyNidUvZh0CEO73Z3rPijnTxcKLjS8X9knJEescepLEPmRl02OBBPWa5F3iwFUqbmVu1cmBXO6JKYU6vc06k9y"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container font-label text-[0.6875rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm">Rare Heritage</span>
+</div>
+<button class="absolute top-4 right-4 text-white hover:text-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="favorite">favorite</span>
+</button>
+</div>
+<div class="pt-8 pb-4">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-headline text-2xl font-bold tracking-tight text-primary group-hover:text-primary-container transition-colors">Rosebriar Lodge</h3>
+<span class="font-headline text-xl font-semibold text-primary">£975,000</span>
+</div>
+<p class="text-on-surface-variant mb-6">Oxfordshire, UK</p>
+<div class="flex items-center gap-12 font-label text-[0.6875rem] uppercase tracking-[0.05em] text-outline">
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">4 BEDROOMS</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">3,100 SQ FT</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-primary font-bold">GRADE II</span>
+</div>
+</div>
+</div>
+</article>
+</section>
+<!-- Pagination / Load More -->
+<footer class="mt-20 flex justify-center">
+<button class="group flex flex-col items-center gap-4 hover:opacity-70 transition-opacity">
+<span class="font-label text-[0.6875rem] uppercase tracking-[0.2em] text-outline">EXPLORE MORE ESTATES</span>
+<div class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="expand_more">expand_more</span>
+</div>
+</button>
+</footer>
+</main>
+<!-- Bottom Navigation Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-6 pb-6 pt-3 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-lg rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.03)] z-50">
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-emerald-700 dark:hover:text-amber-100 transition-all">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05em] font-semibold mt-1">Search</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-emerald-900 dark:bg-amber-200 text-white dark:text-emerald-950 rounded-full w-12 h-12 transition-all duration-600 scale-110">
+<span class="material-symbols-outlined" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-emerald-700 dark:hover:text-amber-100 transition-all">
+<span class="material-symbols-outlined" data-icon="skateboarding">skateboarding</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05em] font-semibold mt-1">Concierge</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-emerald-700 dark:hover:text-amber-100 transition-all">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-[0.05em] font-semibold mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

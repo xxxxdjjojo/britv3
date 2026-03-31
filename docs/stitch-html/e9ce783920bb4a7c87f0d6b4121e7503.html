@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Careers | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface": "#2f3130",
+              "surface-tint": "#376757",
+              "secondary-fixed": "#ffdea6",
+              "on-primary-container": "#8abda9",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#002873",
+              "error": "#ba1a1a",
+              "inverse-on-surface": "#f1f0f0",
+              "surface-container-high": "#e9e8e7",
+              "surface": "#faf9f8",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-dim": "#dadad9",
+              "surface-container": "#eeeeed",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#1a1c1c",
+              "on-secondary-container": "#785601",
+              "surface-bright": "#faf9f8",
+              "background": "#faf9f8",
+              "surface-container-low": "#f4f3f2",
+              "secondary-container": "#fdcd74",
+              "primary-fixed": "#baeed9",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#e3e2e1",
+              "outline": "#707974",
+              "on-surface-variant": "#404945",
+              "on-secondary-fixed-variant": "#5d4200",
+              "on-background": "#1a1c1c",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-variant": "#e3e2e1",
+              "on-tertiary-container": "#96afff",
+              "on-primary-fixed": "#002117",
+              "secondary-fixed-dim": "#eec068",
+              "on-error-container": "#93000a",
+              "inverse-primary": "#9ed1bd",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-secondary": "#ffffff",
+              "secondary": "#7b5804",
+              "primary-container": "#1b4d3e",
+              "on-secondary-fixed": "#271900",
+              "outline-variant": "#c0c9c3",
+              "on-tertiary-fixed": "#00174b",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary": "#003629",
+              "tertiary-container": "#003ca3",
+              "on-primary-fixed-variant": "#1d4f40"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_20px_50px_rgba(26,28,28,0.05)] font-['Plus_Jakarta_Sans'] antialiased tracking-tight">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-emerald-950 dark:text-emerald-50">The Invisible Estate</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Buy</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Rent</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Sell</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Find Trades</a>
+<a class="text-emerald-900 dark:text-emerald-400 font-semibold border-b-2 border-emerald-900 dark:border-emerald-400 pb-1" href="#">Careers</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-stone-600 dark:text-stone-400 font-medium hover:text-emerald-900 transition-colors">Login</button>
+<button class="bg-primary-container text-white px-6 py-2.5 rounded-md font-medium hover:opacity-90 transition-all active:scale-95 duration-600">Account</button>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="px-8 py-20 md:py-32 max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center gap-16">
+<div class="flex-1 space-y-8">
+<span class="label-sm text-[0.6875rem] uppercase tracking-[0.05em] text-primary-container font-semibold">Join the sanctuary</span>
+<h1 class="text-5xl md:text-7xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1]">Architecting the future of home.</h1>
+<p class="text-lg text-on-surface-variant max-w-xl leading-relaxed">We are building an invisible layer for the UK property market. A place where trust is the primary currency and data serves the inhabitant.</p>
+<div class="pt-4">
+<a class="bg-primary text-white px-8 py-4 rounded-md font-medium inline-flex items-center gap-2 hover:bg-primary-container transition-all" href="#openings">
+                        View Openings <span class="material-symbols-outlined text-sm">arrow_downward</span>
+</a>
+</div>
+</div>
+<div class="flex-1 w-full relative">
+<div class="aspect-[4/5] bg-surface-container-low overflow-hidden rounded-xl">
+<img class="w-full h-full object-cover" data-alt="Minimalist modern office interior with warm wooden accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlLcdXO8U5cBtJNeAD3Q8lcSHHoBauvXKCzz7d79TAFkOI34fXcnbbrjQ-YgT_5G_py20ZYFhivTHGLHBvcteoPecX9XCd3wuq4MBbU9ztpVEc-8Ja7Z6H10RmgpmWAwAbZo6hdBHPIsrRESjyNOHUGh2Fo-9vzF97DgnYs5ERplrh4hDk6RPVY4zis7WmUfHw37AIbWCl2H_qMJm4nl6g4U8-bV76czU1lNWx1Edi6pwcqMaT8-EwrUVQ_v3frE2CN8lIOTA5y-Uu"/>
+</div>
+<!-- Asymmetric Floating Card -->
+<div class="absolute -bottom-10 -left-10 bg-surface-container-lowest p-8 shadow-[0_20px_50px_rgba(26,28,28,0.05)] max-w-xs rounded-lg hidden lg:block">
+<p class="italic text-on-surface font-light leading-relaxed">"The culture here isn't about speed; it's about the precision of the experience."</p>
+<div class="mt-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">EM</div>
+<div>
+<p class="text-sm font-bold">Eleanor May</p>
+<p class="text-xs text-on-surface-variant">Lead Product Designer</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Life at The Invisible Estate (Culture) -->
+<section class="bg-surface-container-low py-32">
+<div class="max-w-screen-2xl mx-auto px-8">
+<div class="mb-20">
+<h2 class="text-3xl md:text-4xl font-headline font-bold mb-6">Life at The Invisible Estate</h2>
+<p class="text-on-surface-variant max-w-2xl">Our headquarters is located in the heart of London, but our mindset is global. We prioritize deep work, clear communication, and the radical pursuit of quality.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="space-y-6">
+<div class="aspect-[1/1] rounded-lg overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+<img class="w-full h-full object-cover" data-alt="Team collaborating around a wooden table in a sunny office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArkBGMUDJek4zFI9D7QN_qP1WQElpXv8xJc_Dnbp_kkELQ3CT8GP9oMSaLFiCyiyHuR8UG6mTJHDWl4Nd2ga-6sGOxVtKRsp8HC7XiyGy1z0mmLybVSBcyMNwJ9SmSK4_1DqUGvfa5CpEsQ35WmWCxlHQ7TQXSBBb_xI_-zErmCIb2AnP6TJeLU083Jzfjr1Wh0HZ-ARVeed9whaNwS9EAqK_Z5zWxdmesvBZfWEUS7TfKpZ5iMsjht1AI1nKkGTfeqhDWYrL7Tjrh"/>
+</div>
+<h3 class="text-xl font-headline font-semibold">Trust-First Philosophy</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">We don't track hours; we track impact. Our team is trusted to manage their own focus and energy.</p>
+</div>
+<div class="space-y-6 md:mt-12">
+<div class="aspect-[1/1] rounded-lg overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+<img class="w-full h-full object-cover" data-alt="Modern office lounge with green plants and natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvTnVw_hCWQIst9twFGE9h_M7G12mJxafemj5UhpIm8Y4O-c8oONQG9LdcOS0uxwxMbE2OuSL2B2FR3WXPa6vCvVWPtScN2tdFJBiGw14raF6Xq5OzrEZEwy_cadtN67sB9I4NKDqKWKQnQx_hu58vsNSidfLLD7iA82vEEqnv520mwRGSnZkMPjDePKezou3IFxvhBlcKPf9mEtj2y3zYdpsmMH7SJR9_ttTOEl7T1ZoG5LRzxB_w_sW1gRVhgnEQExFXpI6Hquui"/>
+</div>
+<h3 class="text-xl font-headline font-semibold">Architectural Precision</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Whether it's code or a client email, we believe in the beauty of the details. Excellence is our standard.</p>
+</div>
+<div class="space-y-6 md:mt-24">
+<div class="aspect-[1/1] rounded-lg overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+<img class="w-full h-full object-cover" data-alt="Close up of architectural sketches and a digital tablet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAOlcaqzsgn0coqKQwC-EtBkqOkETCiMavRVcq8vSdcDB2YjanG6wY7NLC9dI9zRMK-aiyUKKklEGyQgB_kDHF8vM9oj7NZQnurUS7JtmrEO1X0m4yJDjKAsa_pQpu4bfBEyD3y1wweMVywrPLHLvxmmTuTjQdA4oh5PihZXhzxxKaLVAgffHCRXtLwiEDHDuzmFT0NjbspeKMZbUQ1A-MEVxgbM9w7OFWFd1j21HzmSoq_xemfdO_iRm3zR9fHmZAAvVFe_IWTzt7"/>
+</div>
+<h3 class="text-xl font-headline font-semibold">Purposeful Growth</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">We are a venture-backed startup with a long-term view. We grow intentionally to preserve our culture.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Our Benefits -->
+<section class="py-32 px-8 max-w-screen-2xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+<div class="lg:col-span-4 sticky top-32">
+<h2 class="text-3xl md:text-4xl font-headline font-bold mb-6">Our Benefits</h2>
+<p class="text-on-surface-variant mb-8">We take care of our people so they can take care of our vision. A premium life supports premium work.</p>
+<div class="flex flex-wrap gap-3">
+<span class="bg-secondary-container/20 text-on-secondary-container px-4 py-1.5 rounded-full text-[0.6875rem] font-bold tracking-wider uppercase">Remote Friendly</span>
+<span class="bg-secondary-container/20 text-on-secondary-container px-4 py-1.5 rounded-full text-[0.6875rem] font-bold tracking-wider uppercase">Equity Options</span>
+</div>
+</div>
+<div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+<div class="group">
+<div class="mb-4 text-primary">
+<span class="material-symbols-outlined text-4xl" data-icon="spa" style="font-variation-settings: 'FILL' 0;">spa</span>
+</div>
+<h4 class="text-lg font-headline font-bold mb-2 group-hover:text-primary transition-colors">Holistic Wellness</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">Private healthcare through Vitality, including mental health support and annual retreats in the Cotswolds.</p>
+</div>
+<div class="group">
+<div class="mb-4 text-primary">
+<span class="material-symbols-outlined text-4xl" data-icon="home_work" style="font-variation-settings: 'FILL' 0;">home_work</span>
+</div>
+<h4 class="text-lg font-headline font-bold mb-2 group-hover:text-primary transition-colors">Workspace Grant</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">A £2,500 initial grant to curate your home office sanctuary, plus a monthly stipend for coffee and books.</p>
+</div>
+<div class="group">
+<div class="mb-4 text-primary">
+<span class="material-symbols-outlined text-4xl" data-icon="family_restroom" style="font-variation-settings: 'FILL' 0;">family_restroom</span>
+</div>
+<h4 class="text-lg font-headline font-bold mb-2 group-hover:text-primary transition-colors">Family First</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">6 months of fully paid parental leave for all parents, regardless of gender or tenure.</p>
+</div>
+<div class="group">
+<div class="mb-4 text-primary">
+<span class="material-symbols-outlined text-4xl" data-icon="school" style="font-variation-settings: 'FILL' 0;">school</span>
+</div>
+<h4 class="text-lg font-headline font-bold mb-2 group-hover:text-primary transition-colors">Learning Budget</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">Unlimited professional development budget for courses, conferences, and certifications.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Current Openings -->
+<section class="bg-surface-container-highest/30 py-32" id="openings">
+<div class="max-w-screen-xl mx-auto px-8">
+<div class="text-center mb-20">
+<h2 class="text-4xl font-headline font-bold mb-4">Current Openings</h2>
+<p class="text-on-surface-variant">Find your place in our growing collective.</p>
+</div>
+<!-- Engineering -->
+<div class="mb-20">
+<h3 class="text-sm font-label font-extrabold tracking-widest text-primary-container mb-8 uppercase border-b border-outline-variant/30 pb-4">Engineering</h3>
+<div class="space-y-4">
+<a class="block bg-surface-container-lowest p-8 rounded-lg group hover:bg-white transition-all duration-300" href="#">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<h4 class="text-xl font-headline font-bold mb-1 group-hover:text-primary transition-colors">Senior Full-Stack Engineer</h4>
+<p class="text-on-surface-variant text-sm">Node.js, React, PostgreSQL · Remote (UK Only)</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:translate-x-2 transition-transform">arrow_forward</span>
+</div>
+</a>
+<a class="block bg-surface-container-lowest p-8 rounded-lg group hover:bg-white transition-all duration-300" href="#">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<h4 class="text-xl font-headline font-bold mb-1 group-hover:text-primary transition-colors">Lead DevOps Architect</h4>
+<p class="text-on-surface-variant text-sm">AWS, Terraform, Kubernetes · London / Hybrid</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:translate-x-2 transition-transform">arrow_forward</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Product & Marketing -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<div>
+<h3 class="text-sm font-label font-extrabold tracking-widest text-primary-container mb-8 uppercase border-b border-outline-variant/30 pb-4">Product</h3>
+<div class="space-y-4">
+<a class="block bg-surface-container-lowest p-8 rounded-lg group hover:bg-white transition-all duration-300" href="#">
+<div class="flex items-center justify-between">
+<h4 class="text-lg font-headline font-bold group-hover:text-primary transition-colors">Product Manager (Mobile)</h4>
+<span class="material-symbols-outlined text-outline-variant text-sm">arrow_outward</span>
+</div>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-label font-extrabold tracking-widest text-primary-container mb-8 uppercase border-b border-outline-variant/30 pb-4">Marketing</h3>
+<div class="space-y-4">
+<a class="block bg-surface-container-lowest p-8 rounded-lg group hover:bg-white transition-all duration-300" href="#">
+<div class="flex items-center justify-between">
+<h4 class="text-lg font-headline font-bold group-hover:text-primary transition-colors">Head of Brand Narrative</h4>
+<span class="material-symbols-outlined text-outline-variant text-sm">arrow_outward</span>
+</div>
+</a>
+</div>
+</div>
+</div>
+<div class="mt-20 text-center">
+<p class="text-on-surface-variant text-sm">Don't see a role that fits? <a class="text-primary font-bold hover:underline" href="#">Send us a speculative CV.</a></p>
+</div>
+</div>
+</section>
+<!-- Trust-First Testimonial -->
+<section class="py-32 px-8">
+<div class="max-w-4xl mx-auto bg-primary-container text-white p-12 md:p-20 rounded-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
+<div class="relative z-10 text-center">
+<div class="flex justify-center mb-8">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-6xl" data-icon="format_quote" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+</div>
+<blockquote class="text-2xl md:text-3xl font-headline font-medium leading-relaxed mb-10">
+                        "In ten years of engineering, I've never worked at a place that values the 'why' as much as the 'how'. We aren't just shipping features; we're establishing a new standard for digital trust."
+                    </blockquote>
+<div>
+<p class="font-bold text-lg">Marcus Thorne</p>
+<p class="text-on-primary-container text-sm">Senior Software Architect</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-100 dark:bg-stone-950 font-['Inter'] text-sm tracking-wide">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 px-12 py-20 w-full max-w-screen-2xl mx-auto">
+<div class="col-span-2">
+<div class="text-xl font-bold text-emerald-950 dark:text-emerald-50 mb-6">The Invisible Estate</div>
+<p class="text-stone-500 max-w-xs mb-6">Redefining the residential experience through architectural UI and data-led trust.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-stone-400 hover:text-emerald-700 cursor-pointer" data-icon="public">public</span>
+<span class="material-symbols-outlined text-stone-400 hover:text-emerald-700 cursor-pointer" data-icon="share">share</span>
+</div>
+</div>
+<div>
+<h5 class="font-bold text-emerald-900 mb-6">Company</h5>
+<ul class="space-y-4">
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors" href="#">About Us</a></li>
+<li><a class="text-emerald-800 dark:text-emerald-300 underline" href="#">Careers</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors" href="#">Press</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors" href="#">Blog</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold text-emerald-900 mb-6">Support</h5>
+<ul class="space-y-4">
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors" href="#">Help Centre</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div class="col-span-2">
+<h5 class="font-bold text-emerald-900 mb-6">Newsletter</h5>
+<p class="text-stone-500 mb-4">Curated property insights, monthly.</p>
+<form class="flex gap-2">
+<input class="bg-white border-none focus:ring-1 focus:ring-primary rounded-md px-4 py-2 w-full text-sm" placeholder="Email address" type="email"/>
+<button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-container transition-colors">Join</button>
+</form>
+</div>
+</div>
+<div class="px-12 py-8 border-t border-stone-200 dark:border-stone-800 text-stone-400 text-xs flex justify-between items-center">
+<span>© 2024 The Invisible Estate. All rights reserved.</span>
+<div class="flex gap-8">
+<span>London, UK</span>
+<span>ISO 27001 Certified</span>
+</div>
+</div>
+</footer>
+</body></html>

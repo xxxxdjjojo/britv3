@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Floor Plan Viewer - The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#eec068",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary-fixed": "#baeed9",
+              "primary": "#003629",
+              "outline": "#707974",
+              "surface-container-low": "#f4f3f2",
+              "on-surface-variant": "#404945",
+              "on-primary-fixed-variant": "#1d4f40",
+              "background": "#faf9f8",
+              "secondary-container": "#fdcd74",
+              "secondary-fixed": "#ffdea6",
+              "on-error-container": "#93000a",
+              "surface-variant": "#e3e2e1",
+              "surface-tint": "#376757",
+              "on-secondary-fixed": "#271900",
+              "tertiary-container": "#003ca3",
+              "error-container": "#ffdad6",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#002873",
+              "on-secondary-container": "#785601",
+              "on-secondary": "#ffffff",
+              "surface-container-high": "#e9e8e7",
+              "on-surface": "#1a1c1c",
+              "primary-container": "#1b4d3e",
+              "on-primary-fixed": "#002117",
+              "on-background": "#1a1c1c",
+              "surface": "#faf9f8",
+              "on-tertiary-container": "#96afff",
+              "error": "#ba1a1a",
+              "on-tertiary-fixed": "#00174b",
+              "primary-fixed-dim": "#9ed1bd",
+              "surface-container-highest": "#e3e2e1",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-primary": "#ffffff",
+              "surface-bright": "#faf9f8",
+              "on-tertiary": "#ffffff",
+              "surface-container": "#eeeeed",
+              "inverse-primary": "#9ed1bd",
+              "inverse-surface": "#2f3130",
+              "surface-dim": "#dadad9",
+              "on-secondary-fixed-variant": "#5d4200",
+              "on-error": "#ffffff",
+              "outline-variant": "#c0c9c3",
+              "on-primary-container": "#8abda9",
+              "inverse-on-surface": "#f1f0f0",
+              "secondary": "#7b5804"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .floorplan-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #1b4d3e;
+            box-shadow: 0 0 0 4px rgba(27, 77, 62, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-between items-center px-8 h-20 w-full">
+<div class="text-xl font-bold tracking-tighter text-[#1A1C1C] dark:text-slate-100 font-headline uppercase">
+            The Invisible Estate
+        </div>
+<nav class="hidden md:flex gap-12 items-center">
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1A1C1C]/60 dark:text-slate-400 pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Overview</a>
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1B4D3E] dark:text-emerald-400 border-b-2 border-[#1B4D3E] pb-1" href="#">Gallery</a>
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1A1C1C]/60 dark:text-slate-400 pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Location</a>
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1A1C1C]/60 dark:text-slate-400 pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Financials</a>
+</nav>
+<div class="flex gap-4">
+<button class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2 rounded-md font-headline text-sm uppercase tracking-wider transition-all scale-98 active:opacity-80">Book Viewing</button>
+</div>
+</header>
+<main class="pt-32 pb-20 max-w-[1440px] mx-auto px-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div class="max-w-2xl">
+<span class="font-label text-[0.6875rem] tracking-[0.15em] text-on-surface-variant uppercase mb-4 block">Architectural Specifications</span>
+<h1 class="font-headline text-[3.5rem] font-extrabold tracking-tighter text-on-surface leading-tight">
+                    Floor Plan <span class="text-primary/30">&amp;</span> Spatial Flow
+                </h1>
+<p class="text-on-surface-variant text-lg mt-6 leading-relaxed font-body max-w-xl">
+                    A masterclass in contemporary layout, maximizing light penetration and seamless indoor-outdoor transitions across three meticulously planned levels.
+                </p>
+</div>
+<!-- Floor Toggles -->
+<div class="flex bg-surface-container-low p-1.5 rounded-xl">
+<button class="px-8 py-3 rounded-lg font-headline text-sm font-semibold transition-all bg-surface-container-lowest text-primary shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                    Ground
+                </button>
+<button class="px-8 py-3 rounded-lg font-headline text-sm font-semibold transition-all text-on-surface-variant hover:text-primary">
+                    First
+                </button>
+<button class="px-8 py-3 rounded-lg font-headline text-sm font-semibold transition-all text-on-surface-variant hover:text-primary">
+                    Second
+                </button>
+</div>
+</div>
+<!-- Main Viewer Area -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Sidebar Metrics (Bento Style) -->
+<div class="lg:col-span-3 space-y-8 order-2 lg:order-1">
+<div class="p-8 bg-surface-container-low rounded-xl">
+<span class="font-label text-[0.625rem] tracking-[0.1em] text-on-surface-variant uppercase mb-6 block">Level Breakdown</span>
+<div class="space-y-6">
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant group-hover:text-primary transition-colors">Total Area</span>
+<span class="font-headline font-bold text-lg">482 m²</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant group-hover:text-primary transition-colors">Ceiling Height</span>
+<span class="font-headline font-bold text-lg">3.2m</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant group-hover:text-primary transition-colors">Bedrooms</span>
+<span class="font-headline font-bold text-lg">5</span>
+</div>
+<div class="flex justify-between items-center group">
+<span class="text-on-surface-variant group-hover:text-primary transition-colors">Bathrooms</span>
+<span class="font-headline font-bold text-lg">4.5</span>
+</div>
+</div>
+</div>
+<div class="p-8 bg-surface-container-low rounded-xl">
+<span class="font-label text-[0.625rem] tracking-[0.1em] text-on-surface-variant uppercase mb-6 block">Room Schedule</span>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-lowest rounded-lg border-l-4 border-primary">
+<p class="font-headline font-bold text-sm">Main Reception</p>
+<p class="text-xs text-on-surface-variant mt-1">12.4m x 8.2m • Double Height</p>
+</div>
+<div class="p-4 hover:bg-surface-container-lowest rounded-lg transition-colors cursor-pointer group">
+<p class="font-headline font-semibold text-sm group-hover:text-primary transition-colors">Kitchen &amp; Pantry</p>
+<p class="text-xs text-on-surface-variant mt-1">9.1m x 5.4m • Professional Grade</p>
+</div>
+<div class="p-4 hover:bg-surface-container-lowest rounded-lg transition-colors cursor-pointer group">
+<p class="font-headline font-semibold text-sm group-hover:text-primary transition-colors">Study / Library</p>
+<p class="text-xs text-on-surface-variant mt-1">4.5m x 4.2m • Acoustic Treated</p>
+</div>
+</div>
+</div>
+<button class="w-full py-4 border border-outline-variant hover:border-primary text-primary font-headline text-sm font-bold uppercase tracking-widest rounded-lg transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                    Download PDF Blueprint
+                </button>
+</div>
+<!-- Floor Plan Canvas -->
+<div class="lg:col-span-9 order-1 lg:order-2">
+<div class="relative bg-surface-container-lowest rounded-xl shadow-[0_40px_100px_rgba(26,28,28,0.03)] overflow-hidden border border-surface-container-low">
+<!-- Zoom/Pan UI -->
+<div class="absolute top-6 right-6 flex flex-col gap-2 z-10">
+<button class="w-10 h-10 bg-surface shadow-md rounded-full flex items-center justify-center text-on-surface hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<button class="w-10 h-10 bg-surface shadow-md rounded-full flex items-center justify-center text-on-surface hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</button>
+<button class="w-10 h-10 bg-surface shadow-md rounded-full flex items-center justify-center text-on-surface hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="fullscreen">fullscreen</span>
+</button>
+</div>
+<!-- Compass/North -->
+<div class="absolute bottom-6 left-6 z-10 opacity-30 group hover:opacity-100 transition-opacity">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 border-2 border-primary rounded-full flex items-center justify-center">
+<span class="font-headline font-bold text-xs">N</span>
+</div>
+<span class="font-label text-[0.6rem] tracking-[0.2em] uppercase text-primary">Orientation</span>
+</div>
+</div>
+<!-- The Architectural Drawing (Simulated with layout) -->
+<div class="aspect-[16/10] w-full p-20 flex items-center justify-center bg-white">
+<div class="relative w-full h-full max-w-4xl border-[1.5px] border-primary/20">
+<!-- Simulated Room Lines -->
+<div class="absolute inset-0 grid grid-cols-12 grid-rows-12 opacity-10">
+<div class="col-span-12 border-b border-primary/40"></div>
+<div class="row-span-12 border-r border-primary/40"></div>
+</div>
+<!-- Room Block 1: Reception -->
+<div class="absolute top-0 left-0 w-[60%] h-[70%] border-r-[1.5px] border-b-[1.5px] border-primary bg-surface-container-low/20 p-8 flex flex-col justify-end">
+<span class="font-label text-[0.6rem] tracking-widest text-primary/60 uppercase">01</span>
+<h3 class="font-headline font-bold text-lg text-primary">MAIN RECEPTION</h3>
+<p class="text-[0.65rem] font-mono text-on-surface-variant mt-1">101.68 SQ M</p>
+<!-- Interactive Dot -->
+<div class="floorplan-dot top-1/2 left-1/2 cursor-pointer hover:scale-125 transition-transform" title="View 360° Panorama"></div>
+</div>
+<!-- Room Block 2: Kitchen -->
+<div class="absolute top-0 right-0 w-[40%] h-[40%] border-b-[1.5px] border-primary p-6">
+<span class="font-label text-[0.6rem] tracking-widest text-primary/60 uppercase">02</span>
+<h3 class="font-headline font-bold text-base text-primary">KITCHEN</h3>
+<p class="text-[0.65rem] font-mono text-on-surface-variant mt-1">49.14 SQ M</p>
+</div>
+<!-- Room Block 3: Terrace -->
+<div class="absolute bottom-0 right-0 w-[40%] h-[60%] border-l-[1.5px] border-primary bg-primary/[0.02] p-6 flex items-center justify-center">
+<div class="text-center">
+<span class="material-symbols-outlined text-primary/20 scale-150 mb-4 block" data-icon="deck">deck</span>
+<h3 class="font-headline font-bold text-sm text-primary uppercase tracking-widest">OUTDOOR TERRACE</h3>
+</div>
+</div>
+<!-- Dimensions Labels -->
+<div class="absolute -top-6 left-[30%] -translate-x-1/2 text-[10px] font-mono text-outline uppercase tracking-wider">12,400 mm</div>
+<div class="absolute -left-12 top-[35%] -translate-y-1/2 -rotate-90 text-[10px] font-mono text-outline uppercase tracking-wider">8,200 mm</div>
+</div>
+</div>
+<!-- Label Key Overlay -->
+<div class="absolute bottom-6 right-6 flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded-full"></div>
+<span class="text-[0.6rem] font-label uppercase tracking-wider opacity-60">Interactive Viewpoint</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 border border-primary/40 rounded-sm"></div>
+<span class="text-[0.6rem] font-label uppercase tracking-wider opacity-60">Structure</span>
+</div>
+</div>
+</div>
+<!-- Legend & Context -->
+<div class="mt-12 flex flex-wrap gap-12 text-on-surface-variant">
+<div class="flex gap-4 items-start max-w-[280px]">
+<span class="material-symbols-outlined text-primary" data-icon="light_mode">light_mode</span>
+<div>
+<h4 class="font-headline text-xs font-bold uppercase tracking-wider mb-1 text-on-surface">Sun Trajectory</h4>
+<p class="text-xs leading-relaxed">South-facing glazing ensures maximum natural daylight throughout the winter months.</p>
+</div>
+</div>
+<div class="flex gap-4 items-start max-w-[280px]">
+<span class="material-symbols-outlined text-primary" data-icon="valve">valve</span>
+<div>
+<h4 class="font-headline text-xs font-bold uppercase tracking-wider mb-1 text-on-surface">Climate Zones</h4>
+<p class="text-xs leading-relaxed">Underfloor heating is zoned per room with independent smart thermostat controls.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#E3E2E1] dark:bg-slate-950 w-full py-20 mt-20">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-lg font-bold text-[#1A1C1C] dark:text-slate-200 font-headline uppercase tracking-tighter">
+                The Invisible Estate
+            </div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Cookie Policy</a>
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Accessibility</a>
+</div>
+<div class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500">
+                © 2024 The Invisible Estate. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>

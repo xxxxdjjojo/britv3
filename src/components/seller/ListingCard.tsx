@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, Heart, MessageSquare, Edit2, MoreVertical, Home } from "lucide-react";
+import { Home } from "lucide-react";
 import type { ListingWithStats } from "@/types/seller";
 import { cn } from "@/lib/utils";
 import {
@@ -16,29 +16,35 @@ type Props = Readonly<{
   onArchive?: (id: string) => void;
 }>;
 
-function MiniBarChart({ values }: Readonly<{ values: number[] }>) {
+function SparklineSVG({ values }: Readonly<{ values: number[] }>) {
   const max = Math.max(...values, 1);
+  const width = 100;
+  const height = 40;
+  const points = values.map((v, i) => {
+    const x = (i / Math.max(values.length - 1, 1)) * width;
+    const y = height - (v / max) * (height - 4) - 2;
+    return `${x},${y}`;
+  });
+  const d = points.length > 1 ? `M ${points.join(" L ")}` : "";
   return (
-    <div className="flex items-end gap-0.5 h-10">
-      {values.map((v, i) => (
-        <div
-          key={i}
-          className="w-2.5 bg-[--color-brand-primary-lighter] rounded-sm hover:bg-[--color-brand-primary]/30 transition-colors"
-          style={{ height: `${Math.max(4, (v / max) * 40)}px` }}
-        />
-      ))}
-    </div>
+    <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
+      <path d={d} fill="none" stroke="#1B4D3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  active: "bg-[--color-success-light] text-[--color-success]",
-  under_offer: "bg-[--color-warning-light] text-[--color-warning]",
-  sold: "bg-[--color-neutral-100] text-[--color-neutral-600]",
-  draft: "bg-[--color-info-light] text-[--color-info]",
-  paused: "bg-[--color-warning-light] text-[--color-warning]",
-  archived: "bg-[--color-neutral-100] text-[--color-neutral-400]",
+const STATUS_BADGE: Record<string, string> = {
+  active: "bg-[--color-brand-primary-dark]/5 text-[--color-brand-primary-dark]",
+  under_offer: "bg-[--color-brand-secondary-light] text-[--color-brand-secondary-dark]",
+  sold: "bg-[--color-surface-container-high] text-zinc-500",
+  draft: "bg-[--color-brand-accent-light] text-[--color-brand-accent]",
+  paused: "bg-[--color-surface-container-high] text-zinc-500",
+  archived: "bg-[--color-surface-container-high] text-zinc-400",
 };
+
+function formatStatusLabel(status: string) {
+  return status.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export function ListingCard({ listing, onArchive }: Props) {
   const thumb = listing.photos[0]?.url;
@@ -46,89 +52,153 @@ export function ListingCard({ listing, onArchive }: Props) {
   const price = listing.asking_price
     ? `£${(listing.asking_price / 100).toLocaleString("en-GB")}`
     : "POA";
+  const listedDaysAgo =
+    listing.created_at
+      ? Math.floor(
+          (Date.now() - new Date(listing.created_at).getTime()) / (1000 * 60 * 60 * 24)
+        )
+      : null;
 
   return (
-    <div className="group flex bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+    <div className="group bg-white rounded-xl overflow-hidden flex items-stretch hover:shadow-[0_20px_50px_rgba(26,28,28,0.06)] transition-shadow duration-500">
       {/* Thumbnail */}
-      <div className="relative w-64 flex-shrink-0 overflow-hidden bg-[--color-neutral-100]">
+      <div className="w-64 xl:w-72 flex-shrink-0 overflow-hidden bg-[--color-surface-container-low]">
         {thumb ? (
           <img
             src={thumb}
             alt={address}
-            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-[--color-neutral-300]">
-            <Home size={32} strokeWidth={1.25} />
+          <div className="h-full w-full flex items-center justify-center text-zinc-300 min-h-[180px]">
+            <Home size={32} strokeWidth={1} />
           </div>
         )}
-        <span className={cn(
-          "absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full capitalize",
-          STATUS_STYLES[listing.status] ?? "bg-[--color-neutral-100] text-[--color-neutral-500]",
-        )}>
-          {listing.status.replace("_", " ")}
-        </span>
       </div>
 
-      {/* Body */}
-      <div className="flex-1 p-6">
-        <p className="text-xs text-[--color-neutral-400] font-medium font-inter">{listing.postcode}</p>
-        <h3 className="text-base font-semibold text-[--color-neutral-900] mt-0.5 font-['Plus_Jakarta_Sans']">{address}</h3>
-        <p className="text-2xl font-bold text-[--color-neutral-900] mt-2 font-['Plus_Jakarta_Sans'] tracking-tight">{price}</p>
-        {listing.bedrooms && (
-          <p className="text-sm text-[--color-neutral-400] mt-1 font-inter">
-            {listing.bedrooms} bed · {listing.bathrooms ?? "–"} bath · {listing.property_type}
-          </p>
-        )}
-        <div className="flex items-center gap-5 mt-4">
-          <span className="flex items-center gap-1.5 text-sm">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[--color-info-light]">
-              <Eye size={12} className="text-[--color-info]" strokeWidth={1.25} />
-            </span>
-            <span className="font-semibold text-[--color-neutral-800] font-inter">{listing.views_count}</span>
-            <span className="text-[--color-neutral-400] text-xs font-inter">views</span>
-          </span>
-          <span className="flex items-center gap-1.5 text-sm">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-pink-50">
-              <Heart size={12} className="text-pink-500" strokeWidth={1.25} />
-            </span>
-            <span className="font-semibold text-[--color-neutral-800] font-inter">{listing.saves_count}</span>
-            <span className="text-[--color-neutral-400] text-xs font-inter">saves</span>
-          </span>
-          <span className="flex items-center gap-1.5 text-sm">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[--color-warning-light]">
-              <MessageSquare size={12} className="text-[--color-warning]" strokeWidth={1.25} />
-            </span>
-            <span className="font-semibold text-[--color-neutral-800] font-inter">{listing.enquiries_count}</span>
-            <span className="text-[--color-neutral-400] text-xs font-inter">enquiries</span>
-          </span>
+      {/* Info Section */}
+      <div className="flex-1 p-6 xl:p-8 flex flex-col justify-between">
+        {/* Top row */}
+        <div className="flex justify-between items-start gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              <span
+                className={cn(
+                  "text-[10px] font-bold tracking-[0.05em] px-2 py-0.5 rounded uppercase",
+                  STATUS_BADGE[listing.status] ?? "bg-[--color-surface-container-high] text-zinc-500"
+                )}
+              >
+                {formatStatusLabel(listing.status)}
+              </span>
+              {listedDaysAgo !== null && (
+                <span className="text-[10px] text-zinc-400 font-medium tracking-[0.05em] uppercase">
+                  Listed {listedDaysAgo} {listedDaysAgo === 1 ? "day" : "days"} ago
+                </span>
+              )}
+            </div>
+            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[--color-on-surface] mb-1 leading-tight">
+              {address}
+            </h3>
+            <p className="text-zinc-500 text-sm flex items-center gap-1">
+              <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+              </svg>
+              {listing.postcode}
+            </p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="font-['Plus_Jakarta_Sans'] font-extrabold text-2xl text-[--color-brand-primary-dark] leading-tight">
+              {price}
+            </p>
+            {listing.tenure && (
+              <p className="text-xs text-zinc-400 font-medium capitalize mt-0.5">
+                {listing.tenure}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Side Panel */}
-      <div className="bg-[--color-neutral-50] flex flex-col items-center justify-between px-5 py-6 min-w-[140px]">
-        <MiniBarChart values={listing.weekly_views} />
-        <p className="text-xs text-[--color-neutral-400] mt-2 mb-4 font-inter">Last 7 days</p>
-        <div className="flex flex-col gap-2 w-full">
-          <Link
-            href={`/dashboard/seller/listings/${listing.id}/edit`}
-            className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[--color-brand-primary] text-white text-xs font-semibold hover:bg-[--color-brand-primary-light] transition-colors font-inter"
-          >
-            <Edit2 size={12} strokeWidth={1.25} /> Edit
-          </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[--color-neutral-100] text-[--color-neutral-600] text-xs font-semibold hover:bg-[--color-neutral-200] transition-colors w-full font-inter">
-              <MoreVertical size={12} strokeWidth={1.25} /> More
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/seller/listings/${listing.id}/analytics`}>Analytics</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-[--color-error]" onClick={() => onArchive?.(listing.id)}>
-                Archive
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Stats Row */}
+        <div className="grid grid-cols-4 gap-8 py-5 border-y border-[--color-surface-container-high]/60 my-4">
+          <div>
+            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase mb-1">Views</p>
+            <p className="text-lg font-['Plus_Jakarta_Sans'] font-bold text-[--color-on-surface]">
+              {listing.views_count >= 1000
+                ? `${(listing.views_count / 1000).toFixed(1)}k`
+                : listing.views_count}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase mb-1">Saves</p>
+            <p className="text-lg font-['Plus_Jakarta_Sans'] font-bold text-[--color-on-surface]">
+              {listing.saves_count}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase mb-1">Enquiries</p>
+            <p className="text-lg font-['Plus_Jakarta_Sans'] font-bold text-[--color-on-surface]">
+              {listing.enquiries_count}
+            </p>
+          </div>
+          <div className="relative h-12">
+            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase absolute -top-5 right-0">Trend</p>
+            <SparklineSVG values={listing.weekly_views} />
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-5">
+            {listing.bedrooms && (
+              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10" />
+                </svg>
+                {listing.bedrooms} Beds
+              </div>
+            )}
+            {listing.property_type && (
+              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 capitalize">
+                {listing.property_type.replace("-", " ")}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/dashboard/seller/listings/${listing.id}/analytics`}
+              className="px-5 py-2 bg-[--color-brand-secondary-light] text-[--color-brand-secondary-dark] text-xs font-bold rounded hover:opacity-90 transition-opacity"
+            >
+              View Analytics
+            </Link>
+            <Link
+              href={`/dashboard/seller/listings/${listing.id}/edit`}
+              className="px-5 py-2 bg-[--color-brand-primary-dark] text-white text-xs font-bold rounded hover:opacity-90 transition-opacity"
+            >
+              Edit
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-9 h-9 flex items-center justify-center rounded border border-[--color-surface-container-high] hover:bg-[--color-surface-container-low] transition-colors">
+                <svg className="w-4 h-4 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/seller/listings/${listing.id}/edit`}>Edit Listing</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/seller/listings/${listing.id}/analytics`}>Analytics</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-[--color-error]"
+                  onClick={() => onArchive?.(listing.id)}
+                >
+                  Archive
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </div>

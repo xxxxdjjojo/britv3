@@ -72,7 +72,7 @@ function HistoryItem({ item }: Readonly<{ item: AgentOfferHistory }>) {
           {item.actor_id.slice(0, 8)}…
         </p>
         {item.note && (
-          <p className="mt-1.5 rounded-lg bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+          <p className="mt-1.5 rounded-xl bg-muted/40 px-3 py-2 text-sm text-neutral-700">
             {item.note}
           </p>
         )}
@@ -131,7 +131,7 @@ function CounterDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-warning text-white hover:bg-warning/90">
+        <Button className="rounded-xl bg-warning text-white hover:bg-warning/90">
           Counter
         </Button>
       </DialogTrigger>
@@ -153,7 +153,7 @@ function CounterDialog({
               value={counterAmount}
               onChange={(e) => setCounterAmount(e.target.value)}
               placeholder="e.g. 450000"
-              className="rounded-lg bg-neutral-50"
+              className="rounded-xl bg-neutral-50"
             />
           </div>
           <div className="space-y-1.5">
@@ -166,19 +166,19 @@ function CounterDialog({
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               placeholder="Add a note for the buyer…"
-              className="resize-none rounded-lg bg-neutral-50"
+              className="resize-none rounded-xl bg-neutral-50"
             />
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <Button
               type="button"
               variant="outline"
-              className="rounded-lg"
+              className="rounded-xl"
               onClick={() => setOpen(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting} className="rounded-lg bg-brand-primary hover:bg-brand-primary/90">
+            <Button type="submit" disabled={submitting} className="rounded-xl bg-brand-primary text-white hover:bg-brand-primary/90">
               {submitting ? "Submitting…" : "Submit Counter"}
             </Button>
           </div>
@@ -215,7 +215,7 @@ function InfoRow({
   value,
 }: Readonly<{ icon: React.ElementType; label: string; value: string }>) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-neutral-50 px-4 py-3">
+    <div className="flex items-center gap-3 rounded-xl bg-muted/40 px-4 py-3">
       <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary-lighter">
         <Icon className="size-4 text-brand-primary" />
       </div>
@@ -286,7 +286,9 @@ export function NegotiationThread({
   return (
     <div className="space-y-5">
       {/* Offer amount hero */}
-      <div className="rounded-2xl bg-brand-primary px-6 py-5 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-brand-primary px-6 py-5 text-white shadow-xl">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/5" />
         <p className="text-sm font-medium text-white/70">Offer Amount</p>
         <p className="mt-1 font-heading text-4xl font-bold tracking-tight">
           {formatGBP(offer.amount)}
@@ -325,7 +327,7 @@ export function NegotiationThread({
 
       {/* Buyer details */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-        <div className="bg-neutral-50 px-5 py-3.5">
+        <div className="bg-muted/30 px-5 py-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
             Buyer Details
           </p>
@@ -357,7 +359,7 @@ export function NegotiationThread({
 
       {/* History timeline */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-        <div className="bg-neutral-50 px-5 py-3.5">
+        <div className="bg-muted/30 px-5 py-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
             History
           </p>
@@ -378,7 +380,7 @@ export function NegotiationThread({
       {/* Actions */}
       {!isFinal && (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-          <div className="bg-neutral-50 px-5 py-3.5">
+          <div className="bg-muted/30 px-5 py-3.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Actions
             </p>
@@ -465,7 +467,7 @@ export function NegotiationThread({
       )}
 
       {isFinal && (
-        <div className="flex items-center gap-3 rounded-2xl bg-neutral-50 p-4">
+        <div className="flex items-center gap-3 rounded-2xl bg-muted/40 p-4">
           <Badge
             className={`capitalize rounded-full ${
               offer.status === "accepted"

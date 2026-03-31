@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Contact Us | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface": "#2f3130",
+              "surface-tint": "#376757",
+              "secondary-fixed": "#ffdea6",
+              "on-primary-container": "#8abda9",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#002873",
+              "error": "#ba1a1a",
+              "inverse-on-surface": "#f1f0f0",
+              "surface-container-high": "#e9e8e7",
+              "surface": "#faf9f8",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "surface-dim": "#dadad9",
+              "surface-container": "#eeeeed",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#1a1c1c",
+              "on-secondary-container": "#785601",
+              "surface-bright": "#faf9f8",
+              "background": "#faf9f8",
+              "surface-container-low": "#f4f3f2",
+              "secondary-container": "#fdcd74",
+              "primary-fixed": "#baeed9",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#e3e2e1",
+              "outline": "#707974",
+              "on-surface-variant": "#404945",
+              "on-secondary-fixed-variant": "#5d4200",
+              "on-background": "#1a1c1c",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-variant": "#e3e2e1",
+              "on-tertiary-container": "#96afff",
+              "on-primary-fixed": "#002117",
+              "secondary-fixed-dim": "#eec068",
+              "on-error-container": "#93000a",
+              "inverse-primary": "#9ed1bd",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-secondary": "#ffffff",
+              "secondary": "#7b5804",
+              "primary-container": "#1b4d3e",
+              "on-secondary-fixed": "#271900",
+              "outline-variant": "#c0c9c3",
+              "on-tertiary-fixed": "#00174b",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary": "#003629",
+              "tertiary-container": "#003ca3",
+              "on-primary-fixed-variant": "#1d4f40"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_20px_50px_rgba(26,28,28,0.05)]">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-emerald-950 dark:text-emerald-50 font-headline">
+                The Invisible Estate
+            </div>
+<div class="hidden md:flex items-center gap-8 font-label text-sm">
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Buy</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Rent</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Sell</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors" href="#">Find Trades</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-stone-600 hover:text-emerald-900 transition-colors font-medium">Login</button>
+<button class="bg-primary text-on-primary px-5 py-2 rounded-md font-medium text-sm transition-all hover:opacity-90 active:scale-95 duration-600 ease-[cubic-bezier(0.22,1,0.36,1)]">Account</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-20 px-6 max-w-screen-2xl mx-auto">
+<!-- Header Section -->
+<section class="mb-20 max-w-3xl">
+<span class="text-xs font-label tracking-[0.2em] text-outline uppercase mb-4 block">Connect with us</span>
+<h1 class="text-[3.5rem] font-extrabold leading-tight tracking-tighter text-on-surface mb-6">
+                Let’s find your <br/><span class="text-primary-container/40 italic">sanctuary.</span>
+</h1>
+<p class="text-lg text-on-surface-variant leading-relaxed font-body font-light">
+                Whether you’re seeking a modern architectural marvel or a quiet country retreat, our team is here to guide the transition with absolute discretion.
+            </p>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-20">
+<!-- Contact Form Section (Left) -->
+<div class="lg:col-span-7">
+<div class="bg-surface-container-lowest p-10 md:p-14 rounded-xl shadow-[0_20px_50px_rgba(26,28,28,0.03)]">
+<form action="#" class="space-y-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="text-[0.6875rem] font-label font-semibold tracking-widest text-on-surface-variant uppercase">Full Name</label>
+<input class="w-full bg-surface-container-low border-0 border-b border-transparent focus:border-primary focus:ring-0 transition-all px-4 py-4 rounded-md text-on-surface placeholder:text-outline-variant font-body" placeholder="Johnathan Doe" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-[0.6875rem] font-label font-semibold tracking-widest text-on-surface-variant uppercase">Email Address</label>
+<input class="w-full bg-surface-container-low border-0 border-b border-transparent focus:border-primary focus:ring-0 transition-all px-4 py-4 rounded-md text-on-surface placeholder:text-outline-variant font-body" placeholder="j.doe@private.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[0.6875rem] font-label font-semibold tracking-widest text-on-surface-variant uppercase">Inquiry Type</label>
+<select class="w-full bg-surface-container-low border-0 border-b border-transparent focus:border-primary focus:ring-0 transition-all px-4 py-4 rounded-md text-on-surface font-body appearance-none">
+<option>Private Viewing Request</option>
+<option>Property Valuation</option>
+<option>General Inquiry</option>
+<option>Investment Portfolio Management</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-[0.6875rem] font-label font-semibold tracking-widest text-on-surface-variant uppercase">Your Message</label>
+<textarea class="w-full bg-surface-container-low border-0 border-b border-transparent focus:border-primary focus:ring-0 transition-all px-4 py-4 rounded-md text-on-surface placeholder:text-outline-variant font-body resize-none" placeholder="Tell us about the property you're envisioning..." rows="5"></textarea>
+</div>
+<button class="w-full md:w-auto px-12 py-4 bg-primary-container text-on-primary font-headline font-bold text-sm tracking-wide rounded-md hover:bg-primary transition-all duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-lg shadow-primary-container/10 active:scale-[0.98]" type="submit">
+                            Send Message
+                        </button>
+</form>
+</div>
+</div>
+<!-- Sidebar Info (Right) -->
+<div class="lg:col-span-5 space-y-16">
+<!-- Contact Channels -->
+<div class="space-y-10">
+<div class="flex items-start gap-6 group">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</div>
+<div>
+<h3 class="text-sm font-label font-bold tracking-wider uppercase mb-1">Email us</h3>
+<p class="text-on-surface-variant font-body mb-2">For general inquiries and press.</p>
+<a class="text-primary font-semibold hover:underline decoration-2 underline-offset-4" href="mailto:concierge@invisibleestate.com">concierge@invisibleestate.com</a>
+</div>
+</div>
+<div class="flex items-start gap-6 group">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+</div>
+<div>
+<h3 class="text-sm font-label font-bold tracking-wider uppercase mb-1">Live Chat</h3>
+<p class="text-on-surface-variant font-body mb-2">Available Mon-Fri, 9am - 6pm.</p>
+<button class="text-primary font-semibold hover:underline decoration-2 underline-offset-4">Start a conversation</button>
+</div>
+</div>
+<div class="flex items-start gap-6 group">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<div>
+<h3 class="text-sm font-label font-bold tracking-wider uppercase mb-1">London Office</h3>
+<address class="not-italic text-on-surface-variant font-body leading-relaxed">
+                                42 Berkeley Square, Mayfair<br/>
+                                London, W1J 5AW<br/>
+                                United Kingdom
+                            </address>
+</div>
+</div>
+</div>
+<!-- Map Placeholder -->
+<div class="relative w-full aspect-video rounded-xl overflow-hidden shadow-sm bg-surface-container-low group">
+<img class="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 transition-all duration-700" data-alt="Monochrome map of Mayfair London streets" data-location="London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeqNI6y0e9j-vdGYWIiRCJ8hfgiM5vBu2CWPiqgWiudHMOl4dJd4TgDtfiUzX4e47fYzelK5yz8zzHCEBnWPfysnB_DtYfCWL1zjA2BakVKR3FikMZEe45jh13GPPZ9v80ZXQmWjpRdlOc4tUEvthGFj8_safHHYf8cYM0rGI1TIV_IrpXSitq15wkpphza3pEe7YM_DtfHQrMTfKIaSUY0pusEKtHCxTSmN5pCuS82uRQA6oysOufXL8Jv92e7b_2Fwr7yDCI5wNy"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-white/20">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-xs font-label font-bold tracking-widest uppercase">Invisible HQ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-100 dark:bg-stone-950">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 px-12 py-20 w-full max-w-screen-2xl mx-auto">
+<div class="col-span-2">
+<div class="text-xl font-bold text-emerald-950 dark:text-emerald-50 mb-6 font-headline">The Invisible Estate</div>
+<p class="text-stone-500 font-body text-sm max-w-xs leading-relaxed">
+                    A bespoke real estate firm specializing in the quiet acquisition and disposition of the world's finest architectural assets.
+                </p>
+</div>
+<div class="space-y-4">
+<h4 class="font-label font-bold text-[0.6875rem] tracking-[0.1em] uppercase text-on-surface">Company</h4>
+<ul class="space-y-2">
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors text-sm font-body" href="#">About Us</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors text-sm font-body" href="#">Careers</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors text-sm font-body" href="#">Press</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-label font-bold text-[0.6875rem] tracking-[0.1em] uppercase text-on-surface">Resources</h4>
+<ul class="space-y-2">
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors text-sm font-body" href="#">Blog</a></li>
+<li><a class="text-stone-500 hover:text-emerald-700 transition-colors text-sm font-body" href="#">Help Centre</a></li>
+</ul>
+</div>
+<div class="col-span-2 md:col-span-1 flex flex-col justify-between">
+<div></div>
+<div class="text-stone-400 text-[0.625rem] font-label tracking-widest uppercase mt-12 md:mt-0">
+                    © 2024 The Invisible Estate. All rights reserved.
+                </div>
+</div>
+</div>
+</footer>
+<!-- Accessibility Float (Part of the 4-click rule/Quick access) -->
+<div class="fixed bottom-8 right-8 flex flex-col gap-4">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all duration-300" title="Instant Support">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</button>
+</div>
+</body></html>

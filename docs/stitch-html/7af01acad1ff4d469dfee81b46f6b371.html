@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Invisible Estate | Curated Property Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-highest": "#e3e2e1",
+              "on-secondary-fixed-variant": "#5d4200",
+              "secondary-container": "#fdcd74",
+              "surface-tint": "#376757",
+              "surface-container": "#eeeeed",
+              "inverse-primary": "#9ed1bd",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#f1f0f0",
+              "on-secondary-container": "#785601",
+              "on-error": "#ffffff",
+              "on-tertiary-container": "#96afff",
+              "on-primary-fixed-variant": "#1d4f40",
+              "surface-dim": "#dadad9",
+              "tertiary": "#002873",
+              "surface-variant": "#e3e2e1",
+              "outline": "#707974",
+              "on-surface-variant": "#404945",
+              "on-secondary": "#ffffff",
+              "surface-container-high": "#e9e8e7",
+              "surface-bright": "#faf9f8",
+              "on-primary-container": "#8abda9",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "secondary-fixed-dim": "#eec068",
+              "primary-fixed": "#baeed9",
+              "on-secondary-fixed": "#271900",
+              "on-primary-fixed": "#002117",
+              "tertiary-fixed": "#dbe1ff",
+              "tertiary-container": "#003ca3",
+              "on-tertiary-fixed": "#00174b",
+              "surface-container-low": "#f4f3f2",
+              "secondary-fixed": "#ffdea6",
+              "on-background": "#1a1c1c",
+              "inverse-surface": "#2f3130",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "primary": "#1B4D3E",
+              "secondary": "#7b5804",
+              "background": "#faf9f8",
+              "surface-container-lowest": "#ffffff",
+              "surface": "#faf9f8",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "on-surface": "#1a1c1c",
+              "primary-container": "#1B4D3E",
+              "error": "#ba1a1a",
+              "outline-variant": "#c0c9c3",
+              "on-error-container": "#93000a",
+              "primary-fixed-dim": "#9ed1bd"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        color: #1a1c1c;
+      }
+      h1, h2, h3, .brand-font {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+</head>
+<body class="bg-surface selection:bg-primary/10">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-outline-variant/30">
+<nav class="flex items-center justify-between px-8 h-20 w-full max-w-screen-2xl mx-auto font-['Plus_Jakarta_Sans'] tracking-tight">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-bold text-primary">The Invisible Estate</span>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface border-b-2 border-secondary pb-1 font-semibold" href="#">Buy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Rent</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Sold</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">New Homes</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Inspiration</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="hidden lg:block px-6 py-2.5 bg-primary text-on-primary rounded-full font-bold transition-transform hover:scale-105">List a Property</button>
+<div class="flex items-center gap-4 text-on-surface">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">favorite</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">account_circle</span>
+</div>
+</div>
+</nav>
+</header>
+<!-- Search & Filter Bar (Sticky below Nav) -->
+<section class="mt-20 sticky top-20 z-40 bg-white py-4 px-8 border-b border-outline-variant/30">
+<div class="max-w-screen-2xl mx-auto">
+<div class="flex flex-col md:flex-row items-center gap-4">
+<div class="relative flex-1 w-full group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-12 pl-12 pr-4 bg-surface-container-low border-none rounded-lg focus:ring-1 focus:ring-primary focus:bg-white transition-all placeholder:text-outline-variant text-sm" placeholder="Search area, city or street..." type="text"/>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto">
+<button class="flex items-center gap-1 px-4 py-2 bg-surface-container-high rounded-lg whitespace-nowrap text-sm font-semibold hover:bg-surface-container-highest">
+                        Price <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-2 bg-surface-container-high rounded-lg whitespace-nowrap text-sm font-semibold hover:bg-surface-container-highest">
+                        Type <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-2 bg-surface-container-high rounded-lg whitespace-nowrap text-sm font-semibold hover:bg-surface-container-highest">
+                        Beds <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg whitespace-nowrap text-sm font-bold shadow-sm">
+                        Filters <span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+<div class="hidden lg:flex items-center bg-surface-container-low p-1 rounded-lg">
+<button class="px-4 py-1.5 bg-white shadow-sm rounded-md text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">list</span> List
+                    </button>
+<button class="px-4 py-1.5 hover:bg-surface-container-high rounded-md text-sm font-bold flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">map</span> Map
+                    </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<main class="max-w-screen-2xl mx-auto px-8 pt-8 pb-20">
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Property List Column -->
+<div class="flex-1 min-w-0">
+<!-- Map Header Section -->
+<div class="mb-8 relative rounded-xl overflow-hidden border border-outline-variant/30 group">
+<div class="aspect-[21/9] w-full bg-surface-container relative">
+<img class="w-full h-full object-cover opacity-90 group-hover:scale-[1.02] transition-transform duration-700" data-alt="Stylized map of Oxfordshire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgsEcOcmLnyJMZum__Hh500ZBe6Z0dxtbsBEbwTHNc69AjUZo4_uopL80aoJ-u9qBkc2OzfOd1itn-7k6knZL_NHzYt2NYIyp_G1kkVRG-JVKkoFWcAC8fPOv5UgKUKvqFjwCkvwbmdObEp47Xdqe8lRF8tK9XC0QBYTpHVRf40_ovjcaTVQMpl40P9cRkZI2kfYrGPLrsCQ7bUBx4jPsgVBsZh8Ipt9UJTqSqAWmwdfEIvcBzk0BuLiVyH2mi1p9Ed1Iq49PFgpYQ"/>
+<div class="absolute inset-0 bg-primary/5"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-primary/20 flex items-center gap-2">
+<span class="w-2.5 h-2.5 bg-secondary rounded-full animate-pulse"></span>
+<span class="text-xs font-bold uppercase tracking-wider">Oxfordshire: 1,248 Results</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4 flex justify-center">
+<button class="bg-white text-on-surface px-6 py-2.5 rounded-lg shadow-xl border border-outline-variant/20 flex items-center gap-2 text-sm font-bold hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[20px]">open_in_full</span> Expand Map Area
+                        </button>
+</div>
+</div>
+<!-- Results Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-2xl font-extrabold tracking-tight text-on-surface">Properties in Oxfordshire</h2>
+<p class="text-on-surface-variant text-sm mt-1">Found 1,248 matching results</p>
+</div>
+<div class="text-sm font-semibold flex items-center gap-2 text-on-surface-variant">
+                        Sort by: <span class="text-on-surface cursor-pointer flex items-center gap-1">Newest <span class="material-symbols-outlined text-[16px]">expand_more</span></span>
+</div>
+</div>
+<!-- Horizontal Property Cards List -->
+<div class="flex flex-col gap-6">
+<!-- Card 1 -->
+<article class="group cursor-pointer bg-white overflow-hidden rounded-xl border border-outline-variant/20 flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow">
+<div class="relative w-full md:w-1/2 aspect-[4/3] md:aspect-auto">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Modern luxury estate" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8ucYppGbT60W4K3nglLnI0EFA0UuD-X5Kn-IUVK02VGNeTSeEdFBqgnISQCYbr3XiUi1k_HOWjiEEUMMPfMw4CYN-ztt6Wd89zAS0ffG6oC4tL411W1SPTuLLEmjPBRC9ZqR_mFbiitQXVGmGz8v2DsO0q1mkQjbt1TpZntKII1f4VUIG5Iixg5HEcLdfMhBLiQY2O5gcPKjgKWFRj6Kj3_s19uyazYYwvKXM7HKIx957YcHgaaJLaULlfYRm5qoCIMGPx0AnUewx"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-secondary text-on-secondary px-2 py-1 rounded text-[10px] font-bold tracking-widest uppercase">Premium</span>
+<span class="bg-white/90 backdrop-blur-sm text-primary px-2 py-1 rounded text-[10px] font-bold tracking-widest uppercase">Verified</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-error transition-all">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+</button>
+</div>
+<div class="w-full md:w-1/2 p-6 flex flex-col justify-between border-l border-outline-variant/10">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-xl font-bold text-on-surface group-hover:text-primary transition-colors">The Glass Pavilion</h3>
+<span class="text-xl font-extrabold text-primary">£4,250,000</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">Chipping Norton, Oxfordshire</p>
+<div class="flex items-center gap-4 text-xs font-semibold text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/10">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">bed</span> 5 Beds</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">bathtub</span> 4 Baths</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">square_foot</span> 4,200 sqft</span>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<p class="text-[10px] font-bold uppercase tracking-wider text-outline">Listing Agent</p>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/20 flex items-center justify-center font-bold text-[10px] text-primary">JD</div>
+<span class="text-xs font-bold text-on-surface">Julianne Deville</span>
+</div>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold uppercase tracking-wider text-outline">Local Experts</p>
+<div class="flex gap-2 text-xs">
+<span class="flex items-center gap-1 text-secondary font-bold"><span class="material-symbols-outlined text-[14px]">plumbing</span> Plumber</span>
+<span class="flex items-center gap-1 text-secondary font-bold"><span class="material-symbols-outlined text-[14px]">bolt</span> Electrician</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="group cursor-pointer bg-white overflow-hidden rounded-xl border border-outline-variant/20 flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow">
+<div class="relative w-full md:w-1/2 aspect-[4/3] md:aspect-auto">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Traditional stone cottage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATBerb7P9CGmRPUTTbMHCynsybbxiR6vjT7-TsRVtFX2vyNM3qnL59D5nItU2Twl6HmSfoRR1_2C_tmgnkbtLbfCAorRBaBoJ4I_FduW0B_8zNDh3nXTaukZN-NW4rse68HX81k_fFXllhwke0oER-gfDnHTZP6Qxo7V_dCPOODkExSp9hOHd1nixk_XEu8PpFvi3PaK4vx2uMeupf-AK5GioFfm3sia3u0zvS1Ob0FjLwSZxsdZOapGhFTwP2NNtWso3cDHzWOSkH"/>
+<div class="absolute top-4 left-4">
+<span class="bg-primary text-on-primary px-2 py-1 rounded text-[10px] font-bold tracking-widest uppercase">New Listing</span>
+</div>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-error transition-all">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+</button>
+</div>
+<div class="w-full md:w-1/2 p-6 flex flex-col justify-between border-l border-outline-variant/10">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-xl font-bold text-on-surface group-hover:text-primary transition-colors">Willow Creek House</h3>
+<span class="text-xl font-extrabold text-primary">£1,850,000</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">Bampton, Oxfordshire</p>
+<div class="flex items-center gap-4 text-xs font-semibold text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/10">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">bed</span> 4 Beds</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">bathtub</span> 3 Baths</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">square_foot</span> 2,850 sqft</span>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<p class="text-[10px] font-bold uppercase tracking-wider text-outline">Listing Agent</p>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary overflow-hidden border border-outline-variant/20 flex items-center justify-center font-bold text-[10px] text-white">TM</div>
+<span class="text-xs font-bold text-on-surface">Thomas Miller</span>
+</div>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold uppercase tracking-wider text-outline">Local Experts</p>
+<div class="flex gap-2 text-xs">
+<span class="flex items-center gap-1 text-secondary font-bold"><span class="material-symbols-outlined text-[14px]">architecture</span> Architect</span>
+<span class="flex items-center gap-1 text-secondary font-bold"><span class="material-symbols-outlined text-[14px]">mop</span> Specialist</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="group cursor-pointer bg-white overflow-hidden rounded-xl border border-outline-variant/20 flex flex-col md:flex-row shadow-sm hover:shadow-md transition-shadow">
+<div class="relative w-full md:w-1/2 aspect-[4/3] md:aspect-auto">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Architectural minimalist home" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUFbfno4YRAXsUk6mJn_QrtUpZBRYWv7RanQwloP_Qj4OjSeyKfZD6uj_M3KzuAgoZYimtEHqCcx81v9uSnhhIjayUonZ8kT-eLxVZx3dMySJZeMIoFfRE89Kpio0Y9Rj02ru_x_Pv8HK25KM4UZsJ_KJ6SHwfwhFbFRFqBUId_FqOErm8zFLYj3IlrWiRzsBvTGDOGPx0inZFQvLE-bgqAvl2hrx0OH4ljbv7U7C7ewdNCG_81cWyPZjCu-KLYpgopAxyHtMRlUpE"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-error transition-all">
+<span class="material-symbols-outlined text-[24px]">favorite</span>
+</button>
+</div>
+<div class="w-full md:w-1/2 p-6 flex flex-col justify-between border-l border-outline-variant/10">
+<div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="text-xl font-bold text-on-surface group-hover:text-primary transition-colors">The Monolith</h3>
+<span class="text-xl font-extrabold text-primary">£6,700,000</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">Woodstock, Oxfordshire</p>
+<div class="flex items-center gap-4 text-xs font-semibold text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/10">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">bed</span> 6 Beds</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">bathtub</span> 6 Baths</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">square_foot</span> 8,400 sqft</span>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<p class="text-[10px] font-bold uppercase tracking-wider text-outline">Listing Agent</p>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/20 flex items-center justify-center font-bold text-[10px] text-primary">SR</div>
+<span class="text-xs font-bold text-on-surface">Sarah Reed</span>
+</div>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold uppercase tracking-wider text-outline">Local Experts</p>
+<div class="flex gap-2 text-xs">
+<span class="flex items-center gap-1 text-secondary font-bold"><span class="material-symbols-outlined text-[14px]">grass</span> Gardener</span>
+<span class="flex items-center gap-1 text-secondary font-bold"><span class="material-symbols-outlined text-[14px]">security</span> Security</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+<!-- Sidebar -->
+<aside class="w-full lg:w-[360px] shrink-0 space-y-8">
+<!-- Search Statistics Card -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/20">
+<h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">insights</span> Area Insights
+                    </h3>
+<div class="space-y-5">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-on-surface-variant">Avg. Listing Price</span>
+<span class="font-bold text-primary">£1.4M</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-on-surface-variant">Days on Market</span>
+<span class="font-bold text-primary">18 days</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] uppercase tracking-widest font-bold text-on-surface-variant/60">
+<span>Demand Level</span>
+<span>High</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[75%]"></div>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 bg-white border border-primary/20 text-primary text-sm font-bold rounded-lg hover:bg-primary/5 transition-all">Detailed Market Report</button>
+</div>
+<!-- Featured Advisor -->
+<div class="border border-outline-variant/30 p-6 rounded-xl">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white text-xl font-bold">JD</div>
+<div>
+<h4 class="font-bold text-on-surface">Julianne Deville</h4>
+<p class="text-xs text-on-surface-variant font-medium">Oxfordshire Area Lead</p>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed mb-6">Expert in Cotswold estates and rural Oxfordshire property markets.</p>
+<button class="w-full py-2.5 text-xs font-bold text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2">
+                        Contact Office <span class="material-symbols-outlined text-[16px]">mail</span>
+</button>
+</div>
+<!-- Quick Links -->
+<div class="p-6 bg-surface-container-low rounded-xl">
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/60 mb-4">Popular Searches</h4>
+<ul class="space-y-2 text-xs font-semibold text-on-surface">
+<li class="hover:text-primary cursor-pointer flex items-center justify-between">Cotswolds Estates <span class="material-symbols-outlined text-[16px]">chevron_right</span></li>
+<li class="hover:text-primary cursor-pointer flex items-center justify-between">River Thames Access <span class="material-symbols-outlined text-[16px]">chevron_right</span></li>
+<li class="hover:text-primary cursor-pointer flex items-center justify-between">Listed Historical Homes <span class="material-symbols-outlined text-[16px]">chevron_right</span></li>
+</ul>
+</div>
+</aside>
+</div>
+</main>
+<!-- Map Toggle Floating Action -->
+<button class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-primary text-on-primary px-8 py-3.5 rounded-full shadow-2xl flex items-center gap-3 font-bold transition-all hover:scale-105 active:scale-95 group">
+<span class="material-symbols-outlined transition-transform group-hover:rotate-12">map</span> Full Map View
+    </button>
+<!-- Footer Component -->
+<footer class="bg-surface-container-low border-t border-outline-variant/30 w-full py-16 px-8">
+<div class="max-w-screen-2xl mx-auto">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-12 text-sm">
+<div class="col-span-2 md:col-span-1">
+<span class="font-['Plus_Jakarta_Sans'] font-bold text-xl text-primary mb-6 block">The Invisible Estate</span>
+<p class="text-on-surface-variant leading-relaxed text-xs">© 2024 The Invisible Estate.<br/>Curated Sanctuary Living.</p>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-bold text-[10px] uppercase tracking-widest text-on-surface-variant/50">Company</span>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">About Us</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Careers</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Media</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-bold text-[10px] uppercase tracking-widest text-on-surface-variant/50">Legal</span>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Privacy Policy</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Terms of Use</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Cookies</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-bold text-[10px] uppercase tracking-widest text-on-surface-variant/50">Social</span>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Instagram</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">LinkedIn</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">YouTube</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="font-bold text-[10px] uppercase tracking-widest text-on-surface-variant/50">Support</span>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Contact Center</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Help FAQ</a>
+<a class="text-on-surface hover:text-primary transition-colors font-medium" href="#">Sitemap</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sold Prices | Oxfordshire — The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#f1f0f0",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-container-high": "#e9e8e7",
+              "surface-container": "#eeeeed",
+              "outline": "#707974",
+              "on-surface-variant": "#404945",
+              "primary": "#003629",
+              "primary-fixed": "#baeed9",
+              "on-tertiary-fixed": "#00174b",
+              "tertiary-container": "#003ca3",
+              "secondary-fixed": "#ffdea6",
+              "surface-container-low": "#f4f3f2",
+              "on-error-container": "#93000a",
+              "surface": "#faf9f8",
+              "inverse-primary": "#9ed1bd",
+              "surface-variant": "#e3e2e1",
+              "surface-tint": "#376757",
+              "on-secondary-fixed-variant": "#5d4200",
+              "inverse-surface": "#2f3130",
+              "on-surface": "#1a1c1c",
+              "on-background": "#1a1c1c",
+              "tertiary": "#002873",
+              "on-primary-container": "#8abda9",
+              "background": "#faf9f8",
+              "on-error": "#ffffff",
+              "on-primary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "secondary": "#7b5804",
+              "secondary-container": "#fdcd74",
+              "on-secondary-fixed": "#271900",
+              "secondary-fixed-dim": "#eec068",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-secondary-container": "#785601",
+              "on-tertiary-container": "#96afff",
+              "on-primary-fixed": "#002117",
+              "outline-variant": "#c0c9c3",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "surface-bright": "#faf9f8",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-dim": "#dadad9",
+              "surface-container-highest": "#e3e2e1",
+              "on-primary-fixed-variant": "#1d4f40",
+              "primary-container": "#1b4d3e"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-header {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #1b4d3e;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md flex justify-between items-center px-8 h-20 max-w-full tonal-shift bg-stone-100/50 dark:bg-stone-800/50">
+<div class="text-xl font-bold tracking-tighter text-[#1B4D3E] dark:text-white font-headline">The Invisible Estate</div>
+<div class="hidden md:flex items-center space-x-12 font-['Plus_Jakarta_SANS'] font-medium text-sm tracking-tight">
+<a class="text-stone-500 dark:text-stone-400 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Listings</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Area Guides</a>
+<a class="text-[#1B4D3E] dark:text-white border-b-2 border-[#1B4D3E] pb-1" href="#">Market Trends</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Valuation</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-500 cursor-pointer hover:opacity-80 transition-opacity duration-600">search</span>
+<span class="material-symbols-outlined text-[#1B4D3E] dark:text-[#E3E2E1] cursor-pointer hover:opacity-80 transition-opacity duration-600">account_circle</span>
+</div>
+</nav>
+<!-- SideNavBar (Desktop) -->
+<aside class="hidden lg:flex h-screen w-64 fixed left-0 top-20 flex-col bg-stone-50 dark:bg-stone-950 font-['Plus_Jakarta_SANS']">
+<div class="p-8 pb-4">
+<h3 class="text-[#1B4D3E] font-bold text-xs uppercase tracking-widest opacity-60">Area Guide</h3>
+<p class="text-sm font-medium mt-1">Oxfordshire District</p>
+</div>
+<nav class="flex flex-col mt-4">
+<a class="flex items-center gap-4 text-stone-500 dark:text-stone-400 p-4 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all duration-600 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">map</span>
+<span class="text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-4 bg-white dark:bg-stone-800 text-[#1B4D3E] font-semibold rounded-r-lg p-4 transition-all duration-600 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="text-sm">Sold Prices</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 dark:text-stone-400 p-4 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all duration-600 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span class="text-sm">Demographics</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 dark:text-stone-400 p-4 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all duration-600 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">school</span>
+<span class="text-sm">Schools</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 dark:text-stone-400 p-4 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all duration-600 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">train</span>
+<span class="text-sm">Transport</span>
+</a>
+</nav>
+</aside>
+<main class="lg:ml-64 pt-32 px-8 pb-20 max-w-[1400px] mx-auto">
+<!-- Hero Section -->
+<section class="mb-20">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-2xl">
+<span class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container text-[0.6875rem] font-label uppercase tracking-[0.1em] rounded-full mb-6">Market Insights</span>
+<h1 class="text-5xl md:text-7xl font-headline font-bold text-primary tracking-tighter leading-none mb-6">Sold Prices <br/>Oxfordshire</h1>
+<p class="text-lg text-on-surface-variant max-w-lg font-light leading-relaxed">
+                        A curated analysis of residential transactions across the Oxfordshire region, updated monthly with Land Registry data for absolute precision.
+                    </p>
+</div>
+<div class="bg-surface-container-low p-8 rounded-xl flex items-center gap-12 min-w-[320px]">
+<div>
+<p class="text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline mb-2">Market Velocity</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-headline font-bold text-primary tracking-tighter">42</span>
+<span class="text-sm font-medium text-on-surface-variant">days</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-xs text-secondary font-medium">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+<span>12% faster than last year</span>
+</div>
+</div>
+<div class="w-px h-16 bg-outline-variant opacity-30"></div>
+<div>
+<p class="text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline mb-2">Avg. Valuation</p>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-headline font-bold text-primary tracking-tighter">£582k</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-xs text-primary font-medium">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+4.2% YoY</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Insights -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+<!-- Heat Map Visualization Placeholder -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(26,28,28,0.05)] relative min-h-[400px]">
+<div class="absolute inset-0 z-0 grayscale opacity-40 mix-blend-multiply">
+<img alt="abstract topographic map of Oxfordshire England stylized minimalist data visualization forest green and soft cream palette" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiw4E6-ohhq6aHAXhFWLKoyEhtdpNB7CBH_nvO6aaM4vvVS5n6F64erYac41by8_L_MIK7SYjbvUK13CS19_-gJT1kiQEGjt4xfmLnC2wObGeNfWuFVdlGYaILttabHVp2QWlNoV9_OJ-yWYelHdufXgIoP5A08Dbi4uFJsHbcJFNKt5NKqSt9EZC7pse2MI9OhQWVv0D_SzDKpHjDGZZ0vOleXjJWWq27ePZV07S9erC83foykue0aCDJKdrZHV1hCsBlrhK3lGo7"/>
+</div>
+<!-- Price Per Sq Ft Overlay -->
+<div class="absolute top-8 left-8 z-10">
+<h3 class="text-xl font-headline font-bold text-primary mb-2">Price per Sq Ft Heat Map</h3>
+<p class="text-sm text-on-surface-variant">Relative density of high-value transactions</p>
+</div>
+<div class="absolute bottom-8 right-8 z-10 flex flex-col gap-4">
+<div class="bg-white/90 backdrop-blur-md p-4 rounded-lg flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded-full"></div>
+<span class="text-[0.6875rem] font-label uppercase tracking-[0.1em]">£600+</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary/40 rounded-full"></div>
+<span class="text-[0.6875rem] font-label uppercase tracking-[0.1em]">£400-£600</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-secondary-container rounded-full"></div>
+<span class="text-[0.6875rem] font-label uppercase tracking-[0.1em]">&lt; £400</span>
+</div>
+</div>
+</div>
+<!-- Map Pins Simulation -->
+<div class="absolute top-1/2 left-1/3 w-6 h-6 bg-primary border-4 border-white rounded-full shadow-lg"></div>
+<div class="absolute top-1/3 right-1/4 w-4 h-4 bg-primary/60 border-2 border-white rounded-full shadow-lg"></div>
+<div class="absolute bottom-1/4 left-1/2 w-5 h-5 bg-secondary-container border-2 border-white rounded-full shadow-lg"></div>
+</div>
+<!-- Property Type Distribution -->
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col justify-between">
+<div>
+<h3 class="text-xl font-headline font-bold text-primary mb-6">Market Composition</h3>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-label uppercase tracking-widest text-outline">
+<span>Detached</span>
+<span class="text-primary font-bold">45%</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-label uppercase tracking-widest text-outline">
+<span>Semi-Detached</span>
+<span class="text-primary font-bold">32%</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary/70 h-full w-[32%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-label uppercase tracking-widest text-outline">
+<span>Terraced</span>
+<span class="text-primary font-bold">18%</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary/40 h-full w-[18%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-label uppercase tracking-widest text-outline">
+<span>Apartments</span>
+<span class="text-primary font-bold">5%</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary-container h-full w-[5%]"></div>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-8 py-4 w-full bg-primary text-white rounded-md font-medium text-sm hover:opacity-90 transition-opacity">
+                    Download Full Report (PDF)
+                </button>
+</div>
+</section>
+<!-- Sold Prices Table Section -->
+<section class="space-y-12">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<h2 class="text-3xl font-headline font-bold text-primary tracking-tight">Recent Transactions</h2>
+<div class="flex items-center gap-4 bg-surface-container-low p-1.5 rounded-lg">
+<button class="px-4 py-2 bg-white text-primary text-sm font-semibold rounded shadow-sm">All Types</button>
+<button class="px-4 py-2 text-stone-500 text-sm font-medium hover:text-primary transition-colors">Residential</button>
+<button class="px-4 py-2 text-stone-500 text-sm font-medium hover:text-primary transition-colors">Commercial</button>
+<div class="w-px h-6 bg-outline-variant/30 mx-2"></div>
+<span class="material-symbols-outlined text-outline cursor-pointer p-1">tune</span>
+</div>
+</div>
+<!-- High-Density Table -->
+<div class="bg-white rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(26,28,28,0.03)]">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/10">
+<th class="p-6 text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline">Property Address</th>
+<th class="p-6 text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline">Type</th>
+<th class="p-6 text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline">Sale Price</th>
+<th class="p-6 text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline">Date Sold</th>
+<th class="p-6 text-[0.6875rem] font-label uppercase tracking-[0.1em] text-outline text-right">Price / Sq Ft</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-6">
+<p class="font-medium text-primary">Windrush Manor, Burford OX18</p>
+<p class="text-xs text-on-surface-variant mt-1">Freehold • 5 Bedrooms</p>
+</td>
+<td class="p-6">
+<span class="px-2 py-1 bg-surface-container rounded text-[10px] font-label uppercase tracking-wider">Detached</span>
+</td>
+<td class="p-6 font-headline font-bold text-primary">£2,450,000</td>
+<td class="p-6 text-sm text-on-surface-variant">14 Oct 2023</td>
+<td class="p-6 text-right font-medium text-primary">£842</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-6">
+<p class="font-medium text-primary">72 Woodstock Road, Oxford OX2</p>
+<p class="text-xs text-on-surface-variant mt-1">Leasehold • 2 Bedrooms</p>
+</td>
+<td class="p-6">
+<span class="px-2 py-1 bg-surface-container rounded text-[10px] font-label uppercase tracking-wider">Apartment</span>
+</td>
+<td class="p-6 font-headline font-bold text-primary">£685,000</td>
+<td class="p-6 text-sm text-on-surface-variant">02 Oct 2023</td>
+<td class="p-6 text-right font-medium text-primary">£913</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-6">
+<p class="font-medium text-primary">Willow Cottage, Chipping Norton OX7</p>
+<p class="text-xs text-on-surface-variant mt-1">Freehold • 3 Bedrooms</p>
+</td>
+<td class="p-6">
+<span class="px-2 py-1 bg-surface-container rounded text-[10px] font-label uppercase tracking-wider">Terraced</span>
+</td>
+<td class="p-6 font-headline font-bold text-primary">£425,000</td>
+<td class="p-6 text-sm text-on-surface-variant">28 Sep 2023</td>
+<td class="p-6 text-right font-medium text-primary">£415</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-6">
+<p class="font-medium text-primary">The Old Rectory, Henley-on-Thames RG9</p>
+<p class="text-xs text-on-surface-variant mt-1">Freehold • 6 Bedrooms</p>
+</td>
+<td class="p-6">
+<span class="px-2 py-1 bg-surface-container rounded text-[10px] font-label uppercase tracking-wider">Detached</span>
+</td>
+<td class="p-6 font-headline font-bold text-primary">£3,100,000</td>
+<td class="p-6 text-sm text-on-surface-variant">15 Sep 2023</td>
+<td class="p-6 text-right font-medium text-primary">£1,025</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="p-6">
+<p class="font-medium text-primary">14 Meadow Lane, Witney OX28</p>
+<p class="text-xs text-on-surface-variant mt-1">Freehold • 3 Bedrooms</p>
+</td>
+<td class="p-6">
+<span class="px-2 py-1 bg-surface-container rounded text-[10px] font-label uppercase tracking-wider">Semi-Detached</span>
+</td>
+<td class="p-6 font-headline font-bold text-primary">£395,000</td>
+<td class="p-6 text-sm text-on-surface-variant">09 Sep 2023</td>
+<td class="p-6 text-right font-medium text-primary">£368</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 bg-surface-container-low flex justify-between items-center">
+<p class="text-[0.6875rem] font-label uppercase tracking-widest text-outline">Showing 1-5 of 1,248 transactions</p>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-white rounded transition-colors">
+<span class="material-symbols-outlined text-outline">chevron_left</span>
+</button>
+<span class="text-xs font-bold text-primary">1</span>
+<button class="p-2 hover:bg-white rounded transition-colors">
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual CTA -->
+<section class="mt-20 p-12 rounded-2xl bg-primary text-white overflow-hidden relative">
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+<div class="max-w-md">
+<h2 class="text-3xl font-headline font-bold mb-4 tracking-tight leading-tight">Wondering how much your Oxfordshire home is worth today?</h2>
+<p class="text-on-primary-container font-light leading-relaxed">Our data models combine Land Registry sales with real-time market sentiment to give you a precise valuation.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+<button class="px-8 py-4 bg-secondary-fixed-dim text-on-secondary-fixed font-semibold rounded-md transition-transform active:scale-95 duration-600 cubic-bezier(0.22,1,0.36,1)">Get Instant Valuation</button>
+<button class="px-8 py-4 border border-white/20 hover:bg-white/10 rounded-md font-semibold transition-colors">Speak to an Agent</button>
+</div>
+</div>
+<!-- Decorative Grain/Texture Overlay -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="smooth gradient flowing from deep navy to soft lavender with subtle grain texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAtw2p_VVd8FFGZ2wdWmTUvdq7GFZpQBsZcRWLf9FUkHpg9rV1YBDGn_kFopmKxtN_npjz1EAS8JnbH1tA6kvzGWHzWMu7yJOWFYRBMvnb9p-MpynkQI-QemJrW2Q7VK5JEcnV8bc3uwR8Uo-SK2gWuBPpmowWMjx3ZO33Nzvt1Pbu5BEfpC3jVvVdfG8YV5uJRCDsc_LPCkZaom4wqPlPnvhxp9-HvO2pKR0a-47UrvQLIEKwzECh7Fp8QIvSFieDLtXl-LMS2dl7"/>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-100 dark:bg-stone-950 w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 tonal-shift top-border-stone-200 dark:top-border-stone-800">
+<div>
+<div class="text-lg font-bold text-[#1B4D3E] dark:text-white font-headline">The Invisible Estate</div>
+<p class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 mt-2">© 2024 The Invisible Estate. All rights reserved. Registered in England &amp; Wales.</p>
+</div>
+<div class="flex gap-8 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em]">
+<a class="text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Market Reports</a>
+<a class="text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Expert Advice</a>
+<a class="text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+</body></html>

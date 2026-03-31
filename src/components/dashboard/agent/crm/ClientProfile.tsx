@@ -43,11 +43,11 @@ type EditForm = {
 };
 
 const CLIENT_TYPE_COLORS: Record<string, string> = {
-  buyer: "bg-accent text-accent-foreground",
-  seller: "bg-warning-light text-warning",
-  renter: "bg-info-light text-info",
-  landlord: "bg-[color-mix(in_srgb,var(--color-brand-secondary-light)_80%,transparent)] text-[color-mix(in_srgb,var(--color-brand-secondary)_90%,#000)]",
-  investor: "bg-success-light text-success",
+  buyer: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+  seller: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+  renter: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  landlord: "bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400",
+  investor: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
 };
 
 export function ClientProfile({ client }: Props) {
@@ -315,7 +315,7 @@ export function ClientProfile({ client }: Props) {
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                  <span className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
                     Email
                   </span>
                   {client.email ? (
@@ -328,7 +328,7 @@ export function ClientProfile({ client }: Props) {
                 </div>
                 <div className="h-px bg-border/60" />
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                  <span className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
                     Phone
                   </span>
                   {client.phone ? (
@@ -341,7 +341,7 @@ export function ClientProfile({ client }: Props) {
                 </div>
                 <div className="h-px bg-border/60" />
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+                  <span className="text-muted-foreground text-xs font-semibold uppercase tracking-widest">
                     Type
                   </span>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${typeColorClass}`}>
@@ -447,7 +447,7 @@ export function ClientProfile({ client }: Props) {
                   {Object.entries(client.preferences).map(([key, val], i, arr) => (
                     <div key={key}>
                       <div className="flex items-center justify-between py-2.5 text-sm">
-                        <dt className="font-medium text-muted-foreground capitalize text-xs uppercase tracking-wide">
+                        <dt className="font-semibold text-muted-foreground capitalize text-[11px] uppercase tracking-widest">
                           {key.replace(/_/g, " ")}
                         </dt>
                         <dd className="text-foreground font-medium">
@@ -467,7 +467,7 @@ export function ClientProfile({ client }: Props) {
         <TabsContent value="properties" className="mt-4">
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardContent className="py-14 text-center">
-              <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <div className="size-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
                 <Home className="size-6 text-muted-foreground" strokeWidth={1.25} />
               </div>
               <p className="text-sm font-medium text-foreground">No properties linked</p>
@@ -482,7 +482,7 @@ export function ClientProfile({ client }: Props) {
         <TabsContent value="communication" className="mt-4">
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardContent className="py-14 text-center">
-              <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <div className="size-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
                 <MessageSquare className="size-6 text-muted-foreground" strokeWidth={1.25} />
               </div>
               <p className="text-sm font-medium text-foreground">No messages yet</p>
@@ -497,7 +497,7 @@ export function ClientProfile({ client }: Props) {
         <TabsContent value="transactions" className="mt-4">
           <Card className="border-0 shadow-sm rounded-2xl">
             <CardContent className="py-14 text-center">
-              <div className="size-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <div className="size-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
                 <CreditCard className="size-6 text-muted-foreground" strokeWidth={1.25} />
               </div>
               <p className="text-sm font-medium text-foreground">No transactions yet</p>

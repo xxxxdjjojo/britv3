@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gallery | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#eec068",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary-fixed": "#baeed9",
+              "primary": "#003629",
+              "outline": "#707974",
+              "surface-container-low": "#f4f3f2",
+              "on-surface-variant": "#404945",
+              "on-primary-fixed-variant": "#1d4f40",
+              "background": "#faf9f8",
+              "secondary-container": "#fdcd74",
+              "secondary-fixed": "#ffdea6",
+              "on-error-container": "#93000a",
+              "surface-variant": "#e3e2e1",
+              "surface-tint": "#376757",
+              "on-secondary-fixed": "#271900",
+              "tertiary-container": "#003ca3",
+              "error-container": "#ffdad6",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#002873",
+              "on-secondary-container": "#785601",
+              "on-secondary": "#ffffff",
+              "surface-container-high": "#e9e8e7",
+              "on-surface": "#1a1c1c",
+              "primary-container": "#1b4d3e",
+              "on-primary-fixed": "#002117",
+              "on-background": "#1a1c1c",
+              "surface": "#faf9f8",
+              "on-tertiary-container": "#96afff",
+              "error": "#ba1a1a",
+              "on-tertiary-fixed": "#00174b",
+              "primary-fixed-dim": "#9ed1bd",
+              "surface-container-highest": "#e3e2e1",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-primary": "#ffffff",
+              "surface-bright": "#faf9f8",
+              "on-tertiary": "#ffffff",
+              "surface-container": "#eeeeed",
+              "inverse-primary": "#9ed1bd",
+              "inverse-surface": "#2f3130",
+              "surface-dim": "#dadad9",
+              "on-secondary-fixed-variant": "#5d4200",
+              "on-error": "#ffffff",
+              "outline-variant": "#c0c9c3",
+              "on-primary-container": "#8abda9",
+              "inverse-on-surface": "#f1f0f0",
+              "secondary": "#7b5804"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .gallery-masonry {
+            column-count: 1;
+            column-gap: 2rem;
+        }
+        @media (min-width: 768px) { .gallery-masonry { column-count: 2; } }
+        @media (min-width: 1280px) { .gallery-masonry { column-count: 3; } }
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Top Navigation Shell -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-between items-center px-8 h-20 w-full">
+<div class="flex items-center gap-8">
+<a class="text-xl font-bold tracking-tighter text-[#1A1C1C] dark:text-slate-100 font-headline" href="#">The Invisible Estate</a>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1A1C1C]/60 dark:text-slate-400 pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Overview</a>
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1B4D3E] dark:text-emerald-400 border-b-2 border-[#1B4D3E] pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Gallery</a>
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1A1C1C]/60 dark:text-slate-400 pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Location</a>
+<a class="font-plus-jakarta-sans text-sm tracking-wide uppercase text-[#1A1C1C]/60 dark:text-slate-400 pb-1 hover:text-[#1B4D3E] transition-colors duration-300" href="#">Financials</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 bg-primary text-on-primary font-headline text-sm font-semibold rounded-lg scale-98 active:opacity-80 transition-all">Book Viewing</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-32 pb-20 px-4 md:px-12 lg:px-20 max-w-[1920px] mx-auto">
+<!-- Header Controls (Minimal Interface) -->
+<header class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="space-y-2">
+<a class="group inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+<span class="font-label text-[0.6875rem] tracking-[0.05em] uppercase">Back to Detail</span>
+</a>
+<h1 class="font-headline text-4xl md:text-5xl font-bold tracking-tight text-on-surface">Blackwood Manor</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end">
+<span class="font-label text-[0.6875rem] tracking-[0.05em] uppercase text-on-surface-variant">Gallery Progress</span>
+<span class="font-headline text-2xl font-light text-on-surface">24 <span class="text-outline-variant">/</span> 48</span>
+</div>
+<div class="h-12 w-[1px] bg-surface-container-highest"></div>
+<button class="p-3 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</header>
+<!-- Immersive Masonry Grid -->
+<div class="gallery-masonry">
+<!-- Large Hero Image -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Exterior View" class="w-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Modern architectural home exterior with forest backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyHuKkp7k47aFi5ujqOaeVGd9hp3beK5DlGERUQ-VRxjWWU3sdH_CtF1stn44R21UtA-eb46tf4nIHiNMb-thCyc3B7t7xGyuW2bbHHdiP9smeb61efw4CNNcnaje3uYrs_7QPOwctp6jjgh4St3uAcTAFGCWWWKkuC3-SSbwTxLfKOPqzHYxT5y5KSVtzjj7y7oefzeOU3GNMkra_oiKMXJQ-x5lI3qZXVZXnxRxhn_DDX3VSr8SrHpVrCgldXBWvcJLNpvhzfHeW"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Vertical Interior -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Dining Area" class="w-full aspect-[3/4] object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Minimalist dining room with floor to ceiling windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCabI0SkquzDtmqahWTthEu2Qpeo0P7G-MUjffgr4s1VT37M9fydARzEtUTE3qns05E4Q74VWjf_tKaDbxPp1bu31LxpYQBwNvrP_2HuRRElbfFezJVwO5fSQmFig9RVeFgVekaNWRZ2KfVz8MoK46ItzyTcLmPEajM1TLeFzdl4gQBOeenCZfdHfHeqxRUdMk0JR_zWGSgX3UWS6xC2EByXMSbS1TUO01zMxyxObn1to8avCVe0R0dAka3wqeBc2jX6HuIu2v2EC9k"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Detail Shot -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Kitchen Detail" class="w-full aspect-square object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Luxury marble kitchen island detail shot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFX00aGLqYVQhanIx0wyntBp-KMjdeUBcFHxY-F6dlf4ufjVDSqYkOjfM3zYK5B-erWYKvco9IJx-zJQfCtnE0aoXhHbCXkIgn9FVGmoiqd94XAWDVhsWZIN3yFGmjUi1rauYxCZiclEfXN5YxXM6qbRu7wXNlQ6yHWhbRDsYg7TLvFtJdj31V8EeZi9gvoHpJSYJ9NYfTPNhP3r2J4KxWXxmHBT7DQTw_h5Zz1d3nPpu4-sYx7yLvgfCsSLakQ1vlOxxnDRItT0AD"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Landscape Pool -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Infinity Pool" class="w-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Infinity pool overlooking a misty valley" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG_YC_UmlLQBzj1nmB-15xY-1MeHb2rQ-4yfFsHrKUEq2EYh-YLjrN9_If4ObEXi4FmGCtH9Ib7NHkAvsd8WhF8Cs1DAYkeKNM0pCDfDzjwrritYaUugZLvYA8LPMqckccIhRzzJ9lDuSuKDrCK_nEuDA64EBobN9R7Q_VeSWJHev_KFwBaJCT_U4-2YyJtPrF1fiK-S2ldoR70vzuOouGytb-xo1gFI1zBvaEx6QTdFh3yM9hAgM2AAJzIXBVEY_iQOcOv7WkYmE3"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Master Suite -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Bedroom View" class="w-full aspect-[4/5] object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Spacious master bedroom with natural oak accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTo69qLdQwmj8UEDKUlH_uFPxfUiq5g5bnp5CnCF2R_wt1-KHrp-ngYsrsTcid_pazcJpQXOlxdAcbNOIIgiduFc-vUCcUShg3RztrQL0nbGcWLINRYlHWvU0Uuho0Axrb5Uo8O3NWz5AK0NvF0DPnLHKJwFfmSdBYbUf_ENrY9yqgezS3R2LGpjI90CX3kRdZNQfeEMUnm3dr6nXFbCj8VRhTE4Cx5KQEku_1qoL9uwn33jVt23dTiR4Yv0HGG1fsKhWDTzggru1T"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Terrace Detail -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Outdoor Terrace" class="w-full aspect-video object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Minimalist outdoor terrace with stone paving" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXO7Us_MH0Uvza7TpwyhmDdujPGrVQ3teSQ2RseJqIrlYXEH4virkT5-JT2sadAgTWUQal-i6wWe_pWsj1805vq43cFrJjOlOzGMOf70a2Svu0KuQPJjhPwETT39Ndjp86WuJuflVC898oc-kbnPD8t7iWJbrTv7sP-f-UpeNZ-QFIQMXH-uxEp15L6WCzVigRYemqq3ArWNrKNcBs6pKgnM26mxPtUYWmTX-fCc47sSslIX9v9W_cAl3oZLfClXYqyCLtzuVY25nh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Staircase Asymmetry -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Staircase" class="w-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Sculptural concrete staircase in modern foyer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoPfug4SyGYyaRI2la9gt3kSKFKl1W5h2L5mmgK6eSmwEzP2KlM0smjD315uSjxst6ebvzdDrd6TYUH1m2qnOOyN5eKuOM9Ur3Sicaw_llSeSvS8Ji1wwROhcrhwXqDGaaMJsM7UiPxtEoNG_tgEAjvY4XETxFygxGuE1FNxkvq0yrE6aBd6RNkdmVYfmu6SzbjNIQL2yEnQ8IySE2x4D6uritS8OINKIXw4_uOnnCnbA-QLI2vfQtBzY_DCUk9IRc-1kZaA6Fx8wp"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Library View -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Private Library" class="w-full aspect-[2/3] object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Quiet home library with dark wood shelving" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIZMXQRjiKsUQFNPE-dJZCX5ylyUnHos1LMyfZ0Ki1LWMTYkK91Xf0LM3891I2AOsQL03BNtSU6V1RFonOZcmTgtUrmEUfUuiYHsCVo95x0y-I5Cia9lp2ME2Fj0OJptPPcOrCd3PtP2SYwx2VAeVATtgGh4n84m1C2ntIDCG5Xz4Hv2-prS2eZi4g8G2ltRe6C00Qg_px7sdhPYS1Qy8SpnOtzJOLMVZ-vnsfaXWDOauR51Zteeri2licmQRrtym-hWR5816cRGJ-"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+<!-- Garden Path -->
+<div class="gallery-item group relative overflow-hidden rounded-xl">
+<img alt="Garden View" class="w-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] scale-100 group-hover:scale-105" data-alt="Landscaped garden path with architectural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ4KvuQEjbjqaa00P_vI12R4Pjk1jg9g_x5yLGPu9Ky8Ef6E5oM-SGHmYliLN6GEZa4VTAl0WRJ0A0vQxzNWdYOFEeDpWktc3RzT80PkxpEJnvnPXXSJ4oGlCLUvJhiJkSSS4wZdrnSPMpC-TGyZZgaxt1dcLND1U5IdXRH1WAClt3Iyb36bAM2HHm2Lphtor_j3eCDCDLGDfPvGTNAM5cZfm3sT9suqUOVZieSXdcHmzu-ANxTQLwWBcWGbmjXDyelpGvvsZ1gWGL"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+</div>
+</div>
+<!-- End of Gallery Marker -->
+<div class="mt-20 flex flex-col items-center">
+<div class="w-20 h-[1px] bg-outline-variant mb-8"></div>
+<p class="font-label text-[0.6875rem] tracking-[0.2em] uppercase text-on-surface-variant">End of Collection</p>
+<button class="mt-8 px-10 py-4 bg-secondary-fixed-dim text-on-secondary-fixed font-headline font-bold rounded-lg hover:brightness-95 transition-all">
+                Make Offer
+            </button>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="bg-[#E3E2E1] dark:bg-slate-950 w-full py-20 tonal-shift-no-borders">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="text-lg font-bold text-[#1A1C1C] dark:text-slate-200 font-headline">The Invisible Estate</span>
+<p class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500">© 2024 The Invisible Estate. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Cookie Policy</a>
+<a class="font-plus-jakarta-sans text-[0.6875rem] tracking-[0.05em] uppercase text-[#1A1C1C]/70 dark:text-slate-500 hover:underline decoration-[#EEC068] underline-offset-4 transition-opacity opacity-90 hover:opacity-100" href="#">Accessibility</a>
+</div>
+</div>
+</footer>
+<!-- Floating UI for Mobile Gallery Count -->
+<div class="md:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+<div class="bg-surface-container-lowest/90 backdrop-blur-xl px-6 py-3 rounded-full shadow-[0_20px_50px_rgba(26,28,28,0.1)] flex items-center gap-4">
+<span class="font-label text-[0.6875rem] tracking-[0.1em] uppercase">24 / 48</span>
+<div class="w-px h-4 bg-surface-container-highest"></div>
+<span class="material-symbols-outlined text-primary">photo_library</span>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Windrush Estate | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .gentle-shadow { shadow-[0_20px_50px_rgba(26,28,28,0.05)] }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "tertiary-fixed-dim": "#b4c5ff",
+                "surface": "#faf9f8",
+                "primary-fixed-dim": "#9ed1bd",
+                "inverse-surface": "#2f3130",
+                "surface-dim": "#dadad9",
+                "on-surface-variant": "#404945",
+                "on-tertiary-container": "#96afff",
+                "surface-container-lowest": "#ffffff",
+                "on-surface": "#1a1c1c",
+                "on-secondary-fixed": "#271900",
+                "on-error-container": "#93000a",
+                "on-secondary": "#ffffff",
+                "error-container": "#ffdad6",
+                "tertiary-container": "#003ca3",
+                "on-tertiary-fixed": "#00174b",
+                "surface-container-high": "#e9e8e7",
+                "surface-container-low": "#f4f3f2",
+                "surface-container": "#eeeeed",
+                "secondary-container": "#fdcd74",
+                "secondary": "#7b5804",
+                "outline-variant": "#c0c9c3",
+                "on-secondary-container": "#785601",
+                "on-primary-fixed-variant": "#1d4f40",
+                "on-tertiary": "#ffffff",
+                "surface-bright": "#faf9f8",
+                "tertiary-fixed": "#dbe1ff",
+                "on-primary-fixed": "#002117",
+                "secondary-fixed": "#ffdea6",
+                "surface-variant": "#e3e2e1",
+                "tertiary": "#002873",
+                "on-secondary-fixed-variant": "#5d4200",
+                "inverse-on-surface": "#f1f0f0",
+                "surface-container-highest": "#e3e2e1",
+                "primary-fixed": "#baeed9",
+                "secondary-fixed-dim": "#eec068",
+                "primary": "#003629",
+                "on-primary-container": "#8abda9",
+                "on-error": "#ffffff",
+                "on-background": "#1a1c1c",
+                "on-tertiary-fixed-variant": "#003ea8",
+                "on-primary": "#ffffff",
+                "outline": "#707974",
+                "primary-container": "#1b4d3e",
+                "inverse-primary": "#9ed1bd",
+                "error": "#ba1a1a",
+                "surface-tint": "#376757",
+                "background": "#faf9f8"
+              },
+              fontFamily: {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface font-body text-on-surface leading-relaxed">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-emerald-950/80 backdrop-blur-md flex justify-between items-center px-8 h-20 w-full no-border bg-surface-container-low/50">
+<div class="text-xl font-bold tracking-tighter text-emerald-950 dark:text-white font-headline">The Invisible Estate</div>
+<nav class="hidden md:flex items-center gap-8 font-plus-jakarta text-sm tracking-tight">
+<a class="text-emerald-900 dark:text-white border-b-2 border-emerald-900 dark:border-white pb-1 hover:text-emerald-950 dark:hover:text-white transition-colors duration-600" href="#">Listings</a>
+<a class="text-emerald-800/60 dark:text-emerald-100/60 hover:text-emerald-950 dark:hover:text-white transition-colors duration-600" href="#">Concierge</a>
+<a class="text-emerald-800/60 dark:text-emerald-100/60 hover:text-emerald-950 dark:hover:text-white transition-colors duration-600" href="#">Journal</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-emerald-900 dark:text-emerald-50 scale-98 active:opacity-80">favorite</button>
+<button class="material-symbols-outlined text-emerald-900 dark:text-emerald-50 scale-98 active:opacity-80">account_circle</button>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Gallery & Core Data -->
+<section class="px-8 mt-8">
+<div class="grid grid-cols-12 gap-6 h-[716px]">
+<div class="col-span-12 md:col-span-8 overflow-hidden rounded-xl relative group">
+<img alt="Stunning Cotswold manor house with golden stone exterior" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxexI9oiIccw-IpYdd-TCzSuwTNIinZUaMyU0qnQ-7D19UxzL-_UrJ0LdgHUprzIv3g9KyoQsBcdAHXNCeViCvRdAxH2FFppWQw1NRmf5LWDqLMw0LXaD_I4zwjKRnU3lWGwJxK0AUbdHWmoARn0MAjPxesgzz2TLEB4zYt8gJnhv19DlsBPttILj3zk8mqKNdU0__so451eznMDOiL8AZx0WUt5-m_DLN5YD_Mr7ET9Gj3FTDYNytWOKpyflTSPz-VaWBPcOqrc3p"/>
+<div class="absolute bottom-6 left-6 flex gap-3">
+<button class="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">view_in_ar</span> 360° Tour
+                </button>
+<button class="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">play_circle</span> Video
+                </button>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 grid grid-rows-2 gap-6">
+<div class="overflow-hidden rounded-xl">
+<img alt="Modern minimalist kitchen with emerald green cabinetry" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_hudjZtASXRMh-n0DKmnx_QQXHS5FXF1rh2PZBoMH3ZBrGC_Z0o7s6-MQcN4oRGUGTQh_AsdL-NMqvRQSfOxLNBxWLN5Ga65MClL9hu1xtaq6YwkV8E75oQUFcapX2FaQcDsttdZHA7Hi5b1bWBtjBkE4bHB1ywyiF3gTqpCQ7WN2FcMt4tJv9ukzUTmFHBXWg6dyxjEh8u-43rWnhZqvr_SU-qewArDVwYCjHvb_v01l4hJXEmR3GfUNOkosAq9fO4nLwruGIiYM"/>
+</div>
+<div class="overflow-hidden rounded-xl relative">
+<img alt="Expansive manicured garden with infinity pool" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzUI6MO7d8KJEJPuWgnZl7KVFYwovdSbcC6dxXGwpgnX7qECC8b6hjkXpfeDT1s0OkgHenT92Gu8Gk5RDTiq47VRbcvdItskM6mwc10BSL9ODnwCTp254AQ-glrbhM3fbygmf6XloPaUCKfek8iUuj8HhTlDbSOU7FSB56SUvyxj4n3v4AK1XzHg6NfDF0COEg2uyKPdYNwIrtfW7REFs69QVirp_-edMCVHW9snC6mPOVZztY6CN7kCY2N38hcVeQ1E-SblDtg-Fg"/>
+<div class="absolute inset-0 bg-primary/40 flex items-center justify-center cursor-pointer">
+<span class="text-white font-headline font-bold text-lg">+12 Photos</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 flex flex-col md:flex-row justify-between items-start gap-12">
+<div class="flex-1">
+<div class="flex items-center gap-4 mb-4">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Certified Estate</span>
+<span class="text-outline text-xs tracking-widest uppercase font-medium">Ref: WE-9921</span>
+</div>
+<h1 class="text-5xl font-extrabold tracking-tighter text-primary font-headline mb-4">The Windrush Estate</h1>
+<p class="text-xl text-outline mb-8">Windrush Valley, Oxfordshire, OX18</p>
+<div class="flex gap-16 mb-12 py-8 border-y border-outline-variant/20">
+<div>
+<p class="text-[10px] font-bold tracking-widest uppercase text-outline mb-1">Price</p>
+<p class="text-2xl font-bold font-headline text-primary">£4,250,000</p>
+</div>
+<div>
+<p class="text-[10px] font-bold tracking-widest uppercase text-outline mb-1">Bedrooms</p>
+<p class="text-2xl font-bold font-headline text-primary">6</p>
+</div>
+<div>
+<p class="text-[10px] font-bold tracking-widest uppercase text-outline mb-1">Bathrooms</p>
+<p class="text-2xl font-bold font-headline text-primary">5</p>
+</div>
+<div>
+<p class="text-[10px] font-bold tracking-widest uppercase text-outline mb-1">Area</p>
+<p class="text-2xl font-bold font-headline text-primary">5,420 <span class="text-sm font-normal">sq ft</span></p>
+</div>
+</div>
+<div class="prose max-w-none text-on-surface/80 leading-relaxed font-body">
+<p class="mb-6 text-lg">A masterwork of Cotswold vernacular architecture, The Windrush Estate stands as a curated sanctuary in the heart of the valley. Meticulously restored over three years, the property harmonizes 17th-century heritage with invisible modern technology.</p>
+<p>The main residence features sweeping dual-aspect reception rooms, a bespoke culinary suite by deVOL, and an expansive primary wing overlooking the private meadow and Windrush River frontage.</p>
+</div>
+</div>
+<!-- Sticky Sidebar -->
+<aside class="w-full md:w-80 flex flex-col gap-6 sticky top-28">
+<div class="bg-white p-8 rounded-2xl shadow-[0_20px_50px_rgba(26,28,28,0.05)] flex flex-col gap-6">
+<button class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-white rounded-lg font-bold tracking-tight hover:opacity-90 transition-all">Book Viewing</button>
+<button class="w-full py-4 bg-secondary-fixed-dim text-on-secondary-fixed rounded-lg font-bold tracking-tight hover:bg-secondary-fixed transition-all">Ask Agent</button>
+<div class="pt-6 border-t border-outline-variant/20 flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container">
+<img alt="Professional real estate agent portrait" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSvWOZ4NH6ArxMHMrltYXVfX_GraNs1rsscwuD1rIatNZ_ZdrVW1-HDMnUiPd9dwKxz7LK7gAjfssMr7gTPcA1eWx-_s8xT7JxK3UwnfMbfPB8rX18hoJD3qtOPn15vEt8A6MHzVLOiczE4634uPbRTG9trUgi_qdpxHOVW_k5S15IKZ-c0zpqUEXcCWQ9diKpgsqktmzX3dPceumdTlmsDhXS7D9CHyhiwf1YJA-sCmwlkiWcJzL4NNG32e3_rxJRXBC0AFAC4gQA"/>
+</div>
+<div>
+<p class="text-sm font-bold">Julian Sterling</p>
+<p class="text-xs text-outline">Prime Portfolio Director</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center gap-8 text-[10px] font-bold uppercase tracking-widest text-outline">
+<button class="flex items-center gap-2 hover:text-primary transition-colors"><span class="material-symbols-outlined text-sm">share</span> Share</button>
+<button class="flex items-center gap-2 hover:text-error transition-colors"><span class="material-symbols-outlined text-sm">flag</span> Report</button>
+</div>
+</aside>
+</div>
+</section>
+<!-- Main Content Grid & SideNav -->
+<section class="px-8 mt-24 grid grid-cols-12 gap-12">
+<!-- SideNavBar -->
+<div class="hidden md:block col-span-3">
+<nav class="flex flex-col gap-4 p-6 w-full rounded-r-2xl h-fit sticky top-24 bg-surface-container-low dark:bg-emerald-900/20 shadow-[0_20px_50px_rgba(26,28,28,0.05)] tonal-shift no-lines">
+<div class="mb-6">
+<p class="font-plus-jakarta text-xs uppercase tracking-widest text-emerald-800/50 dark:text-emerald-100/40">Property Navigation</p>
+<p class="text-lg font-bold text-emerald-900">Mayfair Penthouse</p>
+</div>
+<a class="flex items-center gap-3 p-4 bg-white dark:bg-emerald-800 text-emerald-900 dark:text-amber-200 font-bold rounded-lg transition-all duration-600" href="#overview">
+<span class="material-symbols-outlined">info</span>
+<span class="font-plus-jakarta text-xs uppercase tracking-widest">Overview</span>
+</a>
+<a class="flex items-center gap-3 p-4 text-emerald-800/50 dark:text-emerald-100/40 hover:bg-white/50 dark:hover:bg-emerald-800/50 rounded-lg transition-all duration-600" href="#experts">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-plus-jakarta text-xs uppercase tracking-widest">Local Experts</span>
+</a>
+<a class="flex items-center gap-3 p-4 text-emerald-800/50 dark:text-emerald-100/40 hover:bg-white/50 dark:hover:bg-emerald-800/50 rounded-lg transition-all duration-600" href="#location">
+<span class="material-symbols-outlined">location_on</span>
+<span class="font-plus-jakarta text-xs uppercase tracking-widest">Location</span>
+</a>
+<a class="flex items-center gap-3 p-4 text-emerald-800/50 dark:text-emerald-100/40 hover:bg-white/50 dark:hover:bg-emerald-800/50 rounded-lg transition-all duration-600" href="#financials">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-plus-jakarta text-xs uppercase tracking-widest">Financials</span>
+</a>
+<button class="mt-8 w-full py-4 bg-primary text-white rounded-lg font-bold tracking-tight">Book Viewing</button>
+</nav>
+</div>
+<div class="col-span-12 md:col-span-9 flex flex-col gap-24">
+<!-- Floor Plan -->
+<div class="scroll-mt-32" id="overview">
+<h3 class="text-3xl font-extrabold tracking-tighter text-primary font-headline mb-8">Architectural Layout</h3>
+<div class="bg-surface-container-low rounded-2xl p-12 flex items-center justify-center">
+<img alt="Detailed architectural floor plan of the estate" class="max-w-full h-auto mix-blend-multiply opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASy2glwW5NFb7XYjNquCXSTesM05RcCRmJ9jeK5ssuN2rM_LXs35H5HE_wIKMhYRTcFdx7hhdRcnk7TmE4vILleZ2FDttHVoUS6-IYWu5i4CkNDx6KilT6o1FbwFBqFjpQIwqUfynf32OswMl5P-fA60jSfIoTqOwM6NkvExsJexQQ4F4GXF4f0_TYi64Wf5Z7C8yHpL1gSFh7B2TN0b9BLIm2t_1apwlZ7AVfNauo_uLzUruf88GkUP-fIQxh7HHuMWGQObfxUMC0"/>
+</div>
+</div>
+<!-- Local Experts for your move -->
+<div class="scroll-mt-32" id="experts">
+<div class="mb-10">
+<h3 class="text-3xl font-extrabold tracking-tighter text-primary font-headline mb-3">Local Experts for your move</h3>
+<p class="text-on-surface/70 max-w-2xl">We've curated a network of verified local professionals to ensure your move is seamless.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(26,28,28,0.03)] flex flex-col h-full border border-surface-container">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">gavel</span>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] fill-1">verified</span> Verified
+                        </span>
+</div>
+<div class="flex-1">
+<h4 class="text-lg font-bold font-headline text-primary mb-1">Sterling Solicitors</h4>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest">128 Reviews</span>
+</div>
+</div>
+<button class="w-full py-4 bg-[#1B4D3E] text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all">Book Consultation</button>
+</div>
+<!-- Card 2 -->
+<div class="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(26,28,28,0.03)] flex flex-col h-full border border-surface-container">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] fill-1">verified</span> Verified
+                        </span>
+</div>
+<div class="flex-1">
+<h4 class="text-lg font-bold font-headline text-primary mb-1">Cotswold Removals</h4>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm">star_half</span>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest">342 Reviews</span>
+</div>
+</div>
+<button class="w-full py-4 bg-[#1B4D3E] text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all">Get Quote</button>
+</div>
+<!-- Card 3 -->
+<div class="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(26,28,28,0.03)] flex flex-col h-full border border-surface-container">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">architecture</span>
+</div>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] fill-1">verified</span> Verified
+                        </span>
+</div>
+<div class="flex-1">
+<h4 class="text-lg font-bold font-headline text-primary mb-1">Valley Surveyors Ltd</h4>
+<div class="flex items-center gap-2 mb-6">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+</div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest">89 Reviews</span>
+</div>
+</div>
+<button class="w-full py-4 bg-[#1B4D3E] text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all">Book Consultation</button>
+</div>
+</div>
+</div>
+<!-- Integrated Insights Grid -->
+<div>
+<h3 class="text-3xl font-extrabold tracking-tighter text-primary font-headline mb-8">Sanctuary Insights</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4 shadow-[0_4px_20px_rgba(26,28,28,0.03)] border-b-2 border-primary/5">
+<span class="material-symbols-outlined text-primary-container">energy_program_saving</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">EPC Rating</p>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold font-headline text-primary">B</span>
+<span class="text-xs text-outline mb-1">Highly Efficient</span>
+</div>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4 shadow-[0_4px_20px_rgba(26,28,28,0.03)] border-b-2 border-primary/5">
+<span class="material-symbols-outlined text-primary-container">signal_cellular_alt</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Connectivity</p>
+<p class="text-xl font-bold font-headline text-primary">Ultrafast Fiber</p>
+<p class="text-xs text-outline">1,000 Mbps Available</p>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4 shadow-[0_4px_20px_rgba(26,28,28,0.03)] border-b-2 border-primary/5">
+<span class="material-symbols-outlined text-primary-container">tsunami</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Environmental Risk</p>
+<p class="text-xl font-bold font-headline text-primary">Very Low</p>
+<p class="text-xs text-outline">Flood Zone 1</p>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4 shadow-[0_4px_20px_rgba(26,28,28,0.03)] border-b-2 border-primary/5">
+<span class="material-symbols-outlined text-primary-container">shield</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Safety</p>
+<p class="text-xl font-bold font-headline text-primary">Low Crime Area</p>
+<p class="text-xs text-outline">Top 5% in UK</p>
+</div>
+<div class="bg-white p-8 rounded-xl flex flex-col gap-4 shadow-[0_4px_20px_rgba(26,28,28,0.03)] border-b-2 border-primary/5">
+<span class="material-symbols-outlined text-primary-container">account_balance</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Council Tax</p>
+<p class="text-xl font-bold font-headline text-primary">Band H</p>
+<p class="text-xs text-outline">£4,120 Per Annum</p>
+</div>
+<div class="bg-primary p-8 rounded-xl flex flex-col justify-between text-white">
+<p class="text-[10px] font-bold uppercase tracking-widest opacity-60">Full Report</p>
+<p class="text-sm font-medium">Download the full technical dossier for this estate.</p>
+<button class="mt-4 flex items-center gap-2 text-secondary-fixed-dim font-bold text-xs uppercase tracking-widest">
+                        Download PDF <span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Location & Area -->
+<div class="scroll-mt-32" id="location">
+<h3 class="text-3xl font-extrabold tracking-tighter text-primary font-headline mb-8">The Environment</h3>
+<div class="grid grid-cols-12 gap-8">
+<div class="col-span-12 lg:col-span-7 rounded-2xl overflow-hidden h-[400px] shadow-lg">
+<img alt="Stylized map showing Oxfordshire area" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTP8L3IP_Rs88ivrm--SfaQZhm7ZsxcBwCDoq1j0eqCu7Gnm__23tFE43scNCPLr_QPnpY5LIQSi_nEerv7TG5mpZa6h9mw_Yk_1op-Kos6BQ4lwDdBAuiQVgrvuBme6_2_-KSsx3PXutCqh1bjcCCHI7QdJoMLJlazL8QQRsMCcboIdfS2B_TlnOZqszvIy6HrgW8YgQtzzpd2BA2NCgtglBOU7kL9KRlocNrzN3b4Xbn-Iz5Qv9g5sTYtwz_TXPzDE6ix5UFZkdf"/>
+</div>
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-8">
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">train</span> Transport &amp; Commute
+                        </h4>
+<ul class="space-y-4">
+<li class="flex justify-between items-center text-sm">
+<span class="text-on-surface/70">Kingham Station (London Fast)</span>
+<span class="font-bold">12 mins drive</span>
+</li>
+<li class="flex justify-between items-center text-sm">
+<span class="text-on-surface/70">Oxford City Centre</span>
+<span class="font-bold">35 mins drive</span>
+</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">school</span> School Catchment
+                        </h4>
+<ul class="space-y-4">
+<li class="flex justify-between items-center text-sm">
+<span class="text-on-surface/70">Windrush Primary</span>
+<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold">Ofsted: Outstanding</span>
+</li>
+<li class="flex justify-between items-center text-sm">
+<span class="text-on-surface/70">The Cotswold School</span>
+<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-[10px] font-bold">Ofsted: Outstanding</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Financials -->
+<div class="scroll-mt-32" id="financials">
+<h3 class="text-3xl font-extrabold tracking-tighter text-primary font-headline mb-8">Market &amp; Financials</h3>
+<div class="flex flex-col gap-8">
+<!-- Charts Row -->
+<div class="bg-surface-container-low rounded-2xl p-10">
+<h4 class="text-sm font-bold uppercase tracking-widest text-primary mb-8">Price Paid History</h4>
+<div class="relative h-[300px] w-full flex flex-col">
+<!-- Legend -->
+<div class="flex gap-6 mb-8">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline">Windrush Estate</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline">Regional Average</span>
+</div>
+</div>
+<!-- Graph Area -->
+<div class="flex-1 relative border-l border-b border-outline-variant/30 ml-8 mb-6">
+<!-- Data Lines (SVG for precision) -->
+<svg class="absolute inset-0 w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Regional Benchmark -->
+<path d="M 0 85 L 10 82 L 20 78 L 30 75 L 40 70 L 50 68 L 60 62 L 70 55 L 80 50 L 90 45 L 100 40" fill="none" stroke="#c0c9c3" stroke-dasharray="4 2" stroke-width="1.5"></path>
+<!-- Property Value -->
+<path d="M 0 90 L 10 85 L 20 80 L 30 72 L 40 60 L 50 55 L 60 45 L 70 30 L 80 25 L 90 18 L 100 10" fill="none" stroke="#003629" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="100" cy="10" fill="#003629" r="4"></circle>
+</svg>
+<div class="absolute -left-10 inset-y-0 flex flex-col justify-between text-[10px] font-medium text-outline">
+<span>£5M</span>
+<span>£2.5M</span>
+<span>£0</span>
+</div>
+</div>
+<div class="flex justify-between ml-8 text-[10px] font-medium text-outline">
+<span>2009</span>
+<span>2012</span>
+<span>2015</span>
+<span>2018</span>
+<span>2021</span>
+<span>2024</span>
+</div>
+</div>
+</div>
+<!-- Calculator and Costs Row -->
+<div class="bg-surface-container-low rounded-2xl p-10 grid grid-cols-1 md:grid-cols-2 gap-16">
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest text-primary mb-8">Mortgage Calculator</h4>
+<div class="space-y-6">
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-outline mb-2">Deposit (20%)</label>
+<input class="w-full bg-white border-none rounded-lg p-3 text-sm focus:ring-1 focus:ring-primary" type="text" value="£850,000"/>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-widest text-outline mb-2">Monthly Repayment</label>
+<p class="text-3xl font-bold font-headline text-primary">£18,420</p>
+<p class="text-[10px] text-outline mt-1">Based on 4.5% APR over 25 years</p>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest text-primary mb-8">Ownership Costs</h4>
+<div class="space-y-4">
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-sm text-on-surface/70">Stamp Duty (SDLT)</span>
+<span class="text-sm font-bold">£483,750</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-sm text-on-surface/70">Annual Service Charge</span>
+<span class="text-sm font-bold">£0.00 (Freehold)</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-sm text-on-surface/70">Est. Monthly Utilities</span>
+<span class="text-sm font-bold">£650</span>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary-container/10 rounded-lg">
+<p class="text-xs text-primary font-medium">This property has appreciated by 14% in value over the last 24 months compared to area average of 8%.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommendations -->
+<div>
+<h3 class="text-3xl font-extrabold tracking-tighter text-primary font-headline mb-8">Similar Sanctuaries</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-xl mb-4">
+<img alt="Luxurious modern villa with extensive glass walls" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD01mxiJ7XFyQxS2dMDWvC8K-gLKpObTWQbMww1s4wXQtk0GTmadRczBoWNXUpaD-oad1SvEcvhGlnl9bsNvxel3jqrNQ2KLTQgE3iHjePKxYxL40FlVG_Jgw-ImIfS-KuFKCM1vmR05k_4qBdh-gsc-tAVQLpp0YzGy4PKgcSUG8IcoIvfvqQ8rkRhDIFnFMbJZ2qpFXEMmKbhydtWY_hdMadNmx9itG5smv2VU8xAYGzkKwbaikhhfQMk8d-S8GiLp-HZvj5Pc-WJ"/>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Burford, Oxfordshire</p>
+<h4 class="text-xl font-bold font-headline text-primary">The Weaver’s Lodge</h4>
+<p class="text-sm font-bold mt-1">£3,950,000</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-xl mb-4">
+<img alt="Traditional brick country house with ivy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVdC6c46ALw9RlKnrwRIrf-8uYApatjmdEhLRoRk3QdnfXg7yHUVRyvgHxkdcybiMqie2TtiGTdwe6Q0sZN_U0ICeE8J4brRTL847K6QEjvo4KUpBi0ojGNt4K72Ne2EDO4FXsegEeY2k1Dh5C0cBLZ-Lqj7VIYwzMQ9oYxgGUluUxBzbkDVi3G9tRZ0EjDP9hEL4w-Usd735lPT56-D-2ha1yNo0UDCyhIPJWDejaa5EmJEfyEY913nQFBGSyT82oW-rdiqE3yKOw"/>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Stow-on-the-Wold</p>
+<h4 class="text-xl font-bold font-headline text-primary">Lansdowne Manor</h4>
+<p class="text-sm font-bold mt-1">£5,100,000</p>
+</div>
+</div>
+</div>
+<!-- Tradespeople -->
+<div class="bg-primary text-white p-12 rounded-3xl">
+<h3 class="text-2xl font-bold font-headline mb-4">Curated Maintenance</h3>
+<p class="text-on-primary-container max-w-xl mb-12">The Invisible Estate maintains an exclusive roster of master tradespeople who know this property's unique requirements.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">architecture</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest">Heritage Stonework</p>
+<p class="text-[10px] text-on-primary-container">Masonry Specialist</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">park</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest">Organic Gardens</p>
+<p class="text-[10px] text-on-primary-container">Arboriculture</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">security</span>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-widest">Cyber Fortress</p>
+<p class="text-[10px] text-on-primary-container">Smart Home Security</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-emerald-950 dark:bg-black w-full mt-20 flex flex-col items-center py-12 px-8 tonal-shift-high">
+<div class="text-lg font-plus-jakarta text-white mb-8">The Invisible Estate</div>
+<div class="flex flex-wrap justify-center gap-8 mb-8">
+<a class="font-inter text-xs tracking-wide text-emerald-100/50 hover:text-amber-200 transition-colors" href="#">Privacy Policy</a>
+<a class="font-inter text-xs tracking-wide text-emerald-100/50 hover:text-amber-200 transition-colors" href="#">Terms of Service</a>
+<a class="font-inter text-xs tracking-wide text-emerald-100/50 hover:text-amber-200 transition-colors" href="#">EPC Ratings</a>
+<a class="font-inter text-xs tracking-wide text-emerald-100/50 hover:text-amber-200 transition-colors" href="#">Cookie Settings</a>
+</div>
+<div class="font-inter text-xs tracking-wide text-white opacity-80">© 2024 The Invisible Estate. Curated Sanctuary.</div>
+</footer>
+</body></html>

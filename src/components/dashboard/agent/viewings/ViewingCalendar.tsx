@@ -151,7 +151,7 @@ function PublishAvailabilityDialog() {
                 setForm((f) => ({ ...f, property_id: e.target.value }))
               }
               placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
-              className="rounded-lg bg-neutral-50"
+              className="rounded-xl bg-neutral-50"
             />
           </div>
           <div className="space-y-1.5">
@@ -168,7 +168,7 @@ function PublishAvailabilityDialog() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, date: e.target.value }))
               }
-              className="rounded-lg bg-neutral-50"
+              className="rounded-xl bg-neutral-50"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -186,7 +186,7 @@ function PublishAvailabilityDialog() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, start_time: e.target.value }))
                 }
-                className="rounded-lg bg-neutral-50"
+                className="rounded-xl bg-neutral-50"
               />
             </div>
             <div className="space-y-1.5">
@@ -203,7 +203,7 @@ function PublishAvailabilityDialog() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, end_time: e.target.value }))
                 }
-                className="rounded-lg bg-neutral-50"
+                className="rounded-xl bg-neutral-50"
               />
             </div>
           </div>
@@ -491,8 +491,8 @@ export function ViewingCalendar({
       {/* Day / selected-date slot list */}
       {(viewMode === "day" || viewMode === "month") && (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-          <div className="bg-neutral-50 px-5 py-4">
-            <p className="font-heading font-semibold text-foreground">
+          <div className="bg-muted/30 px-5 py-4">
+            <p className="font-heading text-sm font-semibold text-foreground">
               {viewMode === "day"
                 ? "Today's slots"
                 : `Slots for ${selectedDate.toLocaleDateString("en-GB", {

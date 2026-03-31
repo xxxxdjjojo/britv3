@@ -108,7 +108,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
           Reviews
         </h1>
         <p className="mt-0.5 text-sm text-neutral-500">
@@ -117,49 +117,47 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
       </div>
 
       {/* Hero rating card */}
-      <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-        <div className="bg-brand-primary px-6 py-5">
-          <p className="text-sm font-medium text-white/70">Overall Rating</p>
-        </div>
-        <div className="p-6">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-8 sm:items-start">
-            <div className="text-center sm:text-left">
-              <p className="font-heading text-6xl font-bold tabular-nums text-foreground">
-                {stats.overall_avg.toFixed(1)}
-              </p>
-              <StarDisplay rating={stats.overall_avg} size="lg" />
-              <p className="mt-1.5 text-sm text-neutral-500">
-                Based on {stats.total_count} review
-                {stats.total_count !== 1 ? "s" : ""}
-              </p>
-            </div>
+      <div className="relative overflow-hidden rounded-2xl bg-brand-primary p-8 text-white shadow-xl">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/5" />
+        <p className="text-xs font-semibold uppercase tracking-widest text-white/60">Overall Rating</p>
+        <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
+          <div className="text-center sm:text-left">
+            <p className="font-heading text-6xl font-bold tabular-nums text-white">
+              {stats.overall_avg.toFixed(1)}
+            </p>
+            <StarDisplay rating={stats.overall_avg} size="lg" />
+            <p className="mt-1.5 text-sm text-white/70">
+              Based on {stats.total_count} review
+              {stats.total_count !== 1 ? "s" : ""}
+            </p>
+          </div>
 
-            {/* Distribution bars */}
-            <div className="flex-1 w-full max-w-xs space-y-2">
-              {[5, 4, 3, 2, 1].map((star) => {
-                const count = stats.by_star[star] ?? 0;
-                const pct =
-                  stats.total_count > 0
-                    ? (count / stats.total_count) * 100
-                    : 0;
-                return (
-                  <div key={star} className="flex items-center gap-2.5 text-sm">
-                    <span className="w-5 shrink-0 text-right text-xs font-medium text-neutral-400">
-                      {star}
-                    </span>
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
-                      <div
-                        className="h-2 rounded-full bg-brand-secondary transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="w-5 shrink-0 text-xs text-neutral-400">
-                      {count}
-                    </span>
+          {/* Distribution bars */}
+          <div className="flex-1 w-full max-w-xs space-y-2">
+            {[5, 4, 3, 2, 1].map((star) => {
+              const count = stats.by_star[star] ?? 0;
+              const pct =
+                stats.total_count > 0
+                  ? (count / stats.total_count) * 100
+                  : 0;
+              return (
+                <div key={star} className="flex items-center gap-2.5 text-sm">
+                  <span className="w-5 shrink-0 text-right text-xs font-medium text-white/60">
+                    {star}
+                  </span>
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/20">
+                    <div
+                      className="h-2 rounded-full bg-white/80 transition-all"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
-                );
-              })}
-            </div>
+                  <span className="w-5 shrink-0 text-xs text-white/60">
+                    {count}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -167,8 +165,8 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
       {/* Sentiment trend chart */}
       {trendData.length > 1 && (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-          <div className="bg-neutral-50 px-5 py-4">
-            <p className="font-heading font-semibold text-foreground">Rating Trend</p>
+          <div className="bg-muted/30 px-5 py-4">
+            <p className="font-heading text-sm font-semibold text-foreground">Rating Trend</p>
           </div>
           <div className="p-5">
             <ResponsiveContainer width="100%" height={200}>
@@ -213,7 +211,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
           value={starFilter}
           onValueChange={(v) => setStarFilter(v ?? "")}
         >
-          <SelectTrigger className="w-40 rounded-lg bg-neutral-50">
+          <SelectTrigger className="w-40 rounded-xl bg-neutral-50">
             <SelectValue placeholder="All Stars" />
           </SelectTrigger>
           <SelectContent>
@@ -230,7 +228,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
           value={responseFilter}
           onValueChange={(v) => setResponseFilter(v ?? "")}
         >
-          <SelectTrigger className="w-48 rounded-lg bg-neutral-50">
+          <SelectTrigger className="w-48 rounded-xl bg-neutral-50">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
@@ -245,8 +243,8 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
       <div className="space-y-4">
         {filteredReviews.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
-            <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-              <StarIcon className="size-7 text-brand-primary" strokeWidth={1.25} />
+            <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-muted">
+              <StarIcon className="size-6 text-muted-foreground" strokeWidth={1.25} />
             </div>
             <p className="font-heading font-semibold text-foreground">No reviews found</p>
             <p className="mt-1 text-sm text-neutral-500">
@@ -272,7 +270,7 @@ export function ReviewsDashboard({ reviews, stats }: Props) {
               key={review.id}
               className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 transition-shadow hover:shadow-md"
             >
-              <div className="bg-neutral-50 px-5 py-4">
+              <div className="bg-muted/30 px-5 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">

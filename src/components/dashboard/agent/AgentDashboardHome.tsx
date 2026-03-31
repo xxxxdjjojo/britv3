@@ -133,7 +133,9 @@ function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, href }: K
 
 function AiSuggestionsSection() {
   return (
-    <div className="rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-light p-6 text-white">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-primary to-brand-primary-light p-6 text-white">
+      <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5" />
+      <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/5" />
       <div className="flex items-center gap-3 mb-4">
         <div className="flex size-9 items-center justify-center rounded-lg bg-white/15">
           <Sparkles className="size-4 text-white" strokeWidth={1.25} />
@@ -164,10 +166,10 @@ function AiSuggestionsSection() {
 
 function TodaysDiarySection({ slots }: Readonly<{ slots: DiaryViewingSlot[] }>) {
   return (
-    <div className="rounded-xl bg-card p-5 shadow-sm ring-1 ring-border/60">
+    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border/60">
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20">
-          <Calendar className="size-4 text-blue-600" strokeWidth={1.25} />
+        <div className="flex size-9 items-center justify-center rounded-lg bg-info-light dark:bg-blue-900/20">
+          <Calendar className="size-4 text-info" strokeWidth={1.25} />
         </div>
         <div>
           <h3 className="font-heading text-sm font-semibold text-foreground">Today&apos;s Diary</h3>
@@ -232,7 +234,7 @@ function TodaysDiarySection({ slots }: Readonly<{ slots: DiaryViewingSlot[] }>) 
 
 function LettingsKpiSection() {
   return (
-    <div className="flex h-full flex-col rounded-xl bg-card p-5 shadow-sm ring-1 ring-border/60">
+    <div className="flex h-full flex-col rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border/60">
       <div className="flex items-center gap-3 mb-4">
         <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
           <Home className="size-4 text-muted-foreground" strokeWidth={1.25} />
@@ -278,7 +280,9 @@ function PerformanceGauge({ score }: Readonly<{ score: number }>) {
         : "Getting Started";
 
   return (
-    <div className="rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-light p-6 text-white">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-primary to-brand-primary-light p-6 text-white">
+      <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5" />
+      <div className="pointer-events-none absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/5" />
       <h3 className="font-heading text-sm font-semibold text-white mb-6">Performance Score</h3>
       <div className="flex flex-col items-center gap-4">
         <div className="relative flex items-center justify-center">
@@ -326,7 +330,7 @@ function PerformanceGauge({ score }: Readonly<{ score: number }>) {
 
 function ActivityFeed({ items }: Readonly<{ items: ActivityFeedItem[] }>) {
   return (
-    <div className="rounded-xl bg-card p-5 shadow-sm ring-1 ring-border/60">
+    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border/60">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-heading text-sm font-semibold text-foreground">Recent Activity</h3>
         {items.length > 0 && (
@@ -458,7 +462,7 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Sales KPI detail */}
         <div className="lg:col-span-2">
-          <div className="rounded-xl bg-card p-5 shadow-sm ring-1 ring-border/60">
+          <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border/60">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="font-heading text-sm font-semibold text-foreground">Sales Overview</h3>
               <Link

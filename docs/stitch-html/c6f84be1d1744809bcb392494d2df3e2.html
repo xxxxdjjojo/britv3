@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Area Guide: Kensington | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#f1f0f0",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-container-high": "#e9e8e7",
+              "surface-container": "#eeeeed",
+              "outline": "#707974",
+              "on-surface-variant": "#404945",
+              "primary": "#003629",
+              "primary-fixed": "#baeed9",
+              "on-tertiary-fixed": "#00174b",
+              "tertiary-container": "#003ca3",
+              "secondary-fixed": "#ffdea6",
+              "surface-container-low": "#f4f3f2",
+              "on-error-container": "#93000a",
+              "surface": "#faf9f8",
+              "inverse-primary": "#9ed1bd",
+              "surface-variant": "#e3e2e1",
+              "surface-tint": "#376757",
+              "on-secondary-fixed-variant": "#5d4200",
+              "inverse-surface": "#2f3130",
+              "on-surface": "#1a1c1c",
+              "on-background": "#1a1c1c",
+              "tertiary": "#002873",
+              "on-primary-container": "#8abda9",
+              "background": "#faf9f8",
+              "on-error": "#ffffff",
+              "on-primary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "secondary": "#7b5804",
+              "secondary-container": "#fdcd74",
+              "on-secondary-fixed": "#271900",
+              "secondary-fixed-dim": "#eec068",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-secondary-container": "#785601",
+              "on-tertiary-container": "#96afff",
+              "on-primary-fixed": "#002117",
+              "outline-variant": "#c0c9c3",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "surface-bright": "#faf9f8",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-dim": "#dadad9",
+              "surface-container-highest": "#e3e2e1",
+              "on-primary-fixed-variant": "#1d4f40",
+              "primary-container": "#1b4d3e"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        font-size: 20px;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .invisible-border { border: 1px solid rgba(192, 201, 195, 0.15); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md flex justify-between items-center px-8 h-20 max-w-full">
+<div class="flex items-center gap-12">
+<span class="text-xl font-bold tracking-tighter text-[#1B4D3E] dark:text-white">The Invisible Estate</span>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-stone-500 dark:text-stone-400 hover:text-[#1B4D3E] dark:hover:text-white transition-colors font-['Plus_Jakarta_SANS'] font-medium text-sm tracking-tight" href="#">Listings</a>
+<a class="text-[#1B4D3E] dark:text-white border-b-2 border-[#1B4D3E] pb-1 font-['Plus_Jakarta_SANS'] font-medium text-sm tracking-tight" href="#">Area Guides</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-[#1B4D3E] dark:hover:text-white transition-colors font-['Plus_Jakarta_SANS'] font-medium text-sm tracking-tight" href="#">Market Trends</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-[#1B4D3E] dark:hover:text-white transition-colors font-['Plus_Jakarta_SANS'] font-medium text-sm tracking-tight" href="#">Valuation</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 font-body" placeholder="Search locations..." type="text"/>
+</div>
+<button class="hover:opacity-80 transition-opacity duration-600 scale-[0.99] active:scale-95">
+<span class="material-symbols-outlined text-[#1B4D3E] dark:text-[#E3E2E1]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<div class="pt-20 flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-5rem)] w-64 fixed left-0 top-20 bg-stone-50 dark:bg-stone-950 transition-all duration-600 ease-in-out border-r-0">
+<div class="p-8">
+<h2 class="font-headline font-bold text-lg text-[#1B4D3E] dark:text-[#E3E2E1]">Area Guide</h2>
+<p class="text-xs text-stone-500 font-label tracking-wider uppercase mt-1">London Borough of Kensington</p>
+</div>
+<nav class="flex-1 space-y-1 pr-4">
+<a class="flex items-center gap-3 px-8 py-4 bg-white dark:bg-stone-800 text-[#1B4D3E] font-semibold rounded-r-lg transition-all" href="#overview">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Plus_Jakarta_SANS']">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-4 text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all" href="#market">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Plus_Jakarta_SANS']">Sold Prices</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-4 text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all" href="#demographics">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-['Plus_Jakarta_SANS']">Demographics</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-4 text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all" href="#schools">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="font-['Plus_Jakarta_SANS']">Schools</span>
+</a>
+<a class="flex items-center gap-3 px-8 py-4 text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all" href="#transport">
+<span class="material-symbols-outlined" data-icon="train">train</span>
+<span class="font-['Plus_Jakarta_SANS']">Transport</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 bg-surface px-8 lg:px-16 py-12">
+<!-- Hero Section / Overview -->
+<section class="mb-20" id="overview">
+<div class="flex flex-col lg:flex-row gap-12 items-start">
+<div class="lg:w-1/2">
+<span class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container text-[0.6875rem] font-bold uppercase tracking-widest rounded-full mb-6">Area Profile 01</span>
+<h1 class="text-5xl lg:text-7xl font-headline font-extrabold text-primary tracking-tighter leading-none mb-8">Kensington. <br/><span class="text-outline-variant">The Royal Sanctuary.</span></h1>
+<p class="text-lg text-on-surface-variant leading-relaxed max-w-xl font-body">
+                            Defined by its golden-hued Victorian architecture and sprawling royal parks, Kensington remains London's most prestigious residential enclave. A harmony of cultural gravity and quiet residential charm.
+                        </p>
+<div class="mt-12 grid grid-cols-2 gap-8">
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest mb-1">Average Value</p>
+<p class="text-2xl font-headline font-bold text-primary">£2.45M</p>
+</div>
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest mb-1">Annual Growth</p>
+<p class="text-2xl font-headline font-bold text-primary">+4.2%</p>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 w-full aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden">
+<img alt="Kensington Streets" class="w-full h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-1000" data-alt="cinematic shot of elegant white Victorian townhouses in Kensington London with blooming spring trees and soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWd9Ce5Bn9VckHLJg99zpQvEkDjiwBt70dLYIATPMJPxEp56F3yLoFVDFBqZnpIgyNxRErnA2YihPtnEmgJXYxdC8r1hwHcqvo9mw7kztwmwJobLGwH9jeQkV07FoaUHehbTeSfA0r04yLlAeBhWRpfUpFd28Zz_58Wia761Gg9JdCLb9NhA2elAyHfkrgLQGYhrngTOozclCpRC2VW-Db2B53EyT9Acy5GncHSrv-aEggViM0OVWheeUbDUovdadGrdJOw2QqNyoi"/>
+</div>
+</div>
+</section>
+<!-- Demographics Bento -->
+<section class="mb-20 py-20 bg-surface-container-low rounded-3xl px-12" id="demographics">
+<div class="mb-12">
+<h3 class="text-3xl font-headline font-bold text-primary mb-2">Demographics</h3>
+<p class="text-on-surface-variant font-body">A vibrant community of international professionals and established families.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-2xl flex flex-col justify-between h-64">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="diversity_3">diversity_3</span>
+<div>
+<h4 class="text-4xl font-headline font-extrabold text-primary mb-2">42%</h4>
+<p class="text-sm text-on-surface-variant uppercase tracking-widest font-label">International Residents</p>
+</div>
+</div>
+<div class="bg-primary text-white p-8 rounded-2xl h-64 flex flex-col justify-between">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="work">work</span>
+<div>
+<h4 class="text-3xl font-headline font-bold">Financial &amp; Legal</h4>
+<p class="text-xs text-primary-fixed-dim uppercase tracking-widest font-label mt-2">Primary Professions</p>
+</div>
+</div>
+<div class="bg-surface-container-highest p-8 rounded-2xl h-64 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<span class="text-xs font-label uppercase text-stone-500">Avg Age</span>
+<span class="text-xl font-headline font-bold">38</span>
+</div>
+<div class="w-full bg-stone-300 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant font-body">Predominantly young families and high-net-worth professionals aged 30-50.</p>
+</div>
+<div class="md:col-span-2 bg-white p-8 rounded-2xl flex items-center gap-12 h-64">
+<div class="flex-1">
+<h4 class="text-xl font-headline font-bold mb-4">Household Types</h4>
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-sm font-body text-on-surface">Families (48%)</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-sm font-body text-on-surface">Single Professionals (32%)</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+<span class="text-sm font-body text-on-surface">Retirees (20%)</span>
+</div>
+</div>
+</div>
+<div class="hidden lg:block w-32 h-32 rounded-full border-[12px] border-primary border-r-secondary border-b-outline-variant"></div>
+</div>
+</div>
+</section>
+<!-- Schools Section -->
+<section class="mb-20" id="schools">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h3 class="text-3xl font-headline font-bold text-primary mb-2">Premier Education</h3>
+<p class="text-on-surface-variant font-body">Some of the world's most acclaimed preparatory and secondary institutions.</p>
+</div>
+<button class="text-sm font-label text-primary font-bold uppercase tracking-widest border-b border-primary-container pb-1">View Full Directory</button>
+</div>
+<div class="space-y-8">
+<!-- School Item 1 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between py-8 hover:bg-surface-container-low transition-all duration-600 rounded-xl px-4 -mx-4">
+<div class="flex gap-8 items-center">
+<div class="w-16 h-16 bg-white flex items-center justify-center rounded-full shadow-sm">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="school">school</span>
+</div>
+<div>
+<h4 class="text-xl font-headline font-bold text-primary">The Holland Park School</h4>
+<p class="text-sm text-on-surface-variant font-body">State Secondary • Ofsted: Outstanding</p>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex gap-12 text-right">
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest">A-Level Pass Rate</p>
+<p class="text-lg font-headline font-bold">94%</p>
+</div>
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest">Distance</p>
+<p class="text-lg font-headline font-bold">0.4 mi</p>
+</div>
+</div>
+</div>
+<!-- School Item 2 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between py-8 hover:bg-surface-container-low transition-all duration-600 rounded-xl px-4 -mx-4">
+<div class="flex gap-8 items-center">
+<div class="w-16 h-16 bg-white flex items-center justify-center rounded-full shadow-sm">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<h4 class="text-xl font-headline font-bold text-primary">Kensington Prep School</h4>
+<p class="text-sm text-on-surface-variant font-body">Independent Primary • Highly Commended</p>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex gap-12 text-right">
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest">ISI Rating</p>
+<p class="text-lg font-headline font-bold text-secondary">Excellent</p>
+</div>
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest">Distance</p>
+<p class="text-lg font-headline font-bold">0.9 mi</p>
+</div>
+</div>
+</div>
+<!-- School Item 3 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between py-8 hover:bg-surface-container-low transition-all duration-600 rounded-xl px-4 -mx-4">
+<div class="flex gap-8 items-center">
+<div class="w-16 h-16 bg-white flex items-center justify-center rounded-full shadow-sm">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="temple_hindu">temple_hindu</span>
+</div>
+<div>
+<h4 class="text-xl font-headline font-bold text-primary">Lycée Français Charles de Gaulle</h4>
+<p class="text-sm text-on-surface-variant font-body">International Secondary • Bilingual Focus</p>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex gap-12 text-right">
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest">Bac Rate</p>
+<p class="text-lg font-headline font-bold">98%</p>
+</div>
+<div>
+<p class="text-[0.6875rem] font-label text-stone-400 uppercase tracking-widest">Distance</p>
+<p class="text-lg font-headline font-bold">1.2 mi</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Transport Connectivity -->
+<section class="mb-20" id="transport">
+<div class="bg-primary-container text-white rounded-3xl p-12 overflow-hidden relative">
+<div class="relative z-10 lg:w-1/2">
+<h3 class="text-4xl font-headline font-extrabold mb-4">Connectivity</h3>
+<p class="text-on-primary-container font-body mb-10 leading-relaxed">Centrally positioned with unparalleled access to the West End and City. Connectivity is the heartbeat of Kensington living.</p>
+<div class="space-y-6">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full border border-on-primary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="directions_subway">directions_subway</span>
+</div>
+<div>
+<p class="text-xs font-label uppercase text-on-primary-container tracking-widest">High Street Kensington</p>
+<p class="font-headline font-bold">District &amp; Circle Lines</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full border border-on-primary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="flight">flight</span>
+</div>
+<div>
+<p class="text-xs font-label uppercase text-on-primary-container tracking-widest">Heathrow Airport</p>
+<p class="font-headline font-bold">35 mins via Heathrow Express</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full border border-on-primary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="directions_walk">directions_walk</span>
+</div>
+<div>
+<p class="text-xs font-label uppercase text-on-primary-container tracking-widest">Hyde Park</p>
+<p class="font-headline font-bold">6 minute walk</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Map Mockup -->
+<div class="absolute top-0 right-0 w-full lg:w-1/2 h-full opacity-20 pointer-events-none grayscale invert" data-location="Kensington, London" style="">
+<img alt="Map view" class="w-full h-full object-cover" data-alt="abstract stylized aerial map layout of London streets with geometric lines and minimal detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCZSYhnBQX8MqfJfwIsYztWUVz6iX33NxJMVdKe0bUkpdByDdwk6sNtL8YKfM8N-a7Kq6d6w8LRwcNrWktzN5m7Kzl8KaIDz_aYpHxZIgeYt9MvfbLbXPU3QdnowT9uxgsMWdSz8A9ej66cuUw_EB9iB26TW3NaYv5nIQVkfSM8E4BFZ2vNh84yyjuvuucD5w8emt3-ntyxgV2AJDIhKZ-I0Fxs6tLu8mJKJua-D-zgJ3qz7t6MRKrG6i9Dex3O18sJEmMZZx_zFSA"/>
+</div>
+</div>
+</section>
+<!-- Character / Local Vibe Section (Asymmetric) -->
+<section class="mb-20">
+<div class="flex flex-col lg:flex-row gap-20 items-center">
+<div class="lg:w-2/5 order-2 lg:order-1">
+<img alt="Local Lifestyle" class="rounded-lg aspect-[3/4] object-cover shadow-[0_20px_50px_rgba(26,28,28,0.05)]" data-alt="minimalist aesthetic photo of a high-end cafe in London with white marble tables and a small vase of flowers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4LYGM3kXGnPi27ABSSDXc5by7Q_Pc8rO5l5GG3eU3hOXaElnCQ0t8LWSnBY0uj5CJ9Lm-PWNVn4-eY6Df-26GxCyWHMG-HrBjogQOzRO9otuILrQ3lPkKDvOkt-W5_a-6LHBeZCdeX86tsMFmwKIGFi97lGLevqu4_wZTaSCr5u4NM3cWnFJPmQj33ZN03MsZIfFFLe-vbgtwWf53LX2mewEU2jszk1WGbpnQO9bAfPcORDLG8fbZMsqrkq1QC0pdFeZu_GjwwttO"/>
+</div>
+<div class="lg:w-3/5 order-1 lg:order-2">
+<h3 class="text-3xl font-headline font-bold text-primary mb-6">The Lifestyle</h3>
+<div class="space-y-8 font-body text-on-surface-variant leading-relaxed">
+<p>Life in Kensington revolves around refined simplicity. Morning jogs through Kensington Gardens are followed by coffee on Church Street. It is an area that values privacy as much as it does proximity to world-class retail on the High Street.</p>
+<p>Cultural institutions like the V&amp;A, Royal Albert Hall, and the Natural History Museum provide an intellectual backdrop that few other global neighborhoods can match.</p>
+<div class="flex gap-4">
+<span class="bg-surface-container-high px-4 py-2 rounded-full text-[0.6875rem] font-label uppercase tracking-widest">Museum Quarter</span>
+<span class="bg-surface-container-high px-4 py-2 rounded-full text-[0.6875rem] font-label uppercase tracking-widest">Fine Dining</span>
+<span class="bg-surface-container-high px-4 py-2 rounded-full text-[0.6875rem] font-label uppercase tracking-widest">Royal Parks</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 bg-stone-100 dark:bg-stone-950 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-stone-200 dark:border-stone-800">
+<div>
+<span class="text-lg font-bold text-[#1B4D3E] dark:text-white">The Invisible Estate</span>
+<p class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 dark:text-stone-500 mt-2">© 2024 The Invisible Estate. All rights reserved. Registered in England &amp; Wales.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Market Reports</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Expert Advice</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 dark:text-stone-500 hover:text-[#1B4D3E] dark:hover:text-white transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+<!-- FAB (Suppressed based on context: Details Page) -->
+</body></html>

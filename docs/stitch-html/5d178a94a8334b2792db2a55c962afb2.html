@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Property Comparison | LUXE ESTATE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#ffffff",
+              "inverse-surface": "#2f2f3b",
+              "surface-container-highest": "#e2e1f1",
+              "secondary-container": "#fdcd74",
+              "primary-fixed": "#baeed9",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#f1efff",
+              "surface-dim": "#dad8e8",
+              "surface": "#fbf8ff",
+              "secondary-fixed": "#ffdea6",
+              "on-surface": "#1a1b26",
+              "background": "#fbf8ff",
+              "tertiary-fixed": "#dbe1ff",
+              "surface-container": "#eeecfc",
+              "on-tertiary-fixed": "#00174b",
+              "on-tertiary-container": "#96afff",
+              "surface-bright": "#fbf8ff",
+              "on-error": "#ffffff",
+              "on-background": "#1a1b26",
+              "surface-variant": "#e2e1f1",
+              "inverse-primary": "#9ed1bd",
+              "primary": "#003629",
+              "on-primary-fixed": "#002117",
+              "outline-variant": "#c0c9c3",
+              "on-error-container": "#93000a",
+              "error": "#ba1a1a",
+              "surface-container-lowest": "#ffffff",
+              "tertiary": "#002873",
+              "on-secondary": "#ffffff",
+              "on-secondary-container": "#785601",
+              "primary-container": "#1b4d3e",
+              "surface-container-low": "#f4f2ff",
+              "on-primary-fixed-variant": "#1d4f40",
+              "error-container": "#ffdad6",
+              "surface-container-high": "#e8e7f7",
+              "on-primary-container": "#8abda9",
+              "secondary": "#7b5804",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-surface-variant": "#404945",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-secondary-fixed-variant": "#5d4200",
+              "surface-tint": "#376757",
+              "on-secondary-fixed": "#271900",
+              "secondary-fixed-dim": "#eec068",
+              "outline": "#707974",
+              "tertiary-container": "#003ca3"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .sticky-col { position: sticky; left: 0; z-index: 20; }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 240px repeat(3, 1fr);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 shadow-sm">
+<div class="flex items-center justify-between px-6 h-16 max-w-[1440px] mx-auto">
+<div class="text-2xl font-bold tracking-tight text-emerald-900 dark:text-emerald-50 font-headline">LUXE ESTATE</div>
+<div class="hidden md:flex items-center space-gap-8 h-full">
+<a class="text-neutral-600 dark:text-neutral-400 font-headline font-semibold px-4 hover:text-emerald-700 transition-colors" href="#">Properties</a>
+<a class="text-neutral-600 dark:text-neutral-400 font-headline font-semibold px-4 hover:text-emerald-700 transition-colors" href="#">Insights</a>
+<a class="text-emerald-900 dark:text-emerald-400 border-b-2 border-emerald-900 dark:border-emerald-400 pb-1 font-headline font-semibold px-4 transition-colors" href="#">Comparisons</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-neutral-600 font-semibold px-4 hover:text-emerald-700 transition-colors">Sign In</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-xl font-semibold shadow-sm hover:opacity-90 transition-all">List Property</button>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 max-w-[1440px] mx-auto px-6">
+<!-- Page Header & Controls -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h1 class="text-3xl font-headline font-bold text-primary mb-2">Compare Properties</h1>
+<p class="text-on-surface-variant max-w-xl">Review and contrast your shortlisted estates. Analyze key metrics side-by-side to make an informed investment decision.</p>
+</div>
+<div class="flex items-center gap-6 bg-white p-3 rounded-2xl shadow-sm border border-neutral-100">
+<div class="flex items-center gap-3">
+<span class="text-sm font-medium text-on-surface-variant">Highlight Differences</span>
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-emerald-100 transition-colors focus:outline-none">
+<span class="inline-block h-4 w-4 translate-x-6 transform rounded-full bg-emerald-800 transition-transform"></span>
+</button>
+</div>
+<div class="h-8 w-px bg-neutral-200"></div>
+<button class="flex items-center gap-2 text-sm font-semibold text-primary hover:text-emerald-700 transition-colors">
+<span class="material-symbols-outlined text-lg">share</span>
+                    Share Comparison
+                </button>
+</div>
+</div>
+<!-- Comparison Table Container -->
+<div class="relative overflow-x-auto rounded-2xl border border-neutral-200 bg-white shadow-xl">
+<div class="min-w-[1000px]">
+<!-- Sticky Header Row -->
+<div class="comparison-grid sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-neutral-200">
+<div class="p-6 sticky-col bg-white">
+<div class="flex flex-col h-full justify-center">
+<span class="text-xs font-bold uppercase tracking-widest text-secondary-fixed-dim mb-1">Estate Overview</span>
+<span class="text-sm text-on-surface-variant">3 Selected Properties</span>
+</div>
+</div>
+<!-- Property Card 1 -->
+<div class="p-6 border-l border-neutral-100 relative group">
+<button class="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur text-error hover:bg-error hover:text-white p-1 rounded-full transition-all shadow-sm">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+<img class="w-full h-32 object-cover rounded-xl mb-4 shadow-md" data-alt="ultra modern luxury villa with glass walls and clean white lines at sunset with warm interior lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO_LdKD6M2kbYGS1CvlE5U4SnsLGynTm2netHMYk74RP-4fhoXxTtVD9YESWX-2UORKB16cQrwN_Bmgl-5NzbodlAYxhwIXkdsvNTmnKD9RsWtJweK0WRU2fdDzkeiRz3LKselLCUUvHy7m6VewfGnEJvl8QJ0Kzv579fTQqJ6_cnuVGAWnR0FLQYpl4DsBW6zRlactHtc061eoxaW5be4Yg9e3E4QVWZhBBOLK0tDDx7Ke5cgf4CoYdBMM6-UNPW-C0ntbC4U9NGL"/>
+<h3 class="font-headline font-bold text-on-surface leading-tight mb-1">The Glass Pavilion</h3>
+<p class="text-sm text-on-surface-variant mb-2">Highgate, London N6</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-lg font-bold text-primary">£4,250,000</span>
+</div>
+<button class="w-full mt-4 py-2.5 bg-primary-container text-on-primary-container rounded-lg text-sm font-bold shadow-sm hover:bg-emerald-900 transition-colors">Book Viewing</button>
+</div>
+<!-- Property Card 2 -->
+<div class="p-6 border-l border-neutral-100 relative group">
+<button class="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur text-error hover:bg-error hover:text-white p-1 rounded-full transition-all shadow-sm">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+<img class="w-full h-32 object-cover rounded-xl mb-4 shadow-md" data-alt="stately red brick victorian manor house with manicured lawns and symmetrical architecture under clear blue sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp9TuNjygqPp83K7Rvi5mRxh-NBMU4t_YGfsqDQ8CtKIiTrZ_G2Ifs7hCqEfi1ljfDWPZTIx9JGyQ3CP5u0u4KtL3i_YIj9JhRzv225BqxqfPIk9XkM3-CNqxHSkfo4GY4-XjhlpwxrV1EEBA92pGBPP0NrjfREPXi5E2ui0ASp3OpHMQCPOYe-EUeQd-NUbLj0-oSp0bN5XSGlfbLO5JkaRms6o3b393LaD31XhaYRDfejeDIx3espqo7JWVVZK7ES4jtjePz6eoy"/>
+<h3 class="font-headline font-bold text-on-surface leading-tight mb-1">Somerset Gardens</h3>
+<p class="text-sm text-on-surface-variant mb-2">Chelsea, London SW3</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-lg font-bold text-primary">£5,100,000</span>
+</div>
+<button class="w-full mt-4 py-2.5 bg-primary-container text-on-primary-container rounded-lg text-sm font-bold shadow-sm hover:bg-emerald-900 transition-colors">Book Viewing</button>
+</div>
+<!-- Property Card 3 -->
+<div class="p-6 border-l border-neutral-100 relative group">
+<button class="absolute top-4 right-4 z-10 bg-white/80 backdrop-blur text-error hover:bg-error hover:text-white p-1 rounded-full transition-all shadow-sm">
+<span class="material-symbols-outlined text-xl">close</span>
+</button>
+<img class="w-full h-32 object-cover rounded-xl mb-4 shadow-md" data-alt="minimalist contemporary penthouse interior with floor to ceiling windows overlooking the london skyline at dusk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcDjP7hme6Ph5jVl2HtTDskABz6J1F0jFTyrK0Si_im4MuWxH9El_0FNaH0Y5BhfnwUjL3A7TtMubpXG1XgRzoZlykTnEp5VDpL6H302-R-03RDsqC-kw8LQtX74K6COh6e5kGbduwygeYYxnhLuJf0feMYNlJdQDHxkiFVDGMXnX8wILZJljK0Trag-Dpkd0lKcmnG1d9n4BCj8fB7wPw0GFIaUKX4wf18KgnPHRQDhDIdWd4cXul3W796NyfJSgM3qGiqYiuzOn0"/>
+<h3 class="font-headline font-bold text-on-surface leading-tight mb-1">Skyloft Penthouse</h3>
+<p class="text-sm text-on-surface-variant mb-2">Nine Elms, London SW11</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-lg font-bold text-primary">£3,850,000</span>
+</div>
+<button class="w-full mt-4 py-2.5 bg-primary-container text-on-primary-container rounded-lg text-sm font-bold shadow-sm hover:bg-emerald-900 transition-colors">Book Viewing</button>
+</div>
+</div>
+<!-- Category: Key Facts -->
+<div class="bg-neutral-50/50 py-3 px-6 sticky-col border-b border-neutral-100">
+<h4 class="text-xs font-bold uppercase tracking-widest text-emerald-800">Key Facts</h4>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Bedrooms</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">5 Double Bedrooms</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold bg-emerald-50/20">6 Double Bedrooms</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">4 Double Bedrooms</div>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Bathrooms</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">4 Ensuite, 1 Guest</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">6 Ensuite, 2 Guest</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">4 Ensuite</div>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Area (sq ft)</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">4,250 sq ft</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold bg-emerald-50/20">5,100 sq ft</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">3,400 sq ft</div>
+</div>
+<!-- Category: Tenure & Costs -->
+<div class="bg-neutral-50/50 py-3 px-6 sticky-col border-b border-neutral-100 mt-4">
+<h4 class="text-xs font-bold uppercase tracking-widest text-emerald-800">Tenure &amp; Costs</h4>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Tenure</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Freehold</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Freehold</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold bg-emerald-50/20">Leasehold (999 yrs)</div>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Service Charge</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">N/A</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">N/A</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold bg-emerald-50/20">£12,400 per annum</div>
+</div>
+<!-- Category: Features -->
+<div class="bg-neutral-50/50 py-3 px-6 sticky-col border-b border-neutral-100 mt-4">
+<h4 class="text-xs font-bold uppercase tracking-widest text-emerald-800">Features</h4>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Parking</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Gated Driveway (3 cars)</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold bg-emerald-50/20">Double Garage</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold bg-emerald-50/20">2 Secure Underground</div>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Heating</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Geothermal Underfloor</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Gas Central</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Smart Electric HVAC</div>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">EPC Rating</div>
+<div class="p-6 border-l border-neutral-100">
+<span class="px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-bold">A</span>
+</div>
+<div class="p-6 border-l border-neutral-100 bg-emerald-50/20">
+<span class="px-2 py-0.5 rounded bg-yellow-100 text-yellow-800 text-xs font-bold">C</span>
+</div>
+<div class="p-6 border-l border-neutral-100">
+<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-xs font-bold">B</span>
+</div>
+</div>
+<!-- Category: Local Insights -->
+<div class="bg-neutral-50/50 py-3 px-6 sticky-col border-b border-neutral-100 mt-4">
+<h4 class="text-xs font-bold uppercase tracking-widest text-emerald-800">Local Insights</h4>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">Nearest Station</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Highgate (0.4m)</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Sloane Square (0.2m)</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Battersea Power St (0.1m)</div>
+</div>
+<div class="comparison-grid border-b border-neutral-100">
+<div class="p-6 sticky-col bg-white text-sm font-medium text-on-surface-variant">School Catchment</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Highgate School</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Eaton House</div>
+<div class="p-6 border-l border-neutral-100 text-sm font-semibold">Thomas's Battersea</div>
+</div>
+</div>
+</div>
+</main>
+<!-- SideNavBar (Search Tools) -->
+<aside class="fixed left-0 top-16 hidden lg:flex flex-col py-6 h-[calc(100vh-64px)] w-64 border-r border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 font-['Inter'] text-sm z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-1">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="professional portrait of a sophisticated man in a dark green suit with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCGYnQHMPK1Yrif4IP7etPCh2ycxty8VjA4f7mnPTjknvEcepjHafGyzS7Tt3M60kXHDXJ-3jYwrkiFfoOzprGzd691NyTo4Ys1jYtkimrAynQLwpJhZtrFD9VFD4BHM33MVm_QjyGVqqIeUN62HwRxHDvx6-XisGOy7dPk-jmYWVOEWsDqBmx1N2Rb1G9zFg-jtkJwfAbB9fdm5kAu1wMCYpGcHMbWwQqKMnK4G3D4NdYjZ6-kZQ51-fa_EUWOimwgsKwY3MANHr-"/>
+<div>
+<p class="font-semibold text-emerald-800 dark:text-emerald-400">Premium Member</p>
+<p class="text-xs text-neutral-500">London, UK</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-3 py-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">search_check</span>
+<span>Saved Search</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-900 dark:text-emerald-300 font-semibold border-r-4 border-emerald-800 rounded-lg" href="#">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span>Comparisons</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span>
+<span>Viewings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span>Messages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Account</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-emerald-800 text-white p-3 rounded-xl text-xs font-bold tracking-wide hover:bg-emerald-700 transition-colors uppercase">
+                Upgrade to Concierge
+            </button>
+</div>
+</aside>
+<!-- Footer -->
+<footer class="w-full py-12 px-6 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+<div>
+<div class="text-lg font-bold text-emerald-900 mb-4">LUXE ESTATE</div>
+<p class="font-['Inter'] text-xs text-neutral-500 max-w-sm">
+                    © 2024 LUXE ESTATE. All rights reserved. Registered in England &amp; Wales.
+                </p>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-4 md:justify-end items-center">
+<a class="font-['Inter'] text-xs text-neutral-500 no-underline hover:text-emerald-600 opacity-80 hover:opacity-100 transition-all" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-xs text-neutral-500 no-underline hover:text-emerald-600 opacity-80 hover:opacity-100 transition-all" href="#">Terms of Service</a>
+<a class="font-['Inter'] text-xs text-neutral-500 no-underline hover:text-emerald-600 opacity-80 hover:opacity-100 transition-all" href="#">Cookie Policy</a>
+<a class="font-['Inter'] text-xs text-neutral-500 no-underline hover:text-emerald-600 opacity-80 hover:opacity-100 transition-all" href="#">Accessibility</a>
+</div>
+</div>
+</footer>
+</body></html>

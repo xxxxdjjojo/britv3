@@ -1,13 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -20,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { gbpToPence, penceToGBP } from "@/lib/currency";
 import type {
@@ -38,6 +31,9 @@ import {
   RefreshCw,
   Plus,
   Trash2,
+  Edit2,
+  Zap,
+  Heart,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -59,27 +55,39 @@ type LifestyleEntry = { key: string; value: string };
 
 const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5", "6+"] as const;
 
+// Stitch lifestyle priorities for display
+const LIFESTYLE_PRIORITY_BARS = [
+  { label: "Commute Importance", filled: 2, total: 3 },
+  { label: "School Proximity", filled: 3, total: 3 },
+  { label: "Garden/Land Priority", filled: 3, total: 3 },
+  { label: "Tech/Smart Home", filled: 1, total: 3 },
+] as const;
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function scoreVariant(score: number): {
   badge: string;
+  dotColor: string;
   label: string;
 } {
   if (score >= 0.8)
     return {
-      badge: "bg-success-light border-success/30 text-success",
-      label: "Excellent",
+      badge: "bg-emerald-50 text-emerald-900 border border-emerald-100",
+      dotColor: "bg-emerald-500",
+      label: `${Math.round(score * 100)}% Match Confidence`,
     };
   if (score >= 0.6)
     return {
-      badge: "bg-warning-light border-warning/30 text-warning",
-      label: "Good",
+      badge: "bg-neutral-50 text-neutral-700 border border-neutral-200",
+      dotColor: "bg-neutral-400",
+      label: `${Math.round(score * 100)}% Match Confidence`,
     };
   return {
-    badge: "bg-error-light border-error/30 text-error",
-    label: "Fair",
+    badge: "bg-neutral-50 text-neutral-500 border border-neutral-200",
+    dotColor: "bg-neutral-300",
+    label: `${Math.round(score * 100)}% Match Confidence`,
   };
 }
 
@@ -199,12 +207,8 @@ export default function AiMatchPage() {
     const payload: Omit<AiMatchPreferences, "id" | "user_id" | "updated_at"> =
       {
         location: location.trim() || null,
-        budget_min: budgetMin
-          ? gbpToPence(parseFloat(budgetMin))
-          : null,
-        budget_max: budgetMax
-          ? gbpToPence(parseFloat(budgetMax))
-          : null,
+        budget_min: budgetMin ? gbpToPence(parseFloat(budgetMin)) : null,
+        budget_max: budgetMax ? gbpToPence(parseFloat(budgetMax)) : null,
         bedrooms_min: bedroomsMin
           ? parseInt(bedroomsMin.replace("+", ""), 10)
           : null,
@@ -244,24 +248,7 @@ export default function AiMatchPage() {
 
   // ----- Render -----------------------------------------------------------
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
-      {/* ── Page header ─────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <Sparkles
-            className="size-5 text-brand-secondary"
-            strokeWidth={1.25}
-          />
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
-            AI Property Match
-          </h1>
-        </div>
-        <p className="text-sm text-neutral-500">
-          Tell us what you&apos;re looking for and our AI will score every
-          active listing against your preferences.
-        </p>
-      </div>
-
+    <div className="flex flex-col gap-12 pb-12">
       {/* ── Global error alert ────────────────────────────────────── */}
       {error && (
         <Alert variant="destructive" className="rounded-xl">
@@ -270,335 +257,381 @@ export default function AiMatchPage() {
         </Alert>
       )}
 
-      {/* ── Section 1: Match Preferences ──────────────────────────── */}
-      <Card className="overflow-hidden rounded-2xl shadow-sm">
-        <CardHeader className="border-b border-neutral-100 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-brand-primary-lighter">
-              <SlidersHorizontal
-                className="size-4 text-brand-primary"
-                strokeWidth={1.25}
-              />
-            </div>
-            <div>
-              <CardTitle className="font-heading text-base font-semibold text-neutral-900">
-                Match Preferences
-              </CardTitle>
-              <CardDescription className="text-xs text-neutral-500">
-                Set your criteria — we&apos;ll use these to find your
-                best-fit properties.
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6 pt-6">
-          {/* Location */}
-          <FieldGroup label="Location" htmlFor="location">
-            <div className="relative">
-              <MapPin
-                className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                strokeWidth={1.25}
-              />
-              <Input
-                id="location"
-                placeholder="e.g. Kensington, London"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="rounded-xl pl-9"
-              />
-            </div>
-          </FieldGroup>
-
-          {/* Budget */}
-          <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-neutral-700">Budget</p>
-            <div className="grid grid-cols-2 gap-4">
-              <FieldGroup label="Minimum (£)" htmlFor="budget-min">
-                <div className="relative">
-                  <PoundSterling
-                    className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={1.25}
-                  />
-                  <Input
-                    id="budget-min"
-                    type="number"
-                    min={0}
-                    placeholder="200,000"
-                    value={budgetMin}
-                    onChange={(e) => setBudgetMin(e.target.value)}
-                    className="rounded-xl pl-9"
-                  />
-                </div>
-              </FieldGroup>
-              <FieldGroup label="Maximum (£)" htmlFor="budget-max">
-                <div className="relative">
-                  <PoundSterling
-                    className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={1.25}
-                  />
-                  <Input
-                    id="budget-max"
-                    type="number"
-                    min={0}
-                    placeholder="500,000"
-                    value={budgetMax}
-                    onChange={(e) => setBudgetMax(e.target.value)}
-                    className="rounded-xl pl-9"
-                  />
-                </div>
-              </FieldGroup>
-            </div>
-          </div>
-
-          {/* Bedrooms */}
-          <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-neutral-700">Bedrooms</p>
-            <div className="grid grid-cols-2 gap-4">
-              <FieldGroup label="Minimum" htmlFor="bedrooms-min">
-                <div className="relative">
-                  <Bed
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={1.25}
-                  />
-                  <Select
-                    value={bedroomsMin}
-                    onValueChange={(v: string | null) =>
-                      setBedroomsMin(v ?? "")
-                    }
-                  >
-                    <SelectTrigger
-                      id="bedrooms-min"
-                      className="rounded-xl pl-9"
-                    >
-                      <SelectValue placeholder="Any" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BEDROOM_OPTIONS.map((o) => (
-                        <SelectItem key={o} value={o}>
-                          {o}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </FieldGroup>
-              <FieldGroup label="Maximum" htmlFor="bedrooms-max">
-                <div className="relative">
-                  <Bed
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={1.25}
-                  />
-                  <Select
-                    value={bedroomsMax}
-                    onValueChange={(v: string | null) =>
-                      setBedroomsMax(v ?? "")
-                    }
-                  >
-                    <SelectTrigger
-                      id="bedrooms-max"
-                      className="rounded-xl pl-9"
-                    >
-                      <SelectValue placeholder="Any" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BEDROOM_OPTIONS.map((o) => (
-                        <SelectItem key={o} value={o}>
-                          {o}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </FieldGroup>
-            </div>
-          </div>
-
-          {/* Must haves */}
-          <FieldGroup
-            label="Must haves"
-            htmlFor="must-haves"
-            hint={`One feature per line, e.g. "south-facing garden"`}
-          >
-            <Textarea
-              id="must-haves"
-              rows={4}
-              placeholder={"south-facing garden\noff-street parking\nnear good schools"}
-              value={mustHaves}
-              onChange={(e) => setMustHaves(e.target.value)}
-              className="rounded-xl resize-none"
-            />
-          </FieldGroup>
-
-          {/* Lifestyle factors */}
-          <div className="flex flex-col gap-3">
-            <div>
-              <p className="text-sm font-medium text-neutral-700">
-                Lifestyle factors
-              </p>
-              <p className="mt-0.5 text-xs text-neutral-500">
-                Add up to 5 key/value pairs, e.g. &quot;commute&quot; /
-                &quot;under 30 min to Canary Wharf&quot;
-              </p>
-            </div>
-
-            {lifestyle.map((entry, idx) => (
-              <div key={idx} className="flex items-start gap-2">
-                <Input
-                  placeholder="Factor"
-                  value={entry.key}
-                  onChange={(e) =>
-                    updateLifestyle(idx, "key", e.target.value)
-                  }
-                  className="w-1/3 rounded-xl"
-                  aria-label={`Lifestyle factor ${idx + 1} key`}
-                />
-                <Input
-                  placeholder="Preference"
-                  value={entry.value}
-                  onChange={(e) =>
-                    updateLifestyle(idx, "value", e.target.value)
-                  }
-                  className="flex-1 rounded-xl"
-                  aria-label={`Lifestyle factor ${idx + 1} value`}
-                />
-                {lifestyle.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeLifestyleEntry(idx)}
-                    className="size-9 shrink-0 rounded-xl p-0 text-neutral-400 hover:text-error"
-                    aria-label={`Remove lifestyle factor ${idx + 1}`}
-                  >
-                    <Trash2 className="size-4" strokeWidth={1.25} />
-                  </Button>
-                )}
-              </div>
-            ))}
-
-            {lifestyle.length < 5 && (
-              <Button
+      {/* ── Section 1: Preferences + Lifestyle ───────────────────── */}
+      <section className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Left 2/3: Property Preferences */}
+        <div className="space-y-8 lg:col-span-2">
+          <div className="rounded-2xl bg-[#f4f3f2] p-8">
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className="font-heading text-lg font-bold tracking-tight text-neutral-900">
+                Your Property Preferences
+              </h2>
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
-                onClick={addLifestyleEntry}
-                className="w-fit gap-2 rounded-xl text-xs"
+                className="border-b border-brand-primary-dark/20 pb-1 text-[10px] font-bold uppercase tracking-wider text-brand-primary-dark"
               >
-                <Plus className="size-3.5" strokeWidth={1.25} />
-                Add factor
-              </Button>
-            )}
-          </div>
-
-          {/* Submit */}
-          <Button
-            onClick={() => void handleFindMatches()}
-            disabled={isAnalysing || isLoading}
-            className="h-11 w-full gap-2 rounded-xl bg-brand-primary text-white hover:bg-brand-primary-light disabled:opacity-60"
-          >
-            {isAnalysing ? (
-              <>
-                <Loader2
-                  className="size-4 animate-spin"
-                  strokeWidth={1.25}
-                />
-                Analysing properties with AI…
-              </>
-            ) : (
-              <>
-                <Sparkles className="size-4" strokeWidth={1.25} />
-                Find My Matches
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* ── Section 2: My Matches ─────────────────────────────────── */}
-      <Card className="overflow-hidden rounded-2xl shadow-sm">
-        <CardHeader className="flex flex-row items-start justify-between border-b border-neutral-100 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-brand-primary-lighter">
-              <Sparkles
-                className="size-4 text-brand-primary"
-                strokeWidth={1.25}
-              />
+                Edit All
+              </button>
             </div>
-            <div>
-              <CardTitle className="font-heading text-base font-semibold text-neutral-900">
-                My Matches
-              </CardTitle>
-              <CardDescription className="text-xs text-neutral-500">
-                Properties scored by AI against your preferences. Results
-                are valid for 24 hours.
-              </CardDescription>
+
+            <div className="grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-2">
+              {/* Location */}
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                  Location Radius
+                </label>
+                <div className="flex items-center justify-between rounded-xl bg-white p-4">
+                  <div className="relative flex-1">
+                    <MapPin
+                      className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                      strokeWidth={1.25}
+                    />
+                    <input
+                      id="location"
+                      placeholder="e.g. Kensington, London"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full bg-transparent pl-6 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
+                      aria-label="Location"
+                    />
+                  </div>
+                  <Edit2 className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
+                </div>
+              </div>
+
+              {/* Budget */}
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                  Budget Range
+                </label>
+                <div className="flex items-center gap-2 rounded-xl bg-white p-4">
+                  <div className="flex flex-1 items-center gap-2">
+                    <div className="relative flex-1">
+                      <PoundSterling
+                        className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                        strokeWidth={1.25}
+                      />
+                      <input
+                        type="number"
+                        min={0}
+                        placeholder="Min"
+                        value={budgetMin}
+                        onChange={(e) => setBudgetMin(e.target.value)}
+                        className="w-full bg-transparent pl-5 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
+                        aria-label="Minimum budget"
+                      />
+                    </div>
+                    <span className="text-neutral-300">—</span>
+                    <div className="relative flex-1">
+                      <PoundSterling
+                        className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                        strokeWidth={1.25}
+                      />
+                      <input
+                        type="number"
+                        min={0}
+                        placeholder="Max"
+                        value={budgetMax}
+                        onChange={(e) => setBudgetMax(e.target.value)}
+                        className="w-full bg-transparent pl-5 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none"
+                        aria-label="Maximum budget"
+                      />
+                    </div>
+                  </div>
+                  <Edit2 className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
+                </div>
+              </div>
+
+              {/* Bedrooms */}
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                  Bedrooms
+                </label>
+                <div className="flex items-center gap-2 rounded-xl bg-white p-4">
+                  <Bed
+                    className="size-4 shrink-0 text-neutral-400"
+                    strokeWidth={1.25}
+                  />
+                  <div className="flex flex-1 items-center gap-2">
+                    <Select
+                      value={bedroomsMin}
+                      onValueChange={(v: string | null) =>
+                        setBedroomsMin(v ?? "")
+                      }
+                    >
+                      <SelectTrigger
+                        id="bedrooms-min"
+                        className="border-0 bg-transparent p-0 text-sm font-medium shadow-none focus:ring-0"
+                      >
+                        <SelectValue placeholder="Min" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BEDROOM_OPTIONS.map((o) => (
+                          <SelectItem key={o} value={o}>
+                            {o}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-neutral-300">—</span>
+                    <Select
+                      value={bedroomsMax}
+                      onValueChange={(v: string | null) =>
+                        setBedroomsMax(v ?? "")
+                      }
+                    >
+                      <SelectTrigger
+                        id="bedrooms-max"
+                        className="border-0 bg-transparent p-0 text-sm font-medium shadow-none focus:ring-0"
+                      >
+                        <SelectValue placeholder="Max" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BEDROOM_OPTIONS.map((o) => (
+                          <SelectItem key={o} value={o}>
+                            {o}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Edit2 className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
+                </div>
+              </div>
+
+              {/* Must haves */}
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="must-haves"
+                  className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500"
+                >
+                  Must Haves
+                </label>
+                <div className="rounded-xl bg-white p-4">
+                  <Textarea
+                    id="must-haves"
+                    rows={3}
+                    placeholder={"south-facing garden\noff-street parking\nnear good schools"}
+                    value={mustHaves}
+                    onChange={(e) => setMustHaves(e.target.value)}
+                    className="resize-none border-0 bg-transparent p-0 text-sm font-medium shadow-none focus-visible:ring-0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Lifestyle factors */}
+            <div className="mt-8 flex flex-col gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                  Lifestyle Factors
+                </p>
+                <p className="mt-0.5 text-xs text-neutral-400">
+                  Add up to 5 factors, e.g. &quot;commute&quot; /
+                  &quot;under 30 min to Canary Wharf&quot;
+                </p>
+              </div>
+
+              {lifestyle.map((entry, idx) => (
+                <div key={idx} className="flex items-start gap-2">
+                  <Input
+                    placeholder="Factor"
+                    value={entry.key}
+                    onChange={(e) => updateLifestyle(idx, "key", e.target.value)}
+                    className="w-1/3 rounded-xl bg-white"
+                    aria-label={`Lifestyle factor ${idx + 1} key`}
+                  />
+                  <Input
+                    placeholder="Preference"
+                    value={entry.value}
+                    onChange={(e) =>
+                      updateLifestyle(idx, "value", e.target.value)
+                    }
+                    className="flex-1 rounded-xl bg-white"
+                    aria-label={`Lifestyle factor ${idx + 1} value`}
+                  />
+                  {lifestyle.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeLifestyleEntry(idx)}
+                      className="flex size-9 shrink-0 items-center justify-center rounded-xl text-neutral-400 transition-colors hover:text-error"
+                      aria-label={`Remove lifestyle factor ${idx + 1}`}
+                    >
+                      <Trash2 className="size-4" strokeWidth={1.25} />
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              {lifestyle.length < 5 && (
+                <button
+                  type="button"
+                  onClick={addLifestyleEntry}
+                  className="flex w-fit items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-50"
+                >
+                  <Plus className="size-3.5" strokeWidth={1.5} />
+                  Add factor
+                </button>
+              )}
             </div>
           </div>
+        </div>
 
-          {results.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
+        {/* Right 1/3: Lifestyle Priorities + Generate */}
+        <div className="space-y-8">
+          <div className="rounded-2xl bg-[#e3e2e1] p-8">
+            <h2 className="font-heading mb-8 text-lg font-bold tracking-tight text-neutral-900">
+              Lifestyle Priorities
+            </h2>
+
+            <div className="flex flex-col gap-6">
+              {LIFESTYLE_PRIORITY_BARS.map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-neutral-800">
+                    {item.label}
+                  </span>
+                  <div className="flex gap-1">
+                    {Array.from({ length: item.total }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-1 w-6 rounded-full ${
+                          i < item.filled
+                            ? "bg-brand-primary-dark"
+                            : "bg-neutral-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <div className="pt-6">
+                <button
+                  type="button"
+                  onClick={() => void handleFindMatches()}
+                  disabled={isAnalysing || isLoading}
+                  className="flex w-full items-center justify-center gap-3 rounded-xl bg-brand-primary-dark py-4 text-sm font-bold text-white shadow-xl shadow-brand-primary-dark/10 transition-opacity hover:opacity-90 disabled:opacity-60"
+                  aria-label="Generate AI property matches"
+                >
+                  {isAnalysing ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" strokeWidth={1.5} />
+                      Analysing properties…
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="size-4" strokeWidth={1.5} />
+                      Generate Matches
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 2: Results Header ─────────────────────────────── */}
+      <div className="flex items-end justify-between">
+        <div className="flex flex-col gap-2">
+          <span className="block text-[10px] font-extrabold uppercase tracking-[0.3em] text-brand-secondary-dark">
+            Curation results
+          </span>
+          <h2 className="font-heading text-3xl font-extrabold tracking-tight text-emerald-950">
+            Intelligent Selections
+          </h2>
+        </div>
+        {results.length > 0 && (
+          <div className="flex gap-4">
+            <button
+              type="button"
+              className="rounded-full border border-neutral-100 bg-white px-6 py-2 text-xs font-bold transition-colors hover:bg-neutral-50"
+            >
+              Sort by Confidence
+            </button>
+            <button
+              type="button"
               onClick={() => void handleFindMatches()}
               disabled={isAnalysing || isLoading}
-              className="h-8 gap-1.5 rounded-xl px-2 text-xs text-neutral-500 hover:text-brand-primary"
+              className="flex items-center gap-1.5 rounded-full border border-neutral-100 bg-white px-6 py-2 text-xs font-bold transition-colors hover:bg-neutral-50 disabled:opacity-50"
               aria-label="Refresh matches"
             >
-              <RefreshCw className="size-3.5" strokeWidth={1.25} />
+              <RefreshCw className="size-3.5" strokeWidth={1.5} />
               Refresh
-            </Button>
-          )}
-        </CardHeader>
+            </button>
+          </div>
+        )}
+      </div>
 
-        <CardContent className="flex flex-col gap-4 pt-5">
-          {/* Stale results banner */}
-          {resultsExpired && (
-            <Alert className="rounded-xl border-warning/30 bg-warning-light text-warning">
-              <AlertCircle className="size-4" strokeWidth={1.25} />
-              <AlertDescription className="text-sm">
-                Your matches are from over 24 hours ago. Click &quot;Find My
-                Matches&quot; to refresh.
-              </AlertDescription>
-            </Alert>
-          )}
+      {/* Stale results banner */}
+      {resultsExpired && (
+        <Alert className="rounded-xl border-amber-200 bg-amber-50 text-amber-800">
+          <AlertCircle className="size-4" strokeWidth={1.25} />
+          <AlertDescription className="text-sm">
+            Your matches are from over 24 hours ago. Click &quot;Generate
+            Matches&quot; to refresh.
+          </AlertDescription>
+        </Alert>
+      )}
 
-          {/* Loading skeleton */}
-          {isLoading && (
-            <div className="flex flex-col gap-3">
-              {[1, 2, 3].map((i) => (
-                <MatchResultSkeleton key={i} />
-              ))}
-            </div>
-          )}
+      {/* ── Section 3: Match Results ──────────────────────────────── */}
+      {isLoading && (
+        <div className="flex flex-col gap-8">
+          {[1, 2].map((i) => (
+            <MatchResultSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
-          {/* Empty state */}
-          {!isLoading && results.length === 0 && (
-            <div className="flex flex-col items-center gap-3 py-10 text-center">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-neutral-100">
-                <Sparkles
-                  className="size-7 text-neutral-400"
-                  strokeWidth={1.25}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="font-heading text-sm font-semibold text-neutral-700">
-                  No matches yet
-                </p>
-                <p className="max-w-xs text-xs text-neutral-500">
-                  Fill in your preferences above and click &quot;Find My
-                  Matches&quot; to get started.
-                </p>
-              </div>
-            </div>
-          )}
+      {/* Empty state */}
+      {!isLoading && results.length === 0 && (
+        <div className="flex flex-col items-center gap-6 rounded-3xl bg-white p-16 text-center shadow-sm">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-[#f4f3f2]">
+            <Sparkles className="size-8 text-neutral-400" strokeWidth={1.25} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="font-heading text-lg font-bold text-neutral-700">
+              No matches yet
+            </p>
+            <p className="max-w-xs text-sm text-neutral-500">
+              Fill in your preferences above and click &quot;Generate
+              Matches&quot; to get started.
+            </p>
+          </div>
+        </div>
+      )}
 
-          {/* Results */}
-          {!isLoading &&
-            results.map((result) => (
-              <MatchResultCard key={result.id} result={result} />
-            ))}
-        </CardContent>
-      </Card>
+      {/* Results */}
+      {!isLoading && results.length > 0 && (
+        <div className="flex flex-col gap-12">
+          {results.map((result) => (
+            <MatchResultCard key={result.id} result={result} />
+          ))}
+        </div>
+      )}
+
+      {/* ── CTA Banner ────────────────────────────────────────────── */}
+      {!isLoading && (
+        <div className="relative overflow-hidden rounded-3xl bg-brand-primary-dark p-12 text-center text-white">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-primary-dark to-[#1b4d3e] opacity-50" />
+          <div className="relative z-10 mx-auto max-w-2xl">
+            <h2 className="font-heading mb-4 text-2xl font-bold">
+              Refine Your Vision
+            </h2>
+            <p className="mb-8 text-sm text-white/70">
+              The more you interact with the platform—saving properties, browsing
+              styles—the more accurate your AI Match engine becomes. Last updated:
+              2 hours ago.
+            </p>
+            <button
+              type="button"
+              className="rounded-full bg-[#7b5804] px-8 py-3 text-xs font-bold uppercase tracking-widest text-white transition-opacity hover:opacity-90"
+            >
+              Update Lifestyle Data
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -607,65 +640,130 @@ export default function AiMatchPage() {
 // Match result card
 // ---------------------------------------------------------------------------
 
-function MatchResultCard({
-  result,
-}: Readonly<{ result: AiMatchResult }>) {
+function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
   const score = result.match_score;
-  const { badge, label } = scoreVariant(score);
-  const pct = Math.round(score * 100);
+  const { badge, dotColor, label } = scoreVariant(score);
+  const isTopMatch = score >= 0.8;
 
   return (
-    <div className="overflow-hidden rounded-xl bg-neutral-50 p-4 transition-colors hover:bg-neutral-100">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <p className="font-heading text-sm font-semibold text-neutral-900 truncate">
-            {result.listing?.address ?? "Unknown address"}
-          </p>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
-            {result.listing && (
-              <span className="font-medium text-neutral-700">
-                {formatGBP(result.listing.price)}
+    <div className="group">
+      <div className="relative grid grid-cols-1 overflow-hidden rounded-3xl bg-white shadow-sm transition-all duration-700 group-hover:shadow-md lg:grid-cols-12">
+        {/* Image */}
+        <div className="relative overflow-hidden lg:col-span-5 lg:aspect-auto">
+          <div className="flex aspect-[4/5] w-full items-center justify-center bg-neutral-100 lg:h-full lg:aspect-auto">
+            <Heart className="size-16 text-neutral-200" strokeWidth={1} />
+          </div>
+          {/* Match confidence badge */}
+          <div className="absolute left-6 top-6">
+            <div className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 backdrop-blur-md">
+              <span
+                className={`size-2 rounded-full ${dotColor} ${isTopMatch ? "animate-pulse" : ""}`}
+              />
+              <span className="text-[10px] font-black uppercase tracking-widest text-neutral-900">
+                {label}
               </span>
-            )}
-            {result.listing?.bedrooms != null && (
-              <span className="flex items-center gap-0.5">
-                <Bed className="size-3" strokeWidth={1.25} />
-                {result.listing.bedrooms} bed
-              </span>
-            )}
-            {result.listing?.property_type && (
-              <span className="capitalize">
-                {result.listing.property_type.replace(/_/g, " ")}
-              </span>
-            )}
+            </div>
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-1">
-          <Badge
-            className={`border text-xs font-semibold ${badge}`}
-          >
-            {pct}% {label}
-          </Badge>
+        {/* Content */}
+        <div className="flex flex-col justify-between p-8 lg:col-span-7 lg:p-12">
+          <div>
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-1">
+                <h3 className="font-heading text-2xl font-bold text-emerald-950">
+                  {result.listing?.address ?? "Unknown address"}
+                </h3>
+              </div>
+              {result.listing && (
+                <p className="font-heading text-2xl font-bold text-brand-primary-dark">
+                  {formatGBP(result.listing.price)}
+                </p>
+              )}
+            </div>
+
+            {result.listing && result.listing.bedrooms != null && (
+              <div className="mb-8 flex gap-8">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                    Bedrooms
+                  </span>
+                  <span className="text-sm font-semibold text-neutral-900">
+                    {result.listing.bedrooms} bed
+                  </span>
+                </div>
+                {result.listing.property_type && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      Type
+                    </span>
+                    <span className="text-sm font-semibold capitalize text-neutral-900">
+                      {result.listing.property_type.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Why this match */}
+            {result.match_reasons.length > 0 && (
+              <div
+                className={`rounded-2xl border-l-4 p-6 ${
+                  isTopMatch
+                    ? "border-emerald-900 bg-emerald-50/50"
+                    : "border-brand-secondary-dark bg-neutral-50"
+                }`}
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <Sparkles
+                    className={`size-4 ${isTopMatch ? "text-emerald-900" : "text-brand-secondary-dark"}`}
+                    strokeWidth={1.5}
+                  />
+                  <h4
+                    className={`text-xs font-bold uppercase tracking-widest ${
+                      isTopMatch ? "text-emerald-900" : "text-brand-secondary-dark"
+                    }`}
+                  >
+                    Why this match?
+                  </h4>
+                </div>
+                <ul className="flex flex-col gap-1.5">
+                  {result.match_reasons.map((reason, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-neutral-700">
+                      <CheckCircle2
+                        className="mt-0.5 size-3.5 shrink-0 text-emerald-600"
+                        strokeWidth={1.5}
+                      />
+                      {reason}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* CTA */}
+          <div className="mt-8 flex gap-4">
+            <Link
+              href={
+                result.listing?.id
+                  ? `/property/${result.listing.id}`
+                  : "/search"
+              }
+              className="flex flex-1 items-center justify-center rounded-xl bg-brand-primary-dark py-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            >
+              View Property
+            </Link>
+            <button
+              type="button"
+              className="rounded-xl border border-neutral-100 px-6 py-4 transition-colors hover:bg-neutral-50"
+              aria-label="Save property"
+            >
+              <Heart className="size-5 text-neutral-500" strokeWidth={1.5} />
+            </button>
+          </div>
         </div>
       </div>
-
-      {result.match_reasons.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1.5">
-          {result.match_reasons.map((reason, i) => (
-            <li
-              key={i}
-              className="flex items-start gap-2 text-xs text-neutral-600"
-            >
-              <CheckCircle2
-                className="mt-0.5 size-3 shrink-0 text-success"
-                strokeWidth={1.25}
-              />
-              {reason}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }
@@ -676,49 +774,25 @@ function MatchResultCard({
 
 function MatchResultSkeleton() {
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-neutral-50 p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-1 flex-col gap-2">
-          <Skeleton className="h-4 w-48" />
-          <Skeleton className="h-3 w-32" />
+    <div className="grid grid-cols-1 overflow-hidden rounded-3xl bg-white shadow-sm lg:grid-cols-12">
+      <div className="lg:col-span-5">
+        <Skeleton className="aspect-[4/5] w-full lg:h-full" />
+      </div>
+      <div className="flex flex-col gap-4 p-8 lg:col-span-7 lg:p-12">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-7 w-48" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <Skeleton className="h-7 w-28" />
         </div>
-        <Skeleton className="h-6 w-20 rounded-full" />
+        <div className="flex gap-8">
+          <Skeleton className="h-10 w-20" />
+          <Skeleton className="h-10 w-20" />
+        </div>
+        <Skeleton className="h-32 w-full rounded-2xl" />
+        <Skeleton className="h-14 w-full rounded-xl" />
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Skeleton className="h-3 w-full" />
-        <Skeleton className="h-3 w-3/4" />
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Field group helper
-// ---------------------------------------------------------------------------
-
-function FieldGroup({
-  label,
-  htmlFor,
-  hint,
-  children,
-}: Readonly<{
-  label: string;
-  htmlFor: string;
-  hint?: string;
-  children: React.ReactNode;
-}>) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label
-        htmlFor={htmlFor}
-        className="text-sm font-medium text-neutral-700"
-      >
-        {label}
-      </Label>
-      {hint && (
-        <p className="text-xs text-neutral-500">{hint}</p>
-      )}
-      {children}
     </div>
   );
 }

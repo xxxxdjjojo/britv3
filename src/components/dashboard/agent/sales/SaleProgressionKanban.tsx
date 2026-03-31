@@ -181,7 +181,7 @@ function DroppableColumn({
       className={`flex min-w-[210px] max-w-[240px] flex-shrink-0 flex-col gap-2 rounded-2xl p-3 transition-all ${
         isOver
           ? "bg-brand-primary-lighter shadow-md ring-2 ring-brand-primary/30"
-          : "bg-neutral-100"
+          : "bg-muted/20"
       }`}
     >
       {/* Column header */}
@@ -263,7 +263,7 @@ function ProgressionDialog({
 
           {/* IDs */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-neutral-50 p-3">
+            <div className="rounded-xl bg-muted/40 p-3">
               <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
                 Property ID
               </p>
@@ -271,7 +271,7 @@ function ProgressionDialog({
                 {progression.property_id}
               </p>
             </div>
-            <div className="rounded-xl bg-neutral-50 p-3">
+            <div className="rounded-xl bg-muted/40 p-3">
               <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
                 Offer ID
               </p>
@@ -290,12 +290,12 @@ function ProgressionDialog({
               type="date"
               defaultValue={progression.expected_completion_date ?? ""}
               readOnly
-              className="mt-1.5 rounded-lg bg-neutral-50 text-sm"
+              className="mt-1.5 rounded-xl bg-muted/40 text-sm"
             />
           </div>
 
           {progression.solicitor_buyer && (
-            <div className="rounded-xl bg-neutral-50 p-3">
+            <div className="rounded-xl bg-muted/40 p-3">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
                 Buyer Solicitor
               </p>
@@ -316,7 +316,7 @@ function ProgressionDialog({
               defaultValue={progression.notes ?? ""}
               readOnly
               rows={3}
-              className="mt-1.5 resize-none rounded-lg bg-neutral-50 text-sm"
+              className="mt-1.5 resize-none rounded-xl bg-muted/40 text-sm"
             />
           </div>
 

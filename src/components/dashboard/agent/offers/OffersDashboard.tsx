@@ -90,7 +90,7 @@ function OfferCard({ offer }: Readonly<{ offer: AgentOffer }>) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xl font-bold tracking-tight text-neutral-900">
+        <span className="font-heading text-xl font-bold tracking-tight text-neutral-900">
           {formatGBP(offer.amount)}
         </span>
         <StatusPill {...aipCfg} />
@@ -141,7 +141,7 @@ export function OffersDashboard({
         <div className="relative flex-1 min-w-48">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400" strokeWidth={1.25} />
           <Input
-            className="rounded-lg bg-neutral-50 pl-9 text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary"
+            className="rounded-xl bg-neutral-50 pl-9 text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-brand-primary"
             placeholder="Search by buyer name…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -151,7 +151,7 @@ export function OffersDashboard({
           value={statusFilter}
           onValueChange={(v) => setStatusFilter(v as StatusFilter)}
         >
-          <SelectTrigger className="w-44 rounded-lg bg-neutral-50 text-neutral-700">
+          <SelectTrigger className="w-44 rounded-xl bg-neutral-50 text-neutral-700">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -167,8 +167,8 @@ export function OffersDashboard({
 
       {totalOffers === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
-          <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-            <Building2 className="size-7 text-brand-primary" strokeWidth={1.25} />
+          <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-muted">
+            <Building2 className="size-6 text-muted-foreground" strokeWidth={1.25} />
           </div>
           <p className="font-heading font-semibold text-foreground">No offers found</p>
           <p className="mt-1 text-sm text-neutral-500">
@@ -191,7 +191,7 @@ export function OffersDashboard({
                     <Building2 className="size-4 text-brand-primary" strokeWidth={1.25} />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
                       Property
                     </p>
                     <p className="font-mono text-sm font-semibold text-neutral-800">

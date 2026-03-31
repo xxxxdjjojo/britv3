@@ -154,7 +154,7 @@ export function ReviewResponseForm({ review }: Props) {
       </Button>
 
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
           Respond to Review
         </h1>
         <p className="mt-0.5 text-sm text-neutral-500">
@@ -164,8 +164,8 @@ export function ReviewResponseForm({ review }: Props) {
 
       {/* Original review */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-        <div className="bg-neutral-50 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+        <div className="bg-muted/30 px-5 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
             Original Review
           </p>
         </div>
@@ -200,8 +200,8 @@ export function ReviewResponseForm({ review }: Props) {
 
       {/* Response input / preview */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-        <div className="flex items-center justify-between bg-neutral-50 px-5 py-4">
-          <p className="font-semibold text-neutral-900">
+        <div className="flex items-center justify-between bg-muted/30 px-5 py-4">
+          <p className="font-heading text-sm font-semibold text-foreground">
             {isPreview ? "Preview" : "Write Response"}
           </p>
           <Button
@@ -249,7 +249,7 @@ export function ReviewResponseForm({ review }: Props) {
                 maxLength={500}
                 rows={6}
                 placeholder="Write a professional, helpful response to this review…"
-                className="resize-none rounded-lg bg-neutral-50"
+                className="resize-none rounded-xl bg-neutral-50"
               />
               <div className="flex items-center justify-between text-xs">
                 <span

@@ -135,6 +135,17 @@ export default function RoleDashboardPage(
 
   // Loading state
   if (isLoading) {
+    if (role === "homebuyer") {
+      return (
+        <div className="min-h-screen bg-[#faf9f8] px-4 py-8 md:px-8 lg:px-12 flex flex-col gap-8">
+          <Skeleton className="h-40 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}
+          </div>
+          <Skeleton className="h-64 w-full rounded-2xl" />
+        </div>
+      );
+    }
     return (
       <DashboardShell role={typedRole}>
         <StatCardGrid>
@@ -177,6 +188,16 @@ export default function RoleDashboardPage(
 
   const dashboardData = result.data;
   const statCards = getStatCards(dashboardData);
+
+  // Homebuyer dashboard has its own fully-styled layout (Stitch design).
+  // Render it standalone without the generic shell stat cards.
+  if (typedRole === "homebuyer") {
+    return (
+      <div className="min-h-screen bg-[#faf9f8] px-4 py-8 md:px-8 lg:px-12">
+        <RoleDashboardContent data={dashboardData} />
+      </div>
+    );
+  }
 
   return (
     <DashboardShell

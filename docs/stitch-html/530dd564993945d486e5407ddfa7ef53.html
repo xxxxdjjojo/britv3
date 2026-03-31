@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sold Prices — Isleworth | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#003ca3",
+              "on-background": "#1a1c1c",
+              "on-secondary-fixed-variant": "#5d4200",
+              "inverse-surface": "#2f3130",
+              "on-error-container": "#93000a",
+              "surface-container-lowest": "#ffffff",
+              "secondary-fixed-dim": "#eec068",
+              "secondary-container": "#fdcd74",
+              "inverse-on-surface": "#f1f0f0",
+              "on-tertiary-container": "#96afff",
+              "on-primary-container": "#8abda9",
+              "outline-variant": "#c0c9c3",
+              "surface-container-low": "#f4f3f2",
+              "surface-container-high": "#e9e8e7",
+              "error": "#ba1a1a",
+              "on-tertiary": "#ffffff",
+              "outline": "#707974",
+              "on-secondary": "#ffffff",
+              "on-primary-fixed-variant": "#1d4f40",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "surface-variant": "#e3e2e1",
+              "on-surface-variant": "#404945",
+              "error-container": "#ffdad6",
+              "surface": "#faf9f8",
+              "inverse-primary": "#9ed1bd",
+              "on-secondary-fixed": "#271900",
+              "surface-container-highest": "#e3e2e1",
+              "surface-container": "#eeeeed",
+              "primary-container": "#1b4d3e",
+              "on-primary": "#ffffff",
+              "on-error": "#ffffff",
+              "on-primary-fixed": "#002117",
+              "primary-fixed-dim": "#9ed1bd",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "secondary-fixed": "#ffdea6",
+              "surface-tint": "#376757",
+              "surface-bright": "#faf9f8",
+              "on-secondary-container": "#785601",
+              "primary": "#003629",
+              "on-tertiary-fixed": "#00174b",
+              "tertiary-fixed": "#dbe1ff",
+              "secondary": "#7b5804",
+              "on-surface": "#1a1c1c",
+              "tertiary": "#002873",
+              "surface-dim": "#dadad9",
+              "primary-fixed": "#baeed9",
+              "background": "#faf9f8"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-950/80 backdrop-blur-md no-border bg-stone-100/50 dark:bg-stone-900/50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-emerald-950 dark:text-emerald-50 font-headline">The Invisible Estate</div>
+<div class="hidden md:flex items-center gap-8 font-['Plus_Jakarta_Sans'] tracking-tight">
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors" href="#">Market Trends</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors" href="#">Area Guides</a>
+<a class="text-emerald-900 dark:text-emerald-400 font-semibold border-b-2 border-emerald-900 dark:border-emerald-400 pb-1" href="#">Sold Prices</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-50 transition-colors" href="#">Valuation</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-emerald-900 dark:text-emerald-50 cursor-pointer p-2 hover:bg-stone-50/50 dark:hover:bg-stone-800/50 rounded-full transition-all">account_circle</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 max-w-screen-2xl mx-auto px-8 min-h-screen">
+<!-- Search & Hero Context -->
+<header class="mb-12">
+<h1 class="font-headline text-5xl font-extrabold tracking-tighter text-primary mb-6">Isleworth Sold Prices</h1>
+<div class="max-w-3xl">
+<div class="relative group">
+<div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="w-full h-16 pl-14 pr-32 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all text-lg font-body placeholder:text-outline-variant" placeholder="Enter postcode or street address in Isleworth..." type="text"/>
+<button class="absolute right-3 top-2.5 h-11 px-6 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary-container transition-colors">
+                        Search
+                    </button>
+</div>
+</div>
+</header>
+<!-- Summary Statistics Bento -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+<div class="col-span-1 md:col-span-2 p-8 rounded-xl bg-surface-container-low flex flex-col justify-between">
+<div>
+<span class="text-[0.6875rem] uppercase tracking-[0.1em] font-bold text-outline">Market Snapshot</span>
+<h2 class="text-3xl font-headline font-bold text-primary mt-2">Isleworth TW7</h2>
+</div>
+<div class="mt-8 flex items-baseline gap-2">
+<span class="text-5xl font-headline font-extrabold tracking-tighter text-primary">£580,250</span>
+<span class="text-sm font-medium text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_down</span> -2.4%
+                    </span>
+</div>
+<p class="text-sm text-outline mt-1 font-medium">Average Sold Price (Last 12 Months)</p>
+</div>
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-[0_20px_50px_rgba(26,28,28,0.03)] border border-surface-container">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-on-secondary-fixed">receipt_long</span>
+</div>
+<div class="text-4xl font-headline font-bold text-primary">142</div>
+<div class="text-[0.6875rem] uppercase tracking-[0.05em] font-bold text-outline mt-2">Total Transactions</div>
+</div>
+<div class="p-8 rounded-xl bg-surface-container-lowest shadow-[0_20px_50px_rgba(26,28,28,0.03)] border border-surface-container">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-on-primary-fixed">query_stats</span>
+</div>
+<div class="text-4xl font-headline font-bold text-primary">-2.1%</div>
+<div class="text-[0.6875rem] uppercase tracking-[0.05em] font-bold text-outline mt-2">Price vs Listing</div>
+</div>
+</section>
+<!-- Main Content Area: Table & Map -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Side Navigation Insights (Shared Component Context) -->
+<aside class="hidden lg:block lg:col-span-2">
+<div class="sticky top-28 space-y-6">
+<div class="space-y-1">
+<div class="text-[0.6875rem] uppercase tracking-[0.1em] font-bold text-primary mb-4 px-3">Area Insights</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:bg-stone-100 rounded-lg transition-transform hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Demographics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:bg-stone-100 rounded-lg transition-transform hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined text-[20px]">school</span>
+<span class="text-sm font-medium">Schools</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:bg-stone-100 rounded-lg transition-transform hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined text-[20px]">train</span>
+<span class="text-sm font-medium">Transport</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-emerald-50 text-emerald-900 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<span class="text-sm font-semibold">Market Data</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:bg-stone-100 rounded-lg transition-transform hover:translate-x-1 duration-300" href="#">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+<span class="text-sm font-medium">Local Amenities</span>
+</a>
+</nav>
+</div>
+<button class="w-full py-3 bg-secondary-fixed-dim text-on-secondary-fixed rounded-lg text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all">Download Report</button>
+</div>
+</aside>
+<!-- Results Table -->
+<div class="lg:col-span-7">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-xl font-headline font-bold text-primary">Latest Transactions</h3>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-4 py-2 bg-white border border-outline-variant/30 rounded-lg text-sm font-medium hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto no-scrollbar">
+<table class="w-full text-left border-separate border-spacing-y-4">
+<thead>
+<tr class="text-[0.6875rem] uppercase tracking-[0.1em] font-bold text-outline">
+<th class="px-4 py-2">Address</th>
+<th class="px-4 py-2">Type</th>
+<th class="px-4 py-2">Beds</th>
+<th class="px-4 py-2">Sold Price</th>
+<th class="px-4 py-2">Date</th>
+<th class="px-4 py-2 text-right">% vs Ask</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<!-- Row 1 -->
+<tr class="bg-surface-container-lowest group hover:shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all cursor-pointer">
+<td class="px-4 py-6 rounded-l-xl font-medium text-primary">14 Syon Lane, TW7 5NP</td>
+<td class="px-4 py-6 text-outline">Semi-Detached</td>
+<td class="px-4 py-6 text-outline">4</td>
+<td class="px-4 py-6 font-bold text-primary">£845,000</td>
+<td class="px-4 py-6 text-outline">12 Oct 2024</td>
+<td class="px-4 py-6 rounded-r-xl text-right text-error font-medium">-1.2%</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-lowest group hover:shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all cursor-pointer">
+<td class="px-4 py-6 rounded-l-xl font-medium text-primary">2A Linkfield Road, TW7 6QT</td>
+<td class="px-4 py-6 text-outline">Terraced</td>
+<td class="px-4 py-6 text-outline">3</td>
+<td class="px-4 py-6 font-bold text-primary">£612,500</td>
+<td class="px-4 py-6 text-outline">28 Sep 2024</td>
+<td class="px-4 py-6 rounded-r-xl text-right text-emerald-600 font-medium">+0.5%</td>
+</tr>
+<!-- Row 3 -->
+<tr class="bg-surface-container-lowest group hover:shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all cursor-pointer">
+<td class="px-4 py-6 rounded-l-xl font-medium text-primary">Maltings House, Apt 4</td>
+<td class="px-4 py-6 text-outline">Flat</td>
+<td class="px-4 py-6 text-outline">2</td>
+<td class="px-4 py-6 font-bold text-primary">£425,000</td>
+<td class="px-4 py-6 text-outline">15 Sep 2024</td>
+<td class="px-4 py-6 rounded-r-xl text-right text-error font-medium">-3.8%</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-lowest group hover:shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all cursor-pointer">
+<td class="px-4 py-6 rounded-l-xl font-medium text-primary">82 Church Road, TW7 4DS</td>
+<td class="px-4 py-6 text-outline">Detached</td>
+<td class="px-4 py-6 text-outline">5</td>
+<td class="px-4 py-6 font-bold text-primary">£1,250,000</td>
+<td class="px-4 py-6 text-outline">02 Sep 2024</td>
+<td class="px-4 py-6 rounded-r-xl text-right text-outline font-medium">0%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Interactive Map & Trend -->
+<div class="lg:col-span-3 space-y-8">
+<!-- Map -->
+<div class="rounded-xl overflow-hidden bg-surface-container-low h-96 relative group">
+<img alt="Aerial map of Isleworth area" class="w-full h-full object-cover opacity-80 mix-blend-multiply transition-transform duration-700 group-hover:scale-105" data-alt="Modern satellite map view of Isleworth urban residential streets with green parks and river proximity in soft morning light" data-location="Isleworth, London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAqmLSsh6FcxY4UJR4zX0gQffSm9hUalZ58XLABPWYeH6YI6HqVQr4ZXYsXnCvgjrcRY_qtz3hZ4Ae28taV3IPML6202CpEJ4Ihv6K322zPOcqLi-8JOPhzmbaYPJJX0MV2-vFuBIten4_53uEEjcwhjvHjAw1K7r0d9JmJoPaN-bruqHJvkX-3sX-Qrer5qfFA08QBivBN5xcycoHLRx3KL6hA-HJsiS5NE-RmyrCF_bshHNG7kVwz75vCgO3z6XdF_1m_QGe27tu"/>
+<!-- Map Markers (Simulated) -->
+<div class="absolute inset-0 p-8">
+<div class="absolute top-1/4 left-1/3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">£845k</div>
+<div class="absolute top-1/2 left-1/2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">£612k</div>
+<div class="absolute bottom-1/3 right-1/4 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">£1.2M</div>
+<div class="absolute top-1/3 right-1/3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">£425k</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-lg flex items-center justify-between">
+<span class="text-xs font-bold text-primary uppercase tracking-widest">Interactive Map</span>
+<span class="material-symbols-outlined text-primary">open_in_full</span>
+</div>
+</div>
+<!-- Historical Trend Chart (Simulated) -->
+<div class="p-6 rounded-xl bg-surface-container-lowest border border-surface-container">
+<h4 class="text-sm font-headline font-bold text-primary mb-6">Price Trend (5 Years)</h4>
+<div class="h-40 flex items-end gap-2 group">
+<div class="flex-1 bg-stone-100 h-1/2 rounded-t hover:bg-emerald-200 transition-all"></div>
+<div class="flex-1 bg-stone-100 h-2/3 rounded-t hover:bg-emerald-200 transition-all"></div>
+<div class="flex-1 bg-stone-100 h-3/4 rounded-t hover:bg-emerald-200 transition-all"></div>
+<div class="flex-1 bg-stone-100 h-2/3 rounded-t hover:bg-emerald-200 transition-all"></div>
+<div class="flex-1 bg-primary h-[85%] rounded-t"></div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] font-bold text-outline uppercase tracking-wider">
+<span>2020</span>
+<span>2024</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component Context) -->
+<footer class="w-full py-12 px-8 mt-20 bg-stone-100 dark:bg-stone-900 tonal-shift">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:flex lg:justify-between items-end w-full max-w-screen-2xl mx-auto">
+<div class="space-y-4">
+<div class="text-emerald-900 dark:text-emerald-50 font-bold font-headline text-lg">The Invisible Estate</div>
+<div class="font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em] text-stone-400 dark:text-stone-500">© 2024 The Invisible Estate. Editorial Property Intelligence.</div>
+</div>
+<div class="flex flex-wrap gap-8 mt-8 lg:mt-0 font-['Inter'] text-[0.6875rem] uppercase tracking-[0.05em]">
+<a class="text-stone-400 dark:text-stone-500 hover:text-amber-600 dark:hover:text-amber-300 transition-colors" href="#">Privacy Policy</a>
+<a class="text-stone-400 dark:text-stone-500 hover:text-amber-600 dark:hover:text-amber-300 transition-colors" href="#">Data Methodology</a>
+<a class="text-stone-400 dark:text-stone-500 hover:text-amber-600 dark:hover:text-amber-300 transition-colors" href="#">Terms of Service</a>
+<a class="text-emerald-900 dark:text-emerald-50 font-bold hover:text-amber-600 dark:hover:text-amber-300 transition-colors" href="#">Contact Expert</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Britestate | The Curated Sanctuary for UK Property</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "surface-container": "#eeeeed",
+                "surface-dim": "#dadad9",
+                "on-primary": "#ffffff",
+                "tertiary": "#002873",
+                "surface-tint": "#376757",
+                "surface": "#faf9f8",
+                "on-primary-fixed": "#002117",
+                "on-background": "#1a1c1c",
+                "background": "#faf9f8",
+                "secondary-fixed-dim": "#eec068",
+                "on-secondary-fixed-variant": "#5d4200",
+                "outline-variant": "#c0c9c3",
+                "on-tertiary-container": "#96afff",
+                "surface-variant": "#e3e2e1",
+                "on-primary-fixed-variant": "#1d4f40",
+                "secondary-fixed": "#ffdea6",
+                "on-secondary": "#ffffff",
+                "surface-container-highest": "#e3e2e1",
+                "on-primary-container": "#8abda9",
+                "surface-bright": "#faf9f8",
+                "on-error-container": "#93000a",
+                "on-error": "#ffffff",
+                "on-tertiary-fixed-variant": "#003ea8",
+                "on-tertiary-fixed": "#00174b",
+                "tertiary-fixed-dim": "#b4c5ff",
+                "outline": "#707974",
+                "primary": "#003629",
+                "inverse-surface": "#2f3130",
+                "primary-fixed": "#baeed9",
+                "secondary": "#7b5804",
+                "primary-fixed-dim": "#9ed1bd",
+                "on-surface-variant": "#404945",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-fixed": "#dbe1ff",
+                "on-secondary-fixed": "#271900",
+                "surface-container-high": "#e9e8e7",
+                "surface-container-low": "#f4f3f2",
+                "primary-container": "#1b4d3e",
+                "on-secondary-container": "#785601",
+                "inverse-primary": "#9ed1bd",
+                "on-surface": "#1a1c1c",
+                "tertiary-container": "#003ca3",
+                "inverse-on-surface": "#f1f0f0",
+                "error-container": "#ffdad6",
+                "error": "#ba1a1a",
+                "secondary-container": "#fdcd74",
+                "on-tertiary": "#ffffff"
+              },
+              fontFamily: {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .editorial-shadow {
+            shadow-[0_20px_50px_rgba(26,28,28,0.05)];
+        }
+      </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-['Plus_Jakarta_Sans'] tracking-tight">
+<div class="text-2xl font-bold text-emerald-900 dark:text-emerald-50">Britestate</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-emerald-900 dark:text-emerald-400 font-semibold border-b-2 border-amber-400 pb-1" href="#">Properties</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-emerald-800 transition-colors" href="#">Advisors</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-emerald-800 transition-colors" href="#">Valuations</a>
+<a class="text-zinc-600 dark:text-zinc-400 hover:text-emerald-800 transition-colors" href="#">Insights</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="bg-primary hover:bg-primary-container text-white px-6 py-2.5 rounded-md font-semibold transition-all duration-300 scale-95 active:scale-90">
+                    List Property
+                </button>
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="User profile avatar" data-alt="professional headshot of a person with a warm smile in a well-lit modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHqnRCJ5__7vpCBhPbil1nWRiElw7izrWfgPdXtKMpmTf7m4D166XzGbqXaLMj5U9H9K9EY3BBBp6F9yfJ-xa49Ypai4zjis0DhbshOkwsdrD7QKmO8H0zfX2KvEXo7pcyOXr-9wPIrbFnPaXculu3Oxpih26I0kvukA33LyOQyxEyB7STu6I85o5MEuM-oIQ3pZFkUJlKBJx9Vmya2xRnc1aA7H1GWnMSXMnkMCwb5ztuU8hZ81noBxViGeEyEjl1JbVlGezJsxCe"/>
+</div>
+</div>
+</div>
+</nav>
+<main>
+<!-- Hero Section -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Hero background" class="w-full h-full object-cover scale-105" data-alt="stunning english countryside manor at golden hour with soft mist and warm sunlight hitting the stone facade" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB117yKA-4DFYQF0UKMS9CHg0UU319SKZI4FkA7cZ2T2tlU4Mfiybx2BbSThmeBEW-EEBjVqD9ORboY064rn-H2m8or2Wm99DbuOv7qjJVTVMxJG9czM0onCG9OYJ4iWKHBRQvQG4662Ew7FUnGNNr_iC--DHG3EihHvaX7x_xco2C1vV64ifRxHC7re-EY6kTjSTsBGQFqXZ6hw9TYJF3kRTxTB3Ks8qQPTy-ghL0OUIot6G2GynwQcU0TquB_UJrDULDuIQ41EWWx"/>
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
+</div>
+<div class="relative z-10 w-full max-w-4xl px-6 text-center">
+<h1 class="font-headline text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight">
+                    Find your perfect property
+                </h1>
+<p class="text-lg md:text-xl text-white/90 mb-12 font-light">
+                    Search over 25,000 homes and discover verified local professionals
+                </p>
+<!-- Search Shell -->
+<div class="bg-white/95 backdrop-blur-xl p-2 rounded-xl shadow-[0_20px_50px_rgba(26,28,28,0.15)] max-w-3xl mx-auto">
+<div class="flex gap-4 p-2 border-b border-surface-container mb-2">
+<button class="px-6 py-2 rounded-lg bg-primary text-white font-medium text-sm">Buy</button>
+<button class="px-6 py-2 rounded-lg text-zinc-500 hover:bg-zinc-100 font-medium text-sm transition-colors">Rent</button>
+<button class="px-6 py-2 rounded-lg text-zinc-500 hover:bg-zinc-100 font-medium text-sm transition-colors">Find Services</button>
+</div>
+<div class="flex flex-col md:flex-row gap-4 p-4">
+<div class="flex-1 flex items-center gap-3 px-4 py-3 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-zinc-400">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-on-surface" placeholder="Enter city, postcode or street" type="text"/>
+</div>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary-container transition-all">
+                            Search
+                        </button>
+</div>
+</div>
+<!-- Trust Bar -->
+<div class="mt-16 flex flex-wrap justify-center gap-12 text-white/80 font-label text-sm tracking-[0.05em] uppercase">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+                        25,000+ Properties
+                    </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+                        5,000+ Verified Pros
+                    </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">groups</span>
+                        Trusted by 50,000 Users
+                    </div>
+</div>
+</div>
+</section>
+<!-- Featured Properties -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div>
+<span class="font-label text-xs tracking-widest uppercase text-secondary font-bold mb-4 block">Curated Selection</span>
+<h2 class="font-headline text-4xl font-bold text-primary">Featured Properties</h2>
+</div>
+<div class="flex bg-surface-container-low p-1 rounded-full">
+<button class="px-8 py-2.5 rounded-full bg-white shadow-sm text-sm font-semibold text-primary">For Sale</button>
+<button class="px-8 py-2.5 rounded-full text-sm font-semibold text-zinc-500 hover:text-primary transition-colors">To Rent</button>
+<button class="px-8 py-2.5 rounded-full text-sm font-semibold text-zinc-500 hover:text-primary transition-colors">New Builds</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+<!-- Property Card 1 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-xl mb-6 relative">
+<img alt="Cotswold Cottage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="charming honey-colored stone cottage in the cotswolds with lavender garden and classic english architecture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB117yKA-4DFYQF0UKMS9CHg0UU319SKZI4FkA7cZ2T2tlU4Mfiybx2BbSThmeBEW-EEBjVqD9ORboY064rn-H2m8or2Wm99DbuOv7qjJVTVMxJG9czM0onCG9OYJ4iWKHBRQvQG4662Ew7FUnGNNr_iC--DHG3EihHvaX7x_xco2C1vV64ifRxHC7re-EY6kTjSTsBGQFqXZ6hw9TYJF3kRTxTB3Ks8qQPTy-ghL0OUIot6G2GynwQcU0TquB_UJrDULDuIQ41EWWx"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary">Verified Listing</div>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2">The Old Rectory</h3>
+<p class="text-zinc-500 text-sm mb-4">Cotswolds, Gloucestershire</p>
+<div class="flex items-center gap-8 text-xs font-label tracking-wider uppercase text-zinc-400">
+<span>4 Beds</span>
+<span>3 Baths</span>
+<span>2,450 SQFT</span>
+</div>
+<p class="mt-4 font-headline text-lg font-bold text-primary">£1,250,000</p>
+</div>
+<!-- Property Card 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-xl mb-6 relative">
+<img alt="Modern Mews" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="sleek modern London mews house with large glass windows and dark metal framing in a quiet cobblestone street" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKQ47h4a9IB0BttVQjW6HiNoGWHTQoG_D90JUXWfb_yK_RMNLUFkVe-CqUaieN7pasSox9fCTyPHm534PdrkC6obFpalNe6-qKSyfonm6wxfaYQL5mB413rD8dgrVAxfg_tX-Edzz0WVnZGXKXYWzzTum8Y35i1FGI7Ah1ivQBJ-HQcbqdpuKtRkoDM2S6LWjjnXjoB3B5aHGFY4pzRoAT05r2kjhUUuP71N70STHf1p1VWBL7xnLPs4fvwiO6Yuc67C7PbnkHahkl"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase text-primary">New Build</div>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2">Belgravia Mews</h3>
+<p class="text-zinc-500 text-sm mb-4">Belgravia, London</p>
+<div class="flex items-center gap-8 text-xs font-label tracking-wider uppercase text-zinc-400">
+<span>2 Beds</span>
+<span>2 Baths</span>
+<span>1,100 SQFT</span>
+</div>
+<p class="mt-4 font-headline text-lg font-bold text-primary">£2,850,000</p>
+</div>
+<!-- Property Card 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-xl mb-6 relative">
+<img alt="Coastal Villa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="contemporary cliffside villa in cornwall with panoramic ocean views and expansive timber decking" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_D_1sggVoDgoEPNk-E_6-3lzTuJgxe8jbCgyEGoJpHon3sHIvHJmA4NeaAq9Ch907-895HSIrDw9K6VvsBoOBtuiBZj8hN1buyhPHCgsOr_V5g47mCk4OAulvSZwUtiSczqJZSXKJ5oXCaCPaDnCD4Wed-y_KWz76OS5pCXD44KV5lR9Ra24elXusj2M2yEPBzb_s7xBYlcz1caROVeF3cwsUDXLD6CeK4O74gIAFVcXeOKlPgln0dBRpyIjKg9ymw5oCqr3boDbA"/>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2">Seaward House</h3>
+<p class="text-zinc-500 text-sm mb-4">St Ives, Cornwall</p>
+<div class="flex items-center gap-8 text-xs font-label tracking-wider uppercase text-zinc-400">
+<span>5 Beds</span>
+<span>4 Baths</span>
+<span>3,200 SQFT</span>
+</div>
+<p class="mt-4 font-headline text-lg font-bold text-primary">£3,400,000</p>
+</div>
+<!-- Property Card 4 -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-xl mb-6 relative">
+<img alt="Regency Flat" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="elegant regency style apartment building in bath with ornate stone detailing and grand sash windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD60CznMbQP_j6hNA0yxfj49c_CO01I5EP8zLMUd3sE1OrgyRP7ZTuXuJ_6AbU-OsnX2UhVHzny2e8lYCKbcP1mXsl-11Tv_h6NaBW0kVFGfqshlIpDXNAR_KryHccPwBqzJjTfwWnlCyTZQb-CUDMcmbskp5dkrFa0ln53Mas0KTvDY82vy4qvUA6e8GzHpHpBMyedlf7cZTo3TWquENCb8M9pUOzwu-kRwzQZ9YWWl4EW8Jh3Mu52DCVGYHUCa2YouuX16ot-2brG"/>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2">Royal Crescent Flat</h3>
+<p class="text-zinc-500 text-sm mb-4">Bath, Somerset</p>
+<div class="flex items-center gap-8 text-xs font-label tracking-wider uppercase text-zinc-400">
+<span>3 Beds</span>
+<span>2 Baths</span>
+<span>1,850 SQFT</span>
+</div>
+<p class="mt-4 font-headline text-lg font-bold text-primary">£1,150,000</p>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-screen-xl mx-auto px-8">
+<div class="text-center mb-20">
+<h2 class="font-headline text-4xl font-bold text-primary mb-4">How It Works</h2>
+<p class="text-zinc-500 max-w-2xl mx-auto">A seamless journey from discovery to doorstep, powered by British property expertise.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center font-headline text-2xl font-bold mb-8 relative z-10">
+                            1
+                        </div>
+<span class="material-symbols-outlined text-4xl text-secondary-fixed-dim mb-6">search_insights</span>
+<h4 class="font-headline text-xl font-bold text-primary mb-4">Search</h4>
+<p class="text-sm text-zinc-600 leading-relaxed">Browse thousands of hand-picked listings with detailed metadata and local insights.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center font-headline text-2xl font-bold mb-8 relative z-10">
+                            2
+                        </div>
+<span class="material-symbols-outlined text-4xl text-secondary-fixed-dim mb-6">handshake</span>
+<h4 class="font-headline text-xl font-bold text-primary mb-4">Connect</h4>
+<p class="text-sm text-zinc-600 leading-relaxed">Directly message verified estate agents or local tradespeople for surveys and quotes.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center font-headline text-2xl font-bold mb-8 relative z-10">
+                            3
+                        </div>
+<span class="material-symbols-outlined text-4xl text-secondary-fixed-dim mb-6">key</span>
+<h4 class="font-headline text-xl font-bold text-primary mb-4">Move In</h4>
+<p class="text-sm text-zinc-600 leading-relaxed">Finalise contracts with integrated legal partners and settle into your sanctuary.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Find Services Grid -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto">
+<div class="mb-16">
+<h2 class="font-headline text-4xl font-bold text-primary mb-4">Find Local Experts</h2>
+<p class="text-zinc-500">Connecting you with the UK's most trusted property professionals.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+<div class="p-8 rounded-xl bg-surface hover:bg-white hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 group cursor-pointer border border-transparent hover:border-surface-container">
+<span class="material-symbols-outlined text-3xl text-primary mb-4 group-hover:scale-110 transition-transform">plumbing</span>
+<h5 class="font-bold text-primary mb-1">Plumbers</h5>
+<p class="text-xs text-zinc-400">124 verified pros</p>
+</div>
+<div class="p-8 rounded-xl bg-surface hover:bg-white hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 group cursor-pointer border border-transparent hover:border-surface-container">
+<span class="material-symbols-outlined text-3xl text-primary mb-4 group-hover:scale-110 transition-transform">bolt</span>
+<h5 class="font-bold text-primary mb-1">Electricians</h5>
+<p class="text-xs text-zinc-400">98 verified pros</p>
+</div>
+<div class="p-8 rounded-xl bg-surface hover:bg-white hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 group cursor-pointer border border-transparent hover:border-surface-container">
+<span class="material-symbols-outlined text-3xl text-primary mb-4 group-hover:scale-110 transition-transform">architecture</span>
+<h5 class="font-bold text-primary mb-1">Architects</h5>
+<p class="text-xs text-zinc-400">42 verified pros</p>
+</div>
+<div class="p-8 rounded-xl bg-surface hover:bg-white hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 group cursor-pointer border border-transparent hover:border-surface-container">
+<span class="material-symbols-outlined text-3xl text-primary mb-4 group-hover:scale-110 transition-transform">brush</span>
+<h5 class="font-bold text-primary mb-1">Painters</h5>
+<p class="text-xs text-zinc-400">156 verified pros</p>
+</div>
+<div class="p-8 rounded-xl bg-surface hover:bg-white hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 group cursor-pointer border border-transparent hover:border-surface-container">
+<span class="material-symbols-outlined text-3xl text-primary mb-4 group-hover:scale-110 transition-transform">gavel</span>
+<h5 class="font-bold text-primary mb-1">Conveyancers</h5>
+<p class="text-xs text-zinc-400">67 verified pros</p>
+</div>
+<div class="p-8 rounded-xl bg-surface hover:bg-white hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 group cursor-pointer border border-transparent hover:border-surface-container">
+<span class="material-symbols-outlined text-3xl text-primary mb-4 group-hover:scale-110 transition-transform">foundation</span>
+<h5 class="font-bold text-primary mb-1">Surveyors</h5>
+<p class="text-xs text-zinc-400">83 verified pros</p>
+</div>
+</div>
+</section>
+<!-- Trust & Verification -->
+<section class="bg-primary py-24 text-white overflow-hidden relative">
+<div class="max-w-screen-xl mx-auto px-8 relative z-10 flex flex-col lg:flex-row items-center gap-20">
+<div class="flex-1">
+<span class="font-label text-xs tracking-widest uppercase text-secondary-fixed-dim font-bold mb-6 block">Our Guarantee</span>
+<h2 class="font-headline text-5xl font-extrabold mb-8 leading-tight">Property Search, Elevated by Trust</h2>
+<p class="text-white/70 text-lg mb-12 leading-relaxed">
+                        Every listing and professional on Britestate undergoes our proprietary "3+3" verification protocol. We validate 3 recent client testimonials and require 3 peer-endorsements from registered industry bodies before approval.
+                    </p>
+<div class="flex gap-16">
+<div>
+<p class="text-4xl font-extrabold text-secondary-fixed-dim mb-2">12,500</p>
+<p class="text-sm font-label uppercase tracking-widest text-white/50">Verified Reviews</p>
+</div>
+<div>
+<p class="text-4xl font-extrabold text-secondary-fixed-dim mb-2">98%</p>
+<p class="text-sm font-label uppercase tracking-widest text-white/50">Satisfaction Rate</p>
+</div>
+</div>
+</div>
+<div class="flex-1 w-full lg:w-auto">
+<div class="bg-white/10 backdrop-blur-md p-10 rounded-2xl border border-white/10">
+<div class="space-y-8">
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim">verified_user</span>
+<div>
+<h5 class="font-bold mb-2">ID &amp; Credential Check</h5>
+<p class="text-sm text-white/60">Strict KYC protocols for every listed professional and agent.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim">diversity_3</span>
+<div>
+<h5 class="font-bold mb-2">3-Peer Validation</h5>
+<p class="text-sm text-white/60">Professional endorsements from industry-recognized experts.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim">reviews</span>
+<div>
+<h5 class="font-bold mb-2">Manual Client Audits</h5>
+<p class="text-sm text-white/60">Our team personally verifies recent transaction histories.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-primary-container/20 to-transparent"></div>
+</section>
+<!-- Testimonials -->
+<section class="py-24 bg-surface px-8">
+<div class="max-w-screen-xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-white p-10 rounded-2xl shadow-[0_20px_50px_rgba(26,28,28,0.03)] border border-surface-container">
+<div class="flex gap-1 mb-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-zinc-600 mb-8 leading-relaxed">"Britestate transformed our house hunt. The transparency of verified listings meant we could focus on the architecture, not the fine print."</p>
+<div class="flex items-center gap-4">
+<img alt="Sarah J" class="w-12 h-12 rounded-full object-cover" data-alt="portrait of a young professional woman with a bright and happy expression outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVB3gV11I-5dFOGL4u6lHc5d_392xwfZrOPQsBhSU3novDScyGlBSviSqLFsJPE0dI4O19hu6cwhi3xDF_YRJJPmyoN6O_ndg03cjlJMzX4ND_bThxqabRliUQL1rqk7J-5fmHMSX_5Bn4HbE-uP3-T4g9yvXJlHN_2ETQhUBVFCTbROsmITBP8R_JtRbxPn08mYTF059veN8QO-dfRlYnRay27S0XF26hldEaZCsVXCxK-o4YtCZxOE8ICqJ-23Xgd7_7xBYUUI9R"/>
+<div>
+<h6 class="font-bold text-primary">Sarah Jenkins</h6>
+<p class="text-xs text-zinc-400">First-time Buyer</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-white p-10 rounded-2xl shadow-[0_20px_50px_rgba(26,28,28,0.03)] border border-surface-container">
+<div class="flex gap-1 mb-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-zinc-600 mb-8 leading-relaxed">"As a landlord, finding contractors I can trust is vital. The verification process on Britestate saves me days of vetting."</p>
+<div class="flex items-center gap-4">
+<img alt="Marcus T" class="w-12 h-12 rounded-full object-cover" data-alt="middle aged man with glasses and a friendly smile in professional attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAteAcGZt4-_Vo2FdHgTHeTUEY7jHi2oS4dsiXNN7KZVt3eixV2kIVX9j-VC8zFK-iyXYLreaiAcYUEpgA7nHO3iCot_zL5iFX5fek9L4xFnSuwD0r-PfHxxGd-FJhGN-m6oOhJrDtfQ6zGNSpveb7J17avogEoYdsgRI9w3Frnk5N0YKOVZi8s200dvTLbrRXaLBmIMoCI-aqT_-m3j4Kvg-cFLEfGfEdy91A79q_k5HNDDcPz63y9_Eag1dkjhoGQNG3FCMprpmxV"/>
+<div>
+<h6 class="font-bold text-primary">Marcus Thornton</h6>
+<p class="text-xs text-zinc-400">Property Developer</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-white p-10 rounded-2xl shadow-[0_20px_50px_rgba(26,28,28,0.03)] border border-surface-container">
+<div class="flex gap-1 mb-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-zinc-600 mb-8 leading-relaxed">"Joining Britestate as a verified electrician has grown my business by 40%. It's the only platform that rewards quality over quantity."</p>
+<div class="flex items-center gap-4">
+<img alt="James L" class="w-12 h-12 rounded-full object-cover" data-alt="man in workwear with a confident and approachable demeanor in a workshop setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB4JNLXKATThUDLxsQhpqlUiOdzGtdo8pGGbbFt1k1oxoxUa3U6ZJjVS5OYHmnzgfGNytzT1ZvAxhvX9hkAAzDBu-hqAsFzixdCV3BtcU4LCt33J1EwgugeQxrxZGOM5CkEa6PoK4pbACKZwDcLgD-YC1qrJ9qCnrauVSOyAkAsLZtbPXt-nPju2jjbwvOxfUY9DMYZvpN1MKoEuwVW58dFjg_wW1L-RP8wnCOn3xvwEW2rPv54V6vTfBG1KYVFNiWg9iaMyt0uhBT"/>
+<div>
+<h6 class="font-bold text-primary">James Lawrence</h6>
+<p class="text-xs text-zinc-400">Master Electrician</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Blog Preview -->
+<section class="py-24 px-8 max-w-screen-2xl mx-auto">
+<div class="mb-16 flex justify-between items-end">
+<div>
+<h2 class="font-headline text-4xl font-bold text-primary mb-4">Latest Insights</h2>
+<p class="text-zinc-500">Expert analysis on the UK property landscape.</p>
+</div>
+<a class="text-primary font-bold hover:text-secondary transition-colors" href="#">Read all news →</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<article class="group">
+<div class="aspect-video rounded-xl overflow-hidden mb-6">
+<img alt="Blog 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="close up of a modern office space with minimalist design and warm indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7qHW2vCdIfxSYjaCaLghMLo222nRsONCyyfTsmKCuT7txWL_rjYr1v-WfxtEg_jgZqLzINN5U7HegZl9R9mKPcCecDyujzVVaIejXbew_GHoouiKRRdqrxOOyxF80BaIdpCkDayM_YfGv8eimwtAu7sBxHv6fLABRX6xzgshqdLc_WmD4EZH2GBcMpAMAtPeQCt7jLh5UNYjbVZVzXdUxzBLqN79AwX5Rmh66bCD6Gfpmb6cj4eQXT-UPWsDCOYoU1sZRYv6OWCax"/>
+</div>
+<span class="font-label text-[10px] uppercase tracking-widest text-secondary font-bold mb-3 block">Market Report</span>
+<h4 class="font-headline text-xl font-bold text-primary mb-3">The Rise of Regional Eco-Sanctuaries</h4>
+<p class="text-sm text-zinc-500 leading-relaxed">Why sustainable architecture is driving property values in the South West this year.</p>
+</article>
+<article class="group">
+<div class="aspect-video rounded-xl overflow-hidden mb-6">
+<img alt="Blog 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="top view of architectural blueprints and a laptop on a clean white desk surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6wzaTVJ63MDKI6n_Atxja87jYh2xcnbDrk-UpJ3E55-RSBIAllOC7262QnD1nnxsagcTf7NUoR4vAe0C9HRZHPpkjTVbEdv-IxltA_8q4NgUyMFohxR5K0P7897d9yiRp9ScklU--zRlifleigJTlxRIDW_5C0bRxbquhPDJOIliXZNCLQedAbrFPYTo0QVrT9MJAm6ZA1YQcBmR8VNQqxarcO3Oubfjy2LuE8vAmaSJ3Y5Ru3btRkf--UTeCPRHy0IMkQMaK8D2u"/>
+</div>
+<span class="font-label text-[10px] uppercase tracking-widest text-secondary font-bold mb-3 block">Legals</span>
+<h4 class="font-headline text-xl font-bold text-primary mb-3">Understanding 2024 Rental Reform</h4>
+<p class="text-sm text-zinc-500 leading-relaxed">Essential guide for landlords and tenants on upcoming legislative shifts.</p>
+</article>
+<article class="group">
+<div class="aspect-video rounded-xl overflow-hidden mb-6">
+<img alt="Blog 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="beautifully decorated modern living room with natural lighting and elegant wooden accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeXZY4EigyzTkmV11vCoFa6FgSw3kwse68ZyDXeYTzmUH_fAHiZgwXBUgZuDEzbWaIYJ5KEt0J86GUDieLU-Avh7SeT1NgUh8vF3nQMzdPwgDLWnv0pMkLzVe4hBMUhj1ZpoUBesrrITHF05-yHcyR5JXFM7uAVAOsB-8KGwFHxFVaWFY_35-S7veEVbxQMHvk0Nfplqn1xEGQKOQAXrxTqC6VK2XeEHOQmclzlXTNKKbzSN4aKTopDl7ivfcq2A_qye1CWVSuEuTW"/>
+</div>
+<span class="font-label text-[10px] uppercase tracking-widest text-secondary font-bold mb-3 block">Design</span>
+<h4 class="font-headline text-xl font-bold text-primary mb-3">Minimalism in the Modern Estate</h4>
+<p class="text-sm text-zinc-500 leading-relaxed">How less is becoming more in the luxury residential market across London.</p>
+</article>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 px-8">
+<div class="max-w-screen-xl mx-auto rounded-3xl bg-primary-fixed/30 p-16 md:p-24 text-center overflow-hidden relative">
+<div class="relative z-10">
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-primary mb-8">Ready to get started?</h2>
+<p class="text-lg text-primary/70 mb-12 max-w-2xl mx-auto">Join the most trusted property ecosystem in the UK today. Whether you're buying, selling, or searching for expertise.</p>
+<div class="flex flex-col md:flex-row justify-center gap-6">
+<button class="bg-primary text-white px-10 py-4 rounded-lg font-bold hover:bg-primary-container transition-all">List Your Property</button>
+<button class="bg-white text-primary border border-primary/10 px-10 py-4 rounded-lg font-bold hover:bg-surface-container-low transition-all">Find a Professional</button>
+</div>
+</div>
+<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -top-20 -left-20 w-80 h-80 bg-secondary/5 rounded-full blur-3xl"></div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-20 bg-zinc-100 dark:bg-zinc-900">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 px-12 py-16 border-t border-zinc-200 dark:border-zinc-800 max-w-screen-2xl mx-auto">
+<div>
+<div class="text-xl font-black text-emerald-900 dark:text-emerald-50 mb-6">Britestate</div>
+<p class="text-zinc-500 max-w-sm font-['Inter'] text-sm tracking-wide leading-relaxed">
+                    The Curated Sanctuary for UK Property. Providing trust, transparency, and premium service to every step of your property journey.
+                </p>
+<p class="text-zinc-500 mt-12 font-['Inter'] text-sm tracking-wide">© 2024 Britestate. The Curated Sanctuary for UK Property.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+<div>
+<h5 class="font-bold text-primary mb-6 text-sm">Navigation</h5>
+<ul class="space-y-4 font-['Inter'] text-sm tracking-wide">
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Properties</a></li>
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Advisors</a></li>
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Valuations</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold text-primary mb-6 text-sm">Company</h5>
+<ul class="space-y-4 font-['Inter'] text-sm tracking-wide">
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">About Britestate</a></li>
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Contact Us</a></li>
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold text-primary mb-6 text-sm">Legal</h5>
+<ul class="space-y-4 font-['Inter'] text-sm tracking-wide">
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Terms of Service</a></li>
+<li><a class="text-zinc-500 hover:text-amber-500 transition-colors" href="#">Cookie Policy</a></li>
+</ul>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

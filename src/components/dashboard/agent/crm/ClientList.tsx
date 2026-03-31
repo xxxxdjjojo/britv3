@@ -67,11 +67,11 @@ type AddClientForm = {
 
 // CSS-var-compatible badge classes — semantic colors from design system
 const CLIENT_TYPE_COLORS: Record<string, string> = {
-  buyer: "bg-accent text-accent-foreground",
-  seller: "bg-warning-light text-warning",
-  renter: "bg-info-light text-info",
-  landlord: "bg-[color-mix(in_srgb,var(--color-brand-secondary-light)_80%,transparent)] text-[color-mix(in_srgb,var(--color-brand-secondary)_90%,#000)]",
-  investor: "bg-success-light text-success",
+  buyer: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+  seller: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+  renter: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  landlord: "bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400",
+  investor: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
 };
 
 export function ClientList({ clients }: Props) {
@@ -399,7 +399,7 @@ export function ClientList({ clients }: Props) {
       )}
 
       {/* Table */}
-      <div className="rounded-xl bg-card overflow-hidden shadow-sm ring-1 ring-border/60">
+      <div className="rounded-2xl bg-card overflow-hidden shadow-sm ring-1 ring-border/60">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -410,7 +410,7 @@ export function ClientList({ clients }: Props) {
                     <TableHead
                       key={header.id}
                       onClick={header.column.getToggleSortingHandler()}
-                      className={`text-xs font-semibold text-muted-foreground uppercase tracking-wide ${
+                      className={`text-[11px] font-semibold text-muted-foreground uppercase tracking-widest ${
                         header.column.getCanSort() ? "cursor-pointer select-none hover:text-foreground" : ""
                       }`}
                     >
@@ -445,8 +445,8 @@ export function ClientList({ clients }: Props) {
                   className="h-40 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-3">
-                    <div className="size-12 rounded-full bg-muted flex items-center justify-center">
-                      <Users className="size-5 text-muted-foreground" strokeWidth={1.25} />
+                    <div className="size-14 rounded-full bg-muted flex items-center justify-center">
+                      <Users className="size-6 text-muted-foreground" strokeWidth={1.25} />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">No clients found</p>
@@ -467,7 +467,7 @@ export function ClientList({ clients }: Props) {
                   className="hover:bg-muted/30 transition-colors data-[state=selected]:bg-accent/50"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-sm text-foreground">
+                    <TableCell key={cell.id} className="px-4 py-3 text-sm text-foreground">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

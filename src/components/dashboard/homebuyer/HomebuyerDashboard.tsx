@@ -1,14 +1,11 @@
 
 /**
- * Homebuyer dashboard — Invisible Estate design system.
+ * Homebuyer dashboard — Stitch design system restyle.
  * Sections: welcome hero, stats, new-properties carousel, next viewing + activity, recommended services.
  */
 
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DashboardWelcome } from "@/components/dashboard/shared/DashboardWelcome";
 import {
   Heart,
   Bell,
@@ -17,7 +14,6 @@ import {
   MapPin,
   Bed,
   Bath,
-  SquareIcon,
   TrendingDown,
   MessageSquare,
   FileText,
@@ -30,6 +26,8 @@ import {
   Phone,
   Search,
   Sparkles,
+  Navigation,
+  RefreshCw,
 } from "lucide-react";
 import type { HomebuyerDashboard as HomebuyerData } from "@/types/dashboard";
 
@@ -40,105 +38,96 @@ import type { HomebuyerDashboard as HomebuyerData } from "@/types/dashboard";
 const MOCK_PROPERTIES = [
   {
     id: "p1",
-    price: "£1,250,000",
-    name: "The Glass House Residency",
-    location: "Kensington Garden, London",
+    price: "£485,000",
+    name: "Richmond Road",
+    location: "Isleworth TW7",
     beds: 3,
     baths: 2,
-    sqft: "1,200",
-    tags: ["Featured", "Virtual Tour"],
-    matchScore: 98,
+    sqft: "1,150",
+    tag: "New Listing",
+    tagVariant: "primary" as const,
   },
   {
     id: "p2",
-    price: "£875,000",
-    name: "Greenwich Penthouse Suite",
-    location: "Riverside Drive, Greenwich",
-    beds: 2,
+    price: "£495,000",
+    name: "Linkfield Road",
+    location: "Isleworth TW7",
+    beds: 3,
     baths: 2,
-    sqft: "950",
-    tags: [],
-    matchScore: 91,
+    sqft: "1,210",
+    tag: "Reduced",
+    tagVariant: "secondary" as const,
   },
   {
     id: "p3",
-    price: "£4,200/mo",
-    name: "Victorian Townhouse",
-    location: "Chelsea Mews, London",
-    beds: 4,
-    baths: 3,
-    sqft: "2,100",
-    tags: ["Price Drop"],
-    matchScore: 87,
-  },
-  {
-    id: "p4",
-    price: "£1,100,000",
-    name: "The Marble Loft",
-    location: "Shoreditch High St, London",
-    beds: 1,
+    price: "£470,000",
+    name: "Ambleside Avenue",
+    location: "Isleworth TW7",
+    beds: 3,
     baths: 1,
-    sqft: "850",
-    tags: [],
-    matchScore: 82,
+    sqft: "1,080",
+    tag: null,
+    tagVariant: "primary" as const,
   },
 ];
 
 const MOCK_ACTIVITY = [
   {
     id: 1,
-    icon: TrendingDown,
-    iconBg: "bg-success-light",
-    iconColor: "text-success",
-    title: "Price dropped on a saved home",
-    description:
-      "Victorian Townhouse Chelsea decreased from £4,500 to £4,200/mo",
-    time: "2 hours ago",
+    iconBg: "bg-emerald-50",
+    iconColor: "text-emerald-700",
+    Icon: TrendingDown,
+    title: "Price Reduction",
+    description: "Linkfield Road dropped to £495,000",
+    time: "2 HOURS AGO",
   },
   {
     id: 2,
-    icon: MessageSquare,
-    iconBg: "bg-brand-primary-lighter",
-    iconColor: "text-brand-primary",
-    title: "New message from Sarah Jones",
-    description: "Viewing confirmed for tomorrow at 10:30 AM",
-    time: "5 hours ago",
+    iconBg: "bg-blue-50",
+    iconColor: "text-blue-700",
+    Icon: MessageSquare,
+    title: "Viewing Confirmed",
+    description: "Your viewing for 22 Oak Lane is confirmed",
+    time: "5 HOURS AGO",
   },
   {
     id: 3,
-    icon: FileText,
-    iconBg: "bg-neutral-100",
-    iconColor: "text-neutral-500",
-    title: "Offer document received",
-    description: "Draft offer for Greenwich Penthouse ready to review",
-    time: "Yesterday",
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-700",
+    Icon: FileText,
+    title: "New Match",
+    description: "Richmond Road added to your matches",
+    time: "YESTERDAY",
   },
 ];
 
 const MOCK_SERVICES = [
   {
     id: "s1",
-    icon: Building,
-    title: "Mortgage Pre-approval",
+    Icon: Building,
+    title: "Mortgage Broker",
     description:
-      "Get pre-approved to strengthen your offer and speed up the buying process.",
+      "Expert financial advice to secure the best rates for your property purchase.",
     href: "/services/mortgage",
+    cta: "Explore Rates",
   },
   {
     id: "s2",
-    icon: Gavel,
-    title: "Legal Advice",
+    Icon: Gavel,
+    title: "Solicitor",
     description:
-      "Connect with qualified solicitors for conveyancing and property law guidance.",
+      "Streamlined legal processing and conveyancing with fixed-fee protection.",
     href: "/services/legal",
+    cta: "Get Quotes",
   },
   {
     id: "s3",
-    icon: Truck,
-    title: "Moving Concierge",
+    Icon: Truck,
+    title: "Surveyor",
     description:
-      "Stress-free moving with vetted removal companies and change-of-address services.",
+      "RICS certified surveys to ensure peace of mind for your new investment.",
     href: "/services/moving",
+    cta: "Book Survey",
   },
 ];
 
@@ -149,83 +138,91 @@ const MOCK_SERVICES = [
 export function HomebuyerDashboard({
   data,
 }: Readonly<{ data: HomebuyerData }>) {
-  const userName = "James";
+  const userName = "Alexander";
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* ── 1. Welcome Hero ───────────────────────────────────────────── */}
-      <DashboardWelcome
-        name={userName}
-        variant="hero"
-        message="You have 5 new property matches since your last visit. Let's find your dream home."
-        actions={[
-          { label: "Resume Search", href: "/search", icon: Search },
-          {
-            label: "Review Favourites",
-            href: "/dashboard/homebuyer/saved",
-            variant: "outline",
-            icon: Heart,
-          },
-        ]}
-      />
+    <div className="flex flex-col gap-12 pb-12">
+      {/* ── 1. Welcome Banner ─────────────────────────────────────────── */}
+      <section className="relative overflow-hidden rounded-2xl bg-brand-primary-dark p-8 lg:p-10">
+        <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-2">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-white lg:text-3xl">
+              Good morning, {userName}!
+            </h2>
+            <p className="text-lg text-emerald-200">
+              You have 3 new properties matching your searches in Isleworth.
+            </p>
+          </div>
+          <Link href="/dashboard/homebuyer/ai-match">
+            <Button
+              className="shrink-0 rounded-full bg-[#eec068] px-6 py-3 text-sm font-bold uppercase tracking-wide text-[#271900] hover:opacity-90"
+              aria-label="View AI property matches"
+            >
+              View Matches
+            </Button>
+          </Link>
+        </div>
+        {/* Decorative orb */}
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+      </section>
 
       {/* ── 2. Stats Row ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <DashStatCard
-          icon={<Heart className="size-5 text-brand-primary" strokeWidth={1.25} />}
+      <section
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        aria-label="Dashboard statistics"
+      >
+        <StatCard
+          Icon={Heart}
           label="Saved Properties"
           value={data.saved_properties_count ?? 12}
-          sub="+2 this week"
         />
-        <DashStatCard
-          icon={<Bell className="size-5 text-brand-primary" strokeWidth={1.25} />}
+        <StatCard
+          Icon={Bell}
           label="Active Alerts"
-          value={data.active_searches_count ?? 4}
+          value={data.active_searches_count ?? 3}
         />
-        <DashStatCard
-          icon={<Calendar className="size-5 text-brand-primary" strokeWidth={1.25} />}
-          label="Viewings Scheduled"
-          value={data.upcoming_viewings.length || 3}
-          sub="Next: Tomorrow"
+        <StatCard
+          Icon={Calendar}
+          label="Upcoming Viewings"
+          value={data.upcoming_viewings.length || 2}
         />
-        <DashStatCard
-          icon={<Mail className="size-5 text-brand-primary" strokeWidth={1.25} />}
-          label="Agent Messages"
-          value={15}
-          sub="8 unread"
+        <StatCard
+          Icon={Mail}
+          label="Unread Messages"
+          value={5}
         />
-      </div>
+      </section>
 
       {/* ── 3. New Properties Carousel ────────────────────────────────── */}
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-brand-secondary" strokeWidth={1.25} />
-            <h2 className="font-heading text-lg font-semibold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
-              New Properties For You
-            </h2>
+      <section className="flex flex-col gap-8">
+        <div className="flex items-end justify-between">
+          <div className="flex flex-col gap-1">
+            <h3 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+              New Properties for You
+            </h3>
+            <p className="text-sm text-neutral-500">
+              3-bed homes in Isleworth under £500k
+            </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="size-8 rounded-lg p-0"
+            <button
+              type="button"
+              className="flex size-10 items-center justify-center rounded-full bg-[#eeeeed] text-neutral-700 transition-colors hover:bg-[#e3e2e1]"
               aria-label="Previous properties"
             >
-              <ChevronLeft className="size-4" strokeWidth={1.25} />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="size-8 rounded-lg p-0"
+              <ChevronLeft className="size-5" strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              className="flex size-10 items-center justify-center rounded-full bg-brand-primary-dark text-white transition-opacity hover:opacity-90"
               aria-label="Next properties"
             >
-              <ChevronRight className="size-4" strokeWidth={1.25} />
-            </Button>
+              <ChevronRight className="size-5" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {MOCK_PROPERTIES.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
@@ -233,141 +230,103 @@ export function HomebuyerDashboard({
       </section>
 
       {/* ── 4. Split: Next Viewing + Recent Activity ──────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left — Next Viewing (1/3) */}
-        <Card className="overflow-hidden rounded-2xl shadow-sm lg:col-span-1">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 font-heading text-sm font-semibold text-neutral-700">
-              <Calendar className="size-4 text-brand-primary" strokeWidth={1.25} />
-              Next Viewing
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            {/* Map placeholder */}
-            <div className="flex aspect-[16/9] items-center justify-center rounded-xl bg-neutral-100">
-              <MapPin className="size-8 text-neutral-300" strokeWidth={1.25} />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <p className="font-heading text-sm font-semibold text-neutral-900">
-                The Glass House Residency
-              </p>
-              <p className="text-xs text-neutral-500">
-                Unit 402, Kensington Garden
-              </p>
-              <p className="text-xs font-semibold text-brand-primary">
-                Tomorrow at 10:30 AM
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-xl bg-neutral-50 p-3">
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter">
-                <span className="font-heading text-xs font-bold text-brand-primary">
-                  SJ
-                </span>
+      <section className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+        {/* Left 2/3 — Next Viewing */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          <h3 className="font-heading text-xl font-bold tracking-tight text-neutral-900">
+            Next Viewing
+          </h3>
+          <div className="relative overflow-hidden rounded-3xl bg-[#f4f3f2] p-8">
+            <div className="flex flex-col gap-8 md:flex-row md:items-start">
+              {/* Property thumbnail placeholder */}
+              <div className="aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-neutral-200 md:w-48">
+                <div className="flex size-full items-center justify-center">
+                  <MapPin className="size-10 text-neutral-300" strokeWidth={1.25} />
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-neutral-900">
-                  Sarah Jones
-                </p>
-                <p className="text-xs text-neutral-500">Senior Agent</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="size-8 shrink-0 rounded-lg p-0"
-                aria-label="Call Sarah Jones"
-              >
-                <Phone className="size-3.5" strokeWidth={1.25} />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Right — Recent Activity (2/3) */}
-        <Card className="overflow-hidden rounded-2xl shadow-sm lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="font-heading text-sm font-semibold text-neutral-700">
-              Recent Activity
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 gap-1 px-2 text-xs text-brand-primary hover:text-brand-primary"
-              render={<Link href="/dashboard/homebuyer/activity" />}
-            >
-              View all
-              <ArrowRight className="size-3" strokeWidth={1.25} />
-            </Button>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex flex-col">
-              {MOCK_ACTIVITY.map((item, idx) => (
-                <div
-                  key={item.id}
-                  className={`flex gap-4 py-4 ${idx !== 0 ? "mt-0" : ""}`}
-                >
-                  <div
-                    className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${item.iconBg}`}
-                  >
-                    <item.icon
-                      className={`size-4 ${item.iconColor}`}
-                      strokeWidth={1.25}
-                    />
-                  </div>
-                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <p className="text-sm font-medium text-neutral-900">
-                      {item.title}
+              <div className="flex flex-1 flex-col gap-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800">
+                      Tomorrow at 10:30 AM
                     </p>
-                    <p className="text-xs leading-relaxed text-neutral-500">
-                      {item.description}
+                    <h4 className="font-heading text-2xl font-bold text-neutral-900">
+                      22 Oak Lane
+                    </h4>
+                    <p className="text-sm text-neutral-500">
+                      Isleworth, London, TW7 4JP
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs text-neutral-400">
-                    {item.time}
+                  <span className="shrink-0 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                    Confirmed
                   </span>
                 </div>
-              ))}
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-xl bg-brand-primary-dark px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  >
+                    <Navigation className="size-4" strokeWidth={1.5} />
+                    Get Directions
+                  </button>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-50"
+                  >
+                    <RefreshCw className="size-4" strokeWidth={1.5} />
+                    Reschedule
+                  </button>
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+
+        {/* Right 1/3 — Recent Activity */}
+        <div className="flex flex-col gap-4">
+          <h3 className="font-heading text-xl font-bold tracking-tight text-neutral-900">
+            Recent Activity
+          </h3>
+          <div className="flex flex-col gap-6">
+            {MOCK_ACTIVITY.map((item) => (
+              <div key={item.id} className="flex gap-4">
+                <div
+                  className={`flex size-10 shrink-0 items-center justify-center rounded-full ${item.iconBg}`}
+                >
+                  <item.Icon className={`size-4 ${item.iconColor}`} strokeWidth={1.5} />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-sm font-semibold text-neutral-800">
+                    {item.title}
+                  </p>
+                  <p className="text-xs text-neutral-500">{item.description}</p>
+                  <p className="mt-1.5 text-[10px] font-medium text-neutral-400">
+                    {item.time}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="w-full pt-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 transition-colors hover:text-brand-primary-dark"
+            >
+              View All Activity
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* ── 5. Recommended Services ───────────────────────────────────── */}
-      <section className="flex flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold tracking-tight text-neutral-900 font-['Plus_Jakarta_Sans']">
+      <section className="flex flex-col gap-8">
+        <h3 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
           Recommended Services
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        </h3>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {MOCK_SERVICES.map((service) => (
-            <Card
-              key={service.id}
-              className="group overflow-hidden rounded-2xl shadow-sm transition-shadow hover:shadow-md"
-            >
-              <CardContent className="flex flex-col items-start gap-3 p-6">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-brand-primary-lighter">
-                  <service.icon
-                    className="size-5 text-brand-primary"
-                    strokeWidth={1.25}
-                  />
-                </div>
-                <h3 className="font-heading text-sm font-semibold text-neutral-900">
-                  {service.title}
-                </h3>
-                <p className="text-xs leading-relaxed text-neutral-500">
-                  {service.description}
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-auto h-auto gap-1 px-0 text-xs text-brand-primary hover:bg-transparent hover:text-brand-primary-light"
-                  render={<Link href={service.href} />}
-                >
-                  Learn more
-                  <ArrowRight className="size-3" strokeWidth={1.25} />
-                </Button>
-              </CardContent>
-            </Card>
+            <ServiceCard key={service.id} service={service} />
           ))}
         </div>
       </section>
@@ -379,32 +338,25 @@ export function HomebuyerDashboard({
 // Stat card sub-component
 // ---------------------------------------------------------------------------
 
-function DashStatCard({
-  icon,
+function StatCard({
+  Icon,
   label,
   value,
-  sub,
 }: Readonly<{
-  icon: React.ReactNode;
+  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
   value: string | number;
-  sub?: string;
 }>) {
   return (
-    <Card className="overflow-hidden rounded-2xl shadow-sm">
-      <CardContent className="flex flex-col gap-3 p-5">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-brand-primary-lighter">
-          {icon}
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <p className="text-xs font-medium text-neutral-500">{label}</p>
-          <p className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
-            {value}
-          </p>
-          {sub && <p className="text-xs text-neutral-400">{sub}</p>}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col items-center rounded-2xl bg-white p-6 text-center shadow-sm">
+      <Icon className="mb-4 size-6 text-emerald-900" strokeWidth={1.25} />
+      <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
+        {label}
+      </p>
+      <p className="font-heading text-3xl font-extrabold text-neutral-900">
+        {value}
+      </p>
+    </div>
   );
 }
 
@@ -420,74 +372,102 @@ type PropertyCardData = {
   beds: number;
   baths: number;
   sqft: string;
-  tags: string[];
-  matchScore: number;
+  tag: string | null;
+  tagVariant: "primary" | "secondary";
 };
 
 function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
+  const tagClasses =
+    property.tagVariant === "secondary"
+      ? "bg-[#fdcd74] text-[#785601]"
+      : "bg-brand-primary-dark/90 text-white";
+
   return (
-    <Card className="group overflow-hidden rounded-2xl shadow-sm transition-shadow hover:shadow-md">
+    <div className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md">
       {/* Image placeholder */}
-      <div className="relative aspect-[4/3] bg-neutral-100">
-        {/* Tags */}
-        {property.tags.length > 0 && (
-          <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
-            {property.tags.map((tag) => (
-              <Badge
-                key={tag}
-                className={
-                  tag === "Price Drop"
-                    ? "bg-success text-white text-xs font-medium"
-                    : "bg-white/90 text-neutral-700 text-xs font-medium backdrop-blur-sm"
-                }
-              >
-                {tag}
-              </Badge>
-            ))}
+      <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+        <div className="flex size-full items-center justify-center">
+          <Heart className="size-12 text-neutral-200" strokeWidth={1} />
+        </div>
+
+        {property.tag && (
+          <div className="absolute left-4 top-4">
+            <span
+              className={`rounded px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${tagClasses}`}
+            >
+              {property.tag}
+            </span>
           </div>
         )}
-        {/* AI match score */}
-        <div className="absolute right-3 top-3">
-          <Badge className="bg-brand-primary text-white text-xs font-semibold">
-            {property.matchScore}% match
-          </Badge>
-        </div>
+
         {/* Save button */}
         <button
           type="button"
-          className="absolute bottom-3 right-3 flex size-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-400 shadow-sm backdrop-blur-sm transition hover:bg-white hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           aria-label={`Save ${property.name}`}
         >
-          <Heart className="size-4 text-neutral-400" strokeWidth={1.25} />
+          <Heart className="size-4" strokeWidth={1.5} />
         </button>
       </div>
 
-      <CardContent className="flex flex-col gap-2 p-4">
-        <p className="font-heading text-base font-bold text-neutral-900">
+      <div className="p-6">
+        <p className="font-heading text-2xl font-bold text-emerald-950">
           {property.price}
         </p>
-        <p className="text-sm font-medium text-neutral-800 line-clamp-1">
-          {property.name}
+        <p className="mb-4 mt-1 text-sm text-neutral-500">
+          {property.name}, {property.location}
         </p>
-        <p className="flex items-center gap-1 text-xs text-neutral-500">
-          <MapPin className="size-3 shrink-0" strokeWidth={1.25} />
-          <span className="truncate">{property.location}</span>
-        </p>
-        <div className="flex items-center gap-3 pt-2 text-xs text-neutral-500">
-          <span className="flex items-center gap-1">
-            <Bed className="size-3" strokeWidth={1.25} />
+        <div className="flex items-center gap-4 border-t border-neutral-100 pt-4 text-sm text-neutral-500">
+          <span className="flex items-center gap-1.5">
+            <Bed className="size-4" strokeWidth={1.25} />
             {property.beds}
           </span>
-          <span className="flex items-center gap-1">
-            <Bath className="size-3" strokeWidth={1.25} />
+          <span className="flex items-center gap-1.5">
+            <Bath className="size-4" strokeWidth={1.25} />
             {property.baths}
           </span>
-          <span className="flex items-center gap-1">
-            <SquareIcon className="size-3" strokeWidth={1.25} />
-            {property.sqft} sq ft
+          <span className="flex items-center gap-1.5">
+            <Search className="size-4" strokeWidth={1.25} />
+            {property.sqft}
           </span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Service card sub-component
+// ---------------------------------------------------------------------------
+
+type ServiceData = {
+  id: string;
+  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  title: string;
+  description: string;
+  href: string;
+  cta: string;
+};
+
+function ServiceCard({ service }: Readonly<{ service: ServiceData }>) {
+  return (
+    <div className="group overflow-hidden rounded-3xl border border-neutral-100 bg-white p-8 transition-all hover:border-emerald-200 hover:shadow-sm">
+      <div className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-[#f4f3f2] transition-colors group-hover:bg-emerald-50">
+        <service.Icon className="size-6 text-emerald-900" strokeWidth={1.25} />
+      </div>
+      <h4 className="font-heading mb-2 text-lg font-bold text-emerald-950">
+        {service.title}
+      </h4>
+      <p className="mb-6 text-sm leading-relaxed text-neutral-500">
+        {service.description}
+      </p>
+      <Link
+        href={service.href}
+        className="flex items-center gap-2 text-sm font-bold text-emerald-800 transition-transform hover:translate-x-1"
+      >
+        {service.cta}
+        <ArrowRight className="size-4" strokeWidth={1.5} />
+      </Link>
+    </div>
   );
 }

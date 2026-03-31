@@ -102,7 +102,7 @@ function ListingCard({ listing, onRestored, onDeleted }: ListingCardProps) {
           className={cn(
             "absolute left-3 top-3 rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize",
             isDraft
-              ? "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400"
+              ? "bg-warning-light text-warning dark:bg-amber-900/20 dark:text-amber-400"
               : "bg-muted/90 text-muted-foreground backdrop-blur-sm",
           )}
         >

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About Us | The Invisible Estate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-highest": "#e3e2e1",
+              "surface": "#faf9f8",
+              "on-error": "#ffffff",
+              "on-secondary-fixed-variant": "#5d4200",
+              "on-primary-fixed-variant": "#1d4f40",
+              "on-primary": "#ffffff",
+              "error-container": "#ffdad6",
+              "secondary": "#7b5804",
+              "tertiary-fixed": "#dbe1ff",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "surface-bright": "#faf9f8",
+              "on-surface-variant": "#404945",
+              "secondary-fixed-dim": "#eec068",
+              "primary-fixed-dim": "#9ed1bd",
+              "surface-container-low": "#f4f3f2",
+              "error": "#ba1a1a",
+              "on-primary-container": "#8abda9",
+              "on-error-container": "#93000a",
+              "primary-container": "#1b4d3e",
+              "on-secondary-container": "#785601",
+              "secondary-container": "#fdcd74",
+              "inverse-on-surface": "#f1f0f0",
+              "inverse-primary": "#9ed1bd",
+              "secondary-fixed": "#ffdea6",
+              "surface-container": "#eeeeed",
+              "surface-container-high": "#e9e8e7",
+              "on-tertiary-fixed": "#00174b",
+              "on-surface": "#1a1c1c",
+              "tertiary": "#002873",
+              "primary-fixed": "#baeed9",
+              "surface-dim": "#dadad9",
+              "on-tertiary-container": "#96afff",
+              "on-secondary": "#ffffff",
+              "on-secondary-fixed": "#271900",
+              "surface-variant": "#e3e2e1",
+              "background": "#faf9f8",
+              "outline-variant": "#c0c9c3",
+              "inverse-surface": "#2f3130",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#003ca3",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "primary": "#003629",
+              "surface-container-lowest": "#ffffff",
+              "surface-tint": "#376757",
+              "outline": "#707974",
+              "on-background": "#1a1c1c",
+              "on-primary-fixed": "#002117"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' 0, 'opsz' 24;
+      }
+      .editorial-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+      }
+      .glass-header {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto font-['Plus_Jakarta_Sans'] tracking-tight">
+<div class="text-xl font-bold text-emerald-950 dark:text-emerald-50">The Invisible Estate</div>
+<div class="hidden md:flex items-center space-x-12">
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 transition-colors duration-300 ease-in-out" href="#">Properties</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 transition-colors duration-300 ease-in-out" href="#">Insights</a>
+<a class="text-emerald-900 dark:text-emerald-400 font-semibold border-b-2 border-emerald-900 transition-colors duration-300 ease-in-out" href="#">About</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-emerald-800 transition-colors duration-300 ease-in-out" href="#">Contact</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="hidden lg:block text-emerald-900 dark:text-emerald-500 font-medium hover:opacity-80 transition-opacity">List Property</button>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="professional headshot of a refined man in a charcoal suit, soft studio lighting, high-end editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtt3s7lDUpuwUfopq21oEu04hoKQ4ynEfoRGP7cYf-BnkCSRItEKpr-ttBjwb0gkKG-KJwdMuFxTsHk0nd9HzoAKggRZgxnv8Ml3cjjtZsot1UDg_H5l0uGArr_eP7Dg9EYD6jrT_ljEteGWVMhVw1GNb5m2fHw5Uj26ozC-PaglkB_OGnTliyaWwX32r57YoC7Q25lvjqOU0nqt2lyXaXLAMYb9fRJ8Yrk7TFVFi8BAVMOnt1LvLx0Pktx4f3clSfNYE668LrR_de"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="max-w-screen-2xl mx-auto px-8 md:px-12 py-20 editorial-grid gap-y-12">
+<div class="col-span-12 lg:col-span-5 flex flex-col justify-center pr-12">
+<span class="font-label text-sm tracking-[0.15em] text-secondary mb-6 uppercase">Our Narrative</span>
+<h1 class="font-headline text-5xl md:text-[5rem] leading-[1.1] font-extrabold tracking-tighter text-primary mb-10">
+                    A Curated Sanctuary
+                </h1>
+<p class="text-lg text-on-surface-variant leading-relaxed max-w-lg">
+                    We believe the search for a home should be as tranquil as the home itself. Our mission is to simplify property discovery through editorial excellence and an uncompromising "Invisible" interface.
+                </p>
+</div>
+<div class="col-span-12 lg:col-span-7 aspect-[16/10] bg-surface-container-low overflow-hidden">
+<img alt="Minimalist home exterior" class="w-full h-full object-cover grayscale-[20%] hover:scale-105 transition-transform duration-[2000ms] ease-[cubic-bezier(0.22,1,0.36,1)]" data-alt="architectural photograph of a minimalist brutalist villa with smooth concrete walls, large glass windows, surrounded by soft forest pine trees at twilight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmY5sWFVNFhZJJAU4VMI8dqH6QEs8V4VZjDekb14yW0FrZaQVmpPyVsBjZ_LkmirwlYyMu1syw9YcBshwG9ZtO8Aj3aYKm-J-QQNznq-7EFENAc5L-nda_e-6k-TLVccorv7saiVm26mJRtug4rEENn0D_yFWRxhVQPWrgKrm2o5XEzqsqYODMnrljfNBpE3eHoKtOwemD04ygjzJY_P5Rmlfs5DLDUbUD6XDjB_aPRGsmGhJV9WoObDHUOIWoKrijlzLGUc-JwHN4"/>
+</div>
+</section>
+<!-- The Philosophy -->
+<section class="bg-surface-container-low py-28">
+<div class="max-w-screen-2xl mx-auto px-8 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-24">
+<div class="space-y-6">
+<div class="w-12 h-[2px] bg-secondary-fixed-dim"></div>
+<h2 class="font-headline text-2xl font-bold text-primary">Zero Noise</h2>
+<p class="text-on-surface-variant font-light leading-relaxed">
+                            Traditional portals profit from distraction. We profit from focus. Our platform is strictly ad-free, banner-free, and notification-light. We strip away the clutter to let architectural beauty speak for itself.
+                        </p>
+</div>
+<div class="space-y-6">
+<div class="w-12 h-[2px] bg-secondary-fixed-dim"></div>
+<h2 class="font-headline text-2xl font-bold text-primary">Editorial Rigor</h2>
+<p class="text-on-surface-variant font-light leading-relaxed">
+                            Not every house belongs here. Every listing on The Invisible Estate is hand-vetted by our curators for its design integrity, environmental harmony, and spatial soul. Quality over volume, always.
+                        </p>
+</div>
+<div class="space-y-6">
+<div class="w-12 h-[2px] bg-secondary-fixed-dim"></div>
+<h2 class="font-headline text-2xl font-bold text-primary">Invisible Interface</h2>
+<p class="text-on-surface-variant font-light leading-relaxed">
+                            The UI is a tool, not a performance. We employ tonal layering and generous whitespace to ensure the digital experience recedes into the background, becoming a silent partner in your journey.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- The Curators -->
+<section class="py-32">
+<div class="max-w-screen-2xl mx-auto px-8 md:px-12">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div class="max-w-xl">
+<span class="font-label text-xs tracking-widest text-secondary uppercase mb-4 block">Human Intelligence</span>
+<h2 class="font-headline text-4xl font-bold text-primary tracking-tight">The Curators</h2>
+<p class="mt-6 text-on-surface-variant">Our team is comprised of architects, designers, and real estate visionaries who see properties as more than just square footage.</p>
+</div>
+<div class="flex space-x-4">
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">west</span>
+</button>
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">east</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+<!-- Anna Singh -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] bg-surface-container mb-6 overflow-hidden">
+<img alt="Anna Singh" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="refined portrait of a woman with minimalist gold jewelry, wearing a structured cream blazer, warm natural afternoon sunlight, professional editorial look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS5DcjWCvKK0Foe063qhTTyrWBWeeyGNSbQMnuou1ACWp3D0TNeTbfzFyqwM_Uad-fN9AD7tiuJ78de5ZDesDqjTOj9c3Re6yS2POh5QYztFCWj3uJiC3IjOi4A_aGkTnJ5PisQ03kSarVThgAUSz8oCufbihJOqe8T1SXnJ8-RDlOEJ_Ssa30Kr_VBEYbtLKKuEZqrUjlVLdXNw-xpDMyBQroKGDJvecTvtZIamr4eJBAfblnIJTkML8_ixoH6DRGXVdHBw5bwBTH"/>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary">Anna Singh</h3>
+<p class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase mt-1">Head of Design</p>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity">
+                            Specializing in architectural phenomenology, Anna ensures every estate meets our aesthetic threshold.
+                        </p>
+</div>
+<!-- Julian Thorne -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] bg-surface-container mb-6 overflow-hidden">
+<img alt="Julian Thorne" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="man in charcoal turtleneck looking thoughtful, dramatic side lighting, high-end studio portrait, soft blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhDbWvfCw5yBpLgeZj1BF0Bq-jJSbYyz5HIgTjM1EdMQWD_uuMcz3xcl8XKmMJAk1gX98DLuPkRlyTU1TYVqmoITqzFC9mGXqln7j_0nFGb81tHFUYJ9q76Hwb4_9mKb_BG8sLknUBhD-QNdxsA0ZtLdwbiBvvF-UfK6O7Z5iBmv12a55-KMzAdLAyoDogovSH2GQXWJr39mJbtWL24Vc4ZpoYVE-KkRQ7zm_biy2H6vX407OKB-qtWbkeCu14xolE2AOYWx-umaAm"/>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary">Julian Thorne</h3>
+<p class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase mt-1">Founder</p>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity">
+                            A pioneer in digital real estate, Julian founded The Invisible Estate to return elegance to the home-buying process.
+                        </p>
+</div>
+<!-- Elena Rossi -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] bg-surface-container mb-6 overflow-hidden">
+<img alt="Elena Rossi" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="sophisticated woman with glasses and dark hair, wearing a forest green silk blouse, professional workspace background with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD58drV0qF32XPWsAS8p_a7T9eb44q84JZR5N2iXC_GCdKCM9C8k6w-ZDXLkOShpX2c3V8t-L_gD8JQrtSvNonVt5aO7mkWC5SNuUxjGKwxcgdzdZZltNvHP5rFudUFXJ3Dca1_CA4ZNVzlKbN-a08PRAbxsbaHLp2v9fgvaQCJcUCgBuwswZKKb1BURtIpw2xsVHVNp_V2u-sD4WI202fXoUdK66iA_F_QIo3Rp8WI_47fO-R4S8Ma12u5l8Vn58KUjlHYCkOiZPcw"/>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary">Elena Rossi</h3>
+<p class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase mt-1">Head of Curation</p>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity">
+                            Elena brings fifteen years of high-end international brokerage experience to our vetting process.
+                        </p>
+</div>
+<!-- Marcus Vance -->
+<div class="group cursor-pointer">
+<div class="aspect-[4/5] bg-surface-container mb-6 overflow-hidden">
+<img alt="Marcus Vance" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="handsome man with salt and pepper beard, wearing a linen shirt, relaxed garden setting, soft natural outdoor light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0gjrU_oneiCgEGZlUWSJnLC0-fmd2lHd6TPiG-UACE-vh0JmGhMRH5tkYQdxHZ3mdnA7qflUN8V5yqSF7QW4W6BH31zvb9Dx895rMh4RjgGKwMh4G_P1jFA6uEs1TNeuhPeUa5bdrBOEgZqZqtB-eG_rn_gActUhqxkg6wY7sH5QIKjDPSwjOfekr8_NU1C79pyTEYh_iHu-i2sjuj3ys_sGhyrjs2qm_md3pOQ8lJvKVe0_SYNDaeTSCD13qvGXIUeCIdvxrIQO6"/>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary">Marcus Vance</h3>
+<p class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase mt-1">Global Director</p>
+<p class="mt-4 text-sm text-on-surface-variant leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity">
+                            Marcus oversees our partnerships with the world's most exclusive private family offices.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Press & Recognition -->
+<section class="bg-surface-container-highest/30 py-24">
+<div class="max-w-screen-2xl mx-auto px-8 md:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-16 items-center">
+<div class="lg:border-r lg:border-outline-variant/30 pr-8">
+<p class="font-headline text-lg italic text-primary-container">"The Invisible Estate is a masterclass in digital restraint."</p>
+<span class="font-label text-[10px] tracking-widest text-secondary mt-4 block uppercase">The Times</span>
+</div>
+<div class="lg:border-r lg:border-outline-variant/30 px-0 lg:px-8">
+<p class="font-headline text-lg italic text-primary-container">"Finally, a platform that respects the architecture it showcases."</p>
+<span class="font-label text-[10px] tracking-widest text-secondary mt-4 block uppercase">Architectural Digest</span>
+</div>
+<div class="lg:border-r lg:border-outline-variant/30 px-0 lg:px-8">
+<p class="font-headline text-lg italic text-primary-container">"A quiet revolution in the noisy world of real estate portals."</p>
+<span class="font-label text-[10px] tracking-widest text-secondary mt-4 block uppercase">Monocle</span>
+</div>
+<div class="flex justify-around items-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-500">
+<span class="material-symbols-outlined text-4xl">verified_user</span>
+<span class="material-symbols-outlined text-4xl">workspace_premium</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Visionary CTA -->
+<section class="py-40">
+<div class="max-w-3xl mx-auto px-8 text-center">
+<h2 class="font-headline text-5xl font-bold text-primary mb-8 tracking-tight">Begin your journey.</h2>
+<p class="text-on-surface-variant text-lg leading-relaxed mb-12 font-light">
+                    Whether you are seeking your next sanctuary or looking to transition an extraordinary estate, we are here to curate the path forward.
+                </p>
+<div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+<button class="px-10 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-md font-medium hover:opacity-90 transition-opacity w-full sm:w-auto">
+                        Explore Listings
+                    </button>
+<button class="px-10 py-4 bg-secondary-fixed-dim text-on-secondary-fixed rounded-md font-medium hover:bg-secondary-container transition-colors w-full sm:w-auto">
+                        List Your Estate
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-20 bg-stone-100 dark:bg-stone-950 font-['Inter'] text-sm tracking-wide">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 px-12 py-16 max-w-screen-2xl mx-auto tonal-shift bg-stone-200/30">
+<div class="col-span-2">
+<div class="text-lg font-semibold text-emerald-950 dark:text-emerald-100 mb-6">The Invisible Estate</div>
+<p class="text-stone-600 dark:text-stone-400 mb-6">Redefining high-end property discovery through quiet luxury and editorial precision.</p>
+<div class="text-emerald-900 dark:text-emerald-500 font-medium">Curated Excellence.</div>
+</div>
+<div class="flex flex-col space-y-4">
+<h4 class="font-bold text-stone-900 dark:text-stone-100 uppercase text-xs tracking-[0.2em] mb-2">Company</h4>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 underline-offset-4 hover:underline transition-opacity" href="#">Our Story</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 underline-offset-4 hover:underline transition-opacity" href="#">Investment Strategy</a>
+</div>
+<div class="flex flex-col space-y-4">
+<h4 class="font-bold text-stone-900 dark:text-stone-100 uppercase text-xs tracking-[0.2em] mb-2">Legal</h4>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 underline-offset-4 hover:underline transition-opacity" href="#">Privacy Policy</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 underline-offset-4 hover:underline transition-opacity" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col space-y-4">
+<h4 class="font-bold text-stone-900 dark:text-stone-100 uppercase text-xs tracking-[0.2em] mb-2">Technical</h4>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 underline-offset-4 hover:underline transition-opacity" href="#">Cookie Settings</a>
+<a class="text-stone-600 dark:text-stone-400 hover:text-emerald-900 dark:hover:text-emerald-200 underline-offset-4 hover:underline transition-opacity" href="#">UK Tax Compliance</a>
+</div>
+<div class="flex flex-col space-y-4">
+<h4 class="font-bold text-stone-900 dark:text-stone-100 uppercase text-xs tracking-[0.2em] mb-2">Inquiries</h4>
+<span class="text-stone-600 dark:text-stone-400">concierge@invisibleestate.com</span>
+<span class="text-stone-600 dark:text-stone-400">+44 20 7946 0101</span>
+</div>
+</div>
+<div class="max-w-screen-2xl mx-auto px-12 py-8 border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="text-stone-500 dark:text-stone-400">© 2024 The Invisible Estate. Curated Excellence.</span>
+<div class="flex space-x-6 text-stone-400">
+<span class="material-symbols-outlined cursor-pointer hover:text-emerald-900">public</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-emerald-900">share</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-emerald-900">mail</span>
+</div>
+</div>
+</footer>
+</body></html>

@@ -65,10 +65,10 @@ function Section({
 }>) {
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-      <div className="bg-neutral-50 px-6 py-4">
-        <p className="font-heading font-semibold text-foreground">{title}</p>
+      <div className="bg-muted/30 px-6 py-4">
+        <p className="font-heading text-sm font-semibold text-foreground">{title}</p>
         {description && (
-          <p className="mt-0.5 text-xs text-neutral-500">{description}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         )}
       </div>
       <div className="p-6">{children}</div>
@@ -208,9 +208,9 @@ export function AgencyBrandingForm({ profile }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {/* Live preview */}
       <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-        <div className="bg-neutral-50 px-6 py-4">
-          <p className="font-heading font-semibold text-foreground">Preview</p>
-          <p className="mt-0.5 text-xs text-neutral-500">
+        <div className="bg-muted/30 px-6 py-4">
+          <p className="font-heading text-sm font-semibold text-foreground">Preview</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
             How your brand appears across the platform
           </p>
         </div>
@@ -326,7 +326,7 @@ export function AgencyBrandingForm({ profile }: Props) {
                   value={primaryColour}
                   onChange={() => {}}
                   readOnly
-                  className="rounded-lg bg-neutral-50 font-mono text-sm uppercase"
+                  className="rounded-xl bg-neutral-50 font-mono text-sm uppercase"
                   aria-label="Primary colour hex value"
                 />
               </div>
@@ -358,7 +358,7 @@ export function AgencyBrandingForm({ profile }: Props) {
                   value={secondaryColour}
                   onChange={() => {}}
                   readOnly
-                  className="rounded-lg bg-neutral-50 font-mono text-sm uppercase"
+                  className="rounded-xl bg-neutral-50 font-mono text-sm uppercase"
                   aria-label="Secondary colour hex value"
                 />
               </div>
@@ -396,7 +396,7 @@ export function AgencyBrandingForm({ profile }: Props) {
           {...register("description")}
           rows={4}
           placeholder="A brief description shown on your public profile…"
-          className="resize-none rounded-lg bg-neutral-50"
+          className="resize-none rounded-xl bg-neutral-50"
         />
         <div className="mt-2 flex items-center justify-between">
           <span />
@@ -440,7 +440,7 @@ export function AgencyBrandingForm({ profile }: Props) {
                   type="url"
                   {...register(id)}
                   placeholder={placeholder}
-                  className="rounded-lg bg-neutral-50 pl-9"
+                  className="rounded-xl bg-neutral-50 pl-9"
                 />
               </div>
               {errors[id] && (

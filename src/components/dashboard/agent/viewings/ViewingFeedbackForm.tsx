@@ -98,7 +98,7 @@ function FeedbackCard({ feedback }: Readonly<{ feedback: AgentViewingFeedback }>
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
       {/* Header */}
-      <div className="bg-neutral-50 px-4 py-3">
+      <div className="bg-muted/30 px-4 py-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
             <p className="font-semibold text-neutral-900">
@@ -253,8 +253,8 @@ function AddFeedbackForm({ onAdded }: Readonly<{ onAdded: () => void }>) {
 
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60">
-      <div className="bg-neutral-50 px-6 py-4">
-        <p className="font-semibold text-neutral-900">Add Viewing Feedback</p>
+      <div className="bg-muted/30 px-6 py-4">
+        <p className="font-heading text-sm font-semibold text-foreground">Add Viewing Feedback</p>
       </div>
       <div className="p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -273,7 +273,7 @@ function AddFeedbackForm({ onAdded }: Readonly<{ onAdded: () => void }>) {
                   setForm((f) => ({ ...f, buyer_name: e.target.value }))
                 }
                 placeholder="e.g. John Smith"
-                className="rounded-lg bg-neutral-50"
+                className="rounded-xl bg-neutral-50"
               />
             </div>
             <div className="space-y-1.5">
@@ -290,7 +290,7 @@ function AddFeedbackForm({ onAdded }: Readonly<{ onAdded: () => void }>) {
                   setForm((f) => ({ ...f, viewing_slot_id: e.target.value }))
                 }
                 placeholder="UUID of the viewing slot"
-                className="rounded-lg bg-neutral-50"
+                className="rounded-xl bg-neutral-50"
               />
             </div>
           </div>
@@ -368,7 +368,7 @@ function AddFeedbackForm({ onAdded }: Readonly<{ onAdded: () => void }>) {
               }
               placeholder="Notes from the viewing…"
               rows={3}
-              className="resize-none rounded-lg bg-neutral-50"
+              className="resize-none rounded-xl bg-neutral-50"
             />
           </div>
 
@@ -415,11 +415,11 @@ export function ViewingFeedbackForm({
       {/* Existing feedback */}
       {feedbacks.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl bg-neutral-50 py-16 text-center">
-          <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-brand-primary-lighter">
-            <MessageSquare className="size-7 text-brand-primary" />
+          <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-muted">
+            <MessageSquare className="size-6 text-muted-foreground" />
           </div>
-          <p className="font-semibold text-neutral-800">No feedback yet</p>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="font-heading font-semibold text-foreground">No feedback yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             Feedback submitted after viewings will appear here.
           </p>
         </div>

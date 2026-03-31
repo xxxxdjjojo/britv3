@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>14 Elm Road, Isleworth | ESTATE_EDITION</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#dad8e8",
+              "surface": "#fbf8ff",
+              "surface-variant": "#e2e1f1",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#b4c5ff",
+              "on-tertiary-fixed": "#00174b",
+              "on-error-container": "#93000a",
+              "tertiary-fixed": "#dbe1ff",
+              "on-primary-fixed-variant": "#1d4f40",
+              "tertiary": "#002873",
+              "surface-bright": "#fbf8ff",
+              "on-primary-fixed": "#002117",
+              "surface-container": "#eeecfc",
+              "on-secondary-fixed-variant": "#5d4200",
+              "background": "#fbf8ff",
+              "error": "#ba1a1a",
+              "primary": "#1B4D3E",
+              "secondary-fixed-dim": "#eec068",
+              "inverse-primary": "#9ed1bd",
+              "inverse-surface": "#2f2f3b",
+              "on-secondary-container": "#785601",
+              "outline": "#707974",
+              "surface-tint": "#376757",
+              "surface-container-highest": "#e2e1f1",
+              "inverse-on-surface": "#f1efff",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#8abda9",
+              "surface-container-high": "#e8e7f7",
+              "secondary-fixed": "#ffdea6",
+              "outline-variant": "#c0c9c3",
+              "on-surface": "#1a1b26",
+              "tertiary-container": "#003ca3",
+              "on-tertiary-container": "#96afff",
+              "secondary": "#D4A853",
+              "on-tertiary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "primary-container": "#1b4d3e",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed-variant": "#003ea8",
+              "on-surface-variant": "#404945",
+              "on-background": "#1a1b26",
+              "secondary-container": "#fdcd74",
+              "surface-container-low": "#f4f2ff",
+              "on-secondary-fixed": "#271900",
+              "primary-fixed": "#baeed9",
+              "primary-fixed-dim": "#9ed1bd"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(226, 226, 232, 0.5); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar from Shared Components -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 shadow-sm">
+<nav class="flex justify-between items-center h-16 px-6 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-emerald-900 dark:text-emerald-50">ESTATE_EDITION</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-neutral-600 dark:text-neutral-400 hover:text-emerald-800 transition-colors" href="#">Discover</a>
+<a class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-neutral-600 dark:text-neutral-400 hover:text-emerald-800 transition-colors" href="#">Markets</a>
+<a class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-neutral-600 dark:text-neutral-400 hover:text-emerald-800 transition-colors" href="#">Insights</a>
+<a class="font-['Plus_Jakarta_Sans'] font-semibold text-sm text-neutral-600 dark:text-neutral-400 hover:text-emerald-800 transition-colors" href="#">Guides</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center bg-surface-container rounded-full px-4 py-1.5 border border-outline-variant">
+<span class="material-symbols-outlined text-sm mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none text-xs focus:ring-0 w-32 lg:w-48 p-0" placeholder="Search UK property..." type="text"/>
+</div>
+<button class="bg-primary text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity">Sign In</button>
+</div>
+</nav>
+</header>
+<main class="pt-16 max-w-[1440px] mx-auto px-4 md:px-8">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 py-6 text-xs font-medium text-on-surface-variant overflow-x-auto whitespace-nowrap hide-scrollbar">
+<a class="hover:text-primary" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary" href="#">London</a>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary" href="#">Isleworth</a>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface">14 Elm Road</span>
+</nav>
+<!-- Gallery Section -->
+<section class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 h-[400px] md:h-[600px] mb-6 overflow-hidden rounded-2xl relative">
+<div class="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden">
+<img alt="Property Hero" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Modern semi-detached Victorian house with white exterior and large windows under a soft blue sky at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKj09zd_uvc_ykEh2LMx_kV7755tzLGpy0Fk9Lg_a7hvVyIsq8Q-wnDy2mrajDBW4ATxLhG7MeiditOuKurpGsg5BuEwCewbLRqqwh6skrZNloPnCDshKEP-voX64Di7dR2gSklV_nFLCl4vh555u8NE7hj23eBUQuQqWwOYnw3LcM0pWT0w4hPmzXTJDpwyKnRlH489GPJZUawAmxfJR2-PmIOPdNgquiVtGSVoX5_cFxn5MCr1sclmyxZm9CEA-DC5QnltunF5MM"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors"></div>
+</div>
+<div class="hidden md:block relative group cursor-pointer overflow-hidden">
+<img alt="Interior Detail" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Bright modern refurbished kitchen with white marble countertops and sage green cabinetry in natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5PZed-gqmlu3jOIMap_oiHvN5HnoGtS4B32pP-NBC-EskZjNLF7a7MMOz0tETIVzD4nB2Yh-LKYzLi3GF-YLBCBXi63E1s4lXFc8tGKnNb67fFkpTH0T7kzsCdBkHywdB6HKAskpVtYSdJkzOmNqRc5pBJ24yUA5dAfWsGxrYeWnp4B6fVpl_WghiUTZ-nA5MYJc1l1tBJv646WbCdmu2xCbCElo3UMwYBrilvB3WGKuQXoEgGt4ObUkMVn3IbHs23Qy8d9fx8MQF"/>
+</div>
+<div class="hidden md:block relative group cursor-pointer overflow-hidden">
+<img alt="Bedroom" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Spacious airy master bedroom with minimalist decor and soft beige linens and large window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjmrraLbz5oi12LFbY8W6NNzMRw1rVMIMFNOYkDyqDWmreztcqdSlm3zpB1qwx3aVyWk3-AZkCraOExvak-3Rm3zuL1doYs44HedvAE4xdV1E813ONAcWJzipUEYmZO7450njiw9wWlCezze6Z5alDu28Ahtmo-9ZrsXAJyXi-Do1hDDc2nD-HoW2m4iFRIevLJeIs_HaTnMrX5yC23XfDqRbIQxwcT_UodNkB_aRWH4A7tfhs0cjPaA6cG8O2_Xmuofl4TAbcZO6W"/>
+</div>
+<div class="hidden md:block md:col-span-2 md:row-span-1 relative group cursor-pointer overflow-hidden">
+<img alt="Garden View" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Lush south-facing landscaped garden with wooden deck and manicured green lawn in Isleworth" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALqD0i3pKphgJLQQWd4vCziBke5Le_ckPr6CmHOEXN2q_XKf90QSFhbCJba2QcRloUJR3DvFABlsUkcY6fEWRADaxFbeOwGioUVoLNDgG3xRD2Xodsm10orEMfjTqhnSFHLaFXTCzlDfW1roreqYcoH5JrvVefB-jadYEgRAQl9rtLlCD7nWV0zWBwl5Gv82rzl_YE17HdB-98m1NR3_4nTRYI--56Au2U9kj2E6LaobptpR4sZuj9e2tSMqf0fPdIcB2U7CuuhvyE"/>
+</div>
+<button class="absolute bottom-6 right-6 glass-panel px-6 py-2.5 rounded-full flex items-center gap-2 text-sm font-semibold text-primary shadow-lg hover:bg-white transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="gallery_thumbnail">gallery_thumbnail</span>
+                View All 24 Photos
+            </button>
+</section>
+<!-- Sticky Key Info Bar -->
+<section class="sticky top-[64px] z-40 bg-white/90 backdrop-blur-xl border-b border-neutral-100 py-4 -mx-4 md:-mx-8 px-4 md:px-8 mb-8 transition-shadow duration-300">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h1 class="text-2xl md:text-3xl font-headline font-bold text-primary">£425,000</h1>
+<p class="text-on-surface-variant font-medium text-sm flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                        14 Elm Road, Isleworth, TW7 4PQ
+                    </p>
+</div>
+<div class="flex flex-wrap items-center gap-6">
+<div class="flex items-center gap-6 text-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg text-secondary" data-icon="bed">bed</span>
+<span class="font-semibold text-on-surface">3 Bed</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg text-secondary" data-icon="bathtub">bathtub</span>
+<span class="font-semibold text-on-surface">2 Bath</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg text-secondary" data-icon="apartment">apartment</span>
+<span class="font-semibold text-on-surface">Semi-Detached</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg text-secondary" data-icon="straighten">straighten</span>
+<span class="font-semibold text-on-surface">1,200 sq ft</span>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full md:w-auto">
+<button class="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm flex-1 md:flex-none shadow-md hover:shadow-lg transition-all">Book Viewing</button>
+<button class="p-3 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="p-3 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Main Content (65%) -->
+<div class="lg:col-span-8 space-y-12">
+<!-- Description -->
+<section>
+<h2 class="text-xl font-headline font-bold text-primary mb-6">About this property</h2>
+<div class="space-y-4 text-on-surface-variant leading-relaxed">
+<p>This beautifully presented semi-detached family home is situated on one of Isleworth's most sought-after residential roads. Having undergone a complete architectural renovation, the property combines traditional character with modern efficiency.</p>
+<p>The ground floor features a bright, open-plan reception leading into a bespoke kitchen-diner with premium integrated appliances and oversized bifold doors that open onto a landscaped south-facing garden. High ceilings and engineered oak flooring run throughout the living spaces.</p>
+<p>Upstairs, three generous double bedrooms offer ample storage, with the master benefiting from a sleek en-suite shower room. The property is ideally positioned for commuters, being within walking distance of Isleworth station.</p>
+<button class="text-primary font-bold text-sm underline underline-offset-4 decoration-secondary hover:text-secondary-fixed-dim transition-colors">Read more</button>
+</div>
+<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex items-start gap-3 p-4 rounded-xl bg-surface-container-low border border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-sm font-medium">Large south-facing private landscaped garden with hardwood decking.</p>
+</div>
+<div class="flex items-start gap-3 p-4 rounded-xl bg-surface-container-low border border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<p class="text-sm font-medium">Newly refurbished kitchen with marble worktops and NEFF appliances.</p>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="grid grid-cols-2 md:grid-cols-3 gap-6">
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Tenure</p>
+<p class="text-sm font-semibold">Freehold</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Council Tax</p>
+<p class="text-sm font-semibold">Band D (£1,920 pa)</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Energy Rating</p>
+<div class="flex items-center gap-2">
+<span class="bg-success text-white text-[10px] px-2 py-0.5 rounded-full font-bold">EPC C</span>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Property Type</p>
+<p class="text-sm font-semibold">Semi-Detached</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Parking</p>
+<p class="text-sm font-semibold">Driveway (2 Cars)</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Condition</p>
+<p class="text-sm font-semibold">Renovated 2023</p>
+</div>
+</section>
+<!-- Floor Plan Viewer -->
+<section>
+<h2 class="text-xl font-headline font-bold text-primary mb-6">Floor Plans</h2>
+<div class="bg-white border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
+<div class="flex border-b border-outline-variant">
+<button class="px-6 py-4 text-sm font-bold border-b-2 border-primary text-primary">Ground Floor</button>
+<button class="px-6 py-4 text-sm font-medium text-on-surface-variant hover:bg-surface-container-low transition-colors">First Floor</button>
+</div>
+<div class="p-8 flex justify-center items-center min-h-[400px] bg-neutral-50/50">
+<img alt="Floorplan" class="max-w-full h-auto opacity-75 grayscale contrast-125" data-alt="Architectural technical blueprint floor plan showing room dimensions and layout of a ground floor house" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMS1lwgYmXdfn-aCt6x9ybxF-x44eNPJAdbTG-_eFXCNROSGL2cXqvKuUDVBB9Fb0pbbNjimuiUZj0Q2QG_I0NuECW43PSGY73n3-wDl-98DBXlk550__e6wr-lPPRWQh0hP8z3Xq1GnDliCOtEZazeznNa0oniuukrtY2FUFPHwjMrHrGgos8H4WmuSqQLrpsBvFh8qdbfmqjV9pUggRPwrHdcun6f-hEBLpSJkz7NvufuTGLcMLokeiC74TwPwgEynrjQiP-watJ"/>
+</div>
+</div>
+</section>
+<!-- Location & Area -->
+<section>
+<div class="flex justify-between items-end mb-6">
+<h2 class="text-xl font-headline font-bold text-primary">Location &amp; Connectivity</h2>
+<a class="text-xs font-bold text-secondary flex items-center gap-1" href="#">Open in Google Maps <span class="material-symbols-outlined text-xs" data-icon="open_in_new">open_in_new</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<div class="md:col-span-8 h-80 rounded-2xl overflow-hidden border border-outline-variant relative">
+<img class="w-full h-full object-cover grayscale brightness-110 contrast-75" data-alt="A clean topographic map background of Isleworth London area with a central green pin location" data-location="Isleworth, London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOjIGWOaXJQtGyVCE3ttRJkEzQFDCa8htcECRaFu84qI2lFMETfQPCIspgTZ5HceltBPWGHbbvR_7UNv0ioNq0_VBbgh-cA3E8OKSod-hDqcHXEKMhDAsDZR32si-qvblUO33ktCzxDH_cOW1thgDi-nmIO0lvBL0he7GEHjSH9IiYfwy4ThsKh-UORrXhQgKyQev6xkHvfwesvOcGkTLR7LkHkR3FZnsGBZmnpwnd4NhJq1SytSTxV0aoo1_1MdGlduLjv4_W6Vjs"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white shadow-xl ring-4 ring-white">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-4 space-y-4">
+<div class="p-4 rounded-xl bg-surface-container-high space-y-3">
+<p class="text-xs font-bold text-primary uppercase tracking-wider">Nearest Stations</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="train">train</span>
+<span class="text-sm font-medium">Isleworth</span>
+</div>
+<span class="text-xs text-on-surface-variant font-mono">0.4mi</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="directions_subway">directions_subway</span>
+<span class="text-sm font-medium">Osterley (Tube)</span>
+</div>
+<span class="text-xs text-on-surface-variant font-mono">0.9mi</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-primary-container text-white space-y-3">
+<p class="text-xs font-bold text-on-primary-container uppercase tracking-wider">School Catchment</p>
+<div class="flex flex-col gap-1">
+<p class="text-sm font-bold">The Blue School</p>
+<div class="flex items-center gap-2">
+<span class="bg-secondary text-on-secondary text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Outstanding</span>
+<span class="text-xs opacity-80">0.2mi away</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Insights -->
+<section class="space-y-8">
+<h2 class="text-xl font-headline font-bold text-primary">Market Insights</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<p class="text-sm font-bold text-on-surface-variant">Price Growth (Isleworth TW7)</p>
+<div class="h-40 flex items-end gap-2 px-2 border-b border-l border-outline-variant">
+<div class="w-1/6 bg-secondary-container h-[40%] rounded-t-sm"></div>
+<div class="w-1/6 bg-secondary-container h-[45%] rounded-t-sm"></div>
+<div class="w-1/6 bg-secondary-container h-[60%] rounded-t-sm"></div>
+<div class="w-1/6 bg-secondary h-[75%] rounded-t-sm"></div>
+<div class="w-1/6 bg-secondary h-[85%] rounded-t-sm"></div>
+<div class="w-1/6 bg-primary h-[95%] rounded-t-sm"></div>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-on-surface-variant px-2">
+<span>2019</span><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span>
+</div>
+</div>
+<div class="space-y-4">
+<p class="text-sm font-bold text-on-surface-variant">Comparable Sold Prices</p>
+<div class="space-y-2">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant">
+<div>
+<p class="text-xs font-bold">12 Elm Road</p>
+<p class="text-[10px] text-on-surface-variant">Nov 2023 • Similar size</p>
+</div>
+<p class="text-sm font-bold text-primary">£432,000</p>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant">
+<div>
+<p class="text-xs font-bold">8 Oak Way</p>
+<p class="text-[10px] text-on-surface-variant">Aug 2023 • 3 Bed Semi</p>
+</div>
+<p class="text-sm font-bold text-primary">£418,500</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+<div class="p-4 rounded-xl border border-outline-variant flex gap-4 items-center">
+<span class="material-symbols-outlined text-3xl text-primary" data-icon="wifi">wifi</span>
+<div>
+<p class="text-[10px] font-bold uppercase text-on-surface-variant">Broadband</p>
+<p class="text-sm font-bold">Ultrafast (1Gbps)</p>
+</div>
+</div>
+<div class="p-4 rounded-xl border border-outline-variant flex gap-4 items-center">
+<span class="material-symbols-outlined text-3xl text-primary" data-icon="signal_cellular_4_bar">signal_cellular_4_bar</span>
+<div>
+<p class="text-[10px] font-bold uppercase text-on-surface-variant">Mobile Signal</p>
+<p class="text-sm font-bold">5G Ready (All)</p>
+</div>
+</div>
+<div class="p-4 rounded-xl border border-outline-variant flex gap-4 items-center">
+<span class="material-symbols-outlined text-3xl text-secondary" data-icon="electric_car">electric_car</span>
+<div>
+<p class="text-[10px] font-bold uppercase text-on-surface-variant">EV Charging</p>
+<p class="text-sm font-bold">Point Installed</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Calculators -->
+<section class="bg-surface-container rounded-2xl p-8">
+<h2 class="text-xl font-headline font-bold text-primary mb-8">Financial Overview</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<p class="font-bold text-sm">Monthly Mortgage</p>
+<span class="text-xl font-headline font-bold text-primary">£1,842</span>
+</div>
+<div class="space-y-4">
+<div class="space-y-2">
+<div class="flex justify-between text-xs">
+<label>Deposit (£42,500)</label>
+<span class="font-bold text-primary">10%</span>
+</div>
+<div class="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[10%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs">
+<label>Interest Rate</label>
+<span class="font-bold text-primary">4.2%</span>
+</div>
+<div class="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[40%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-6 border-l-0 md:border-l border-outline-variant md:pl-12">
+<div class="flex justify-between items-center">
+<p class="font-bold text-sm">Stamp Duty (SDLT)</p>
+<span class="text-xl font-headline font-bold text-primary">£8,750</span>
+</div>
+<div class="p-4 rounded-xl bg-white border border-outline-variant text-xs space-y-2">
+<div class="flex justify-between">
+<span>First-time buyer?</span>
+<span class="text-success font-bold">£0.00</span>
+</div>
+<div class="flex justify-between">
+<span>Standard rate</span>
+<span>£8,750.00</span>
+</div>
+<div class="flex justify-between">
+<span>Additional property</span>
+<span class="text-error font-bold">£21,500.00</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar (35%) -->
+<aside class="lg:col-span-4">
+<div class="sticky top-32 space-y-6">
+<!-- Agent Card -->
+<div class="bg-white border border-outline-variant rounded-2xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<span class="text-sm font-bold tracking-widest text-primary">STERLING &amp; CO</span>
+<img class="w-8 h-8 object-contain" data-alt="Modern minimalist real estate agency logo for Sterling and Co" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyMAUXtgEeCIGweT_cu_apfyQzmtYbHYA5mQqsVTRgJJIAdgN5q-eVADjEza_7VcoHb7-5KgmNO3FQhUMwFZsgaVnfR_mmgP1ryRgCkyNcDV2Y0SpkcwyWPuuxwFsP_0KfKK9lCz353oG6bzoWXOvsMn82lTdIpyr1E1K3ZLyfcoUAiNNUunyIFNUzxSVx1z_1VZCPXIBlQLtQsHx3ccbOR5ZtaFe7dXnwuYtYENqQ1HCDHh_MfVDbk_4FYDEqyvF4P7OHnnhPvee9"/>
+</div>
+<div class="flex items-center gap-4 mb-6 pb-6 border-b border-outline-variant">
+<img class="w-16 h-16 rounded-full object-cover" data-alt="Professional portrait of Alexander Thorne, a male real estate agent in a tailored navy suit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS5h2dC3q4H7juCgU5bCiXqC1VwdNMRsACfW5zAZaRL0SWugonDbgrtr-3kh58RAwRqWGMuN5XbQdv0qS2giepHdzwgL4_-_8W6P9oPwULPlUraNPzTCW4bVkBr1YukILffIRfDrSGxvxBBzUh6e2_7_1Yi7MdoTD48M9XFOBB9lyo4keOURoaFZO6QVKGn_qxyw4p6s4TDYpGX3aHM0FyoLDw-DfSBpdLO_5pcR6Eu_dtcF4-oeYo01IrV4KziTpbc2ABMZ0Cedly"/>
+<div>
+<p class="font-headline font-bold text-primary">Alexander Thorne</p>
+<p class="text-xs text-on-surface-variant font-medium">Senior Portfolio Manager</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px] text-secondary" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-[10px] font-bold">4.9 (124 reviews)</span>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm shadow-md hover:opacity-95 transition-opacity">Request Viewing</button>
+<button class="w-full bg-white border border-primary text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container transition-colors">Contact Agent</button>
+</div>
+</div>
+<!-- Viewing Widget -->
+<div class="bg-surface-container-low border border-outline-variant rounded-2xl p-6">
+<p class="text-sm font-bold text-primary mb-4">Instant Viewing Slots</p>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-white p-2 rounded-lg text-center border border-primary cursor-pointer">
+<p class="text-[10px] font-bold">MON</p>
+<p class="text-xs">14:00</p>
+</div>
+<div class="bg-white p-2 rounded-lg text-center border border-outline-variant opacity-50 cursor-not-allowed">
+<p class="text-[10px] font-bold">MON</p>
+<p class="text-xs">16:30</p>
+</div>
+<div class="bg-white p-2 rounded-lg text-center border border-outline-variant cursor-pointer hover:border-primary">
+<p class="text-[10px] font-bold">TUE</p>
+<p class="text-xs">10:00</p>
+</div>
+</div>
+</div>
+<!-- Mortgage Prompt -->
+<div class="relative overflow-hidden bg-primary-container rounded-2xl p-6 text-white group cursor-pointer">
+<div class="absolute -right-8 -top-8 w-24 h-24 bg-secondary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+<p class="text-xs font-bold text-secondary uppercase tracking-widest mb-1">Mortgage Expert</p>
+<p class="text-lg font-headline font-bold mb-4">Need financing?</p>
+<p class="text-xs text-on-tertiary-container mb-6">Speak to our independent brokers and get a decision in principle today.</p>
+<button class="bg-secondary text-primary px-6 py-2 rounded-full text-xs font-bold hover:scale-105 transition-transform">Get Expert Advice</button>
+</div>
+</div>
+</aside>
+</div>
+<!-- Related Content -->
+<section class="mt-20 space-y-12">
+<div>
+<h2 class="text-2xl font-headline font-bold text-primary mb-8">Similar Properties in Isleworth</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="group cursor-pointer">
+<div class="rounded-2xl overflow-hidden aspect-[4/3] mb-4 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Luxury modern townhouse facade with clean architectural lines and floor to ceiling windows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_IgIUi-oDMwV_FguTM8nHr-nFl3AhNclTdSs_8CHif5YMCbXEXO6CBZvpY4Zd8K-mVP0BQL8lhdYujxW11tKEBnfEauZA1arpTBj2XG5tWP3a71xwD9g4MTN1pg866UF4nYG-oQerK_9DybOq6hrQGFemckLv0pWlHwoqS8zJcUVCFfLGazFJQnEmd3U9F8OgCv5yfb1HJ4rPKzO1TTl-LwbcC_BlUfTU3puexxzMszXiFs08ifN8CJZPgXjD7VQJyy7sfdNsVClc"/>
+<span class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-primary">£440,000</span>
+</div>
+<h3 class="font-bold text-on-surface group-hover:text-primary transition-colors">32 Lismore Road, Isleworth</h3>
+<p class="text-xs text-on-surface-variant">3 Bed • 2 Bath • Terrace</p>
+</div>
+<div class="group cursor-pointer">
+<div class="rounded-2xl overflow-hidden aspect-[4/3] mb-4 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Quaint brick Victorian terraced cottage with a small front garden and black painted door" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWw0yb9VIOtqu_h5GbCYrTukHqwgMcDUqMJ2CDYz1QB-jdR3Hi1DPVjWxeVp_iXrXB440lpWJmpFz8ujqO11qRWLebcIcuOcReeQ-RIEAt5VZMwnQiFsKFvph9WBlkLnaH2hdrWNX5Iaab-Ypnh0EjlIRBtKUmcad4yMprf7TSpyuMrOxCOnDD6ncPxQZwZfRsJbbxR2vacipJobH6SS0sIZAyOpiGsY-_QmANwdg-15WXBZWURExEPj3NFbVefrvcXGVDBDgtrHmt"/>
+<span class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-primary">£415,000</span>
+</div>
+<h3 class="font-bold text-on-surface group-hover:text-primary transition-colors">5 Church Street, Isleworth</h3>
+<p class="text-xs text-on-surface-variant">2 Bed • 1 Bath • Cottage</p>
+</div>
+<div class="group cursor-pointer">
+<div class="rounded-2xl overflow-hidden aspect-[4/3] mb-4 relative">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Modern apartment building with balcony and glass railings in an urban setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPBpVQvNyO3bMk9MoU8IbWG32Ytk237gR0hK4jC-WTTYhlxEAJW9KqIXI5uPHASdBd7nEJyiNc3WB8YeQnHNWiW9RZls_LMyuohi7Dh4dwJhEkxHyNw-8xhjR6tIFMMo18--cPki_vLFmyFNLpTjszUS712AJMoB_n2Ybw3b4tEA9V0EzDPmiWLKLoN6Lvk5ad1ma0WPvuu0Fu0-rGGWiTTFyvcoHm_v0_J398Oee4rNHe377BmjHQemEqmRW5kLXkFBYt3r9p3ckt"/>
+<span class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-primary">£395,000</span>
+</div>
+<h3 class="font-bold text-on-surface group-hover:text-primary transition-colors">Fitzroy House, 10 High Street</h3>
+<p class="text-xs text-on-surface-variant">2 Bed • 2 Bath • Penthouse</p>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-2xl font-headline font-bold text-primary mb-8">Recommended Tradespeople</h2>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="p-4 rounded-2xl border border-outline-variant hover:border-primary transition-colors flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-3xl text-secondary mb-3" data-icon="construction">construction</span>
+<p class="text-sm font-bold">West London Builders</p>
+<p class="text-[10px] text-on-surface-variant">98% Recommendation</p>
+</div>
+<div class="p-4 rounded-2xl border border-outline-variant hover:border-primary transition-colors flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-3xl text-secondary mb-3" data-icon="format_paint">format_paint</span>
+<p class="text-sm font-bold">Pure Decor Isleworth</p>
+<p class="text-[10px] text-on-surface-variant">Local Specialists</p>
+</div>
+<div class="p-4 rounded-2xl border border-outline-variant hover:border-primary transition-colors flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-3xl text-secondary mb-3" data-icon="landscape">landscape</span>
+<p class="text-sm font-bold">Green Bloom Gardens</p>
+<p class="text-[10px] text-on-surface-variant">Award Winning</p>
+</div>
+<div class="p-4 rounded-2xl border border-outline-variant hover:border-primary transition-colors flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-3xl text-secondary mb-3" data-icon="electric_bolt">electric_bolt</span>
+<p class="text-sm font-bold">SafeWatt Electric</p>
+<p class="text-[10px] text-on-surface-variant">NIC/EIC Registered</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Actions -->
+<section class="py-12 border-t border-outline-variant mt-20 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-6">
+<button class="text-xs font-bold text-on-surface-variant flex items-center gap-2 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
+                    Report listing
+                </button>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-bold text-on-surface-variant">Share listing</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors"><img class="w-4 h-4 opacity-50" data-alt="Facebook icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDegY_BRhZxtLJbZp248-YfzB97K9FCy4vPpNWCh_VlBpPSUBIf49ReOWPL9jXZNu7MkNI7Su5-wdnAbNoRe5Yfksyb16gUPEe8-QfKJRe5XLnYxMn1nzs51rZzAS5JZQV00dTFwTSZ0-ZJSYe5UOZww6LOU37Cz73g2bFn-JSy5qWdJ0Pa1GHpxQ6WRFU80htvU3AFpR96EelC3moMkGIWcjyJ2BySIzQms_MwIwyh8ZCpoPSwA37_2yXhU5gbkiF25P_M_77cxPQ_"/></button>
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors"><img class="w-4 h-4 opacity-50" data-alt="Twitter icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUQE8OIrOT4Lq3qRbD7iIoUz4WPCvVqdXwl7K9w1w_qz0oJhLsNDRcQ_poMOp4FqKRPBVokfVEs-5mK7sAOJQUMuGNdUjJsGxiqoAIS0L1wTrb7m7_55BKujpYJsn6K_sbpo9rNH3DWV3XTz4khm37F4a7NcixWgQJz89XiJsc2ereKZEr1sXfIFSTvJIrfd0EtxPt3hlfJZPL7-mdw4icOCl9QdDgVKqD-b020Oyc9KqVTZ8mvjO0yyO1npVp9KLeTivCZSI3ExW7"/></button>
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors"><img class="w-4 h-4 opacity-50" data-alt="WhatsApp icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTACf7mFIgCOpGhr_BuG4WWomLJhsvP6xEkRuk5VCJo4qxjqv6EDPHM_uwaoEnDvpKGojRFG1nPJmCFB2RBwDT8vqi81yFGhwy3LldIlT__N7NiSnbcNXl0zfj80yuN8sEx7DgJnsQ2CmkBcg4zCQVlfVPFISaplg9JlDlFHHlTHsr4vx-GAhe_Wh9CA1fQnuiL-PY4ljXvFtu77Nbs14KC3EdgjuvFcdN6MXmjsLx45Ow67fw6pjxNwSP7n4n4nzyVnYnpuyiTN8q"/></button>
+</div>
+</div>
+</div>
+<p class="text-[10px] text-on-surface-variant font-mono">ID: UK-LON-ISL-4PQ-14 | Listed: 12 Oct 2024</p>
+</section>
+</main>
+<!-- Footer from Shared Components -->
+<footer class="w-full mt-20 bg-neutral-50 dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-8 py-16 max-w-[1440px] mx-auto">
+<div class="space-y-4">
+<span class="text-lg font-bold text-emerald-900 dark:text-emerald-50">ESTATE_EDITION</span>
+<p class="font-['Inter'] text-sm text-neutral-600 dark:text-neutral-400">Premium UK property market data, listings and professional insights for the modern homeowner.</p>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-50">Discover</h4>
+<ul class="space-y-2">
+<li><a class="font-['Inter'] text-sm text-neutral-500 hover:text-emerald-900 dark:hover:text-emerald-300 underline-offset-4" href="#">Property Search</a></li>
+<li><a class="font-['Inter'] text-sm text-neutral-500 hover:text-emerald-900 dark:hover:text-emerald-300 underline-offset-4" href="#">Market Reports</a></li>
+<li><a class="font-['Inter'] text-sm text-neutral-500 hover:text-emerald-900 dark:hover:text-emerald-300 underline-offset-4" href="#">Mortgage Advice</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-50">Resources</h4>
+<ul class="space-y-2">
+<li><a class="font-['Inter'] text-sm text-neutral-500 hover:text-emerald-900 dark:hover:text-emerald-300 underline-offset-4" href="#">Editorial Policy</a></li>
+<li><a class="font-['Inter'] text-sm text-neutral-500 hover:text-emerald-900 dark:hover:text-emerald-300 underline-offset-4" href="#">Privacy</a></li>
+<li><a class="font-['Inter'] text-sm text-neutral-500 hover:text-emerald-900 dark:hover:text-emerald-300 underline-offset-4" href="#">Terms</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-50">Contact</h4>
+<p class="font-['Inter'] text-sm text-neutral-500">Registered in England &amp; Wales.<br/>Isleworth Office: TW7 4EB</p>
+</div>
+</div>
+<div class="border-t border-neutral-200 dark:border-neutral-800 py-6 px-8 text-center">
+<p class="font-['Inter'] text-sm text-neutral-600 dark:text-neutral-400">© 2024 Estate Edition UK. All rights reserved. Registered in England &amp; Wales.</p>
+</div>
+</footer>
+</body></html>
