@@ -63,18 +63,18 @@ export default function RefundRequestPage() {
     return (
       <div className="flex min-h-screen items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
             <CheckCircle2 className="text-green-500" size={36} />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+            <h2 className="font-heading text-xl font-semibold text-foreground">
               Request submitted
             </h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 font-body text-sm text-neutral-500">
               We&apos;ll review your request and respond within 2 business days.
             </p>
           </div>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted">
             <Link href={basePath}>Back to billing</Link>
           </Button>
         </div>
@@ -83,48 +83,44 @@ export default function RefundRequestPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
+    <div className="mx-auto max-w-2xl space-y-8 p-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link href={basePath}><ArrowLeft size={16} /></Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+          <h1 className="font-heading text-xl font-semibold text-foreground">
             Request a Refund
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="font-body text-sm text-neutral-500">
             Refunds are available within 14 days of subscription start
           </p>
         </div>
       </div>
 
-      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-        <CardContent className="py-4">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
-            <strong>14-day refund policy:</strong> Refund requests must be submitted within 14 days of your subscription starting. Refunds are processed within 5–10 business days.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="rounded-xl bg-amber-50 p-4 ring-1 ring-amber-200/60 dark:bg-amber-950/40 dark:ring-amber-800/60">
+        <p className="font-body text-sm text-amber-800 dark:text-amber-200">
+          <strong>14-day refund policy:</strong> Refund requests must be submitted within 14 days of your subscription starting. Refunds are processed within 5–10 business days.
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <RotateCcw size={16} className="text-gray-400" />
-            Refund Request Form
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+        <div className="flex items-center gap-2 border-b border-neutral-100/60 p-6 dark:border-neutral-700/60">
+          <RotateCcw size={16} className="text-neutral-400" />
+          <span className="font-heading text-base font-semibold text-foreground">Refund Request Form</span>
+        </div>
+        <div className="p-6">
           <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Reason for refund *</Label>
+              <Label className="font-body text-sm font-medium text-foreground">Reason for refund *</Label>
               <div className="space-y-2">
                 {REFUND_REASONS.map((reason) => (
                   <label
                     key={reason}
-                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors ring-1 ${
                       selectedReason === reason
-                        ? "border-[#1B4D3E] bg-[#E8F5EE] dark:border-emerald-700 dark:bg-[#1B4D3E]/10"
-                        : "border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                        ? "bg-brand-primary-lighter ring-brand-primary dark:bg-brand-primary/10"
+                        : "bg-card ring-neutral-200/60 hover:bg-muted/30 dark:ring-neutral-700/60"
                     }`}
                   >
                     <input
@@ -133,16 +129,16 @@ export default function RefundRequestPage() {
                       value={reason}
                       checked={selectedReason === reason}
                       onChange={(e) => setSelectedReason(e.target.value)}
-                      className="accent-[#1B4D3E]"
+                      className="accent-brand-primary"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{reason}</span>
+                    <span className="font-body text-sm text-foreground">{reason}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="details" className="text-sm font-medium">
+              <Label htmlFor="details" className="font-body text-sm font-medium text-foreground">
                 Additional details (optional)
               </Label>
               <Textarea
@@ -159,7 +155,7 @@ export default function RefundRequestPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting || !selectedReason}
-                className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F]"
+                className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-primary/90"
               >
                 {isSubmitting ? (
                   <><Loader2 size={14} className="mr-2 animate-spin" />Submitting…</>
@@ -167,13 +163,13 @@ export default function RefundRequestPage() {
                   "Submit Refund Request"
                 )}
               </Button>
-              <Button type="button" variant="ghost" asChild>
+              <Button type="button" variant="ghost" asChild className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted">
                 <Link href={basePath}>Cancel</Link>
               </Button>
             </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

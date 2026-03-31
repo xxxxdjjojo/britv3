@@ -29,13 +29,13 @@ type SubscriptionRow = {
 function statusConfig(status: string) {
   switch (status) {
     case "active":
-      return { label: "Active", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800" };
+      return { label: "Active", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 ring-1 ring-green-200/60 dark:bg-green-950/40 dark:ring-green-800/60" };
     case "trialing":
-      return { label: "Trial", icon: Clock, color: "text-blue-600", bg: "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800" };
+      return { label: "Trial", icon: Clock, color: "text-blue-600", bg: "bg-blue-50 ring-1 ring-blue-200/60 dark:bg-blue-950/40 dark:ring-blue-800/60" };
     case "past_due":
-      return { label: "Past due", icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-50 border-orange-200 dark:bg-orange-950 dark:border-orange-800" };
+      return { label: "Past due", icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-50 ring-1 ring-orange-200/60 dark:bg-orange-950/40 dark:ring-orange-800/60" };
     default:
-      return { label: "No plan", icon: AlertCircle, color: "text-gray-500", bg: "bg-gray-50 border-gray-200 dark:bg-gray-900 dark:border-gray-800" };
+      return { label: "No plan", icon: AlertCircle, color: "text-neutral-500", bg: "bg-muted/40 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60" };
   }
 }
 
@@ -92,27 +92,29 @@ export default async function BillingPage({
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+        <h1 className="font-heading text-xl font-semibold text-foreground">
           Billing & Payments
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Manage your subscription, invoices, and payment details
         </p>
       </div>
 
       {/* Subscription status card */}
-      <Card className={`border ${cfg.bg}`}>
-        <CardContent className="flex items-start justify-between gap-4 py-5">
+      <div className={`rounded-xl p-5 ${cfg.bg}`}>
+        <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <StatusIcon className={`mt-0.5 shrink-0 ${cfg.color}`} size={20} />
             <div>
               {hasActivePlan ? (
                 <>
-                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  <p className="font-heading text-base font-semibold text-foreground">
                     {subscription!.plan_name ?? "Britestate Plan"}{" "}
-                    <Badge className="ml-1 text-xs font-medium">{cfg.label}</Badge>
+                    <Badge className="ml-1 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-brand-primary-lighter text-brand-primary">
+                      {cfg.label}
+                    </Badge>
                   </p>
-                  <p className="mt-0.5 text-sm text-gray-600 dark:text-gray-400">
+                  <p className="mt-0.5 font-body text-sm text-neutral-500">
                     {subscription!.price_amount
                       ? `${formatGBP(subscription!.price_amount, subscription!.currency)}/month`
                       : null}
@@ -126,10 +128,10 @@ export default async function BillingPage({
                 </>
               ) : (
                 <>
-                  <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  <p className="font-heading text-base font-semibold text-foreground">
                     No active plan
                   </p>
-                  <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                  <p className="mt-0.5 font-body text-sm text-neutral-500">
                     Subscribe to start listing properties and managing clients on Britestate.
                   </p>
                 </>
@@ -138,22 +140,22 @@ export default async function BillingPage({
           </div>
           <div className="shrink-0">
             {hasActivePlan ? (
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted">
                 <Link href={`${basePath}/subscription`}>
                   Manage
                   <ArrowRight size={14} className="ml-1" />
                 </Link>
               </Button>
             ) : (
-              <Button size="sm" asChild style={{ backgroundColor: "#1B4D3E" }}>
+              <Button size="sm" asChild className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-primary/90">
                 <Link href={`${basePath}/checkout/subscription`}>
                   Subscribe now
                 </Link>
               </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Quick actions grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -161,24 +163,24 @@ export default async function BillingPage({
           const Icon = action.icon;
           return (
             <Link key={action.href} href={action.href}>
-              <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
-                <CardContent className="flex items-start gap-4 py-5">
-                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE] dark:bg-[#1B4D3E]/20">
-                    <Icon className="text-[#1B4D3E] dark:text-emerald-400" size={18} />
+              <div className="h-full cursor-pointer rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 transition-all hover:shadow-md dark:ring-neutral-700/60">
+                <div className="flex items-start gap-4">
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 p-2 dark:bg-emerald-900/20">
+                    <Icon className="text-brand-primary dark:text-emerald-400" size={18} />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">{action.label}</p>
-                    <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{action.description}</p>
+                    <p className="font-heading text-sm font-semibold text-foreground">{action.label}</p>
+                    <p className="mt-0.5 font-body text-sm text-neutral-500">{action.description}</p>
                   </div>
-                  <ArrowRight className="ml-auto mt-1 shrink-0 text-gray-400" size={16} />
-                </CardContent>
-              </Card>
+                  <ArrowRight className="ml-auto mt-1 shrink-0 text-neutral-400" size={16} />
+                </div>
+              </div>
             </Link>
           );
         })}
       </div>
 
-      <p className="text-xs text-gray-400 dark:text-gray-600">
+      <p className="font-body text-xs text-neutral-500">
         A 2.5% platform commission applies on sales transactions. All payments are processed securely via Stripe.
       </p>
     </div>
