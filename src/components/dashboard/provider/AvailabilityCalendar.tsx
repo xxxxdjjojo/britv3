@@ -275,7 +275,7 @@ export function AvailabilityCalendar({
 
       {/* ── Error banner ── */}
       {error && (
-        <div className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">
+        <div className="rounded-md bg-error-light px-4 py-2 text-sm text-error">
           {error}
         </div>
       )}
@@ -319,7 +319,7 @@ export function AvailabilityCalendar({
 
           if (isBooked) {
             cellClass =
-              "relative min-h-[72px] p-1.5 bg-[#E8F5EE] border border-[#1B4D3E] cursor-default";
+              "relative min-h-[72px] p-1.5 bg-brand-primary-lighter border border-brand-primary cursor-default";
           } else if (isBlocked) {
             cellClass =
               "relative min-h-[72px] p-1.5 bg-neutral-100 cursor-pointer transition-colors hover:bg-neutral-200";
@@ -333,7 +333,7 @@ export function AvailabilityCalendar({
               className={[
                 "inline-flex size-6 items-center justify-center rounded-full text-xs font-medium",
                 isToday
-                  ? "ring-2 ring-[#1B4D3E] ring-offset-1 text-[#1B4D3E] font-bold"
+                  ? "ring-2 ring-brand-primary ring-offset-1 text-brand-primary font-bold"
                   : "text-neutral-700",
               ].join(" ")}
             >
@@ -386,14 +386,14 @@ export function AvailabilityCalendar({
                       key={b.id}
                       href={`/dashboard/provider/jobs/${b.id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="block truncate rounded bg-[#1B4D3E]/10 px-1 text-[10px] font-medium text-[#1B4D3E] hover:underline"
+                      className="block truncate rounded bg-brand-primary/10 px-1 text-[10px] font-medium text-brand-primary hover:underline"
                     >
                       {b.booking_reference}
                     </Link>
                   ))}
 
                 {isBooked && dayBookings.length > 2 && (
-                  <span className="block text-[10px] text-[#1B4D3E]">
+                  <span className="block text-[10px] text-brand-primary">
                     +{dayBookings.length - 2} more
                   </span>
                 )}
@@ -415,11 +415,11 @@ export function AvailabilityCalendar({
           stripe
         />
         <LegendItem
-          color="bg-[#E8F5EE] border border-[#1B4D3E]"
+          color="bg-brand-primary-lighter border border-brand-primary"
           label="Booked"
         />
         <div className="flex items-center gap-2">
-          <span className="inline-flex size-4 items-center justify-center rounded-full ring-2 ring-[#1B4D3E]" />
+          <span className="inline-flex size-4 items-center justify-center rounded-full ring-2 ring-brand-primary" />
           <span className="text-xs text-neutral-600">Today</span>
         </div>
       </div>

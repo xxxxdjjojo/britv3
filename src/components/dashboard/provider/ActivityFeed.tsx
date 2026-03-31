@@ -47,7 +47,7 @@ export function ActivityFeed({ items }: ActivityFeedProps) {
         const Icon = ACTIVITY_ICONS[item.type] ?? Inbox;
         return (
           <li key={item.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
-            <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-[#E8F5EE] text-[#1B4D3E]">
+            <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter text-brand-primary">
               <Icon className="size-4" />
             </span>
             <div className="flex flex-1 flex-col gap-0.5 min-w-0">

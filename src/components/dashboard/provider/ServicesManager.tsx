@@ -195,7 +195,7 @@ export function ServicesManager({
       {/* Header + Add button */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">My Services</h1>
+          <h1 className="text-2xl font-bold font-heading text-neutral-900">My Services</h1>
           <p className="mt-0.5 text-sm text-neutral-500">
             Manage the services you offer to clients.
           </p>
@@ -203,7 +203,7 @@ export function ServicesManager({
         <button
           type="button"
           onClick={openAddDialog}
-          className="flex items-center gap-2 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#163d31] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2"
+          className="flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
         >
           <Plus className="size-4" />
           Add Service
@@ -222,7 +222,7 @@ export function ServicesManager({
           <button
             type="button"
             onClick={openAddDialog}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#1B4D3E] px-4 py-2 text-sm font-semibold text-[#1B4D3E] transition-colors hover:bg-[#E8F5EE]"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary-lighter"
           >
             <Plus className="size-4" />
             Add Service
@@ -283,7 +283,7 @@ export function ServicesManager({
                   htmlFor="svc-name"
                   className="mb-1 block text-sm font-medium text-neutral-700"
                 >
-                  Service Name <span className="text-red-500">*</span>
+                  Service Name <span className="text-error">*</span>
                 </label>
                 <input
                   id="svc-name"
@@ -292,7 +292,7 @@ export function ServicesManager({
                   value={form.name}
                   onChange={(e) => handleFieldChange("name", e.target.value)}
                   placeholder="e.g. Boiler installation"
-                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
@@ -302,7 +302,7 @@ export function ServicesManager({
                   htmlFor="svc-category"
                   className="mb-1 block text-sm font-medium text-neutral-700"
                 >
-                  Category <span className="text-red-500">*</span>
+                  Category <span className="text-error">*</span>
                 </label>
                 <select
                   id="svc-category"
@@ -310,7 +310,7 @@ export function ServicesManager({
                   onChange={(e) =>
                     handleFieldChange("category", e.target.value)
                   }
-                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 >
                   {SERVICE_CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -336,14 +336,14 @@ export function ServicesManager({
                     handleFieldChange("description", e.target.value)
                   }
                   placeholder="Brief description of what this service includes…"
-                  className="block w-full resize-none rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                  className="block w-full resize-none rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
               {/* Pricing type */}
               <fieldset>
                 <legend className="mb-2 text-sm font-medium text-neutral-700">
-                  Pricing Type <span className="text-red-500">*</span>
+                  Pricing Type <span className="text-error">*</span>
                 </legend>
                 <div className="flex flex-wrap gap-3">
                   {(
@@ -358,7 +358,7 @@ export function ServicesManager({
                       className={[
                         "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors",
                         form.pricing_type === value
-                          ? "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E]"
+                          ? "border-brand-primary bg-brand-primary-lighter text-brand-primary"
                           : "border-neutral-300 text-neutral-700 hover:border-neutral-400",
                       ].join(" ")}
                     >
@@ -402,7 +402,7 @@ export function ServicesManager({
                         handleFieldChange("price_amount", e.target.value)
                       }
                       placeholder="0.00"
-                      className="block w-full rounded-lg border border-neutral-300 py-2 pl-7 pr-3 text-sm text-neutral-900 placeholder-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                      className="block w-full rounded-lg border border-neutral-300 py-2 pl-7 pr-3 text-sm text-neutral-900 placeholder-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     />
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export function ServicesManager({
 
               {/* Error */}
               {error && (
-                <p role="alert" className="text-sm text-red-600">
+                <p role="alert" className="text-sm text-error">
                   {error}
                 </p>
               )}
@@ -428,7 +428,7 @@ export function ServicesManager({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex items-center gap-2 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#163d31] disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90 disabled:opacity-50"
                 >
                   {isPending && <Loader2 className="size-4 animate-spin" />}
                   {editingService ? "Save Changes" : "Add Service"}

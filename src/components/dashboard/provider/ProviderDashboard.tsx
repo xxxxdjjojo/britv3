@@ -79,8 +79,8 @@ const MOCK_SCHEDULE = [
 ] as const;
 
 const SCHEDULE_STATUS_CLASSES: Record<string, string> = {
-  "In Progress": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Confirmed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  "In Progress": "bg-info-light text-info dark:bg-info/10 dark:text-info",
+  Confirmed: "bg-success-light text-success dark:bg-success/10 dark:text-success",
   Scheduled: "bg-muted text-muted-foreground",
 };
 

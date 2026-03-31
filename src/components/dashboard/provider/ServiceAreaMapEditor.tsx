@@ -293,7 +293,7 @@ export function ServiceAreaMapEditor({
           className={[
             "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
             drawMode === "polygon"
-              ? "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E]"
+              ? "border-brand-primary bg-brand-primary-lighter text-brand-primary"
               : "border-neutral-300 text-neutral-700 hover:border-neutral-400",
           ].join(" ")}
         >
@@ -306,7 +306,7 @@ export function ServiceAreaMapEditor({
           className={[
             "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
             drawMode === "circle"
-              ? "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E]"
+              ? "border-brand-primary bg-brand-primary-lighter text-brand-primary"
               : "border-neutral-300 text-neutral-700 hover:border-neutral-400",
           ].join(" ")}
         >
@@ -319,7 +319,7 @@ export function ServiceAreaMapEditor({
           className={[
             "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
             drawMode === "select"
-              ? "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E]"
+              ? "border-brand-primary bg-brand-primary-lighter text-brand-primary"
               : "border-neutral-300 text-neutral-700 hover:border-neutral-400",
           ].join(" ")}
         >
@@ -343,7 +343,7 @@ export function ServiceAreaMapEditor({
               type="button"
               onClick={savePendingFeature}
               disabled={saving}
-              className="flex items-center gap-2 rounded-lg bg-[#1B4D3E] px-3 py-2 text-sm font-semibold text-white hover:bg-[#163d31] disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-brand-primary px-3 py-2 text-sm font-semibold text-white hover:bg-brand-primary/90 disabled:opacity-50"
             >
               {saving && <Loader2 className="size-4 animate-spin" />}
               Save Zone
@@ -353,7 +353,7 @@ export function ServiceAreaMapEditor({
       </div>
 
       {saveError && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="text-sm text-error">
           {saveError}
         </p>
       )}
@@ -362,7 +362,7 @@ export function ServiceAreaMapEditor({
       <div className="relative h-[500px] overflow-hidden rounded-xl border border-neutral-200">
         {isLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-neutral-50">
-            <Loader2 className="size-8 animate-spin text-[#1B4D3E]" />
+            <Loader2 className="size-8 animate-spin text-brand-primary" />
           </div>
         )}
         <div ref={mapContainerRef} className="h-full w-full" />
@@ -381,11 +381,11 @@ export function ServiceAreaMapEditor({
                 className="flex items-center justify-between gap-3 rounded-lg bg-neutral-50 px-3 py-2"
               >
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-[#1B4D3E]" />
+                  <span className="size-2 rounded-full bg-brand-primary" />
                   <span className="text-sm text-neutral-700">
                     {zone.name ?? (zone.zone_type === "radius" ? "Radius zone" : "Polygon zone")}
                   </span>
-                  <span className="rounded-full bg-[#E8F5EE] px-2 py-0.5 text-[10px] font-semibold uppercase text-[#1B4D3E]">
+                  <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-[10px] font-semibold uppercase text-brand-primary">
                     {zone.zone_type}
                   </span>
                 </div>
@@ -393,7 +393,7 @@ export function ServiceAreaMapEditor({
                   type="button"
                   aria-label="Delete zone"
                   onClick={() => deleteZone(zone.id)}
-                  className="flex size-7 items-center justify-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-red-600"
+                  className="flex size-7 items-center justify-center rounded-lg text-neutral-400 hover:bg-error-light hover:text-error"
                 >
                   <Trash2 className="size-3.5" />
                 </button>

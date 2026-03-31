@@ -213,7 +213,7 @@ function BoostOptionCard({
             isPopular
               ? "bg-brand-primary text-white"
               : isBest
-                ? "bg-amber-500 text-white"
+                ? "bg-warning text-white"
                 : "bg-neutral-700 text-white"
           }`}
         >
@@ -237,7 +237,7 @@ function BoostOptionCard({
         {option.features.map((feature) => (
           <li key={feature} className="flex items-start gap-2 text-sm text-neutral-700">
             <svg
-              className="mt-0.5 h-4 w-4 shrink-0 text-green-500"
+              className="mt-0.5 h-4 w-4 shrink-0 text-success"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -280,7 +280,7 @@ function BoostOptionCard({
       </div>
 
       {error && (
-        <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{error}</p>
+        <p className="mb-3 rounded-lg bg-error-light px-3 py-2 text-xs text-error">{error}</p>
       )}
 
       <button

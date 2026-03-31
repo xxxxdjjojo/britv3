@@ -52,7 +52,7 @@ export default async function ProviderDashboardPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
+        <h1 className="text-2xl font-bold font-heading text-neutral-900">
           {businessName
             ? `Welcome back, ${businessName}`
             : "Provider Dashboard"}
@@ -64,7 +64,7 @@ export default async function ProviderDashboardPage() {
 
       {/* ── Verification Banner ──────────────────────────────────────────────── */}
       {!isVerified && (
-        <div className="w-full rounded-xl bg-[#1B4D3E] p-5 text-white">
+        <div className="w-full rounded-2xl bg-brand-primary p-5 text-white">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1 space-y-3">
               <p className="text-sm font-semibold">
@@ -88,7 +88,7 @@ export default async function ProviderDashboardPage() {
             <Link href="/dashboard/provider/verification">
               <Button
                 size="sm"
-                className="shrink-0 bg-white text-[#1B4D3E] hover:bg-white/90 font-semibold"
+                className="shrink-0 bg-white text-brand-primary hover:bg-white/90 font-semibold"
               >
                 Complete Verification
                 <ArrowRight className="ml-1.5 size-4" />
@@ -131,18 +131,18 @@ export default async function ProviderDashboardPage() {
       {/* ── Two-Column Grid: Activity + Upcoming Jobs ────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
           <h2 className="mb-4 text-base font-semibold text-neutral-900">Recent Activity</h2>
           <ActivityFeed items={activity} />
         </div>
 
         {/* Upcoming Jobs */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold text-neutral-900">Upcoming Jobs</h2>
             <Link
               href="/dashboard/provider/jobs/active"
-              className="text-xs font-medium text-[#1B4D3E] hover:underline"
+              className="text-xs font-medium text-brand-primary hover:underline"
             >
               View all
             </Link>
@@ -152,11 +152,11 @@ export default async function ProviderDashboardPage() {
       </div>
 
       {/* ── Quick Actions ────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
         <h2 className="mb-4 text-base font-semibold text-neutral-900">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <Link href="/dashboard/provider/quotes/builder">
-            <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+            <Button className="bg-brand-primary text-white hover:bg-brand-primary/90">
               <FileText className="mr-2 size-4" />
               New Quote
             </Button>

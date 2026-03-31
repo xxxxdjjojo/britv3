@@ -56,8 +56,8 @@ function DeadlineBadge({ deadline }: Readonly<{ deadline: string }>) {
     <Badge
       className={
         isUrgent
-          ? "bg-red-100 text-red-700 border-red-200 shrink-0"
-          : "bg-amber-100 text-amber-700 border-amber-200 shrink-0"
+          ? "bg-error-light text-error border-error/20 shrink-0"
+          : "bg-warning-light text-warning border-warning/20 shrink-0"
       }
     >
       {label}
@@ -78,7 +78,7 @@ function ActionRow({ action }: Readonly<{ action: SmartAction }>) {
       className="group flex items-start gap-3 rounded-lg p-3 transition-colors hover:bg-neutral-50"
     >
       {/* Icon */}
-      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E]">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
         <Icon className="size-4" />
       </span>
 
@@ -104,7 +104,7 @@ function ActionRow({ action }: Readonly<{ action: SmartAction }>) {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center gap-2 py-8 text-center">
-      <CheckCircle2 className="size-10 text-[#1B4D3E]/60" />
+      <CheckCircle2 className="size-10 text-brand-primary/60" />
       <p className="text-sm font-medium text-neutral-700">All caught up!</p>
       <p className="text-xs text-neutral-500">No urgent actions right now.</p>
     </div>
@@ -124,7 +124,7 @@ export function SmartActionsCard({ actions }: SmartActionsCardProps) {
     <Card className="border-neutral-200 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base font-semibold text-neutral-900">
-          <Sparkles className="size-4 text-[#1B4D3E]" />
+          <Sparkles className="size-4 text-brand-primary" />
           Suggested Actions
         </CardTitle>
       </CardHeader>

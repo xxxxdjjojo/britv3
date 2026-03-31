@@ -47,7 +47,7 @@ export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {
 
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             {/* Category pill */}
-            <span className="rounded-full bg-[#E8F5EE] px-2.5 py-0.5 text-xs font-semibold text-[#1B4D3E]">
+            <span className="rounded-full bg-brand-primary-lighter px-2.5 py-0.5 text-xs font-semibold text-brand-primary">
               {CATEGORY_LABELS[service.category] ?? service.category}
             </span>
 
@@ -57,7 +57,7 @@ export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {
                 "rounded-full px-2.5 py-0.5 text-xs font-medium",
                 service.pricing_type === "quote_on_request"
                   ? "bg-neutral-100 text-neutral-600"
-                  : "bg-blue-50 text-blue-700",
+                  : "bg-info-light text-info",
               ].join(" ")}
             >
               {formatPricing(service.pricing_type, service.price_amount)}
@@ -85,7 +85,7 @@ export function ServiceCard({ service, onEdit, onDelete }: ServiceCardProps) {
             type="button"
             aria-label={`Delete ${service.name}`}
             onClick={() => onDelete(service.id)}
-            className="flex size-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="flex size-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-error-light hover:text-error"
           >
             <Trash2 className="size-4" />
           </button>

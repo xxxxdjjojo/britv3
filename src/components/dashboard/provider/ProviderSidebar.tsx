@@ -113,8 +113,8 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
       href={item.href}
       className={
         isActive
-          ? "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold bg-[#E8F5EE] text-[#1B4D3E] dark:bg-[#1B4D3E] dark:text-white"
-          : "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 dark:text-neutral-300 transition-colors hover:bg-neutral-100 dark:hover:bg-[#1B4D3E]/20"
+          ? "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary dark:text-white"
+          : "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-neutral-700 dark:text-neutral-300 transition-colors hover:bg-neutral-100 dark:hover:bg-brand-primary/20"
       }
     >
       <Icon className="size-4 shrink-0" />
@@ -125,13 +125,13 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
 
 function SidebarInner(props: Readonly<{ pathname: string }>) {
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-[#152C22]">
+    <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-neutral-900">
       {/* Logo */}
       <div className="flex items-center gap-3 border-b p-6">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-[#1B4D3E] text-white">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary text-white">
           <Building2 className="size-5" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-[#1B4D3E] dark:text-white">BRITESTATE</h1>
+        <h1 className="text-xl font-bold font-heading tracking-tight text-brand-primary dark:text-white">BRITESTATE</h1>
       </div>
 
       {/* Nav groups */}
@@ -161,7 +161,7 @@ export function ProviderSidebar() {
   return (
     <>
       {/* Desktop permanent sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r bg-white dark:bg-[#152C22] lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r bg-white dark:bg-neutral-900 lg:block">
         <SidebarInner pathname={pathname} />
       </aside>
 
