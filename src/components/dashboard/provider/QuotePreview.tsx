@@ -48,7 +48,7 @@ export function QuotePreview({
   });
 
   return (
-    <div className="rounded-xl border border-border bg-white p-8 shadow-sm dark:bg-neutral-900 print:shadow-none">
+    <div className="rounded-2xl border border-border bg-white p-8 shadow-sm dark:bg-neutral-900 print:shadow-none">
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>

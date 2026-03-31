@@ -239,8 +239,8 @@ export function InvoiceGenerator({
       <div className="space-y-6">
         {/* Saved invoice banner */}
         {savedInvoiceId && (
-          <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm dark:border-green-800 dark:bg-green-950">
-            <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
+          <div className="flex items-center justify-between rounded-lg border border-success/20 bg-success-light px-4 py-3 text-sm dark:border-success/30 dark:bg-success/10">
+            <div className="flex items-center gap-2 text-success">
               <CheckCircle2 className="size-4 shrink-0" />
               <span>
                 Invoice <strong>{savedInvoiceNumber}</strong> saved.{" "}

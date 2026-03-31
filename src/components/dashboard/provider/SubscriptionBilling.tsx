@@ -163,7 +163,7 @@ function EarningsMetrics() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {/* Available to withdraw — hero card */}
-      <div className="rounded-xl bg-brand-primary p-6 text-white">
+      <div className="rounded-2xl bg-brand-primary p-6 text-white">
         <div className="flex items-center gap-2">
           <TrendingUp className="size-4 text-white/70" />
           <p className="font-body text-sm font-medium text-white/70">
@@ -177,7 +177,7 @@ function EarningsMetrics() {
       </div>
 
       {/* Pending payments */}
-      <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+      <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
         <p className="font-body text-sm font-medium text-muted-foreground">
           Pending Payments
         </p>
@@ -188,7 +188,7 @@ function EarningsMetrics() {
       </div>
 
       {/* Tax estimate */}
-      <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+      <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
         <p className="font-body text-sm font-medium text-muted-foreground">
           Tax Estimate
         </p>
@@ -219,7 +219,7 @@ function CurrentPlanBanner(
       : "bg-brand-primary-lighter text-brand-primary";
 
   return (
-    <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+    <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="flex size-12 items-center justify-center rounded-xl bg-brand-primary text-white">
@@ -273,7 +273,7 @@ function PlanComparisonTable(
   const { currentPlanId, onUpgrade } = props;
 
   return (
-    <div className="overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
         <h2 className="font-heading text-base font-semibold text-foreground">
           Choose Your Plan
@@ -320,7 +320,7 @@ function PlanComparisonTable(
                           : "Free"}
                       </span>
                       {plan.highlight && !isCurrent && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                        <span className="rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning dark:bg-warning/10 dark:text-warning">
                           Popular
                         </span>
                       )}
@@ -512,7 +512,7 @@ function PaymentMethodSection(
 
   if (!stripeEnabled) {
     return (
-      <div className="rounded-xl border border-dashed border-border bg-muted/30 p-6">
+      <div className="rounded-2xl border border-dashed border-neutral-200/60 bg-muted/30 p-6 dark:border-neutral-700/60">
         <div className="flex items-center gap-3">
           <CreditCard className="size-5 text-muted-foreground" />
           <div>
@@ -529,7 +529,7 @@ function PaymentMethodSection(
   }
 
   return (
-    <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+    <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <h2 className="font-heading text-base font-semibold text-foreground">
         Payment Method
       </h2>
@@ -569,11 +569,11 @@ type BillingStatus = "paid" | "pending" | "failed";
 function billingStatusConfig(status: BillingStatus): string {
   switch (status) {
     case "paid":
-      return "bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary/20 dark:text-green-300";
+      return "bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary";
     case "pending":
-      return "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300";
+      return "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning";
     case "failed":
-      return "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300";
+      return "bg-error-light text-error dark:bg-error/10 dark:text-error";
   }
 }
 
@@ -583,7 +583,7 @@ function BillingHistorySection(
   const { rows } = props;
 
   return (
-    <div className="overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
         <h2 className="font-heading text-base font-semibold text-foreground">
           Billing History

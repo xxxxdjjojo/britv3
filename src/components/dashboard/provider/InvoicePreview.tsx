@@ -70,11 +70,10 @@ export function InvoicePreview({
   const totalPence = subtotalPence + vatPence;
 
   return (
-    <div className="rounded-xl border border-border bg-white shadow-sm dark:bg-neutral-900 print:shadow-none">
+    <div className="rounded-2xl border border-border bg-white shadow-sm dark:bg-neutral-900 print:shadow-none">
       {/* Britestate brand header bar */}
       <div
-        className="flex items-center justify-between rounded-t-xl px-8 py-4"
-        style={{ backgroundColor: "#1B4D3E" }}
+        className="flex items-center justify-between rounded-t-xl bg-brand-primary px-8 py-4"
       >
         <span className="text-lg font-bold tracking-widest text-white">
           BRITESTATE

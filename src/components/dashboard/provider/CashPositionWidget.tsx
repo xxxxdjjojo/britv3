@@ -35,7 +35,7 @@ export function CashPositionWidget({ cashPosition }: CashPositionWidgetProps) {
       {/* Header */}
       <CardHeader className="border-b border-neutral-100">
         <div className="flex items-center gap-2">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+          <div className="flex size-9 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
             <PoundSterling className="size-5" />
           </div>
           <CardTitle className="text-base font-semibold text-neutral-900">
@@ -59,7 +59,7 @@ export function CashPositionWidget({ cashPosition }: CashPositionWidgetProps) {
           {/* Received (paid) */}
           <div className="space-y-1">
             <p className="text-xs font-medium text-neutral-500">Received</p>
-            <p className="text-lg font-bold text-emerald-600">{fmtGbp(receivedPence)}</p>
+            <p className="text-lg font-bold text-success">{fmtGbp(receivedPence)}</p>
             <Badge variant="secondary" className="text-xs">
               {receivedCount} invoice{receivedCount !== 1 ? "s" : ""}
             </Badge>
@@ -71,7 +71,7 @@ export function CashPositionWidget({ cashPosition }: CashPositionWidgetProps) {
             <p
               className={[
                 "text-lg font-bold",
-                overduePence > 0 ? "text-red-600" : "text-neutral-400",
+                overduePence > 0 ? "text-error" : "text-muted-foreground/40",
               ].join(" ")}
             >
               {fmtGbp(overduePence)}
@@ -109,7 +109,7 @@ export function CashPositionWidget({ cashPosition }: CashPositionWidgetProps) {
           <p
             className={[
               "text-xl font-black tracking-tight",
-              netPositionPence >= 0 ? "text-emerald-600" : "text-red-600",
+              netPositionPence >= 0 ? "text-success" : "text-error",
             ].join(" ")}
           >
             {fmtGbp(netPositionPence)}

@@ -44,7 +44,7 @@ export default async function TransactionDetailPage(
   }
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="max-w-2xl p-6">
       <TransactionDetail transaction={transaction} />
     </div>
   );

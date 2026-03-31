@@ -128,7 +128,7 @@ function PaymentForm({ invoiceId, amountPence, onSuccess, onClose }: PaymentForm
       <PaymentElement />
 
       {formError && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="text-sm text-error" role="alert">
           {formError}
         </p>
       )}
@@ -145,7 +145,7 @@ function PaymentForm({ invoiceId, amountPence, onSuccess, onClose }: PaymentForm
         <button
           type="submit"
           disabled={submitting || !stripe}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md bg-brand-primary text-white hover:bg-brand-primary/90 disabled:opacity-50 transition-colors"
         >
           {submitting ? (
             <>
@@ -242,7 +242,7 @@ export function OnsitePaymentDialog({
       aria-label="Collect on-site payment"
     >
       {/* Panel */}
-      <div className="relative w-full max-w-md rounded-xl bg-white dark:bg-neutral-900 shadow-2xl border border-neutral-200 dark:border-neutral-700 p-6">
+      <div className="relative w-full max-w-md rounded-2xl bg-card shadow-2xl border border-border p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
@@ -259,13 +259,13 @@ export function OnsitePaymentDialog({
 
         {/* Stripe Connect not set up */}
         {!chargesEnabled && (
-          <div className="flex items-start gap-3 rounded-lg bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 p-4">
-            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-lg bg-warning-light dark:bg-warning/10 border border-warning/20 dark:border-warning/30 p-4">
+            <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+              <p className="text-sm font-medium text-warning">
                 Stripe Connect required
               </p>
-              <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              <p className="text-sm text-warning mt-1">
                 Set up Stripe Connect first to collect on-site payments. Go to{" "}
                 <Link
                   href="/dashboard/provider/payments"
@@ -282,26 +282,26 @@ export function OnsitePaymentDialog({
         {/* Loading spinner */}
         {chargesEnabled && loading && (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
             <p className="text-sm text-neutral-500">Setting up payment…</p>
           </div>
         )}
 
         {/* Init error */}
         {chargesEnabled && !loading && initError && (
-          <div className="flex items-start gap-3 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4">
-            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-lg bg-error-light dark:bg-error/10 border border-error/20 dark:border-error/30 p-4">
+            <AlertTriangle className="h-5 w-5 text-error shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+              <p className="text-sm font-medium text-error">
                 Could not initialise payment
               </p>
-              <p className="text-sm text-red-700 dark:text-red-300 mt-1">{initError}</p>
+              <p className="text-sm text-error mt-1">{initError}</p>
               <button
                 onClick={() => {
                   fetchedForRef.current = null;
                   setPaymentIntent(null);
                 }}
-                className="mt-2 text-sm underline text-red-700 dark:text-red-300 hover:no-underline"
+                className="mt-2 text-sm underline text-error hover:no-underline"
               >
                 Try again
               </button>
@@ -335,7 +335,7 @@ export function OnsitePaymentDialog({
 
         {/* Stripe not configured (no publishable key) */}
         {chargesEnabled && !loading && !initError && !stripePromise && (
-          <p className="text-sm text-red-600 dark:text-red-400">
+          <p className="text-sm text-error">
             Stripe is not configured. Contact support.
           </p>
         )}

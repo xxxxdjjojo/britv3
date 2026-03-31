@@ -429,8 +429,8 @@ export function QuoteBuilderForm({
       <div className="space-y-6">
         {/* Restore banner */}
         {showRestoreBanner && (
-          <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm dark:border-amber-800 dark:bg-amber-950">
-            <span className="text-amber-800 dark:text-amber-200">
+          <div className="flex items-center justify-between rounded-lg border border-warning/20 bg-warning-light px-4 py-3 text-sm dark:border-warning/30 dark:bg-warning/10">
+            <span className="text-warning">
               You have an unsaved draft. Restore it?
             </span>
             <div className="flex items-center gap-2">
@@ -441,7 +441,7 @@ export function QuoteBuilderForm({
                 type="button"
                 onClick={handleDismissRestore}
                 aria-label="Dismiss"
-                className="text-amber-600 hover:text-amber-800 dark:text-amber-400"
+                className="text-warning hover:text-warning/80"
               >
                 <X className="size-4" />
               </button>
@@ -867,8 +867,8 @@ export function QuoteBuilderForm({
                   <div
                     className={`mt-2 rounded-md px-3 py-2 text-sm ${
                       milestonesValid
-                        ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
-                        : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                        ? "bg-success-light text-success dark:bg-success/10 dark:text-success"
+                        : "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning"
                     }`}
                   >
                     {milestonesValid ? (
