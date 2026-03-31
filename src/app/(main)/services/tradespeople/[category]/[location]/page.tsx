@@ -234,11 +234,11 @@ export default async function CategoryLocationPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f8]">
+    <div className="min-h-screen bg-surface">
       {/* Page header */}
-      <div className="relative overflow-hidden bg-[#1B4D3E] py-14 px-4">
+      <div className="relative overflow-hidden bg-brand-primary py-14 px-4">
         <div className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-[#D4A853]/10 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-secondary/10 blur-3xl" />
         <div className="relative mx-auto max-w-5xl">
           <h1
             className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl mb-2"
@@ -262,7 +262,7 @@ export default async function CategoryLocationPage({ params }: PageProps) {
 
         {/* Provider grid */}
         {providers.length === 0 ? (
-          <div className="rounded-2xl bg-[#f4f3f2] py-16 text-center">
+          <div className="rounded-2xl bg-surface-container-low py-16 text-center">
             <p className="font-semibold text-[#1B4D3E]">
               No {categoryDisplay.toLowerCase()} found in {locationDisplay}
             </p>

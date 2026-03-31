@@ -79,7 +79,7 @@ export default async function ServicesPage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* ── Section 1: Hero + Search Bar ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] py-28 sm:py-36">
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-brand-primary-dark py-28 sm:py-36">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-white/5 blur-3xl" />
         <div className="pointer-events-none absolute -right-32 bottom-0 h-[400px] w-[400px] rounded-full bg-brand-secondary/10 blur-3xl" />
@@ -263,7 +263,7 @@ export default async function ServicesPage() {
 
       {/* ── Section 6: Bottom CTA ── */}
       <section className="px-6 pb-28">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] p-12 text-center sm:p-16">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primary to-brand-primary-dark p-12 text-center sm:p-16">
           <h2 className="font-heading text-3xl font-bold text-white sm:text-4xl" style={{ letterSpacing: "-0.02em" }}>
             Post a Job — Get Free Quotes
           </h2>

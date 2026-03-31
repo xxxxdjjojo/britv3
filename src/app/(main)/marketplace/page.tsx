@@ -80,7 +80,7 @@ export default async function MarketplaceLandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] text-white py-20 px-6">
+      <section className="bg-gradient-to-br from-brand-primary to-brand-accent text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-extrabold mb-4 tracking-tight">
             Find Trusted Professionals Near You
@@ -103,7 +103,7 @@ export default async function MarketplaceLandingPage() {
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+              className="px-6 py-3 bg-white text-brand-accent font-semibold rounded-lg hover:bg-slate-50 transition-colors"
             >
               Search
             </button>
@@ -139,10 +139,10 @@ export default async function MarketplaceLandingPage() {
             <a
               key={slug}
               href={href}
-              className="group flex flex-col items-center p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#2563EB] hover:shadow-md transition-all"
+              className="group flex flex-col items-center p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-accent hover:shadow-md transition-all"
             >
               <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
-                <Icon className="w-6 h-6 text-[#2563EB]" />
+                <Icon className="w-6 h-6 text-brand-accent" />
               </div>
               <span className="font-semibold text-slate-900 dark:text-white text-sm text-center">
                 {label}
@@ -170,7 +170,7 @@ export default async function MarketplaceLandingPage() {
                   <a
                     key={item.provider_id}
                     href={`/services/${p.slug}`}
-                    className="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-[#2563EB] hover:shadow-md transition-all"
+                    className="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-brand-accent hover:shadow-md transition-all"
                   >
                     {/* Avatar */}
                     <div className="w-14 h-14 rounded-full bg-slate-200 dark:bg-slate-700 flex-shrink-0 overflow-hidden flex items-center justify-center">
@@ -229,14 +229,14 @@ export default async function MarketplaceLandingPage() {
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Need a tradesperson?</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Post your job for free and get quotes from up to 5 verified professionals.</p>
-            <a href="/post-a-job" className="inline-block px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors">
+            <a href="/post-a-job" className="inline-block px-6 py-3 bg-brand-accent text-white font-semibold rounded-lg hover:bg-brand-accent/90 transition-colors">
               Post a Job — It&apos;s Free
             </a>
           </div>
           <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Are you a tradesperson?</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Browse jobs posted by homeowners in your area and send quotes directly.</p>
-            <a href="/dashboard/service_provider/jobs" className="inline-block px-6 py-3 bg-[#1B4D3E] text-white font-semibold rounded-lg hover:bg-[#163D30] transition-colors">
+            <a href="/dashboard/service_provider/jobs" className="inline-block px-6 py-3 bg-brand-primary text-white font-semibold rounded-lg hover:bg-brand-primary/90 transition-colors">
               Browse Available Jobs
             </a>
           </div>
@@ -245,7 +245,7 @@ export default async function MarketplaceLandingPage() {
 
       {/* For professionals CTA */}
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="bg-gradient-to-r from-[#1B4D3E] to-[#2563EB] rounded-2xl p-10 text-center text-white">
+        <div className="bg-gradient-to-r from-brand-primary to-brand-accent rounded-2xl p-10 text-center text-white">
           <h2 className="text-3xl font-bold mb-3">Are you a professional?</h2>
           <p className="text-white/80 mb-7 max-w-xl mx-auto">
             Join 10,000+ verified providers on Britestate and grow your
@@ -253,7 +253,7 @@ export default async function MarketplaceLandingPage() {
           </p>
           <Link
             href="/register?professional=service_provider"
-            className="inline-block px-8 py-3.5 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+            className="inline-block px-8 py-3.5 bg-white text-brand-accent font-semibold rounded-lg hover:bg-slate-50 transition-colors"
           >
             List Your Business
           </Link>
