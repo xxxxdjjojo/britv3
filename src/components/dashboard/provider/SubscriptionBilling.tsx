@@ -9,6 +9,7 @@ import {
   Zap,
   Star,
   Shield,
+  TrendingUp,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -141,17 +142,65 @@ function formatDate(iso: string): string {
   });
 }
 
-function getPlanIcon(id: PlanId) {
+function renderPlanIcon(id: PlanId, className: string) {
   switch (id) {
     case "premium":
-      return Crown;
+      return <Crown className={className} />;
     case "professional":
-      return Star;
+      return <Star className={className} />;
     case "starter":
-      return Zap;
+      return <Zap className={className} />;
     default:
-      return Shield;
+      return <Shield className={className} />;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Earnings metric cards (Stitch design: available + pending + tax)
+// ---------------------------------------------------------------------------
+
+function EarningsMetrics() {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* Available to withdraw — hero card */}
+      <div className="rounded-xl bg-brand-primary p-6 text-white">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="size-4 text-white/70" />
+          <p className="font-body text-sm font-medium text-white/70">
+            Available to Withdraw
+          </p>
+        </div>
+        <p className="mt-2 font-heading text-3xl font-bold">£12,450.80</p>
+        <p className="mt-1 font-body text-xs uppercase tracking-wide text-white/60">
+          Ready · Stripe Connect
+        </p>
+      </div>
+
+      {/* Pending payments */}
+      <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+        <p className="font-body text-sm font-medium text-muted-foreground">
+          Pending Payments
+        </p>
+        <p className="mt-2 font-heading text-3xl font-bold text-foreground">
+          £2,180.00
+        </p>
+        <p className="mt-1 font-body text-xs text-muted-foreground">4 jobs in progress</p>
+      </div>
+
+      {/* Tax estimate */}
+      <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+        <p className="font-body text-sm font-medium text-muted-foreground">
+          Tax Estimate
+        </p>
+        <p className="mt-2 font-heading text-3xl font-bold text-foreground">
+          £4,890.45
+        </p>
+        <p className="mt-1 font-body text-xs text-muted-foreground">
+          At 20% effective rate
+        </p>
+      </div>
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -163,19 +212,18 @@ function CurrentPlanBanner(
 ) {
   const { currentPlanId, renewalDate } = props;
   const plan = PLANS.find((p) => p.id === currentPlanId) ?? PLANS[0];
-  const Icon = getPlanIcon(currentPlanId);
 
   const badgeColour =
     currentPlanId === "free"
-      ? "bg-neutral-100 text-neutral-600"
-      : "bg-[#E8F5EE] text-[#1B4D3E]";
+      ? "bg-muted text-muted-foreground"
+      : "bg-brand-primary-lighter text-brand-primary";
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-[#1B4D3E] text-white">
-            <Icon className="size-6" />
+          <div className="flex size-12 items-center justify-center rounded-xl bg-brand-primary text-white">
+            {renderPlanIcon(currentPlanId, "size-6")}
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -185,24 +233,25 @@ function CurrentPlanBanner(
                 {plan.name} Plan
               </span>
               {currentPlanId !== "free" && (
-                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-xs font-medium text-brand-primary">
                   Active
                 </span>
               )}
             </div>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="mt-1 font-body text-sm text-muted-foreground">
               {plan.priceMonthly !== null
                 ? `£${plan.priceMonthly}/month`
                 : "Free forever"}
-              {renewalDate
-                ? ` · Renews ${formatDate(renewalDate)}`
-                : ""}
+              {renewalDate ? ` · Renews ${formatDate(renewalDate)}` : ""}
             </p>
           </div>
         </div>
 
         {currentPlanId !== "free" && (
-          <button className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50">
+          <button
+            className="rounded-lg border border-destructive/30 px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/5"
+            aria-label="Cancel subscription plan"
+          >
             Cancel Plan
           </button>
         )}
@@ -224,59 +273,59 @@ function PlanComparisonTable(
   const { currentPlanId, onUpgrade } = props;
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-100">
-        <h2 className="text-base font-semibold text-neutral-900">
+    <div className="overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+      <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
+        <h2 className="font-heading text-base font-semibold text-foreground">
           Choose Your Plan
         </h2>
-        <p className="mt-0.5 text-sm text-neutral-500">
+        <p className="mt-0.5 font-body text-sm text-muted-foreground">
           Upgrade at any time. Changes take effect immediately.
         </p>
       </div>
 
       {/* Desktop table */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-neutral-100">
-              <th className="py-4 pl-6 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 w-40">
+            <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60">
+              <th className="w-40 py-4 pl-6 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Feature
               </th>
               {PLANS.map((plan) => {
                 const isCurrent = plan.id === currentPlanId;
-                const Icon = getPlanIcon(plan.id);
                 return (
                   <th
                     key={plan.id}
-                    className={`py-4 px-4 text-center ${
+                    className={`px-4 py-4 text-center ${
                       isCurrent
-                        ? "bg-[#E8F5EE]"
+                        ? "bg-brand-primary-lighter"
                         : plan.highlight
-                          ? "bg-neutral-50"
+                          ? "bg-muted/30"
                           : ""
                     }`}
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <Icon
-                        className={`size-5 ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-400"}`}
-                      />
+                      {renderPlanIcon(
+                        plan.id,
+                        `size-5 ${isCurrent ? "text-brand-primary" : "text-muted-foreground"}`,
+                      )}
                       <span
-                        className={`text-sm font-bold ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-800"}`}
+                        className={`font-heading text-sm font-bold ${isCurrent ? "text-brand-primary" : "text-foreground"}`}
                       >
                         {plan.name}
                       </span>
-                      <span className="text-xs text-neutral-500">
+                      <span className="font-body text-xs text-muted-foreground">
                         {plan.priceMonthly !== null
                           ? `£${plan.priceMonthly}/mo`
                           : "Free"}
                       </span>
                       {plan.highlight && !isCurrent && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
                           Popular
                         </span>
                       )}
                       {isCurrent && (
-                        <span className="rounded-full bg-[#1B4D3E] px-2 py-0.5 text-xs font-medium text-white">
+                        <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
                           Current
                         </span>
                       )}
@@ -290,9 +339,9 @@ function PlanComparisonTable(
             {FEATURE_ROWS.map((row) => (
               <tr
                 key={row.key}
-                className="border-b border-neutral-100 last:border-0"
+                className="border-b border-neutral-100/60 last:border-0 dark:border-neutral-700/60"
               >
-                <td className="py-3 pl-6 pr-4 text-sm font-medium text-neutral-700">
+                <td className="py-3 pl-6 pr-4 font-body text-sm font-medium text-foreground">
                   {row.label}
                 </td>
                 {PLANS.map((plan) => {
@@ -301,15 +350,15 @@ function PlanComparisonTable(
                   return (
                     <td
                       key={plan.id}
-                      className={`py-3 px-4 text-center text-sm ${
+                      className={`px-4 py-3 text-center font-body text-sm ${
                         isCurrent
-                          ? "bg-[#E8F5EE] text-[#1B4D3E] font-medium"
-                          : "text-neutral-600"
+                          ? "bg-brand-primary-lighter font-medium text-brand-primary"
+                          : "text-muted-foreground"
                       }`}
                     >
                       {typeof value === "number" ? (
                         value === 0 ? (
-                          <span className="text-neutral-300">—</span>
+                          <span className="text-muted-foreground/40">—</span>
                         ) : (
                           <span className="font-semibold">{value}</span>
                         )
@@ -323,8 +372,8 @@ function PlanComparisonTable(
             ))}
 
             {/* CTA row */}
-            <tr className="border-t border-neutral-200 bg-neutral-50">
-              <td className="py-4 pl-6 pr-4 text-sm font-medium text-neutral-500">
+            <tr className="border-t border-neutral-100/60 bg-muted/20 dark:border-neutral-700/60">
+              <td className="py-4 pl-6 pr-4 font-body text-sm font-medium text-muted-foreground">
                 Action
               </td>
               {PLANS.map((plan) => {
@@ -336,23 +385,25 @@ function PlanComparisonTable(
                 return (
                   <td
                     key={plan.id}
-                    className={`py-4 px-4 text-center ${isCurrent ? "bg-[#E8F5EE]" : ""}`}
+                    className={`px-4 py-4 text-center ${isCurrent ? "bg-brand-primary-lighter" : ""}`}
                   >
                     {isCurrent ? (
-                      <span className="inline-flex items-center gap-1 text-sm font-medium text-[#1B4D3E]">
+                      <span className="inline-flex items-center gap-1 font-body text-sm font-medium text-brand-primary">
                         <Check className="size-4" /> Current
                       </span>
                     ) : isDowngrade ? (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-lg border border-neutral-300 px-4 py-1.5 text-sm font-medium text-neutral-600 transition hover:bg-neutral-100"
+                        className="rounded-lg border border-border px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        aria-label={`Downgrade to ${plan.name}`}
                       >
                         Downgrade
                       </button>
                     ) : (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-lg bg-[#1B4D3E] px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-[#163d31]"
+                        className="rounded-lg bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90"
+                        aria-label={`Upgrade to ${plan.name}`}
                       >
                         Upgrade
                       </button>
@@ -366,10 +417,9 @@ function PlanComparisonTable(
       </div>
 
       {/* Mobile plan cards */}
-      <div className="md:hidden divide-y divide-neutral-100">
+      <div className="divide-y divide-neutral-100/60 dark:divide-neutral-700/60 md:hidden">
         {PLANS.map((plan) => {
           const isCurrent = plan.id === currentPlanId;
-          const Icon = getPlanIcon(plan.id);
           const isDowngrade =
             PLANS.findIndex((p) => p.id === plan.id) <
             PLANS.findIndex((p) => p.id === currentPlanId);
@@ -377,20 +427,21 @@ function PlanComparisonTable(
           return (
             <div
               key={plan.id}
-              className={`p-5 ${isCurrent ? "bg-[#E8F5EE] border-l-4 border-[#1B4D3E]" : ""}`}
+              className={`p-5 ${isCurrent ? "border-l-4 border-brand-primary bg-brand-primary-lighter" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Icon
-                    className={`size-5 ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-400"}`}
-                  />
+                  {renderPlanIcon(
+                    plan.id,
+                    `size-5 ${isCurrent ? "text-brand-primary" : "text-muted-foreground"}`,
+                  )}
                   <div>
                     <p
-                      className={`text-sm font-bold ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-800"}`}
+                      className={`font-heading text-sm font-bold ${isCurrent ? "text-brand-primary" : "text-foreground"}`}
                     >
                       {plan.name}
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="font-body text-xs text-muted-foreground">
                       {plan.priceMonthly !== null
                         ? `£${plan.priceMonthly}/mo`
                         : "Free"}
@@ -398,20 +449,22 @@ function PlanComparisonTable(
                   </div>
                 </div>
                 {isCurrent ? (
-                  <span className="rounded-full bg-[#1B4D3E] px-2 py-0.5 text-xs font-medium text-white">
+                  <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
                     Current
                   </span>
                 ) : isDowngrade ? (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-lg border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-600"
+                    className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground"
+                    aria-label={`Downgrade to ${plan.name}`}
                   >
                     Downgrade
                   </button>
                 ) : (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-lg bg-[#1B4D3E] px-3 py-1 text-xs font-semibold text-white"
+                    className="rounded-lg bg-brand-primary px-3 py-1 text-xs font-semibold text-white hover:bg-brand-primary/90"
+                    aria-label={`Upgrade to ${plan.name}`}
                   >
                     Upgrade
                   </button>
@@ -426,9 +479,9 @@ function PlanComparisonTable(
                       key={row.key}
                       className="flex items-center justify-between text-xs"
                     >
-                      <span className="text-neutral-500">{row.label}</span>
+                      <span className="font-body text-muted-foreground">{row.label}</span>
                       <span
-                        className={`font-medium ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-700"}`}
+                        className={`font-body font-medium ${isCurrent ? "text-brand-primary" : "text-foreground"}`}
                       >
                         {typeof value === "number"
                           ? value === 0
@@ -452,19 +505,21 @@ function PlanComparisonTable(
 // Payment Method section
 // ---------------------------------------------------------------------------
 
-function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
+function PaymentMethodSection(
+  props: Readonly<{ stripeEnabled: boolean }>,
+) {
   const { stripeEnabled } = props;
 
   if (!stripeEnabled) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-6">
+      <div className="rounded-xl border border-dashed border-border bg-muted/30 p-6">
         <div className="flex items-center gap-3">
-          <CreditCard className="size-5 text-neutral-400" />
+          <CreditCard className="size-5 text-muted-foreground" />
           <div>
-            <p className="text-sm font-medium text-neutral-700">
+            <p className="font-body text-sm font-medium text-foreground">
               Payment Method
             </p>
-            <p className="mt-0.5 text-xs text-neutral-400">
+            <p className="mt-0.5 font-body text-xs text-muted-foreground">
               Stripe billing is not yet configured. Check back soon.
             </p>
           </div>
@@ -474,25 +529,30 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-      <h2 className="text-base font-semibold text-neutral-900">
+    <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+      <h2 className="font-heading text-base font-semibold text-foreground">
         Payment Method
       </h2>
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {/* Card artwork */}
-          <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-50">
-            <CreditCard className="size-6 text-neutral-400" />
+          <div className="flex size-12 items-center justify-center rounded-lg border border-border bg-muted">
+            <CreditCard className="size-6 text-muted-foreground" />
           </div>
           <div>
-            <p className="text-sm font-medium text-neutral-800">
+            <p className="font-body text-sm font-medium text-foreground">
               Visa ending in{" "}
               <span className="font-bold tracking-widest">4242</span>
             </p>
-            <p className="mt-0.5 text-xs text-neutral-400">Expires 12 / 2028</p>
+            <p className="mt-0.5 font-body text-xs text-muted-foreground">
+              Expires 12 / 2028
+            </p>
           </div>
         </div>
-        <button className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50">
+        <button
+          className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          aria-label="Update payment method"
+        >
           Update
         </button>
       </div>
@@ -506,14 +566,14 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
 
 type BillingStatus = "paid" | "pending" | "failed";
 
-function billingStatusConfig(status: BillingStatus) {
+function billingStatusConfig(status: BillingStatus): string {
   switch (status) {
     case "paid":
-      return "bg-green-100 text-green-700";
+      return "bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary/20 dark:text-green-300";
     case "pending":
-      return "bg-amber-100 text-amber-700";
+      return "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300";
     case "failed":
-      return "bg-red-100 text-red-700";
+      return "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300";
   }
 }
 
@@ -523,32 +583,34 @@ function BillingHistorySection(
   const { rows } = props;
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-neutral-100">
-        <h2 className="text-base font-semibold text-neutral-900">
+    <div className="overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+      <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
+        <h2 className="font-heading text-base font-semibold text-foreground">
           Billing History
         </h2>
       </div>
 
       {rows.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm text-neutral-500">No billing history yet.</p>
+          <p className="font-body text-sm text-muted-foreground">
+            No billing history yet.
+          </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-neutral-50 border-b border-neutral-200">
-                <th className="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+              <tr className="border-b border-neutral-100/60 bg-muted/40 dark:border-neutral-700/60">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Date
                 </th>
-                <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Amount
                 </th>
-                <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Status
                 </th>
-                <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Invoice
                 </th>
               </tr>
@@ -557,32 +619,33 @@ function BillingHistorySection(
               {rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition"
+                  className="border-b border-neutral-100/60 last:border-0 transition-colors hover:bg-muted/30 dark:border-neutral-700/60"
                 >
-                  <td className="py-3 px-6 text-sm text-neutral-600">
+                  <td className="px-6 py-3 font-body text-sm text-muted-foreground">
                     {formatDate(row.date)}
                   </td>
-                  <td className="py-3 px-4 text-sm font-medium text-neutral-900">
+                  <td className="px-4 py-3 font-body text-sm font-semibold text-foreground">
                     {formatGBP(row.amount)}
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${billingStatusConfig(row.status)}`}
                     >
                       {row.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="px-4 py-3">
                     {row.invoiceUrl ? (
                       <a
                         href={row.invoiceUrl}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-[#1B4D3E] hover:underline"
+                        className="inline-flex items-center gap-1 font-body text-xs font-medium text-brand-accent hover:underline"
+                        aria-label={`Download invoice for ${formatDate(row.date)}`}
                       >
                         <Download className="size-3" />
                         Download
                       </a>
                     ) : (
-                      <span className="text-xs text-neutral-400">—</span>
+                      <span className="font-body text-xs text-muted-foreground">—</span>
                     )}
                   </td>
                 </tr>
@@ -621,7 +684,10 @@ export function SubscriptionBilling(props: SubscriptionBillingProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* 0. Earnings metrics (Stitch: available + pending + tax) */}
+      <EarningsMetrics />
+
       {/* 1. Current plan banner */}
       <CurrentPlanBanner
         currentPlanId={activePlan}

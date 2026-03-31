@@ -43,12 +43,12 @@ export default async function BillingPage() {
     )?.subscription_renewal_date ?? null;
 
   return (
-    <div className="p-6 space-y-6 max-w-5xl">
+    <div className="max-w-5xl space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           Subscription &amp; Billing
-        </h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        </h2>
+        <p className="mt-1 font-body text-sm text-neutral-500">
           Manage your plan, payment method, and billing history.
         </p>
       </div>
