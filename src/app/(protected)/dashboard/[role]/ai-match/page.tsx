@@ -32,7 +32,6 @@ import {
   Loader2,
   MapPin,
   Bed,
-  Bath,
   PoundSterling,
   CheckCircle2,
   AlertCircle,
@@ -632,12 +631,6 @@ function MatchResultCard({
               <span className="flex items-center gap-0.5">
                 <Bed className="size-3" strokeWidth={1.25} />
                 {result.listing.bedrooms} bed
-              </span>
-            )}
-            {result.listing?.bathrooms != null && (
-              <span className="flex items-center gap-0.5">
-                <Bath className="size-3" strokeWidth={1.25} />
-                {result.listing.bathrooms} bath
               </span>
             )}
             {result.listing?.property_type && (

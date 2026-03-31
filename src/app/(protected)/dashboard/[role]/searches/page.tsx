@@ -191,11 +191,11 @@ export default async function SavedSearchesPage() {
                       {formatFilters(search.filters)}
                     </p>
 
-                    {/* Location (if set) */}
-                    {search.filters.location && (
+                    {/* Location (if set via q param) */}
+                    {"q" in search.filters && Boolean((search.filters as Record<string, unknown>).q) && (
                       <p className="flex items-center gap-1 text-xs text-neutral-500">
                         <MapPin className="size-3 shrink-0" strokeWidth={1.25} />
-                        {search.filters.location}
+                        {String((search.filters as Record<string, unknown>).q)}
                       </p>
                     )}
 
@@ -222,7 +222,7 @@ export default async function SavedSearchesPage() {
                       {/* Last updated */}
                       <span className="flex items-center gap-1 text-xs text-neutral-400">
                         <Clock className="size-3" strokeWidth={1.25} />
-                        {formatRelativeTime(search.created_at)}
+                        {formatRelativeTime(String(search.created_at))}
                       </span>
                     </div>
                   </div>
