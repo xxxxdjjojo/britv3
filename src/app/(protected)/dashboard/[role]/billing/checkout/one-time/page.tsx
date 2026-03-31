@@ -127,13 +127,10 @@ function OneTimeCheckoutContent() {
             <ArrowLeft size={16} />
           </Button>
           <div>
-            <h1
-              className="text-2xl font-semibold text-gray-900 dark:text-gray-100"
-              style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-            >
+            <h1 className="font-heading text-xl font-semibold text-foreground">
               Complete your purchase
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="font-body text-sm text-neutral-500">
               Secure checkout powered by Stripe
             </p>
           </div>
@@ -142,25 +139,25 @@ function OneTimeCheckoutContent() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
           {/* Left: Boost details */}
           <div className="lg:col-span-2 space-y-5">
-            <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F5EE] dark:bg-[#1B4D3E]/20">
-                <Zap className="text-[#1B4D3E] dark:text-emerald-400" size={18} />
+            <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
+                <Zap className="text-green-700 dark:text-green-300" size={18} />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="font-heading text-base font-semibold text-foreground">
                 {checkoutState.boost.label}
               </h2>
-              <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p className="mt-1 font-heading text-3xl font-bold text-foreground">
                 {checkoutState.boost.price}
               </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 font-body text-sm text-neutral-500">
                 {checkoutState.boost.description}
               </p>
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 font-body text-xs text-neutral-500">
                 Duration: {checkoutState.boost.duration}
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-600">
+            <div className="flex items-center gap-2 font-body text-xs text-neutral-500">
               <ShieldCheck size={14} />
               <span>One-time payment. Your listing is featured immediately.</span>
             </div>
@@ -172,7 +169,7 @@ function OneTimeCheckoutContent() {
               stripe={stripePromise}
               options={{ clientSecret: checkoutState.clientSecret }}
             >
-              <EmbeddedCheckout className="rounded-lg" />
+              <EmbeddedCheckout className="rounded-xl" />
             </EmbeddedCheckoutProvider>
           </div>
         </div>
@@ -182,24 +179,26 @@ function OneTimeCheckoutContent() {
 
   // Show boost selection
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
+    <div className="mx-auto max-w-2xl space-y-8 p-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link href={basePath}><ArrowLeft size={16} /></Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+          <h1 className="font-heading text-xl font-semibold text-foreground">
             Feature Your Listing
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="font-body text-sm text-neutral-500">
             Get premium placement and 3x more views
           </p>
         </div>
       </div>
 
       {!stripePromise && (
-        <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-200">
-          Payment service is not configured. Please contact support.
+        <div className="rounded-xl bg-red-50 p-4 ring-1 ring-red-200/60 dark:bg-red-900/20 dark:ring-red-700/60">
+          <p className="font-body text-sm text-red-700 dark:text-red-300">
+            Payment service is not configured. Please contact support.
+          </p>
         </div>
       )}
 
@@ -210,26 +209,26 @@ function OneTimeCheckoutContent() {
             onClick={() => setSelectedBoost(boost)}
             className={`relative cursor-pointer transition-all ${
               selectedBoost?.id === boost.id
-                ? "border-2 border-[#1B4D3E] ring-2 ring-[#1B4D3E]/10 shadow-md"
-                : "hover:shadow-md"
-            } ${boost.highlighted ? "border-[#2563EB]" : ""}`}
+                ? "ring-2 ring-brand-primary shadow-md"
+                : "ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 hover:shadow-md"
+            } ${boost.highlighted ? "ring-2 ring-brand-primary/60" : ""}`}
           >
             {boost.highlighted && (
               <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                <span className="rounded-full bg-[#2563EB] px-2.5 py-0.5 text-xs font-medium text-white">
+                <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
                   Best value
                 </span>
               </div>
             )}
             <CardContent className="pt-6 pb-4 text-center">
-              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F5EE] dark:bg-[#1B4D3E]/20">
-                <Zap className="text-[#1B4D3E] dark:text-emerald-400" size={18} />
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
+                <Zap className="text-green-700 dark:text-green-300" size={18} />
               </div>
-              <p className="font-semibold text-gray-900 dark:text-gray-100">{boost.label}</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">{boost.price}</p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{boost.description}</p>
+              <p className="font-body text-sm font-medium text-foreground">{boost.label}</p>
+              <p className="mt-1 font-heading text-2xl font-bold text-foreground">{boost.price}</p>
+              <p className="mt-1 font-body text-xs text-neutral-500">{boost.description}</p>
               {selectedBoost?.id === boost.id && (
-                <div className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-[#1B4D3E] dark:text-emerald-400">
+                <div className="mt-3 flex items-center justify-center gap-1 font-body text-xs font-medium text-green-700 dark:text-green-300">
                   <CheckCircle2 size={14} />
                   Selected
                 </div>
@@ -240,10 +239,10 @@ function OneTimeCheckoutContent() {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button
+        <button
           onClick={() => void handleCheckout()}
           disabled={!selectedBoost || isLoading || !stripePromise}
-          className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
+          className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-50 inline-flex items-center gap-2"
         >
           {isLoading ? (
             <><Loader2 size={14} className="animate-spin" />Loading checkout…</>
@@ -252,13 +251,13 @@ function OneTimeCheckoutContent() {
           ) : (
             "Select a boost option"
           )}
-        </Button>
+        </button>
         <Button variant="ghost" asChild>
           <Link href={basePath}>Cancel</Link>
         </Button>
       </div>
 
-      <p className="text-xs text-gray-400 dark:text-gray-600">
+      <p className="font-body text-xs text-neutral-500">
         One-time payment. Your listing will be featured immediately after payment. All payments processed securely via Stripe.
       </p>
     </div>
@@ -270,7 +269,7 @@ export default function OneTimeCheckoutPage() {
     <Suspense
       fallback={
         <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#1B4D3E]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
         </div>
       }
     >

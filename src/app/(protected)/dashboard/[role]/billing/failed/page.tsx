@@ -101,60 +101,57 @@ function PaymentFailedContent() {
   const basePath = `/dashboard/${params.role}/billing`;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 to-white p-6 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Failed icon */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
-          <AlertCircle className="text-red-500" size={44} />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20">
+          <AlertCircle className="text-red-700 dark:text-red-300" size={44} />
         </div>
 
         <div>
-          <h1
-            className="text-3xl font-bold text-gray-900 dark:text-gray-100"
-            style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-          >
+          <h1 className="font-heading text-xl font-semibold text-foreground">
             {decline.title}
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-2 font-body text-sm text-neutral-500">
             {decline.message}
           </p>
         </div>
 
-        <Card className="border-red-200 bg-white dark:border-red-800 dark:bg-gray-900">
+        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-red-200/60 dark:ring-red-700/60">
           <CardContent className="py-5">
-            <p className="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p className="mb-3 font-body text-sm font-medium text-foreground">
               Recommended next step
             </p>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
+            <p className="font-body text-sm text-neutral-500">
               {decline.advice}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <CardContent className="py-5">
-            <p className="mb-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p className="mb-4 font-body text-sm font-medium text-foreground">
               What you can do:
             </p>
             <div className="space-y-3 text-sm text-left">
-              <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                <RefreshCw size={16} className="mt-0.5 shrink-0 text-gray-400" />
+              <div className="flex items-start gap-2 font-body text-sm text-foreground">
+                <RefreshCw size={16} className="mt-0.5 shrink-0 text-neutral-500" />
                 <span>Try again with the same or a different card</span>
               </div>
-              <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                <CreditCard size={16} className="mt-0.5 shrink-0 text-gray-400" />
+              <div className="flex items-start gap-2 font-body text-sm text-foreground">
+                <CreditCard size={16} className="mt-0.5 shrink-0 text-neutral-500" />
                 <Link
                   href={`${basePath}/payment-methods`}
-                  className="underline hover:text-[#1B4D3E] dark:hover:text-emerald-400"
+                  className="underline hover:text-brand-primary"
                 >
                   Manage your payment methods
                 </Link>
               </div>
-              <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                <Phone size={16} className="mt-0.5 shrink-0 text-gray-400" />
+              <div className="flex items-start gap-2 font-body text-sm text-foreground">
+                <Phone size={16} className="mt-0.5 shrink-0 text-neutral-500" />
                 <a
                   href="tel:+44"
-                  className="underline hover:text-[#1B4D3E] dark:hover:text-emerald-400"
+                  className="underline hover:text-brand-primary"
                 >
                   Contact your bank to authorise the payment
                 </a>
@@ -164,15 +161,13 @@ function PaymentFailedContent() {
         </Card>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button
-            className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
-            asChild
+          <Link
+            href={`${basePath}/checkout/subscription`}
+            className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 inline-flex items-center gap-2"
           >
-            <Link href={`${basePath}/checkout/subscription`}>
-              <CreditCard size={16} />
-              Try with different card
-            </Link>
-          </Button>
+            <CreditCard size={16} />
+            Try with different card
+          </Link>
           <Button variant="outline" asChild>
             <Link href={basePath}>
               Back to billing
@@ -181,7 +176,7 @@ function PaymentFailedContent() {
           </Button>
         </div>
 
-        <p className="text-xs text-gray-400 dark:text-gray-600">
+        <p className="font-body text-xs text-neutral-500">
           Your card was not charged. Need help?{" "}
           <a href="mailto:support@britestate.co.uk" className="underline">
             Contact support
@@ -197,7 +192,7 @@ export default function PaymentFailedPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-neutral-500" />
         </div>
       }
     >

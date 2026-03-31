@@ -75,22 +75,19 @@ export default function PaymentConfirmationPage() {
   // Polling state — waiting for webhook to confirm subscription
   if (status === "polling") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E8F5EE] to-white p-6 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 dark:bg-brand-primary/20">
             <Loader2
-              className="animate-spin text-[#1B4D3E] dark:text-emerald-400"
+              className="animate-spin text-brand-primary"
               size={44}
             />
           </div>
           <div>
-            <h1
-              className="text-3xl font-bold text-gray-900 dark:text-gray-100"
-              style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-            >
+            <h1 className="font-heading text-xl font-semibold text-foreground">
               Processing your payment…
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
+            <p className="mt-2 font-body text-sm text-neutral-500">
               Please wait while we confirm your subscription. This usually takes
               a few seconds.
             </p>
@@ -103,33 +100,28 @@ export default function PaymentConfirmationPage() {
   // Timeout state — webhook took too long, show a softer message
   if (status === "timeout") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E8F5EE] to-white p-6 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
-            <CheckCircle2 className="text-amber-600 dark:text-amber-400" size={44} />
+            <CheckCircle2 className="text-amber-700 dark:text-amber-300" size={44} />
           </div>
           <div>
-            <h1
-              className="text-3xl font-bold text-gray-900 dark:text-gray-100"
-              style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-            >
+            <h1 className="font-heading text-xl font-semibold text-foreground">
               Payment confirmed
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
+            <p className="mt-2 font-body text-sm text-neutral-500">
               Payment confirmed but activation is taking longer than expected.
               Your dashboard will be ready shortly.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button
-              className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
-              asChild
+            <Link
+              href={dashboardPath}
+              className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 inline-flex items-center gap-2"
             >
-              <Link href={dashboardPath}>
-                Go to Dashboard
-                <ArrowRight size={16} />
-              </Link>
-            </Button>
+              Go to Dashboard
+              <ArrowRight size={16} />
+            </Link>
             <Button variant="outline" asChild>
               <Link href={billingPath}>
                 <Home size={16} className="mr-2" />
@@ -137,7 +129,7 @@ export default function PaymentConfirmationPage() {
               </Link>
             </Button>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-600">
+          <p className="font-body text-xs text-neutral-500">
             Questions? Contact us at{" "}
             <a href="mailto:support@britestate.co.uk" className="underline">
               support@britestate.co.uk
@@ -150,23 +142,20 @@ export default function PaymentConfirmationPage() {
 
   // Success state — webhook confirmed, subscription is active
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E8F5EE] to-white p-6 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Success icon */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20">
-          <CheckCircle2 className="text-[#1B4D3E] dark:text-emerald-400" size={44} />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
+          <CheckCircle2 className="text-green-700 dark:text-green-300" size={44} />
         </div>
 
         <div>
-          <h1
-            className="text-3xl font-bold text-gray-900 dark:text-gray-100"
-            style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-          >
+          <h1 className="font-heading text-xl font-semibold text-foreground">
             You&apos;re all set!
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-2 font-body text-sm text-neutral-500">
             Welcome to{" "}
-            <span className="font-semibold text-[#1B4D3E] dark:text-emerald-400">
+            <span className="font-semibold text-foreground">
               {decodeURIComponent(plan)}
             </span>
             .
@@ -174,19 +163,19 @@ export default function PaymentConfirmationPage() {
           </p>
         </div>
 
-        <Card className="border-green-200 bg-white dark:border-green-800 dark:bg-gray-900">
+        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <CardContent className="py-5">
             <div className="space-y-3 text-sm text-left">
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <CheckCircle2 size={16} className="text-green-500 shrink-0" />
+              <div className="flex items-center gap-2 font-body text-sm text-foreground">
+                <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 shrink-0" />
                 <span>Subscription activated</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <CheckCircle2 size={16} className="text-green-500 shrink-0" />
+              <div className="flex items-center gap-2 font-body text-sm text-foreground">
+                <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 shrink-0" />
                 <span>Confirmation email sent</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <CheckCircle2 size={16} className="text-green-500 shrink-0" />
+              <div className="flex items-center gap-2 font-body text-sm text-foreground">
+                <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 shrink-0" />
                 <span>All features unlocked</span>
               </div>
             </div>
@@ -194,15 +183,13 @@ export default function PaymentConfirmationPage() {
         </Card>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button
-            className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
-            asChild
+          <Link
+            href={dashboardPath}
+            className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 inline-flex items-center gap-2"
           >
-            <Link href={dashboardPath}>
-              Go to Dashboard
-              <ArrowRight size={16} />
-            </Link>
-          </Button>
+            Go to Dashboard
+            <ArrowRight size={16} />
+          </Link>
           <Button variant="outline" asChild>
             <Link href={billingPath}>
               <Home size={16} className="mr-2" />
@@ -212,12 +199,12 @@ export default function PaymentConfirmationPage() {
         </div>
 
         {sessionId && (
-          <p className="text-xs text-gray-400 dark:text-gray-600">
+          <p className="font-body text-xs text-neutral-500">
             Session: {sessionId.slice(0, 16)}…
           </p>
         )}
 
-        <p className="text-xs text-gray-400 dark:text-gray-600">
+        <p className="font-body text-xs text-neutral-500">
           Questions? Contact us at{" "}
           <a href="mailto:support@britestate.co.uk" className="underline">
             support@britestate.co.uk
