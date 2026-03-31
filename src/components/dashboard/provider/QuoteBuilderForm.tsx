@@ -5,7 +5,6 @@ import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { Plus, Trash2, Sparkles, X, Save, FolderOpen, AlignLeft } from "lucide-react";
 import { QuotePreview } from "./QuotePreview";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -15,12 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -120,6 +113,18 @@ type QuoteBuilderFormProps = Readonly<{
 }>;
 
 // ---------------------------------------------------------------------------
+// Section step badge
+// ---------------------------------------------------------------------------
+
+function StepBadge({ step }: Readonly<{ step: string }>) {
+  return (
+    <span className="w-8 h-8 rounded-full bg-[#9ed1bd] flex items-center justify-center text-[#003629] font-bold text-xs shrink-0">
+      {step}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
@@ -194,7 +199,7 @@ export function QuoteBuilderForm({
 
   // Milestone allocation validation
   const milestoneTotalPence = watchedMilestones.reduce(
-    (s, m) => s + (Math.round((Number(m.amountPence) || 0) * 100)),
+    (s, m) => s + Math.round((Number(m.amountPence) || 0) * 100),
     0,
   );
   const milestoneRemainingPence = totalPence - milestoneTotalPence;
@@ -219,10 +224,7 @@ export function QuoteBuilderForm({
     autoSaveRef.current = setInterval(() => {
       if (typeof window === "undefined") return;
       try {
-        window.localStorage.setItem(
-          DRAFT_KEY,
-          JSON.stringify(form.getValues()),
-        );
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify(form.getValues()));
       } catch {
         // ignore
       }
@@ -330,15 +332,17 @@ export function QuoteBuilderForm({
   }
 
   async function submitQuote(values: QuoteFormValues, mode: "draft" | "send") {
-    // Validate staged payments if enabled
-    if (values.stagedPaymentsEnabled && values.milestones.length > 0 && !milestonesValid) {
+    if (
+      values.stagedPaymentsEnabled &&
+      values.milestones.length > 0 &&
+      !milestonesValid
+    ) {
       toast.error("Milestone amounts must sum to the quote total before sending.");
       return;
     }
 
     setSubmitting(true);
     try {
-      // Filter out section header rows for the API payload
       const lineItems = values.lineItems
         .filter((item) => !item.isSectionHeader)
         .map((item) => ({
@@ -353,12 +357,8 @@ export function QuoteBuilderForm({
         ? new Date(values.validUntil)
         : new Date(today.getTime() + 14 * 86_400_000);
       const diffMs = validUntilDate.getTime() - today.getTime();
-      const validUntilDays = Math.max(
-        1,
-        Math.round(diffMs / 86_400_000),
-      );
+      const validUntilDays = Math.max(1, Math.round(diffMs / 86_400_000));
 
-      // Build milestones payload
       const milestonesPayload =
         values.stagedPaymentsEnabled && values.milestones.length > 0
           ? values.milestones.map((m) => ({
@@ -367,7 +367,6 @@ export function QuoteBuilderForm({
             }))
           : undefined;
 
-      // 1. Create quote (draft)
       const createRes = await fetch("/api/provider/quotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -387,7 +386,6 @@ export function QuoteBuilderForm({
 
       const quote = (await createRes.json()) as { id: string };
 
-      // 2. If sending, transition to sent
       if (mode === "send") {
         const sendRes = await fetch(`/api/provider/quotes/${quote.id}/send`, {
           method: "POST",
@@ -396,7 +394,6 @@ export function QuoteBuilderForm({
           const err = (await sendRes.json()) as { error?: string };
           throw new Error(err.error ?? "Failed to send quote");
         }
-        // Clear localStorage on successful send
         try {
           window.localStorage.removeItem(DRAFT_KEY);
         } catch {
@@ -407,7 +404,6 @@ export function QuoteBuilderForm({
         toast.success("Quote saved as draft.");
       }
 
-      // Clear localStorage for draft too since it is now persisted
       try {
         window.localStorage.removeItem(DRAFT_KEY);
       } catch {
@@ -421,27 +417,38 @@ export function QuoteBuilderForm({
     }
   }
 
+  // Stitch label style
+  const labelCls =
+    "text-[11px] font-bold tracking-widest text-stone-400 uppercase block mb-1.5";
+  // Stitch input style (borderless, tonal background)
+  const inputCls =
+    "w-full bg-[#f4f3f2] border-0 rounded-lg py-3 px-4 text-sm text-stone-900 focus:ring-1 focus:ring-[#003629] focus:bg-white transition-all placeholder:text-stone-400";
+
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
+    <div className="flex flex-col lg:flex-row gap-10">
       {/* ------------------------------------------------------------------ */}
       {/* Left pane — Form                                                   */}
       {/* ------------------------------------------------------------------ */}
-      <div className="space-y-6">
+      <div className="flex-1 space-y-10">
         {/* Restore banner */}
         {showRestoreBanner && (
-          <div className="flex items-center justify-between rounded-lg border border-warning/20 bg-warning-light px-4 py-3 text-sm dark:border-warning/30 dark:bg-warning/10">
-            <span className="text-warning">
+          <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm">
+            <span className="text-amber-800">
               You have an unsaved draft. Restore it?
             </span>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={handleRestore}>
+              <button
+                type="button"
+                onClick={handleRestore}
+                className="rounded-md border border-amber-300 px-3 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition-colors"
+              >
                 Restore
-              </Button>
+              </button>
               <button
                 type="button"
                 onClick={handleDismissRestore}
                 aria-label="Dismiss"
-                className="text-warning hover:text-warning/80"
+                className="text-amber-600 hover:text-amber-800"
               >
                 <X className="size-4" />
               </button>
@@ -449,292 +456,342 @@ export function QuoteBuilderForm({
           </div>
         )}
 
-        {/* Client / Job section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Client &amp; Job</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="clientName"
-                  className="mb-1 block text-sm font-medium text-foreground"
-                >
-                  Client Name
-                </label>
-                {requestId && prefillClientName ? (
-                  <Input
-                    id="clientName"
-                    value={prefillClientName}
-                    readOnly
-                    className="bg-muted"
-                  />
-                ) : (
-                  <Input
-                    id="clientName"
-                    placeholder="e.g. Jane Smith"
-                    {...register("clientName")}
-                  />
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="category"
-                  className="mb-1 block text-sm font-medium text-foreground"
-                >
-                  Category
-                </label>
-                {requestId && prefillCategory ? (
-                  <Input
-                    id="category"
-                    value={prefillCategory}
-                    readOnly
-                    className="bg-muted capitalize"
-                  />
-                ) : (
-                  <Input
-                    id="category"
-                    placeholder="e.g. Plumbing"
-                    {...register("category")}
-                  />
-                )}
-              </div>
-            </div>
-
+        {/* ── Section 01: Client & Property ── */}
+        <section className="space-y-5">
+          <div className="flex items-center gap-3">
+            <StepBadge step="01" />
+            <h2 className="text-lg font-semibold font-heading text-stone-900">
+              Client &amp; Property
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label
-                htmlFor="jobTitle"
-                className="mb-1 block text-sm font-medium text-foreground"
-              >
-                Job Title
+              <label htmlFor="clientName" className={labelCls}>
+                Client Name
               </label>
-              {requestId && prefillJobTitle ? (
-                <Input
-                  id="jobTitle"
-                  value={prefillJobTitle}
+              {requestId && prefillClientName ? (
+                <input
+                  id="clientName"
+                  value={prefillClientName}
                   readOnly
-                  className="bg-muted"
+                  className={`${inputCls} bg-stone-200/60 cursor-not-allowed`}
                 />
               ) : (
-                <Input
-                  id="jobTitle"
-                  placeholder="e.g. Boiler replacement and system flush"
-                  {...register("jobTitle")}
+                <input
+                  id="clientName"
+                  placeholder="e.g. Jane Smith"
+                  className={inputCls}
+                  {...register("clientName")}
                 />
               )}
             </div>
+            <div>
+              <label htmlFor="propertyAddress" className={labelCls}>
+                Property Address
+              </label>
+              {requestId && prefillCategory ? (
+                <input
+                  id="propertyAddress"
+                  value={prefillCategory}
+                  readOnly
+                  className={`${inputCls} bg-stone-200/60 cursor-not-allowed capitalize`}
+                />
+              ) : (
+                <input
+                  id="propertyAddress"
+                  placeholder="e.g. 42 Belgravia Square, London"
+                  className={inputCls}
+                  {...register("category")}
+                />
+              )}
+            </div>
+          </div>
+        </section>
 
-            {/* AI suggest button */}
-            {watchedJobTitle.trim() && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleSuggestItems}
-                disabled={suggestLoading}
-                className="gap-2"
-              >
-                <Sparkles className="size-4 text-primary" />
-                {suggestLoading ? "Generating…" : "Suggest line items"}
-              </Button>
+        {/* ── Section 02: Scope of Work ── */}
+        <section className="space-y-5">
+          <div className="flex items-center gap-3">
+            <StepBadge step="02" />
+            <h2 className="text-lg font-semibold font-heading text-stone-900">
+              Scope of Work
+            </h2>
+          </div>
+          <div>
+            <label htmlFor="jobTitle" className={labelCls}>
+              Job Title
+            </label>
+            {requestId && prefillJobTitle ? (
+              <input
+                id="jobTitle"
+                value={prefillJobTitle}
+                readOnly
+                className={`${inputCls} bg-stone-200/60 cursor-not-allowed`}
+              />
+            ) : (
+              <input
+                id="jobTitle"
+                placeholder="e.g. Boiler replacement and system flush"
+                className={inputCls}
+                {...register("jobTitle")}
+              />
             )}
-          </CardContent>
-        </Card>
+          </div>
+          <div>
+            <label htmlFor="notes" className={labelCls}>
+              Detailed Description
+            </label>
+            <Textarea
+              id="notes"
+              placeholder="Describe the project milestones and specific tasks..."
+              rows={4}
+              className="w-full bg-[#f4f3f2] border-0 rounded-lg py-3 px-4 text-sm text-stone-900 focus:ring-1 focus:ring-[#003629] focus:bg-white transition-all placeholder:text-stone-400 resize-none"
+              {...register("notes")}
+            />
+          </div>
 
-        {/* Line items */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-base">Line Items</CardTitle>
+          {/* AI suggest button */}
+          {watchedJobTitle.trim() && (
+            <button
+              type="button"
+              onClick={handleSuggestItems}
+              disabled={suggestLoading}
+              className="inline-flex items-center gap-2 border border-[#003629]/30 text-[#003629] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-[#003629]/5 transition-colors disabled:opacity-60"
+            >
+              <Sparkles className="size-4" />
+              {suggestLoading ? "Generating…" : "Suggest Line Items"}
+            </button>
+          )}
+        </section>
+
+        {/* ── Section 03: Line Items ── */}
+        <section className="space-y-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <StepBadge step="03" />
+              <h2 className="text-lg font-semibold font-heading text-stone-900">
+                Line Items
+              </h2>
+            </div>
             <div className="flex items-center gap-2">
-              {/* Template actions */}
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={handleSaveTemplateClick}
-                className="gap-1.5 text-xs"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-800 uppercase tracking-wider transition-colors"
                 title="Save current items as a template"
               >
                 <Save className="size-3.5" />
-                Save template
-              </Button>
+                Save Template
+              </button>
               {templates.length > 0 && (
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
                   onClick={() => setShowLoadTemplate((v) => !v)}
-                  className="gap-1.5 text-xs"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-800 uppercase tracking-wider transition-colors"
                   title="Load a saved template"
                 >
                   <FolderOpen className="size-3.5" />
-                  Load template
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {/* Save template inline dialog */}
-            {showSaveTemplate && (
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
-                <Input
-                  autoFocus
-                  placeholder="Template name…"
-                  value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleConfirmSaveTemplate();
-                    if (e.key === "Escape") setShowSaveTemplate(false);
-                  }}
-                  className="h-8 text-sm"
-                />
-                <Button size="sm" onClick={handleConfirmSaveTemplate}>Save</Button>
-                <button
-                  type="button"
-                  onClick={() => setShowSaveTemplate(false)}
-                  className="text-muted-foreground hover:text-foreground"
-                  aria-label="Cancel"
-                >
-                  <X className="size-4" />
+                  Load Template
                 </button>
-              </div>
-            )}
-
-            {/* Load template list */}
-            {showLoadTemplate && templates.length > 0 && (
-              <div className="rounded-lg border border-border bg-background shadow-sm">
-                <p className="border-b border-border px-3 py-2 text-xs font-semibold text-muted-foreground">
-                  Saved Templates
-                </p>
-                <ul className="max-h-48 overflow-y-auto">
-                  {templates.map((tpl, idx) => (
-                    <li
-                      key={idx}
-                      className="flex items-center justify-between px-3 py-2 hover:bg-muted/50"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleLoadTemplate(tpl)}
-                        className="flex-1 text-left text-sm font-medium hover:text-primary"
-                      >
-                        {tpl.name}
-                        <span className="ml-2 text-xs font-normal text-muted-foreground">
-                          ({tpl.items.filter((i) => !i.isSectionHeader).length} items)
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteTemplate(idx)}
-                        aria-label="Delete template"
-                        className="ml-2 text-muted-foreground hover:text-destructive"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Column headers */}
-            <div className="hidden grid-cols-[1fr_56px_88px_72px_80px_32px] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-              <span>Description</span>
-              <span className="text-right">Qty</span>
-              <span className="text-right">Unit Price</span>
-              <span className="text-right">VAT %</span>
-              <span className="text-right">Total</span>
-              <span />
+              )}
+              <button
+                type="button"
+                onClick={() =>
+                  append({ description: "", qty: 1, unitPrice: 0, vatRate: 20 })
+                }
+                className="inline-flex items-center gap-1.5 text-[#003629] text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
+              >
+                <Plus className="size-4" />
+                Add Item
+              </button>
             </div>
+          </div>
 
-            {fields.map((field, index) => {
-              const isSectionHeader = field.isSectionHeader === true;
+          {/* Save template inline dialog */}
+          {showSaveTemplate && (
+            <div className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
+              <Input
+                autoFocus
+                placeholder="Template name…"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleConfirmSaveTemplate();
+                  if (e.key === "Escape") setShowSaveTemplate(false);
+                }}
+                className="h-8 text-sm border-stone-200"
+              />
+              <button
+                type="button"
+                onClick={handleConfirmSaveTemplate}
+                className="px-3 py-1.5 bg-[#003629] text-white text-xs font-bold rounded"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSaveTemplate(false)}
+                className="text-stone-400 hover:text-stone-700"
+                aria-label="Cancel"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          )}
 
-              if (isSectionHeader) {
-                return (
-                  <div
-                    key={field.id}
-                    className="flex items-center gap-2 border-b border-border pb-1 pt-2"
+          {/* Load template list */}
+          {showLoadTemplate && templates.length > 0 && (
+            <div className="rounded-lg border border-stone-200 bg-white shadow-sm">
+              <p className="border-b border-stone-100 px-3 py-2 text-xs font-semibold text-stone-500">
+                Saved Templates
+              </p>
+              <ul className="max-h-48 overflow-y-auto">
+                {templates.map((tpl, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-center justify-between px-3 py-2 hover:bg-stone-50"
                   >
-                    <AlignLeft className="size-4 shrink-0 text-muted-foreground" />
-                    <Input
-                      placeholder="Section title…"
-                      {...register(`lineItems.${index}.sectionTitle`)}
-                      className="h-8 flex-1 border-0 bg-transparent p-0 text-sm font-semibold focus-visible:ring-0"
-                    />
                     <button
                       type="button"
-                      onClick={() => remove(index)}
-                      aria-label="Remove section"
-                      className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => handleLoadTemplate(tpl)}
+                      className="flex-1 text-left text-sm font-medium hover:text-[#003629]"
                     >
-                      <Trash2 className="size-4" />
+                      {tpl.name}
+                      <span className="ml-2 text-xs font-normal text-stone-400">
+                        ({tpl.items.filter((i) => !i.isSectionHeader).length} items)
+                      </span>
                     </button>
-                  </div>
-                );
-              }
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTemplate(idx)}
+                      aria-label="Delete template"
+                      className="ml-2 text-stone-400 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-              const qty = Number(watchedItems[index]?.qty) || 0;
-              const unitPrice = Number(watchedItems[index]?.unitPrice) || 0;
-              const vatRate = Number(watchedItems[index]?.vatRate) || 0;
-              const linePence = calcLinePence(qty, unitPrice);
+          {/* Line item rows */}
+          {fields.map((field, index) => {
+            const isSectionHeader = field.isSectionHeader === true;
 
+            if (isSectionHeader) {
               return (
                 <div
                   key={field.id}
-                  className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_56px_88px_72px_80px_32px] sm:items-center"
+                  className="flex items-center gap-2 border-b border-stone-200 pb-1 pt-2"
                 >
-                  <Input
-                    placeholder="Description"
-                    {...register(`lineItems.${index}.description`)}
+                  <AlignLeft className="size-4 shrink-0 text-stone-400" />
+                  <input
+                    placeholder="Section title…"
+                    {...register(`lineItems.${index}.sectionTitle`)}
+                    className="h-8 flex-1 border-0 bg-transparent p-0 text-sm font-semibold focus:ring-0 outline-none text-stone-800"
                   />
-                  <Input
-                    type="number"
-                    min={1}
-                    step={1}
-                    placeholder="Qty"
-                    className="text-right"
-                    {...register(`lineItems.${index}.qty`, {
-                      valueAsNumber: true,
-                    })}
-                  />
-                  <div className="relative">
-                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground text-sm">
-                      £
-                    </span>
-                    <Input
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    aria-label="Remove section"
+                    className="flex size-8 items-center justify-center rounded-md text-stone-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              );
+            }
+
+            const qty = Number(watchedItems[index]?.qty) || 0;
+            const unitPrice = Number(watchedItems[index]?.unitPrice) || 0;
+            const vatRate = Number(watchedItems[index]?.vatRate) || 0;
+            const linePence = calcLinePence(qty, unitPrice);
+
+            return (
+              <div
+                key={field.id}
+                className="p-5 bg-[#f4f3f2] rounded-xl space-y-3"
+              >
+                <div className="grid grid-cols-12 gap-3">
+                  <div className="col-span-6 space-y-1">
+                    <label className={labelCls}>Item Description</label>
+                    <input
+                      placeholder="Description"
+                      className="w-full bg-white border-0 rounded-lg py-2 px-3 text-sm text-stone-900 focus:ring-1 focus:ring-[#003629] transition-all outline-none"
+                      {...register(`lineItems.${index}.description`)}
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-1">
+                    <label className={labelCls}>Qty</label>
+                    <input
                       type="number"
-                      min={0}
-                      step={0.01}
-                      placeholder="0.00"
-                      className="pl-7 text-right"
-                      {...register(`lineItems.${index}.unitPrice`, {
+                      min={1}
+                      step={1}
+                      placeholder="1"
+                      className="w-full bg-white border-0 rounded-lg py-2 px-3 text-sm text-right text-stone-900 focus:ring-1 focus:ring-[#003629] transition-all outline-none"
+                      {...register(`lineItems.${index}.qty`, {
                         valueAsNumber: true,
                       })}
                     />
                   </div>
-                  <Select
-                    defaultValue={String(field.vatRate)}
-                    onValueChange={(val) =>
-                      setValue(
-                        `lineItems.${index}.vatRate`,
-                        Number(val) as 0 | 5 | 20,
-                      )
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">0%</SelectItem>
-                      <SelectItem value="5">5%</SelectItem>
-                      <SelectItem value="20">20%</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <div className="text-right text-sm font-medium text-foreground sm:pr-1">
-                    {fmtGbp(linePence)}
-                    <span className="ml-0.5 text-[10px] text-muted-foreground">
-                      +{vatRate}%
+                  <div className="col-span-4 space-y-1">
+                    <label className={labelCls}>Rate (£)</label>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-400 text-sm">
+                        £
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        placeholder="0.00"
+                        className="w-full bg-white border-0 rounded-lg py-2 pl-7 pr-3 text-sm text-right text-stone-900 focus:ring-1 focus:ring-[#003629] transition-all outline-none"
+                        {...register(`lineItems.${index}.unitPrice`, {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex gap-4 items-center">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={vatRate > 0}
+                        onChange={(e) =>
+                          setValue(
+                            `lineItems.${index}.vatRate`,
+                            e.target.checked ? 20 : 0,
+                          )
+                        }
+                        className="rounded border-stone-200 text-[#003629] focus:ring-[#003629] w-4 h-4"
+                      />
+                      <span className="text-xs text-stone-500 font-medium">
+                        Include VAT (20%)
+                      </span>
+                    </label>
+                    <Select
+                      defaultValue={String(field.vatRate)}
+                      onValueChange={(val) =>
+                        setValue(
+                          `lineItems.${index}.vatRate`,
+                          Number(val) as 0 | 5 | 20,
+                        )
+                      }
+                    >
+                      <SelectTrigger className="h-7 w-20 text-xs border-stone-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">0%</SelectItem>
+                        <SelectItem value="5">5%</SelectItem>
+                        <SelectItem value="20">20%</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-xs font-medium text-stone-700">
+                      = {fmtGbp(linePence)}
                     </span>
                   </div>
                   <button
@@ -742,223 +799,257 @@ export function QuoteBuilderForm({
                     onClick={() => fields.length > 1 && remove(index)}
                     disabled={fields.length <= 1}
                     aria-label="Remove line item"
-                    className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-40"
+                    className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="size-4" />
                   </button>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
 
-            <div className="flex items-center gap-2">
-              <Button
+          {/* Add section */}
+          <button
+            type="button"
+            onClick={handleAddSectionHeader}
+            className="inline-flex items-center gap-2 text-stone-400 hover:text-stone-700 text-xs font-bold uppercase tracking-wider transition-colors"
+          >
+            <AlignLeft className="size-4" />
+            Add Section
+          </button>
+
+          {/* Totals summary */}
+          <div className="flex flex-col items-end gap-1.5 pt-3 px-5">
+            <div className="flex justify-between w-full max-w-xs text-stone-500 text-sm">
+              <span>Subtotal</span>
+              <span>{fmtGbp(subtotalPence)}</span>
+            </div>
+            <div className="flex justify-between w-full max-w-xs text-stone-500 text-sm">
+              <span>VAT Total</span>
+              <span>{fmtGbp(vatPence)}</span>
+            </div>
+            <div className="flex justify-between w-full max-w-xs text-[#003629] font-bold text-lg pt-2 border-t border-stone-200">
+              <span>Total Quote</span>
+              <span>{fmtGbp(totalPence)}</span>
+            </div>
+          </div>
+
+          {/* Staged Payments Toggle */}
+          <div className="border-t border-stone-200 pt-4">
+            <label className="flex cursor-pointer items-center gap-3">
+              <input
+                type="checkbox"
+                {...register("stagedPaymentsEnabled")}
+                className="size-4 rounded border-stone-200 accent-[#003629]"
+              />
+              <span className="text-sm font-medium text-stone-900">
+                Enable staged payments
+              </span>
+            </label>
+            <p className="mt-1 text-xs text-stone-500 ml-7">
+              Split the total into payment milestones that the client pays over
+              time.
+            </p>
+          </div>
+
+          {stagedPaymentsEnabled && (
+            <div className="space-y-3 rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
+                Payment Milestones
+              </p>
+
+              {milestoneFields.map((mField, mIdx) => (
+                <div key={mField.id} className="flex items-center gap-2">
+                  <Input
+                    placeholder="Milestone label (e.g. Deposit)"
+                    {...register(`milestones.${mIdx}.label`)}
+                    className="flex-1 border-stone-200"
+                  />
+                  <div className="relative w-32">
+                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-400 text-sm">
+                      £
+                    </span>
+                    <Input
+                      type="number"
+                      min={0}
+                      step={0.01}
+                      placeholder="0.00"
+                      className="pl-7 text-right border-stone-200"
+                      {...register(`milestones.${mIdx}.amountPence`, {
+                        valueAsNumber: true,
+                      })}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeMilestone(mIdx)}
+                    aria-label="Remove milestone"
+                    className="flex size-8 items-center justify-center rounded-md text-stone-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              ))}
+
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  append({ description: "", qty: 1, unitPrice: 0, vatRate: 20 })
-                }
-                className="gap-2"
+                onClick={() => appendMilestone({ label: "", amountPence: 0 })}
+                className="inline-flex items-center gap-2 border border-stone-200 text-stone-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-stone-100 transition-colors"
               >
                 <Plus className="size-4" />
-                Add Row
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleAddSectionHeader}
-                className="gap-2 text-muted-foreground"
-              >
-                <AlignLeft className="size-4" />
-                Add Section
-              </Button>
-            </div>
+                Add Milestone
+              </button>
 
-            {/* Totals summary */}
-            <dl className="ml-auto w-44 space-y-1 border-t border-border pt-3 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Subtotal</dt>
-                <dd className="font-medium">{fmtGbp(subtotalPence)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">VAT</dt>
-                <dd className="font-medium">{fmtGbp(vatPence)}</dd>
-              </div>
-              <div className="flex justify-between border-t border-border pt-1">
-                <dt className="font-bold text-foreground">Total</dt>
-                <dd className="font-bold text-foreground">
-                  {fmtGbp(totalPence)}
-                </dd>
-              </div>
-            </dl>
-
-            {/* ---------------------------------------------------------------- */}
-            {/* Staged Payments Toggle                                           */}
-            {/* ---------------------------------------------------------------- */}
-            <div className="border-t border-border pt-4">
-              <label className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  {...register("stagedPaymentsEnabled")}
-                  className="size-4 rounded border-border accent-primary"
-                />
-                <span className="text-sm font-medium text-foreground">
-                  Enable staged payments
-                </span>
-              </label>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Split the total into payment milestones that the client pays over time.
-              </p>
-            </div>
-
-            {stagedPaymentsEnabled && (
-              <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Payment Milestones
-                </p>
-
-                {milestoneFields.map((mField, mIdx) => (
-                  <div key={mField.id} className="flex items-center gap-2">
-                    <Input
-                      placeholder="Milestone label (e.g. Deposit)"
-                      {...register(`milestones.${mIdx}.label`)}
-                      className="flex-1"
-                    />
-                    <div className="relative w-32">
-                      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground text-sm">
-                        £
-                      </span>
-                      <Input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        placeholder="0.00"
-                        className="pl-7 text-right"
-                        {...register(`milestones.${mIdx}.amountPence`, {
-                          valueAsNumber: true,
-                        })}
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeMilestone(mIdx)}
-                      aria-label="Remove milestone"
-                      className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </div>
-                ))}
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => appendMilestone({ label: "", amountPence: 0 })}
-                  className="gap-2"
+              {milestoneFields.length > 0 && (
+                <div
+                  className={`mt-2 rounded-md px-3 py-2 text-sm ${
+                    milestonesValid
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "bg-amber-50 text-amber-800"
+                  }`}
                 >
-                  <Plus className="size-4" />
-                  Add Milestone
-                </Button>
-
-                {/* Allocation indicator */}
-                {milestoneFields.length > 0 && (
-                  <div
-                    className={`mt-2 rounded-md px-3 py-2 text-sm ${
-                      milestonesValid
-                        ? "bg-success-light text-success dark:bg-success/10 dark:text-success"
-                        : "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning"
-                    }`}
-                  >
-                    {milestonesValid ? (
-                      <span>Milestones fully allocated — {fmtGbp(totalPence)}</span>
-                    ) : (
-                      <span>
-                        {milestoneRemainingPence > 0
-                          ? `${fmtGbp(milestoneRemainingPence)} remaining to allocate`
-                          : `Over-allocated by ${fmtGbp(Math.abs(milestoneRemainingPence))}`}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Notes + valid until */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label
-                htmlFor="notes"
-                className="mb-1 block text-sm font-medium text-foreground"
-              >
-                Notes
-              </label>
-              <Textarea
-                id="notes"
-                placeholder="Payment terms, scope exclusions, warranty info…"
-                rows={4}
-                {...register("notes")}
-              />
+                  {milestonesValid ? (
+                    <span>Milestones fully allocated — {fmtGbp(totalPence)}</span>
+                  ) : (
+                    <span>
+                      {milestoneRemainingPence > 0
+                        ? `${fmtGbp(milestoneRemainingPence)} remaining to allocate`
+                        : `Over-allocated by ${fmtGbp(Math.abs(milestoneRemainingPence))}`}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
+          )}
+        </section>
+
+        {/* ── Section 04: Timeline & Terms ── */}
+        <section className="space-y-5">
+          <div className="flex items-center gap-3">
+            <StepBadge step="04" />
+            <h2 className="text-lg font-semibold font-heading text-stone-900">
+              Timeline &amp; Terms
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label
-                htmlFor="validUntil"
-                className="mb-1 block text-sm font-medium text-foreground"
-              >
-                Valid Until
+              <label htmlFor="validUntil" className={labelCls}>
+                Expiry Date
               </label>
-              <Input
+              <input
                 id="validUntil"
                 type="date"
+                className={inputCls}
                 {...register("validUntil")}
               />
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <label htmlFor="paymentTerms" className={labelCls}>
+                Payment Terms
+              </label>
+              <select
+                id="paymentTerms"
+                className={inputCls}
+              >
+                <option>50% Deposit / 50% On Completion</option>
+                <option>Net 30 Days</option>
+                <option>Phased Payments</option>
+              </select>
+            </div>
+          </div>
+        </section>
 
-        {/* Action buttons */}
-        <div className="flex gap-3">
-          <Button
+        {/* ── Action Footer ── */}
+        <div className="flex items-center justify-end gap-4 pt-6 border-t border-stone-200">
+          <button
             type="button"
-            variant="outline"
             disabled={submitting || formState.isSubmitting}
             onClick={handleSubmit((values) => submitQuote(values, "draft"))}
+            className="px-7 py-3 text-stone-500 font-heading font-semibold text-sm hover:text-[#003629] transition-colors disabled:opacity-50"
           >
-            Save Draft
-          </Button>
-          <Button
+            Save as Draft
+          </button>
+          <button
             type="button"
             disabled={submitting || formState.isSubmitting}
             onClick={handleSubmit((values) => submitQuote(values, "send"))}
+            className="px-9 py-3.5 bg-gradient-to-r from-[#003629] to-[#1b4d3e] text-white rounded-lg font-heading font-bold text-sm shadow-lg shadow-[#003629]/10 active:scale-95 transition-all disabled:opacity-50"
           >
-            Send to Client
-          </Button>
+            Generate &amp; Send Quote
+          </button>
         </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Right pane — Preview                                               */}
+      {/* Right pane — Live PDF Preview                                       */}
       {/* ------------------------------------------------------------------ */}
-      <div className="lg:sticky lg:top-6 lg:self-start">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Live Preview
-        </p>
-        <QuotePreview
-          providerName={providerName}
-          clientName={watchedClientName}
-          jobTitle={watchedJobTitle}
-          lineItems={watchedItems}
-          notes={watchedNotes}
-          validUntil={watchedValidUntil}
-        />
-      </div>
+      <aside className="lg:w-[420px] lg:sticky lg:top-24 lg:self-start">
+        <div className="bg-stone-200/30 p-2 rounded-2xl border border-white/40 shadow-lg">
+          <div className="bg-white rounded-xl overflow-hidden shadow-inner">
+            <QuotePreview
+              providerName={providerName}
+              clientName={watchedClientName}
+              jobTitle={watchedJobTitle}
+              lineItems={watchedItems}
+              notes={watchedNotes}
+              validUntil={watchedValidUntil}
+            />
+          </div>
+          {/* Preview controls */}
+          <div className="flex justify-between items-center px-4 py-2.5">
+            <p className="text-[10px] text-stone-500 font-medium">
+              PDF Preview • Real-time Sync
+            </p>
+            <div className="flex gap-1">
+              <button className="p-1.5 hover:bg-white rounded transition-colors text-stone-400">
+                <svg
+                  className="size-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 15.803a7.5 7.5 0 0 0 10.607 0zM10.5 7.5v6m3-3h-6"
+                  />
+                </svg>
+              </button>
+              <button className="p-1.5 hover:bg-white rounded transition-colors text-stone-400">
+                <svg
+                  className="size-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.056 48.056 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z"
+                  />
+                </svg>
+              </button>
+              <button className="p-1.5 hover:bg-white rounded transition-colors text-stone-400">
+                <svg
+                  className="size-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

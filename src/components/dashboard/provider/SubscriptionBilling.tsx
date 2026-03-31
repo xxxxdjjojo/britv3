@@ -9,7 +9,6 @@ import {
   Zap,
   Star,
   Shield,
-  TrendingUp,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -86,7 +85,6 @@ const PLANS: Plan[] = [
   },
 ];
 
-// Feature row labels (match the Plan keys we want to display)
 const FEATURE_ROWS: Array<{ label: string; key: keyof Plan }> = [
   { label: "Leads per month", key: "leads" },
   { label: "Profile / Badge", key: "badge" },
@@ -95,32 +93,10 @@ const FEATURE_ROWS: Array<{ label: string; key: keyof Plan }> = [
   { label: "Boost credits", key: "boostCredits" },
 ];
 
-// ---------------------------------------------------------------------------
-// Demo billing history (hardcoded — would come from props in production)
-// ---------------------------------------------------------------------------
-
 const DEMO_BILLING: BillingRow[] = [
-  {
-    id: "inv_001",
-    date: "2026-03-01",
-    amount: 7900,
-    status: "paid",
-    invoiceUrl: "#",
-  },
-  {
-    id: "inv_002",
-    date: "2026-02-01",
-    amount: 7900,
-    status: "paid",
-    invoiceUrl: "#",
-  },
-  {
-    id: "inv_003",
-    date: "2026-01-01",
-    amount: 7900,
-    status: "paid",
-    invoiceUrl: "#",
-  },
+  { id: "inv_001", date: "2026-03-01", amount: 7900, status: "paid", invoiceUrl: "#" },
+  { id: "inv_002", date: "2026-02-01", amount: 7900, status: "paid", invoiceUrl: "#" },
+  { id: "inv_003", date: "2026-01-01", amount: 7900, status: "paid", invoiceUrl: "#" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -156,48 +132,236 @@ function renderPlanIcon(id: PlanId, className: string) {
 }
 
 // ---------------------------------------------------------------------------
-// Earnings metric cards (Stitch design: available + pending + tax)
+// Bento Financial Overview (top grid)
 // ---------------------------------------------------------------------------
 
-function EarningsMetrics() {
+function FinancialBento() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      {/* Available to withdraw — hero card */}
-      <div className="rounded-2xl bg-brand-primary p-6 text-white">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="size-4 text-white/70" />
-          <p className="font-body text-sm font-medium text-white/70">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
+      {/* Large featured card — Available to Withdraw */}
+      <div className="md:col-span-2 lg:col-span-2 bg-white p-8 rounded-2xl border border-stone-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+        <div className="relative z-10">
+          <span className="text-emerald-900 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-lg">
             Available to Withdraw
+          </span>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-5xl font-extrabold text-stone-950 tracking-tighter">
+              £12,450.80
+            </span>
+            <span className="text-emerald-600 font-bold flex items-center text-sm">
+              <svg
+                className="size-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"
+                />
+              </svg>
+              12%
+            </span>
+          </div>
+          <p className="text-stone-500 text-sm mt-2">
+            Next auto-payout: June 15th, 2024
           </p>
         </div>
-        <p className="mt-2 font-heading text-3xl font-bold">£12,450.80</p>
-        <p className="mt-1 font-body text-xs uppercase tracking-wide text-white/60">
-          Ready · Stripe Connect
-        </p>
+        <div className="mt-8 flex items-center gap-4 relative z-10">
+          <button className="flex-1 py-3 bg-[#003629] text-white rounded-xl font-bold hover:bg-[#1b4d3e] transition-all shadow-lg active:scale-95 text-sm">
+            Withdraw Now
+          </button>
+          <button className="p-3 bg-stone-50 border border-stone-200 rounded-xl hover:bg-stone-100 transition-colors">
+            <svg
+              className="size-5 text-stone-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+              />
+            </svg>
+          </button>
+        </div>
+        {/* Decorative background element */}
+        <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-50 pointer-events-none" />
       </div>
 
-      {/* Pending payments */}
-      <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-        <p className="font-body text-sm font-medium text-muted-foreground">
-          Pending Payments
-        </p>
-        <p className="mt-2 font-heading text-3xl font-bold text-foreground">
-          £2,180.00
-        </p>
-        <p className="mt-1 font-body text-xs text-muted-foreground">4 jobs in progress</p>
+      {/* Pending Payments */}
+      <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div className="w-10 h-10 rounded-full bg-[#ffdea6] flex items-center justify-center text-[#7b5804] mb-4">
+            <svg
+              className="size-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
+            </svg>
+          </div>
+          <p className="text-stone-500 text-sm font-medium">Pending Payments</p>
+          <h3 className="text-2xl font-bold text-stone-900 mt-1">£2,180.00</h3>
+        </div>
+        <p className="text-xs text-stone-400 mt-4">4 jobs currently in processing</p>
       </div>
 
-      {/* Tax estimate */}
-      <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-        <p className="font-body text-sm font-medium text-muted-foreground">
-          Tax Estimate
-        </p>
-        <p className="mt-2 font-heading text-3xl font-bold text-foreground">
-          £4,890.45
-        </p>
-        <p className="mt-1 font-body text-xs text-muted-foreground">
-          At 20% effective rate
-        </p>
+      {/* Tax Estimate */}
+      <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 mb-4">
+            <svg
+              className="size-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+              />
+            </svg>
+          </div>
+          <p className="text-stone-500 text-sm font-medium">Tax Estimate (YTD)</p>
+          <h3 className="text-2xl font-bold text-stone-900 mt-1">£4,890.45</h3>
+        </div>
+        <p className="text-xs text-stone-400 mt-4">Calculated at 20% effective rate</p>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Monthly Revenue chart + Payout Method
+// ---------------------------------------------------------------------------
+
+const REVENUE_BARS = [
+  { label: "JAN", heightPct: 40, bold: false },
+  { label: "FEB", heightPct: 65, bold: false },
+  { label: "MAR", heightPct: 55, bold: false },
+  { label: "APR", heightPct: 85, bold: true },
+  { label: "MAY", heightPct: 70, bold: false },
+  { label: "JUN", heightPct: 95, bold: true, dark: true },
+];
+
+function RevenueAndPayoutSection() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+      {/* Revenue chart */}
+      <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+        <div className="flex items-center justify-between mb-7">
+          <div>
+            <h3 className="font-bold text-lg font-heading text-stone-900">
+              Monthly Revenue
+            </h3>
+            <p className="text-sm text-stone-500">
+              Earnings performance over the last 6 months
+            </p>
+          </div>
+          <select className="text-sm border-stone-200 rounded-lg py-1 pl-3 pr-8 focus:ring-[#003629] text-stone-700 bg-white border">
+            <option>Last 6 Months</option>
+            <option>Last Year</option>
+          </select>
+        </div>
+        <div className="h-64 flex items-end justify-between gap-4 px-2">
+          {REVENUE_BARS.map((bar) => (
+            <div
+              key={bar.label}
+              className="flex-1 flex flex-col items-center gap-2 group"
+            >
+              <div
+                className={`w-full rounded-t-lg transition-all ${
+                  bar.dark
+                    ? "bg-[#003629] group-hover:bg-[#1b4d3e]"
+                    : bar.bold
+                      ? "bg-emerald-200 group-hover:bg-emerald-300"
+                      : "bg-emerald-100 group-hover:bg-emerald-200"
+                }`}
+                style={{ height: `${bar.heightPct}%` }}
+              />
+              <span
+                className={`text-[10px] font-medium ${
+                  bar.dark || bar.bold ? "text-stone-900 font-bold" : "text-stone-400"
+                }`}
+              >
+                {bar.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Payout Method — dark card */}
+      <div className="bg-[#003629] text-white p-6 rounded-2xl shadow-xl flex flex-col">
+        <h3 className="font-bold text-lg mb-5 font-heading">Payout Method</h3>
+        <div className="bg-white/10 border border-white/20 rounded-xl p-4 mb-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs text-emerald-200 uppercase tracking-widest font-bold">
+              Linked Bank Account
+            </span>
+            <svg
+              className="size-5 text-emerald-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
+              />
+            </svg>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
+              <span className="text-[10px] font-bold text-[#003629]">HSBC</span>
+            </div>
+            <div>
+              <p className="font-bold text-sm">•••• •••• 4492</p>
+              <p className="text-xs text-emerald-200">Business Direct Account</p>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-3 mb-5">
+          <div className="flex justify-between text-sm">
+            <span className="text-emerald-200">Processing Fee</span>
+            <span className="font-medium">£0.00 (Standard)</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-emerald-200">Arrival Time</span>
+            <span className="font-medium">1-3 Business Days</span>
+          </div>
+        </div>
+        <button className="mt-auto w-full py-3.5 bg-white text-[#003629] rounded-xl font-extrabold hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 text-sm">
+          Change Account
+          <svg
+            className="size-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m8.25 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   );
@@ -213,32 +377,25 @@ function CurrentPlanBanner(
   const { currentPlanId, renewalDate } = props;
   const plan = PLANS.find((p) => p.id === currentPlanId) ?? PLANS[0];
 
-  const badgeColour =
-    currentPlanId === "free"
-      ? "bg-muted text-muted-foreground"
-      : "bg-brand-primary-lighter text-brand-primary";
-
   return (
-    <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
+    <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-brand-primary text-white">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-[#003629] text-white">
             {renderPlanIcon(currentPlanId, "size-6")}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${badgeColour}`}
-              >
+              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold bg-emerald-50 text-emerald-900">
                 {plan.name} Plan
               </span>
               {currentPlanId !== "free" && (
-                <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-xs font-medium text-brand-primary">
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
                   Active
                 </span>
               )}
             </div>
-            <p className="mt-1 font-body text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-stone-500">
               {plan.priceMonthly !== null
                 ? `£${plan.priceMonthly}/month`
                 : "Free forever"}
@@ -248,10 +405,7 @@ function CurrentPlanBanner(
         </div>
 
         {currentPlanId !== "free" && (
-          <button
-            className="rounded-lg border border-destructive/30 px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/5"
-            aria-label="Cancel subscription plan"
-          >
+          <button className="rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
             Cancel Plan
           </button>
         )}
@@ -273,12 +427,12 @@ function PlanComparisonTable(
   const { currentPlanId, onUpgrade } = props;
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-      <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
-        <h2 className="font-heading text-base font-semibold text-foreground">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-stone-200">
+      <div className="border-b border-stone-100 px-6 py-4">
+        <h2 className="font-heading text-base font-semibold text-stone-900">
           Choose Your Plan
         </h2>
-        <p className="mt-0.5 font-body text-sm text-muted-foreground">
+        <p className="mt-0.5 text-sm text-stone-500">
           Upgrade at any time. Changes take effect immediately.
         </p>
       </div>
@@ -287,8 +441,8 @@ function PlanComparisonTable(
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-neutral-100/60 dark:border-neutral-700/60">
-              <th className="w-40 py-4 pl-6 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <tr className="border-b border-stone-100">
+              <th className="w-40 py-4 pl-6 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-stone-400">
                 Feature
               </th>
               {PLANS.map((plan) => {
@@ -297,35 +451,31 @@ function PlanComparisonTable(
                   <th
                     key={plan.id}
                     className={`px-4 py-4 text-center ${
-                      isCurrent
-                        ? "bg-brand-primary-lighter"
-                        : plan.highlight
-                          ? "bg-muted/30"
-                          : ""
+                      isCurrent ? "bg-emerald-50" : plan.highlight ? "bg-stone-50/50" : ""
                     }`}
                   >
                     <div className="flex flex-col items-center gap-1">
                       {renderPlanIcon(
                         plan.id,
-                        `size-5 ${isCurrent ? "text-brand-primary" : "text-muted-foreground"}`,
+                        `size-5 ${isCurrent ? "text-[#003629]" : "text-stone-400"}`,
                       )}
                       <span
-                        className={`font-heading text-sm font-bold ${isCurrent ? "text-brand-primary" : "text-foreground"}`}
+                        className={`font-heading text-sm font-bold ${isCurrent ? "text-[#003629]" : "text-stone-900"}`}
                       >
                         {plan.name}
                       </span>
-                      <span className="font-body text-xs text-muted-foreground">
+                      <span className="text-xs text-stone-500">
                         {plan.priceMonthly !== null
                           ? `£${plan.priceMonthly}/mo`
                           : "Free"}
                       </span>
                       {plan.highlight && !isCurrent && (
-                        <span className="rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning dark:bg-warning/10 dark:text-warning">
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
                           Popular
                         </span>
                       )}
                       {isCurrent && (
-                        <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
+                        <span className="rounded-full bg-[#003629] px-2 py-0.5 text-xs font-medium text-white">
                           Current
                         </span>
                       )}
@@ -337,11 +487,8 @@ function PlanComparisonTable(
           </thead>
           <tbody>
             {FEATURE_ROWS.map((row) => (
-              <tr
-                key={row.key}
-                className="border-b border-neutral-100/60 last:border-0 dark:border-neutral-700/60"
-              >
-                <td className="py-3 pl-6 pr-4 font-body text-sm font-medium text-foreground">
+              <tr key={row.key} className="border-b border-stone-100 last:border-0">
+                <td className="py-3 pl-6 pr-4 text-sm font-medium text-stone-800">
                   {row.label}
                 </td>
                 {PLANS.map((plan) => {
@@ -350,15 +497,15 @@ function PlanComparisonTable(
                   return (
                     <td
                       key={plan.id}
-                      className={`px-4 py-3 text-center font-body text-sm ${
+                      className={`px-4 py-3 text-center text-sm ${
                         isCurrent
-                          ? "bg-brand-primary-lighter font-medium text-brand-primary"
-                          : "text-muted-foreground"
+                          ? "bg-emerald-50 font-medium text-[#003629]"
+                          : "text-stone-500"
                       }`}
                     >
                       {typeof value === "number" ? (
                         value === 0 ? (
-                          <span className="text-muted-foreground/40">—</span>
+                          <span className="text-stone-300">—</span>
                         ) : (
                           <span className="font-semibold">{value}</span>
                         )
@@ -372,8 +519,8 @@ function PlanComparisonTable(
             ))}
 
             {/* CTA row */}
-            <tr className="border-t border-neutral-100/60 bg-muted/20 dark:border-neutral-700/60">
-              <td className="py-4 pl-6 pr-4 font-body text-sm font-medium text-muted-foreground">
+            <tr className="border-t border-stone-100 bg-stone-50/50">
+              <td className="py-4 pl-6 pr-4 text-sm font-medium text-stone-500">
                 Action
               </td>
               {PLANS.map((plan) => {
@@ -385,16 +532,16 @@ function PlanComparisonTable(
                 return (
                   <td
                     key={plan.id}
-                    className={`px-4 py-4 text-center ${isCurrent ? "bg-brand-primary-lighter" : ""}`}
+                    className={`px-4 py-4 text-center ${isCurrent ? "bg-emerald-50" : ""}`}
                   >
                     {isCurrent ? (
-                      <span className="inline-flex items-center gap-1 font-body text-sm font-medium text-brand-primary">
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-[#003629]">
                         <Check className="size-4" /> Current
                       </span>
                     ) : isDowngrade ? (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-lg border border-border px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        className="rounded-xl border border-stone-200 px-4 py-1.5 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100"
                         aria-label={`Downgrade to ${plan.name}`}
                       >
                         Downgrade
@@ -402,7 +549,7 @@ function PlanComparisonTable(
                     ) : (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-lg bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90"
+                        className="rounded-xl bg-[#003629] px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#1b4d3e]"
                         aria-label={`Upgrade to ${plan.name}`}
                       >
                         Upgrade
@@ -417,7 +564,7 @@ function PlanComparisonTable(
       </div>
 
       {/* Mobile plan cards */}
-      <div className="divide-y divide-neutral-100/60 dark:divide-neutral-700/60 md:hidden">
+      <div className="divide-y divide-stone-100 md:hidden">
         {PLANS.map((plan) => {
           const isCurrent = plan.id === currentPlanId;
           const isDowngrade =
@@ -427,35 +574,31 @@ function PlanComparisonTable(
           return (
             <div
               key={plan.id}
-              className={`p-5 ${isCurrent ? "border-l-4 border-brand-primary bg-brand-primary-lighter" : ""}`}
+              className={`p-5 ${isCurrent ? "border-l-4 border-[#003629] bg-emerald-50" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {renderPlanIcon(
                     plan.id,
-                    `size-5 ${isCurrent ? "text-brand-primary" : "text-muted-foreground"}`,
+                    `size-5 ${isCurrent ? "text-[#003629]" : "text-stone-400"}`,
                   )}
                   <div>
-                    <p
-                      className={`font-heading text-sm font-bold ${isCurrent ? "text-brand-primary" : "text-foreground"}`}
-                    >
+                    <p className={`font-heading text-sm font-bold ${isCurrent ? "text-[#003629]" : "text-stone-900"}`}>
                       {plan.name}
                     </p>
-                    <p className="font-body text-xs text-muted-foreground">
-                      {plan.priceMonthly !== null
-                        ? `£${plan.priceMonthly}/mo`
-                        : "Free"}
+                    <p className="text-xs text-stone-500">
+                      {plan.priceMonthly !== null ? `£${plan.priceMonthly}/mo` : "Free"}
                     </p>
                   </div>
                 </div>
                 {isCurrent ? (
-                  <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
+                  <span className="rounded-full bg-[#003629] px-2 py-0.5 text-xs font-medium text-white">
                     Current
                   </span>
                 ) : isDowngrade ? (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground"
+                    className="rounded-xl border border-stone-200 px-3 py-1 text-xs font-medium text-stone-700"
                     aria-label={`Downgrade to ${plan.name}`}
                   >
                     Downgrade
@@ -463,30 +606,22 @@ function PlanComparisonTable(
                 ) : (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-lg bg-brand-primary px-3 py-1 text-xs font-semibold text-white hover:bg-brand-primary/90"
+                    className="rounded-xl bg-[#003629] px-3 py-1 text-xs font-semibold text-white hover:bg-[#1b4d3e]"
                     aria-label={`Upgrade to ${plan.name}`}
                   >
                     Upgrade
                   </button>
                 )}
               </div>
-
               <ul className="mt-3 space-y-1.5">
                 {FEATURE_ROWS.map((row) => {
                   const value = plan[row.key];
                   return (
-                    <li
-                      key={row.key}
-                      className="flex items-center justify-between text-xs"
-                    >
-                      <span className="font-body text-muted-foreground">{row.label}</span>
-                      <span
-                        className={`font-body font-medium ${isCurrent ? "text-brand-primary" : "text-foreground"}`}
-                      >
+                    <li key={row.key} className="flex items-center justify-between text-xs">
+                      <span className="text-stone-500">{row.label}</span>
+                      <span className={`font-medium ${isCurrent ? "text-[#003629]" : "text-stone-800"}`}>
                         {typeof value === "number"
-                          ? value === 0
-                            ? "—"
-                            : String(value)
+                          ? value === 0 ? "—" : String(value)
                           : String(value)}
                       </span>
                     </li>
@@ -505,21 +640,19 @@ function PlanComparisonTable(
 // Payment Method section
 // ---------------------------------------------------------------------------
 
-function PaymentMethodSection(
-  props: Readonly<{ stripeEnabled: boolean }>,
-) {
+function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
   const { stripeEnabled } = props;
 
   if (!stripeEnabled) {
     return (
-      <div className="rounded-2xl border border-dashed border-neutral-200/60 bg-muted/30 p-6 dark:border-neutral-700/60">
+      <div className="rounded-2xl border border-dashed border-stone-200 bg-stone-50 p-6">
         <div className="flex items-center gap-3">
-          <CreditCard className="size-5 text-muted-foreground" />
+          <CreditCard className="size-5 text-stone-400" />
           <div>
-            <p className="font-body text-sm font-medium text-foreground">
+            <p className="text-sm font-medium text-stone-800">
               Payment Method
             </p>
-            <p className="mt-0.5 font-body text-xs text-muted-foreground">
+            <p className="mt-0.5 text-xs text-stone-500">
               Stripe billing is not yet configured. Check back soon.
             </p>
           </div>
@@ -529,30 +662,24 @@ function PaymentMethodSection(
   }
 
   return (
-    <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-      <h2 className="font-heading text-base font-semibold text-foreground">
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
+      <h2 className="font-heading text-base font-semibold text-stone-900 mb-4">
         Payment Method
       </h2>
-      <div className="mt-4 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {/* Card artwork */}
-          <div className="flex size-12 items-center justify-center rounded-lg border border-border bg-muted">
-            <CreditCard className="size-6 text-muted-foreground" />
+          <div className="flex size-12 items-center justify-center rounded-xl border border-stone-200 bg-stone-50">
+            <CreditCard className="size-6 text-stone-500" />
           </div>
           <div>
-            <p className="font-body text-sm font-medium text-foreground">
+            <p className="text-sm font-medium text-stone-900">
               Visa ending in{" "}
               <span className="font-bold tracking-widest">4242</span>
             </p>
-            <p className="mt-0.5 font-body text-xs text-muted-foreground">
-              Expires 12 / 2028
-            </p>
+            <p className="mt-0.5 text-xs text-stone-500">Expires 12 / 2028</p>
           </div>
         </div>
-        <button
-          className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-          aria-label="Update payment method"
-        >
+        <button className="rounded-xl border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50">
           Update
         </button>
       </div>
@@ -566,94 +693,126 @@ function PaymentMethodSection(
 
 type BillingStatus = "paid" | "pending" | "failed";
 
-function billingStatusConfig(status: BillingStatus): string {
+function billingStatusConfig(status: BillingStatus): { pill: string; dot: string } {
   switch (status) {
     case "paid":
-      return "bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary";
+      return { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" };
     case "pending":
-      return "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning";
+      return { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500" };
     case "failed":
-      return "bg-error-light text-error dark:bg-error/10 dark:text-error";
+      return { pill: "bg-red-50 text-red-700", dot: "bg-red-500" };
   }
 }
 
-function BillingHistorySection(
-  props: Readonly<{ rows: BillingRow[] }>,
-) {
+function BillingHistorySection(props: Readonly<{ rows: BillingRow[] }>) {
   const { rows } = props;
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-      <div className="border-b border-neutral-100/60 px-6 py-4 dark:border-neutral-700/60">
-        <h2 className="font-heading text-base font-semibold text-foreground">
-          Billing History
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-stone-200">
+      <div className="border-b border-stone-100 px-6 py-4 flex items-center justify-between">
+        <h2 className="font-heading text-base font-semibold text-stone-900">
+          Transaction History
         </h2>
+        <div className="flex gap-2">
+          <button className="px-3 py-1.5 bg-stone-50 text-stone-600 rounded-lg text-xs font-semibold hover:bg-stone-100 transition-colors">
+            All
+          </button>
+          <button className="px-3 py-1.5 text-stone-500 rounded-lg text-xs font-semibold hover:bg-stone-50 transition-colors">
+            Paid
+          </button>
+          <button className="px-3 py-1.5 text-stone-500 rounded-lg text-xs font-semibold hover:bg-stone-50 transition-colors">
+            Pending
+          </button>
+        </div>
       </div>
 
       {rows.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="font-body text-sm text-muted-foreground">
-            No billing history yet.
-          </p>
+          <p className="text-sm text-stone-500">No billing history yet.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-neutral-100/60 bg-muted/40 dark:border-neutral-700/60">
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Amount
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Invoice
-                </th>
+              <tr className="bg-stone-50 text-stone-500 text-[10px] uppercase tracking-wider font-bold border-b border-stone-100">
+                <th className="px-6 py-4">Job ID</th>
+                <th className="px-6 py-4">Client</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Amount</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-neutral-100/60 last:border-0 transition-colors hover:bg-muted/30 dark:border-neutral-700/60"
-                >
-                  <td className="px-6 py-3 font-body text-sm text-muted-foreground">
-                    {formatDate(row.date)}
-                  </td>
-                  <td className="px-4 py-3 font-body text-sm font-semibold text-foreground">
-                    {formatGBP(row.amount)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${billingStatusConfig(row.status)}`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {row.invoiceUrl ? (
-                      <a
-                        href={row.invoiceUrl}
-                        className="inline-flex items-center gap-1 font-body text-xs font-medium text-brand-accent hover:underline"
-                        aria-label={`Download invoice for ${formatDate(row.date)}`}
-                      >
-                        <Download className="size-3" />
-                        Download
-                      </a>
-                    ) : (
-                      <span className="font-body text-xs text-muted-foreground">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+            <tbody className="divide-y divide-stone-100">
+              {rows.map((row) => {
+                const { pill, dot } = billingStatusConfig(row.status);
+                return (
+                  <tr key={row.id} className="hover:bg-stone-50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-mono text-stone-600">
+                      #{row.id.toUpperCase()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-xs font-bold text-stone-600">
+                          P
+                        </div>
+                        <span className="text-sm font-semibold text-stone-900">
+                          Platform Subscription
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-stone-500">
+                      {formatDate(row.date)}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-stone-900">
+                      {formatGBP(row.amount)}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${pill}`}>
+                          {row.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {row.invoiceUrl ? (
+                        <a
+                          href={row.invoiceUrl}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-[#003629] hover:underline"
+                          aria-label={`Download invoice for ${formatDate(row.date)}`}
+                        >
+                          <Download className="size-3" />
+                          Download
+                        </a>
+                      ) : (
+                        <span className="text-xs text-stone-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
+
+      <div className="p-4 border-t border-stone-100 bg-stone-50 flex items-center justify-between">
+        <p className="text-xs text-stone-500 font-medium">
+          Showing {rows.length} of {rows.length} transactions
+        </p>
+        <div className="flex gap-2">
+          <button
+            disabled
+            className="px-3 py-1 border border-stone-200 rounded text-xs hover:bg-white transition-colors disabled:opacity-50 text-stone-600"
+          >
+            Previous
+          </button>
+          <button className="px-3 py-1 border border-stone-200 rounded text-xs hover:bg-white transition-colors text-stone-600">
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -669,42 +828,34 @@ export type SubscriptionBillingProps = Readonly<{
 }>;
 
 export function SubscriptionBilling(props: SubscriptionBillingProps) {
-  const {
-    currentPlanId = "free",
-    renewalDate = null,
-    stripeEnabled,
-  } = props;
+  const { currentPlanId = "free", renewalDate = null, stripeEnabled } = props;
 
   const [activePlan, setActivePlan] = useState<PlanId>(currentPlanId);
 
   function handleUpgrade(planId: PlanId) {
     // Placeholder — in production this would open the Stripe billing portal
-    // or initiate a Stripe Checkout session.
     setActivePlan(planId);
   }
 
   return (
     <div className="space-y-8">
-      {/* 0. Earnings metrics (Stitch: available + pending + tax) */}
-      <EarningsMetrics />
+      {/* 0. Bento financial overview */}
+      <FinancialBento />
 
-      {/* 1. Current plan banner */}
-      <CurrentPlanBanner
-        currentPlanId={activePlan}
-        renewalDate={renewalDate}
-      />
+      {/* 1. Revenue chart + payout method */}
+      <RevenueAndPayoutSection />
 
-      {/* 2. Plan comparison table */}
-      <PlanComparisonTable
-        currentPlanId={activePlan}
-        onUpgrade={handleUpgrade}
-      />
-
-      {/* 3. Payment method */}
-      <PaymentMethodSection stripeEnabled={stripeEnabled} />
-
-      {/* 4. Billing history */}
+      {/* 2. Transaction / billing history */}
       <BillingHistorySection rows={DEMO_BILLING} />
+
+      {/* 3. Current plan banner */}
+      <CurrentPlanBanner currentPlanId={activePlan} renewalDate={renewalDate} />
+
+      {/* 4. Plan comparison table */}
+      <PlanComparisonTable currentPlanId={activePlan} onUpgrade={handleUpgrade} />
+
+      {/* 5. Payment method */}
+      <PaymentMethodSection stripeEnabled={stripeEnabled} />
     </div>
   );
 }

@@ -2,16 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { FileText, Plus, TrendingUp, Clock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { FileText, Plus } from "lucide-react";
 import type { QuoteStatus } from "@/types/marketplace";
 
 type QuoteRow = {
@@ -24,32 +15,39 @@ type QuoteRow = {
   created_at: string;
 };
 
-const STATUS_STYLES: Record<QuoteStatus, string> = {
+type StatusFilter = QuoteStatus | "all";
+
+const STATUS_BADGE: Record<QuoteStatus, string> = {
   draft:
-    "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
-  sent: "bg-info-light text-info dark:bg-info/10 dark:text-info",
-  viewed: "bg-info-light text-info dark:bg-info/10 dark:text-info",
-  accepted:
-    "bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary/20 dark:text-green-300",
-  declined: "bg-error-light text-error dark:bg-error/10 dark:text-error",
-  expired:
-    "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
-  withdrawn:
-    "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
+    "bg-stone-100 text-stone-500",
+  sent: "bg-blue-50 text-blue-700",
+  viewed: "bg-blue-50 text-blue-700",
+  accepted: "bg-emerald-50 text-emerald-700",
+  declined: "bg-red-50 text-red-700",
+  expired: "bg-stone-100 text-stone-500",
+  withdrawn: "bg-stone-100 text-stone-500",
 };
 
-const STATUS_FILTERS: (QuoteStatus | "all")[] = [
+const STATUS_FILTERS: StatusFilter[] = [
   "all",
-  "draft",
   "sent",
-  "viewed",
+  "draft",
   "accepted",
   "declined",
 ];
 
+function fmtGBP(pence: number): string {
+  return pence.toLocaleString("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 2,
+  });
+}
+
 export default function ProviderQuotesPage() {
   const [quotes, setQuotes] = useState<QuoteRow[]>([]);
-  const [filter, setFilter] = useState<QuoteStatus | "all">("all");
+  const [filter, setFilter] = useState<StatusFilter>("all");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchQuotes = useCallback(async () => {
@@ -79,219 +77,353 @@ export default function ProviderQuotesPage() {
 
   const acceptedCount = quotes.filter((q) => q.status === "accepted").length;
   const sentCount = quotes.filter(
-    (q) => q.status === "sent" || q.status === "accepted" || q.status === "declined",
+    (q) =>
+      q.status === "sent" ||
+      q.status === "accepted" ||
+      q.status === "declined",
   ).length;
   const conversionRate =
     sentCount > 0 ? Math.round((acceptedCount / sentCount) * 100) : 0;
 
+  // Client-side search filter
+  const filtered = quotes.filter((q) => {
+    if (!search.trim()) return true;
+    const q2 = search.toLowerCase();
+    return (
+      q.quote_number.toLowerCase().includes(q2) ||
+      q.rfq_title.toLowerCase().includes(q2)
+    );
+  });
+
   return (
-    <div className="space-y-6 p-6 max-w-7xl">
-      {/* ── Header ── */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">
-            Quotes
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage and track all your client quotes.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/provider/quotes/builder"
-          className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light"
-          aria-label="Create new quote"
-        >
-          <Plus className="size-4" />
-          New Quote
-        </Link>
-      </div>
+    <div className="min-h-screen bg-[#faf9f8] p-0">
+      <div className="pt-8 px-10 pb-20 max-w-7xl mx-auto">
 
-      {/* ── Metric cards ── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Outstanding */}
-        <div className="rounded-2xl bg-brand-primary p-6 text-white">
-          <p className="text-sm font-medium text-white/70">Outstanding Value</p>
-          <p className="mt-2 font-heading text-3xl font-bold">
-            {outstanding.toLocaleString("en-GB", {
-              style: "currency",
-              currency: "GBP",
-            })}
-          </p>
-          <p className="mt-1 text-xs uppercase tracking-wide text-white/60">
-            Awaiting client decision
-          </p>
-        </div>
-
-        {/* Conversion rate */}
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="size-4 text-brand-primary" />
-            <p className="text-sm font-medium text-muted-foreground">
-              Conversion Rate
-            </p>
+        {/* ── Header ── */}
+        <div className="flex justify-between items-end mb-10">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] font-sans mb-2 block">
+              Provider Overview
+            </span>
+            <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
+              Quote Management
+            </h1>
           </div>
-          <p className="mt-2 font-heading text-3xl font-bold text-foreground">
-            {conversionRate}%
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {acceptedCount} of {sentCount} sent quotes accepted
-          </p>
-        </div>
-
-        {/* Total quotes */}
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Clock className="size-4 text-muted-foreground" />
-            <p className="text-sm font-medium text-muted-foreground">
-              Total Quotes
-            </p>
-          </div>
-          <p className="mt-2 font-heading text-3xl font-bold text-foreground">
-            {quotes.length}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">Across all statuses</p>
-        </div>
-      </div>
-
-      {/* ── Filters ── */}
-      <div
-        className="flex flex-wrap gap-2"
-        role="group"
-        aria-label="Filter quotes by status"
-      >
-        {STATUS_FILTERS.map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilter(status)}
-            aria-pressed={filter === status}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium capitalize transition-colors ${
-              filter === status
-                ? "border-brand-primary bg-brand-primary-lighter text-brand-primary"
-                : "border-border text-muted-foreground hover:border-brand-primary/40 hover:text-foreground"
-            }`}
+          <Link
+            href="/dashboard/provider/quotes/builder"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#003629] to-[#1b4d3e] text-white px-7 py-3.5 rounded-md font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-300"
+            aria-label="Create new quote"
           >
-            {status === "all" ? "All" : status}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Table card ── */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-        <div className="border-b border-border px-6 py-4">
-          <h2 className="font-heading text-base font-semibold text-foreground">
-            Submitted Quotes
-          </h2>
+            <Plus className="size-4" />
+            New Quote
+          </Link>
         </div>
 
-        {loading ? (
-          <div className="py-12 text-center">
-            <div
-              className="mx-auto size-8 animate-spin rounded-full border-2 border-brand-primary border-t-transparent"
-              aria-label="Loading quotes"
-            />
-            <p className="mt-3 text-sm text-muted-foreground">
-              Loading quotes…
-            </p>
+        {/* ── Stats & Filter bar ── */}
+        <section className="bg-[#f4f3f2] rounded-xl p-7 mb-10 flex flex-wrap gap-6 items-center">
+          {/* Status filter tabs */}
+          <div className="flex gap-3 items-center">
+            <span className="text-xs font-sans uppercase tracking-widest text-stone-400">
+              Filter Status:
+            </span>
+            <div className="flex bg-stone-200/50 p-1 rounded-lg gap-0.5">
+              {STATUS_FILTERS.map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilter(status)}
+                  aria-pressed={filter === status}
+                  className={`px-4 py-2 text-xs font-bold rounded-md transition-colors capitalize ${
+                    filter === status
+                      ? "bg-white text-emerald-900 shadow-sm"
+                      : "text-stone-500 hover:text-stone-800"
+                  }`}
+                >
+                  {status === "all" ? "All" : status}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : quotes.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 py-16">
-            <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-              <FileText className="size-7 text-muted-foreground" />
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium text-foreground">
-                No quotes yet
+
+          <div className="h-7 w-px bg-stone-300 mx-2 hidden lg:block" />
+
+          {/* KPIs */}
+          <div className="flex gap-8">
+            <div>
+              <p className="text-[10px] text-stone-400 font-sans uppercase tracking-widest mb-1">
+                Total Outstanding
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Create your first quote to get started.
+              <p className="text-xl font-bold font-heading text-emerald-900">
+                {fmtGBP(outstanding)}
               </p>
             </div>
-            <Link
-              href="/dashboard/provider/quotes/builder"
-              className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-primary-light"
+            <div>
+              <p className="text-[10px] text-stone-400 font-sans uppercase tracking-widest mb-1">
+                Conversion Rate
+              </p>
+              <p className="text-xl font-bold font-heading text-[#7b5804]">
+                {conversionRate}%
+              </p>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="ml-auto flex items-center gap-3 bg-white border border-stone-200/50 px-4 py-2 rounded-lg">
+            <svg
+              className="size-4 text-stone-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
             >
-              <Plus className="size-4" />
-              Create Quote
-            </Link>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 4.65 16.65a7.5 7.5 0 0 0 11.7 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search reference or property..."
+              className="bg-transparent border-none text-sm focus:ring-0 w-56 text-stone-900 placeholder:text-stone-400 outline-none"
+            />
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/40 hover:bg-muted/40">
-                  <TableHead className="font-semibold uppercase tracking-wide text-xs text-muted-foreground">
-                    Quote #
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wide text-xs text-muted-foreground">
-                    RFQ / Property
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wide text-xs text-muted-foreground">
-                    Amount
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wide text-xs text-muted-foreground">
-                    Status
-                  </TableHead>
-                  <TableHead className="font-semibold uppercase tracking-wide text-xs text-muted-foreground">
-                    Date
-                  </TableHead>
-                  <TableHead className="w-8" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quotes.map((quote) => (
-                  <TableRow
-                    key={quote.id}
-                    className="transition-colors hover:bg-muted/30"
-                  >
-                    <TableCell className="font-medium text-foreground">
-                      {quote.quote_number}
-                    </TableCell>
-                    <TableCell>
+        </section>
+
+        {/* ── Quote Table ── */}
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100/50">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-stone-50 text-[10px] uppercase tracking-[0.15em] text-stone-500 font-bold border-b border-stone-100">
+                <th className="px-8 py-5">Reference</th>
+                <th className="px-8 py-5">Property / Client</th>
+                <th className="px-8 py-5">Total Amount</th>
+                <th className="px-8 py-5">Date</th>
+                <th className="px-8 py-5">Status</th>
+                <th className="px-8 py-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-50">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-8 py-12 text-center">
+                    <div
+                      className="mx-auto size-7 animate-spin rounded-full border-2 border-[#003629] border-t-transparent"
+                      aria-label="Loading quotes"
+                    />
+                    <p className="mt-3 text-sm text-stone-500">Loading quotes…</p>
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-8 py-16 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="flex size-14 items-center justify-center rounded-full bg-stone-100">
+                        <FileText className="size-7 text-stone-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-stone-800">
+                          No quotes yet
+                        </p>
+                        <p className="mt-1 text-xs text-stone-500">
+                          Create your first quote to get started.
+                        </p>
+                      </div>
                       <Link
-                        href={`/dashboard/rfqs/${quote.rfq_id}`}
-                        className="font-medium text-brand-accent hover:underline"
+                        href="/dashboard/provider/quotes/builder"
+                        className="inline-flex items-center gap-2 bg-[#003629] text-white px-5 py-2.5 rounded-md text-sm font-semibold hover:opacity-90 transition-opacity"
                       >
-                        {quote.rfq_title}
+                        <Plus className="size-4" />
+                        Create Quote
                       </Link>
-                    </TableCell>
-                    <TableCell className="font-semibold text-foreground">
-                      {quote.total_amount.toLocaleString("en-GB", {
-                        style: "currency",
-                        currency: "GBP",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`border-transparent capitalize text-xs font-medium ${STATUS_STYLES[quote.status]}`}
-                      >
-                        {quote.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((quote) => (
+                  <tr
+                    key={quote.id}
+                    className="hover:bg-stone-50/50 transition-colors group"
+                  >
+                    <td className="px-8 py-5 font-medium font-heading text-stone-900 text-sm">
+                      {quote.quote_number}
+                    </td>
+                    <td className="px-8 py-5">
+                      <div className="flex flex-col">
+                        <Link
+                          href={`/dashboard/rfqs/${quote.rfq_id}`}
+                          className="text-sm font-semibold text-stone-900 hover:text-emerald-800 transition-colors"
+                        >
+                          {quote.rfq_title}
+                        </Link>
+                      </div>
+                    </td>
+                    <td className="px-8 py-5 font-bold text-stone-900 text-sm">
+                      {fmtGBP(quote.total_amount)}
+                    </td>
+                    <td className="px-8 py-5 text-sm text-stone-600">
                       {new Date(quote.created_at).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
-                    </TableCell>
-                    <TableCell>
-                      {quote.status === "accepted" && (
-                        <Link
-                          href={`/dashboard/provider/quotes/${quote.id}/invoice`}
-                          className="text-xs font-medium text-brand-accent hover:underline"
-                          aria-label={`Generate invoice for quote ${quote.quote_number}`}
-                        >
-                          Invoice
-                        </Link>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </td>
+                    <td className="px-8 py-5">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${STATUS_BADGE[quote.status]}`}
+                      >
+                        {quote.status}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {quote.status === "accepted" && (
+                          <Link
+                            href={`/dashboard/provider/quotes/${quote.id}/invoice`}
+                            className="px-3 py-1.5 bg-[#003629] text-white text-[10px] font-bold rounded uppercase tracking-wider hover:opacity-90 transition-opacity"
+                            aria-label={`Generate invoice for quote ${quote.quote_number}`}
+                          >
+                            Invoice Now
+                          </Link>
+                        )}
+                        {(quote.status === "sent" || quote.status === "viewed") && (
+                          <Link
+                            href={`/dashboard/provider/quotes/builder?edit=${quote.id}`}
+                            className="p-1.5 hover:bg-white rounded-md text-stone-400 hover:text-emerald-900 shadow-sm border border-transparent hover:border-stone-200 transition-colors"
+                            title="Edit Quote"
+                          >
+                            <svg
+                              className="size-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931zm0 0L19.5 7.125"
+                              />
+                            </svg>
+                          </Link>
+                        )}
+                        {quote.status === "draft" && (
+                          <Link
+                            href={`/dashboard/provider/quotes/builder?edit=${quote.id}`}
+                            className="p-1.5 hover:bg-white rounded-md text-stone-400 hover:text-emerald-900 shadow-sm border border-transparent hover:border-stone-200 transition-colors"
+                            title="Edit Draft"
+                          >
+                            <svg
+                              className="size-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931zm0 0L19.5 7.125"
+                              />
+                            </svg>
+                          </Link>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {/* Table footer */}
+          {!loading && filtered.length > 0 && (
+            <div className="px-8 py-5 bg-stone-50/50 flex items-center justify-between border-t border-stone-100">
+              <p className="text-xs text-stone-500">
+                Showing{" "}
+                <span className="font-bold text-stone-900">{filtered.length}</span>{" "}
+                quote{filtered.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Quote Insights ── */}
+        <div className="mt-16 flex flex-col md:flex-row gap-10 items-start">
+          <div className="md:w-2/3">
+            <h3 className="text-2xl font-bold font-heading text-emerald-900 mb-4">
+              Quote Insights
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="bg-[#eeeeed] rounded-xl p-6 border-l-4 border-[#7b5804]">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-[#7b5804] mb-2">
+                  High Value Opportunity
+                </h4>
+                <p className="text-sm text-stone-600 leading-relaxed mb-3">
+                  Quotes sent within 24 hours of a site visit have significantly
+                  higher acceptance rates. Keep your response time short.
+                </p>
+                <span className="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                  View Template Advice
+                  <svg
+                    className="size-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div className="bg-[#eeeeed] rounded-xl p-6 border-l-4 border-[#003629]">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-[#003629] mb-2">
+                  Portfolio Synergy
+                </h4>
+                <p className="text-sm text-stone-600 leading-relaxed mb-3">
+                  You have active quotes in the same area. Consider a logistics
+                  discount to secure all contracts at once.
+                </p>
+                <span className="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                  Bundle Options
+                  <svg
+                    className="size-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Premium CTA card */}
+          <div className="md:w-1/3 bg-[#1b4d3e] p-8 rounded-2xl relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_top_right,_white,_transparent)]" />
+            <h3 className="text-xl font-bold text-white mb-3 relative z-10">
+              Premium Assistance
+            </h3>
+            <p className="text-emerald-100 text-sm leading-relaxed mb-5 relative z-10">
+              Need a legal review for a complex quote? Our Estate Advocates are
+              available for consultation.
+            </p>
+            <button className="w-full py-3 bg-[#eec068] text-[#271900] font-bold rounded-md hover:-translate-y-0.5 transition-transform relative z-10 text-sm">
+              Book Consultation
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

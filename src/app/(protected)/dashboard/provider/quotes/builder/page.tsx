@@ -56,26 +56,34 @@ export default async function QuoteBuilderPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-7xl">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">
-            New Quote
+    <div className="min-h-screen bg-[#faf9f8]">
+      {/* Page header */}
+      <div className="pt-8 px-10 pb-6 max-w-7xl mx-auto">
+        <div className="space-y-1 mb-8">
+          <span className="text-[11px] font-bold tracking-widest text-[#003629] uppercase">
+            Draft Status: Active
+          </span>
+          <h1 className="text-3xl font-bold font-heading text-[#003629] tracking-tight">
+            Create Professional Bid
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Build and send a professional quote to your client.
+          <p className="text-stone-500 max-w-lg text-sm">
+            Outline the scope of work and financials for your next premium
+            project. The preview updates in real-time.
           </p>
         </div>
       </div>
 
-      <QuoteBuilderForm
-        providerId={providerId}
-        providerName={providerName}
-        requestId={requestId}
-        prefillClientName={prefillClientName}
-        prefillJobTitle={prefillJobTitle}
-        prefillCategory={prefillCategory}
-      />
+      {/* Form + Preview canvas */}
+      <div className="px-10 pb-16 max-w-7xl mx-auto">
+        <QuoteBuilderForm
+          providerId={providerId}
+          providerName={providerName}
+          requestId={requestId}
+          prefillClientName={prefillClientName}
+          prefillJobTitle={prefillJobTitle}
+          prefillCategory={prefillCategory}
+        />
+      </div>
     </div>
   );
 }
