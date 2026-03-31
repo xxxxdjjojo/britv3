@@ -93,27 +93,47 @@ export async function fetchProviderReviews(
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
+  // No FK from reviews to profiles — query separately
   const { data, error, count } = await supabase
     .from("reviews")
-    .select(
-      `
-      *,
-      profiles (
-        full_name,
-        avatar_url
-      )
-    `,
-      { count: "exact" },
-    )
+    .select("*", { count: "exact" })
     .eq("provider_id", providerId)
+    .eq("moderation_status", "approved")
+    .order("created_at", { ascending: false })
     .range(from, to);
 
   if (error || !data) {
     return { reviews: [], total: 0 };
   }
 
+  // Fetch reviewer profiles
+  const reviewerIds = data.map((r) => (r as Record<string, unknown>).reviewer_id).filter(Boolean) as string[];
+  let profileMap = new Map<string, { full_name: string | null; avatar_url: string | null }>();
+  if (reviewerIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url")
+      .in("id", reviewerIds);
+    if (profiles) {
+      for (const p of profiles) {
+        profileMap.set(p.id, { full_name: p.display_name, avatar_url: p.avatar_url });
+      }
+    }
+  }
+
+  const reviews = data.map((row) => {
+    const r = row as Record<string, unknown>;
+    const reviewerId = r.reviewer_id as string;
+    const profile = profileMap.get(reviewerId) ?? { full_name: null, avatar_url: null };
+    return {
+      ...row,
+      body: r.review_text ?? null,
+      profiles: profile,
+    };
+  });
+
   return {
-    reviews: data as unknown as PublicReview[],
+    reviews: reviews as unknown as PublicReview[],
     total: count ?? 0,
   };
 }
@@ -187,19 +207,11 @@ export async function fetchAgentBySlug(
 ): Promise<AgentPublicProfile | null> {
   const supabase = await createClient();
 
+  // Fetch agent profile — no FK from agent_agency_profiles to profiles,
+  // so we query them separately and stitch together.
   const { data, error } = await supabase
     .from("agent_agency_profiles")
-    .select(
-      `
-      *,
-      profiles (
-        id,
-        avatar_url,
-        full_name,
-        email
-      )
-    `,
-    )
+    .select("*")
     .eq("slug", slug)
     .single();
 
@@ -207,7 +219,55 @@ export async function fetchAgentBySlug(
     return null;
   }
 
-  return data as unknown as AgentPublicProfile;
+  // Fetch the linked profile via user_id or agent_id
+  const profileId = (data as Record<string, unknown>).user_id ?? (data as Record<string, unknown>).agent_id;
+  let profiles: { id: string; avatar_url: string | null; full_name: string | null; email: string | null } = {
+    id: String(profileId ?? ""),
+    avatar_url: null,
+    full_name: null,
+    email: null,
+  };
+
+  if (profileId) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("id, avatar_url, display_name")
+      .eq("id", String(profileId))
+      .single();
+
+    if (profileData) {
+      profiles = {
+        id: profileData.id,
+        avatar_url: profileData.avatar_url,
+        full_name: profileData.display_name,
+        email: null,
+      };
+    }
+  }
+
+  // Map DB columns to the AgentPublicProfile shape
+  const row = data as Record<string, unknown>;
+  const result = {
+    ...data,
+    profiles,
+    phone: row.contact_phone ?? null,
+    email: row.contact_email ?? null,
+    areas_covered: row.coverage_areas ?? [],
+    specialisations: row.specializations ?? [],
+    agency: row.agency_name
+      ? {
+          id: String(row.agency_id ?? row.id),
+          name: String(row.agency_name),
+          logo_url: (row.logo_url as string | null) ?? null,
+          website_url: (row.website_url as string | null) ?? null,
+          address: [row.address_line_1, row.address_line_2, row.city, row.postcode]
+            .filter(Boolean)
+            .join(", "),
+        }
+      : null,
+  };
+
+  return result as unknown as AgentPublicProfile;
 }
 
 /**
@@ -275,24 +335,24 @@ export async function fetchAgentListings(
     .select(
       `
       id,
-      title,
       slug,
       price,
-      sold_price,
       status,
-      bedrooms,
-      bathrooms,
-      property_type,
-      cover_image_url,
-      address_line1,
-      city,
-      postcode,
+      listing_type,
       created_at,
-      sold_at
+      properties (
+        title,
+        bedrooms,
+        bathrooms,
+        property_type,
+        address_line1,
+        city,
+        postcode
+      )
     `,
       { count: "exact" },
     )
-    .eq("agent_id", agentId)
+    .eq("user_id", agentId)
     .in("status", statusValues)
     .order("created_at", { ascending: false })
     .range(from, to);
@@ -301,8 +361,31 @@ export async function fetchAgentListings(
     return { listings: [], total: 0, page, pageSize: PAGE_SIZE };
   }
 
+  // Map the JOIN result to the AgentListingItem shape
+  const listings = data.map((row) => {
+    const r = row as Record<string, unknown>;
+    const prop = (r.properties ?? {}) as Record<string, unknown>;
+    return {
+      id: r.id,
+      title: prop.title ?? "Untitled",
+      slug: r.slug,
+      price: r.price,
+      sold_price: null,
+      status: r.status,
+      bedrooms: prop.bedrooms ?? null,
+      bathrooms: prop.bathrooms ?? null,
+      property_type: prop.property_type ?? null,
+      cover_image_url: null,
+      address_line1: prop.address_line1 ?? null,
+      city: prop.city ?? null,
+      postcode: prop.postcode ?? null,
+      created_at: r.created_at,
+      sold_at: null,
+    };
+  });
+
   return {
-    listings: data as AgentListingItem[],
+    listings: listings as AgentListingItem[],
     total: count ?? 0,
     page,
     pageSize: PAGE_SIZE,
@@ -320,20 +403,10 @@ export async function fetchAgentTeam(
 ): Promise<AgentTeamMember[]> {
   const supabase = await createClient();
 
+  // No FK from agent_agency_profiles to profiles — query separately
   const { data, error } = await supabase
     .from("agent_agency_profiles")
-    .select(
-      `
-      id,
-      user_id,
-      profiles (
-        full_name,
-        avatar_url
-      ),
-      role,
-      bio
-    `,
-    )
+    .select("id, user_id, agent_id, display_name, role, bio")
     .eq("agency_id", agencyId)
     .order("created_at", { ascending: true });
 
@@ -341,15 +414,35 @@ export async function fetchAgentTeam(
     return [];
   }
 
+  // Fetch profile data for each team member
+  const userIds = data
+    .map((m) => (m as Record<string, unknown>).user_id ?? (m as Record<string, unknown>).agent_id)
+    .filter(Boolean) as string[];
+
+  let profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+  if (userIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url")
+      .in("id", userIds);
+    if (profiles) {
+      for (const p of profiles) {
+        profileMap.set(p.id, { display_name: p.display_name, avatar_url: p.avatar_url });
+      }
+    }
+  }
+
   return data.map((member) => {
-    const profile = (Array.isArray(member.profiles) ? member.profiles[0] : member.profiles) as { full_name: string | null; avatar_url: string | null } | null;
+    const m = member as Record<string, unknown>;
+    const profileId = (m.user_id ?? m.agent_id) as string | null;
+    const profile = profileId ? profileMap.get(profileId) : null;
     return {
-      id: member.id as string,
-      user_id: member.user_id as string,
-      full_name: profile?.full_name ?? null,
+      id: m.id as string,
+      user_id: (m.user_id ?? m.agent_id ?? "") as string,
+      full_name: profile?.display_name ?? (m.display_name as string | null) ?? null,
       avatar_url: profile?.avatar_url ?? null,
-      role: (member.role as string | null) ?? null,
-      bio: (member.bio as string | null) ?? null,
+      role: (m.role as string | null) ?? null,
+      bio: (m.bio as string | null) ?? null,
     };
   });
 }
