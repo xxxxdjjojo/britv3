@@ -3,7 +3,6 @@
 import { useState, useCallback, useTransition } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,23 +36,20 @@ function buildCalendarGrid(year: number, month: number): (Date | null)[] {
   const firstDay = new Date(year, month - 1, 1);
   const lastDay = new Date(year, month, 0);
   // ISO week: Mon=0 … Sun=6
-  const startDow = (firstDay.getDay() + 6) % 7; // offset for Mon-first grid
+  const startDow = (firstDay.getDay() + 6) % 7;
   const cells: (Date | null)[] = [];
   for (let i = 0; i < startDow; i++) cells.push(null);
   for (let d = 1; d <= lastDay.getDate(); d++) {
     cells.push(new Date(year, month - 1, d));
   }
-  // Pad to complete last row
   while (cells.length % 7 !== 0) cells.push(null);
   return cells;
 }
 
-/** Returns true when dateStr falls within [start, end] inclusive. */
 function inRange(dateStr: string, start: string, end: string): boolean {
   return dateStr >= start && dateStr <= end;
 }
 
-/** Expand BlockedRange list into a Set of date strings. */
 function buildBlockedSet(ranges: BlockedRange[]): Set<string> {
   const s = new Set<string>();
   for (const r of ranges) {
@@ -67,10 +63,7 @@ function buildBlockedSet(ranges: BlockedRange[]): Set<string> {
   return s;
 }
 
-/** Expand bookings into a Map<dateStr, BookingSlim[]>. */
-function buildBookingMap(
-  bookings: BookingSlim[],
-): Map<string, BookingSlim[]> {
+function buildBookingMap(bookings: BookingSlim[]): Map<string, BookingSlim[]> {
   const m = new Map<string, BookingSlim[]>();
   for (const b of bookings) {
     const cur = new Date(b.scheduled_start_date);
@@ -87,19 +80,10 @@ function buildBookingMap(
 }
 
 const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
+
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -114,16 +98,17 @@ export function AvailabilityCalendar({
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth() + 1); // 1-based
 
-  // Local state for blocked ranges (optimistic updates)
-  const [blockedRanges, setBlockedRanges] =
-    useState<BlockedRange[]>(initialBlockedRanges);
-
+  const [blockedRanges, setBlockedRanges] = useState<BlockedRange[]>(initialBlockedRanges);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const blockedSet = buildBlockedSet(blockedRanges);
   const bookingMap = buildBookingMap(initialBookings);
   const cells = buildCalendarGrid(viewYear, viewMonth);
+
+  // Derived stats
+  const bookedCount = Array.from(bookingMap.keys()).length;
+  const blockedCount = blockedRanges.length;
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 
@@ -154,12 +139,11 @@ export function AvailabilityCalendar({
 
   const handleToggle = useCallback(
     (dateStr: string) => {
-      if (bookingMap.has(dateStr)) return; // booked → not toggleable
+      if (bookingMap.has(dateStr)) return;
       const willBlock = !blockedSet.has(dateStr);
 
       setError(null);
 
-      // Optimistic update
       if (willBlock) {
         setBlockedRanges((prev) => [
           ...prev,
@@ -193,8 +177,6 @@ export function AvailabilityCalendar({
             throw new Error(body?.error ?? "Failed to update availability");
           }
 
-          // If unblocking succeeded, the optimistic state is correct.
-          // If blocking succeeded, replace the optimistic id with real server data.
           if (willBlock) {
             const json = (await res.json()) as {
               data?: { id?: string; date?: string };
@@ -211,7 +193,6 @@ export function AvailabilityCalendar({
             }
           }
         } catch (err) {
-          // Rollback optimistic update
           if (willBlock) {
             setBlockedRanges((prev) =>
               prev.filter((r) => r.id !== `optimistic-${dateStr}`),
@@ -239,71 +220,70 @@ export function AvailabilityCalendar({
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-4">
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-neutral-900">
-          {MONTH_NAMES[viewMonth - 1]} {viewYear}
-        </h2>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={goToToday}
-            className="text-xs"
-          >
-            Today
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label="Previous month"
-            onClick={goToPrev}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            aria-label="Next month"
-            onClick={goToNext}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
+    <div className="flex flex-col h-full">
+      {/* ── Calendar Header ── */}
+      <div className="px-8 py-6 border-b border-neutral-100 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <h2 className="text-2xl font-bold text-neutral-900 font-heading">
+            {MONTH_NAMES[viewMonth - 1]} {viewYear}
+          </h2>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={goToPrev}
+              aria-label="Previous month"
+              className="p-2 hover:bg-neutral-50 rounded-lg transition-colors"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              onClick={goToNext}
+              aria-label="Next month"
+              className="p-2 hover:bg-neutral-50 rounded-lg transition-colors"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          </div>
         </div>
+        <button
+          onClick={goToToday}
+          className="px-4 py-2 text-sm font-bold text-emerald-900 hover:bg-emerald-50 rounded-lg transition-colors"
+        >
+          Today
+        </button>
       </div>
 
-      {/* ── Error banner ── */}
+      {/* ── Error Banner ── */}
       {error && (
-        <div className="rounded-md bg-error-light px-4 py-2 text-sm text-error">
+        <div className="mx-6 mt-4 rounded-lg bg-error-light px-4 py-2 text-sm text-error">
           {error}
         </div>
       )}
 
-      {/* ── Day-of-week headers ── */}
-      <div className="grid grid-cols-7 gap-px">
-        {DAY_NAMES.map((d) => (
+      {/* ── Day of Week Headers ── */}
+      <div className="grid grid-cols-7 border-b border-neutral-100">
+        {DAY_NAMES.map((d, i) => (
           <div
             key={d}
-            className="py-2 text-center text-xs font-medium text-neutral-500"
+            className={[
+              "py-4 text-center text-xs font-bold uppercase tracking-widest",
+              i >= 5 ? "text-emerald-600" : "text-neutral-400",
+            ].join(" ")}
           >
             {d}
           </div>
         ))}
       </div>
 
-      {/* ── Calendar grid ── */}
-      <div
-        className="grid grid-cols-7 gap-px rounded-lg overflow-hidden border border-neutral-200 bg-neutral-200"
-        style={
-          {
-            "--stripe": "rgba(0,0,0,0.04)",
-          } as React.CSSProperties
-        }
-      >
+      {/* ── Calendar Body ── */}
+      <div className="flex-1 grid grid-cols-7 auto-rows-fr min-h-[400px]">
         {cells.map((date, idx) => {
           if (!date) {
-            return <div key={`blank-${idx}`} className="bg-white min-h-[72px]" />;
+            return (
+              <div
+                key={`blank-${idx}`}
+                className="border-r border-b border-neutral-100 bg-neutral-50/30"
+              />
+            );
           }
 
           const ds = toDateStr(date);
@@ -312,34 +292,27 @@ export function AvailabilityCalendar({
           const dayBookings = bookingMap.get(ds) ?? [];
           const isBooked = dayBookings.length > 0;
           const isPast = ds < todayStr;
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
-          // Determine cell style
           let cellClass =
-            "relative min-h-[72px] p-1.5 bg-white cursor-pointer transition-colors hover:bg-neutral-50";
+            "p-3 border-r border-b border-neutral-100 relative group transition-colors cursor-pointer hover:bg-emerald-50/20";
 
           if (isBooked) {
-            cellClass =
-              "relative min-h-[72px] p-1.5 bg-brand-primary-lighter border border-brand-primary cursor-default";
+            cellClass = "p-3 border-r border-b border-neutral-100 relative";
           } else if (isBlocked) {
             cellClass =
-              "relative min-h-[72px] p-1.5 bg-neutral-100 cursor-pointer transition-colors hover:bg-neutral-200";
+              "p-3 border-r border-b border-neutral-100 relative cursor-pointer bg-neutral-200/40 hover:bg-neutral-200/60 transition-colors";
           } else if (isPast) {
             cellClass =
-              "relative min-h-[72px] p-1.5 bg-white opacity-40 cursor-default";
+              "p-3 border-r border-b border-neutral-100 relative opacity-40 cursor-default";
+          } else if (isWeekend) {
+            cellClass =
+              "p-3 border-r border-b border-neutral-100 relative bg-emerald-50/30 cursor-pointer hover:bg-emerald-50/50 transition-colors";
           }
 
-          const dateNum = (
-            <span
-              className={[
-                "inline-flex size-6 items-center justify-center rounded-full text-xs font-medium",
-                isToday
-                  ? "ring-2 ring-brand-primary ring-offset-1 text-brand-primary font-bold"
-                  : "text-neutral-700",
-              ].join(" ")}
-            >
-              {date.getDate()}
-            </span>
-          );
+          if (isToday && !isBooked) {
+            cellClass += " bg-emerald-50/40";
+          }
 
           return (
             <div
@@ -352,32 +325,39 @@ export function AvailabilityCalendar({
                 isBooked
                   ? "Booked — cannot toggle"
                   : isBlocked
-                    ? "Marked unavailable — click to unblock"
+                    ? "Click to unblock"
                     : isPast
                       ? undefined
                       : "Click to mark unavailable"
               }
             >
-              {/* Diagonal stripe overlay for blocked */}
-              {isBlocked && !isBooked && (
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-20"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)",
-                    backgroundSize: "8px 8px",
-                  }}
-                />
+              {/* Date number */}
+              {isToday ? (
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-emerald-900 text-white rounded-full text-xs font-bold">
+                  {date.getDate()}
+                </span>
+              ) : (
+                <span
+                  className={[
+                    "text-sm font-semibold",
+                    isWeekend ? "text-emerald-900" : "text-neutral-900",
+                    isPast ? "text-neutral-400" : "",
+                  ].join(" ")}
+                >
+                  {date.getDate()}
+                </span>
               )}
 
-              <div className="relative z-10 flex flex-col gap-1">
-                {dateNum}
+              {isToday && (
+                <p className="mt-1 text-[10px] text-emerald-900 font-bold">Today</p>
+              )}
 
+              {/* Events */}
+              <div className="mt-1 space-y-1">
                 {isBlocked && !isBooked && (
-                  <span className="block truncate text-[10px] text-neutral-500">
-                    Unavailable
-                  </span>
+                  <div className="px-2 py-0.5 bg-neutral-300 rounded text-[10px] text-neutral-700 font-bold truncate">
+                    {blockedRanges.find((r) => inRange(ds, r.start_date, r.end_date))?.reason ?? "Unavailable"}
+                  </div>
                 )}
 
                 {isBooked &&
@@ -386,14 +366,14 @@ export function AvailabilityCalendar({
                       key={b.id}
                       href={`/dashboard/provider/jobs/${b.id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="block truncate rounded bg-brand-primary/10 px-1 text-[10px] font-medium text-brand-primary hover:underline"
+                      className="block truncate rounded px-2 py-0.5 bg-brand-primary text-[10px] text-white font-bold hover:opacity-90 transition-opacity"
                     >
                       {b.booking_reference}
                     </Link>
                   ))}
 
                 {isBooked && dayBookings.length > 2 && (
-                  <span className="block text-[10px] text-brand-primary">
+                  <span className="block text-[10px] text-brand-primary font-bold">
                     +{dayBookings.length - 2} more
                   </span>
                 )}
@@ -403,57 +383,28 @@ export function AvailabilityCalendar({
         })}
       </div>
 
-      {/* ── Legend ── */}
-      <div className="flex flex-wrap gap-4 pt-1">
-        <LegendItem
-          color="bg-white border border-neutral-200"
-          label="Available"
-        />
-        <LegendItem
-          color="bg-neutral-100"
-          label="Blocked"
-          stripe
-        />
-        <LegendItem
-          color="bg-brand-primary-lighter border border-brand-primary"
-          label="Booked"
-        />
+      {/* ── Calendar Footer ── */}
+      <div className="bg-neutral-50 px-6 py-4 flex items-center justify-between border-t border-neutral-100">
+        <div className="flex items-center gap-4 text-xs text-neutral-500">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-brand-primary" />
+            {bookedCount} Job{bookedCount !== 1 ? "s" : ""} Scheduled
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-neutral-400" />
+            {blockedCount} Personal Block{blockedCount !== 1 ? "s" : ""}
+          </span>
+        </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex size-4 items-center justify-center rounded-full ring-2 ring-brand-primary" />
-          <span className="text-xs text-neutral-600">Today</span>
+          <span className="text-xs text-neutral-400">All times in GMT+0 (London)</span>
         </div>
       </div>
 
       {isPending && (
-        <p className="text-xs text-neutral-400">Saving…</p>
+        <div className="px-6 pb-2">
+          <p className="text-xs text-neutral-400">Saving…</p>
+        </div>
       )}
-    </div>
-  );
-}
-
-function LegendItem({
-  color,
-  label,
-  stripe,
-}: Readonly<{ color: string; label: string; stripe?: boolean }>) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`relative inline-block size-4 rounded ${color} overflow-hidden`}
-      >
-        {stripe && (
-          <span
-            aria-hidden
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)",
-              backgroundSize: "6px 6px",
-            }}
-          />
-        )}
-      </span>
-      <span className="text-xs text-neutral-600">{label}</span>
     </div>
   );
 }

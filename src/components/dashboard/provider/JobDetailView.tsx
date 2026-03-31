@@ -387,6 +387,28 @@ function StatusPanel({
 }
 
 // ---------------------------------------------------------------------------
+// Star Rating (shared helper)
+// ---------------------------------------------------------------------------
+
+function StarRating({ rating }: Readonly<{ rating: number }>) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star
+          key={n}
+          className={[
+            "size-4",
+            n <= rating
+              ? "fill-warning text-warning"
+              : "fill-neutral-200 text-neutral-200",
+          ].join(" ")}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Review Panel (sidebar)
 // ---------------------------------------------------------------------------
 
@@ -394,24 +416,6 @@ function ReviewPanel({
   jobId,
   review,
 }: Readonly<{ jobId: string; review: JobSidebarData["review"] }>) {
-  function StarRating({ rating }: Readonly<{ rating: number }>) {
-    return (
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <Star
-            key={n}
-            className={[
-              "size-4",
-              n <= rating
-                ? "fill-warning text-warning"
-                : "fill-neutral-200 text-neutral-200",
-            ].join(" ")}
-          />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
       <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Review</h3>

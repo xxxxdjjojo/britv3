@@ -23,8 +23,7 @@ function formatBudget(minPence: number | null, maxPence: number | null): string 
   const fmt = (p: number) => `£${(p / 100).toLocaleString("en-GB")}`;
   if (minPence != null && maxPence != null) return `${fmt(minPence)}–${fmt(maxPence)}`;
   if (minPence != null) return `From ${fmt(minPence)}`;
-  if (maxPence != null) return `Up to ${fmt(maxPence!)}`;
-  return "Budget TBC";
+  return `Up to ${fmt(maxPence!)}`;
 }
 
 function relativeTime(isoString: string): string {
@@ -36,23 +35,6 @@ function relativeTime(isoString: string): string {
   if (diffHrs < 24) return `${diffHrs}h ago`;
   const diffDays = Math.floor(diffHrs / 24);
   return `${diffDays}d ago`;
-}
-
-type UrgencyLevel = "urgent" | "high" | "medium" | "low" | string;
-
-function urgencyBadge(urgency: UrgencyLevel): { label: string; className: string } {
-  switch (urgency) {
-    case "urgent":
-      return { label: "Urgent", className: "bg-error-light text-error" };
-    case "high":
-      return { label: "High Priority", className: "bg-warning-light text-warning" };
-    case "medium":
-      return { label: "Medium", className: "bg-neutral-100 text-neutral-600" };
-    case "low":
-      return { label: "Low Priority", className: "bg-success-light text-success" };
-    default:
-      return { label: "New", className: "bg-neutral-100 text-neutral-600" };
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -117,15 +99,15 @@ type JobLeadCardProps = Readonly<{
   providerId: string;
   /** Called when the lead is accepted or declined so parent can remove card */
   onRemove: (leadId: string) => void;
+  /** "card" = standalone card (default), "row" = row inside a parent article */
+  layout?: "card" | "row";
 }>;
 
-export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
+export function JobLeadCard({ lead, providerId, onRemove, layout = "card" }: JobLeadCardProps) {
   const [accepting, setAccepting] = useState(false);
   const [declining, setDeclining] = useState(false);
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const badge = urgencyBadge(lead.serviceCategory); // we don't have urgency in ProviderLead, use category as label
 
   async function handleAccept() {
     setAccepting(true);
@@ -156,6 +138,93 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
     }
   }
 
+  const isUrgent = lead.serviceCategory.toLowerCase().includes("emergency") ||
+    lead.serviceCategory.toLowerCase().includes("urgent");
+
+  const actionButtons = (
+    <div className="flex items-center gap-3 shrink-0">
+      <button
+        className="px-4 py-2 text-sm font-semibold text-neutral-600 hover:text-neutral-900 transition-colors"
+        onClick={() => setShowDeclineDialog(true)}
+        disabled={accepting || declining}
+      >
+        Decline
+      </button>
+      <Button
+        size="sm"
+        className="px-6 bg-brand-secondary text-white font-bold rounded-xl hover:bg-brand-secondary/90 hover:shadow-md transition-all active:scale-95"
+        onClick={handleAccept}
+        disabled={accepting || declining}
+      >
+        <CheckCircle className="mr-1.5 size-4" />
+        {accepting ? "Accepting…" : "Quote Lead"}
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="px-3"
+        aria-label="Message client"
+        disabled={accepting || declining}
+      >
+        <MessageSquare className="size-4" />
+      </Button>
+    </div>
+  );
+
+  // Row layout (used inside parent <article> in the leads bento grid)
+  if (layout === "row") {
+    return (
+      <>
+        {showDeclineDialog && (
+          <DeclineDialog
+            onConfirm={handleDecline}
+            onCancel={() => setShowDeclineDialog(false)}
+            loading={declining}
+          />
+        )}
+
+        <div className="flex items-start gap-5 flex-1 min-w-0">
+          <div className="w-14 h-14 rounded-xl bg-neutral-50 flex items-center justify-center border border-neutral-100 shrink-0">
+            <Wrench className="size-6 text-neutral-400" />
+          </div>
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h4 className="font-heading font-semibold text-neutral-900 truncate">
+                {lead.serviceCategory}
+              </h4>
+              <span className={[
+                "px-2 py-0.5 text-[10px] font-bold rounded shrink-0",
+                isUrgent
+                  ? "bg-amber-50 text-amber-700"
+                  : "bg-neutral-100 text-neutral-600",
+              ].join(" ")}>
+                {isUrgent ? "URGENT" : "STANDARD"}
+              </span>
+            </div>
+            <p className="text-sm text-neutral-500 line-clamp-1">{lead.description}</p>
+            <div className="flex gap-4 pt-1">
+              <span className="text-xs font-medium text-neutral-400 flex items-center gap-1">
+                <MapPin className="size-3" />
+                {lead.location || "Location TBC"}
+              </span>
+              <span className="text-xs font-medium text-neutral-400 flex items-center gap-1">
+                <Clock className="size-3" />
+                {relativeTime(lead.createdAt)}
+              </span>
+              <span className="text-xs font-medium text-neutral-600">
+                {formatBudget(lead.budgetMinPence, lead.budgetMaxPence)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {error && <p className="text-xs text-error shrink-0">{error}</p>}
+        {actionButtons}
+      </>
+    );
+  }
+
+  // Default card layout
   return (
     <>
       {showDeclineDialog && (
@@ -166,58 +235,56 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
         />
       )}
 
-      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm transition hover:shadow-md flex flex-col gap-4">
         {/* Header row */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            {/* Category icon avatar */}
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
-              <Wrench className="size-5 text-brand-primary" />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-neutral-900">
-                {lead.serviceCategory}
-              </p>
-              <p className="text-xs text-neutral-500">{lead.clientName}</p>
-            </div>
-          </div>
-
-          {/* Urgency badge — we show category as the label since urgency isn't in ProviderLead type */}
-          <span
-            className={["shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium", badge.className].join(" ")}
-          >
-            New Lead
+        <div className="flex justify-between items-start">
+          <span className={[
+            "px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase rounded",
+            isUrgent ? "bg-amber-50 text-amber-700" : "bg-neutral-100 text-neutral-500",
+          ].join(" ")}>
+            {isUrgent ? "URGENT" : "STANDARD"}
+          </span>
+          <span className="text-xs font-medium text-neutral-400">
+            {relativeTime(lead.createdAt)}
           </span>
         </div>
 
-        {/* Description */}
-        <p className="mt-3 text-sm text-neutral-600 line-clamp-2">{lead.description}</p>
+        {/* Title + description */}
+        <div className="space-y-2">
+          <h4 className="font-heading font-semibold text-lg text-neutral-900">
+            {lead.serviceCategory}
+          </h4>
+          {lead.description && (
+            <p className="text-sm text-neutral-500 leading-relaxed line-clamp-2">
+              {lead.description}
+            </p>
+          )}
+        </div>
 
-        {/* Meta row */}
-        <div className="mt-3 flex flex-wrap gap-3 text-xs text-neutral-500">
-          <span className="flex items-center gap-1">
-            <MapPin className="size-3.5" />
-            {lead.location || "Location TBC"}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock className="size-3.5" />
-            {relativeTime(lead.createdAt)}
-          </span>
-          <span className="font-medium text-neutral-700">
-            {formatBudget(lead.budgetMinPence, lead.budgetMaxPence)}
-          </span>
+        {/* Budget + location */}
+        <div className="grid grid-cols-2 gap-4 py-2 border-y border-neutral-50">
+          <div>
+            <p className="text-[10px] text-neutral-400 font-bold uppercase">Budget</p>
+            <p className="font-heading font-semibold text-neutral-900">
+              {formatBudget(lead.budgetMinPence, lead.budgetMaxPence)}
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] text-neutral-400 font-bold uppercase">Location</p>
+            <p className="font-heading font-semibold text-neutral-900">
+              {lead.location || "TBC"}
+            </p>
+          </div>
         </div>
 
         {/* Error */}
-        {error && (
-          <p className="mt-2 text-xs text-error">{error}</p>
-        )}
+        {error && <p className="text-xs text-error">{error}</p>}
 
         {/* Actions */}
-        <div className="mt-4 flex gap-2">
+        <div className="flex gap-3">
           <Button
             size="sm"
-            className="flex-1 bg-brand-primary text-white hover:bg-brand-primary/90"
+            className="flex-1 py-2.5 bg-neutral-900 text-white font-bold rounded-xl hover:bg-neutral-800 transition-all"
             onClick={handleAccept}
             disabled={accepting || declining}
           >
@@ -227,21 +294,12 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
           <Button
             size="sm"
             variant="outline"
-            className="flex-1 border-neutral-200"
+            className="p-2.5 border border-neutral-200 rounded-xl"
             onClick={() => setShowDeclineDialog(true)}
             disabled={accepting || declining}
+            aria-label="Decline lead"
           >
-            <XCircle className="mr-1.5 size-4" />
-            Decline
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="px-3"
-            aria-label="Message client"
-            disabled={accepting || declining}
-          >
-            <MessageSquare className="size-4" />
+            <XCircle className="size-4" />
           </Button>
         </div>
       </div>
