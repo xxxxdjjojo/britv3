@@ -94,7 +94,7 @@ async function PageContent({ params }: Props) {
             <FileText className="size-6 text-[color:var(--color-brand-primary)]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold font-heading tracking-tight">Tenancy Agreement</h1>
+            <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Tenancy Agreement Builder</h1>
             <p className="text-muted-foreground text-sm mt-1">
               {tenancy.tenant_name}
             </p>

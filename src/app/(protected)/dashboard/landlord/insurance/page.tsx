@@ -124,13 +124,11 @@ export default function InsurancePage() {
     <div className="space-y-8 p-6">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-          Landlord Insurance
+        <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+          Property Insurance
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Protecting your rental property with the right insurance is essential. As a landlord, a
-          standard home insurance policy will not cover you — you need specialist landlord insurance
-          that accounts for tenancy risks, rental income, and property liability.
+          Protect your portfolio with the right landlord insurance cover across buildings, contents, liability, and rent guarantee.
         </p>
       </div>
 

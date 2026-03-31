@@ -118,7 +118,7 @@ async function PageContent({ params }: Props) {
               {initials}
             </div>
             <div>
-              <h1 className="text-2xl font-bold font-heading tracking-tight">
+              <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                 {application.applicant_name}
               </h1>
               <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">

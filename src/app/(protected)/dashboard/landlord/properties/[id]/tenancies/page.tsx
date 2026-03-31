@@ -67,7 +67,7 @@ async function PageContent(
             <Users className="size-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
               Tenancy History
             </h1>
             <p className="text-sm text-muted-foreground">

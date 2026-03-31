@@ -263,11 +263,11 @@ export default function CheckInPage() {
             <ClipboardList className="size-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-              Inventory Check-In Report
+            <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+              Inventory Check-In
             </h1>
             <p className="text-sm text-muted-foreground">
-              Document each room&apos;s condition at the start of the tenancy
+              {propertyAddress || "Document each room\u2019s condition at the start of the tenancy"}
             </p>
           </div>
         </div>

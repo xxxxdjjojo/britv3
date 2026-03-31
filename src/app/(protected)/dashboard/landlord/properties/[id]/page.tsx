@@ -69,7 +69,7 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
       {/* Property Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+          <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
             {property.address_line_1}
           </h1>
           <p className="flex items-center gap-1.5 mt-1 text-sm text-neutral-500">

@@ -235,8 +235,8 @@ export default function CreateListingPage(
 
       {/* Header */}
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
-          Create Rental Listing
+        <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+          Create New Listing
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Publish this property as a rental listing on Britestate.
