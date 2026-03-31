@@ -274,6 +274,7 @@ export default function BlogPage({
           <input
             type="email"
             placeholder="Your email address"
+            aria-label="Email address for newsletter"
             className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 font-body text-sm text-white placeholder:text-white/50 outline-none focus:ring-2 focus:ring-white/30"
           />
           <button className="rounded-lg bg-white px-4 py-2 font-body text-sm font-medium text-brand-primary hover:bg-white/90 focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2">

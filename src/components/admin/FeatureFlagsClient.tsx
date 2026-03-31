@@ -75,7 +75,7 @@ function FlagRow({ flag }: { flag: FeatureFlag }) {
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-mono font-body text-sm font-medium text-foreground">
+            <span className="font-mono text-sm font-medium text-foreground">
               {flag.key}
             </span>
             {flag.allowed_roles && flag.allowed_roles.length > 0 && (
