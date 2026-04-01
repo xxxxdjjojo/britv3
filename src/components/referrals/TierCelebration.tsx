@@ -78,12 +78,12 @@ export function TierCelebration({ show, tierName, onComplete }: Props) {
         aria-hidden="true"
       />
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20">
-        <div className="animate-bounce rounded-2xl bg-white p-8 text-center shadow-2xl">
+        <div className="animate-bounce rounded-2xl bg-surface-container-lowest p-8 text-center shadow-2xl">
           <p className="text-4xl">🎉</p>
-          <h2 className="mt-2 text-2xl font-bold text-neutral-900">
+          <h2 className="mt-2 text-2xl font-bold text-on-surface">
             You reached {tierName}!
           </h2>
-          <p className="mt-1 text-sm text-neutral-600">
+          <p className="mt-1 text-sm text-[--color-on-surface-variant]">
             Keep referring to unlock more rewards
           </p>
         </div>

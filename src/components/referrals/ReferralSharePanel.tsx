@@ -38,9 +38,9 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
   const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`;
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-      <h2 className="mb-2 text-lg font-bold text-neutral-900">Share Your Link</h2>
-      <p className="mb-4 text-sm text-neutral-500">
+    <div className="rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest p-6 shadow-sm">
+      <h2 className="mb-2 text-lg font-bold text-on-surface">Share Your Link</h2>
+      <p className="mb-4 text-sm text-[--color-on-surface-variant]">
         Every tradesperson you refer earns you BOTH 1 month free.
       </p>
 
@@ -50,13 +50,13 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
           readOnly
           type="text"
           value={referralUrl}
-          className="flex-1 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700 focus:outline-none"
+          className="flex-1 rounded-lg border border-[--color-outline-variant] bg-[--color-surface-container-low] px-3 py-2 text-sm text-on-surface focus:outline-none"
           onFocus={(e) => e.target.select()}
         />
         <button
           type="button"
           onClick={handleCopy}
-          className="shrink-0 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#2D7A5F]"
+          className="shrink-0 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[--color-brand-primary-light]"
         >
           {copied ? "Copied!" : "Copy Link"}
         </button>
@@ -69,14 +69,14 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "whatsapp" })}
-          className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100"
+          className="inline-flex items-center gap-2 rounded-lg border border-brand-primary/20 bg-brand-primary-lighter px-4 py-2 text-sm font-medium text-brand-primary transition-colors hover:bg-brand-primary-lighter/80"
         >
           WhatsApp
         </a>
         <a
           href={`mailto:?subject=${emailSubject}&body=${emailBody}`}
           onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "email" })}
-          className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
+          className="inline-flex items-center gap-2 rounded-lg border border-[--color-outline-variant] bg-[--color-surface-container-low] px-4 py-2 text-sm font-medium text-on-surface transition-colors hover:bg-[--color-surface-container-high]"
         >
           Email
         </a>
@@ -92,7 +92,7 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
         <button
           type="button"
           onClick={() => setShowQr(!showQr)}
-          className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
+          className="inline-flex items-center gap-2 rounded-lg border border-[--color-outline-variant] bg-[--color-surface-container-low] px-4 py-2 text-sm font-medium text-on-surface transition-colors hover:bg-[--color-surface-container-high]"
         >
           {showQr ? "Hide QR" : "QR Code"}
         </button>
@@ -100,14 +100,14 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
 
       {/* QR Code (toggle) */}
       {showQr && (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-lg border border-neutral-100 bg-neutral-50 p-6">
+        <div className="mt-4 flex flex-col items-center gap-3 rounded-lg border border-[--color-outline-variant] bg-[--color-surface-container-low] p-6">
           <QRCodeSVG
             value={referralUrl}
             size={200}
             level="M"
             className="rounded-lg"
           />
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-[--color-on-surface-variant]">
             Scan or screenshot to share on-site
           </p>
         </div>

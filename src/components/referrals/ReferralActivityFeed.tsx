@@ -10,8 +10,8 @@ type Props = Readonly<{
 }>;
 
 const STATUS_CONFIG: Record<ReferralStatus, { label: string; className: string }> = {
-  pending: { label: "Pending", className: "bg-neutral-100 text-neutral-600" },
-  rewarded: { label: "Rewarded", className: "bg-green-100 text-green-700" },
+  pending: { label: "Pending", className: "bg-[--color-surface-container-low] text-[--color-on-surface-variant]" },
+  rewarded: { label: "Rewarded", className: "bg-brand-primary-lighter text-brand-primary" },
 };
 
 function formatDate(iso: string): string {
@@ -27,32 +27,32 @@ export function ReferralActivityFeed({ referrals, totalRewardsPence, hasMore, on
     <div className="space-y-6">
       {/* Stats row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-neutral-200 bg-white p-5 text-center shadow-sm">
-          <p className="text-3xl font-bold text-neutral-900">{referrals.length}</p>
-          <p className="mt-1 text-sm text-neutral-500">Total Referrals</p>
+        <div className="rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest p-5 text-center shadow-sm">
+          <p className="text-3xl font-bold text-on-surface">{referrals.length}</p>
+          <p className="mt-1 text-sm text-[--color-on-surface-variant]">Total Referrals</p>
         </div>
-        <div className="rounded-xl border border-neutral-200 bg-white p-5 text-center shadow-sm">
-          <p className="text-3xl font-bold text-neutral-900">
+        <div className="rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest p-5 text-center shadow-sm">
+          <p className="text-3xl font-bold text-on-surface">
             {referrals.filter((r) => r.status === "rewarded").length}
           </p>
-          <p className="mt-1 text-sm text-neutral-500">Successful</p>
+          <p className="mt-1 text-sm text-[--color-on-surface-variant]">Successful</p>
         </div>
-        <div className="rounded-xl border border-neutral-200 bg-white p-5 text-center shadow-sm">
-          <p className="text-3xl font-bold text-green-600">
+        <div className="rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest p-5 text-center shadow-sm">
+          <p className="text-3xl font-bold text-brand-primary">
             £{Math.floor(totalRewardsPence / 100)}
           </p>
-          <p className="mt-1 text-sm text-neutral-500">Total Earned</p>
+          <p className="mt-1 text-sm text-[--color-on-surface-variant]">Total Earned</p>
         </div>
       </div>
 
       {/* Activity table */}
-      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm">
-        <h2 className="border-b border-neutral-100 px-6 py-4 text-lg font-semibold text-neutral-900">
+      <div className="rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest shadow-sm">
+        <h2 className="border-b border-[--color-outline-variant] px-6 py-4 text-lg font-semibold text-on-surface">
           Referral Activity
         </h2>
         {referrals.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-[--color-on-surface-variant]">
               No referrals yet. Share your link to get started!
             </p>
           </div>
@@ -60,27 +60,27 @@ export function ReferralActivityFeed({ referrals, totalRewardsPence, hasMore, on
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-neutral-100 bg-neutral-50">
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <tr className="border-b border-[--color-outline-variant] bg-[--color-surface-container-low]">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[--color-on-surface-variant]">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[--color-on-surface-variant]">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[--color-on-surface-variant]">
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100">
+              <tbody className="divide-y divide-[--color-outline-variant]">
                 {referrals.map((referral) => {
                   const config = STATUS_CONFIG[referral.status];
                   return (
-                    <tr key={referral.id} className="transition-colors hover:bg-neutral-50">
-                      <td className="px-6 py-4 text-neutral-700">
+                    <tr key={referral.id} className="transition-colors hover:bg-[--color-surface-container-low]">
+                      <td className="px-6 py-4 text-on-surface">
                         {referral.referred_name ?? "Tradesperson"}
                       </td>
-                      <td className="px-6 py-4 tabular-nums text-neutral-500">
+                      <td className="px-6 py-4 tabular-nums text-[--color-on-surface-variant]">
                         {formatDate(referral.created_at)}
                       </td>
                       <td className="px-6 py-4">
@@ -100,11 +100,11 @@ export function ReferralActivityFeed({ referrals, totalRewardsPence, hasMore, on
 
         {/* Show all button when truncated */}
         {hasMore && onShowAll && (
-          <div className="border-t border-neutral-100 px-6 py-3 text-center">
+          <div className="border-t border-[--color-outline-variant] px-6 py-3 text-center">
             <button
               type="button"
               onClick={onShowAll}
-              className="text-sm font-medium text-[#1B4D3E] hover:underline"
+              className="text-sm font-medium text-brand-primary hover:underline"
             >
               Show all referrals
             </button>

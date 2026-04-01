@@ -14,9 +14,9 @@ export function TierProgressBar({ currentTier, successfulReferrals }: Props) {
   const remaining = next ? next.threshold - successfulReferrals : 0;
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-neutral-900">Referral Tier</h2>
+        <h2 className="text-lg font-bold text-on-surface">Referral Tier</h2>
         {currentTier !== "none" && (
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
@@ -40,7 +40,7 @@ export function TierProgressBar({ currentTier, successfulReferrals }: Props) {
               {idx > 0 && (
                 <div
                   className={`h-0.5 w-8 sm:w-16 ${
-                    isReached ? "bg-[#1B4D3E]" : "bg-neutral-200"
+                    isReached ? "bg-brand-primary" : "bg-[--color-outline-variant]"
                   }`}
                 />
               )}
@@ -48,15 +48,15 @@ export function TierProgressBar({ currentTier, successfulReferrals }: Props) {
                 <div
                   className={`flex size-8 items-center justify-center rounded-full text-xs font-bold ${
                     isReached
-                      ? "bg-[#1B4D3E] text-white"
+                      ? "bg-brand-primary text-white"
                       : isCurrent
-                        ? "border-2 border-[#1B4D3E] text-[#1B4D3E]"
-                        : "border-2 border-neutral-200 text-neutral-400"
+                        ? "border-2 border-brand-primary text-brand-primary"
+                        : "border-2 border-[--color-outline-variant] text-[--color-on-surface-variant]"
                   }`}
                 >
                   {config.threshold}
                 </div>
-                <span className="text-[10px] text-neutral-500">
+                <span className="text-[10px] text-[--color-on-surface-variant]">
                   {config.displayName}
                 </span>
               </div>
@@ -67,13 +67,13 @@ export function TierProgressBar({ currentTier, successfulReferrals }: Props) {
 
       {/* Next tier message */}
       {next && (
-        <p className="mt-4 text-sm text-neutral-600">
+        <p className="mt-4 text-sm text-[--color-on-surface-variant]">
           <span className="font-semibold">{remaining}</span> more referral{remaining !== 1 ? "s" : ""} to reach{" "}
           <span className="font-semibold">{TIER_CONFIGS[next.tier].displayName}</span>!
         </p>
       )}
       {!next && currentTier === "partner" && (
-        <p className="mt-4 text-sm font-medium text-[#1B4D3E]">
+        <p className="mt-4 text-sm font-medium text-brand-primary">
           You&apos;ve reached the highest tier. Thank you for building the Britestate community!
         </p>
       )}
