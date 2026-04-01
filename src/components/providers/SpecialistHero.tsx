@@ -109,7 +109,7 @@ function AvatarFallback({ name, ringClass }: Readonly<{ name: string | null; rin
     : "?";
   return (
     <div
-      className={`w-full h-full flex items-center justify-center text-2xl font-bold text-white ${ringClass.split(" ")[1] ?? "bg-slate-200"}`}
+      className={`w-full h-full flex items-center justify-center text-2xl font-bold text-white ${ringClass.split(" ")[1] ?? "bg-[--color-surface-container-high]"}`}
     >
       {initials}
     </div>
@@ -146,7 +146,7 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
   const trustAccreditations = accreditations.map((a) => ({ type: a.type, number: a.number }));
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8 mb-8">
+    <div className="bg-surface-container-lowest dark:bg-slate-900 rounded-xl border border-[--color-outline-variant] dark:border-slate-800 p-8 mb-8">
       <div className="flex flex-col sm:flex-row gap-6">
         {/* Avatar with ring */}
         <div className="relative shrink-0">
@@ -175,29 +175,29 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
 
         {/* Identity block */}
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl font-bold text-on-surface dark:text-white tracking-tight">
             {provider.business_name}
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 mt-0.5">{categoryLabel}</p>
+          <p className="text-lg text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] mt-0.5">{categoryLabel}</p>
 
           {/* Stats row */}
-          <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-slate-600 dark:text-slate-400">
+          <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
             {avg !== null && (
               <span className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <strong className="text-slate-900 dark:text-white">{avg.toFixed(1)}</strong>
+                <Star className="w-4 h-4 fill-brand-secondary text-brand-secondary" />
+                <strong className="text-on-surface dark:text-white">{avg.toFixed(1)}</strong>
                 <span>({totalReviews} reviews)</span>
               </span>
             )}
             {provider.city && (
               <span className="flex items-center gap-1">
-                <MapPin className="w-4 h-4 text-slate-400" />
+                <MapPin className="w-4 h-4 text-[--color-on-surface-variant]" />
                 {provider.city}
               </span>
             )}
             {provider.years_experience !== null && (
               <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4 text-slate-400" />
+                <Clock className="w-4 h-4 text-[--color-on-surface-variant]" />
                 {provider.years_experience} years experience
               </span>
             )}
@@ -251,7 +251,7 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
             {provider.phone && (
               <a
                 href={`tel:${provider.phone}`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 border border-[--color-outline-variant] dark:border-slate-600 text-on-surface dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-[--color-surface-container-low] dark:hover:bg-slate-800 transition-colors"
               >
                 Call
               </a>

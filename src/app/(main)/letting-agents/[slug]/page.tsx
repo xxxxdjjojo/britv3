@@ -101,7 +101,7 @@ export default async function LettingAgentProfilePage({ params }: Params) {
       : null;
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] dark:bg-[#0f1a17]">
+    <div className="min-h-screen bg-surface dark:bg-[#0f1a17]">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back link */}
         <Link
@@ -113,12 +113,12 @@ export default async function LettingAgentProfilePage({ params }: Params) {
         </Link>
 
         {/* Hero section */}
-        <div className="bg-white dark:bg-[#1a2822] rounded-2xl shadow-sm overflow-hidden mb-8">
+        <div className="bg-surface-container-lowest dark:bg-[#1a2822] rounded-2xl shadow-sm overflow-hidden mb-8">
           <div className="bg-gradient-to-r from-brand-primary to-[#003629] h-32 sm:h-40" />
           <div className="px-6 sm:px-10 pb-8 -mt-12 relative">
             <div className="flex flex-col sm:flex-row sm:items-end gap-5">
               {/* Logo */}
-              <div className="w-24 h-24 rounded-2xl bg-white dark:bg-[#1a2822] shadow-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+              <div className="w-24 h-24 rounded-2xl bg-surface-container-lowest dark:bg-[#1a2822] shadow-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                 {logoUrl ? (
                   <Image
                     src={logoUrl}
@@ -141,13 +141,13 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                   </span>
                 </div>
                 <h1
-                  className="font-heading text-2xl sm:text-3xl font-bold text-[#1a1a1a] dark:text-white"
+                  className="font-heading text-2xl sm:text-3xl font-bold text-on-surface dark:text-white"
                   style={{ letterSpacing: "-0.02em" }}
                 >
                   {agencyName}
                 </h1>
                 {city && (
-                  <p className="flex items-center gap-1.5 text-sm text-[#6b7280] dark:text-[#9ca3af] mt-1">
+                  <p className="flex items-center gap-1.5 text-sm text-[--color-on-surface-variant] dark:text-[#9ca3af] mt-1">
                     <MapPin className="h-4 w-4" />
                     {city}
                   </p>
@@ -155,10 +155,10 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                 {avgRating !== null && (
                   <div className="flex items-center gap-1.5 mt-2">
                     <Star className="h-4 w-4 fill-brand-secondary text-brand-secondary" />
-                    <span className="text-sm font-semibold text-[#1a1a1a] dark:text-white">
+                    <span className="text-sm font-semibold text-on-surface dark:text-white">
                       {avgRating.toFixed(1)}
                     </span>
-                    <span className="text-xs text-[#6b7280]">
+                    <span className="text-xs text-[--color-on-surface-variant]">
                       ({reviews.length} review{reviews.length !== 1 ? "s" : ""})
                     </span>
                   </div>
@@ -173,19 +173,19 @@ export default async function LettingAgentProfilePage({ params }: Params) {
           {/* Main content */}
           <div className="lg:col-span-8 space-y-8">
             {/* About */}
-            <section className="bg-white dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
-              <h2 className="font-heading text-xl font-bold text-[#1a1a1a] dark:text-white mb-4">
+            <section className="bg-surface-container-lowest dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
+              <h2 className="font-heading text-xl font-bold text-on-surface dark:text-white mb-4">
                 About {agencyName}
               </h2>
-              <p className="text-[#6b7280] dark:text-[#9ca3af] leading-relaxed">
+              <p className="text-[--color-on-surface-variant] dark:text-[#9ca3af] leading-relaxed">
                 {profile.bio ??
                   `${agencyName} is a trusted letting agent on Britestate, specialising in residential lettings and property management${city ? ` in ${city}` : ""}.`}
               </p>
             </section>
 
             {/* Services */}
-            <section className="bg-white dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
-              <h2 className="font-heading text-xl font-bold text-[#1a1a1a] dark:text-white mb-4">
+            <section className="bg-surface-container-lowest dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
+              <h2 className="font-heading text-xl font-bold text-on-surface dark:text-white mb-4">
                 Letting Services
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -208,13 +208,13 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                 ].map((s) => (
                   <div
                     key={s.title}
-                    className="bg-[#f4f3f2] dark:bg-[#0f1a17] rounded-xl p-5"
+                    className="bg-[--color-surface-container-low] dark:bg-[#0f1a17] rounded-xl p-5"
                   >
                     <div className="text-brand-primary mb-3">{s.icon}</div>
-                    <h3 className="font-heading font-semibold text-[#1a1a1a] dark:text-white text-sm mb-1">
+                    <h3 className="font-heading font-semibold text-on-surface dark:text-white text-sm mb-1">
                       {s.title}
                     </h3>
-                    <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] leading-relaxed">
+                    <p className="text-xs text-[--color-on-surface-variant] dark:text-[#9ca3af] leading-relaxed">
                       {s.desc}
                     </p>
                   </div>
@@ -224,8 +224,8 @@ export default async function LettingAgentProfilePage({ params }: Params) {
 
             {/* Areas covered */}
             {areasCovered.length > 0 && (
-              <section className="bg-white dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
-                <h2 className="font-heading text-xl font-bold text-[#1a1a1a] dark:text-white mb-4">
+              <section className="bg-surface-container-lowest dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
+                <h2 className="font-heading text-xl font-bold text-on-surface dark:text-white mb-4">
                   Areas Covered
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -243,12 +243,12 @@ export default async function LettingAgentProfilePage({ params }: Params) {
             )}
 
             {/* Reviews */}
-            <section className="bg-white dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
-              <h2 className="font-heading text-xl font-bold text-[#1a1a1a] dark:text-white mb-4">
+            <section className="bg-surface-container-lowest dark:bg-[#1a2822] rounded-2xl p-6 sm:p-8 shadow-sm">
+              <h2 className="font-heading text-xl font-bold text-on-surface dark:text-white mb-4">
                 Reviews
               </h2>
               {reviews.length === 0 ? (
-                <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">
+                <p className="text-sm text-[--color-on-surface-variant] dark:text-[#9ca3af]">
                   No reviews yet. Be the first to review {agencyName}.
                 </p>
               ) : (
@@ -260,7 +260,7 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                     return (
                       <div
                         key={idx}
-                        className="bg-[#f4f3f2] dark:bg-[#0f1a17] rounded-xl p-5"
+                        className="bg-[--color-surface-container-low] dark:bg-[#0f1a17] rounded-xl p-5"
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <div className="flex items-center gap-0.5">
@@ -275,7 +275,7 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                               />
                             ))}
                           </div>
-                          <span className="text-xs text-[#6b7280]">
+                          <span className="text-xs text-[--color-on-surface-variant]">
                             {new Date(review.created_at).toLocaleDateString(
                               "en-GB",
                               {
@@ -286,11 +286,11 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                             )}
                           </span>
                         </div>
-                        <p className="text-sm text-[#404945] dark:text-[#9ca3af] leading-relaxed">
+                        <p className="text-sm text-[--color-on-surface-variant] dark:text-[#9ca3af] leading-relaxed">
                           {review.review_text}
                         </p>
                         {reviewer?.full_name && (
-                          <p className="text-xs text-[#6b7280] mt-2">
+                          <p className="text-xs text-[--color-on-surface-variant] mt-2">
                             -- {reviewer.full_name}
                           </p>
                         )}
@@ -305,8 +305,8 @@ export default async function LettingAgentProfilePage({ params }: Params) {
           {/* Sidebar */}
           <div className="lg:col-span-4 space-y-6">
             {/* Contact card */}
-            <div className="bg-white dark:bg-[#1a2822] rounded-2xl p-6 shadow-sm sticky top-24">
-              <h3 className="font-heading font-bold text-[#1a1a1a] dark:text-white mb-4">
+            <div className="bg-surface-container-lowest dark:bg-[#1a2822] rounded-2xl p-6 shadow-sm sticky top-24">
+              <h3 className="font-heading font-bold text-on-surface dark:text-white mb-4">
                 Contact {agencyName}
               </h3>
 
@@ -314,7 +314,7 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                 {profile.phone && (
                   <a
                     href={`tel:${profile.phone}`}
-                    className="flex items-center gap-3 text-sm text-[#404945] dark:text-[#9ca3af] hover:text-brand-primary transition-colors"
+                    className="flex items-center gap-3 text-sm text-[--color-on-surface-variant] dark:text-[#9ca3af] hover:text-brand-primary transition-colors"
                   >
                     <Phone className="h-4 w-4 text-brand-primary/60" />
                     {profile.phone}
@@ -323,7 +323,7 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                 {profile.email && (
                   <a
                     href={`mailto:${profile.email}`}
-                    className="flex items-center gap-3 text-sm text-[#404945] dark:text-[#9ca3af] hover:text-brand-primary transition-colors"
+                    className="flex items-center gap-3 text-sm text-[--color-on-surface-variant] dark:text-[#9ca3af] hover:text-brand-primary transition-colors"
                   >
                     <Mail className="h-4 w-4 text-brand-primary/60" />
                     {profile.email}
@@ -334,7 +334,7 @@ export default async function LettingAgentProfilePage({ params }: Params) {
                     href={profile.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-sm text-[#404945] dark:text-[#9ca3af] hover:text-brand-primary transition-colors"
+                    className="flex items-center gap-3 text-sm text-[--color-on-surface-variant] dark:text-[#9ca3af] hover:text-brand-primary transition-colors"
                   >
                     <Globe className="h-4 w-4 text-brand-primary/60" />
                     Website

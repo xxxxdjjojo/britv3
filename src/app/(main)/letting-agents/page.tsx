@@ -455,7 +455,7 @@ export default async function LettingAgentsPage({ searchParams }: Props) {
             </p>
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 font-semibold text-brand-primary hover:bg-surface-container-low active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 rounded-xl bg-surface-container-lowest px-8 py-3.5 font-semibold text-brand-primary hover:bg-surface-container-low active:scale-95 transition-all"
             >
               Create Your Agent Profile
               <ArrowRight className="h-4 w-4" />

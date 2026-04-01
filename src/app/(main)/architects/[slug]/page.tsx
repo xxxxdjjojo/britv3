@@ -60,7 +60,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-surface dark:bg-slate-950">
         <ProviderHero provider={provider} category="architect" />
         <main className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -72,7 +72,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
                     label: "Overview",
                     content: (
                       <section className="space-y-6">
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                        <h2 className="text-xl font-bold text-on-surface dark:text-white">
                           Professional Credentials
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -83,7 +83,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
                               <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide">
                                 RIBA Member
                               </p>
-                              <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
+                              <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
                                 Royal Institute of British Architects
                               </p>
                             </div>
@@ -91,25 +91,25 @@ export default async function ArchitectProfilePage({ params }: Params) {
                           {(provider.qualifications ?? []).some((q) =>
                             q.toLowerCase().startsWith("arb"),
                           ) && (
-                            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 rounded-xl">
-                              <p className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">
+                            <div className="bg-brand-primary-lighter dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 rounded-xl">
+                              <p className="text-xs font-bold text-[--color-brand-primary-light] dark:text-green-400 uppercase tracking-wide">
                                 ARB Registered
                               </p>
-                              <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
+                              <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
                                 Architects Registration Board
                               </p>
                             </div>
                           )}
                           {provider.years_experience !== null &&
                             provider.years_experience > 0 && (
-                              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl">
-                                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                              <div className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 p-4 rounded-xl">
+                                <p className="text-xs font-bold text-[--color-on-surface-variant] dark:text-slate-400 uppercase tracking-wide">
                                   Experience
                                 </p>
-                                <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                                <p className="text-2xl font-bold text-on-surface dark:text-white mt-1">
                                   {provider.years_experience}
                                 </p>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-[--color-on-surface-variant]">
                                   years in practice
                                 </p>
                               </div>
@@ -119,7 +119,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
                           (q) => !q.includes(":"),
                         ).length > 0 && (
                           <div>
-                            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                            <h3 className="text-sm font-bold text-on-surface dark:text-slate-300 mb-2">
                               Specialisms
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -128,7 +128,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
                                 .map((q) => (
                                   <span
                                     key={q}
-                                    className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-full capitalize"
+                                    className="px-3 py-1 bg-[--color-surface-container-low] dark:bg-slate-800 text-on-surface dark:text-slate-300 text-xs font-medium rounded-full capitalize"
                                   >
                                     {q.replace(/_/g, " ")}
                                   </span>
