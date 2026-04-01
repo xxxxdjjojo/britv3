@@ -72,7 +72,7 @@ function scoreVariant(score: number): {
   if (score >= 0.8)
     return {
       badge: "bg-primary-container/20 text-brand-primary border border-outline-variant/20",
-      dotColor: "bg-emerald-500",
+      dotColor: "bg-brand-primary",
       label: `${Math.round(score * 100)}% Match Confidence`,
     };
   if (score >= 0.6)
@@ -728,7 +728,7 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
                   {result.match_reasons.map((reason, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-neutral-700">
                       <CheckCircle2
-                        className="mt-0.5 size-3.5 shrink-0 text-emerald-600"
+                        className="mt-0.5 size-3.5 shrink-0 text-brand-primary"
                         strokeWidth={1.5}
                       />
                       {reason}

@@ -46,7 +46,7 @@ function statusBadge(status: Viewing["status"]): { label: string; className: str
       return {
         label: "Confirmed",
         className: "bg-primary-container/20 text-brand-primary",
-        dot: "bg-emerald-500",
+        dot: "bg-brand-primary",
       };
     case "rescheduled":
       return {
@@ -490,7 +490,7 @@ export default function ViewingsPage({
             </h3>
             <div className="space-y-3">
               {[
-                { dot: "bg-emerald-500", label: "Confirmed" },
+                { dot: "bg-brand-primary", label: "Confirmed" },
                 { dot: "bg-amber-500", label: "Pending Confirmation" },
                 { dot: "bg-zinc-400", label: "Completed" },
                 { dot: "bg-red-500", label: "Cancelled" },

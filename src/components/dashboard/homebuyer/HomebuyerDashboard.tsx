@@ -83,8 +83,8 @@ const MOCK_PROPERTIES = [
 const MOCK_ACTIVITY = [
   {
     id: 1,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-700",
+    iconBg: "bg-primary-container/20",
+    iconColor: "text-brand-primary",
     Icon: TrendingDown,
     title: "Price Reduction",
     description: "Linkfield Road dropped to £495,000",
@@ -184,7 +184,7 @@ export function HomebuyerDashboard({
           </Link>
         </div>
         {/* Decorative orb */}
-        <div className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-brand-primary/10 blur-3xl" />
       </section>
 
       {/* ── 2. Stats Row ──────────────────────────────────────────────── */}
@@ -237,7 +237,7 @@ export function HomebuyerDashboard({
             {/* Next — brand-primary-dark (primary = #003629) */}
             <button
               type="button"
-              className="flex size-10 items-center justify-center rounded-full bg-brand-primary-dark text-white transition-opacity hover:opacity-90"
+              className="flex size-10 items-center justify-center rounded-full bg-brand-primary text-white transition-opacity hover:opacity-90"
               aria-label="Next properties"
             >
               <ChevronRight className="size-5" strokeWidth={1.5} />

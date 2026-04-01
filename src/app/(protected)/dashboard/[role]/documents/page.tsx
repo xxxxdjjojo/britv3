@@ -135,7 +135,7 @@ const STATUS_CONFIG: Record<UserDocument["status"], StatusConfig> = {
   },
   pending_review: {
     label: "Under Review",
-    badgeClass: "bg-[#fdcd74] text-[#785601]",
+    badgeClass: "bg-secondary-container text-on-secondary-container",
   },
   verified: {
     label: "Verified",
@@ -143,7 +143,7 @@ const STATUS_CONFIG: Record<UserDocument["status"], StatusConfig> = {
   },
   rejected: {
     label: "Rejected",
-    badgeClass: "bg-[#ffdad6] text-[#93000a]",
+    badgeClass: "bg-error-container text-on-error-container",
   },
 };
 
@@ -245,14 +245,14 @@ function DocumentTableRow({
 
   const iconBg =
     doc.status === "rejected"
-      ? "bg-[#ffdad6]/20"
+      ? "bg-error-container/20"
       : doc.status === "pending_review"
-        ? "bg-[#fdcd74]/20"
+        ? "bg-secondary-container/20"
         : "bg-primary-container/20";
 
   const iconColor =
     doc.status === "rejected"
-      ? "text-[#93000a]"
+      ? "text-error"
       : doc.status === "pending_review"
         ? "text-[#7b5804]"
         : "text-brand-primary";

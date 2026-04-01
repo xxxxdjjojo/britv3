@@ -53,7 +53,7 @@ async function PageContent() {
         ? `${kpis.views_change_pct >= 0 ? "+" : ""}${kpis.views_change_pct}%`
         : null,
       badgeColor: (kpis.views_change_pct ?? 0) >= 0
-        ? "text-emerald-600 bg-primary-container/20"
+        ? "text-brand-primary bg-primary-container/20"
         : "text-rose-600 bg-rose-50",
       iconBg: "bg-[--color-brand-primary-lighter]",
       iconColor: "text-[--color-brand-primary]",
@@ -81,7 +81,7 @@ async function PageContent() {
         ? `${kpis.enquiries_change_pct >= 0 ? "+" : ""}${kpis.enquiries_change_pct}%`
         : null,
       badgeColor: (kpis.enquiries_change_pct ?? 0) >= 0
-        ? "text-emerald-600 bg-primary-container/20"
+        ? "text-brand-primary bg-primary-container/20"
         : "text-rose-600 bg-rose-50",
       iconBg: "bg-[--color-brand-accent-light]",
       iconColor: "text-[--color-brand-accent]",
