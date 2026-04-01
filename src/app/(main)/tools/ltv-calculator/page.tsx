@@ -26,28 +26,6 @@ const RELATED_TOOLS = [
   { href: "/tools/remortgage-calculator", label: "Remortgage Calculator" },
 ];
 
-const FAQS = [
-  {
-    q: "What is LTV and why does it matter?",
-    a: "LTV (Loan-to-Value) is the ratio of your mortgage loan to the value of your property, expressed as a percentage. A lower LTV signals less risk to lenders, which typically unlocks better interest rates and broader product choice.",
-  },
-  {
-    q: "What is a good LTV for a mortgage?",
-    a: "60% LTV or below typically secures the best available mortgage rates. 75–80% LTV is considered typical for many buyers and still attracts competitive deals. Higher LTVs are possible but come with higher rates and fewer product options.",
-  },
-  {
-    q: "Can my LTV change over time?",
-    a: "Yes. As you repay your mortgage the outstanding balance falls, improving your LTV. Rising property values also reduce your LTV, while falling values can increase it. You can recalculate whenever you remortgage or review your deal.",
-  },
-  {
-    q: "How does LTV affect my mortgage rate?",
-    a: "Lenders price risk through LTV bands. Dropping from 85% to 80% LTV, for instance, can unlock a significantly lower rate tier — sometimes saving thousands of pounds over a two- or five-year fixed period.",
-  },
-  {
-    q: "What if my LTV is above 90%?",
-    a: "Products are more limited above 90% LTV. The Government's Mortgage Guarantee Scheme enables some lenders to offer 95% LTV mortgages. A larger deposit or a gifted deposit from family can help bring your LTV down to a more competitive band.",
-  },
-];
 
 export default function LtvCalculatorPage() {
   return (
@@ -96,53 +74,27 @@ export default function LtvCalculatorPage() {
           <div className="space-y-10 lg:col-span-8">
             <LtvCalculator />
 
-            {/* How LTV Works + FAQ — 2 column layout */}
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {/* How LTV works */}
-              <div className="rounded-xl border border-neutral-100 bg-white p-7 dark:border-neutral-800 dark:bg-neutral-900">
-                <h3 className="mb-4 font-heading text-base font-semibold text-neutral-900 dark:text-white">
-                  How LTV works
-                </h3>
-                <div className="space-y-3 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
-                  <p>
-                    LTV is calculated by dividing your mortgage amount by the
-                    property value and multiplying by 100. A £180,000 mortgage
-                    on a £300,000 property gives an LTV of 60%.
-                  </p>
-                  <p>
-                    Lenders group LTV into rate tiers — each tier has a distinct
-                    set of products. Crossing a tier boundary (e.g. from 80% to
-                    75%) can meaningfully reduce your interest rate.
-                  </p>
-                  <p>
-                    Saving a slightly larger deposit to clear a tier boundary is
-                    often one of the highest-return financial decisions a buyer
-                    can make.
-                  </p>
-                </div>
-              </div>
-
-              {/* FAQ accordion */}
-              <div>
-                <h3 className="mb-4 font-heading text-base font-semibold text-neutral-900 dark:text-white">
-                  Frequently Asked Questions
-                </h3>
-                <div className="space-y-2">
-                  {FAQS.map((faq) => (
-                    <details
-                      key={faq.q}
-                      className="group rounded-lg border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-neutral-900"
-                    >
-                      <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-neutral-800 marker:content-none dark:text-neutral-200 flex items-center justify-between">
-                        {faq.q}
-                        <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400 transition-transform group-open:rotate-90" />
-                      </summary>
-                      <p className="px-4 pb-4 text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
-                        {faq.a}
-                      </p>
-                    </details>
-                  ))}
-                </div>
+            {/* How LTV Works — SEO content (FAQ is inside LtvCalculator component) */}
+            <div className="rounded-xl border border-neutral-100 bg-white p-7 dark:border-neutral-800 dark:bg-neutral-900">
+              <h3 className="mb-4 font-heading text-base font-semibold text-neutral-900 dark:text-white">
+                How LTV works
+              </h3>
+              <div className="space-y-3 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400">
+                <p>
+                  LTV is calculated by dividing your mortgage amount by the
+                  property value and multiplying by 100. A £180,000 mortgage
+                  on a £300,000 property gives an LTV of 60%.
+                </p>
+                <p>
+                  Lenders group LTV into rate tiers — each tier has a distinct
+                  set of products. Crossing a tier boundary (e.g. from 80% to
+                  75%) can meaningfully reduce your interest rate.
+                </p>
+                <p>
+                  Saving a slightly larger deposit to clear a tier boundary is
+                  often one of the highest-return financial decisions a buyer
+                  can make.
+                </p>
               </div>
             </div>
           </div>

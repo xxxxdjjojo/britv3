@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Financial Tools Hub", () => {
-  test("lists all 10 calculators with working links", async ({ page }) => {
+  test("lists all 14 calculators with working links", async ({ page }) => {
     await page.goto("/tools");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
@@ -16,6 +16,10 @@ test.describe("Financial Tools Hub", () => {
       "Remortgage Calculator",
       "Moving Cost Estimator",
       "First-Time Buyer Guide",
+      "Home Equity Calculator",
+      "Investment Calculator",
+      "LTV Calculator",
+      "Overpayment Calculator",
     ];
 
     for (const name of toolLinks) {
@@ -409,6 +413,150 @@ test.describe("Mortgage Comparison", () => {
   });
 });
 
+test.describe("Equity Calculator", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/tools/equity-calculator");
+  });
+
+  test("renders inputs and equity result", async ({ page }) => {
+    await expect(page.getByText("Property Value").first()).toBeVisible();
+    await expect(page.getByText(/[Ee]quity/).first()).toBeVisible();
+  });
+
+  test("breadcrumbs navigate back to tools", async ({ page }) => {
+    const toolsLink = page.getByRole("link", { name: "Tools" });
+    await expect(toolsLink).toHaveAttribute("href", /\/tools/);
+  });
+});
+
+test.describe("Investment Calculator", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/tools/investment-calculator");
+  });
+
+  test("renders calculator with input fields", async ({ page }) => {
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Investment");
+    await expect(page.getByText("Property Price").first()).toBeVisible();
+    await expect(page.getByText(/Rental Income/).first()).toBeVisible();
+    await expect(page.getByText(/Interest Rate/).first()).toBeVisible();
+  });
+
+  test("shows yield and ROI results", async ({ page }) => {
+    await expect(page.getByText("Annual Cash Flow").first()).toBeVisible();
+    await expect(page.getByText("Net Yield").first()).toBeVisible();
+    await expect(page.getByText("Return on Equity").first()).toBeVisible();
+    await expect(page.getByText("Total ROI").first()).toBeVisible();
+  });
+
+  test("renders FAQ section", async ({ page }) => {
+    await expect(page.getByText("Frequently Asked Questions")).toBeVisible();
+    await expect(page.getByText("What is a good rental yield").first()).toBeVisible();
+  });
+
+  test("CTA links to marketplace for mortgage brokers", async ({ page }) => {
+    const cta = page.getByRole("link", { name: /Find a Mortgage Broker/i });
+    await expect(cta).toHaveAttribute("href", /marketplace/);
+  });
+
+  test("related tools section links to other calculators", async ({ page }) => {
+    await expect(page.getByText("Related Tools")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Rental Yield Calculator/ })).toBeVisible();
+  });
+
+  test("disclaimer is visible", async ({ page }) => {
+    await expect(page.getByText(/illustrative purposes only/i).first()).toBeVisible();
+  });
+});
+
+test.describe("LTV Calculator", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/tools/ltv-calculator");
+  });
+
+  test("renders calculator with input fields", async ({ page }) => {
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("LTV");
+    await expect(page.getByText("Property Value").first()).toBeVisible();
+    await expect(page.getByText("Outstanding Mortgage").first()).toBeVisible();
+  });
+
+  test("shows LTV ratio result", async ({ page }) => {
+    // The LtvCalculator component shows a big percentage result
+    await expect(page.getByText("Loan-to-Value Ratio").first()).toBeVisible();
+    await expect(page.getByText(/Classification/).first()).toBeVisible();
+  });
+
+  test("renders LTV tier reference in sidebar", async ({ page }) => {
+    await expect(page.getByText("LTV Tier Reference")).toBeVisible();
+    await expect(page.getByText("Elite").first()).toBeVisible();
+    await expect(page.getByText("Premier").first()).toBeVisible();
+    await expect(page.getByText("Standard").first()).toBeVisible();
+  });
+
+  test("FAQ section is rendered", async ({ page }) => {
+    // FAQ is inside the LtvCalculator component — may need to scroll
+    await page.getByText("Frequently Asked Questions").first().scrollIntoViewIfNeeded();
+    await expect(page.getByText("Frequently Asked Questions").first()).toBeVisible();
+    await expect(page.getByText("What is LTV and why does it matter").first()).toBeVisible();
+  });
+
+  test("CTA links to marketplace", async ({ page }) => {
+    const cta = page.getByRole("link", { name: /Find a Mortgage Broker/i });
+    await expect(cta).toHaveAttribute("href", /marketplace/);
+  });
+
+  test("related tools section is present", async ({ page }) => {
+    await expect(page.getByText("Related Tools")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Mortgage Calculator/ }).first()).toBeVisible();
+  });
+});
+
+test.describe("Overpayment Calculator", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/tools/overpayment-calculator");
+  });
+
+  test("renders calculator with input fields", async ({ page }) => {
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Overpayment");
+    await expect(page.getByText("Outstanding Balance").first()).toBeVisible();
+    await expect(page.getByText(/Interest Rate/).first()).toBeVisible();
+    await expect(page.getByText("Monthly Overpayment").first()).toBeVisible();
+  });
+
+  test("shows interest saved and time saved results", async ({ page }) => {
+    await expect(page.getByText("Interest Saved").first()).toBeVisible();
+    await expect(page.getByText("Time Saved").first()).toBeVisible();
+  });
+
+  test("ERC-free annual cap section is present", async ({ page }) => {
+    await expect(page.getByText(/ERC-Free Annual Cap/).first()).toBeVisible();
+  });
+
+  test("renders benefits section in sidebar", async ({ page }) => {
+    await expect(page.getByText("Benefits of Overpaying")).toBeVisible();
+    await expect(page.getByText("Save thousands in total interest")).toBeVisible();
+    await expect(page.getByText("Build equity faster")).toBeVisible();
+  });
+
+  test("FAQ section is rendered", async ({ page }) => {
+    await expect(page.getByText("Frequently Asked Questions")).toBeVisible();
+    await expect(page.getByText("How much can I overpay without penalty").first()).toBeVisible();
+  });
+
+  test("CTA links to mortgage comparison", async ({ page }) => {
+    const cta = page.getByRole("link", { name: /Compare Mortgage Rates/i });
+    await expect(cta).toHaveAttribute("href", /mortgage-comparison/);
+  });
+
+  test("related tools section is present", async ({ page }) => {
+    await expect(page.getByText("Related Tools")).toBeVisible();
+    await expect(page.getByRole("link", { name: /LTV Calculator/ })).toBeVisible();
+  });
+
+  test("disclaimer is visible", async ({ page }) => {
+    await expect(page.getByText(/illustrative purposes only/i).first()).toBeVisible();
+  });
+});
+
 test.describe("Financial Tools — Mobile", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -429,6 +577,27 @@ test.describe("Financial Tools — Mobile", () => {
 
   test("affordability calculator fits at 390px", async ({ page }) => {
     await page.goto("/tools/affordability-calculator");
+    const body = page.locator("body");
+    const bodyWidth = await body.evaluate((el) => el.scrollWidth);
+    expect(bodyWidth).toBeLessThanOrEqual(395);
+  });
+
+  test("investment calculator fits at 390px", async ({ page }) => {
+    await page.goto("/tools/investment-calculator");
+    const body = page.locator("body");
+    const bodyWidth = await body.evaluate((el) => el.scrollWidth);
+    expect(bodyWidth).toBeLessThanOrEqual(395);
+  });
+
+  test("ltv calculator fits at 390px", async ({ page }) => {
+    await page.goto("/tools/ltv-calculator");
+    const body = page.locator("body");
+    const bodyWidth = await body.evaluate((el) => el.scrollWidth);
+    expect(bodyWidth).toBeLessThanOrEqual(395);
+  });
+
+  test("overpayment calculator fits at 390px", async ({ page }) => {
+    await page.goto("/tools/overpayment-calculator");
     const body = page.locator("body");
     const bodyWidth = await body.evaluate((el) => el.scrollWidth);
     expect(bodyWidth).toBeLessThanOrEqual(395);
