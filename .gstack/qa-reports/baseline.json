@@ -1,10 +1,12 @@
 {
   "date": "2026-04-01",
   "url": "http://localhost:3000",
-  "healthScore": 92,
+  "branch": "style/stage8-calculators",
+  "healthScore": 85,
   "issues": [
-    { "id": "ISSUE-001", "title": "Pricing redirects to login", "severity": "medium", "category": "functional", "status": "deferred" },
-    { "id": "ISSUE-002", "title": "fetchTopRatedProviders missing column", "severity": "low", "category": "functional", "status": "deferred" }
+    {"id": "ISSUE-001", "title": "Help Centre renders inside dashboard layout when authenticated", "severity": "high", "category": "routing"},
+    {"id": "ISSUE-002", "title": "Error pages redirect to login instead of rendering", "severity": "medium", "category": "routing"},
+    {"id": "ISSUE-003", "title": "PostHog config console errors on all pages", "severity": "low", "category": "console"}
   ],
-  "categoryScores": { "console": 70, "links": 100, "visual": 100, "functional": 97, "ux": 95, "performance": 85, "content": 100, "accessibility": 92 }
+  "categoryScores": {"console": 70, "links": 100, "visual": 95, "functional": 85, "ux": 80, "performance": 80, "content": 95, "accessibility": 90}
 }

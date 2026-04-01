@@ -77,13 +77,13 @@ function scoreVariant(score: number): {
     };
   if (score >= 0.6)
     return {
-      badge: "bg-neutral-50 text-neutral-700 border border-neutral-200",
-      dotColor: "bg-neutral-400",
+      badge: "bg-surface-container-low text-on-surface-variant border border-outline-variant",
+      dotColor: "bg-outline",
       label: `${Math.round(score * 100)}% Match Confidence`,
     };
   return {
-    badge: "bg-neutral-50 text-neutral-500 border border-neutral-200",
-    dotColor: "bg-neutral-300",
+    badge: "bg-surface-container-low text-on-surface-variant border border-outline-variant",
+    dotColor: "bg-outline-variant",
     label: `${Math.round(score * 100)}% Match Confidence`,
   };
 }
@@ -274,13 +274,13 @@ export default function AiMatchPage() {
             <div className="grid grid-cols-1 gap-x-12 gap-y-8 md:grid-cols-2">
               {/* Location */}
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">
                   Location Radius
                 </label>
                 <div className="flex items-center justify-between rounded-xl bg-surface-container-lowest p-4">
                   <div className="relative flex-1">
                     <MapPin
-                      className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                      className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-outline"
                       strokeWidth={1.25}
                     />
                     <input
@@ -288,24 +288,24 @@ export default function AiMatchPage() {
                       placeholder="e.g. Kensington, London"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      className="w-full bg-transparent pl-6 text-sm font-medium text-on-surface placeholder:text-neutral-400 focus:outline-none"
+                      className="w-full bg-transparent pl-6 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none"
                       aria-label="Location"
                     />
                   </div>
-                  <Edit2 className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
+                  <Edit2 className="size-4 shrink-0 text-outline" strokeWidth={1.25} />
                 </div>
               </div>
 
               {/* Budget */}
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">
                   Budget Range
                 </label>
                 <div className="flex items-center gap-2 rounded-xl bg-surface-container-lowest p-4">
                   <div className="flex flex-1 items-center gap-2">
                     <div className="relative flex-1">
                       <PoundSterling
-                        className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                        className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-outline"
                         strokeWidth={1.25}
                       />
                       <input
@@ -314,14 +314,14 @@ export default function AiMatchPage() {
                         placeholder="Min"
                         value={budgetMin}
                         onChange={(e) => setBudgetMin(e.target.value)}
-                        className="w-full bg-transparent pl-5 text-sm font-medium text-on-surface placeholder:text-neutral-400 focus:outline-none"
+                        className="w-full bg-transparent pl-5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none"
                         aria-label="Minimum budget"
                       />
                     </div>
-                    <span className="text-neutral-300">—</span>
+                    <span className="text-outline-variant">—</span>
                     <div className="relative flex-1">
                       <PoundSterling
-                        className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                        className="absolute left-0 top-1/2 size-4 -translate-y-1/2 text-outline"
                         strokeWidth={1.25}
                       />
                       <input
@@ -330,23 +330,23 @@ export default function AiMatchPage() {
                         placeholder="Max"
                         value={budgetMax}
                         onChange={(e) => setBudgetMax(e.target.value)}
-                        className="w-full bg-transparent pl-5 text-sm font-medium text-on-surface placeholder:text-neutral-400 focus:outline-none"
+                        className="w-full bg-transparent pl-5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none"
                         aria-label="Maximum budget"
                       />
                     </div>
                   </div>
-                  <Edit2 className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
+                  <Edit2 className="size-4 shrink-0 text-outline" strokeWidth={1.25} />
                 </div>
               </div>
 
               {/* Bedrooms */}
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                <label className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">
                   Bedrooms
                 </label>
                 <div className="flex items-center gap-2 rounded-xl bg-surface-container-lowest p-4">
                   <Bed
-                    className="size-4 shrink-0 text-neutral-400"
+                    className="size-4 shrink-0 text-outline"
                     strokeWidth={1.25}
                   />
                   <div className="flex flex-1 items-center gap-2">
@@ -370,7 +370,7 @@ export default function AiMatchPage() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <span className="text-neutral-300">—</span>
+                    <span className="text-outline-variant">—</span>
                     <Select
                       value={bedroomsMax}
                       onValueChange={(v: string | null) =>
@@ -392,7 +392,7 @@ export default function AiMatchPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Edit2 className="size-4 shrink-0 text-neutral-400" strokeWidth={1.25} />
+                  <Edit2 className="size-4 shrink-0 text-outline" strokeWidth={1.25} />
                 </div>
               </div>
 
@@ -400,7 +400,7 @@ export default function AiMatchPage() {
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="must-haves"
-                  className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500"
+                  className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant"
                 >
                   Must Haves
                 </label>
@@ -420,10 +420,10 @@ export default function AiMatchPage() {
             {/* Lifestyle factors */}
             <div className="mt-8 flex flex-col gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">
                   Lifestyle Factors
                 </p>
-                <p className="mt-0.5 text-xs text-neutral-400">
+                <p className="mt-0.5 text-xs text-outline">
                   Add up to 5 factors, e.g. &quot;commute&quot; /
                   &quot;under 30 min to Canary Wharf&quot;
                 </p>
@@ -451,7 +451,7 @@ export default function AiMatchPage() {
                     <button
                       type="button"
                       onClick={() => removeLifestyleEntry(idx)}
-                      className="flex size-9 shrink-0 items-center justify-center rounded-xl text-neutral-400 transition-colors hover:text-error"
+                      className="flex size-9 shrink-0 items-center justify-center rounded-xl text-outline transition-colors hover:text-error"
                       aria-label={`Remove lifestyle factor ${idx + 1}`}
                     >
                       <Trash2 className="size-4" strokeWidth={1.25} />
@@ -464,7 +464,7 @@ export default function AiMatchPage() {
                 <button
                   type="button"
                   onClick={addLifestyleEntry}
-                  className="flex w-fit items-center gap-2 rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-2 text-xs font-medium text-neutral-600 transition-colors hover:bg-neutral-50"
+                  className="flex w-fit items-center gap-2 rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-2 text-xs font-medium text-on-surface-variant transition-colors hover:bg-surface-container-low"
                 >
                   <Plus className="size-3.5" strokeWidth={1.5} />
                   Add factor
@@ -484,7 +484,7 @@ export default function AiMatchPage() {
             <div className="flex flex-col gap-6">
               {LIFESTYLE_PRIORITY_BARS.map((item) => (
                 <div key={item.label} className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-neutral-800">
+                  <span className="text-sm font-medium text-on-surface">
                     {item.label}
                   </span>
                   <div className="flex gap-1">
@@ -494,7 +494,7 @@ export default function AiMatchPage() {
                         className={`h-1 w-6 rounded-full ${
                           i < item.filled
                             ? "bg-brand-primary"
-                            : "bg-neutral-300"
+                            : "bg-outline-variant"
                         }`}
                       />
                     ))}
@@ -542,7 +542,7 @@ export default function AiMatchPage() {
           <div className="flex gap-4">
             <button
               type="button"
-              className="rounded-full border border-outline-variant/20 bg-surface-container-lowest px-6 py-2 text-xs font-bold transition-colors hover:bg-neutral-50"
+              className="rounded-full border border-outline-variant/20 bg-surface-container-lowest px-6 py-2 text-xs font-bold transition-colors hover:bg-surface-container-low"
             >
               Sort by Confidence
             </button>
@@ -550,7 +550,7 @@ export default function AiMatchPage() {
               type="button"
               onClick={() => void handleFindMatches()}
               disabled={isAnalysing || isLoading}
-              className="flex items-center gap-1.5 rounded-full border border-outline-variant/20 bg-surface-container-lowest px-6 py-2 text-xs font-bold transition-colors hover:bg-neutral-50 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-full border border-outline-variant/20 bg-surface-container-lowest px-6 py-2 text-xs font-bold transition-colors hover:bg-surface-container-low disabled:opacity-50"
               aria-label="Refresh matches"
             >
               <RefreshCw className="size-3.5" strokeWidth={1.5} />
@@ -584,13 +584,13 @@ export default function AiMatchPage() {
       {!isLoading && results.length === 0 && (
         <div className="flex flex-col items-center gap-6 rounded-3xl bg-surface-container-lowest p-16 text-center shadow-sm">
           <div className="flex size-16 items-center justify-center rounded-2xl bg-surface-container-low">
-            <Sparkles className="size-8 text-neutral-400" strokeWidth={1.25} />
+            <Sparkles className="size-8 text-outline" strokeWidth={1.25} />
           </div>
           <div className="flex flex-col gap-1">
-            <p className="font-heading text-lg font-bold text-neutral-700">
+            <p className="font-heading text-lg font-bold text-on-surface-variant">
               No matches yet
             </p>
-            <p className="max-w-xs text-sm text-neutral-500">
+            <p className="max-w-xs text-sm text-on-surface-variant">
               Fill in your preferences above and click &quot;Generate
               Matches&quot; to get started.
             </p>
@@ -610,7 +610,7 @@ export default function AiMatchPage() {
       {/* ── CTA Banner ────────────────────────────────────────────── */}
       {!isLoading && (
         <div className="relative overflow-hidden rounded-3xl bg-brand-primary p-12 text-center text-white">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-primary to-[#1b4d3e] opacity-50" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-primary-dark to-brand-primary opacity-50" />
           <div className="relative z-10 mx-auto max-w-2xl">
             <h2 className="font-heading mb-4 text-2xl font-bold">
               Refine Your Vision
@@ -647,8 +647,8 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
       <div className="relative grid grid-cols-1 overflow-hidden rounded-3xl bg-surface-container-lowest shadow-sm transition-all duration-700 group-hover:shadow-md lg:grid-cols-12">
         {/* Image */}
         <div className="relative overflow-hidden lg:col-span-5 lg:aspect-auto">
-          <div className="flex aspect-[4/5] w-full items-center justify-center bg-neutral-100 lg:h-full lg:aspect-auto">
-            <Heart className="size-16 text-neutral-200" strokeWidth={1} />
+          <div className="flex aspect-[4/5] w-full items-center justify-center bg-surface-container-low lg:h-full lg:aspect-auto">
+            <Heart className="size-16 text-outline-variant/50" strokeWidth={1} />
           </div>
           {/* Match confidence badge */}
           <div className="absolute left-6 top-6">
@@ -682,7 +682,7 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
             {result.listing && result.listing.bedrooms != null && (
               <div className="mb-8 flex gap-8">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-outline">
                     Bedrooms
                   </span>
                   <span className="text-sm font-semibold text-on-surface">
@@ -691,7 +691,7 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
                 </div>
                 {result.listing.property_type && (
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-outline">
                       Type
                     </span>
                     <span className="text-sm font-semibold capitalize text-on-surface">
@@ -708,7 +708,7 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
                 className={`rounded-2xl border-l-4 p-6 ${
                   isTopMatch
                     ? "border-brand-primary bg-primary-container/20"
-                    : "border-brand-secondary-dark bg-neutral-50"
+                    : "border-brand-secondary-dark bg-surface-container-low"
                 }`}
               >
                 <div className="mb-3 flex items-center gap-2">
@@ -726,7 +726,7 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
                 </div>
                 <ul className="flex flex-col gap-1.5">
                   {result.match_reasons.map((reason, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-neutral-700">
+                    <li key={i} className="flex items-start gap-2 text-sm leading-relaxed text-on-surface-variant">
                       <CheckCircle2
                         className="mt-0.5 size-3.5 shrink-0 text-brand-primary"
                         strokeWidth={1.5}
@@ -753,10 +753,10 @@ function MatchResultCard({ result }: Readonly<{ result: AiMatchResult }>) {
             </Link>
             <button
               type="button"
-              className="rounded-xl border border-outline-variant/20 px-6 py-4 transition-colors hover:bg-neutral-50"
+              className="rounded-xl border border-outline-variant/20 px-6 py-4 transition-colors hover:bg-surface-container-low"
               aria-label="Save property"
             >
-              <Heart className="size-5 text-neutral-500" strokeWidth={1.5} />
+              <Heart className="size-5 text-on-surface-variant" strokeWidth={1.5} />
             </button>
           </div>
         </div>

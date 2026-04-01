@@ -92,8 +92,8 @@ const MOCK_ACTIVITY = [
   },
   {
     id: 2,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-700",
+    iconBg: "bg-brand-accent-light",
+    iconColor: "text-brand-accent",
     Icon: MessageSquare,
     title: "Viewing Confirmed",
     description: "Your viewing for 22 Oak Lane is confirmed",
@@ -101,8 +101,8 @@ const MOCK_ACTIVITY = [
   },
   {
     id: 3,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-700",
+    iconBg: "bg-brand-secondary-light",
+    iconColor: "text-brand-secondary-dark",
     Icon: FileText,
     title: "New Match",
     description: "Richmond Road added to your matches",
@@ -163,20 +163,13 @@ export function HomebuyerDashboard({
             <h2 className="font-heading text-2xl font-bold tracking-tight text-white lg:text-3xl">
               Good morning, {userName}!
             </h2>
-            <p
-              className="text-lg"
-              style={{ color: "var(--color-on-primary-container, #8abda9)" }}
-            >
+            <p className="text-lg text-on-primary-container">
               You have 3 new properties matching your searches in Isleworth.
             </p>
           </div>
           <Link href="/dashboard/homebuyer/ai-match">
             <Button
-              className="shrink-0 rounded-full px-6 py-3 text-sm font-bold uppercase tracking-wide hover:opacity-90"
-              style={{
-                backgroundColor: "var(--color-secondary-fixed-dim, #eec068)",
-                color: "var(--color-on-secondary-fixed-dim, #271900)",
-              }}
+              className="shrink-0 rounded-full bg-secondary-fixed-dim px-6 py-3 text-sm font-bold uppercase tracking-wide text-on-secondary-fixed-dim hover:opacity-90"
               aria-label="View AI property matches"
             >
               View Matches
@@ -221,7 +214,7 @@ export function HomebuyerDashboard({
             <h3 className="font-heading text-2xl font-bold tracking-tight text-on-surface">
               New Properties for You
             </h3>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-on-surface-variant">
               3-bed homes in Isleworth under £500k
             </p>
           </div>
@@ -265,7 +258,7 @@ export function HomebuyerDashboard({
               {/* Property thumbnail placeholder */}
               <div className="aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-surface-container-high md:w-48">
                 <div className="flex size-full items-center justify-center">
-                  <MapPin className="size-10 text-neutral-300" strokeWidth={1.25} />
+                  <MapPin className="size-10 text-outline-variant" strokeWidth={1.25} />
                 </div>
               </div>
 
@@ -278,7 +271,7 @@ export function HomebuyerDashboard({
                     <h4 className="font-heading text-2xl font-bold text-on-surface">
                       22 Oak Lane
                     </h4>
-                    <p className="text-sm text-neutral-500">
+                    <p className="text-sm text-on-surface-variant">
                       Isleworth, London, TW7 4JP
                     </p>
                   </div>
@@ -326,8 +319,8 @@ export function HomebuyerDashboard({
                   <p className="text-sm font-semibold text-on-surface">
                     {item.title}
                   </p>
-                  <p className="text-xs text-neutral-500">{item.description}</p>
-                  <p className="mt-1.5 text-[10px] font-medium text-neutral-400">
+                  <p className="text-xs text-on-surface-variant">{item.description}</p>
+                  <p className="mt-1.5 text-[10px] font-medium text-outline">
                     {item.time}
                   </p>
                 </div>
@@ -336,7 +329,7 @@ export function HomebuyerDashboard({
 
             <button
               type="button"
-              className="w-full pt-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 transition-colors hover:text-brand-primary"
+              className="w-full pt-2 text-[10px] font-bold uppercase tracking-widest text-outline transition-colors hover:text-brand-primary"
             >
               View All Activity
             </button>
@@ -375,7 +368,7 @@ function StatCard({
   return (
     <div className="flex flex-col items-center rounded-2xl border border-outline-variant/10 bg-white p-6 text-center shadow-sm">
       <Icon className="mb-4 size-6 text-brand-primary" strokeWidth={1.25} />
-      <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
+      <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">
         {label}
       </p>
       <p className="font-heading text-3xl font-extrabold text-on-surface">
@@ -414,7 +407,7 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
       {/* Image placeholder — 4:5 aspect ratio per Stitch */}
       <div className="relative aspect-[4/5] overflow-hidden bg-surface-container-low">
         <div className="flex size-full items-center justify-center">
-          <Heart className="size-12 text-neutral-200" strokeWidth={1} />
+          <Heart className="size-12 text-outline-variant/50" strokeWidth={1} />
         </div>
 
         {property.tag && (
@@ -430,7 +423,7 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
         {/* Save button */}
         <button
           type="button"
-          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-400 shadow-sm backdrop-blur-sm transition hover:bg-white hover:text-rose-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white/90 text-outline shadow-sm backdrop-blur-sm transition hover:bg-white hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           aria-label={`Save ${property.name}`}
         >
           <Heart className="size-4" strokeWidth={1.5} />
@@ -442,10 +435,10 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
         <p className="font-heading text-2xl font-bold text-on-surface">
           {property.price}
         </p>
-        <p className="mb-4 mt-1 text-sm text-neutral-500">
+        <p className="mb-4 mt-1 text-sm text-on-surface-variant">
           {property.name}, {property.location}
         </p>
-        <div className="flex items-center gap-4 border-t border-outline-variant/20 pt-4 text-sm text-neutral-500">
+        <div className="flex items-center gap-4 border-t border-outline-variant/20 pt-4 text-sm text-on-surface-variant">
           <span className="flex items-center gap-1.5">
             <Bed className="size-4" strokeWidth={1.25} />
             {property.beds}
@@ -487,7 +480,7 @@ function ServiceCard({ service }: Readonly<{ service: ServiceData }>) {
       <h4 className="font-heading mb-2 text-lg font-bold text-on-surface">
         {service.title}
       </h4>
-      <p className="mb-6 text-sm leading-relaxed text-neutral-500">
+      <p className="mb-6 text-sm leading-relaxed text-on-surface-variant">
         {service.description}
       </p>
       <Link

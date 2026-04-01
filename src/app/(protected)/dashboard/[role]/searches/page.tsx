@@ -73,7 +73,7 @@ export default async function SavedSearchesPage() {
   return (
     <div className="flex flex-col gap-8 pb-12">
       {/* ── Page description ─────────────────────────────────────────── */}
-      <p className="max-w-2xl leading-relaxed text-neutral-500">
+      <p className="max-w-2xl leading-relaxed text-on-surface-variant">
         Manage your bespoke property notifications. Our algorithm monitors the
         market 24/7 to ensure you never miss a property that fits your
         requirements.
@@ -89,7 +89,7 @@ export default async function SavedSearchesPage() {
             <h3 className="font-heading text-xl font-bold text-on-surface">
               No saved searches yet
             </h3>
-            <p className="max-w-sm text-sm text-neutral-500">
+            <p className="max-w-sm text-sm text-on-surface-variant">
               Save a search from the property search page and we&apos;ll send
               you alerts when new matches are listed.
             </p>
@@ -121,7 +121,7 @@ export default async function SavedSearchesPage() {
                       <h3 className="font-heading text-xl font-bold text-on-surface">
                         {search.name}
                       </h3>
-                      <p className="text-xs font-medium text-neutral-500">
+                      <p className="text-xs font-medium text-on-surface-variant">
                         {formatFilters(search.filters)}
                       </p>
                     </div>
@@ -135,7 +135,7 @@ export default async function SavedSearchesPage() {
                         </span>
                       </div>
                     ) : (
-                      <div className="flex shrink-0 items-center gap-2 rounded-full bg-neutral-100 px-3 py-1.5 text-neutral-500">
+                      <div className="flex shrink-0 items-center gap-2 rounded-full bg-surface-container-low px-3 py-1.5 text-on-surface-variant">
                         <Bell className="size-4" strokeWidth={1.5} />
                         <span className="text-[11px] font-bold uppercase tracking-wider">
                           No new matches
@@ -148,7 +148,7 @@ export default async function SavedSearchesPage() {
                   <div className="mb-8 mt-auto grid grid-cols-2 gap-8">
                     {/* Alert frequency */}
                     <div className="flex flex-col gap-3">
-                      <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                      <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
                         Alert Frequency
                       </label>
                       <div className="flex rounded-lg bg-surface-container-low p-1">
@@ -159,7 +159,7 @@ export default async function SavedSearchesPage() {
                               className={`flex-1 rounded-md py-1.5 text-center text-[11px] font-bold transition-all ${
                                 search.alert_frequency === freq
                                   ? "bg-white text-brand-primary shadow-sm"
-                                  : "text-neutral-500"
+                                  : "text-on-surface-variant"
                               }`}
                             >
                               {freq.toUpperCase()}
@@ -171,7 +171,7 @@ export default async function SavedSearchesPage() {
 
                     {/* Last activity */}
                     <div className="flex flex-col gap-3">
-                      <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                      <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
                         Last Activity
                       </label>
                       <p className="py-1.5 text-sm font-medium text-on-surface">
@@ -202,15 +202,15 @@ export default async function SavedSearchesPage() {
 
             {/* ── Create new search card ──────────────────────────────── */}
             <Link href="/search" aria-label="Start a new saved search">
-              <div className="flex h-full min-h-[220px] cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-neutral-200 p-8 text-center transition-all hover:border-brand-primary/40 hover:bg-brand-primary/[0.02]">
-                <div className="flex size-16 items-center justify-center rounded-full bg-surface-container-low text-neutral-400 transition-colors hover:bg-brand-primary/5 hover:text-brand-primary">
+              <div className="flex h-full min-h-[220px] cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-outline-variant p-8 text-center transition-all hover:border-brand-primary/40 hover:bg-brand-primary/[0.02]">
+                <div className="flex size-16 items-center justify-center rounded-full bg-surface-container-low text-outline transition-colors hover:bg-brand-primary/5 hover:text-brand-primary">
                   <PlusCircle className="size-8" strokeWidth={1.5} />
                 </div>
                 <div>
                   <h4 className="font-heading font-bold text-on-surface">
                     Start a New Hunt
                   </h4>
-                  <p className="mt-1 max-w-[200px] text-sm text-neutral-500">
+                  <p className="mt-1 max-w-[200px] text-sm text-on-surface-variant">
                     Define new parameters for your property search.
                   </p>
                 </div>
