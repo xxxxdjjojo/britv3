@@ -100,14 +100,14 @@ async function PageContent() {
         ? `${kpis.views_change_pct >= 0 ? "+" : ""}${kpis.views_change_pct}%`
         : null,
       sub: "Past 30 days",
-      subColor: "text-zinc-400",
+      subColor: "text-[--color-outline]",
       href: "/dashboard/seller/analytics",
     },
     {
       label: "Enquiries",
       value: kpis.enquiries_30d,
       sub: "Past 30d",
-      subColor: "text-zinc-400",
+      subColor: "text-[--color-outline]",
       href: "/dashboard/seller/enquiries",
     },
     {
@@ -126,7 +126,7 @@ async function PageContent() {
         <span className="text-xs font-bold tracking-[0.2em] text-[--color-brand-secondary-dark] uppercase block mb-2">
           Welcome Back
         </span>
-        <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary] leading-tight font-['Plus_Jakarta_Sans']">
+        <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary] leading-tight font-heading">
           Property Performance Overview
         </h1>
       </header>
@@ -139,7 +139,7 @@ async function PageContent() {
             href={card.href}
             className="bg-[--color-surface-container-low] p-8 rounded-2xl flex flex-col justify-between min-h-40 hover:bg-[--color-surface-container] transition-colors duration-200 group"
           >
-            <span className="text-xs font-bold tracking-[0.05em] uppercase text-zinc-500 block mb-4">
+            <span className="text-xs font-bold tracking-[0.05em] uppercase text-[--color-on-surface-variant] block mb-4">
               {card.label}
             </span>
             <div className="flex items-baseline gap-2 flex-wrap">
@@ -162,10 +162,10 @@ async function PageContent() {
       {/* Empty State */}
       {kpis.active_listings === 0 && (
         <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-12 text-center border border-outline-variant/20">
-          <h2 className="text-xl font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] mb-3">
+          <h2 className="text-xl font-bold text-[--color-brand-primary] font-heading mb-3">
             No listings yet
           </h2>
-          <p className="text-zinc-500 text-sm mb-6 max-w-md mx-auto">
+          <p className="text-[--color-on-surface-variant] text-sm mb-6 max-w-md mx-auto">
             Create your first listing to start tracking views, enquiries, and offers from buyers.
           </p>
           <Link
@@ -182,7 +182,7 @@ async function PageContent() {
         {/* Views Trend Chart */}
         <div className="lg:col-span-2 bg-surface-container-lowest p-8 rounded-3xl shadow-[0_20px_50px_rgba(26,28,28,0.05)] border border-[--color-surface-container-high]/30">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-heading">
               Views Trend
             </h2>
             <Link
@@ -197,7 +197,7 @@ async function PageContent() {
 
         {/* Immediate Actions */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] mb-2">
+          <h2 className="text-xl font-bold tracking-tight text-[--color-brand-primary] font-heading mb-2">
             Immediate Actions
           </h2>
           <Link
@@ -205,10 +205,10 @@ async function PageContent() {
             className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-brand-primary transition-all duration-300"
           >
             <div className="flex flex-col items-start">
-              <span className="text-[--color-brand-primary] group-hover:text-white font-bold transition-colors font-['Plus_Jakarta_Sans']">
+              <span className="text-[--color-brand-primary] group-hover:text-white font-bold transition-colors font-heading">
                 Manage Photos
               </span>
-              <span className="text-zinc-500 group-hover:text-white/60 text-xs transition-colors mt-0.5">
+              <span className="text-[--color-on-surface-variant] group-hover:text-white/60 text-xs transition-colors mt-0.5">
                 Update listing images
               </span>
             </div>
@@ -221,10 +221,10 @@ async function PageContent() {
             className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-brand-primary transition-all duration-300"
           >
             <div className="flex flex-col items-start">
-              <span className="text-[--color-brand-primary] group-hover:text-white font-bold transition-colors font-['Plus_Jakarta_Sans']">
+              <span className="text-[--color-brand-primary] group-hover:text-white font-bold transition-colors font-heading">
                 Manage Viewings
               </span>
-              <span className="text-zinc-500 group-hover:text-white/60 text-xs transition-colors mt-0.5">
+              <span className="text-[--color-on-surface-variant] group-hover:text-white/60 text-xs transition-colors mt-0.5">
                 {kpis.upcoming_viewings} pending requests
               </span>
             </div>
@@ -237,10 +237,10 @@ async function PageContent() {
             className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-secondary-container transition-all duration-300"
           >
             <div className="flex flex-col items-start">
-              <span className="text-[--color-brand-primary] font-bold font-['Plus_Jakarta_Sans']">
+              <span className="text-[--color-brand-primary] font-bold font-heading">
                 Request Valuation
               </span>
-              <span className="text-zinc-500 text-xs mt-0.5">
+              <span className="text-[--color-on-surface-variant] text-xs mt-0.5">
                 Professional assessment
               </span>
             </div>
@@ -256,7 +256,7 @@ async function PageContent() {
         {/* Recent Enquiries */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-heading">
               Recent Enquiries
             </h2>
             <Link
@@ -285,17 +285,17 @@ async function PageContent() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1 gap-2">
-                      <h4 className="font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
+                      <h4 className="font-bold text-[--color-brand-primary] font-heading">
                         {enq.buyer_name}
                       </h4>
-                      <span className="text-[10px] font-bold text-zinc-400 uppercase flex-shrink-0">
+                      <span className="text-[10px] font-bold text-[--color-outline] uppercase flex-shrink-0">
                         {new Date(enq.created_at).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
                         })}
                       </span>
                     </div>
-                    <p className="text-sm text-zinc-600 line-clamp-2 italic">&ldquo;{enq.message}&rdquo;</p>
+                    <p className="text-sm text-[--color-on-surface-variant] line-clamp-2 italic">&ldquo;{enq.message}&rdquo;</p>
                     <div className="mt-3 flex gap-4">
                       <Link
                         href="/dashboard/seller/enquiries"
@@ -308,7 +308,7 @@ async function PageContent() {
                 </div>
               ))
             ) : (
-              <div className="py-10 text-center text-zinc-400 text-sm">
+              <div className="py-10 text-center text-[--color-outline] text-sm">
                 No recent enquiries
               </div>
             )}
@@ -318,7 +318,7 @@ async function PageContent() {
         {/* Upcoming Viewings + Market Insight */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-heading">
               Upcoming Viewings
             </h2>
             <Link
@@ -349,20 +349,20 @@ async function PageContent() {
                     className={`bg-[--color-surface-container-low] p-6 rounded-2xl flex items-center gap-6 border-l-4 ${idx === 0 ? "border-[--color-brand-primary]" : "border-[--color-brand-secondary-dark]"}`}
                   >
                     <div className="text-center min-w-[50px]">
-                      <span className="block text-xs font-bold text-zinc-400 uppercase">
+                      <span className="block text-xs font-bold text-[--color-outline] uppercase">
                         {month}
                       </span>
-                      <span className="block text-2xl font-black text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
+                      <span className="block text-2xl font-black text-[--color-brand-primary] font-heading">
                         {day}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] truncate">
+                      <h4 className="font-bold text-[--color-brand-primary] font-heading truncate">
                         {v.buyer_name}
                       </h4>
                       <div className="flex items-center gap-4 mt-1 flex-wrap">
-                        <span className="text-xs text-zinc-500">{time}</span>
-                        <span className="text-xs text-zinc-500 capitalize">
+                        <span className="text-xs text-[--color-on-surface-variant]">{time}</span>
+                        <span className="text-xs text-[--color-on-surface-variant] capitalize">
                           {v.viewing_type.replace("_", " ")}
                         </span>
                       </div>
@@ -380,7 +380,7 @@ async function PageContent() {
                 );
               })
             ) : (
-              <div className="py-6 text-center text-zinc-400 text-sm">
+              <div className="py-6 text-center text-[--color-outline] text-sm">
                 No upcoming viewings scheduled
               </div>
             )}
@@ -389,7 +389,7 @@ async function PageContent() {
           {/* Market Insight Card */}
           <div className="mt-8 p-6 bg-brand-primary rounded-3xl text-white relative overflow-hidden">
             <div className="relative z-10">
-              <h4 className="text-lg font-bold mb-1 font-['Plus_Jakarta_Sans']">Market Insight</h4>
+              <h4 className="text-lg font-bold mb-1 font-heading">Market Insight</h4>
               <p className="text-xs text-[--color-brand-primary-lighter]/80 leading-relaxed max-w-[240px]">
                 Track your listing performance against the local market. View your analytics for detailed comparisons.
               </p>

@@ -134,6 +134,12 @@
   --color-on-secondary-container: #251a00;
   --color-secondary-fixed-dim: #eec068;
   --color-on-secondary-fixed-dim: #271900;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+  --color-inverse-surface: #2f3130;
+  --color-on-inverse-surface: #f0f1ef;
+  --color-tertiary-container: #003ca3;
+  --color-on-tertiary-container: #d8e2ff;
 
   /* --- Custom Breakpoints (britestatestyle.txt) --- */
   --breakpoint-xs: 375px;
@@ -228,6 +234,12 @@
   --color-on-secondary-container: #ffdf9e;
   --color-secondary-fixed-dim: #dfb857;
   --color-on-secondary-fixed-dim: #1c0f00;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+  --color-inverse-surface: #e1e3e0;
+  --color-on-inverse-surface: #2f3130;
+  --color-tertiary-container: #0050d4;
+  --color-on-tertiary-container: #d8e2ff;
 }
 
 /* === Mobile / Touch Utilities === */

@@ -51,28 +51,28 @@ function statusBadge(status: Viewing["status"]): { label: string; className: str
     case "rescheduled":
       return {
         label: "Pending",
-        className: "bg-amber-50 text-amber-700",
-        dot: "bg-amber-500",
+        className: "bg-secondary-container/20 text-on-secondary-container",
+        dot: "bg-secondary-fixed-dim",
       };
     case "completed":
       return {
         label: "Completed",
-        className: "bg-zinc-900/60 text-white",
-        dot: "bg-zinc-400",
+        className: "bg-inverse-surface/60 text-on-inverse-surface",
+        dot: "bg-outline",
       };
     case "cancelled":
       return {
         label: "Cancelled",
-        className: "bg-red-600 text-white",
-        dot: "bg-red-500",
+        className: "bg-error text-on-inverse-surface",
+        dot: "bg-error",
       };
   }
 }
 
 function borderColor(status: Viewing["status"]): string {
   if (status === "confirmed") return "border-brand-primary";
-  if (status === "rescheduled") return "border-amber-500";
-  return "border-zinc-300";
+  if (status === "rescheduled") return "border-secondary-fixed-dim";
+  return "border-outline-variant";
 }
 
 // ---------------------------------------------------------------------------
@@ -105,7 +105,7 @@ function UpcomingViewingCard({
           >
             {badge.label}
           </span>
-          <span className="text-zinc-400 text-xs font-medium">
+          <span className="text-outline text-xs font-medium">
             •{" "}
             {viewing.type === "virtual" ? "Virtual Tour" : "In-person"}
           </span>
@@ -115,7 +115,7 @@ function UpcomingViewingCard({
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           <div>
-            <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+            <span className="text-[0.6875rem] font-bold tracking-widest text-outline uppercase block mb-1">
               Date &amp; Time
             </span>
             <span className="text-sm font-semibold text-on-surface">
@@ -124,33 +124,33 @@ function UpcomingViewingCard({
             </span>
           </div>
           <div>
-            <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+            <span className="text-[0.6875rem] font-bold tracking-widest text-outline uppercase block mb-1">
               Type
             </span>
             <span className="text-sm font-semibold text-on-surface flex items-center gap-1">
               {viewing.type === "virtual" ? (
-                <Video className="size-3.5 text-zinc-400" strokeWidth={1.25} />
+                <Video className="size-3.5 text-outline" strokeWidth={1.25} />
               ) : (
-                <MapPin className="size-3.5 text-zinc-400" strokeWidth={1.25} />
+                <MapPin className="size-3.5 text-outline" strokeWidth={1.25} />
               )}
               {viewing.type === "virtual" ? "Virtual" : "In-person"}
             </span>
           </div>
           <div>
-            <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+            <span className="text-[0.6875rem] font-bold tracking-widest text-outline uppercase block mb-1">
               Agent
             </span>
             <span className="text-sm font-semibold text-on-surface flex items-center gap-1">
-              <User className="size-3.5 text-zinc-400" strokeWidth={1.25} />
+              <User className="size-3.5 text-outline" strokeWidth={1.25} />
               Estate Agent
             </span>
           </div>
           {viewing.notes && (
             <div>
-              <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
+              <span className="text-[0.6875rem] font-bold tracking-widest text-outline uppercase block mb-1">
                 Notes
               </span>
-              <span className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
+              <span className="text-xs text-on-surface-variant leading-relaxed line-clamp-2">
                 {viewing.notes}
               </span>
             </div>
@@ -165,14 +165,14 @@ function UpcomingViewingCard({
           aria-label="Reschedule viewing"
         >
           <button
-            className="p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors text-zinc-600"
+            className="p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors text-on-surface-variant"
             aria-label="Reschedule viewing"
           >
             <RotateCcw className="size-5" strokeWidth={1.25} />
           </button>
         </Link>
         <button
-          className="p-3 bg-surface-container-low rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-zinc-600"
+          className="p-3 bg-surface-container-low rounded-lg hover:bg-error-container/20 hover:text-error transition-colors text-on-surface-variant"
           onClick={() => onCancel(viewing.id)}
           disabled={isCancelling}
           aria-label="Cancel viewing"
@@ -198,8 +198,8 @@ function PastViewingCard({
     <div className="bg-surface-container-low rounded-xl overflow-hidden">
       {/* Placeholder image area */}
       <div className="h-40 relative bg-surface-container-highest flex items-center justify-center">
-        <div className="flex size-12 items-center justify-center rounded-full bg-white/40">
-          <Calendar className="size-6 text-zinc-400" strokeWidth={1.25} />
+        <div className="flex size-12 items-center justify-center rounded-full bg-surface-container-lowest/40">
+          <Calendar className="size-6 text-outline" strokeWidth={1.25} />
         </div>
         <div
           className={`absolute top-4 left-4 text-[10px] font-bold px-2 py-1 rounded tracking-widest uppercase ${badge.className}`}
@@ -211,7 +211,7 @@ function PastViewingCard({
         <h3 className="font-heading font-bold text-base mb-1 text-on-surface">
           {viewing.property_address}
         </h3>
-        <p className="text-zinc-500 text-xs mb-4">
+        <p className="text-on-surface-variant text-xs mb-4">
           {isCompleted ? "Visited on" : "Scheduled for"}{" "}
           {formatDateShort(viewing.scheduled_at)}
         </p>
@@ -225,7 +225,7 @@ function PastViewingCard({
             </div>
           </div>
         ) : (
-          <div className="bg-surface-container-highest p-3 rounded-lg flex items-center gap-2 text-zinc-500">
+          <div className="bg-surface-container-highest p-3 rounded-lg flex items-center gap-2 text-on-surface-variant">
             <X className="size-4" strokeWidth={1.25} />
             <span className="text-xs font-bold uppercase tracking-widest">
               Cancelled
@@ -312,7 +312,7 @@ export default function ViewingsPage({
             <h1 className="font-heading text-4xl font-bold tracking-tight text-on-surface mb-2">
               Viewings
             </h1>
-            <p className="text-zinc-500 font-['Inter'] max-w-2xl">
+            <p className="text-on-surface-variant font-sans max-w-2xl">
               Manage your upcoming property tours and revisit the details of
               estates you&apos;ve already experienced.
             </p>
@@ -331,7 +331,7 @@ export default function ViewingsPage({
 
       {/* ── Error ──────────────────────────────────────────────── */}
       {error && (
-        <div className="flex items-center gap-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 mb-8">
+        <div className="flex items-center gap-3 rounded-xl bg-error-container/20 px-4 py-3 text-sm text-error mb-8">
           <AlertCircle className="size-4 shrink-0" strokeWidth={1.25} />
           Failed to load viewings. Please refresh the page.
         </div>
@@ -349,7 +349,7 @@ export default function ViewingsPage({
               <span className="px-5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest shadow-sm text-on-surface">
                 Month
               </span>
-              <span className="px-5 py-1.5 rounded-full text-xs font-semibold text-zinc-500">
+              <span className="px-5 py-1.5 rounded-full text-xs font-semibold text-on-surface-variant">
                 Week
               </span>
             </div>
@@ -360,7 +360,7 @@ export default function ViewingsPage({
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
               <div
                 key={d}
-                className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase pb-2"
+                className="text-[0.6875rem] font-bold tracking-widest text-outline uppercase pb-2"
               >
                 {d}
               </div>
@@ -368,12 +368,12 @@ export default function ViewingsPage({
           </div>
 
           {/* Calendar grid — static layout matching Stitch */}
-          <div className="grid grid-cols-7 gap-px bg-zinc-200 rounded-lg overflow-hidden border border-zinc-200">
+          <div className="grid grid-cols-7 gap-px bg-surface-container rounded-lg overflow-hidden border border-outline-variant">
             {/* Prev month days */}
             {["28", "29", "30", "31"].map((d) => (
               <div
                 key={`prev-${d}`}
-                className="aspect-square bg-surface-container-lowest p-2 text-xs text-zinc-400"
+                className="aspect-square bg-surface-container-lowest p-2 text-xs text-outline"
               >
                 {d}
               </div>
@@ -397,7 +397,7 @@ export default function ViewingsPage({
                     hasViewing
                       ? "bg-primary-container/20 ring-1 ring-inset ring-brand-primary/20"
                       : isPast
-                        ? "bg-zinc-50"
+                        ? "bg-surface-container-low"
                         : ""
                   }`}
                 >
@@ -414,7 +414,7 @@ export default function ViewingsPage({
             {Array.from({ length: 4 }, (_, i) => i + 1).map((d) => (
               <div
                 key={`next-${d}`}
-                className="aspect-square bg-surface-container-lowest p-2 text-xs text-zinc-400"
+                className="aspect-square bg-surface-container-lowest p-2 text-xs text-outline"
               >
                 {d}
               </div>
@@ -485,15 +485,15 @@ export default function ViewingsPage({
 
           {/* Status legend */}
           <div className="bg-surface-container-low p-6 rounded-xl">
-            <h3 className="font-heading text-xs font-bold tracking-widest uppercase text-zinc-400 mb-5">
+            <h3 className="font-heading text-xs font-bold tracking-widest uppercase text-outline mb-5">
               Viewing Status Keys
             </h3>
             <div className="space-y-3">
               {[
                 { dot: "bg-brand-primary", label: "Confirmed" },
-                { dot: "bg-amber-500", label: "Pending Confirmation" },
-                { dot: "bg-zinc-400", label: "Completed" },
-                { dot: "bg-red-500", label: "Cancelled" },
+                { dot: "bg-secondary-fixed-dim", label: "Pending Confirmation" },
+                { dot: "bg-outline", label: "Completed" },
+                { dot: "bg-error", label: "Cancelled" },
               ].map(({ dot, label }) => (
                 <div key={label} className="flex items-center gap-3">
                   <span className={`w-2 h-2 rounded-full ${dot}`} />
@@ -514,7 +514,7 @@ export default function ViewingsPage({
             <h2 className="font-heading text-2xl font-bold text-on-surface">
               Scheduled Itinerary
             </h2>
-            <p className="text-zinc-500 text-sm mt-1">
+            <p className="text-on-surface-variant text-sm mt-1">
               A chronological breakdown of your upcoming tours.
             </p>
           </div>
@@ -526,7 +526,7 @@ export default function ViewingsPage({
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
                   filterStatus === s
                     ? "bg-brand-primary text-white"
-                    : "bg-surface-container-low text-zinc-500 hover:bg-surface-container"
+                    : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
                 }`}
                 aria-label={`Filter by ${s}`}
               >
@@ -543,14 +543,14 @@ export default function ViewingsPage({
             <div className="flex size-14 items-center justify-center rounded-full bg-surface-container">
               <Calendar
                 strokeWidth={1.25}
-                className="size-7 text-zinc-400"
+                className="size-7 text-outline"
               />
             </div>
             <div>
               <p className="font-heading font-semibold text-on-surface">
                 No upcoming viewings
               </p>
-              <p className="mt-1 text-sm text-zinc-500">
+              <p className="mt-1 text-sm text-on-surface-variant">
                 Book a viewing to get started
               </p>
             </div>

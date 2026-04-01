@@ -182,14 +182,14 @@ function NegotiationProgress({ status }: Readonly<{ status: OfferStatus }>) {
             key={s}
             className={cn(
               "text-[10px] font-bold uppercase tracking-tighter",
-              i === mappedStep ? "text-brand-primary" : "text-stone-400",
+              i === mappedStep ? "text-brand-primary" : "text-outline",
             )}
           >
             {s}
           </span>
         ))}
       </div>
-      <div className="h-0.5 bg-stone-100 w-full relative">
+      <div className="h-0.5 bg-surface-container-low w-full relative">
         <div
           className="absolute h-full bg-brand-primary"
           style={{ width: `${progressPct}%` }}
@@ -202,7 +202,7 @@ function NegotiationProgress({ status }: Readonly<{ status: OfferStatus }>) {
               key={i}
               className={cn(
                 "absolute -top-[3px] w-2 h-2 rounded-full",
-                done ? "bg-brand-primary" : "bg-stone-200",
+                done ? "bg-brand-primary" : "bg-surface-container",
                 i === mappedStep && "ring-4 ring-primary-container/20",
               )}
               style={{ left: `${pct}%`, transform: "translateX(-50%)" }}
@@ -221,20 +221,20 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
 
   const statusBadge = isTerminal(offer.status) ? (
     offer.status === "rejected" ? (
-      <span className="bg-red-100 text-red-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+      <span className="bg-error-container text-on-error-container px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
         Rejected
       </span>
     ) : (
-      <span className="bg-stone-100 text-stone-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+      <span className="bg-surface-container-low text-on-surface-variant px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
         Withdrawn
       </span>
     )
   ) : isCountered ? (
-    <span className="bg-amber-100 text-amber-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+    <span className="bg-secondary-container/30 text-on-secondary-container px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
       Counter-Offer Received
     </span>
   ) : isUnderReview ? (
-    <span className="bg-blue-100 text-blue-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+    <span className="bg-tertiary-container/20 text-on-tertiary-container px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
       Under Review
     </span>
   ) : (
@@ -246,7 +246,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
   return (
     <article className="bg-surface-container-lowest overflow-hidden group shadow-sm hover:shadow-md transition-all rounded-2xl">
       <div className="flex flex-col md:flex-row gap-0 md:gap-8">
-        <div className="md:w-1/3 aspect-[4/5] relative overflow-hidden rounded-l-2xl bg-stone-100 flex-shrink-0">
+        <div className="md:w-1/3 aspect-[4/5] relative overflow-hidden rounded-l-2xl bg-surface-container-low flex-shrink-0">
           {offer.photo_url ? (
             <Image
               src={offer.photo_url}
@@ -257,7 +257,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Home size={32} className="text-stone-300" strokeWidth={1} />
+              <Home size={32} className="text-outline-variant" strokeWidth={1} />
             </div>
           )}
           <div className="absolute top-4 left-4">{statusBadge}</div>
@@ -266,14 +266,14 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
         <div className="md:w-2/3 py-6 pr-6 pl-6 md:pl-0 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-2">
-              <h2 className="text-xl font-bold tracking-tight text-on-surface font-['Plus_Jakarta_Sans']">
+              <h2 className="text-xl font-bold tracking-tight text-on-surface font-heading">
                 {offer.property_address}
               </h2>
               <span className="text-brand-primary font-bold text-lg flex-shrink-0 ml-4">
                 {formatGBP(offer.amount_pence)}
               </span>
             </div>
-            <p className="text-stone-400 text-sm mb-6">
+            <p className="text-outline text-sm mb-6">
               Submitted {formatDate(offer.submitted_at)}
             </p>
 
@@ -284,7 +284,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
             {!isTerminal(offer.status) && (
               <div className="flex gap-6 items-center mb-6">
                 {offer.doc_count !== undefined && (
-                  <div className="flex items-center gap-2 text-stone-500">
+                  <div className="flex items-center gap-2 text-on-surface-variant">
                     <FileText size={15} strokeWidth={1.25} />
                     <span className="text-[11px] font-medium">
                       {offer.doc_count} Doc{offer.doc_count !== 1 ? "s" : ""}
@@ -292,7 +292,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
                   </div>
                 )}
                 {offer.message_count !== undefined && (
-                  <div className="flex items-center gap-2 text-stone-500">
+                  <div className="flex items-center gap-2 text-on-surface-variant">
                     <MessageSquare size={15} strokeWidth={1.25} />
                     <span className="text-[11px] font-medium">
                       {offer.message_count} Messages
@@ -300,7 +300,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
                   </div>
                 )}
                 {offer.version_count !== undefined && (
-                  <div className="flex items-center gap-2 text-stone-500">
+                  <div className="flex items-center gap-2 text-on-surface-variant">
                     <History size={15} strokeWidth={1.25} />
                     <span className="text-[11px] font-medium">
                       {offer.version_count} Version
@@ -324,7 +324,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
             {!isTerminal(offer.status) && (
               <Link
                 href={`/dashboard/homebuyer/offers/${offer.id}`}
-                className="text-stone-700 border border-stone-200 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-stone-50 transition-colors"
+                className="text-on-surface border border-outline-variant px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-surface-container-low transition-colors"
               >
                 View Documents
               </Link>
@@ -332,14 +332,14 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
             {isUnderReview && (
               <Link
                 href={`/dashboard/homebuyer/offers/${offer.id}`}
-                className="text-stone-700 border border-stone-200 px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-stone-50 transition-colors"
+                className="text-on-surface border border-outline-variant px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-surface-container-low transition-colors"
               >
                 Edit Offer
               </Link>
             )}
             <Link
               href={`/dashboard/homebuyer/offers/${offer.id}`}
-              className="text-stone-400 px-3 py-2.5 text-xs font-semibold tracking-wide hover:text-on-surface transition-colors flex items-center gap-1"
+              className="text-outline px-3 py-2.5 text-xs font-semibold tracking-wide hover:text-on-surface transition-colors flex items-center gap-1"
             >
               Details
               <ChevronRight size={12} strokeWidth={1.5} />
@@ -386,17 +386,17 @@ export default function OffersPage() {
       {/* Page Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tighter text-on-surface">
+          <h1 className="font-heading text-4xl md:text-5xl font-extrabold tracking-tighter text-on-surface">
             Active Proposals
           </h1>
-          <p className="text-stone-500 text-base mt-2 leading-relaxed max-w-xl">
+          <p className="text-on-surface-variant text-base mt-2 leading-relaxed max-w-xl">
             Manage your property acquisitions and track real-time negotiation
             progress.
           </p>
         </div>
         <button
           type="button"
-          className="bg-brand-primary hover:opacity-90 text-white px-8 py-4 rounded-lg font-['Plus_Jakarta_Sans'] font-semibold text-sm transition-all shadow-lg flex items-center gap-2 self-start md:self-auto flex-shrink-0"
+          className="bg-brand-primary hover:opacity-90 text-white px-8 py-4 rounded-lg font-heading font-semibold text-sm transition-all shadow-lg flex items-center gap-2 self-start md:self-auto flex-shrink-0"
         >
           <span className="text-lg leading-none">+</span>
           Submit New Offer
@@ -417,7 +417,7 @@ export default function OffersPage() {
                   "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                   tab === key
                     ? "bg-surface-container-lowest text-on-surface shadow-sm"
-                    : "text-stone-500 hover:text-on-surface",
+                    : "text-on-surface-variant hover:text-on-surface",
                 )}
               >
                 {label}
@@ -430,12 +430,12 @@ export default function OffersPage() {
               <Home
                 size={32}
                 strokeWidth={1.25}
-                className="mx-auto text-stone-200 mb-3"
+                className="mx-auto text-outline-variant mb-3"
               />
-              <p className="text-stone-500 text-sm font-medium">
+              <p className="text-on-surface-variant text-sm font-medium">
                 No offers here yet
               </p>
-              <p className="text-stone-400 text-xs mt-1">
+              <p className="text-outline text-xs mt-1">
                 Start browsing properties to make your first offer
               </p>
               <Link
@@ -464,7 +464,7 @@ export default function OffersPage() {
               <div className="flex items-center gap-3 mb-6">
                 <TrendingUp
                   size={20}
-                  className="text-amber-300"
+                  className="text-secondary-container"
                   strokeWidth={1.5}
                 />
                 <h3 className="text-lg font-bold tracking-tight">
@@ -502,7 +502,7 @@ export default function OffersPage() {
           {/* Active portfolio value */}
           {activeCount > 0 && (
             <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
-              <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-1">
+              <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">
                 Active Portfolio Value
               </p>
               <p className="text-3xl font-bold text-brand-primary">
@@ -527,10 +527,10 @@ export default function OffersPage() {
             <div className="space-y-5">
               {HISTORY_ITEMS.map((h) => (
                 <div key={h.id} className="flex gap-4 items-center">
-                  <div className="w-16 h-16 bg-stone-100 shrink-0 overflow-hidden rounded-lg flex items-center justify-center">
+                  <div className="w-16 h-16 bg-surface-container-low shrink-0 overflow-hidden rounded-lg flex items-center justify-center">
                     <Home
                       size={20}
-                      className="text-stone-300"
+                      className="text-outline-variant"
                       strokeWidth={1}
                     />
                   </div>
@@ -544,18 +544,18 @@ export default function OffersPage() {
                           "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 flex-shrink-0",
                           h.status === "accepted"
                             ? "text-brand-primary bg-primary-container/20"
-                            : "text-red-600 bg-red-50",
+                            : "text-error bg-error-container/20",
                         )}
                       >
                         {h.status === "accepted" ? "Accepted" : "Declined"}
                       </span>
                     </div>
-                    <p className="text-[10px] text-stone-400 mb-1.5">
+                    <p className="text-[10px] text-outline mb-1.5">
                       {h.amount} · {h.date}
                     </p>
                     <button
                       type="button"
-                      className="text-[9px] font-bold text-stone-400 hover:text-brand-primary flex items-center gap-1 uppercase tracking-widest transition-colors"
+                      className="text-[9px] font-bold text-outline hover:text-brand-primary flex items-center gap-1 uppercase tracking-widest transition-colors"
                     >
                       Archive Details
                       <ChevronRight size={11} strokeWidth={1.5} />
@@ -568,7 +568,7 @@ export default function OffersPage() {
 
           {/* Pending tasks */}
           <section className="bg-surface-container-low p-6 rounded-xl">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-outline mb-4">
               Pending Tasks
             </h3>
             <ul className="space-y-3">
@@ -578,8 +578,8 @@ export default function OffersPage() {
                   className={cn(
                     "flex items-center gap-3 text-xs font-medium",
                     task.done
-                      ? "text-stone-400 line-through"
-                      : "text-stone-800",
+                      ? "text-outline line-through"
+                      : "text-on-surface",
                   )}
                 >
                   {task.done ? (
@@ -590,7 +590,7 @@ export default function OffersPage() {
                   ) : (
                     <AlertCircle
                       size={14}
-                      className="text-amber-500 flex-shrink-0"
+                      className="text-secondary-fixed-dim flex-shrink-0"
                       strokeWidth={1.5}
                     />
                   )}

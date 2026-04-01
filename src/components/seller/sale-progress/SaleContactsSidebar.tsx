@@ -30,22 +30,22 @@ function ContactRow({ contact }: Readonly<{ contact: Contact }>) {
   return (
     <>
       <div className="flex flex-col">
-        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.12em] mb-3">
+        <span className="text-[10px] font-bold text-outline uppercase tracking-[0.12em] mb-3">
           {contact.role}
         </span>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
               {contact.initials}
             </div>
             <div>
               {contact.name && (
-                <p className="text-sm font-bold text-stone-900">
+                <p className="text-sm font-bold text-on-surface">
                   {contact.name}
                 </p>
               )}
               {contact.email && (
-                <p className="text-xs text-stone-400 truncate max-w-[140px]">
+                <p className="text-xs text-outline truncate max-w-[140px]">
                   {contact.email}
                 </p>
               )}
@@ -55,7 +55,7 @@ function ContactRow({ contact }: Readonly<{ contact: Contact }>) {
             {contact.phone && (
               <a
                 href={`tel:${contact.phone}`}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-50 hover:bg-emerald-50 text-emerald-900 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-primary-container/20 text-primary transition-colors"
                 aria-label={`Call ${contact.name}`}
               >
                 <Phone size={14} strokeWidth={1.5} />
@@ -64,7 +64,7 @@ function ContactRow({ contact }: Readonly<{ contact: Contact }>) {
             {contact.email && (
               <a
                 href={`mailto:${contact.email}`}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-50 hover:bg-emerald-50 text-emerald-900 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-primary-container/20 text-primary transition-colors"
                 aria-label={`Email ${contact.name}`}
               >
                 <Mail size={14} strokeWidth={1.5} />
@@ -73,7 +73,7 @@ function ContactRow({ contact }: Readonly<{ contact: Contact }>) {
             {contact.showChat && (
               <button
                 type="button"
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-50 hover:bg-emerald-50 text-emerald-900 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-primary-container/20 text-primary transition-colors"
                 aria-label={`Message ${contact.name}`}
               >
                 <MessageSquare size={14} strokeWidth={1.5} />
@@ -82,7 +82,7 @@ function ContactRow({ contact }: Readonly<{ contact: Contact }>) {
           </div>
         </div>
       </div>
-      <hr className="border-stone-100" />
+      <hr className="border-outline-variant/30" />
     </>
   );
 }
@@ -112,19 +112,19 @@ export function SaleContactsSidebar({ progression }: Props) {
   ].filter((c) => c.name || c.email);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
-      <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-emerald-900 mb-6">
+    <div className="bg-surface rounded-2xl p-6 shadow-sm">
+      <h2 className="font-heading font-bold text-lg text-primary mb-6">
         Key Contacts
       </h2>
       {contacts.length === 0 ? (
         <div className="text-center py-10">
           <Users
             size={28}
-            className="mx-auto text-stone-200 mb-2"
+            className="mx-auto text-outline-variant mb-2"
             strokeWidth={1.25}
           />
-          <p className="text-sm text-stone-400">No contacts added yet</p>
-          <p className="text-xs text-stone-300 mt-1">
+          <p className="text-sm text-outline">No contacts added yet</p>
+          <p className="text-xs text-outline-variant mt-1">
             Add your solicitor details when you have them
           </p>
         </div>

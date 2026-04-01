@@ -34,7 +34,7 @@ export function StatusTabs({ tabs }: Props) {
             "pb-4 text-sm font-semibold tracking-wide transition-colors duration-150 whitespace-nowrap border-b-2 -mb-px",
             active === tab.key
               ? "text-[--color-brand-primary-dark] border-[--color-brand-primary-dark]"
-              : "text-zinc-400 border-transparent hover:text-[--color-brand-primary-dark]"
+              : "text-[--color-outline] border-transparent hover:text-[--color-brand-primary-dark]"
           )}
         >
           {tab.label} ({tab.count})

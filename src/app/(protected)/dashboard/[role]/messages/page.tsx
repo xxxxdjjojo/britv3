@@ -46,13 +46,13 @@ function NoConversationSelected() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16 text-center">
       <div className="flex size-16 items-center justify-center rounded-full bg-surface-container-low">
-        <Mail className="size-8 text-zinc-400" strokeWidth={1.25} />
+        <Mail className="size-8 text-outline" strokeWidth={1.25} />
       </div>
       <div>
         <p className="font-heading font-bold text-on-surface">
           Select a conversation
         </p>
-        <p className="mt-1 text-sm text-zinc-500 font-sans">
+        <p className="mt-1 text-sm text-on-surface-variant font-sans">
           Choose from the list on the left to start messaging
         </p>
       </div>
@@ -127,7 +127,7 @@ export default function MessagesPage() {
             Messages
             <UnreadBadge />
           </h1>
-          <p className="text-sm text-zinc-500 font-sans mt-0.5">
+          <p className="text-sm text-on-surface-variant font-sans mt-0.5">
             Your conversations with agents and sellers
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function MessagesPage() {
                 <div className="flex items-center gap-2 border-b border-surface-container px-4 py-3 sm:hidden bg-surface-container-lowest/80 backdrop-blur-sm">
                   <button
                     onClick={() => setActiveConversation(null)}
-                    className="flex items-center gap-1.5 text-sm text-zinc-600 hover:text-brand-primary transition-colors"
+                    className="flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-brand-primary transition-colors"
                     aria-label="Back to conversations"
                   >
                     <ArrowLeft className="size-4" strokeWidth={1.25} />

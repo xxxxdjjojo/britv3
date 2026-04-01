@@ -54,7 +54,7 @@ async function PageContent() {
         : null,
       badgeColor: (kpis.views_change_pct ?? 0) >= 0
         ? "text-brand-primary bg-primary-container/20"
-        : "text-rose-600 bg-rose-50",
+        : "text-[--color-error] bg-[--color-error-container]",
       iconBg: "bg-[--color-brand-primary-lighter]",
       iconColor: "text-[--color-brand-primary]",
     },
@@ -64,7 +64,7 @@ async function PageContent() {
       badge: null,
       badgeColor: "",
       iconBg: "bg-[--color-surface-container-high]",
-      iconColor: "text-zinc-500",
+      iconColor: "text-[--color-on-surface-variant]",
     },
     {
       label: "Property Saves",
@@ -82,9 +82,9 @@ async function PageContent() {
         : null,
       badgeColor: (kpis.enquiries_change_pct ?? 0) >= 0
         ? "text-brand-primary bg-primary-container/20"
-        : "text-rose-600 bg-rose-50",
-      iconBg: "bg-[--color-brand-accent-light]",
-      iconColor: "text-[--color-brand-accent]",
+        : "text-[--color-error] bg-[--color-error-container]",
+      iconBg: "bg-[--color-secondary-container]/20",
+      iconColor: "text-[--color-secondary-container]",
     },
     {
       label: "Active Listings",
@@ -104,10 +104,10 @@ async function PageContent() {
           <span className="text-xs font-bold tracking-[0.2em] text-[--color-brand-secondary-dark] uppercase block">
             Performance Insights
           </span>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary] leading-tight font-['Plus_Jakarta_Sans']">
+          <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary] leading-tight font-heading">
             Market Analytics
           </h1>
-          <p className="text-zinc-500 text-sm flex items-center gap-1.5">
+          <p className="text-[--color-on-surface-variant] text-sm flex items-center gap-1.5">
             Across all your active listings &bull; Last 30 days
           </p>
         </div>
@@ -115,10 +115,10 @@ async function PageContent() {
           <button className="px-5 py-2 text-xs font-semibold text-[--color-brand-primary] bg-surface-container-lowest rounded-lg shadow-sm">
             Last 30 Days
           </button>
-          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary] transition-colors">
+          <button className="px-5 py-2 text-xs font-semibold text-[--color-outline] hover:text-[--color-brand-primary] transition-colors">
             90 Days
           </button>
-          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary] transition-colors">
+          <button className="px-5 py-2 text-xs font-semibold text-[--color-outline] hover:text-[--color-brand-primary] transition-colors">
             All Time
           </button>
         </div>
@@ -145,7 +145,7 @@ async function PageContent() {
             </div>
             <div>
               <p className="text-3xl font-bold tracking-tight text-[--color-on-surface]">{card.value}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mt-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[--color-outline] mt-1">
                 {card.label}
               </p>
             </div>
@@ -157,7 +157,7 @@ async function PageContent() {
       {activeListings.length > 0 ? (
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold text-[--color-brand-primary] font-heading">
               Per-Listing Performance
             </h2>
             <Link
@@ -170,7 +170,7 @@ async function PageContent() {
           <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-[--color-surface-container-low] text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                <tr className="bg-[--color-surface-container-low] text-[10px] font-bold uppercase tracking-widest text-[--color-outline]">
                   <th className="px-8 py-5">Property</th>
                   <th className="px-8 py-5">Views</th>
                   <th className="px-8 py-5">Saves</th>
@@ -189,10 +189,10 @@ async function PageContent() {
                       className="hover:bg-[--color-surface-container-low]/50 transition-colors"
                     >
                       <td className="px-8 py-5">
-                        <p className="font-semibold text-sm text-[--color-on-surface] font-['Plus_Jakarta_Sans']">
+                        <p className="font-semibold text-sm text-[--color-on-surface] font-heading">
                           {addr || "Property"}
                         </p>
-                        <p className="text-xs text-zinc-400 mt-0.5">{listing.postcode}</p>
+                        <p className="text-xs text-[--color-outline] mt-0.5">{listing.postcode}</p>
                       </td>
                       <td className="px-8 py-5 font-semibold text-sm text-[--color-on-surface]">
                         {listing.views_count.toLocaleString()}
@@ -231,7 +231,7 @@ async function PageContent() {
               </svg>
               Get Started
             </div>
-            <h2 className="text-3xl font-extrabold font-['Plus_Jakarta_Sans'] leading-tight mb-3">
+            <h2 className="text-3xl font-extrabold font-heading leading-tight mb-3">
               Start Tracking Your Listings
             </h2>
             <p className="text-sm text-[--color-brand-primary-lighter]/70 leading-relaxed mb-6">

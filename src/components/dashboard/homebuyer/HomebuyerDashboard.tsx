@@ -92,8 +92,8 @@ const MOCK_ACTIVITY = [
   },
   {
     id: 2,
-    iconBg: "bg-brand-accent-light",
-    iconColor: "text-brand-accent",
+    iconBg: "bg-surface-container-low",
+    iconColor: "text-on-surface-variant",
     Icon: MessageSquare,
     title: "Viewing Confirmed",
     description: "Your viewing for 22 Oak Lane is confirmed",
@@ -101,8 +101,8 @@ const MOCK_ACTIVITY = [
   },
   {
     id: 3,
-    iconBg: "bg-brand-secondary-light",
-    iconColor: "text-brand-secondary-dark",
+    iconBg: "bg-secondary-container/20",
+    iconColor: "text-on-secondary-container",
     Icon: FileText,
     title: "New Match",
     description: "Richmond Road added to your matches",
@@ -291,7 +291,7 @@ export function HomebuyerDashboard({
                   </button>
                   <button
                     type="button"
-                    className="flex items-center gap-2 rounded-xl border border-outline-variant bg-white px-6 py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
+                    className="flex items-center gap-2 rounded-xl border border-outline-variant bg-surface px-6 py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
                   >
                     <RefreshCw className="size-4" strokeWidth={1.5} />
                     Reschedule
@@ -366,7 +366,7 @@ function StatCard({
   value: string | number;
 }>) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-outline-variant/10 bg-white p-6 text-center shadow-sm">
+    <div className="flex flex-col items-center rounded-2xl border border-outline-variant/10 bg-surface p-6 text-center shadow-sm">
       <Icon className="mb-4 size-6 text-brand-primary" strokeWidth={1.25} />
       <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">
         {label}
@@ -403,7 +403,7 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
       : "bg-brand-primary/90 text-white";
 
   return (
-    <div className="group overflow-hidden rounded-3xl border border-outline-variant/10 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="group overflow-hidden rounded-3xl border border-outline-variant/10 bg-surface shadow-sm transition-shadow hover:shadow-md">
       {/* Image placeholder — 4:5 aspect ratio per Stitch */}
       <div className="relative aspect-[4/5] overflow-hidden bg-surface-container-low">
         <div className="flex size-full items-center justify-center">
@@ -423,7 +423,7 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
         {/* Save button */}
         <button
           type="button"
-          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white/90 text-outline shadow-sm backdrop-blur-sm transition hover:bg-white hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-surface/90 text-outline shadow-sm backdrop-blur-sm transition hover:bg-surface hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           aria-label={`Save ${property.name}`}
         >
           <Heart className="size-4" strokeWidth={1.5} />
@@ -472,7 +472,7 @@ type ServiceData = {
 
 function ServiceCard({ service }: Readonly<{ service: ServiceData }>) {
   return (
-    <div className="group overflow-hidden rounded-3xl border border-outline-variant/10 bg-white p-8 transition-all hover:border-brand-primary/20 hover:shadow-sm">
+    <div className="group overflow-hidden rounded-3xl border border-outline-variant/10 bg-surface p-8 transition-all hover:border-brand-primary/20 hover:shadow-sm">
       {/* Icon container — bg-surface-container-low per Stitch */}
       <div className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-surface-container-low transition-colors group-hover:bg-brand-primary-lighter">
         <service.Icon className="size-6 text-brand-primary" strokeWidth={1.25} />

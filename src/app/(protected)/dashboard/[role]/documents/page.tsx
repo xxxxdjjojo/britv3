@@ -131,7 +131,7 @@ type StatusConfig = {
 const STATUS_CONFIG: Record<UserDocument["status"], StatusConfig> = {
   uploaded: {
     label: "Uploaded",
-    badgeClass: "bg-zinc-100 text-zinc-600",
+    badgeClass: "bg-surface-container-low text-on-surface-variant",
   },
   pending_review: {
     label: "Under Review",
@@ -193,18 +193,18 @@ function UploadCategoryCard({
         <div className="p-3 bg-surface-container-lowest rounded-xl">
           <Icon className="size-5 text-brand-primary" strokeWidth={1.25} />
         </div>
-        <span className="text-[10px] uppercase tracking-[0.2em] font-['Inter'] text-zinc-500">
+        <span className="text-[10px] uppercase tracking-[0.2em] font-sans text-on-surface-variant">
           {config.priority}
         </span>
       </div>
-      <h3 className="text-xl font-['Plus_Jakarta_Sans'] font-bold mb-2 text-on-surface">
+      <h3 className="text-xl font-heading font-bold mb-2 text-on-surface">
         {config.label}
       </h3>
-      <p className="text-sm text-zinc-500 mb-7 leading-relaxed">
+      <p className="text-sm text-on-surface-variant mb-7 leading-relaxed">
         {config.description}
       </p>
       <button
-        className="w-full border-2 border-dashed border-zinc-300 rounded-xl p-7 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-primary/40 transition-colors group/drop"
+        className="w-full border-2 border-dashed border-outline-variant rounded-xl p-7 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-primary/40 transition-colors group/drop"
         onClick={() => onUpload(docType)}
         disabled={isUploading}
         aria-label={`Upload ${config.label} document`}
@@ -220,7 +220,7 @@ function UploadCategoryCard({
         <span className="text-sm font-medium text-on-surface">
           {config.uploadLabel}
         </span>
-        <span className="text-xs text-zinc-500 mt-1">{config.uploadSub}</span>
+        <span className="text-xs text-on-surface-variant mt-1">{config.uploadSub}</span>
       </button>
     </section>
   );
@@ -268,19 +268,19 @@ function DocumentTableRow({
           </div>
           <div>
             <div className="text-sm font-bold text-on-surface">{doc.file_name}</div>
-            <div className="text-xs text-zinc-500 mt-0.5">
+            <div className="text-xs text-on-surface-variant mt-0.5">
               {typeConfig.description}
             </div>
           </div>
         </div>
       </td>
-      <td className="px-7 py-5 text-sm text-zinc-500 font-['Inter'] capitalize">
+      <td className="px-7 py-5 text-sm text-on-surface-variant font-sans capitalize">
         {category}
       </td>
-      <td className="px-7 py-5 text-sm text-zinc-500 font-['Inter']">
+      <td className="px-7 py-5 text-sm text-on-surface-variant font-sans">
         {formatBytes(doc.file_size_bytes)}
       </td>
-      <td className="px-7 py-5 text-sm text-zinc-500 font-['Inter']">
+      <td className="px-7 py-5 text-sm text-on-surface-variant font-sans">
         {formatDate(doc.created_at)}
       </td>
       <td className="px-7 py-5">
@@ -296,13 +296,13 @@ function DocumentTableRow({
       <td className="px-7 py-5 text-right">
         <div className="flex items-center justify-end gap-1">
           <button
-            className="p-1.5 text-zinc-400 hover:text-brand-primary transition-colors rounded-lg hover:bg-surface-container-low"
+            className="p-1.5 text-outline hover:text-brand-primary transition-colors rounded-lg hover:bg-surface-container-low"
             aria-label={`View ${doc.file_name}`}
           >
             <Eye className="size-4" strokeWidth={1.25} />
           </button>
           <button
-            className="p-1.5 text-zinc-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
+            className="p-1.5 text-outline hover:text-error transition-colors rounded-lg hover:bg-error-container/20"
             onClick={() => onDelete(doc.id, doc.file_name)}
             disabled={isDeleting}
             aria-label={`Delete ${doc.file_name}`}
@@ -314,7 +314,7 @@ function DocumentTableRow({
             )}
           </button>
           <button
-            className="p-1.5 text-zinc-400 hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-low"
+            className="p-1.5 text-outline hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-low"
             aria-label="More options"
           >
             <MoreVertical className="size-4" strokeWidth={1.25} />
@@ -421,10 +421,10 @@ export default function DocumentsPage() {
 
       {/* ── Header ──────────────────────────────────────────────── */}
       <div className="mb-12">
-        <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
+        <h1 className="font-heading text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
           Document Vault
         </h1>
-        <p className="text-zinc-500 max-w-2xl leading-relaxed text-base font-['Inter']">
+        <p className="text-on-surface-variant max-w-2xl leading-relaxed text-base font-sans">
           Manage your essential documentation with institutional-grade security.{" "}
           <span className="block mt-2 text-sm font-medium text-brand-primary">
             Your documents are encrypted and only shared with your consent.
@@ -434,7 +434,7 @@ export default function DocumentsPage() {
 
       {/* ── Error ───────────────────────────────────────────────── */}
       {error && (
-        <div className="flex items-center gap-3 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 mb-8">
+        <div className="flex items-center gap-3 rounded-xl bg-error-container/20 px-4 py-3 text-sm text-error mb-8">
           <AlertCircle className="size-4 shrink-0" strokeWidth={1.25} />
           Failed to load documents. Please refresh the page.
         </div>
@@ -455,12 +455,12 @@ export default function DocumentsPage() {
       {/* ── Recent Uploads table ─────────────────────────────────── */}
       <section className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-[0_4px_32px_rgba(26,28,28,0.04)]">
         <div className="px-7 py-8 flex items-center justify-between">
-          <h2 className="text-2xl font-['Plus_Jakarta_Sans'] font-bold text-on-surface">
+          <h2 className="text-2xl font-heading font-bold text-on-surface">
             Recent Uploads
           </h2>
           <div className="flex items-center gap-5">
             <button
-              className="flex items-center text-sm text-zinc-500 cursor-pointer hover:text-brand-primary transition-colors gap-2"
+              className="flex items-center text-sm text-on-surface-variant cursor-pointer hover:text-brand-primary transition-colors gap-2"
               aria-label="Filter documents"
             >
               <Filter className="size-4" strokeWidth={1.25} />
@@ -497,7 +497,7 @@ export default function DocumentsPage() {
                   <th
                     key={h}
                     className={cn(
-                      "px-7 py-4 text-[10px] uppercase tracking-[0.2em] font-['Inter'] font-bold text-zinc-500",
+                      "px-7 py-4 text-[10px] uppercase tracking-[0.2em] font-sans font-bold text-on-surface-variant",
                       i === 5 && "text-right",
                     )}
                   >
@@ -524,14 +524,14 @@ export default function DocumentsPage() {
                       <div className="flex size-14 items-center justify-center rounded-full bg-surface-container-low">
                         <FolderOpen
                           strokeWidth={1.25}
-                          className="size-7 text-zinc-400"
+                          className="size-7 text-outline"
                         />
                       </div>
                       <div>
-                        <p className="font-['Plus_Jakarta_Sans'] font-semibold text-on-surface">
+                        <p className="font-heading font-semibold text-on-surface">
                           No documents yet
                         </p>
-                        <p className="mt-1 text-sm text-zinc-500">
+                        <p className="mt-1 text-sm text-on-surface-variant">
                           Upload documents to keep everything in one secure place
                         </p>
                       </div>
@@ -553,7 +553,7 @@ export default function DocumentsPage() {
         </div>
 
         {/* Pagination footer */}
-        <div className="px-7 py-6 bg-surface-container-low/30 flex items-center justify-between text-sm text-zinc-500">
+        <div className="px-7 py-6 bg-surface-container-low/30 flex items-center justify-between text-sm text-on-surface-variant">
           <span>
             {isLoading
               ? "Loading…"
@@ -579,10 +579,10 @@ export default function DocumentsPage() {
       {/* ── Privacy & Encryption footer banner ─────────────────── */}
       <footer className="mt-16 flex flex-col md:flex-row items-center justify-between p-10 bg-brand-primary rounded-3xl text-on-primary-container overflow-hidden relative">
         <div className="relative z-10 max-w-xl">
-          <h4 className="text-2xl font-['Plus_Jakarta_Sans'] font-bold text-white mb-3">
+          <h4 className="text-2xl font-heading font-bold text-white mb-3">
             Privacy &amp; Encryption
           </h4>
-          <p className="text-on-primary-container leading-relaxed opacity-90 text-sm font-['Inter']">
+          <p className="text-on-primary-container leading-relaxed opacity-90 text-sm font-sans">
             We utilise AES-256 bit encryption at rest and TLS 1.3 in transit.
             Your private documents are never visible to third parties without
             your explicit, timestamped digital signature.
@@ -590,13 +590,13 @@ export default function DocumentsPage() {
           <div className="mt-7 flex items-center gap-6">
             <div className="flex items-center gap-2">
               <Lock className="size-4 text-on-primary-container" strokeWidth={1.25} />
-              <span className="text-xs font-['Inter'] uppercase tracking-widest text-white">
+              <span className="text-xs font-sans uppercase tracking-widest text-white">
                 Encrypted
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Shield className="size-4 text-on-primary-container" strokeWidth={1.25} />
-              <span className="text-xs font-['Inter'] uppercase tracking-widest text-white">
+              <span className="text-xs font-sans uppercase tracking-widest text-white">
                 GDPR Compliant
               </span>
             </div>
@@ -607,7 +607,7 @@ export default function DocumentsPage() {
           <Shield className="size-64 text-white" strokeWidth={0.25} />
         </div>
         <button
-          className="mt-8 md:mt-0 px-7 py-3 bg-secondary-fixed-dim text-on-secondary-fixed-dim font-bold rounded-xl hover:bg-secondary-container transition-all z-10 text-sm font-['Plus_Jakarta_Sans']"
+          className="mt-8 md:mt-0 px-7 py-3 bg-secondary-fixed-dim text-on-secondary-fixed-dim font-bold rounded-xl hover:bg-secondary-container transition-all z-10 text-sm font-heading"
           aria-label="Review security policy"
         >
           Review Security Policy

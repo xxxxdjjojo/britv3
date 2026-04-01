@@ -175,7 +175,7 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
                     variant="secondary"
                     className={cn(
                       "mt-0.5 w-fit text-[10px]",
-                      stat.trendType === "up" && "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400",
+                      stat.trendType === "up" && "bg-[--color-primary-container]/10 text-[--color-primary-container] dark:bg-[--color-primary-container]/20 dark:text-[--color-primary-container]",
                       stat.trendType === "neutral" && "bg-muted text-muted-foreground"
                     )}
                   >

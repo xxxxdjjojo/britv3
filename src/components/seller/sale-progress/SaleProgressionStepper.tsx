@@ -29,9 +29,9 @@ export function SaleProgressionStepper({ progression }: Props) {
   return (
     <div className="relative py-4">
       {/* Track line */}
-      <div className="absolute top-[2.25rem] left-4 right-4 h-1 bg-stone-100 z-0" />
+      <div className="absolute top-[2.25rem] left-4 right-4 h-1 bg-surface-container z-0" />
       <div
-        className="absolute top-[2.25rem] left-4 h-1 bg-emerald-600 z-0 transition-all duration-700"
+        className="absolute top-[2.25rem] left-4 h-1 bg-primary z-0 transition-all duration-700"
         style={{
           width: `calc(${progressPct}% * (100% - 2rem) / 100%)`,
         }}
@@ -61,10 +61,10 @@ export function SaleProgressionStepper({ progression }: Props) {
                   className={cn(
                     "flex items-center justify-center transition-all duration-300",
                     isCurrent
-                      ? "w-10 h-10 rounded-full bg-white border-4 border-emerald-600 text-emerald-600 shadow-xl"
+                      ? "w-10 h-10 rounded-full bg-surface border-4 border-primary text-primary shadow-xl"
                       : isCompleted
-                        ? "w-8 h-8 rounded-full bg-emerald-600 text-white shadow-lg"
-                        : "w-8 h-8 rounded-full bg-stone-200 text-stone-500",
+                        ? "w-8 h-8 rounded-full bg-primary text-white shadow-lg"
+                        : "w-8 h-8 rounded-full bg-surface-container text-on-surface-variant",
                   )}
                 >
                   {isCompleted ? (
@@ -77,7 +77,7 @@ export function SaleProgressionStepper({ progression }: Props) {
                     <Loader2
                       size={18}
                       strokeWidth={2}
-                      className="text-emerald-600 animate-spin"
+                      className="text-primary animate-spin"
                     />
                   ) : (
                     <span className="text-xs font-bold">{stage}</span>
@@ -88,24 +88,24 @@ export function SaleProgressionStepper({ progression }: Props) {
                   className={cn(
                     "text-center leading-tight max-w-[72px]",
                     isCurrent
-                      ? "text-[11px] font-bold text-emerald-900"
+                      ? "text-[11px] font-bold text-primary"
                       : isCompleted
-                        ? "text-[10px] font-bold text-stone-400"
-                        : "text-[10px] font-bold text-stone-400",
+                        ? "text-[10px] font-bold text-outline"
+                        : "text-[10px] font-bold text-outline",
                   )}
                 >
                   {config.shortLabel}
                 </p>
 
                 {completedDate ? (
-                  <p className="text-[9px] text-stone-400">
+                  <p className="text-[9px] text-outline">
                     {new Date(completedDate).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "short",
                     })}
                   </p>
                 ) : expectedDate && isCurrent ? (
-                  <p className="text-[9px] text-emerald-600/70">
+                  <p className="text-[9px] text-primary/70">
                     Est.{" "}
                     {new Date(expectedDate).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -120,25 +120,25 @@ export function SaleProgressionStepper({ progression }: Props) {
       </div>
 
       {/* Current stage detail */}
-      <div className="mt-8 bg-emerald-50/50 rounded-2xl border-2 border-emerald-600 p-5">
+      <div className="mt-8 bg-primary-container/10 rounded-2xl border-2 border-primary p-5">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
               <Loader2 size={18} strokeWidth={2} className="animate-spin" />
             </div>
             <div>
-              <p className="text-xs font-bold text-emerald-700 uppercase tracking-tighter">
+              <p className="text-xs font-bold text-primary uppercase tracking-tighter">
                 Current Stage
               </p>
-              <h3 className="font-bold text-emerald-900">
+              <h3 className="font-bold text-primary">
                 {current}. {STAGE_CONFIG[current].label}
               </h3>
             </div>
           </div>
           {progression.expected_dates[String(current)] && (
             <div className="text-right">
-              <p className="text-xs text-stone-400">Est. Completion</p>
-              <p className="text-sm font-bold text-emerald-900">
+              <p className="text-xs text-outline">Est. Completion</p>
+              <p className="text-sm font-bold text-primary">
                 {new Date(
                   progression.expected_dates[String(current)],
                 ).toLocaleDateString("en-GB", {
@@ -151,7 +151,7 @@ export function SaleProgressionStepper({ progression }: Props) {
           )}
         </div>
         {progression.notes && (
-          <p className="text-sm text-stone-500 mt-3 leading-relaxed border-t border-emerald-100 pt-3">
+          <p className="text-sm text-on-surface-variant mt-3 leading-relaxed border-t border-primary/20 pt-3">
             {progression.notes}
           </p>
         )}

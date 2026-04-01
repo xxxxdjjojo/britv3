@@ -28,7 +28,7 @@ function SparklineSVG({ values }: Readonly<{ values: number[] }>) {
   const d = points.length > 1 ? `M ${points.join(" L ")}` : "";
   return (
     <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
-      <path d={d} fill="none" stroke="#1B4D3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d} fill="none" stroke="var(--color-primary-container)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -36,10 +36,10 @@ function SparklineSVG({ values }: Readonly<{ values: number[] }>) {
 const STATUS_BADGE: Record<string, string> = {
   active: "bg-[--color-brand-primary-dark]/5 text-[--color-brand-primary-dark]",
   under_offer: "bg-[--color-brand-secondary-light] text-[--color-brand-secondary-dark]",
-  sold: "bg-[--color-surface-container-high] text-zinc-500",
-  draft: "bg-[--color-brand-accent-light] text-[--color-brand-accent]",
-  paused: "bg-[--color-surface-container-high] text-zinc-500",
-  archived: "bg-[--color-surface-container-high] text-zinc-400",
+  sold: "bg-[--color-surface-container-high] text-[--color-on-surface-variant]",
+  draft: "bg-[--color-surface-container] text-[--color-on-surface-variant]",
+  paused: "bg-[--color-surface-container-high] text-[--color-on-surface-variant]",
+  archived: "bg-[--color-surface-container-high] text-[--color-outline]",
 };
 
 function formatStatusLabel(status: string) {
@@ -63,7 +63,7 @@ export function ListingCard({ listing, onArchive }: Props) {
   const listedDaysAgo = getDaysAgo(listing.created_at);
 
   return (
-    <div className="group bg-white rounded-xl overflow-hidden flex items-stretch hover:shadow-[0_20px_50px_rgba(26,28,28,0.06)] transition-shadow duration-500">
+    <div className="group bg-[--color-surface] rounded-xl overflow-hidden flex items-stretch hover:shadow-[0_20px_50px_rgba(26,28,28,0.06)] transition-shadow duration-500">
       {/* Thumbnail */}
       <div className="w-64 xl:w-72 flex-shrink-0 overflow-hidden bg-[--color-surface-container-low]">
         {thumb ? (
@@ -73,7 +73,7 @@ export function ListingCard({ listing, onArchive }: Props) {
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-zinc-300 min-h-[180px]">
+          <div className="h-full w-full flex items-center justify-center text-[--color-outline-variant] min-h-[180px]">
             <Home size={32} strokeWidth={1} />
           </div>
         )}
@@ -88,21 +88,21 @@ export function ListingCard({ listing, onArchive }: Props) {
               <span
                 className={cn(
                   "text-[10px] font-bold tracking-[0.05em] px-2 py-0.5 rounded uppercase",
-                  STATUS_BADGE[listing.status] ?? "bg-[--color-surface-container-high] text-zinc-500"
+                  STATUS_BADGE[listing.status] ?? "bg-[--color-surface-container-high] text-[--color-on-surface-variant]"
                 )}
               >
                 {formatStatusLabel(listing.status)}
               </span>
               {listedDaysAgo !== null && (
-                <span className="text-[10px] text-zinc-400 font-medium tracking-[0.05em] uppercase">
+                <span className="text-[10px] text-[--color-outline] font-medium tracking-[0.05em] uppercase">
                   Listed {listedDaysAgo} {listedDaysAgo === 1 ? "day" : "days"} ago
                 </span>
               )}
             </div>
-            <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[--color-on-surface] mb-1 leading-tight">
+            <h3 className="font-heading font-bold text-xl text-[--color-on-surface] mb-1 leading-tight">
               {address}
             </h3>
-            <p className="text-zinc-500 text-sm flex items-center gap-1">
+            <p className="text-[--color-on-surface-variant] text-sm flex items-center gap-1">
               <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
               </svg>
@@ -110,11 +110,11 @@ export function ListingCard({ listing, onArchive }: Props) {
             </p>
           </div>
           <div className="text-right flex-shrink-0">
-            <p className="font-['Plus_Jakarta_Sans'] font-extrabold text-2xl text-[--color-brand-primary-dark] leading-tight">
+            <p className="font-heading font-extrabold text-2xl text-[--color-brand-primary-dark] leading-tight">
               {price}
             </p>
             {listing.tenure && (
-              <p className="text-xs text-zinc-400 font-medium capitalize mt-0.5">
+              <p className="text-xs text-[--color-outline] font-medium capitalize mt-0.5">
                 {listing.tenure}
               </p>
             )}
@@ -124,27 +124,27 @@ export function ListingCard({ listing, onArchive }: Props) {
         {/* Stats Row */}
         <div className="grid grid-cols-4 gap-8 py-5 border-y border-[--color-surface-container-high]/60 my-4">
           <div>
-            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase mb-1">Views</p>
-            <p className="text-lg font-['Plus_Jakarta_Sans'] font-bold text-[--color-on-surface]">
+            <p className="text-[10px] text-[--color-outline] font-bold tracking-widest uppercase mb-1">Views</p>
+            <p className="text-lg font-heading font-bold text-[--color-on-surface]">
               {listing.views_count >= 1000
                 ? `${(listing.views_count / 1000).toFixed(1)}k`
                 : listing.views_count}
             </p>
           </div>
           <div>
-            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase mb-1">Saves</p>
-            <p className="text-lg font-['Plus_Jakarta_Sans'] font-bold text-[--color-on-surface]">
+            <p className="text-[10px] text-[--color-outline] font-bold tracking-widest uppercase mb-1">Saves</p>
+            <p className="text-lg font-heading font-bold text-[--color-on-surface]">
               {listing.saves_count}
             </p>
           </div>
           <div>
-            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase mb-1">Enquiries</p>
-            <p className="text-lg font-['Plus_Jakarta_Sans'] font-bold text-[--color-on-surface]">
+            <p className="text-[10px] text-[--color-outline] font-bold tracking-widest uppercase mb-1">Enquiries</p>
+            <p className="text-lg font-heading font-bold text-[--color-on-surface]">
               {listing.enquiries_count}
             </p>
           </div>
           <div className="relative h-12">
-            <p className="text-[10px] text-zinc-400 font-bold tracking-widest uppercase absolute -top-5 right-0">Trend</p>
+            <p className="text-[10px] text-[--color-outline] font-bold tracking-widest uppercase absolute -top-5 right-0">Trend</p>
             <SparklineSVG values={listing.weekly_views} />
           </div>
         </div>
@@ -153,7 +153,7 @@ export function ListingCard({ listing, onArchive }: Props) {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-5">
             {listing.bedrooms && (
-              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-[--color-on-surface-variant]">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10" />
@@ -162,7 +162,7 @@ export function ListingCard({ listing, onArchive }: Props) {
               </div>
             )}
             {listing.property_type && (
-              <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 capitalize">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-[--color-on-surface-variant] capitalize">
                 {listing.property_type.replace("-", " ")}
               </div>
             )}
@@ -182,7 +182,7 @@ export function ListingCard({ listing, onArchive }: Props) {
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-9 h-9 flex items-center justify-center rounded border border-[--color-surface-container-high] hover:bg-[--color-surface-container-low] transition-colors">
-                <svg className="w-4 h-4 text-zinc-500" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[--color-on-surface-variant]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                 </svg>
               </DropdownMenuTrigger>

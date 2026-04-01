@@ -7,11 +7,11 @@ type Props = Readonly<{ offers: SellerOffer[] }>;
 function StatusBadge({ status }: Readonly<{ status: string }>) {
   const classes = cn(
     "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-    status === "pending" && "bg-amber-100 text-amber-800",
-    status === "accepted" && "bg-emerald-100 text-emerald-800",
-    status === "countered" && "bg-blue-100 text-blue-800",
-    status === "rejected" && "bg-red-100 text-red-700",
-    status === "withdrawn" && "bg-stone-100 text-stone-600",
+    status === "pending" && "bg-secondary-container/30 text-secondary",
+    status === "accepted" && "bg-primary-container/20 text-primary",
+    status === "countered" && "bg-tertiary-container/20 text-tertiary",
+    status === "rejected" && "bg-error-container text-error",
+    status === "withdrawn" && "bg-surface-container text-on-surface-variant",
   );
   return <span className={classes}>{status}</span>;
 }
@@ -28,7 +28,7 @@ export function OfferCompareTable({ offers }: Props) {
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead>
-          <tr className="bg-stone-50 text-stone-500 text-xs font-bold uppercase tracking-wider">
+          <tr className="bg-surface-container-low text-on-surface-variant text-xs font-bold uppercase tracking-wider">
             <th className="px-6 py-4">Buyer</th>
             <th className="px-6 py-4">Amount</th>
             <th className="px-6 py-4">Status</th>
@@ -37,7 +37,7 @@ export function OfferCompareTable({ offers }: Props) {
             <th className="px-6 py-4">Notes</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-stone-100">
+        <tbody className="divide-y divide-outline-variant/30">
           {displayed.map((offer) => {
             const diff = asking ? offer.amount - asking : null;
             const isAbove = diff !== null && diff > 0;
@@ -46,27 +46,27 @@ export function OfferCompareTable({ offers }: Props) {
             return (
               <tr
                 key={offer.id}
-                className="hover:bg-stone-50 transition-colors"
+                className="hover:bg-surface-container-low transition-colors"
               >
                 <td className="px-6 py-4">
-                  <div className="font-semibold text-emerald-900">
+                  <div className="font-semibold text-primary">
                     {offer.buyer_name}
                   </div>
-                  <div className="text-xs text-stone-400 italic capitalize">
+                  <div className="text-xs text-outline italic capitalize">
                     {offer.buyer_type ?? "—"} buyer
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="font-bold text-stone-900">
+                  <div className="font-bold text-on-surface">
                     £{(offer.amount / 100).toLocaleString("en-GB")}
                   </div>
                   {diff !== null && (
                     <div
                       className={cn(
                         "text-xs font-medium",
-                        isAbove && "text-emerald-600",
-                        isBelow && "text-red-500",
-                        !isAbove && !isBelow && "text-stone-400",
+                        isAbove && "text-primary",
+                        isBelow && "text-error",
+                        !isAbove && !isBelow && "text-outline",
                       )}
                     >
                       {isAbove
@@ -85,15 +85,15 @@ export function OfferCompareTable({ offers }: Props) {
                     {offer.is_verified ? (
                       <CheckCircle
                         size={14}
-                        className="text-emerald-600 flex-shrink-0"
+                        className="text-primary flex-shrink-0"
                       />
                     ) : (
                       <Clock
                         size={14}
-                        className="text-stone-400 flex-shrink-0"
+                        className="text-outline flex-shrink-0"
                       />
                     )}
-                    <span className="text-sm text-stone-600">
+                    <span className="text-sm text-on-surface-variant">
                       {offer.is_verified ? "Verified" : "Pending"}
                     </span>
                   </div>
@@ -103,8 +103,8 @@ export function OfferCompareTable({ offers }: Props) {
                     className={cn(
                       "text-sm font-medium",
                       offer.chain_status === "chain_free"
-                        ? "text-emerald-700"
-                        : "text-amber-700",
+                        ? "text-primary"
+                        : "text-secondary",
                     )}
                   >
                     {offer.chain_status === "chain_free"
@@ -112,7 +112,7 @@ export function OfferCompareTable({ offers }: Props) {
                       : `Chain (${offer.chain_length ?? "?"})`}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-xs text-stone-400 max-w-[200px] truncate">
+                <td className="px-6 py-4 text-xs text-outline max-w-[200px] truncate">
                   {offer.conditions ?? "—"}
                 </td>
               </tr>

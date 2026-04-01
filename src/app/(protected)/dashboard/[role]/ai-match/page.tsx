@@ -562,7 +562,7 @@ export default function AiMatchPage() {
 
       {/* Stale results banner */}
       {resultsExpired && (
-        <Alert className="rounded-xl border-amber-200 bg-amber-50 text-amber-800">
+        <Alert className="rounded-xl border-secondary-container bg-secondary-container/20 text-on-secondary-container">
           <AlertCircle className="size-4" strokeWidth={1.25} />
           <AlertDescription className="text-sm">
             Your matches are from over 24 hours ago. Click &quot;Generate

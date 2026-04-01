@@ -33,7 +33,7 @@ export function OfferActionButtons({ offer }: Props) {
         <button
           type="button"
           onClick={() => setModalAction("reject")}
-          className="py-2.5 px-4 rounded-xl text-red-500 text-sm font-semibold hover:bg-red-50 transition-colors"
+          className="py-2.5 px-4 rounded-xl text-error text-sm font-semibold hover:bg-error-container/30 transition-colors"
         >
           Reject
         </button>

@@ -7,20 +7,20 @@ const STATUS_CONFIG = {
   uploaded: {
     icon: CheckCircle,
     label: "Uploaded",
-    iconClass: "text-emerald-500",
-    pillClass: "bg-emerald-100 text-emerald-700",
+    iconClass: "text-primary",
+    pillClass: "bg-primary-container/20 text-primary",
   },
   pending: {
     icon: Clock,
     label: "Pending",
-    iconClass: "text-amber-500",
-    pillClass: "bg-amber-100 text-amber-700",
+    iconClass: "text-secondary",
+    pillClass: "bg-secondary-container/30 text-secondary",
   },
   missing: {
     icon: AlertCircle,
     label: "Required",
-    iconClass: "text-red-500",
-    pillClass: "bg-red-100 text-red-600",
+    iconClass: "text-error",
+    pillClass: "bg-error-container text-error",
   },
 } as const;
 
@@ -48,20 +48,20 @@ export function SaleDocumentsList({ progression }: Props) {
   const uploadedPct = Math.round((uploaded / total) * 100);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
+    <div className="bg-surface rounded-2xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-emerald-900 text-lg">
+        <h3 className="font-heading font-bold text-primary text-lg">
           Documents
         </h3>
-        <span className="text-sm font-semibold text-stone-400">
+        <span className="text-sm font-semibold text-outline">
           {uploaded}/{total}
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 rounded-full bg-stone-100 mb-6">
+      <div className="h-1.5 rounded-full bg-surface-container mb-6">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all"
+          className="h-full rounded-full bg-primary transition-all"
           style={{ width: `${uploadedPct}%` }}
         />
       </div>
@@ -73,9 +73,9 @@ export function SaleDocumentsList({ progression }: Props) {
           return (
             <li
               key={`${doc.name}-${doc.stage}`}
-              className="group flex items-center gap-3 p-4 rounded-xl hover:bg-stone-50 transition-colors"
+              className="group flex items-center gap-3 p-4 rounded-xl hover:bg-surface-container-low transition-colors"
             >
-              <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-stone-100">
+              <div className="w-10 h-10 rounded-lg bg-surface shadow-sm flex items-center justify-center flex-shrink-0 border border-outline-variant/30">
                 <Icon
                   size={16}
                   className={config.iconClass}
@@ -83,10 +83,10 @@ export function SaleDocumentsList({ progression }: Props) {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-emerald-900 truncate">
+                <p className="text-sm font-bold text-primary truncate">
                   {doc.name}
                 </p>
-                <p className="text-[10px] text-stone-400 uppercase font-bold tracking-wider">
+                <p className="text-[10px] text-outline uppercase font-bold tracking-wider">
                   Stage {doc.stage}
                 </p>
               </div>
@@ -97,7 +97,7 @@ export function SaleDocumentsList({ progression }: Props) {
                       href={doc.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-stone-400 hover:text-emerald-900 transition-colors"
+                      className="text-outline hover:text-primary transition-colors"
                       aria-label="View document"
                     >
                       <Eye size={16} strokeWidth={1.25} />
@@ -105,7 +105,7 @@ export function SaleDocumentsList({ progression }: Props) {
                     <a
                       href={doc.url}
                       download
-                      className="text-stone-400 hover:text-emerald-900 transition-colors"
+                      className="text-outline hover:text-primary transition-colors"
                       aria-label="Download document"
                     >
                       <Download size={16} strokeWidth={1.25} />

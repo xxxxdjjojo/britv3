@@ -63,10 +63,10 @@ export default function OffersReceivedPage() {
       <header>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-brand-primary tracking-tight">
+            <h1 className="font-heading text-3xl font-bold text-brand-primary tracking-tight">
               Offers Received
             </h1>
-            <p className="text-neutral-500 mt-1 text-sm">
+            <p className="text-on-surface-variant mt-1 text-sm">
               {pendingCount} pending offer{pendingCount !== 1 ? "s" : ""}{" "}
               awaiting your response
             </p>
@@ -92,25 +92,25 @@ export default function OffersReceivedPage() {
       {!loading && !hasError && offers.length > 0 && (
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
-            <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">
+            <p className="text-xs text-outline font-semibold uppercase tracking-wider">
               Total Offers
             </p>
             <p className="text-3xl font-bold text-on-surface mt-1">
               {offers.length}
             </p>
-            <p className="text-xs text-neutral-400 mt-0.5">received</p>
+            <p className="text-xs text-outline mt-0.5">received</p>
           </div>
-          <div className="bg-amber-50 rounded-2xl p-5 shadow-sm">
-            <p className="text-xs text-amber-700/70 font-semibold uppercase tracking-wider">
+          <div className="bg-secondary-container/20 rounded-2xl p-5 shadow-sm">
+            <p className="text-xs text-secondary/70 font-semibold uppercase tracking-wider">
               Pending
             </p>
-            <p className="text-3xl font-bold text-amber-700 mt-1">
+            <p className="text-3xl font-bold text-secondary mt-1">
               {pendingCount}
             </p>
-            <p className="text-xs text-amber-600/60 mt-0.5">need response</p>
+            <p className="text-xs text-secondary/60 mt-0.5">need response</p>
           </div>
           <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
-            <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">
+            <p className="text-xs text-outline font-semibold uppercase tracking-wider">
               Highest Offer
             </p>
             <p className="text-3xl font-bold text-brand-primary mt-1">
@@ -118,7 +118,7 @@ export default function OffersReceivedPage() {
                 ? `£${(highestOffer / 100).toLocaleString("en-GB")}`
                 : "—"}
             </p>
-            <p className="text-xs text-neutral-400 mt-0.5">offer amount</p>
+            <p className="text-xs text-outline mt-0.5">offer amount</p>
           </div>
         </div>
       )}
@@ -135,7 +135,7 @@ export default function OffersReceivedPage() {
                 "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                 filterTab === key
                   ? "bg-surface-container-lowest text-on-surface shadow-sm"
-                  : "text-neutral-500 hover:text-on-surface",
+                  : "text-on-surface-variant hover:text-on-surface",
               )}
             >
               {label}
@@ -145,7 +145,7 @@ export default function OffersReceivedPage() {
                     "text-xs px-1.5 py-0.5 rounded-full font-bold",
                     filterTab === key
                       ? "bg-primary-container/20 text-brand-primary"
-                      : "bg-surface-container text-neutral-400",
+                      : "bg-surface-container text-outline",
                   )}
                 >
                   {count}
@@ -170,10 +170,10 @@ export default function OffersReceivedPage() {
         <div className="text-center py-20 bg-surface-container-lowest rounded-2xl shadow-sm">
           <AlertCircle
             size={32}
-            className="mx-auto text-red-400 mb-3"
+            className="mx-auto text-error mb-3"
             strokeWidth={1.25}
           />
-          <p className="text-neutral-500 text-sm font-medium">
+          <p className="text-on-surface-variant text-sm font-medium">
             Failed to load offers
           </p>
           <button
@@ -188,19 +188,19 @@ export default function OffersReceivedPage() {
         <div className="text-center py-20 bg-surface-container-lowest rounded-2xl shadow-sm">
           <Inbox
             size={32}
-            className="mx-auto text-neutral-400 mb-3"
+            className="mx-auto text-outline mb-3"
             strokeWidth={1.25}
           />
-          <p className="text-neutral-500 text-sm font-medium">
+          <p className="text-on-surface-variant text-sm font-medium">
             No offers received yet
           </p>
-          <p className="text-neutral-400 text-xs mt-1">
+          <p className="text-outline text-xs mt-1">
             Offers on your active listings will appear here
           </p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 bg-surface-container-lowest rounded-2xl shadow-sm">
-          <p className="text-neutral-400 text-sm">
+          <p className="text-outline text-sm">
             No {filterTab !== "all" ? filterTab : ""} offers
           </p>
         </div>
@@ -222,7 +222,7 @@ export default function OffersReceivedPage() {
           {filtered.length >= 2 && (
             <section className="bg-surface-container-lowest rounded-2xl shadow-lg overflow-hidden">
               <div className="px-6 py-5 flex justify-between items-center bg-primary-container/20">
-                <h2 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-brand-primary">
+                <h2 className="font-heading text-xl font-bold text-brand-primary">
                   Detailed Comparison
                 </h2>
                 <span className="text-xs font-semibold text-brand-primary bg-primary-container/20 px-2.5 py-1 rounded-lg uppercase tracking-wider">
@@ -237,7 +237,7 @@ export default function OffersReceivedPage() {
                 }
               />
               <div className="p-4 bg-surface-container-low flex justify-between items-center">
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-outline">
                   All financials are verified by the Britestate Finance team.
                 </p>
                 <button

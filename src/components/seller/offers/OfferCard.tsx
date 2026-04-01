@@ -33,7 +33,7 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
   const amountPounds = `£${(amount / 100).toLocaleString("en-GB")}`;
 
   let amountDiffLabel = "";
-  let amountDiffClass = "text-stone-500 text-sm font-medium";
+  let amountDiffClass = "text-on-surface-variant text-sm font-medium";
 
   if (asking) {
     const diff = amount - asking;
@@ -41,10 +41,10 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
     const diffFormatted = `£${diffPounds.toLocaleString("en-GB")}`;
     if (diff > 0) {
       amountDiffLabel = `${diffFormatted} over asking`;
-      amountDiffClass = "text-emerald-600 text-sm font-semibold";
+      amountDiffClass = "text-primary text-sm font-semibold";
     } else if (diff < -100) {
       amountDiffLabel = "Below asking";
-      amountDiffClass = "text-red-500 text-sm font-medium";
+      amountDiffClass = "text-error text-sm font-medium";
     } else {
       amountDiffLabel = "Asking price";
     }
@@ -52,25 +52,25 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
 
   const statusClass = cn(
     "inline-block text-xs font-semibold px-2.5 py-1 rounded-full capitalize",
-    offer.status === "pending" && "bg-amber-100 text-amber-700",
-    offer.status === "accepted" && "bg-emerald-100 text-emerald-700",
-    offer.status === "countered" && "bg-blue-100 text-blue-700",
-    offer.status === "rejected" && "bg-red-100 text-red-600",
-    offer.status === "withdrawn" && "bg-stone-100 text-stone-500",
+    offer.status === "pending" && "bg-secondary-container/30 text-secondary",
+    offer.status === "accepted" && "bg-primary-container/20 text-primary",
+    offer.status === "countered" && "bg-tertiary-container/20 text-tertiary",
+    offer.status === "rejected" && "bg-error-container text-error",
+    offer.status === "withdrawn" && "bg-surface-container text-on-surface-variant",
   );
 
   return (
     <>
       <div
         className={cn(
-          "bg-white rounded-2xl overflow-hidden transition-all hover:shadow-lg",
+          "bg-surface rounded-2xl overflow-hidden transition-all hover:shadow-lg",
           featured
-            ? "border-2 border-emerald-900 shadow-xl relative"
-            : "border border-stone-200 shadow-md",
+            ? "border-2 border-primary shadow-xl relative"
+            : "border border-outline-variant shadow-md",
         )}
       >
         {featured && (
-          <div className="absolute top-4 right-4 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tight z-10">
+          <div className="absolute top-4 right-4 bg-primary-container/20 text-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tight z-10">
             Recommended
           </div>
         )}
@@ -82,8 +82,8 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
               className={cn(
                 "h-12 w-12 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0",
                 featured
-                  ? "bg-emerald-50 text-emerald-900"
-                  : "bg-stone-100 text-stone-600",
+                  ? "bg-primary-container/20 text-primary"
+                  : "bg-surface-container text-on-surface-variant",
               )}
             >
               {offer.buyer_name.charAt(0).toUpperCase()}
@@ -93,16 +93,16 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
                 <h3
                   className={cn(
                     "text-lg font-bold",
-                    featured ? "text-emerald-900" : "text-stone-900",
+                    featured ? "text-primary" : "text-on-surface",
                   )}
                 >
                   {offer.buyer_name}
                 </h3>
                 {offer.is_verified && (
-                  <BadgeCheck size={15} className="text-blue-500 flex-shrink-0" />
+                  <BadgeCheck size={15} className="text-tertiary flex-shrink-0" />
                 )}
               </div>
-              <p className="text-sm text-stone-400">
+              <p className="text-sm text-outline">
                 {new Date(offer.offered_at).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",
@@ -118,7 +118,7 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
             <span
               className={cn(
                 "text-3xl font-bold",
-                featured ? "text-emerald-900" : "text-stone-900",
+                featured ? "text-primary" : "text-on-surface",
               )}
             >
               {amountPounds}
@@ -132,14 +132,14 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
 
           {/* Details rows */}
           <div className="space-y-0 mb-8">
-            <div className="flex items-center justify-between py-2.5 border-b border-stone-100">
-              <span className="text-sm text-stone-400">Position</span>
+            <div className="flex items-center justify-between py-2.5 border-b border-outline-variant/30">
+              <span className="text-sm text-outline">Position</span>
               <span
                 className={cn(
                   "text-sm font-semibold flex items-center gap-1",
                   offer.chain_status === "chain_free"
-                    ? "text-emerald-700"
-                    : "text-amber-700",
+                    ? "text-primary"
+                    : "text-secondary",
                 )}
               >
                 {offer.chain_status === "chain_free" ? (
@@ -152,9 +152,9 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
                   : `Chain (${offer.chain_length ?? "?"})`}
               </span>
             </div>
-            <div className="flex items-center justify-between py-2.5 border-b border-stone-100">
-              <span className="text-sm text-stone-400">Funding</span>
-              <span className="text-sm font-semibold text-stone-900 capitalize">
+            <div className="flex items-center justify-between py-2.5 border-b border-outline-variant/30">
+              <span className="text-sm text-outline">Funding</span>
+              <span className="text-sm font-semibold text-on-surface capitalize">
                 {offer.buyer_type === "cash"
                   ? "Cash Buyer"
                   : offer.buyer_type === "mortgage"
@@ -163,11 +163,11 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
               </span>
             </div>
             <div className="flex items-center justify-between py-2.5">
-              <span className="text-sm text-stone-400">Conditions</span>
+              <span className="text-sm text-outline">Conditions</span>
               <span
                 className={cn(
-                  "text-sm font-semibold text-stone-900",
-                  !offer.conditions && "italic text-stone-400",
+                  "text-sm font-semibold text-on-surface",
+                  !offer.conditions && "italic text-outline",
                 )}
               >
                 {offer.conditions ?? "None"}
@@ -185,8 +185,8 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
                   className={cn(
                     "w-full py-3 text-sm font-bold rounded-xl transition-all",
                     featured
-                      ? "bg-emerald-900 text-white hover:bg-emerald-800"
-                      : "border-2 border-emerald-900 text-emerald-900 hover:bg-emerald-50",
+                      ? "bg-primary text-white hover:bg-primary-container"
+                      : "border-2 border-primary text-primary hover:bg-primary-container/10",
                   )}
                 >
                   Accept Offer
@@ -195,14 +195,14 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
                   <button
                     type="button"
                     onClick={() => setModalAction("counter")}
-                    className="py-2.5 border border-stone-200 text-stone-700 font-semibold rounded-xl hover:bg-stone-50 transition-all text-sm"
+                    className="py-2.5 border border-outline-variant text-on-surface font-semibold rounded-xl hover:bg-surface-container-low transition-all text-sm"
                   >
                     Counter
                   </button>
                   <button
                     type="button"
                     onClick={() => setModalAction("reject")}
-                    className="py-2.5 border border-red-200 text-red-600 font-semibold rounded-xl hover:bg-red-50 transition-all text-sm"
+                    className="py-2.5 border border-error/30 text-error font-semibold rounded-xl hover:bg-error-container/30 transition-all text-sm"
                   >
                     Reject
                   </button>
@@ -213,7 +213,7 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
                 <span className={statusClass}>{offer.status}</span>
                 <Link
                   href={`/dashboard/seller/offers/${offer.id}`}
-                  className="flex items-center gap-1 text-xs text-emerald-900 font-semibold hover:underline"
+                  className="flex items-center gap-1 text-xs text-primary font-semibold hover:underline"
                 >
                   View negotiation
                   <ChevronRight size={13} />
@@ -224,7 +224,7 @@ export function OfferCard({ offer, onUpdated, featured = false }: Props) {
             {offer.status === "pending" && (
               <Link
                 href={`/dashboard/seller/offers/${offer.id}`}
-                className="flex items-center justify-center gap-1 text-xs text-emerald-900 font-semibold hover:underline mt-1"
+                className="flex items-center justify-center gap-1 text-xs text-primary font-semibold hover:underline mt-1"
               >
                 View full negotiation
                 <ChevronRight size={13} />

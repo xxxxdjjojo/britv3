@@ -77,7 +77,7 @@ async function PageContent({ params }: Props) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-3">
+          <nav className="flex items-center gap-2 text-sm text-outline mb-3">
             <Link
               href="/dashboard/seller/offers"
               className="flex items-center gap-1.5 hover:text-brand-primary transition-colors"
@@ -85,14 +85,14 @@ async function PageContent({ params }: Props) {
               <ArrowLeft size={14} strokeWidth={1.5} />
               Offers
             </Link>
-            <span className="text-neutral-300">/</span>
+            <span className="text-outline-variant">/</span>
             <span className="text-brand-primary font-medium">{address}</span>
           </nav>
-          <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-on-surface tracking-tight">
+          <h1 className="font-heading text-3xl font-bold text-on-surface tracking-tight">
             Sale Progress Tracker
           </h1>
           {offer && (
-            <p className="text-neutral-500 mt-1">
+            <p className="text-on-surface-variant mt-1">
               Sale to{" "}
               <span className="font-semibold text-brand-primary">
                 {offer.buyer_name}
@@ -128,7 +128,7 @@ async function PageContent({ params }: Props) {
       {/* Progress overview pill */}
       <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-brand-primary">
+          <h2 className="font-heading font-bold text-lg text-brand-primary">
             Live Conveyancing Timeline
           </h2>
           <span className="bg-primary-container/20 text-brand-primary px-3 py-1 rounded-full text-xs font-bold border border-outline-variant/20 uppercase tracking-wider">

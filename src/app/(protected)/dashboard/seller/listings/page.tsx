@@ -76,10 +76,10 @@ async function PageContent({ searchParams }: Props) {
           <span className="text-xs font-bold tracking-[0.2em] text-[--color-brand-secondary-dark] uppercase block mb-2">
             My Portfolio
           </span>
-          <h1 className="text-3xl font-extrabold text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] tracking-tight leading-tight">
+          <h1 className="text-3xl font-extrabold text-[--color-brand-primary] font-heading tracking-tight leading-tight">
             My Listings
           </h1>
-          <p className="text-zinc-500 mt-1 text-sm">
+          <p className="text-[--color-on-surface-variant] mt-1 text-sm">
             Manage and track your property portfolio
           </p>
         </div>
@@ -103,10 +103,10 @@ async function PageContent({ searchParams }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75v-5.25h-4.5V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
             </svg>
           </div>
-          <p className="text-zinc-500 mb-1 text-sm">
+          <p className="text-[--color-on-surface-variant] mb-1 text-sm">
             No listings{status ? ` with status &ldquo;${status}&rdquo;` : ""}
           </p>
-          <p className="text-zinc-400 text-xs mb-6">
+          <p className="text-[--color-outline] text-xs mb-6">
             Create your first listing to get started
           </p>
           <Link
