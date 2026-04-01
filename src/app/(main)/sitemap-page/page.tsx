@@ -74,10 +74,10 @@ export default function SitemapPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="text-center">
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold text-on-surface sm:text-5xl">
           Sitemap
         </h1>
-        <p className="mt-3 text-base text-neutral-600">
+        <p className="mt-3 text-base text-[--color-on-surface-variant]">
           Browse all pages on Britestate.
         </p>
       </div>
@@ -85,7 +85,7 @@ export default function SitemapPage() {
       <div className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
         {sections.map((section) => (
           <div key={section.heading}>
-            <h2 className="font-heading text-lg font-bold text-neutral-900">
+            <h2 className="font-heading text-lg font-bold text-on-surface">
               {section.heading}
             </h2>
             <ul className="mt-3 space-y-2">
@@ -93,7 +93,7 @@ export default function SitemapPage() {
                 <li key={link.href + link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-neutral-600 underline-offset-4 hover:text-brand-primary hover:underline"
+                    className="text-sm text-[--color-on-surface-variant] underline-offset-4 hover:text-brand-primary hover:underline"
                   >
                     {link.label}
                   </Link>

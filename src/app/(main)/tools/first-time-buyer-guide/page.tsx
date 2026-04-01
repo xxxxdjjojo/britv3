@@ -88,7 +88,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "25% penalty for withdrawals not used for first home or retirement",
     ],
     color:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+      "bg-brand-primary-lighter text-[--color-brand-primary-light] dark:bg-emerald-900/30 dark:text-emerald-400",
   },
   {
     icon: Users,
@@ -189,7 +189,7 @@ function AffordabilityChecker() {
         </div>
 
         {/* Results */}
-        <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
+        <div className="rounded-xl border border-[--color-outline-variant] bg-[--color-surface-container-low] p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Your Estimated Affordable Range
           </p>
@@ -197,7 +197,7 @@ function AffordabilityChecker() {
             <span className="text-2xl font-bold tabular-nums text-brand-primary">
               {gbp(maxPriceLow)}
             </span>
-            <span className="text-neutral-400">&ndash;</span>
+            <span className="text-[--color-on-surface-variant]">&ndash;</span>
             <span className="text-2xl font-bold tabular-nums text-brand-primary">
               {gbp(maxPriceHigh)}
             </span>
@@ -243,9 +243,9 @@ export default function FirstTimeBuyerGuidePage() {
   return (
     <>
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="border-b border-[--color-outline-variant] bg-surface-container-lowest dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-sm text-neutral-500">
+          <nav className="flex items-center gap-2 text-sm text-[--color-on-surface-variant]">
             <Link
               href="/tools"
               className="transition-colors hover:text-brand-primary"
@@ -253,7 +253,7 @@ export default function FirstTimeBuyerGuidePage() {
               Tools
             </Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-neutral-900 dark:text-white">
+            <span className="font-medium text-on-surface dark:text-white">
               First-Time Buyer Guide
             </span>
           </nav>
@@ -261,16 +261,16 @@ export default function FirstTimeBuyerGuidePage() {
       </div>
 
       {/* Hero */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
+      <header className="border-b border-[--color-outline-variant] bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3 py-1 text-xs font-semibold text-brand-primary">
             <GraduationCap className="h-3.5 w-3.5" />
             Complete Guide for 2025/26
           </div>
-          <h1 className="mb-4 font-heading text-4xl font-bold text-neutral-900 dark:text-white">
+          <h1 className="mb-4 font-heading text-4xl font-bold text-on-surface dark:text-white">
             First-Time Buyer Guide
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
+          <p className="mx-auto max-w-2xl text-lg text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
             Everything you need to know about buying your first home in the UK.
             From government schemes and savings options to an affordability
             checker — all in one place.
@@ -287,7 +287,7 @@ export default function FirstTimeBuyerGuidePage() {
 
             {/* Guide sections */}
             <div className="space-y-6">
-              <h2 className="font-heading text-2xl font-bold text-neutral-900 dark:text-white">
+              <h2 className="font-heading text-2xl font-bold text-on-surface dark:text-white">
                 Government Schemes &amp; Eligibility
               </h2>
 
@@ -303,10 +303,10 @@ export default function FirstTimeBuyerGuidePage() {
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+                          <h3 className="text-lg font-bold text-on-surface dark:text-white">
                             {section.title}
                           </h3>
-                          <p className="mt-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                          <p className="mt-1 text-sm leading-relaxed text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                             {section.description}
                           </p>
                         </div>
@@ -316,7 +316,7 @@ export default function FirstTimeBuyerGuidePage() {
                         {section.details.map((detail) => (
                           <li
                             key={detail}
-                            className="flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400"
+                            className="flex items-start gap-2 text-sm text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]"
                           >
                             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-primary" />
                             {detail}
@@ -331,7 +331,7 @@ export default function FirstTimeBuyerGuidePage() {
 
             {/* FAQ */}
             <section className="space-y-4">
-              <h3 className="font-heading text-xl font-bold text-neutral-900 dark:text-white">
+              <h3 className="font-heading text-xl font-bold text-on-surface dark:text-white">
                 Frequently Asked Questions
               </h3>
               {[
@@ -354,12 +354,12 @@ export default function FirstTimeBuyerGuidePage() {
               ].map((faq) => (
                 <details
                   key={faq.q}
-                  className="group rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
+                  className="group rounded-lg border border-[--color-outline-variant] bg-surface-container-lowest dark:border-neutral-800 dark:bg-neutral-900"
                 >
-                  <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-neutral-900 dark:text-white">
+                  <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-on-surface dark:text-white">
                     {faq.q}
                   </summary>
-                  <p className="px-5 pb-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  <p className="px-5 pb-4 text-sm leading-relaxed text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                     {faq.a}
                   </p>
                 </details>
@@ -384,7 +384,7 @@ export default function FirstTimeBuyerGuidePage() {
               </p>
               <Link
                 href="/marketplace?category=mortgage-broker"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-[--color-surface-container-low]"
               >
                 Find a Broker
               </Link>
@@ -396,45 +396,45 @@ export default function FirstTimeBuyerGuidePage() {
             {/* Related tools */}
             <Card>
               <CardContent className="space-y-3 p-5">
-                <h3 className="font-bold text-neutral-900 dark:text-white">
+                <h3 className="font-bold text-on-surface dark:text-white">
                   Related Tools
                 </h3>
                 <Link
                   href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-[--color-outline-variant] p-3 transition-colors hover:bg-[--color-surface-container-low] dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Calculator className="h-5 w-5 text-brand-primary" />
                   <div>
                     <p className="text-sm font-semibold">Mortgage Calculator</p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-[--color-on-surface-variant]">
                       Estimate monthly repayments
                     </p>
                   </div>
                 </Link>
                 <Link
                   href="/tools/stamp-duty-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-[--color-outline-variant] p-3 transition-colors hover:bg-[--color-surface-container-low] dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Home className="h-5 w-5 text-brand-primary" />
                   <div>
                     <p className="text-sm font-semibold">
                       Stamp Duty Calculator
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-[--color-on-surface-variant]">
                       Check your FTB SDLT relief
                     </p>
                   </div>
                 </Link>
                 <Link
                   href="/tools/moving-cost-estimator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-[--color-outline-variant] p-3 transition-colors hover:bg-[--color-surface-container-low] dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <PiggyBank className="h-5 w-5 text-brand-primary" />
                   <div>
                     <p className="text-sm font-semibold">
                       Moving Cost Estimator
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-[--color-on-surface-variant]">
                       Budget for all buying costs
                     </p>
                   </div>
@@ -443,10 +443,10 @@ export default function FirstTimeBuyerGuidePage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-[--color-outline-variant] bg-[--color-surface-container-low]/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
-                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
-                <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
+                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-[--color-on-surface-variant]" />
+                <p className="text-[11px] italic leading-relaxed text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                   Disclaimer: This guide is for informational purposes only and
                   does not constitute financial advice. Government schemes,
                   thresholds, and rates are subject to change. Always check

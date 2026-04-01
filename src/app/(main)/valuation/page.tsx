@@ -37,10 +37,10 @@ export default function ValuationPage() {
         <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
           <Home className="size-8" />
         </div>
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold text-on-surface sm:text-5xl">
           Get a Free Property Valuation
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-[--color-on-surface-variant]">
           Find out what your property is worth with our AI-powered valuation
           tool. Instant, accurate, and completely free.
         </p>
@@ -64,22 +64,22 @@ export default function ValuationPage() {
 
       {/* Features */}
       <section className="mt-20">
-        <h2 className="text-center font-heading text-2xl font-bold text-neutral-900">
+        <h2 className="text-center font-heading text-2xl font-bold text-on-surface">
           How It Works
         </h2>
         <div className="mt-8 grid gap-8 sm:grid-cols-3">
           {VALUATION_FEATURES.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-xl border border-neutral-200 p-6 text-center"
+              className="rounded-xl border border-[--color-outline-variant] p-6 text-center"
             >
               <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
                 <feature.icon className="size-6" />
               </div>
-              <h3 className="font-heading text-lg font-semibold text-neutral-900">
+              <h3 className="font-heading text-lg font-semibold text-on-surface">
                 {feature.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-500">
+              <p className="mt-2 text-sm leading-relaxed text-[--color-on-surface-variant]">
                 {feature.description}
               </p>
             </div>
@@ -89,10 +89,10 @@ export default function ValuationPage() {
 
       {/* Landlord CTA */}
       <section className="mt-20 rounded-2xl bg-brand-primary-lighter p-8 text-center sm:p-12">
-        <h2 className="font-heading text-2xl font-bold text-neutral-900">
+        <h2 className="font-heading text-2xl font-bold text-on-surface">
           Are you a landlord?
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-neutral-600">
+        <p className="mx-auto mt-3 max-w-xl text-[--color-on-surface-variant]">
           Access detailed rental yield calculations and portfolio valuations
           from your landlord dashboard.
         </p>

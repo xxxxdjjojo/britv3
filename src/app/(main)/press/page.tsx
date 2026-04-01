@@ -31,20 +31,20 @@ export default async function PressPage() {
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       {/* Hero */}
       <div className="text-center">
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold text-on-surface sm:text-5xl">
           Press
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-[--color-on-surface-variant]">
           The latest news, announcements, and media resources from Britestate.
         </p>
       </div>
 
       {fetchError || releases.length === 0 ? (
-        <div className="mt-12 rounded-xl border border-neutral-200 p-8 text-center">
-          <h2 className="font-heading text-xl font-semibold text-neutral-900">
+        <div className="mt-12 rounded-xl border border-[--color-outline-variant] p-8 text-center">
+          <h2 className="font-heading text-xl font-semibold text-on-surface">
             Coming Soon
           </h2>
-          <p className="mt-2 text-sm text-neutral-500">
+          <p className="mt-2 text-sm text-[--color-on-surface-variant]">
             Our press page is being prepared. In the meantime, please reach out
             to our team for any media enquiries.
           </p>
@@ -60,20 +60,20 @@ export default async function PressPage() {
           {releases.map((release) => (
             <div
               key={release.id}
-              className="rounded-xl border border-neutral-200 p-6"
+              className="rounded-xl border border-[--color-outline-variant] p-6"
             >
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-[--color-on-surface-variant]">
                 {new Date(release.created_at).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
                 })}
               </p>
-              <h2 className="mt-1 font-heading text-lg font-semibold text-neutral-900">
+              <h2 className="mt-1 font-heading text-lg font-semibold text-on-surface">
                 {release.title}
               </h2>
               {release.excerpt && (
-                <p className="mt-2 text-sm text-neutral-500 line-clamp-2">
+                <p className="mt-2 text-sm text-[--color-on-surface-variant] line-clamp-2">
                   {release.excerpt}
                 </p>
               )}
