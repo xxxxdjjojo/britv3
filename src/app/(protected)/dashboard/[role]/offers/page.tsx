@@ -182,7 +182,7 @@ function NegotiationProgress({ status }: Readonly<{ status: OfferStatus }>) {
             key={s}
             className={cn(
               "text-[10px] font-bold uppercase tracking-tighter",
-              i === mappedStep ? "text-emerald-700" : "text-stone-400",
+              i === mappedStep ? "text-brand-primary" : "text-stone-400",
             )}
           >
             {s}
@@ -191,7 +191,7 @@ function NegotiationProgress({ status }: Readonly<{ status: OfferStatus }>) {
       </div>
       <div className="h-0.5 bg-stone-100 w-full relative">
         <div
-          className="absolute h-full bg-emerald-700"
+          className="absolute h-full bg-brand-primary"
           style={{ width: `${progressPct}%` }}
         />
         {stages.map((_, i) => {
@@ -202,8 +202,8 @@ function NegotiationProgress({ status }: Readonly<{ status: OfferStatus }>) {
               key={i}
               className={cn(
                 "absolute -top-[3px] w-2 h-2 rounded-full",
-                done ? "bg-emerald-700" : "bg-stone-200",
-                i === mappedStep && "ring-4 ring-emerald-50",
+                done ? "bg-brand-primary" : "bg-stone-200",
+                i === mappedStep && "ring-4 ring-primary-container/20",
               )}
               style={{ left: `${pct}%`, transform: "translateX(-50%)" }}
             />
@@ -238,13 +238,13 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
       Under Review
     </span>
   ) : (
-    <span className="bg-emerald-100 text-emerald-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+    <span className="bg-primary-container/20 text-brand-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
       {STATUS_LABELS[offer.status]}
     </span>
   );
 
   return (
-    <article className="bg-white overflow-hidden group shadow-sm hover:shadow-md transition-all rounded-2xl">
+    <article className="bg-surface-container-lowest overflow-hidden group shadow-sm hover:shadow-md transition-all rounded-2xl">
       <div className="flex flex-col md:flex-row gap-0 md:gap-8">
         <div className="md:w-1/3 aspect-[4/5] relative overflow-hidden rounded-l-2xl bg-stone-100 flex-shrink-0">
           {offer.photo_url ? (
@@ -266,10 +266,10 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
         <div className="md:w-2/3 py-6 pr-6 pl-6 md:pl-0 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-2">
-              <h2 className="text-xl font-bold tracking-tight text-stone-900 font-['Plus_Jakarta_Sans']">
+              <h2 className="text-xl font-bold tracking-tight text-on-surface font-['Plus_Jakarta_Sans']">
                 {offer.property_address}
               </h2>
-              <span className="text-emerald-900 font-bold text-lg flex-shrink-0 ml-4">
+              <span className="text-brand-primary font-bold text-lg flex-shrink-0 ml-4">
                 {formatGBP(offer.amount_pence)}
               </span>
             </div>
@@ -312,11 +312,11 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-stone-100">
+          <div className="flex flex-wrap gap-3 pt-4 border-t border-outline-variant/20">
             {isCountered && (
               <Link
                 href={`/dashboard/homebuyer/offers/${offer.id}`}
-                className="bg-emerald-900 text-white px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:bg-emerald-800 transition-colors"
+                className="bg-brand-primary text-white px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wide hover:opacity-90 transition-colors"
               >
                 Respond to Counter
               </Link>
@@ -339,7 +339,7 @@ function OfferCard({ offer }: Readonly<{ offer: BuyerOffer }>) {
             )}
             <Link
               href={`/dashboard/homebuyer/offers/${offer.id}`}
-              className="text-stone-400 px-3 py-2.5 text-xs font-semibold tracking-wide hover:text-stone-900 transition-colors flex items-center gap-1"
+              className="text-stone-400 px-3 py-2.5 text-xs font-semibold tracking-wide hover:text-on-surface transition-colors flex items-center gap-1"
             >
               Details
               <ChevronRight size={12} strokeWidth={1.5} />
@@ -386,7 +386,7 @@ export default function OffersPage() {
       {/* Page Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tighter text-stone-900">
+          <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tighter text-on-surface">
             Active Proposals
           </h1>
           <p className="text-stone-500 text-base mt-2 leading-relaxed max-w-xl">
@@ -396,7 +396,7 @@ export default function OffersPage() {
         </div>
         <button
           type="button"
-          className="bg-emerald-900 hover:bg-emerald-800 text-white px-8 py-4 rounded-lg font-['Plus_Jakarta_Sans'] font-semibold text-sm transition-all shadow-lg flex items-center gap-2 self-start md:self-auto flex-shrink-0"
+          className="bg-brand-primary hover:opacity-90 text-white px-8 py-4 rounded-lg font-['Plus_Jakarta_Sans'] font-semibold text-sm transition-all shadow-lg flex items-center gap-2 self-start md:self-auto flex-shrink-0"
         >
           <span className="text-lg leading-none">+</span>
           Submit New Offer
@@ -407,7 +407,7 @@ export default function OffersPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-12 items-start">
         {/* Left column */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 w-fit">
+          <div className="flex items-center gap-1 bg-surface-container rounded-xl p-1 w-fit">
             {tabs.map(({ key, label }) => (
               <button
                 key={key}
@@ -416,8 +416,8 @@ export default function OffersPage() {
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                   tab === key
-                    ? "bg-white text-stone-900 shadow-sm"
-                    : "text-stone-500 hover:text-stone-900",
+                    ? "bg-surface-container-lowest text-on-surface shadow-sm"
+                    : "text-stone-500 hover:text-on-surface",
                 )}
               >
                 {label}
@@ -426,7 +426,7 @@ export default function OffersPage() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+            <div className="text-center py-20 bg-surface-container-lowest rounded-2xl shadow-sm">
               <Home
                 size={32}
                 strokeWidth={1.25}
@@ -440,7 +440,7 @@ export default function OffersPage() {
               </p>
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-emerald-900 text-white text-sm font-semibold hover:bg-emerald-800 transition-colors"
+                className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:opacity-90 transition-colors"
               >
                 Browse properties
                 <ArrowRight size={15} strokeWidth={1.25} />
@@ -458,7 +458,7 @@ export default function OffersPage() {
         {/* Right sidebar */}
         <aside className="space-y-10">
           {/* Market Insight */}
-          <section className="bg-emerald-900 text-white p-8 rounded-xl relative overflow-hidden">
+          <section className="bg-brand-primary text-white p-8 rounded-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-6">
@@ -501,11 +501,11 @@ export default function OffersPage() {
 
           {/* Active portfolio value */}
           {activeCount > 0 && (
-            <section className="bg-white rounded-xl p-6 shadow-sm">
+            <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
               <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-1">
                 Active Portfolio Value
               </p>
-              <p className="text-3xl font-bold text-emerald-900">
+              <p className="text-3xl font-bold text-brand-primary">
                 {formatGBP(totalValue)}
               </p>
             </section>
@@ -514,12 +514,12 @@ export default function OffersPage() {
           {/* Recent history */}
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-stone-900">
+              <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-on-surface">
                 Recent History
               </h3>
               <button
                 type="button"
-                className="text-[11px] font-bold text-emerald-800 hover:underline"
+                className="text-[11px] font-bold text-brand-primary hover:underline"
               >
                 View All
               </button>
@@ -536,14 +536,14 @@ export default function OffersPage() {
                   </div>
                   <div className="flex-grow min-w-0">
                     <div className="flex justify-between items-start">
-                      <h4 className="text-xs font-bold text-stone-900 truncate pr-2">
+                      <h4 className="text-xs font-bold text-on-surface truncate pr-2">
                         {h.title}
                       </h4>
                       <span
                         className={cn(
                           "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 flex-shrink-0",
                           h.status === "accepted"
-                            ? "text-emerald-600 bg-emerald-50"
+                            ? "text-brand-primary bg-primary-container/20"
                             : "text-red-600 bg-red-50",
                         )}
                       >
@@ -555,7 +555,7 @@ export default function OffersPage() {
                     </p>
                     <button
                       type="button"
-                      className="text-[9px] font-bold text-stone-400 hover:text-emerald-900 flex items-center gap-1 uppercase tracking-widest transition-colors"
+                      className="text-[9px] font-bold text-stone-400 hover:text-brand-primary flex items-center gap-1 uppercase tracking-widest transition-colors"
                     >
                       Archive Details
                       <ChevronRight size={11} strokeWidth={1.5} />
@@ -567,7 +567,7 @@ export default function OffersPage() {
           </section>
 
           {/* Pending tasks */}
-          <section className="bg-stone-50 p-6 rounded-xl">
+          <section className="bg-surface-container-low p-6 rounded-xl">
             <h3 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">
               Pending Tasks
             </h3>
@@ -585,7 +585,7 @@ export default function OffersPage() {
                   {task.done ? (
                     <CheckCircle2
                       size={14}
-                      className="text-emerald-600 flex-shrink-0"
+                      className="text-brand-primary flex-shrink-0"
                     />
                   ) : (
                     <AlertCircle
