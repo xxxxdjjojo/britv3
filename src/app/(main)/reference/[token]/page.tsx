@@ -21,14 +21,14 @@ export default async function ReferenceSubmissionPage(props: PageProps) {
   if (!result.valid) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
-        <div className="mx-auto max-w-md rounded-xl bg-white p-8 text-center shadow-lg">
+        <div className="mx-auto max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-lg">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
             <span className="text-2xl text-red-600">!</span>
           </div>
-          <h1 className="mb-2 text-xl font-semibold text-gray-900">
+          <h1 className="mb-2 text-xl font-semibold text-on-surface">
             Invalid or Expired Link
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[--color-on-surface-variant]">
             This reference link has expired or is invalid. Please ask the
             service provider to send a new request.
           </p>
@@ -48,14 +48,14 @@ export default async function ReferenceSubmissionPage(props: PageProps) {
   if (refError || !reference) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
-        <div className="mx-auto max-w-md rounded-xl bg-white p-8 text-center shadow-lg">
+        <div className="mx-auto max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-lg">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
             <span className="text-2xl text-red-600">!</span>
           </div>
-          <h1 className="mb-2 text-xl font-semibold text-gray-900">
+          <h1 className="mb-2 text-xl font-semibold text-on-surface">
             Reference Not Found
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[--color-on-surface-variant]">
             We could not find this reference request. It may have been removed.
             Please contact the service provider for assistance.
           </p>
@@ -68,14 +68,14 @@ export default async function ReferenceSubmissionPage(props: PageProps) {
   if (reference.status !== "pending") {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
-        <div className="mx-auto max-w-md rounded-xl bg-white p-8 text-center shadow-lg">
+        <div className="mx-auto max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-lg">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
             <span className="text-2xl text-green-600">&#10003;</span>
           </div>
-          <h1 className="mb-2 text-xl font-semibold text-gray-900">
+          <h1 className="mb-2 text-xl font-semibold text-on-surface">
             Already Submitted
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-[--color-on-surface-variant]">
             Thank you! This reference has already been submitted.
           </p>
         </div>

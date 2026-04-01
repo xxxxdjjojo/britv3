@@ -140,9 +140,9 @@ export default function MovingCostEstimatorPage() {
   return (
     <>
       {/* Breadcrumbs */}
-      <div className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="border-b border-[--color-outline-variant] bg-surface-container-lowest dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-2 text-sm text-neutral-500">
+          <nav className="flex items-center gap-2 text-sm text-[--color-on-surface-variant]">
             <Link
               href="/tools"
               className="transition-colors hover:text-brand-primary"
@@ -150,7 +150,7 @@ export default function MovingCostEstimatorPage() {
               Tools
             </Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-neutral-900 dark:text-white">
+            <span className="font-medium text-on-surface dark:text-white">
               Moving Cost Estimator
             </span>
           </nav>
@@ -158,12 +158,12 @@ export default function MovingCostEstimatorPage() {
       </div>
 
       {/* Hero */}
-      <header className="border-b border-neutral-200 bg-white py-12 dark:border-neutral-800 dark:bg-neutral-900">
+      <header className="border-b border-[--color-outline-variant] bg-surface-container-lowest py-12 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="mb-4 font-heading text-4xl font-bold text-neutral-900 dark:text-white">
+          <h1 className="mb-4 font-heading text-4xl font-bold text-on-surface dark:text-white">
             Moving Cost Estimator
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
+          <p className="mx-auto max-w-2xl text-lg text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
             Get a complete breakdown of the costs involved in buying and moving
             into a new home, including stamp duty, legal fees, surveys, and
             removals.
@@ -244,16 +244,16 @@ export default function MovingCostEstimatorPage() {
                   return (
                     <div key={item.label}>
                       <div className="mb-1.5 flex items-center justify-between">
-                        <span className="text-sm font-medium text-neutral-900 dark:text-white">
+                        <span className="text-sm font-medium text-on-surface dark:text-white">
                           {item.label}
                         </span>
-                        <span className="text-sm tabular-nums text-neutral-600 dark:text-neutral-400">
+                        <span className="text-sm tabular-nums text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                           {item.low === item.high
                             ? gbp(item.low)
                             : `${gbp(item.low)} – ${gbp(item.high)}`}
                         </span>
                       </div>
-                      <div className="h-3 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                      <div className="h-3 w-full overflow-hidden rounded-full bg-[--color-surface-container-low] dark:bg-neutral-800">
                         <div
                           className={`h-full rounded-full ${item.color} transition-all duration-300`}
                           style={{ width: `${barWidth}%` }}
@@ -264,7 +264,7 @@ export default function MovingCostEstimatorPage() {
                 })}
 
                 {/* Totals */}
-                <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
+                <div className="mt-6 rounded-xl border border-[--color-outline-variant] bg-[--color-surface-container-low] p-5 dark:border-neutral-700 dark:bg-neutral-800/50">
                   <div className="grid gap-4 sm:grid-cols-3 text-center">
                     <div>
                       <p className="text-xs text-muted-foreground">Low Estimate</p>
@@ -298,7 +298,7 @@ export default function MovingCostEstimatorPage() {
               <h3 className="mb-4 text-xl font-bold">
                 What costs are involved in moving?
               </h3>
-              <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
+              <p className="leading-relaxed text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                 Buying a home involves more than just the purchase price. Stamp
                 duty (or LBTT in Scotland, LTT in Wales) is typically the
                 largest additional cost. You will also need to budget for a
@@ -311,7 +311,7 @@ export default function MovingCostEstimatorPage() {
 
             {/* FAQ */}
             <section className="space-y-4">
-              <h3 className="font-heading text-xl font-bold text-neutral-900 dark:text-white">
+              <h3 className="font-heading text-xl font-bold text-on-surface dark:text-white">
                 Frequently Asked Questions
               </h3>
               {[
@@ -330,12 +330,12 @@ export default function MovingCostEstimatorPage() {
               ].map((faq) => (
                 <details
                   key={faq.q}
-                  className="group rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
+                  className="group rounded-lg border border-[--color-outline-variant] bg-surface-container-lowest dark:border-neutral-800 dark:bg-neutral-900"
                 >
-                  <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-neutral-900 dark:text-white">
+                  <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-on-surface dark:text-white">
                     {faq.q}
                   </summary>
-                  <p className="px-5 pb-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  <p className="px-5 pb-4 text-sm leading-relaxed text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                     {faq.a}
                   </p>
                 </details>
@@ -348,7 +348,7 @@ export default function MovingCostEstimatorPage() {
             {/* Solicitor CTA */}
             <div className="rounded-xl bg-brand-primary p-6 text-white shadow-lg">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-lg bg-white/20 p-2">
+                <div className="rounded-lg bg-surface-container-lowest/20 p-2">
                   <Truck className="h-5 w-5" />
                 </div>
                 <h3 className="text-lg font-bold">Find a Solicitor</h3>
@@ -359,7 +359,7 @@ export default function MovingCostEstimatorPage() {
               </p>
               <Link
                 href="/marketplace?category=conveyancing"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-surface-container-lowest py-3 text-center font-bold text-brand-primary transition-colors hover:bg-[--color-surface-container-low]"
               >
                 Get Quotes
               </Link>
@@ -371,33 +371,33 @@ export default function MovingCostEstimatorPage() {
             {/* Related tools */}
             <Card>
               <CardContent className="space-y-3 p-5">
-                <h3 className="font-bold text-neutral-900 dark:text-white">
+                <h3 className="font-bold text-on-surface dark:text-white">
                   Related Tools
                 </h3>
                 <Link
                   href="/tools/stamp-duty-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-[--color-outline-variant] p-3 transition-colors hover:bg-[--color-surface-container-low] dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Home className="h-5 w-5 text-brand-primary" />
                   <div>
                     <p className="text-sm font-semibold">
                       Stamp Duty Calculator
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-[--color-on-surface-variant]">
                       Detailed SDLT band breakdown
                     </p>
                   </div>
                 </Link>
                 <Link
                   href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-[--color-outline-variant] p-3 transition-colors hover:bg-[--color-surface-container-low] dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Calculator className="h-5 w-5 text-brand-primary" />
                   <div>
                     <p className="text-sm font-semibold">
                       Mortgage Calculator
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-[--color-on-surface-variant]">
                       Estimate monthly repayments
                     </p>
                   </div>
@@ -406,10 +406,10 @@ export default function MovingCostEstimatorPage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-[--color-outline-variant] bg-[--color-surface-container-low]/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
-                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
-                <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
+                <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-[--color-on-surface-variant]" />
+                <p className="text-[11px] italic leading-relaxed text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">
                   Disclaimer: Costs shown are estimated ranges based on typical
                   UK market data. Actual costs may vary. Tax rates are subject to
                   change. Always seek professional advice.

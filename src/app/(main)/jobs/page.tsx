@@ -133,7 +133,7 @@ export default async function JobBoardPage({
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-surface-container-lowest dark:bg-slate-950">
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
@@ -147,7 +147,7 @@ export default async function JobBoardPage({
       </section>
 
       {/* Filter bar — SSR form, works without JS */}
-      <section className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 py-4 px-6">
+      <section className="border-b border-[--color-outline-variant] dark:border-slate-800 bg-[--color-surface-container-low] dark:bg-slate-900/60 py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <form
             action="/jobs"
@@ -158,7 +158,7 @@ export default async function JobBoardPage({
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="category-filter"
-                className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+                className="text-xs font-medium text-[--color-on-surface-variant] dark:text-slate-400 uppercase tracking-wide"
               >
                 Category
               </label>
@@ -166,7 +166,7 @@ export default async function JobBoardPage({
                 id="category-filter"
                 name="category"
                 defaultValue={categoryParam ?? ""}
-                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                className="px-3 py-2 rounded-lg border border-[--color-outline-variant] dark:border-slate-700 bg-surface-container-lowest dark:bg-slate-800 text-on-surface dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="">All categories</option>
                 {(Object.keys(CATEGORY_LABELS) as ServiceCategory[]).map(
@@ -183,7 +183,7 @@ export default async function JobBoardPage({
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="urgency-filter"
-                className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide"
+                className="text-xs font-medium text-[--color-on-surface-variant] dark:text-slate-400 uppercase tracking-wide"
               >
                 Urgency
               </label>
@@ -191,7 +191,7 @@ export default async function JobBoardPage({
                 id="urgency-filter"
                 name="urgency"
                 defaultValue={urgencyParam ?? ""}
-                className="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                className="px-3 py-2 rounded-lg border border-[--color-outline-variant] dark:border-slate-700 bg-surface-container-lowest dark:bg-slate-800 text-on-surface dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="">All urgency levels</option>
                 {(
@@ -207,7 +207,7 @@ export default async function JobBoardPage({
             <div className="flex flex-col justify-end mt-auto pt-5">
               <button
                 type="submit"
-                className="px-5 py-2 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors text-sm"
+                className="px-5 py-2 bg-brand-primary text-white font-semibold rounded-lg hover:bg-[--color-brand-primary-light] transition-colors text-sm"
               >
                 Filter
               </button>
@@ -218,7 +218,7 @@ export default async function JobBoardPage({
               <div className="flex flex-col justify-end mt-auto pt-5">
                 <a
                   href="/jobs"
-                  className="px-5 py-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm transition-colors"
+                  className="px-5 py-2 text-[--color-on-surface-variant] hover:text-on-surface dark:hover:text-slate-300 text-sm transition-colors"
                 >
                   Clear
                 </a>
@@ -230,10 +230,10 @@ export default async function JobBoardPage({
 
       {/* Results summary */}
       <div className="max-w-5xl mx-auto px-6 pt-6 pb-2">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-[--color-on-surface-variant] dark:text-slate-400">
           {totalCount > 0 ? (
             <>
-              <span className="font-semibold text-slate-700 dark:text-slate-200">
+              <span className="font-semibold text-on-surface dark:text-slate-200">
                 {totalCount.toLocaleString("en-GB")}
               </span>{" "}
               {totalCount === 1 ? "job" : "jobs"} found
@@ -254,18 +254,18 @@ export default async function JobBoardPage({
       <main className="max-w-5xl mx-auto px-6 pb-16 pt-4">
         {jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <Briefcase className="w-14 h-14 text-slate-300 dark:text-slate-600 mb-5" />
-            <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">
+            <Briefcase className="w-14 h-14 text-[--color-on-surface-variant] dark:text-slate-600 mb-5" />
+            <h2 className="text-xl font-bold text-on-surface dark:text-slate-200 mb-2">
               No jobs found
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 max-w-sm">
+            <p className="text-[--color-on-surface-variant] dark:text-slate-400 max-w-sm">
               No open jobs match your current filters — try expanding your
               service area or check back later.
             </p>
             {(categoryParam || urgencyParam) && (
               <a
                 href="/jobs"
-                className="mt-6 px-6 py-2.5 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors text-sm"
+                className="mt-6 px-6 py-2.5 bg-brand-primary text-white font-semibold rounded-lg hover:bg-[--color-brand-primary-light] transition-colors text-sm"
               >
                 View all jobs
               </a>
@@ -285,11 +285,11 @@ export default async function JobBoardPage({
                 <a
                   key={job.id}
                   href={`/post-a-job/quote/${job.id}`}
-                  className="group flex flex-col gap-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-[#2563EB] hover:shadow-md transition-all"
+                  className="group flex flex-col gap-3 bg-surface-container-lowest dark:bg-slate-900 rounded-xl border border-[--color-outline-variant] dark:border-slate-700 p-5 hover:border-brand-primary hover:shadow-md transition-all"
                 >
                   {/* Title + badges row */}
                   <div className="flex items-start justify-between gap-3">
-                    <h2 className="text-base font-semibold text-slate-900 dark:text-white leading-snug group-hover:text-[#2563EB] transition-colors line-clamp-2">
+                    <h2 className="text-base font-semibold text-on-surface dark:text-white leading-snug group-hover:text-brand-primary transition-colors line-clamp-2">
                       {job.title}
                     </h2>
                     {/* Urgency badge */}
@@ -302,13 +302,13 @@ export default async function JobBoardPage({
 
                   {/* Category badge */}
                   <div>
-                    <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-[--color-surface-container-low] text-on-surface dark:bg-slate-800 dark:text-slate-300">
                       {CATEGORY_LABELS[job.service_category]}
                     </span>
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[--color-on-surface-variant] dark:text-slate-400">
                     {/* Location — masked postcode */}
                     <span className="flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
@@ -317,22 +317,22 @@ export default async function JobBoardPage({
 
                     {/* Budget */}
                     <span className="flex items-center gap-1">
-                      <span className="font-medium text-slate-700 dark:text-slate-200">
+                      <span className="font-medium text-on-surface dark:text-slate-200">
                         {budget}
                       </span>
                     </span>
                   </div>
 
                   {/* Footer row */}
-                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-[--color-outline-variant] dark:border-slate-800">
                     {/* Posted date */}
-                    <span className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
+                    <span className="flex items-center gap-1 text-xs text-[--color-on-surface-variant] dark:text-slate-500">
                       <Clock className="w-3.5 h-3.5 shrink-0" />
                       {postedAgo}
                     </span>
 
                     {/* Quote count */}
-                    <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="flex items-center gap-1 text-xs text-[--color-on-surface-variant] dark:text-slate-400">
                       <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                       {job.quote_count === 0
                         ? "No quotes yet"
@@ -350,13 +350,13 @@ export default async function JobBoardPage({
         {/* Pagination */}
         {(hasPrev || hasNext) && (
           <nav
-            className="flex items-center justify-between mt-10 pt-6 border-t border-slate-200 dark:border-slate-800"
+            className="flex items-center justify-between mt-10 pt-6 border-t border-[--color-outline-variant] dark:border-slate-800"
             aria-label="Pagination"
           >
             {hasPrev ? (
               <a
                 href={buildUrl(pageParam - 1)}
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-on-surface dark:text-slate-200 bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-700 rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors"
               >
                 ← Previous
               </a>
@@ -364,14 +364,14 @@ export default async function JobBoardPage({
               <div />
             )}
 
-            <span className="text-sm text-slate-500 dark:text-slate-400">
+            <span className="text-sm text-[--color-on-surface-variant] dark:text-slate-400">
               Page {pageParam} of {totalPages}
             </span>
 
             {hasNext ? (
               <a
                 href={buildUrl(pageParam + 1)}
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-on-surface dark:text-slate-200 bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-700 rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors"
               >
                 Next →
               </a>
@@ -394,7 +394,7 @@ export default async function JobBoardPage({
           </p>
           <a
             href="/auth/signup?role=service_provider"
-            className="inline-block px-8 py-3 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+            className="inline-block px-8 py-3 bg-surface-container-lowest text-brand-primary font-semibold rounded-lg hover:bg-[--color-surface-container-low] transition-colors"
           >
             Join as a Tradesperson
           </a>

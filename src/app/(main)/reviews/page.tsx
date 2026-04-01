@@ -44,7 +44,7 @@ export default async function ReviewsLandingPage() {
             <Link
               key={area.code}
               href={`/reviews/${area.code.toLowerCase()}`}
-              className="rounded-lg border border-border p-4 transition-colors hover:border-[#2563EB] hover:text-[#2563EB]"
+              className="rounded-lg border border-border p-4 transition-colors hover:border-brand-primary hover:text-brand-primary"
             >
               <p className="font-semibold">{area.label}</p>
               <p className="text-sm text-muted-foreground">{area.code}</p>
@@ -59,7 +59,7 @@ export default async function ReviewsLandingPage() {
           </p>
           <Link
             href="/post-a-job"
-            className="inline-block rounded-lg bg-[#2563EB] px-6 py-2.5 font-semibold text-white hover:bg-[#1D4ED8]"
+            className="inline-block rounded-lg bg-brand-primary px-6 py-2.5 font-semibold text-white hover:bg-[--color-brand-primary-light]"
           >
             Post a Job — Free
           </Link>

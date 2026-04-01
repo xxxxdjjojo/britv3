@@ -91,7 +91,7 @@ export default async function AreaReviewsPage({ params }: PageProps) {
             <Link
               key={`${stat.area_code}-${stat.trade_category}`}
               href={`/reviews/${area}/category/${stat.trade_category}`}
-              className="group rounded-lg border border-border bg-white p-4 transition-shadow hover:shadow-md dark:bg-neutral-900"
+              className="group rounded-lg border border-border bg-surface-container-lowest p-4 transition-shadow hover:shadow-md dark:bg-neutral-900"
             >
               <h3 className="font-medium capitalize text-foreground group-hover:text-brand-primary">
                 {stat.trade_category}

@@ -187,7 +187,7 @@ export default async function CategoryReviewsPage({
         </div>
 
         {providers.length === 0 ? (
-          <div className="mt-6 rounded-lg border border-border bg-white p-8 text-center dark:bg-neutral-900">
+          <div className="mt-6 rounded-lg border border-border bg-surface-container-lowest p-8 text-center dark:bg-neutral-900">
             <p className="text-sm text-muted-foreground">
               No {categoryTitle.toLowerCase()} found in {areaCode}
               {minRating ? ` with a minimum rating of ${minRating}` : ""}.
@@ -207,7 +207,7 @@ export default async function CategoryReviewsPage({
               <Link
                 key={provider.id}
                 href={`/reviews/${area}/${provider.slug}`}
-                className="group block rounded-lg border border-border bg-white p-4 transition-shadow hover:shadow-md dark:bg-neutral-900"
+                className="group block rounded-lg border border-border bg-surface-container-lowest p-4 transition-shadow hover:shadow-md dark:bg-neutral-900"
               >
                 <div className="flex items-start justify-between">
                   <div>
