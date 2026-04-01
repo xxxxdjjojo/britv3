@@ -283,7 +283,7 @@ export function HomebuyerDashboard({
                     </p>
                   </div>
                   {/* Confirmed badge */}
-                  <span className="shrink-0 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                  <span className="shrink-0 rounded-full border border-outline-variant/20 bg-primary-container/20 px-3 py-1 text-xs font-semibold text-brand-primary">
                     Confirmed
                   </span>
                 </div>
@@ -291,7 +291,7 @@ export function HomebuyerDashboard({
                 <div className="flex flex-wrap gap-3 pt-2">
                   <button
                     type="button"
-                    className="flex items-center gap-2 rounded-xl bg-brand-primary-dark px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                    className="flex items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                   >
                     <Navigation className="size-4" strokeWidth={1.5} />
                     Get Directions
@@ -336,7 +336,7 @@ export function HomebuyerDashboard({
 
             <button
               type="button"
-              className="w-full pt-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 transition-colors hover:text-brand-primary-dark"
+              className="w-full pt-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 transition-colors hover:text-brand-primary"
             >
               View All Activity
             </button>

@@ -254,7 +254,7 @@ function DocumentTableRow({
     doc.status === "rejected"
       ? "text-error"
       : doc.status === "pending_review"
-        ? "text-[#7b5804]"
+        ? "text-secondary"
         : "text-brand-primary";
 
   return (
@@ -577,25 +577,25 @@ export default function DocumentsPage() {
       </section>
 
       {/* ── Privacy & Encryption footer banner ─────────────────── */}
-      <footer className="mt-16 flex flex-col md:flex-row items-center justify-between p-10 bg-[#1b4d3e] rounded-3xl text-[#8abda9] overflow-hidden relative">
+      <footer className="mt-16 flex flex-col md:flex-row items-center justify-between p-10 bg-brand-primary rounded-3xl text-on-primary-container overflow-hidden relative">
         <div className="relative z-10 max-w-xl">
           <h4 className="text-2xl font-['Plus_Jakarta_Sans'] font-bold text-white mb-3">
             Privacy &amp; Encryption
           </h4>
-          <p className="text-[#8abda9] leading-relaxed opacity-90 text-sm font-['Inter']">
+          <p className="text-on-primary-container leading-relaxed opacity-90 text-sm font-['Inter']">
             We utilise AES-256 bit encryption at rest and TLS 1.3 in transit.
             Your private documents are never visible to third parties without
             your explicit, timestamped digital signature.
           </p>
           <div className="mt-7 flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <Lock className="size-4 text-emerald-400" strokeWidth={1.25} />
+              <Lock className="size-4 text-on-primary-container" strokeWidth={1.25} />
               <span className="text-xs font-['Inter'] uppercase tracking-widest text-white">
                 Encrypted
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Shield className="size-4 text-emerald-400" strokeWidth={1.25} />
+              <Shield className="size-4 text-on-primary-container" strokeWidth={1.25} />
               <span className="text-xs font-['Inter'] uppercase tracking-widest text-white">
                 GDPR Compliant
               </span>
@@ -607,7 +607,7 @@ export default function DocumentsPage() {
           <Shield className="size-64 text-white" strokeWidth={0.25} />
         </div>
         <button
-          className="mt-8 md:mt-0 px-7 py-3 bg-[#eec068] text-[#271900] font-bold rounded-xl hover:bg-[#fdcd74] transition-all z-10 text-sm font-['Plus_Jakarta_Sans']"
+          className="mt-8 md:mt-0 px-7 py-3 bg-secondary-fixed-dim text-on-secondary-fixed-dim font-bold rounded-xl hover:bg-secondary-container transition-all z-10 text-sm font-['Plus_Jakarta_Sans']"
           aria-label="Review security policy"
         >
           Review Security Policy
