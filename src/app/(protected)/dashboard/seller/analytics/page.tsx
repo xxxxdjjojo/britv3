@@ -53,10 +53,10 @@ async function PageContent() {
         ? `${kpis.views_change_pct >= 0 ? "+" : ""}${kpis.views_change_pct}%`
         : null,
       badgeColor: (kpis.views_change_pct ?? 0) >= 0
-        ? "text-emerald-600 bg-emerald-50"
+        ? "text-emerald-600 bg-primary-container/20"
         : "text-rose-600 bg-rose-50",
       iconBg: "bg-[--color-brand-primary-lighter]",
-      iconColor: "text-[--color-brand-primary-dark]",
+      iconColor: "text-[--color-brand-primary]",
     },
     {
       label: "Unique Viewers",
@@ -81,7 +81,7 @@ async function PageContent() {
         ? `${kpis.enquiries_change_pct >= 0 ? "+" : ""}${kpis.enquiries_change_pct}%`
         : null,
       badgeColor: (kpis.enquiries_change_pct ?? 0) >= 0
-        ? "text-emerald-600 bg-emerald-50"
+        ? "text-emerald-600 bg-primary-container/20"
         : "text-rose-600 bg-rose-50",
       iconBg: "bg-[--color-brand-accent-light]",
       iconColor: "text-[--color-brand-accent]",
@@ -104,7 +104,7 @@ async function PageContent() {
           <span className="text-xs font-bold tracking-[0.2em] text-[--color-brand-secondary-dark] uppercase block">
             Performance Insights
           </span>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary-dark] leading-tight font-['Plus_Jakarta_Sans']">
+          <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary] leading-tight font-['Plus_Jakarta_Sans']">
             Market Analytics
           </h1>
           <p className="text-zinc-500 text-sm flex items-center gap-1.5">
@@ -112,13 +112,13 @@ async function PageContent() {
           </p>
         </div>
         <div className="flex items-center gap-3 bg-[--color-surface-container-low] p-1 rounded-xl">
-          <button className="px-5 py-2 text-xs font-semibold text-[--color-brand-primary-dark] bg-white rounded-lg shadow-sm">
+          <button className="px-5 py-2 text-xs font-semibold text-[--color-brand-primary] bg-surface-container-lowest rounded-lg shadow-sm">
             Last 30 Days
           </button>
-          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary-dark] transition-colors">
+          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary] transition-colors">
             90 Days
           </button>
-          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary-dark] transition-colors">
+          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary] transition-colors">
             All Time
           </button>
         </div>
@@ -129,7 +129,7 @@ async function PageContent() {
         {kpiCards.map((card) => (
           <div
             key={card.label}
-            className="bg-white p-7 rounded-2xl space-y-4 shadow-[0_2px_8px_rgba(26,28,28,0.04)]"
+            className="bg-surface-container-lowest p-7 rounded-2xl space-y-4 shadow-[0_2px_8px_rgba(26,28,28,0.04)]"
           >
             <div className="flex justify-between items-start">
               <span className={`w-9 h-9 rounded-lg flex items-center justify-center ${card.iconBg}`}>
@@ -157,7 +157,7 @@ async function PageContent() {
       {activeListings.length > 0 ? (
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
               Per-Listing Performance
             </h2>
             <Link
@@ -167,7 +167,7 @@ async function PageContent() {
               View All Listings
             </Link>
           </div>
-          <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
+          <div className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-[--color-surface-container-low] text-[10px] font-bold uppercase tracking-widest text-zinc-400">
@@ -223,7 +223,7 @@ async function PageContent() {
         </section>
       ) : (
         /* No active listings CTA */
-        <section className="bg-[--color-brand-primary-dark] p-10 rounded-3xl text-white relative overflow-hidden">
+        <section className="bg-brand-primary p-10 rounded-3xl text-white relative overflow-hidden">
           <div className="relative z-10 max-w-lg">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
