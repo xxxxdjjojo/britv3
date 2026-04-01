@@ -77,24 +77,24 @@ async function PageContent({ params }: Props) {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <nav className="flex items-center gap-2 text-sm text-stone-400 mb-3">
+          <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-3">
             <Link
               href="/dashboard/seller/offers"
-              className="flex items-center gap-1.5 hover:text-emerald-900 transition-colors"
+              className="flex items-center gap-1.5 hover:text-brand-primary transition-colors"
             >
               <ArrowLeft size={14} strokeWidth={1.5} />
               Offers
             </Link>
-            <span className="text-stone-300">/</span>
-            <span className="text-emerald-900 font-medium">{address}</span>
+            <span className="text-neutral-300">/</span>
+            <span className="text-brand-primary font-medium">{address}</span>
           </nav>
-          <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-stone-900 tracking-tight">
+          <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-on-surface tracking-tight">
             Sale Progress Tracker
           </h1>
           {offer && (
-            <p className="text-stone-500 mt-1">
+            <p className="text-neutral-500 mt-1">
               Sale to{" "}
-              <span className="font-semibold text-emerald-900">
+              <span className="font-semibold text-brand-primary">
                 {offer.buyer_name}
               </span>
             </p>
@@ -103,21 +103,21 @@ async function PageContent({ params }: Props) {
 
         <div className="flex items-center gap-3 flex-shrink-0">
           {isComplete && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-container/20 text-brand-primary text-xs font-semibold">
               <CheckCircle2 size={13} />
               Sale complete
             </span>
           )}
           <button
             type="button"
-            className="px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-stone-50 transition-colors shadow-sm"
+            className="px-4 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-surface-container transition-colors shadow-sm"
           >
             <Printer size={15} strokeWidth={1.25} />
             Print Report
           </button>
           <button
             type="button"
-            className="px-4 py-2 bg-emerald-900 text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-emerald-800 transition-colors shadow-md"
+            className="px-4 py-2 bg-brand-primary text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:opacity-90 transition-colors shadow-md"
           >
             <Mail size={15} strokeWidth={1.25} />
             Contact Solicitor
@@ -126,12 +126,12 @@ async function PageContent({ params }: Props) {
       </div>
 
       {/* Progress overview pill */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-emerald-900">
+          <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-lg text-brand-primary">
             Live Conveyancing Timeline
           </h2>
-          <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100 uppercase tracking-wider">
+          <span className="bg-primary-container/20 text-brand-primary px-3 py-1 rounded-full text-xs font-bold border border-outline-variant/20 uppercase tracking-wider">
             Status: {progressPct}% Complete
           </span>
         </div>
