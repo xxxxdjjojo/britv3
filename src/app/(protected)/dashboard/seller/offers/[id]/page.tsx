@@ -120,14 +120,14 @@ function TimelineItem({ event, askingPrice, isLatest }: TimelineItemProps) {
     <div className="relative">
       <div
         className={`absolute -left-8 w-6 h-6 rounded-full border-4 border-white ${
-          isLatest ? "bg-emerald-900" : "bg-stone-200"
+          isLatest ? "bg-brand-primary" : "bg-stone-200"
         }`}
       />
       <div className="flex justify-between items-start">
         <div>
           <p
             className={`font-['Plus_Jakarta_Sans'] text-sm font-bold ${
-              isLatest ? "text-emerald-900" : "text-stone-500"
+              isLatest ? "text-brand-primary" : "text-stone-500"
             }`}
           >
             {label}
@@ -135,13 +135,13 @@ function TimelineItem({ event, askingPrice, isLatest }: TimelineItemProps) {
           {event.amount && (
             <div className="flex items-center gap-2 mt-1">
               <p
-                className={`text-lg font-bold ${isLatest ? "text-stone-900" : "text-stone-400"}`}
+                className={`text-lg font-bold ${isLatest ? "text-on-surface" : "text-stone-400"}`}
               >
                 {formatGBP(event.amount)}
               </p>
               {pricePct && (
                 <span
-                  className={`text-xs font-medium flex items-center gap-0.5 ${aboveAsking ? "text-emerald-600" : "text-red-500"}`}
+                  className={`text-xs font-medium flex items-center gap-0.5 ${aboveAsking ? "text-brand-primary" : "text-red-500"}`}
                 >
                   {aboveAsking ? (
                     <TrendingUp size={11} strokeWidth={1.25} />
@@ -160,7 +160,7 @@ function TimelineItem({ event, askingPrice, isLatest }: TimelineItemProps) {
             </p>
           )}
           {event.kind === "accept" && (
-            <div className="flex items-center gap-1.5 text-emerald-700 text-sm font-semibold mt-1">
+            <div className="flex items-center gap-1.5 text-brand-primary text-sm font-semibold mt-1">
               <CheckCircle size={14} strokeWidth={1.25} />
               Sale agreed
             </div>
@@ -248,7 +248,7 @@ export default async function NegotiationHubPage({ params }: Props) {
         <div className="flex items-center gap-3 text-stone-400 mb-3">
           <Link
             href="/dashboard/seller/offers"
-            className="flex items-center gap-2 hover:text-emerald-900 transition-colors"
+            className="flex items-center gap-2 hover:text-brand-primary transition-colors"
           >
             <ArrowLeft size={15} strokeWidth={1.5} />
             <span className="text-[11px] font-bold uppercase tracking-[0.05em]">
@@ -258,7 +258,7 @@ export default async function NegotiationHubPage({ params }: Props) {
         </div>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="font-['Plus_Jakarta_Sans'] text-4xl font-extrabold tracking-tighter text-emerald-900 leading-none">
+            <h1 className="font-['Plus_Jakarta_Sans'] text-4xl font-extrabold tracking-tighter text-brand-primary leading-none">
               {address}
             </h1>
             <p className="text-stone-400 text-sm mt-2">
@@ -282,7 +282,7 @@ export default async function NegotiationHubPage({ params }: Props) {
         {/* Left / center column — 8 cols */}
         <div className="col-span-12 lg:col-span-8 space-y-10">
           {/* Current Status Card */}
-          <section className="bg-white p-8 rounded-2xl shadow-sm relative overflow-hidden">
+          <section className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 text-right">
               <span className="font-['Inter'] text-[10px] text-stone-400 uppercase tracking-widest block mb-1">
                 Status
@@ -292,7 +292,7 @@ export default async function NegotiationHubPage({ params }: Props) {
                   offer.status === "pending"
                     ? "bg-amber-100 text-amber-700"
                     : offer.status === "accepted"
-                      ? "bg-emerald-100 text-emerald-700"
+                      ? "bg-primary-container/20 text-brand-primary"
                       : offer.status === "countered"
                         ? "bg-blue-100 text-blue-700"
                         : "bg-red-100 text-red-600"
@@ -319,7 +319,7 @@ export default async function NegotiationHubPage({ params }: Props) {
                   <span
                     className={`flex items-center gap-1 text-xs font-medium ${
                       offer.chain_status === "chain_free"
-                        ? "text-emerald-600"
+                        ? "text-brand-primary"
                         : "text-amber-600"
                     }`}
                   >
@@ -333,7 +333,7 @@ export default async function NegotiationHubPage({ params }: Props) {
                       : `In chain (${offer.chain_length ?? "?"})`}
                   </span>
                 </div>
-                <p className="font-['Plus_Jakarta_Sans'] text-5xl font-extrabold text-emerald-900 tracking-tighter leading-none">
+                <p className="font-['Plus_Jakarta_Sans'] text-5xl font-extrabold text-brand-primary tracking-tighter leading-none">
                   {formatGBP(offer.amount)}
                 </p>
                 {askingPrice && (
@@ -355,7 +355,7 @@ export default async function NegotiationHubPage({ params }: Props) {
 
           {/* Interaction History */}
           <section>
-            <h3 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-emerald-900 mb-8 tracking-tight">
+            <h3 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-brand-primary mb-8 tracking-tight">
               Interaction History
             </h3>
             <div className="relative pl-8 space-y-10">
@@ -374,12 +374,12 @@ export default async function NegotiationHubPage({ params }: Props) {
           {/* Document Vault */}
           <section>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-emerald-900 tracking-tight">
+              <h3 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-brand-primary tracking-tight">
                 Document Vault
               </h3>
               <button
                 type="button"
-                className="text-emerald-900 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 hover:underline"
+                className="text-brand-primary text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 hover:underline"
               >
                 <span className="text-base leading-none">+</span> Upload New
               </button>
@@ -388,14 +388,14 @@ export default async function NegotiationHubPage({ params }: Props) {
               {EXAMPLE_DOCS.map((doc) => (
                 <div
                   key={doc.name}
-                  className="group bg-stone-50 p-5 rounded-xl flex items-center justify-between hover:bg-stone-100 transition-colors cursor-pointer"
+                  className="group bg-surface-container p-5 rounded-xl flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-emerald-900 shadow-sm">
+                    <div className="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-brand-primary shadow-sm">
                       <FileText size={18} strokeWidth={1.25} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-emerald-900">
+                      <p className="text-sm font-bold text-brand-primary">
                         {doc.name}
                       </p>
                       <p className="text-[10px] text-stone-400 uppercase font-bold tracking-wider">
@@ -406,12 +406,12 @@ export default async function NegotiationHubPage({ params }: Props) {
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Eye
                       size={18}
-                      className="text-stone-400 hover:text-emerald-900 cursor-pointer"
+                      className="text-stone-400 hover:text-brand-primary cursor-pointer"
                       strokeWidth={1.25}
                     />
                     <Download
                       size={18}
-                      className="text-stone-400 hover:text-emerald-900 cursor-pointer"
+                      className="text-stone-400 hover:text-brand-primary cursor-pointer"
                       strokeWidth={1.25}
                     />
                   </div>
@@ -422,7 +422,7 @@ export default async function NegotiationHubPage({ params }: Props) {
 
           {/* Action bar — only when pending */}
           {isPending && (
-            <section className="bg-stone-50 rounded-2xl p-6">
+            <section className="bg-surface-container rounded-2xl p-6">
               <p className="text-sm font-bold text-stone-800 mb-4">
                 Respond to this offer
               </p>
@@ -432,7 +432,7 @@ export default async function NegotiationHubPage({ params }: Props) {
 
           {/* Sale progress CTA */}
           {hasProgressed && (
-            <section className="bg-emerald-900 rounded-2xl p-6 text-white flex items-center justify-between gap-4">
+            <section className="bg-brand-primary rounded-2xl p-6 text-white flex items-center justify-between gap-4">
               <div>
                 <p className="font-['Plus_Jakarta_Sans'] font-bold text-xl">
                   Sale agreed!
@@ -443,7 +443,7 @@ export default async function NegotiationHubPage({ params }: Props) {
               </div>
               <Link
                 href={`/dashboard/seller/sale-progress/${offer.id}`}
-                className="flex-shrink-0 px-5 py-2.5 rounded-xl bg-white text-emerald-900 text-sm font-bold hover:bg-white/90 transition-colors"
+                className="flex-shrink-0 px-5 py-2.5 rounded-xl bg-white text-brand-primary text-sm font-bold hover:bg-white/90 transition-colors"
               >
                 View progress
               </Link>
@@ -454,8 +454,8 @@ export default async function NegotiationHubPage({ params }: Props) {
         {/* Right sidebar — 4 cols */}
         <aside className="col-span-12 lg:col-span-4 space-y-8">
           {/* Buyer info card */}
-          <section className="bg-white rounded-2xl p-6 shadow-sm">
-            <h4 className="font-['Plus_Jakarta_Sans'] font-bold text-emerald-900 mb-4">
+          <section className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+            <h4 className="font-['Plus_Jakarta_Sans'] font-bold text-brand-primary mb-4">
               Buyer Details
             </h4>
             <div className="flex items-center gap-3 mb-4">
@@ -464,7 +464,7 @@ export default async function NegotiationHubPage({ params }: Props) {
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <p className="font-bold text-stone-900">{offer.buyer_name}</p>
+                  <p className="font-bold text-on-surface">{offer.buyer_name}</p>
                   {offer.is_verified && (
                     <BadgeCheck size={14} className="text-blue-500" />
                   )}
@@ -475,7 +475,7 @@ export default async function NegotiationHubPage({ params }: Props) {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-stone-100">
+              <div className="flex items-center justify-between py-2 border-b border-outline-variant/20">
                 <span className="text-xs text-stone-400">Buyer type</span>
                 <span className="text-xs font-semibold text-stone-700 capitalize">
                   {offer.buyer_type ?? "—"}
@@ -486,7 +486,7 @@ export default async function NegotiationHubPage({ params }: Props) {
                 <span
                   className={`text-xs font-semibold ${
                     offer.chain_status === "chain_free"
-                      ? "text-emerald-700"
+                      ? "text-brand-primary"
                       : "text-amber-700"
                   }`}
                 >
@@ -499,7 +499,7 @@ export default async function NegotiationHubPage({ params }: Props) {
           </section>
 
           {/* Financial Summary */}
-          <section className="bg-emerald-900 text-white p-8 rounded-2xl space-y-5">
+          <section className="bg-brand-primary text-white p-8 rounded-2xl space-y-5">
             <h4 className="font-['Plus_Jakarta_Sans'] text-lg font-bold tracking-tight">
               Financial Summary
             </h4>
@@ -544,12 +544,12 @@ export default async function NegotiationHubPage({ params }: Props) {
               <button
                 key={label}
                 type="button"
-                className="w-full flex items-center justify-between p-4 bg-white border border-stone-200/50 rounded-xl hover:border-emerald-200 transition-all text-sm group shadow-sm"
+                className="w-full flex items-center justify-between p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-xl hover:border-brand-primary/20 transition-all text-sm group shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <Icon
                     size={18}
-                    className="text-emerald-900 group-hover:scale-110 transition-transform"
+                    className="text-brand-primary group-hover:scale-110 transition-transform"
                     strokeWidth={1.25}
                   />
                   <span className="font-medium text-stone-700">{label}</span>
