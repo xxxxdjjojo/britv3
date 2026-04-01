@@ -81,12 +81,12 @@ export default async function SavedSearchesPage() {
 
       {/* ── Empty state ──────────────────────────────────────────────── */}
       {count === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-6 rounded-2xl bg-white py-16 text-center shadow-sm">
-          <div className="flex size-16 items-center justify-center rounded-2xl bg-[#f4f3f2]">
-            <Bell className="size-8 text-emerald-900" strokeWidth={1.25} />
+        <div className="flex flex-col items-center justify-center gap-6 rounded-2xl bg-surface-container-lowest py-16 text-center shadow-sm">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-surface-container-low">
+            <Bell className="size-8 text-brand-primary" strokeWidth={1.25} />
           </div>
           <div className="flex flex-col gap-1">
-            <h3 className="font-heading text-xl font-bold text-neutral-900">
+            <h3 className="font-heading text-xl font-bold text-on-surface">
               No saved searches yet
             </h3>
             <p className="max-w-sm text-sm text-neutral-500">
@@ -95,7 +95,7 @@ export default async function SavedSearchesPage() {
             </p>
           </div>
           <Link href="/search">
-            <Button className="mt-2 gap-2 rounded-xl bg-brand-primary-dark text-white hover:opacity-90">
+            <Button className="mt-2 gap-2 rounded-xl bg-brand-primary text-white hover:opacity-90">
               <Search className="size-4" strokeWidth={1.25} />
               Start a Search
             </Button>
@@ -110,7 +110,7 @@ export default async function SavedSearchesPage() {
               return (
                 <div
                   key={search.id}
-                  className="flex h-full flex-col rounded-2xl bg-white p-8 shadow-sm transition-shadow hover:shadow-md"
+                  className="flex h-full flex-col rounded-2xl bg-surface-container-lowest p-8 shadow-sm transition-shadow hover:shadow-md"
                 >
                   {/* Header */}
                   <div className="mb-6 flex items-start justify-between gap-4">
@@ -118,7 +118,7 @@ export default async function SavedSearchesPage() {
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-secondary-dark">
                         Search Criteria
                       </span>
-                      <h3 className="font-heading text-xl font-bold text-neutral-900">
+                      <h3 className="font-heading text-xl font-bold text-on-surface">
                         {search.name}
                       </h3>
                       <p className="text-xs font-medium text-neutral-500">
@@ -127,7 +127,7 @@ export default async function SavedSearchesPage() {
                     </div>
 
                     {newCount > 0 ? (
-                      <div className="flex shrink-0 items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-700">
+                      <div className="flex shrink-0 items-center gap-2 rounded-full bg-primary-container/20 px-3 py-1.5 text-brand-primary">
                         <Sparkles className="size-4" strokeWidth={1.5} />
                         <span className="text-[11px] font-bold uppercase tracking-wider">
                           {newCount} new{" "}
@@ -151,14 +151,14 @@ export default async function SavedSearchesPage() {
                       <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
                         Alert Frequency
                       </label>
-                      <div className="flex rounded-lg bg-[#f4f3f2] p-1">
+                      <div className="flex rounded-lg bg-surface-container-low p-1">
                         {(["instant", "daily", "weekly"] as const).map(
                           (freq) => (
                             <span
                               key={freq}
                               className={`flex-1 rounded-md py-1.5 text-center text-[11px] font-bold transition-all ${
                                 search.alert_frequency === freq
-                                  ? "bg-white text-brand-primary-dark shadow-sm"
+                                  ? "bg-white text-brand-primary shadow-sm"
                                   : "text-neutral-500"
                               }`}
                             >
@@ -174,21 +174,21 @@ export default async function SavedSearchesPage() {
                       <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">
                         Last Activity
                       </label>
-                      <p className="py-1.5 text-sm font-medium text-neutral-900">
+                      <p className="py-1.5 text-sm font-medium text-on-surface">
                         {formatRelativeTime(String(search.created_at))}
                       </p>
                     </div>
                   </div>
 
                   {/* Footer actions */}
-                  <div className="flex items-center justify-between border-t border-neutral-100 pt-6">
+                  <div className="flex items-center justify-between border-t border-outline-variant/20 pt-6">
                     {/* SavedSearchActions renders Run + Delete buttons */}
                     <SavedSearchActions search={search} />
 
                     <Link href={`/search?saved=${search.id}`}>
                       <button
                         type="button"
-                        className="flex items-center gap-3 font-heading text-sm font-bold text-brand-primary-dark transition-transform hover:translate-x-1"
+                        className="flex items-center gap-3 font-heading text-sm font-bold text-brand-primary transition-transform hover:translate-x-1"
                         aria-label={`View results for ${search.name}`}
                       >
                         View Results
@@ -202,12 +202,12 @@ export default async function SavedSearchesPage() {
 
             {/* ── Create new search card ──────────────────────────────── */}
             <Link href="/search" aria-label="Start a new saved search">
-              <div className="flex h-full min-h-[220px] cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-neutral-200 p-8 text-center transition-all hover:border-brand-primary-dark/40 hover:bg-brand-primary-dark/[0.02]">
-                <div className="flex size-16 items-center justify-center rounded-full bg-[#f4f3f2] text-neutral-400 transition-colors hover:bg-brand-primary-dark/5 hover:text-brand-primary-dark">
+              <div className="flex h-full min-h-[220px] cursor-pointer flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-neutral-200 p-8 text-center transition-all hover:border-brand-primary/40 hover:bg-brand-primary/[0.02]">
+                <div className="flex size-16 items-center justify-center rounded-full bg-surface-container-low text-neutral-400 transition-colors hover:bg-brand-primary/5 hover:text-brand-primary">
                   <PlusCircle className="size-8" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-neutral-900">
+                  <h4 className="font-heading font-bold text-on-surface">
                     Start a New Hunt
                   </h4>
                   <p className="mt-1 max-w-[200px] text-sm text-neutral-500">
