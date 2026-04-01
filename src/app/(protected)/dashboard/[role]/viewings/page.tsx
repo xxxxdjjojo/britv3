@@ -45,7 +45,7 @@ function statusBadge(status: Viewing["status"]): { label: string; className: str
     case "confirmed":
       return {
         label: "Confirmed",
-        className: "bg-emerald-50 text-emerald-900",
+        className: "bg-primary-container/20 text-brand-primary",
         dot: "bg-emerald-500",
       };
     case "rescheduled":
@@ -70,7 +70,7 @@ function statusBadge(status: Viewing["status"]): { label: string; className: str
 }
 
 function borderColor(status: Viewing["status"]): string {
-  if (status === "confirmed") return "border-emerald-900";
+  if (status === "confirmed") return "border-brand-primary";
   if (status === "rescheduled") return "border-amber-500";
   return "border-zinc-300";
 }
@@ -95,7 +95,7 @@ function UpcomingViewingCard({
 
   return (
     <div
-      className={`group bg-white rounded-xl p-6 flex flex-col md:flex-row items-start gap-6 shadow-[0_4px_24px_rgba(26,28,28,0.04)] hover:shadow-[0_8px_32px_rgba(26,28,28,0.08)] transition-all duration-300 border-l-4 ${border}`}
+      className={`group bg-surface-container-lowest rounded-xl p-6 flex flex-col md:flex-row items-start gap-6 shadow-[0_4px_24px_rgba(26,28,28,0.04)] hover:shadow-[0_8px_32px_rgba(26,28,28,0.08)] transition-all duration-300 border-l-4 ${border}`}
     >
       {/* Details */}
       <div className="flex-grow min-w-0">
@@ -110,7 +110,7 @@ function UpcomingViewingCard({
             {viewing.type === "virtual" ? "Virtual Tour" : "In-person"}
           </span>
         </div>
-        <h3 className="font-['Plus_Jakarta_Sans'] text-lg font-bold mb-1 text-[#1a1c1c] group-hover:text-[#003629] transition-colors">
+        <h3 className="font-heading text-lg font-bold mb-1 text-on-surface group-hover:text-brand-primary transition-colors">
           {viewing.property_address}
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
@@ -118,7 +118,7 @@ function UpcomingViewingCard({
             <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
               Date &amp; Time
             </span>
-            <span className="text-sm font-semibold text-[#1a1c1c]">
+            <span className="text-sm font-semibold text-on-surface">
               {formatDateShort(viewing.scheduled_at)},{" "}
               {formatTime(viewing.scheduled_at)}
             </span>
@@ -127,7 +127,7 @@ function UpcomingViewingCard({
             <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
               Type
             </span>
-            <span className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-1">
+            <span className="text-sm font-semibold text-on-surface flex items-center gap-1">
               {viewing.type === "virtual" ? (
                 <Video className="size-3.5 text-zinc-400" strokeWidth={1.25} />
               ) : (
@@ -140,7 +140,7 @@ function UpcomingViewingCard({
             <span className="text-[0.6875rem] font-bold tracking-widest text-zinc-400 uppercase block mb-1">
               Agent
             </span>
-            <span className="text-sm font-semibold text-[#1a1c1c] flex items-center gap-1">
+            <span className="text-sm font-semibold text-on-surface flex items-center gap-1">
               <User className="size-3.5 text-zinc-400" strokeWidth={1.25} />
               Estate Agent
             </span>
@@ -165,14 +165,14 @@ function UpcomingViewingCard({
           aria-label="Reschedule viewing"
         >
           <button
-            className="p-3 bg-[#f4f3f2] rounded-lg hover:bg-[#eeeeed] transition-colors text-zinc-600"
+            className="p-3 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors text-zinc-600"
             aria-label="Reschedule viewing"
           >
             <RotateCcw className="size-5" strokeWidth={1.25} />
           </button>
         </Link>
         <button
-          className="p-3 bg-[#f4f3f2] rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-zinc-600"
+          className="p-3 bg-surface-container-low rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-zinc-600"
           onClick={() => onCancel(viewing.id)}
           disabled={isCancelling}
           aria-label="Cancel viewing"
@@ -195,9 +195,9 @@ function PastViewingCard({
   const isCompleted = viewing.status === "completed";
 
   return (
-    <div className="bg-[#f4f3f2] rounded-xl overflow-hidden">
+    <div className="bg-surface-container-low rounded-xl overflow-hidden">
       {/* Placeholder image area */}
-      <div className="h-40 relative bg-[#e3e2e1] flex items-center justify-center">
+      <div className="h-40 relative bg-surface-container-highest flex items-center justify-center">
         <div className="flex size-12 items-center justify-center rounded-full bg-white/40">
           <Calendar className="size-6 text-zinc-400" strokeWidth={1.25} />
         </div>
@@ -208,7 +208,7 @@ function PastViewingCard({
         </div>
       </div>
       <div className="p-5">
-        <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-base mb-1 text-[#1a1c1c]">
+        <h3 className="font-heading font-bold text-base mb-1 text-on-surface">
           {viewing.property_address}
         </h3>
         <p className="text-zinc-500 text-xs mb-4">
@@ -216,7 +216,7 @@ function PastViewingCard({
           {formatDateShort(viewing.scheduled_at)}
         </p>
         {isCompleted ? (
-          <div className="bg-[#baeed9] text-[#002117] p-3 rounded-lg flex items-center justify-between group cursor-pointer hover:bg-[#003629] hover:text-white transition-colors">
+          <div className="bg-primary-container/20 text-brand-primary p-3 rounded-lg flex items-center justify-between group cursor-pointer hover:bg-brand-primary hover:text-white transition-colors">
             <div className="flex items-center gap-2">
               <Clock className="size-4" strokeWidth={1.25} />
               <span className="text-xs font-bold uppercase tracking-widest">
@@ -225,7 +225,7 @@ function PastViewingCard({
             </div>
           </div>
         ) : (
-          <div className="bg-[#e3e2e1] p-3 rounded-lg flex items-center gap-2 text-zinc-500">
+          <div className="bg-surface-container-highest p-3 rounded-lg flex items-center gap-2 text-zinc-500">
             <X className="size-4" strokeWidth={1.25} />
             <span className="text-xs font-bold uppercase tracking-widest">
               Cancelled
@@ -304,12 +304,12 @@ export default function ViewingsPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] text-[#1a1c1c]">
+    <div className="min-h-screen bg-surface text-on-surface">
       {/* ── Editorial Header ─────────────────────────────────────── */}
       <div className="mb-10">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="font-['Plus_Jakarta_Sans'] text-4xl font-bold tracking-tight text-[#1a1c1c] mb-2">
+            <h1 className="font-heading text-4xl font-bold tracking-tight text-on-surface mb-2">
               Viewings
             </h1>
             <p className="text-zinc-500 font-['Inter'] max-w-2xl">
@@ -319,7 +319,7 @@ export default function ViewingsPage({
           </div>
           <Link href={`/dashboard/${role}/viewings/book`}>
             <button
-              className="shrink-0 flex items-center gap-2 px-5 py-3 bg-[#003629] text-white rounded-lg font-['Plus_Jakarta_Sans'] text-sm font-semibold hover:bg-[#1b4d3e] transition-colors shadow-sm"
+              className="shrink-0 flex items-center gap-2 px-5 py-3 bg-brand-primary text-white rounded-lg font-heading text-sm font-semibold hover:bg-brand-primary/90 transition-colors shadow-sm"
               aria-label="Book a viewing"
             >
               <Plus className="size-4" strokeWidth={1.25} />
@@ -340,13 +340,13 @@ export default function ViewingsPage({
       {/* ── Bento: Calendar + Next Viewing ────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-12">
         {/* Calendar card */}
-        <section className="xl:col-span-8 bg-[#f4f3f2] rounded-xl p-8">
+        <section className="xl:col-span-8 bg-surface-container-low rounded-xl p-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-['Plus_Jakarta_Sans'] text-xl font-semibold text-[#1a1c1c]">
+            <h2 className="font-heading text-xl font-semibold text-on-surface">
               Calendar Schedule
             </h2>
-            <div className="flex items-center bg-[#e3e2e1] rounded-full p-1">
-              <span className="px-5 py-1.5 rounded-full text-xs font-semibold bg-white shadow-sm text-[#1a1c1c]">
+            <div className="flex items-center bg-surface-container-highest rounded-full p-1">
+              <span className="px-5 py-1.5 rounded-full text-xs font-semibold bg-surface-container-lowest shadow-sm text-on-surface">
                 Month
               </span>
               <span className="px-5 py-1.5 rounded-full text-xs font-semibold text-zinc-500">
@@ -373,7 +373,7 @@ export default function ViewingsPage({
             {["28", "29", "30", "31"].map((d) => (
               <div
                 key={`prev-${d}`}
-                className="aspect-square bg-white p-2 text-xs text-zinc-400"
+                className="aspect-square bg-surface-container-lowest p-2 text-xs text-zinc-400"
               >
                 {d}
               </div>
@@ -393,9 +393,9 @@ export default function ViewingsPage({
               return (
                 <div
                   key={`day-${d}`}
-                  className={`aspect-square bg-white p-1 text-xs font-semibold text-[#1a1c1c] relative ${
+                  className={`aspect-square bg-surface-container-lowest p-1 text-xs font-semibold text-on-surface relative ${
                     hasViewing
-                      ? "bg-emerald-50 ring-1 ring-inset ring-emerald-900/20"
+                      ? "bg-primary-container/20 ring-1 ring-inset ring-brand-primary/20"
                       : isPast
                         ? "bg-zinc-50"
                         : ""
@@ -403,7 +403,7 @@ export default function ViewingsPage({
                 >
                   {d}
                   {hasViewing && (
-                    <div className="absolute inset-x-1 bottom-1 bg-emerald-100 text-[9px] p-0.5 rounded border-l-2 border-emerald-900 text-emerald-900 truncate leading-tight">
+                    <div className="absolute inset-x-1 bottom-1 bg-primary-container/20 text-[9px] p-0.5 rounded border-l-2 border-brand-primary text-brand-primary truncate leading-tight">
                       Viewing
                     </div>
                   )}
@@ -414,7 +414,7 @@ export default function ViewingsPage({
             {Array.from({ length: 4 }, (_, i) => i + 1).map((d) => (
               <div
                 key={`next-${d}`}
-                className="aspect-square bg-white p-2 text-xs text-zinc-400"
+                className="aspect-square bg-surface-container-lowest p-2 text-xs text-zinc-400"
               >
                 {d}
               </div>
@@ -425,9 +425,9 @@ export default function ViewingsPage({
         {/* Right sidebar */}
         <aside className="xl:col-span-4 space-y-4">
           {/* Next viewing card */}
-          <div className="bg-[#003629] text-white p-7 rounded-xl relative overflow-hidden">
+          <div className="bg-brand-primary text-white p-7 rounded-xl relative overflow-hidden">
             <div className="relative z-10">
-              <h3 className="font-['Plus_Jakarta_Sans'] text-lg font-bold mb-1">
+              <h3 className="font-heading text-lg font-bold mb-1">
                 Next Viewing
               </h3>
               {isLoading ? (
@@ -437,7 +437,7 @@ export default function ViewingsPage({
                 </div>
               ) : nextViewing ? (
                 <>
-                  <p className="text-[#8abda9] text-sm mb-5 leading-relaxed">
+                  <p className="text-brand-primary-light/70 text-sm mb-5 leading-relaxed">
                     {nextViewing.property_address}
                   </p>
                   <div className="flex items-center gap-5 mb-7">
@@ -475,7 +475,7 @@ export default function ViewingsPage({
                   </div>
                 </>
               ) : (
-                <p className="text-[#8abda9] text-sm mt-3">
+                <p className="text-brand-primary-light/70 text-sm mt-3">
                   No upcoming viewings scheduled.
                 </p>
               )}
@@ -484,8 +484,8 @@ export default function ViewingsPage({
           </div>
 
           {/* Status legend */}
-          <div className="bg-[#f4f3f2] p-6 rounded-xl">
-            <h3 className="font-['Plus_Jakarta_Sans'] text-xs font-bold tracking-widest uppercase text-zinc-400 mb-5">
+          <div className="bg-surface-container-low p-6 rounded-xl">
+            <h3 className="font-heading text-xs font-bold tracking-widest uppercase text-zinc-400 mb-5">
               Viewing Status Keys
             </h3>
             <div className="space-y-3">
@@ -497,7 +497,7 @@ export default function ViewingsPage({
               ].map(({ dot, label }) => (
                 <div key={label} className="flex items-center gap-3">
                   <span className={`w-2 h-2 rounded-full ${dot}`} />
-                  <span className="text-sm font-medium text-[#1a1c1c]">
+                  <span className="text-sm font-medium text-on-surface">
                     {label}
                   </span>
                 </div>
@@ -511,7 +511,7 @@ export default function ViewingsPage({
       <section className="mb-16">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="font-['Plus_Jakarta_Sans'] text-2xl font-bold text-[#1a1c1c]">
+            <h2 className="font-heading text-2xl font-bold text-on-surface">
               Scheduled Itinerary
             </h2>
             <p className="text-zinc-500 text-sm mt-1">
@@ -525,8 +525,8 @@ export default function ViewingsPage({
                 onClick={() => setFilterStatus(s)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
                   filterStatus === s
-                    ? "bg-[#003629] text-white"
-                    : "bg-[#f4f3f2] text-zinc-500 hover:bg-[#eeeeed]"
+                    ? "bg-brand-primary text-white"
+                    : "bg-surface-container-low text-zinc-500 hover:bg-surface-container"
                 }`}
                 aria-label={`Filter by ${s}`}
               >
@@ -539,15 +539,15 @@ export default function ViewingsPage({
         {isLoading ? (
           <UpcomingSkeletons />
         ) : filteredUpcoming.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-2xl bg-[#f4f3f2] py-20 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-[#eeeeed]">
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-surface-container-low py-20 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-surface-container">
               <Calendar
                 strokeWidth={1.25}
                 className="size-7 text-zinc-400"
               />
             </div>
             <div>
-              <p className="font-['Plus_Jakarta_Sans'] font-semibold text-[#1a1c1c]">
+              <p className="font-heading font-semibold text-on-surface">
                 No upcoming viewings
               </p>
               <p className="mt-1 text-sm text-zinc-500">
@@ -556,7 +556,7 @@ export default function ViewingsPage({
             </div>
             <Link href={`/dashboard/${role}/viewings/book`}>
               <button
-                className="mt-2 flex items-center gap-2 px-5 py-2.5 border border-[#003629]/20 rounded-lg text-sm font-semibold text-[#003629] hover:bg-[#003629]/5 transition-colors"
+                className="mt-2 flex items-center gap-2 px-5 py-2.5 border border-brand-primary/20 rounded-lg text-sm font-semibold text-brand-primary hover:bg-brand-primary/5 transition-colors"
                 aria-label="Book your first viewing"
               >
                 <Plus className="size-4" strokeWidth={1.25} />
@@ -582,7 +582,7 @@ export default function ViewingsPage({
       {/* ── Past Viewings ──────────────────────────────────────── */}
       {(isLoading || past.length > 0) && (
         <section>
-          <h2 className="font-['Plus_Jakarta_Sans'] text-2xl font-bold text-[#1a1c1c] mb-8">
+          <h2 className="font-heading text-2xl font-bold text-on-surface mb-8">
             Past Viewings
           </h2>
           {isLoading ? (
