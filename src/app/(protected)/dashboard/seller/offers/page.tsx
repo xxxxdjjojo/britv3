@@ -63,10 +63,10 @@ export default function OffersReceivedPage() {
       <header>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-emerald-900 tracking-tight">
+            <h1 className="font-['Plus_Jakarta_Sans'] text-3xl font-bold text-brand-primary tracking-tight">
               Offers Received
             </h1>
-            <p className="text-stone-500 mt-1 text-sm">
+            <p className="text-neutral-500 mt-1 text-sm">
               {pendingCount} pending offer{pendingCount !== 1 ? "s" : ""}{" "}
               awaiting your response
             </p>
@@ -74,13 +74,13 @@ export default function OffersReceivedPage() {
           <div className="flex gap-3">
             <button
               type="button"
-              className="px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-semibold text-stone-700 hover:bg-stone-50 shadow-sm transition-all"
+              className="px-4 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-xl text-sm font-semibold text-on-surface hover:bg-surface-container shadow-sm transition-all"
             >
               Download Report
             </button>
             <button
               type="button"
-              className="px-4 py-2 bg-emerald-900 text-white rounded-xl text-sm font-semibold hover:bg-emerald-800 shadow-md transition-all"
+              className="px-4 py-2 bg-brand-primary text-white rounded-xl text-sm font-semibold hover:opacity-90 shadow-md transition-all"
             >
               Pause Viewings
             </button>
@@ -91,14 +91,14 @@ export default function OffersReceivedPage() {
       {/* KPI strip */}
       {!loading && !hasError && offers.length > 0 && (
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <p className="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+          <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+            <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">
               Total Offers
             </p>
-            <p className="text-3xl font-bold text-stone-900 mt-1">
+            <p className="text-3xl font-bold text-on-surface mt-1">
               {offers.length}
             </p>
-            <p className="text-xs text-stone-400 mt-0.5">received</p>
+            <p className="text-xs text-neutral-400 mt-0.5">received</p>
           </div>
           <div className="bg-amber-50 rounded-2xl p-5 shadow-sm">
             <p className="text-xs text-amber-700/70 font-semibold uppercase tracking-wider">
@@ -109,23 +109,23 @@ export default function OffersReceivedPage() {
             </p>
             <p className="text-xs text-amber-600/60 mt-0.5">need response</p>
           </div>
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <p className="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+          <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+            <p className="text-xs text-neutral-400 font-semibold uppercase tracking-wider">
               Highest Offer
             </p>
-            <p className="text-3xl font-bold text-emerald-900 mt-1">
+            <p className="text-3xl font-bold text-brand-primary mt-1">
               {highestOffer
                 ? `£${(highestOffer / 100).toLocaleString("en-GB")}`
                 : "—"}
             </p>
-            <p className="text-xs text-stone-400 mt-0.5">offer amount</p>
+            <p className="text-xs text-neutral-400 mt-0.5">offer amount</p>
           </div>
         </div>
       )}
 
       {/* Filter tabs */}
       {!loading && !hasError && offers.length > 0 && (
-        <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 w-fit">
+        <div className="flex items-center gap-1 bg-surface-container rounded-xl p-1 w-fit">
           {tabs.map(({ key, label, count }) => (
             <button
               key={key}
@@ -134,8 +134,8 @@ export default function OffersReceivedPage() {
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                 filterTab === key
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-stone-500 hover:text-stone-900",
+                  ? "bg-surface-container-lowest text-on-surface shadow-sm"
+                  : "text-neutral-500 hover:text-on-surface",
               )}
             >
               {label}
@@ -144,8 +144,8 @@ export default function OffersReceivedPage() {
                   className={cn(
                     "text-xs px-1.5 py-0.5 rounded-full font-bold",
                     filterTab === key
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "bg-stone-200 text-stone-400",
+                      ? "bg-primary-container/20 text-brand-primary"
+                      : "bg-surface-container text-neutral-400",
                   )}
                 >
                   {count}
@@ -162,45 +162,45 @@ export default function OffersReceivedPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 animate-pulse h-80 shadow-sm"
+              className="bg-surface-container-lowest rounded-2xl p-6 animate-pulse h-80 shadow-sm"
             />
           ))}
         </div>
       ) : hasError ? (
-        <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+        <div className="text-center py-20 bg-surface-container-lowest rounded-2xl shadow-sm">
           <AlertCircle
             size={32}
             className="mx-auto text-red-400 mb-3"
             strokeWidth={1.25}
           />
-          <p className="text-stone-500 text-sm font-medium">
+          <p className="text-neutral-500 text-sm font-medium">
             Failed to load offers
           </p>
           <button
             type="button"
             onClick={loadOffers}
-            className="mt-4 px-5 py-2.5 rounded-xl bg-emerald-900 text-white text-sm font-semibold hover:bg-emerald-800 transition-colors"
+            className="mt-4 px-5 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:opacity-90 transition-colors"
           >
             Try again
           </button>
         </div>
       ) : offers.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+        <div className="text-center py-20 bg-surface-container-lowest rounded-2xl shadow-sm">
           <Inbox
             size={32}
-            className="mx-auto text-stone-300 mb-3"
+            className="mx-auto text-neutral-400 mb-3"
             strokeWidth={1.25}
           />
-          <p className="text-stone-500 text-sm font-medium">
+          <p className="text-neutral-500 text-sm font-medium">
             No offers received yet
           </p>
-          <p className="text-stone-400 text-xs mt-1">
+          <p className="text-neutral-400 text-xs mt-1">
             Offers on your active listings will appear here
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
-          <p className="text-stone-400 text-sm">
+        <div className="text-center py-16 bg-surface-container-lowest rounded-2xl shadow-sm">
+          <p className="text-neutral-400 text-sm">
             No {filterTab !== "all" ? filterTab : ""} offers
           </p>
         </div>
@@ -220,12 +220,12 @@ export default function OffersReceivedPage() {
 
           {/* Detailed Comparison Table */}
           {filtered.length >= 2 && (
-            <section className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="px-6 py-5 flex justify-between items-center bg-emerald-50/30">
-                <h2 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-emerald-900">
+            <section className="bg-surface-container-lowest rounded-2xl shadow-lg overflow-hidden">
+              <div className="px-6 py-5 flex justify-between items-center bg-primary-container/20">
+                <h2 className="font-['Plus_Jakarta_Sans'] text-xl font-bold text-brand-primary">
                   Detailed Comparison
                 </h2>
-                <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                <span className="text-xs font-semibold text-brand-primary bg-primary-container/20 px-2.5 py-1 rounded-lg uppercase tracking-wider">
                   Side-by-Side View
                 </span>
               </div>
@@ -236,13 +236,13 @@ export default function OffersReceivedPage() {
                     : filtered
                 }
               />
-              <div className="p-4 bg-stone-50 flex justify-between items-center">
-                <p className="text-xs text-stone-400">
+              <div className="p-4 bg-surface-container-low flex justify-between items-center">
+                <p className="text-xs text-neutral-400">
                   All financials are verified by the Britestate Finance team.
                 </p>
                 <button
                   type="button"
-                  className="text-emerald-900 text-sm font-bold flex items-center gap-1 hover:underline"
+                  className="text-brand-primary text-sm font-bold flex items-center gap-1 hover:underline"
                 >
                   View Complete Audit Trail
                 </button>
