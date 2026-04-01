@@ -12,15 +12,15 @@ const RADIUS = (RING_SIZE - STROKE_WIDTH) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function scoreColor(pct: number): string {
-  if (pct >= 75) return "text-green-500";
-  if (pct >= 50) return "text-yellow-500";
-  return "text-red-500";
+  if (pct >= 75) return "text-success";
+  if (pct >= 50) return "text-warning";
+  return "text-error";
 }
 
 function strokeColor(pct: number): string {
-  if (pct >= 75) return "stroke-green-500";
-  if (pct >= 50) return "stroke-yellow-500";
-  return "stroke-red-500";
+  if (pct >= 75) return "stroke-success";
+  if (pct >= 50) return "stroke-warning";
+  return "stroke-error";
 }
 
 export function SecurityScoreBadge({

@@ -30,8 +30,8 @@ function computeLevel({
   if (visibility === "private" && allSharingOff) {
     return {
       level: "Maximum",
-      color: "text-green-600",
-      iconColor: "text-green-500",
+      color: "text-success",
+      iconColor: "text-success",
       description: "Full privacy protection",
     };
   }
@@ -39,8 +39,8 @@ function computeLevel({
   if (visibility === "registered_only" || (visibility === "private" && !allSharingOff)) {
     return {
       level: "High",
-      color: "text-blue-600",
-      iconColor: "text-blue-500",
+      color: "text-info",
+      iconColor: "text-info",
       description: "Most data is hidden",
     };
   }
@@ -48,16 +48,16 @@ function computeLevel({
   if (visibility === "public" && sharingOnCount < sharingFlags.length) {
     return {
       level: "Standard",
-      color: "text-yellow-600",
-      iconColor: "text-yellow-500",
+      color: "text-warning",
+      iconColor: "text-warning",
       description: "Some data is shared",
     };
   }
 
   return {
     level: "Low",
-    color: "text-red-600",
-    iconColor: "text-red-500",
+    color: "text-error",
+    iconColor: "text-error",
     description: "Profile fully visible",
   };
 }

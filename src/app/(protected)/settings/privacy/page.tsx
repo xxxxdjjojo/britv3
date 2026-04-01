@@ -266,6 +266,7 @@ export default function PrivacySettingsPage() {
               <button
                 key={mode.id}
                 type="button"
+                aria-pressed={isActive}
                 onClick={() => void applyPrivacyMode(mode.id)}
                 className={cn(
                   "relative flex flex-col items-center gap-2 rounded-xl p-5 text-center transition-all",

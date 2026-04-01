@@ -44,7 +44,6 @@ const DEFAULTS: PrefsState = {
 
 const LOCALE_OPTIONS = [
   { value: "en-GB", label: "English (UK)" },
-  // TODO: Re-enable cy-GB (Welsh) and gd-GB (Gaelic) when i18n translations are ready
 ] as const;
 
 const DATE_FORMAT_OPTIONS = [

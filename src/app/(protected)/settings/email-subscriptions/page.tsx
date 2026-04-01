@@ -369,8 +369,8 @@ export default function EmailSubscriptionsPage() {
 
         <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 shrink-0 rounded-lg bg-blue-50 p-1.5 dark:bg-blue-900/20">
-              <Info className="size-4 text-blue-600 dark:text-blue-400" />
+            <div className="mt-0.5 shrink-0 rounded-lg bg-info-light p-1.5 dark:bg-info/10">
+              <Info className="size-4 text-info" />
             </div>
             <div>
               <p className="font-body text-sm font-medium text-foreground">

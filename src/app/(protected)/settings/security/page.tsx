@@ -103,11 +103,11 @@ export default function SecuritySettingsPage() {
         setMfaState("DISABLED");
         setFactorId(null);
         setTotpData(null);
-      } else if ((totpFactor.status as string) === "unverified") {
+      } else if (totpFactor.status === "unverified") {
         setMfaState("PENDING");
         setFactorId(totpFactor.id);
         setTotpData(null);
-      } else if ((totpFactor.status as string) === "verified") {
+      } else if (totpFactor.status === "verified") {
         setMfaState("ENABLED");
         setFactorId(totpFactor.id);
       }
@@ -134,8 +134,8 @@ export default function SecuritySettingsPage() {
         sessions: SessionInfo[];
       };
       setSessions(data ?? []);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Silently degrade — sessions panel shows empty state
     } finally {
       setSessionsLoading(false);
     }
@@ -154,8 +154,8 @@ export default function SecuritySettingsPage() {
         identities: UserIdentity[];
       };
       setIdentities(data ?? []);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Silently degrade — connected accounts shows empty state
     } finally {
       setIdentitiesLoading(false);
     }
@@ -176,8 +176,7 @@ export default function SecuritySettingsPage() {
       };
       setLoginHistory(body.entries ?? []);
       setLoginHistoryFallback(body.fallback ?? false);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setLoginHistoryFallback(true);
     } finally {
       setLoginHistoryLoading(false);
@@ -512,7 +511,7 @@ export default function SecuritySettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="font-heading text-xl font-semibold tracking-tight text-foreground">Security</h1>
+        <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">Security</h2>
         <p className="mt-1 font-body text-sm text-neutral-500">
           Manage your password, two-factor authentication, connected accounts,
           and active sessions.
