@@ -14,6 +14,11 @@ const LEGAL_PAGES = [
   { path: "/legal/aml-policy", heading: /anti.money|aml/i },
   { path: "/legal/modern-slavery", heading: /modern slavery/i },
   { path: "/legal/disclaimer", heading: /disclaimer/i },
+  { path: "/legal/fair-housing", heading: /fair housing/i },
+  { path: "/legal/professional-standards", heading: /professional standards/i },
+  { path: "/legal/regulatory-information", heading: /regulatory/i },
+  { path: "/legal/third-party-services", heading: /third.party/i },
+  { path: "/legal/refund-policy", heading: /refund/i },
 ];
 
 test.describe("Legal Pages", () => {
@@ -54,6 +59,14 @@ test.describe("Legal Index Page", () => {
     await expect(page.getByRole("heading", { name: /Privacy & Data Protection/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Compliance/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Platform/i })).toBeVisible();
+  });
+
+  test("has links to new legal pages", async ({ page }) => {
+    await expect(page.locator('a[href="/legal/fair-housing"]')).toBeVisible();
+    await expect(page.locator('a[href="/legal/professional-standards"]')).toBeVisible();
+    await expect(page.locator('a[href="/legal/regulatory-information"]')).toBeVisible();
+    await expect(page.locator('a[href="/legal/third-party-services"]')).toBeVisible();
+    await expect(page.locator('a[href="/legal/refund-policy"]')).toBeVisible();
   });
 });
 

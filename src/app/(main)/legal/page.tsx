@@ -14,6 +14,11 @@ import {
   Info,
   Coins,
   BrainCircuit,
+  Home,
+  BadgeCheck,
+  Landmark,
+  Network,
+  ReceiptText,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -99,6 +104,24 @@ const categories: Category[] = [
         title: "Modern Slavery Statement",
         desc: "Our commitment under the Modern Slavery Act 2015.",
       },
+      {
+        href: "/legal/fair-housing",
+        icon: Home,
+        title: "Fair Housing Policy",
+        desc: "Our commitment to equal access to housing under the Equality Act 2010.",
+      },
+      {
+        href: "/legal/professional-standards",
+        icon: BadgeCheck,
+        title: "Professional Standards",
+        desc: "Standards and obligations for professionals on Britestate.",
+      },
+      {
+        href: "/legal/regulatory-information",
+        icon: Landmark,
+        title: "Regulatory Information",
+        desc: "Platform regulatory status, FCA disclaimer, and regulator contacts.",
+      },
     ],
   },
   {
@@ -133,6 +156,18 @@ const categories: Category[] = [
         icon: Info,
         title: "Disclaimer",
         desc: "Limitations on the advice and information we provide.",
+      },
+      {
+        href: "/legal/third-party-services",
+        icon: Network,
+        title: "Third-Party Services Disclosure",
+        desc: "Third-party services we use and how your data flows to them.",
+      },
+      {
+        href: "/legal/refund-policy",
+        icon: ReceiptText,
+        title: "Refund Policy",
+        desc: "Refund terms for subscriptions, boosts, and one-time purchases.",
       },
     ],
   },
