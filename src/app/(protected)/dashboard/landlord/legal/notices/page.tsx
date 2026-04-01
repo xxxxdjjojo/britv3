@@ -113,13 +113,13 @@ const S8_GROUNDS = [
 
 function StatusBadge({ status }: Readonly<{ status: string }>) {
   const colours: Record<string, string> = {
-    draft: "bg-gray-100 text-gray-700",
+    draft: "bg-[--color-surface-container-low] text-on-surface",
     generated: "bg-blue-100 text-blue-700",
-    served: "bg-green-100 text-green-700",
+    served: "bg-brand-primary-lighter text-brand-primary",
   };
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colours[status] ?? "bg-gray-100 text-gray-700"}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colours[status] ?? "bg-[--color-surface-container-low] text-on-surface"}`}
     >
       {status}
     </span>
@@ -315,15 +315,15 @@ function NoticesPageInner() {
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Notice Builder</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-on-surface">Notice Builder</h1>
+        <p className="mt-1 text-sm text-[--color-on-surface-variant]">
           Generate Section 21 (no-fault) or Section 8 (breach) possession
           notices.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-[--color-outline-variant]">
         <nav className="-mb-px flex gap-6">
           {(["section21", "section8"] as const).map((tab) => (
             <button
@@ -331,8 +331,8 @@ function NoticesPageInner() {
               onClick={() => setActiveTab(tab)}
               className={`border-b-2 px-1 pb-3 text-sm font-medium ${
                 activeTab === tab
-                  ? "border-green-700 text-green-700"
-                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  ? "border-brand-primary text-brand-primary"
+                  : "border-transparent text-[--color-on-surface-variant] hover:border-[--color-outline-variant] hover:text-on-surface"
               }`}
             >
               {tab === "section21" ? "Section 21" : "Section 8"}
@@ -348,28 +348,28 @@ function NoticesPageInner() {
           <Section21PreflightChecklist onAllChecked={setPreflightPassed} />
 
           <div
-            className={`rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-opacity ${
+            className={`rounded-lg border border-[--color-outline-variant] bg-surface-container-lowest p-6 shadow-sm transition-opacity ${
               preflightPassed ? "opacity-100" : "pointer-events-none opacity-40"
             }`}
             aria-disabled={!preflightPassed}
           >
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            <h2 className="mb-4 text-lg font-semibold text-on-surface">
               Section 21 — No-fault Notice
             </h2>
             {!preflightPassed && (
-              <p className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              <p className="mb-4 rounded-md border border-amber-200 bg-brand-secondary-light px-3 py-2 text-xs text-[--color-brand-secondary-dark]">
                 Complete the checklist above to unlock this form.
               </p>
             )}
             <form onSubmit={handleSubmitS21(onSubmitS21)}>
               <fieldset disabled={!preflightPassed} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-on-surface">
                     Select Tenancy
                   </label>
                   <select
                     {...registerS21("tenancy_id")}
-                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                    className="mt-1 block w-full rounded-md border border-[--color-outline-variant] bg-surface-container-lowest px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   >
                     <option value="">-- Select a tenancy --</option>
                     {tenancies.map((t) => (
@@ -386,14 +386,14 @@ function NoticesPageInner() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-on-surface">
                     Possession Date
                   </label>
                   <input
                     type="date"
                     {...registerS21("possession_date")}
                     min={twoMonthsFromNow()}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                    className="mt-1 block w-full rounded-md border border-[--color-outline-variant] px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   {errorsS21.possession_date && (
                     <p className="mt-1 text-xs text-red-600">
@@ -403,7 +403,7 @@ function NoticesPageInner() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-on-surface">
                     Deposit Scheme Reference
                   </label>
                   <input
@@ -411,7 +411,7 @@ function NoticesPageInner() {
                     {...registerS21("deposit_scheme_reference")}
                     defaultValue={selectedS21Tenancy?.deposit_scheme_reference ?? ""}
                     placeholder="e.g. TDS123456"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                    className="mt-1 block w-full rounded-md border border-[--color-outline-variant] px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   {errorsS21.deposit_scheme_reference && (
                     <p className="mt-1 text-xs text-red-600">
@@ -425,9 +425,9 @@ function NoticesPageInner() {
                     <input
                       type="checkbox"
                       {...registerS21("epc_provided")}
-                      className="rounded border-gray-300 text-green-700"
+                      className="rounded border-[--color-outline-variant] text-brand-primary"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-on-surface">
                       EPC (Energy Performance Certificate) was provided to the
                       tenant
                     </span>
@@ -442,9 +442,9 @@ function NoticesPageInner() {
                     <input
                       type="checkbox"
                       {...registerS21("gas_safety_provided")}
-                      className="rounded border-gray-300 text-green-700"
+                      className="rounded border-[--color-outline-variant] text-brand-primary"
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-on-surface">
                       Gas Safety Certificate was provided within 28 days of tenancy
                       commencement
                     </span>
@@ -494,7 +494,7 @@ function NoticesPageInner() {
                   <button
                     type="submit"
                     disabled={submitting || !s21Validation.valid}
-                    className="rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-[--color-brand-primary-light] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? "Creating..." : "Create Notice"}
                   </button>
@@ -504,8 +504,8 @@ function NoticesPageInner() {
 
             {/* PDF download after notice created */}
             {createdNotice?.notice_type === "section_21" && (
-              <div className="mt-6 rounded-md border border-green-200 bg-green-50 p-4">
-                <p className="mb-3 text-sm font-medium text-green-800">
+              <div className="mt-6 rounded-md border border-brand-primary/20 bg-brand-primary-lighter p-4">
+                <p className="mb-3 text-sm font-medium text-brand-primary">
                   Notice created — download the PDF to serve on your tenant.
                 </p>
                 <div className="flex flex-wrap gap-3">
@@ -523,7 +523,7 @@ function NoticesPageInner() {
                   </PDFErrorBoundary>
                   <button
                     onClick={() => void markServed(createdNotice.id)}
-                    className="rounded-md border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50"
+                    className="rounded-md border border-brand-primary px-4 py-2 text-sm font-medium text-brand-primary hover:bg-brand-primary-lighter"
                   >
                     Mark as Served
                   </button>
@@ -536,18 +536,18 @@ function NoticesPageInner() {
 
       {/* Section 8 form */}
       {activeTab === "section8" && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+        <div className="rounded-lg border border-[--color-outline-variant] bg-surface-container-lowest p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-on-surface">
             Section 8 — Breach of Tenancy Notice
           </h2>
           <form onSubmit={handleSubmitS8(onSubmitS8)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-on-surface">
                 Select Tenancy
               </label>
               <select
                 {...registerS8("tenancy_id")}
-                className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="mt-1 block w-full rounded-md border border-[--color-outline-variant] bg-surface-container-lowest px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               >
                 <option value="">-- Select a tenancy --</option>
                 {tenancies.map((t) => (
@@ -564,7 +564,7 @@ function NoticesPageInner() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-on-surface">
                 Grounds for Possession
               </label>
               <div className="mt-2 space-y-2">
@@ -574,9 +574,9 @@ function NoticesPageInner() {
                       type="checkbox"
                       value={ground.value}
                       {...registerS8("grounds")}
-                      className="mt-0.5 rounded border-gray-300 text-green-700"
+                      className="mt-0.5 rounded border-[--color-outline-variant] text-brand-primary"
                     />
-                    <span className="text-sm text-gray-700">{ground.label}</span>
+                    <span className="text-sm text-on-surface">{ground.label}</span>
                   </label>
                 ))}
               </div>
@@ -589,7 +589,7 @@ function NoticesPageInner() {
 
             {s8HasGround8 && (
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-on-surface">
                   Total Rent Arrears (£)
                 </label>
                 <input
@@ -598,7 +598,7 @@ function NoticesPageInner() {
                   min="0"
                   {...registerS8("arrears_amount")}
                   placeholder="e.g. 2400.00"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                  className="mt-1 block w-full rounded-md border border-[--color-outline-variant] px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {errorsS8.arrears_amount && (
                   <p className="mt-1 text-xs text-red-600">
@@ -650,35 +650,35 @@ function NoticesPageInner() {
       )}
 
       {/* Notices list */}
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 px-6 py-4">
-          <h2 className="text-base font-semibold text-gray-900">
+      <div className="rounded-lg border border-[--color-outline-variant] bg-surface-container-lowest shadow-sm">
+        <div className="border-b border-[--color-outline-variant] px-6 py-4">
+          <h2 className="text-base font-semibold text-on-surface">
             Existing Notices
           </h2>
         </div>
         {loading ? (
-          <div className="px-6 py-8 text-center text-sm text-gray-500">
+          <div className="px-6 py-8 text-center text-sm text-[--color-on-surface-variant]">
             Loading notices...
           </div>
         ) : notices.length === 0 ? (
-          <div className="px-6 py-8 text-center text-sm text-gray-500">
+          <div className="px-6 py-8 text-center text-sm text-[--color-on-surface-variant]">
             No notices created yet.
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[--color-outline-variant]">
             {notices.map((notice) => (
               <div
                 key={notice.id}
                 className="flex items-center justify-between px-6 py-4"
               >
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-on-surface">
                     {notice.notice_type === "section_21"
                       ? "Section 21"
                       : "Section 8"}{" "}
                     Notice
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-[--color-on-surface-variant]">
                     Created{" "}
                     {new Date(notice.created_at).toLocaleDateString("en-GB")}
                     {notice.possession_date &&
@@ -699,7 +699,7 @@ export default function NoticesPage() {
   if (process.env.NEXT_PUBLIC_LEGAL_NOTICES_ENABLED !== "true") {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-sm text-gray-500">This feature is not available.</p>
+        <p className="text-sm text-[--color-on-surface-variant]">This feature is not available.</p>
       </div>
     );
   }

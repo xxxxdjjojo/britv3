@@ -607,7 +607,7 @@ function InlineEntryForm({ propertyId, entry, onSaved }: InlineEntryFormProps) {
           onClick={() => { setType("income"); setCategory(""); }}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             type === "income"
-              ? "bg-white text-green-700 shadow-sm dark:bg-gray-800 dark:text-green-400"
+              ? "bg-surface-container-lowest text-green-700 shadow-sm dark:bg-gray-800 dark:text-green-400"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -618,7 +618,7 @@ function InlineEntryForm({ propertyId, entry, onSaved }: InlineEntryFormProps) {
           onClick={() => { setType("expense"); setCategory(""); }}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             type === "expense"
-              ? "bg-white text-red-700 shadow-sm dark:bg-gray-800 dark:text-red-400"
+              ? "bg-surface-container-lowest text-red-700 shadow-sm dark:bg-gray-800 dark:text-red-400"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >

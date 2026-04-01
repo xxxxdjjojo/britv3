@@ -54,7 +54,7 @@ async function PageContent(
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-on-surface dark:text-gray-100">
           Maintenance Requests
         </h1>
         <Link
@@ -70,7 +70,7 @@ async function PageContent(
         <select
           name="status"
           defaultValue={statusFilter ?? ""}
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="rounded-md border border-[--color-outline-variant] px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         >
           <option value="">All Statuses</option>
           {MAINTENANCE_STATUSES.map((s) => (
@@ -82,7 +82,7 @@ async function PageContent(
         <select
           name="priority"
           defaultValue={priorityFilter ?? ""}
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="rounded-md border border-[--color-outline-variant] px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         >
           <option value="">All Priorities</option>
           {MAINTENANCE_PRIORITIES.map((p) => (
@@ -93,7 +93,7 @@ async function PageContent(
         </select>
         <button
           type="submit"
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+          className="rounded-md border border-[--color-outline-variant] px-3 py-1.5 text-sm font-medium text-on-surface hover:bg-[--color-surface-container-low] dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
         >
           Filter
         </button>

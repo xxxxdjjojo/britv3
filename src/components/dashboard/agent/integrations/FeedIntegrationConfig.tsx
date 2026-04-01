@@ -607,14 +607,14 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                     type="button"
                     onClick={() => handleSyncNow(integration.id)}
                     disabled={syncingId === integration.id || integration.sync_status === "syncing"}
-                    className="rounded border border-gray-300 dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+                    className="rounded border border-[--color-outline-variant] dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800 disabled:opacity-50"
                   >
                     {syncingId === integration.id ? "Syncing..." : "Sync Now"}
                   </button>
                   <button
                     type="button"
                     onClick={() => openEditDialog(integration)}
-                    className="rounded border border-gray-300 dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="rounded border border-[--color-outline-variant] dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800"
                   >
                     Edit
                   </button>

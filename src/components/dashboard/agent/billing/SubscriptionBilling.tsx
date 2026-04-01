@@ -151,7 +151,7 @@ export function SubscriptionBilling({ subscription }: Props) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="font-heading text-lg">Current Plan</CardTitle>
-              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">Active</Badge>
+              <Badge className="bg-brand-primary-lighter text-brand-primary border-brand-primary/20">Active</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -236,7 +236,7 @@ export function SubscriptionBilling({ subscription }: Props) {
               <ul className="space-y-2">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm">
-                    <Check className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-brand-primary" />
                     <span>{feature}</span>
                   </li>
                 ))}

@@ -107,7 +107,7 @@ async function PageContent({
   return (
     <div className="space-y-6 p-6 max-w-3xl mx-auto">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+      <nav className="flex items-center gap-2 text-sm text-[--color-on-surface-variant] dark:text-slate-400">
         <Link
           href="/dashboard/landlord/maintenance"
           className="hover:text-brand-primary transition-colors"
@@ -122,24 +122,24 @@ async function PageContent({
           {request.title}
         </Link>
         <span>/</span>
-        <span className="text-slate-900 dark:text-white font-medium">
+        <span className="text-on-surface dark:text-white font-medium">
           Assign Tradesperson
         </span>
       </nav>
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-on-surface dark:text-white">
           Assign Tradesperson
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-slate-400">
           Choose a verified marketplace provider for:{" "}
-          <span className="font-medium text-slate-700 dark:text-slate-300">
+          <span className="font-medium text-on-surface dark:text-slate-300">
             {request.title}
           </span>
         </p>
         {(city || postcode) && (
-          <p className="mt-0.5 text-xs text-slate-400">
+          <p className="mt-0.5 text-xs text-[--color-on-surface-variant]">
             Property: {city}{postcode ? ` · ${postcode}` : ""}
           </p>
         )}

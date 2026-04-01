@@ -67,7 +67,7 @@ async function PageContent(
             <Users className="size-5 text-primary" />
           </div>
           <div>
-            <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+            <h1 className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-on-surface dark:text-neutral-100">
               Tenancy History
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -97,7 +97,7 @@ async function PageContent(
           </div>
           <div className="rounded-xl border border-border bg-card p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active</p>
-            <p className="mt-1 text-2xl font-bold font-heading text-emerald-600 dark:text-emerald-400">
+            <p className="mt-1 text-2xl font-bold font-heading text-brand-primary dark:text-emerald-400">
               {activeTenancies.length}
             </p>
           </div>
@@ -135,10 +135,10 @@ async function PageContent(
       {/* Active tenancies */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Clock className="size-4 text-emerald-600 dark:text-emerald-400" />
+          <Clock className="size-4 text-brand-primary dark:text-emerald-400" />
           <h2 className="font-heading text-base font-semibold text-foreground">Active</h2>
           {activeTenancies.length > 0 && (
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+            <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-xs font-medium text-brand-primary dark:bg-emerald-900/40 dark:text-emerald-300">
               {activeTenancies.length}
             </span>
           )}

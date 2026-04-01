@@ -196,7 +196,7 @@ async function PageContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-medium text-green-600">
+                    <span className="font-medium text-[--color-success]">
                       {penceToGBP(c.commission_amount)}
                     </span>
                     <Badge variant={c.status === "paid" ? "default" : "secondary"}>
