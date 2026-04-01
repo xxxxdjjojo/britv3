@@ -120,7 +120,7 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
             />
             <Link
               href={`/search?city=${city_data.slug}`}
-              className="bg-white text-brand-primary px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-neutral-50 transition-colors flex-shrink-0"
+              className="bg-white text-brand-primary px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[--color-surface-container-low] transition-colors flex-shrink-0"
             >
               Search
             </Link>
@@ -151,15 +151,15 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               subIcon: false,
             },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-2xl shadow-md p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">{stat.label}</p>
+            <div key={stat.label} className="bg-surface-container-lowest rounded-2xl shadow-md p-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-[--color-on-surface-variant] mb-2">{stat.label}</p>
               <p className="text-3xl font-black text-brand-primary font-heading">{stat.value}</p>
               {stat.subIcon ? (
-                <p className="text-emerald-600 font-bold flex items-center gap-1 mt-1.5 text-sm">
+                <p className="text-[--color-success] font-bold flex items-center gap-1 mt-1.5 text-sm">
                   <TrendingUp className="size-4" /> {stat.sub} YoY
                 </p>
               ) : (
-                <p className="text-sm text-neutral-400 mt-1.5">{stat.sub}</p>
+                <p className="text-sm text-[--color-on-surface-variant] mt-1.5">{stat.sub}</p>
               )}
             </div>
           ))}
@@ -173,12 +173,12 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
 
         {/* ── 5-Year Price Trend ── */}
         <section>
-          <div className="bg-white rounded-2xl shadow-sm p-8">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-8">
             <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-1">Price Trends</p>
-                <h2 className="text-xl font-black font-heading text-neutral-950" style={{ letterSpacing: "-0.02em" }}>5-Year Price Trend</h2>
-                <p className="text-sm text-neutral-500 mt-1">Average property prices in {city_data.name}</p>
+                <h2 className="text-xl font-black font-heading text-on-surface" style={{ letterSpacing: "-0.02em" }}>5-Year Price Trend</h2>
+                <p className="text-sm text-[--color-on-surface-variant] mt-1">Average property prices in {city_data.name}</p>
               </div>
               {/* Property type toggle pills */}
               <div className="flex gap-2">
@@ -188,7 +188,7 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
                     className={`px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer transition-colors ${
                       i === 0
                         ? "bg-brand-primary/10 text-brand-primary"
-                        : "text-neutral-400 hover:text-brand-primary"
+                        : "text-[--color-on-surface-variant] hover:text-brand-primary"
                     }`}
                   >
                     {type}
@@ -224,12 +224,12 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               <Link
                 key={borough.name}
                 href={`/areas/${city_data.slug}/${borough.slug}`}
-                className="group bg-white rounded-2xl p-4 hover:shadow-md transition-all"
+                className="group bg-surface-container-lowest rounded-2xl p-4 hover:shadow-md transition-all"
               >
                 {/* Image placeholder */}
                 <div className="h-24 w-full rounded-xl overflow-hidden bg-[#f4f3f2] mb-3 group-hover:scale-[1.02] transition-transform duration-300" />
-                <p className="font-black text-neutral-950 font-heading">{borough.name}</p>
-                <p className="text-sm text-neutral-500 mt-0.5">Avg {borough.avgPrice}</p>
+                <p className="font-black text-on-surface font-heading">{borough.name}</p>
+                <p className="text-sm text-[--color-on-surface-variant] mt-0.5">Avg {borough.avgPrice}</p>
               </Link>
             ))}
           </div>
@@ -292,12 +292,12 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
             {LOCAL_SERVICES.map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="group bg-white rounded-2xl p-6 hover:shadow-md transition-all text-center cursor-default"
+                className="group bg-surface-container-lowest rounded-2xl p-6 hover:shadow-md transition-all text-center cursor-default"
               >
                 <div className="size-12 rounded-2xl bg-brand-primary/5 text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors flex items-center justify-center mx-auto mb-3">
                   <Icon className="size-5" />
                 </div>
-                <p className="text-sm font-bold text-neutral-900">{label}</p>
+                <p className="text-sm font-bold text-on-surface">{label}</p>
               </div>
             ))}
           </div>
@@ -343,7 +343,7 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
                 placeholder="Enter your email"
                 className="flex-1 px-6 py-4 rounded-xl bg-white/10 text-white placeholder-white/40 border border-white/15 outline-none"
               />
-              <button className="bg-white text-brand-primary font-bold px-8 py-4 rounded-xl hover:bg-neutral-50 transition-colors">
+              <button className="bg-white text-brand-primary font-bold px-8 py-4 rounded-xl hover:bg-[--color-surface-container-low] transition-colors">
                 Join the Waitlist
               </button>
             </div>

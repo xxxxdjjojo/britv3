@@ -57,13 +57,13 @@ export default async function NationalMarketTrendsPage() {
       />
 
       {/* Breadcrumb */}
-      <nav className="max-w-7xl mx-auto px-6 pt-6 pb-2 text-sm text-neutral-500" aria-label="Breadcrumb">
+      <nav className="max-w-7xl mx-auto px-6 pt-6 pb-2 text-sm text-[--color-on-surface-variant]" aria-label="Breadcrumb">
         <ol className="flex items-center gap-2">
           <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
           <li>/</li>
           <li><Link href="/market-trends" className="hover:text-primary transition-colors">Market Trends</Link></li>
           <li>/</li>
-          <li className="text-neutral-900 font-medium">National</li>
+          <li className="text-on-surface font-medium">National</li>
         </ol>
       </nav>
 
@@ -71,10 +71,10 @@ export default async function NationalMarketTrendsPage() {
       <section className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col sm:flex-row sm:items-end gap-3">
           <div className="flex-1">
-            <h1 className="text-3xl sm:text-4xl font-bold font-heading text-neutral-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold font-heading text-on-surface tracking-tight">
               UK National Property Market
             </h1>
-            <p className="mt-2 text-neutral-500 text-sm max-w-2xl">
+            <p className="mt-2 text-[--color-on-surface-variant] text-sm max-w-2xl">
               Comprehensive data on UK house prices, transaction volumes, affordability and regional trends — updated monthly.
             </p>
           </div>
@@ -99,11 +99,11 @@ export default async function NationalMarketTrendsPage() {
           ].map(({ label, value, sub, up }) => (
             <div
               key={label}
-              className="bg-white border border-primary/10 rounded-xl p-4 shadow-sm flex flex-col gap-1"
+              className="bg-surface-container-lowest border border-primary/10 rounded-xl p-4 shadow-sm flex flex-col gap-1"
             >
-              <span className="text-[11px] text-neutral-500 font-semibold uppercase tracking-wide">{label}</span>
-              <span className="text-xl font-bold font-heading text-neutral-900 leading-none">{value}</span>
-              <span className={`text-xs font-semibold ${up ? "text-emerald-600" : "text-red-500"}`}>{sub}</span>
+              <span className="text-[11px] text-[--color-on-surface-variant] font-semibold uppercase tracking-wide">{label}</span>
+              <span className="text-xl font-bold font-heading text-on-surface leading-none">{value}</span>
+              <span className={`text-xs font-semibold ${up ? "text-[--color-success]" : "text-red-500"}`}>{sub}</span>
             </div>
           ))}
         </div>
@@ -111,7 +111,7 @@ export default async function NationalMarketTrendsPage() {
 
       {/* First-Time Buyer stats */}
       <section className="max-w-7xl mx-auto px-6 pb-8">
-        <h2 className="text-xl font-bold font-heading text-neutral-900 mb-4">First-Time Buyers</h2>
+        <h2 className="text-xl font-bold font-heading text-on-surface mb-4">First-Time Buyers</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: "Avg FTB Price", value: `£${formatNumber(national.ftbAvgPrice)}` },
@@ -122,7 +122,7 @@ export default async function NationalMarketTrendsPage() {
               key={label}
               className="bg-primary/5 border border-primary/10 rounded-xl p-5 flex flex-col gap-1"
             >
-              <span className="text-xs text-neutral-500 font-medium uppercase tracking-wide">{label}</span>
+              <span className="text-xs text-[--color-on-surface-variant] font-medium uppercase tracking-wide">{label}</span>
               <span className="text-2xl font-extrabold text-primary">{value}</span>
             </div>
           ))}
@@ -131,13 +131,13 @@ export default async function NationalMarketTrendsPage() {
 
       {/* Historical price chart */}
       <section className="max-w-7xl mx-auto px-6 pb-10">
-        <div className="bg-white border border-primary/10 rounded-2xl p-6 shadow-sm">
+        <div className="bg-surface-container-lowest border border-primary/10 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold font-heading text-neutral-900">
+              <h2 className="text-xl font-bold font-heading text-on-surface">
                 UK Average House Price: 1995–2026
               </h2>
-              <p className="text-xs text-neutral-500 mt-0.5">Nominal prices, not inflation-adjusted</p>
+              <p className="text-xs text-[--color-on-surface-variant] mt-0.5">Nominal prices, not inflation-adjusted</p>
             </div>
           </div>
           <HistoricalPriceChartClient data={national.historicalPrices} />
@@ -151,17 +151,17 @@ export default async function NationalMarketTrendsPage() {
 
       {/* Regional comparison table */}
       <section className="max-w-7xl mx-auto px-6 pb-10">
-        <h2 className="text-xl font-bold font-heading text-neutral-900 mb-4">Regional Comparison</h2>
-        <div className="bg-white border border-primary/10 rounded-2xl overflow-hidden shadow-sm">
+        <h2 className="text-xl font-bold font-heading text-on-surface mb-4">Regional Comparison</h2>
+        <div className="bg-surface-container-lowest border border-primary/10 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-primary/10 bg-primary/5">
-                  <th className="text-left px-4 py-3 font-semibold text-neutral-600 text-neutral-500">Region</th>
-                  <th className="text-right px-4 py-3 font-semibold text-neutral-600 text-neutral-500">Avg Price</th>
-                  <th className="text-right px-4 py-3 font-semibold text-neutral-600 text-neutral-500">YoY</th>
-                  <th className="text-right px-4 py-3 font-semibold text-neutral-600 text-neutral-500 hidden sm:table-cell">Transactions</th>
-                  <th className="text-right px-4 py-3 font-semibold text-neutral-600 text-neutral-500 hidden md:table-cell">Days to Sell</th>
+                  <th className="text-left px-4 py-3 font-semibold text-[--color-on-surface-variant] text-[--color-on-surface-variant]">Region</th>
+                  <th className="text-right px-4 py-3 font-semibold text-[--color-on-surface-variant] text-[--color-on-surface-variant]">Avg Price</th>
+                  <th className="text-right px-4 py-3 font-semibold text-[--color-on-surface-variant] text-[--color-on-surface-variant]">YoY</th>
+                  <th className="text-right px-4 py-3 font-semibold text-[--color-on-surface-variant] text-[--color-on-surface-variant] hidden sm:table-cell">Transactions</th>
+                  <th className="text-right px-4 py-3 font-semibold text-[--color-on-surface-variant] text-[--color-on-surface-variant] hidden md:table-cell">Days to Sell</th>
                 </tr>
               </thead>
               <tbody>
@@ -175,21 +175,21 @@ export default async function NationalMarketTrendsPage() {
                       <td className="px-4 py-3">
                         <Link
                           href={`/areas/${citySlug}`}
-                          className="font-semibold text-neutral-900 hover:text-primary transition-colors"
+                          className="font-semibold text-on-surface hover:text-primary transition-colors"
                         >
                           {r.region}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-right font-semibold text-neutral-800 text-neutral-800">
+                      <td className="px-4 py-3 text-right font-semibold text-on-surface text-on-surface">
                         {r.avgPriceFormatted}
                       </td>
-                      <td className={`px-4 py-3 text-right font-bold ${r.yoyChange >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                      <td className={`px-4 py-3 text-right font-bold ${r.yoyChange >= 0 ? "text-[--color-success]" : "text-red-500"}`}>
                         {r.yoyChangeFormatted}
                       </td>
-                      <td className="px-4 py-3 text-right text-neutral-600 text-neutral-500 hidden sm:table-cell">
+                      <td className="px-4 py-3 text-right text-[--color-on-surface-variant] text-[--color-on-surface-variant] hidden sm:table-cell">
                         {formatNumber(r.transactionsLast12m)}
                       </td>
-                      <td className="px-4 py-3 text-right text-neutral-600 text-neutral-500 hidden md:table-cell">
+                      <td className="px-4 py-3 text-right text-[--color-on-surface-variant] text-[--color-on-surface-variant] hidden md:table-cell">
                         {r.avgDaysToSell} days
                       </td>
                     </tr>
@@ -204,8 +204,8 @@ export default async function NationalMarketTrendsPage() {
 
       {/* Data sources */}
       <section className="max-w-7xl mx-auto px-6 py-12">
-        <h2 className="text-xl font-bold font-heading mb-4 text-neutral-900">Data Sources</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-neutral-600">
+        <h2 className="text-xl font-bold font-heading mb-4 text-on-surface">Data Sources</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[--color-on-surface-variant]">
           <div><strong>Halifax House Price Index</strong> — Monthly, released mid-month</div>
           <div><strong>Nationwide House Price Index</strong> — Monthly, released end-of-month</div>
           <div><strong>HMRC Transaction Data</strong> — Monthly, 1-month lag</div>
@@ -215,7 +215,7 @@ export default async function NationalMarketTrendsPage() {
 
       {/* Internal links */}
       <section className="max-w-7xl mx-auto px-6 pb-16">
-        <h2 className="text-xl font-bold font-heading mb-4 text-neutral-900">Explore More</h2>
+        <h2 className="text-xl font-bold font-heading mb-4 text-on-surface">Explore More</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <InternalLinkCard
             href="/market-trends"

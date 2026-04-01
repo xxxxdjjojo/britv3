@@ -153,22 +153,22 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 pb-24">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-neutral-500" aria-label="Breadcrumb">
+        <nav className="flex items-center gap-2 text-sm text-[--color-on-surface-variant]" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-primary">Home</Link>
           <span>/</span>
           <Link href="/areas" className="hover:text-primary">Areas</Link>
           <span>/</span>
           <Link href={`/areas/${city_data.slug}`} className="hover:text-primary">{city_data.name}</Link>
           <span>/</span>
-          <span className="text-neutral-900 font-medium">Statistics</span>
+          <span className="text-on-surface font-medium">Statistics</span>
         </nav>
 
         {/* Page header */}
         <header>
-          <h1 className="text-4xl font-bold font-heading text-neutral-900 mb-2">
+          <h1 className="text-4xl font-bold font-heading text-on-surface mb-2">
             {city_data.name} Property Statistics
           </h1>
-          <p className="text-neutral-500 text-lg">
+          <p className="text-[--color-on-surface-variant] text-lg">
             Live market data, price breakdowns and transaction volumes for {city_data.name}.
           </p>
           <div className="mt-4">
@@ -178,7 +178,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
 
         {/* KPI Row — 6 cards */}
         <section aria-label="Key market indicators">
-          <h2 className="text-xl font-bold font-heading text-neutral-900 mb-5">Key Market Indicators</h2>
+          <h2 className="text-xl font-bold font-heading text-on-surface mb-5">Key Market Indicators</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
             {kpiCards.map((card) => {
               const Icon = card.icon;
@@ -187,28 +187,28 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
               return (
                 <div
                   key={card.label}
-                  className="bg-white rounded-2xl border border-primary/10 p-5 shadow-sm"
+                  className="bg-surface-container-lowest rounded-2xl border border-primary/10 p-5 shadow-sm"
                 >
                   <div className={`h-9 w-9 rounded-full flex items-center justify-center mb-3 ${
                     isHighlight
                       ? isPositive
-                        ? "bg-emerald-50 text-emerald-600"
+                        ? "bg-brand-primary-lighter text-[--color-success]"
                         : "bg-rose-50 text-rose-600"
                       : "bg-primary/5 text-primary"
                   }`}>
                     <Icon className="size-4" />
                   </div>
-                  <p className="text-xs text-neutral-500 mb-1 leading-tight">{card.label}</p>
+                  <p className="text-xs text-[--color-on-surface-variant] mb-1 leading-tight">{card.label}</p>
                   <p className={`text-2xl font-bold font-heading leading-none ${
                     isHighlight
                       ? isPositive
-                        ? "text-emerald-600"
+                        ? "text-[--color-success]"
                         : "text-rose-600"
-                      : "text-neutral-900"
+                      : "text-on-surface"
                   }`}>
                     {card.value}
                   </p>
-                  <p className="text-xs text-neutral-400 mt-1">{card.sub}</p>
+                  <p className="text-xs text-[--color-on-surface-variant] mt-1">{card.sub}</p>
                 </div>
               );
             })}
@@ -217,7 +217,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
 
         {/* Price by Property Type */}
         <section aria-label="Price by property type">
-          <h2 className="text-xl font-bold font-heading text-neutral-900 mb-5">
+          <h2 className="text-xl font-bold font-heading text-on-surface mb-5">
             Average Price by Property Type
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -227,16 +227,16 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
               return (
                 <div
                   key={code}
-                  className="bg-white rounded-2xl border border-primary/10 p-6 shadow-sm"
+                  className="bg-surface-container-lowest rounded-2xl border border-primary/10 p-6 shadow-sm"
                 >
                   <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center mb-4">
                     <Building2 className="size-5 text-primary" />
                   </div>
-                  <p className="text-sm text-neutral-500 mb-1">{label}</p>
-                  <p className="text-2xl font-bold font-heading text-neutral-900">
+                  <p className="text-sm text-[--color-on-surface-variant] mb-1">{label}</p>
+                  <p className="text-2xl font-bold font-heading text-on-surface">
                     {formatPrice(price)}
                   </p>
-                  <p className="text-xs text-neutral-400 mt-1">Average asking price</p>
+                  <p className="text-xs text-[--color-on-surface-variant] mt-1">Average asking price</p>
                 </div>
               );
             })}
@@ -245,13 +245,13 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
 
         {/* Price Trend Chart */}
         <section aria-label="Price trend chart">
-          <div className="bg-white rounded-2xl border border-primary/10 p-8 shadow-sm">
+          <div className="bg-surface-container-lowest rounded-2xl border border-primary/10 p-8 shadow-sm">
             <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
               <div>
-                <h2 className="text-xl font-bold font-heading text-neutral-900">
+                <h2 className="text-xl font-bold font-heading text-on-surface">
                   5-Year Price Trend
                 </h2>
-                <p className="text-sm text-neutral-500 mt-1">
+                <p className="text-sm text-[--color-on-surface-variant] mt-1">
                   Average property prices in {city_data.name} over time
                 </p>
               </div>
@@ -262,7 +262,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
                     className={`px-4 py-1.5 rounded-full text-sm font-bold cursor-pointer ${
                       i === 0
                         ? "bg-primary/10 text-primary"
-                        : "text-neutral-400 hover:text-primary"
+                        : "text-[--color-on-surface-variant] hover:text-primary"
                     }`}
                   >
                     {type}
@@ -285,7 +285,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
 
         {/* Internal Links */}
         <section aria-label="Explore more">
-          <h2 className="text-xl font-bold font-heading text-neutral-900 mb-5">Explore More</h2>
+          <h2 className="text-xl font-bold font-heading text-on-surface mb-5">Explore More</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InternalLinkCard
               title={`${city_data.name} Area Guide`}

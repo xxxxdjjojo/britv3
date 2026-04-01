@@ -48,20 +48,20 @@ export default async function BlogCategoryPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="text-center">
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold text-on-surface sm:text-5xl">
           {categoryTitle}
         </h1>
-        <p className="mt-3 text-base text-neutral-600">
+        <p className="mt-3 text-base text-[--color-on-surface-variant]">
           Articles and guides about {categoryTitle.toLowerCase()}.
         </p>
       </div>
 
       {fetchError || posts.length === 0 ? (
-        <div className="mt-12 rounded-xl border border-neutral-200 p-8 text-center">
-          <p className="text-lg font-medium text-neutral-700">
+        <div className="mt-12 rounded-xl border border-[--color-outline-variant] p-8 text-center">
+          <p className="text-lg font-medium text-on-surface">
             No posts in this category yet
           </p>
-          <p className="mt-2 text-sm text-neutral-500">
+          <p className="mt-2 text-sm text-[--color-on-surface-variant]">
             Check back soon for new content.
           </p>
           <Link
@@ -77,17 +77,17 @@ export default async function BlogCategoryPage({ params }: Props) {
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
-              className="block rounded-xl border border-neutral-200 p-6 transition-colors hover:border-neutral-300 hover:bg-neutral-50"
+              className="block rounded-xl border border-[--color-outline-variant] p-6 transition-colors hover:border-[--color-outline-variant] hover:bg-[--color-surface-container-low]"
             >
-              <h2 className="font-heading text-lg font-semibold text-neutral-900">
+              <h2 className="font-heading text-lg font-semibold text-on-surface">
                 {post.title}
               </h2>
               {post.excerpt && (
-                <p className="mt-2 text-sm text-neutral-500 line-clamp-2">
+                <p className="mt-2 text-sm text-[--color-on-surface-variant] line-clamp-2">
                   {post.excerpt}
                 </p>
               )}
-              <p className="mt-2 text-xs text-neutral-400">
+              <p className="mt-2 text-xs text-[--color-on-surface-variant]">
                 {new Date(post.created_at).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "long",

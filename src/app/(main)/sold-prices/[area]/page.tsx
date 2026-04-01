@@ -84,7 +84,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
       />
 
       {/* Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="mb-6 flex text-sm text-neutral-500">
+      <nav aria-label="Breadcrumb" className="mb-6 flex text-sm text-[--color-on-surface-variant]">
         <ol className="flex items-center gap-2">
           <li>
             <Link className="hover:text-primary transition-colors" href="/">
@@ -102,7 +102,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
           <li>
             <ChevronRight className="size-4" />
           </li>
-          <li className="font-medium text-neutral-900">
+          <li className="font-medium text-on-surface">
             {areaName}
           </li>
         </ol>
@@ -110,18 +110,18 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
 
       {/* Hero / Search */}
       <div className="mb-10">
-        <h1 className="mb-3 font-heading text-4xl font-bold text-neutral-900">
+        <h1 className="mb-3 font-heading text-4xl font-bold text-on-surface">
           Property Sold Prices in{" "}
           <span className="text-primary">{areaName}</span>
         </h1>
-        <p className="text-neutral-500 mb-6 max-w-xl">
+        <p className="text-[--color-on-surface-variant] mb-6 max-w-xl">
           Recent transactions and price history from HM Land Registry.
         </p>
         <div className="flex flex-col items-end gap-4 md:flex-row max-w-2xl">
           <div className="w-full flex-1 relative">
-            <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-neutral-400" />
+            <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[--color-on-surface-variant]" />
             <input
-              className="w-full rounded-xl border border-neutral-200 bg-white py-4 pl-12 pr-4 shadow-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-xl border border-[--color-outline-variant] bg-surface-container-lowest py-4 pl-12 pr-4 shadow-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="Enter postcode, street or town..."
               type="text"
               defaultValue={areaName}
@@ -136,43 +136,43 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
 
       {/* Stats Overview */}
       <div className="mb-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[--color-on-surface-variant]">
             Average Sold Price
           </p>
           <div className="flex items-baseline gap-2 mt-2">
             <h3 className="text-3xl font-bold font-heading text-primary">{stats.avgPrice}</h3>
             {stats.yoyChange !== undefined && (
-              <span className="flex items-center text-sm font-medium text-emerald-600">
+              <span className="flex items-center text-sm font-medium text-[--color-success]">
                 <TrendingUp className="size-3 mr-0.5" /> {stats.yoyChange}
               </span>
             )}
           </div>
-          <p className="mt-2 text-xs text-neutral-400">Past 12 months</p>
+          <p className="mt-2 text-xs text-[--color-on-surface-variant]">Past 12 months</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[--color-on-surface-variant]">
             Total Transactions
           </p>
-          <h3 className="text-3xl font-bold font-heading text-neutral-900 mt-2">{stats.totalTransactions}</h3>
-          <p className="mt-2 text-xs text-neutral-400">
+          <h3 className="text-3xl font-bold font-heading text-on-surface mt-2">{stats.totalTransactions}</h3>
+          <p className="mt-2 text-xs text-[--color-on-surface-variant]">
             Last 12 months volume
           </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[--color-on-surface-variant]">
             Avg Price vs Asking
           </p>
           <h3 className="text-3xl font-bold font-heading text-red-500 mt-2">{stats.avgVsAsking}</h3>
-          <p className="mt-2 text-xs text-neutral-400">
+          <p className="mt-2 text-xs text-[--color-on-surface-variant]">
             Below asking on average
           </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[--color-on-surface-variant]">
             Market Temperature
           </p>
           <div className="flex items-center gap-2 mt-2">
@@ -181,7 +181,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
             </h3>
             <Thermometer className="size-5 text-primary" />
           </div>
-          <p className="mt-2 text-xs text-neutral-400">
+          <p className="mt-2 text-xs text-[--color-on-surface-variant]">
             Neutral buyer/seller leverage
           </p>
         </div>
@@ -198,9 +198,9 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Table Section */}
         <div className="space-y-6 lg:col-span-2">
-          <div className="overflow-hidden rounded-xl bg-white border border-primary/10 shadow-sm">
+          <div className="overflow-hidden rounded-xl bg-surface-container-lowest border border-primary/10 shadow-sm">
             <div className="flex flex-row items-center justify-between border-b border-primary/5 px-6 py-4">
-              <h2 className="text-lg font-bold text-neutral-900">
+              <h2 className="text-lg font-bold text-on-surface">
                 Recent Sales in {areaName}
               </h2>
               <div className="flex gap-2">
@@ -214,7 +214,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-primary/5 text-xs uppercase tracking-wider text-neutral-500">
+                <thead className="bg-primary/5 text-xs uppercase tracking-wider text-[--color-on-surface-variant]">
                   <tr>
                     <th className="px-6 py-4 font-semibold">Address</th>
                     <th className="px-6 py-4 font-semibold">Type &amp; Beds</th>
@@ -237,7 +237,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
               </table>
             </div>
             <div className="flex items-center justify-between border-t border-primary/5 p-4">
-              <span className="text-xs text-neutral-500">
+              <span className="text-xs text-[--color-on-surface-variant]">
                 Showing 1-{records.length} of {total} results
               </span>
               <div className="flex gap-2">
@@ -257,17 +257,17 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
           <AreaSearchCTA areaName={areaName} citySlug={area} />
 
           {/* Price Trend Chart */}
-          <div className="rounded-xl bg-white border border-primary/10 shadow-sm p-6">
+          <div className="rounded-xl bg-surface-container-lowest border border-primary/10 shadow-sm p-6">
             <div className="mb-8 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-neutral-900 font-heading">Price Trend (10 Years)</h2>
-                <p className="text-sm text-neutral-500 mt-0.5">
+                <h2 className="text-lg font-bold text-on-surface font-heading">Price Trend (10 Years)</h2>
+                <p className="text-sm text-[--color-on-surface-variant] mt-0.5">
                   Historical market performance in {areaName}
                 </p>
               </div>
               <div className="flex gap-2 text-xs font-medium items-center">
                 <span className="size-3 rounded-full bg-primary inline-block" />
-                <span className="text-neutral-600">Avg. Sold Price</span>
+                <span className="text-[--color-on-surface-variant]">Avg. Sold Price</span>
               </div>
             </div>
             <div className="relative flex h-64 items-end justify-between px-2">
@@ -301,7 +301,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                 ))}
               </div>
             </div>
-            <div className="mt-4 flex justify-between px-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+            <div className="mt-4 flex justify-between px-2 text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
               {CHART_BARS.map((bar) => (
                 <span key={bar.year}>{bar.year}</span>
               ))}
@@ -311,21 +311,21 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
 
         {/* Map Side Panel */}
         <div className="lg:col-span-1">
-          <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white border border-primary/10 shadow-sm">
+          <div className="flex h-full flex-col overflow-hidden rounded-xl bg-surface-container-lowest border border-primary/10 shadow-sm">
             <div className="border-b border-primary/5 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-neutral-900">Map View</h2>
+                <h2 className="text-lg font-bold text-on-surface">Map View</h2>
                 <span className="text-xs font-bold text-primary cursor-pointer hover:underline">
                   Expand Map
                 </span>
               </div>
-              <p className="text-sm text-neutral-500 mt-0.5">
+              <p className="text-sm text-[--color-on-surface-variant] mt-0.5">
                 Viewing {areaName} area markers
               </p>
             </div>
             <div className="relative min-h-[500px] flex-1 bg-primary/5">
               {/* Map placeholder */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-neutral-400">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[--color-on-surface-variant]">
                 <MapPin className="size-10 text-primary/20" />
                 <p className="text-sm font-medium">
                   Map view — coming soon
@@ -333,7 +333,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
               </div>
             </div>
             <div className="bg-primary/5 p-4">
-              <div className="flex items-center gap-2 text-xs text-neutral-500">
+              <div className="flex items-center gap-2 text-xs text-[--color-on-surface-variant]">
                 <MapPin className="size-4 shrink-0 text-primary/40" />
                 Prices shown are approximate based on public land registry data.
               </div>

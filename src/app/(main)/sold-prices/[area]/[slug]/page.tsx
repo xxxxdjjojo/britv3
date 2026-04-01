@@ -68,14 +68,14 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
       />
 
       {/* ── Sticky Header ── */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-primary/10 px-4 py-3">
+      <div className="sticky top-0 z-50 bg-surface-container-lowest/80 backdrop-blur-md border-b border-primary/10 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <nav className="text-sm text-primary/60 flex items-center gap-2" aria-label="Breadcrumb">
             <Link href="/sold-prices" className="hover:text-primary">Sold Prices</Link>
             <span>›</span>
             <Link href={`/sold-prices/${area}`} className="hover:text-primary capitalize">{area.replace(/-/g, " ")}</Link>
             <span>›</span>
-            <span className="text-neutral-800 font-medium truncate max-w-[200px]">{address}</span>
+            <span className="text-on-surface font-medium truncate max-w-[200px]">{address}</span>
           </nav>
           <div className="flex-shrink-0">
             <input
@@ -119,20 +119,20 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                 {/* 3 stat cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="rounded-xl bg-primary/5 p-5">
-                    <p className="text-xs text-neutral-500 font-medium uppercase tracking-wide mb-1">Last Sold Price</p>
+                    <p className="text-xs text-[--color-on-surface-variant] font-medium uppercase tracking-wide mb-1">Last Sold Price</p>
                     <p className="text-2xl font-black text-primary font-heading">£{lastPrice.toLocaleString()}</p>
-                    <p className="text-xs text-neutral-500 mt-1">{lastDate}</p>
+                    <p className="text-xs text-[--color-on-surface-variant] mt-1">{lastDate}</p>
                   </div>
-                  <div className="rounded-xl bg-primary/5 p-5 border-l-4 border-emerald-500">
-                    <p className="text-xs text-neutral-500 font-medium uppercase tracking-wide mb-1">Market Performance</p>
-                    <p className="text-2xl font-black text-emerald-700">{growth}</p>
-                    <p className="text-xs text-neutral-500 mt-1">Since last purchase</p>
+                  <div className="rounded-xl bg-primary/5 p-5 border-l-4 border-[--color-success]">
+                    <p className="text-xs text-[--color-on-surface-variant] font-medium uppercase tracking-wide mb-1">Market Performance</p>
+                    <p className="text-2xl font-black text-[--color-success]">{growth}</p>
+                    <p className="text-xs text-[--color-on-surface-variant] mt-1">Since last purchase</p>
                   </div>
                   <div className="rounded-xl bg-primary/5 p-5">
-                    <p className="text-xs text-neutral-500 font-medium uppercase tracking-wide mb-1">Estimated Value</p>
+                    <p className="text-xs text-[--color-on-surface-variant] font-medium uppercase tracking-wide mb-1">Estimated Value</p>
                     <p className="text-2xl font-black text-primary font-heading">{estimatedValue}</p>
-                    <p className="text-xs text-neutral-500 mt-1">Britestate estimate</p>
-                    <p className="text-[10px] text-neutral-400 mt-1 italic">
+                    <p className="text-xs text-[--color-on-surface-variant] mt-1">Britestate estimate</p>
+                    <p className="text-[10px] text-[--color-on-surface-variant] mt-1 italic">
                       This is an automated estimate based on historical transactions and market trends. It is not a formal valuation. For a professional valuation, contact a RICS-qualified surveyor.
                     </p>
                   </div>
@@ -142,7 +142,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
 
             {/* Price History Card */}
             <div className="rounded-xl bg-white shadow-sm border border-primary/10 p-6 sm:p-8">
-              <h2 className="font-bold text-xl text-neutral-900 font-heading flex items-center gap-2 mb-6">
+              <h2 className="font-bold text-xl text-on-surface font-heading flex items-center gap-2 mb-6">
                 <History className="size-5 text-primary" /> Price History
               </h2>
               {/* Vertical timeline */}
@@ -165,7 +165,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                         <p className="text-sm text-primary/60">{entry.date}</p>
                       </div>
                       {entry.change && (
-                        <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                        <span className="text-xs font-medium text-[--color-success] bg-brand-primary-lighter px-2 py-1 rounded-full">
                           {entry.change}
                         </span>
                       )}
@@ -185,7 +185,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
             {nearby.length > 0 && (
               <div className="rounded-xl bg-white shadow-sm border border-primary/10 p-6 sm:p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-bold text-xl text-neutral-900 font-heading">Nearby Sold Prices</h2>
+                  <h2 className="font-bold text-xl text-on-surface font-heading">Nearby Sold Prices</h2>
                   <Link href={`/sold-prices/${area}`} className="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
                     View all on map <ExternalLink className="size-3" />
                   </Link>
@@ -210,7 +210,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                           </Link>
                         </TableCell>
                         <TableCell className="font-bold text-primary text-right">{item.price}</TableCell>
-                        <TableCell className="text-neutral-500 text-right">{item.date}</TableCell>
+                        <TableCell className="text-[--color-on-surface-variant] text-right">{item.date}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -249,10 +249,10 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
               <div className="bg-white/10 rounded-lg p-4 mb-6">
                 <p className="text-sm text-white/80">
                   Local prices in {areaName} have increased by{" "}
-                  <span className="font-bold text-emerald-300">{areaGrowth}%</span> in the last 12 months
+                  <span className="font-bold text-[--color-success]">{areaGrowth}%</span> in the last 12 months
                 </p>
               </div>
-              <button className="w-full bg-white text-primary font-bold py-3 rounded-lg hover:bg-neutral-100 transition-all flex items-center justify-center gap-2">
+              <button className="w-full bg-white text-primary font-bold py-3 rounded-lg hover:bg-[--color-surface-container-low] transition-all flex items-center justify-center gap-2">
                 <TrendingUp className="size-4" /> Get a free valuation
               </button>
               <p className="text-center text-xs text-white/60 mt-4">Trusted by 10,000+ homeowners</p>

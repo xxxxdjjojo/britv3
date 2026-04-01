@@ -101,22 +101,22 @@ export default async function MarketTrendsPage() {
       {/* Header Section */}
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <nav className="mb-2 flex items-center gap-2 text-sm text-neutral-500">
+          <nav className="mb-2 flex items-center gap-2 text-sm text-[--color-on-surface-variant]">
             <Link href="/" className="hover:text-primary transition-colors">
               Home
             </Link>
             <span>/</span>
             <span className="text-primary font-medium">Market Trends</span>
           </nav>
-          <h1 className="font-heading text-3xl font-bold text-neutral-900">
+          <h1 className="font-heading text-3xl font-bold text-on-surface">
             UK Property Market Trends
           </h1>
-          <p className="mt-1 text-neutral-500">
+          <p className="mt-1 text-[--color-on-surface-variant]">
             Real-time data from Land Registry &amp; ONS. Updated March 2026.
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <select className="appearance-none rounded-xl border border-primary/20 bg-white px-4 py-2.5 pr-10 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+          <select className="appearance-none rounded-xl border border-primary/20 bg-surface-container-lowest px-4 py-2.5 pr-10 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
             <option>United Kingdom (National)</option>
             {REGION_SELECTOR_LABELS.map((region) => (
               <option key={region}>{region}</option>
@@ -144,23 +144,23 @@ export default async function MarketTrendsPage() {
         {kpis.map((kpi) => {
           const Icon = KPI_ICONS[kpi.label] ?? PoundSterling;
           return (
-            <div key={kpi.label} className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
+            <div key={kpi.label} className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
               <div className="mb-4 flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[--color-on-surface-variant]">
                   {kpi.label}
                 </span>
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/5 text-primary">
                   <Icon className="h-5 w-5" />
                 </div>
               </div>
-              <div className="text-3xl font-bold font-heading text-neutral-900">{kpi.value}</div>
+              <div className="text-3xl font-bold font-heading text-on-surface">{kpi.value}</div>
               <div
                 className={`mt-2 flex items-center gap-1 text-sm font-semibold ${
                   kpi.trend === "up"
-                    ? "text-emerald-600"
+                    ? "text-[--color-success]"
                     : kpi.trend === "down"
                       ? "text-red-600"
-                      : "text-neutral-400"
+                      : "text-[--color-on-surface-variant]"
                 }`}
               >
                 {kpi.trend === "up" && <TrendingUp className="h-4 w-4" />}
@@ -189,7 +189,7 @@ export default async function MarketTrendsPage() {
             className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
               i === 0
                 ? "bg-primary text-white"
-                : "bg-primary/5 text-neutral-600 hover:bg-primary/10 hover:text-primary"
+                : "bg-primary/5 text-[--color-on-surface-variant] hover:bg-primary/10 hover:text-primary"
             }`}
           >
             {region}
@@ -200,9 +200,9 @@ export default async function MarketTrendsPage() {
       {/* Main Charts Section */}
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Average Prices by Region Bar Chart */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6 lg:col-span-2">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-neutral-900 font-heading">Average Price by Region</h2>
+            <h2 className="text-lg font-bold text-on-surface font-heading">Average Price by Region</h2>
             <Link
               href="#"
               className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
@@ -218,11 +218,11 @@ export default async function MarketTrendsPage() {
                     className="absolute bottom-0 w-full rounded-t-md bg-primary/30 transition-colors group-hover:bg-primary"
                     style={{ height: bar.height }}
                   />
-                  <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg bg-neutral-900 px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap">
+                  <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg bg-on-surface px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap">
                     {bar.price}
                   </div>
                 </div>
-                <span className="text-center text-[10px] font-bold uppercase tracking-tighter text-neutral-400">
+                <span className="text-center text-[10px] font-bold uppercase tracking-tighter text-[--color-on-surface-variant]">
                   {bar.region}
                 </span>
               </div>
@@ -231,8 +231,8 @@ export default async function MarketTrendsPage() {
         </div>
 
         {/* Hot/Cold Markets */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-6">Market Heat Index</h2>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-6">Market Heat Index</h2>
           <div className="space-y-6">
             {/* Hot Zones */}
             <div>
@@ -240,7 +240,7 @@ export default async function MarketTrendsPage() {
                 <span className="flex items-center gap-1 text-xs font-bold uppercase text-red-500">
                   <Flame className="h-4 w-4" /> Hot Zones
                 </span>
-                <span className="text-xs font-medium text-neutral-400">Fastest Growth</span>
+                <span className="text-xs font-medium text-[--color-on-surface-variant]">Fastest Growth</span>
               </div>
               <div className="space-y-3">
                 {HOT_MARKETS.slice(0, 3).map((market) => (
@@ -248,8 +248,8 @@ export default async function MarketTrendsPage() {
                     key={market.city}
                     className="flex items-center justify-between rounded-xl bg-primary/5 p-3"
                   >
-                    <span className="text-sm font-semibold text-neutral-900">{market.city}</span>
-                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-sm font-bold text-emerald-600">
+                    <span className="text-sm font-semibold text-on-surface">{market.city}</span>
+                    <span className="inline-flex items-center rounded-full bg-brand-primary-lighter px-2.5 py-0.5 text-sm font-bold text-[--color-success]">
                       {market.change}
                     </span>
                   </div>
@@ -263,7 +263,7 @@ export default async function MarketTrendsPage() {
                 <span className="flex items-center gap-1 text-xs font-bold uppercase text-blue-500">
                   <Snowflake className="h-4 w-4" /> Cold Zones
                 </span>
-                <span className="text-xs font-medium text-neutral-400">Stagnant</span>
+                <span className="text-xs font-medium text-[--color-on-surface-variant]">Stagnant</span>
               </div>
               <div className="space-y-3">
                 {COLD_MARKETS.slice(0, 3).map((market) => (
@@ -271,7 +271,7 @@ export default async function MarketTrendsPage() {
                     key={market.city}
                     className="flex items-center justify-between rounded-xl bg-primary/5 p-3"
                   >
-                    <span className="text-sm font-semibold text-neutral-900">{market.city}</span>
+                    <span className="text-sm font-semibold text-on-surface">{market.city}</span>
                     <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-bold text-red-600">
                       {market.change}
                     </span>
@@ -286,24 +286,24 @@ export default async function MarketTrendsPage() {
       {/* Charts Data Tables Section */}
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Average Prices by Region Table */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-1">Average Prices by Region</h2>
-          <p className="text-sm text-neutral-500 mb-5">Latest regional average house prices</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-1">Average Prices by Region</h2>
+          <p className="text-sm text-[--color-on-surface-variant] mb-5">Latest regional average house prices</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-primary/10">
-                  <th className="pb-3 text-left font-semibold text-neutral-500">Region</th>
-                  <th className="pb-3 text-right font-semibold text-neutral-500">Avg Price</th>
-                  <th className="pb-3 text-right font-semibold text-neutral-500">YoY Change</th>
+                  <th className="pb-3 text-left font-semibold text-[--color-on-surface-variant]">Region</th>
+                  <th className="pb-3 text-right font-semibold text-[--color-on-surface-variant]">Avg Price</th>
+                  <th className="pb-3 text-right font-semibold text-[--color-on-surface-variant]">YoY Change</th>
                 </tr>
               </thead>
               <tbody>
                 {regions.map((row) => (
                   <tr key={row.region} className="border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors">
-                    <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
-                    <td className="py-2.5 text-right text-neutral-700">{row.avgPriceFormatted}</td>
-                    <td className="py-2.5 text-right font-semibold text-emerald-600">
+                    <td className="py-2.5 font-medium text-on-surface">{row.region}</td>
+                    <td className="py-2.5 text-right text-on-surface">{row.avgPriceFormatted}</td>
+                    <td className="py-2.5 text-right font-semibold text-[--color-success]">
                       {row.yoyChangeFormatted}
                     </td>
                   </tr>
@@ -314,22 +314,22 @@ export default async function MarketTrendsPage() {
         </div>
 
         {/* Transaction Volumes Table */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-1">Transaction Volumes</h2>
-          <p className="text-sm text-neutral-500 mb-5">Annual completed sales by region</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-1">Transaction Volumes</h2>
+          <p className="text-sm text-[--color-on-surface-variant] mb-5">Annual completed sales by region</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-primary/10">
-                  <th className="pb-3 text-left font-semibold text-neutral-500">Region</th>
-                  <th className="pb-3 text-right font-semibold text-neutral-500">Volume (12m)</th>
+                  <th className="pb-3 text-left font-semibold text-[--color-on-surface-variant]">Region</th>
+                  <th className="pb-3 text-right font-semibold text-[--color-on-surface-variant]">Volume (12m)</th>
                 </tr>
               </thead>
               <tbody>
                 {regions.map((row) => (
                   <tr key={row.region} className="border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors">
-                    <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
-                    <td className="py-2.5 text-right text-neutral-700">
+                    <td className="py-2.5 font-medium text-on-surface">{row.region}</td>
+                    <td className="py-2.5 text-right text-on-surface">
                       {row.transactionsLast12m.toLocaleString("en-GB")}
                     </td>
                   </tr>
@@ -340,22 +340,22 @@ export default async function MarketTrendsPage() {
         </div>
 
         {/* Time to Sell Table */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-1">Time to Sell</h2>
-          <p className="text-sm text-neutral-500 mb-5">Average days on market by region</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-1">Time to Sell</h2>
+          <p className="text-sm text-[--color-on-surface-variant] mb-5">Average days on market by region</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-primary/10">
-                  <th className="pb-3 text-left font-semibold text-neutral-500">Region</th>
-                  <th className="pb-3 text-right font-semibold text-neutral-500">Avg Days</th>
+                  <th className="pb-3 text-left font-semibold text-[--color-on-surface-variant]">Region</th>
+                  <th className="pb-3 text-right font-semibold text-[--color-on-surface-variant]">Avg Days</th>
                 </tr>
               </thead>
               <tbody>
                 {regions.map((row) => (
                   <tr key={row.region} className="border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors">
-                    <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
-                    <td className="py-2.5 text-right text-neutral-700">{row.avgDaysToSell}</td>
+                    <td className="py-2.5 font-medium text-on-surface">{row.region}</td>
+                    <td className="py-2.5 text-right text-on-surface">{row.avgDaysToSell}</td>
                   </tr>
                 ))}
               </tbody>
@@ -364,21 +364,21 @@ export default async function MarketTrendsPage() {
         </div>
 
         {/* Asking vs Sold Price Gap Table */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-1">Asking vs Sold Price Gap</h2>
-          <p className="text-sm text-neutral-500 mb-5">Difference between asking and final sale price</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-1">Asking vs Sold Price Gap</h2>
+          <p className="text-sm text-[--color-on-surface-variant] mb-5">Difference between asking and final sale price</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-primary/10">
-                  <th className="pb-3 text-left font-semibold text-neutral-500">Region</th>
-                  <th className="pb-3 text-right font-semibold text-neutral-500">Gap %</th>
+                  <th className="pb-3 text-left font-semibold text-[--color-on-surface-variant]">Region</th>
+                  <th className="pb-3 text-right font-semibold text-[--color-on-surface-variant]">Gap %</th>
                 </tr>
               </thead>
               <tbody>
                 {regions.map((row) => (
                   <tr key={row.region} className="border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors">
-                    <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
+                    <td className="py-2.5 font-medium text-on-surface">{row.region}</td>
                     <td className="py-2.5 text-right font-semibold text-red-600">
                       {row.askingVsSoldGapFormatted}
                     </td>
@@ -392,20 +392,20 @@ export default async function MarketTrendsPage() {
 
       {/* SVG Charts */}
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg font-bold text-neutral-900 font-heading">Asking vs. Sold Price Trend</h2>
-              <p className="text-sm text-neutral-500 mt-0.5">Market negotiation leverage indicator</p>
+              <h2 className="text-lg font-bold text-on-surface font-heading">Asking vs. Sold Price Trend</h2>
+              <p className="text-sm text-[--color-on-surface-variant] mt-0.5">Market negotiation leverage indicator</p>
             </div>
             <div className="flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1.5">
                 <span className="h-3 w-3 rounded-full bg-primary" />
-                <span className="text-neutral-600">Asking</span>
+                <span className="text-[--color-on-surface-variant]">Asking</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-full bg-emerald-500" />
-                <span className="text-neutral-600">Sold</span>
+                <span className="h-3 w-3 rounded-full bg-[--color-success]" />
+                <span className="text-[--color-on-surface-variant]">Sold</span>
               </div>
             </div>
           </div>
@@ -421,7 +421,7 @@ export default async function MarketTrendsPage() {
               <path d="M0,40 C50,30 100,50 150,45 S250,20 300,35 S400,25 400,25" fill="none" stroke="#1B4D3E" strokeWidth="2" />
               <path d="M0,50 C50,45 100,60 150,55 S250,35 300,45 S400,38 400,38" fill="none" stroke="#10b981" strokeWidth="2" />
             </svg>
-            <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+            <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
               <span>Oct</span>
               <span>Nov</span>
               <span>Dec</span>
@@ -433,11 +433,11 @@ export default async function MarketTrendsPage() {
         </div>
 
         {/* Monthly Transaction Volume Chart */}
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg font-bold text-neutral-900 font-heading">Monthly Transaction Volume</h2>
-              <p className="text-sm text-neutral-500 mt-0.5">Total completed sales per month</p>
+              <h2 className="text-lg font-bold text-on-surface font-heading">Monthly Transaction Volume</h2>
+              <p className="text-sm text-[--color-on-surface-variant] mt-0.5">Total completed sales per month</p>
             </div>
             <span className="rounded-full bg-primary/5 text-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
               YTD 2026
@@ -458,7 +458,7 @@ export default async function MarketTrendsPage() {
               <path d="M0,80 Q50,60 100,75 T200,50 T300,70 T400,40 L400,100 L0,100 Z" fill="url(#areaGrad)" />
               <path d="M0,80 Q50,60 100,75 T200,50 T300,70 T400,40" fill="none" stroke="#1B4D3E" strokeWidth="3" />
             </svg>
-            <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+            <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
               <span>Oct</span>
               <span>Nov</span>
               <span>Dec</span>
@@ -472,38 +472,38 @@ export default async function MarketTrendsPage() {
 
       {/* MoM and YoY Comparison Cards */}
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-1">Month-on-Month Change</h2>
-          <p className="text-sm text-neutral-500 mb-5">February 2026 vs March 2026</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-1">Month-on-Month Change</h2>
+          <p className="text-sm text-[--color-on-surface-variant] mb-5">February 2026 vs March 2026</p>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Avg Price</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">+1.2%</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Avg Price</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">+1.2%</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>£3,500</span>
               </div>
             </div>
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Transactions</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">+5.5%</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Transactions</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">+5.5%</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>+4,800</span>
               </div>
             </div>
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Days to Sell</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">-1 day</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Days to Sell</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">-1 day</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>Faster</span>
               </div>
             </div>
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Price Gap</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">-0.1%</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-neutral-400">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Price Gap</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">-0.1%</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-on-surface-variant]">
                 <Minus className="h-3 w-3" />
                 <span>Unchanged</span>
               </div>
@@ -511,38 +511,38 @@ export default async function MarketTrendsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-neutral-900 font-heading mb-1">Year-on-Year Change</h2>
-          <p className="text-sm text-neutral-500 mb-5">March 2025 vs March 2026</p>
+        <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-on-surface font-heading mb-1">Year-on-Year Change</h2>
+          <p className="text-sm text-[--color-on-surface-variant] mb-5">March 2025 vs March 2026</p>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Avg Price</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">+3.8%</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Avg Price</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">+3.8%</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>£10,900</span>
               </div>
             </div>
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Transactions</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">+12%</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Transactions</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">+12%</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>+9,900</span>
               </div>
             </div>
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Days to Sell</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">-3 days</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Days to Sell</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">-3 days</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>Faster</span>
               </div>
             </div>
             <div className="rounded-xl bg-primary/5 p-4 text-center">
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Price Gap</p>
-              <p className="mt-1 text-xl font-bold text-neutral-900">-0.3%</p>
-              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-emerald-600">
+              <p className="text-xs font-medium uppercase tracking-wider text-[--color-on-surface-variant]">Price Gap</p>
+              <p className="mt-1 text-xl font-bold text-on-surface">-0.3%</p>
+              <div className="mt-1 flex items-center justify-center gap-1 text-sm text-[--color-success]">
                 <TrendingUp className="h-3 w-3" />
                 <span>Narrowing</span>
               </div>
@@ -554,21 +554,21 @@ export default async function MarketTrendsPage() {
       {/* Market Commentary Section */}
       <section className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h2 className="mb-6 font-heading text-2xl font-bold text-neutral-900">
+          <h2 className="mb-6 font-heading text-2xl font-bold text-on-surface">
             Expert Market Commentary
           </h2>
-          <div className="overflow-hidden rounded-xl bg-white border border-primary/10 shadow-sm">
+          <div className="overflow-hidden rounded-xl bg-surface-container-lowest border border-primary/10 shadow-sm">
             <div className="p-8">
               <div className="mb-3 flex items-center gap-2">
                 <span className="rounded-full bg-primary/10 px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
                   Analysis
                 </span>
-                <span className="text-xs font-medium text-neutral-400">8 Mar 2026</span>
+                <span className="text-xs font-medium text-[--color-on-surface-variant]">8 Mar 2026</span>
               </div>
-              <h3 className="mb-4 text-xl font-bold leading-tight text-neutral-900 font-heading">
+              <h3 className="mb-4 text-xl font-bold leading-tight text-on-surface font-heading">
                 Spring 2026 Market Outlook: Sustained Growth Amid Evolving Buyer Confidence
               </h3>
-              <div className="space-y-4 text-sm leading-relaxed text-neutral-600">
+              <div className="space-y-4 text-sm leading-relaxed text-[--color-on-surface-variant]">
                 <p>
                   The UK property market enters spring 2026 in its strongest position in three
                   years. Average house prices have risen 3.8% year-on-year to reach
@@ -600,8 +600,8 @@ export default async function MarketTrendsPage() {
                   MT
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-neutral-900">Dr. Marcus Thorne</div>
-                  <div className="text-xs text-neutral-500">Chief Economist, Britestate</div>
+                  <div className="text-sm font-bold text-on-surface">Dr. Marcus Thorne</div>
+                  <div className="text-xs text-[--color-on-surface-variant]">Chief Economist, Britestate</div>
                 </div>
               </div>
             </div>
@@ -610,15 +610,15 @@ export default async function MarketTrendsPage() {
 
         {/* Local Authority Heat Rankings */}
         <div>
-          <h2 className="mb-6 font-heading text-2xl font-bold text-neutral-900">
+          <h2 className="mb-6 font-heading text-2xl font-bold text-on-surface">
             Local Authority Heat
           </h2>
-          <div className="bg-white rounded-xl border border-primary/10 shadow-sm p-6">
+          <div className="bg-surface-container-lowest rounded-xl border border-primary/10 shadow-sm p-6">
             <div className="mb-6 flex border-b border-primary/5">
               <button className="flex-1 border-b-2 border-primary pb-3 text-sm font-bold text-primary">
                 Highest Yield
               </button>
-              <button className="flex-1 pb-3 text-sm font-bold text-neutral-400 hover:text-neutral-600 transition-colors">
+              <button className="flex-1 pb-3 text-sm font-bold text-[--color-on-surface-variant] hover:text-[--color-on-surface-variant] transition-colors">
                 Fastest Sales
               </button>
             </div>
@@ -628,15 +628,15 @@ export default async function MarketTrendsPage() {
                 const rankLabel = item.rank.padStart(2, "0");
                 return (
                   <div key={item.rank} className="flex items-center gap-4">
-                    <div className="w-6 text-lg font-bold text-neutral-300">{rankLabel}</div>
+                    <div className="w-6 text-lg font-bold text-[--color-on-surface-variant]">{rankLabel}</div>
                     <div className="flex-1">
-                      <div className="text-sm font-bold text-neutral-900">{item.area}</div>
-                      <div className="text-xs text-neutral-500">
+                      <div className="text-sm font-bold text-on-surface">{item.area}</div>
+                      <div className="text-xs text-[--color-on-surface-variant]">
                         Yield: {item.yield}% &bull; {item.detail}
                       </div>
                     </div>
                     <div className="h-1.5 w-24 overflow-hidden rounded-full bg-primary/10">
-                      <div className="h-full bg-emerald-500" style={{ width: barWidth }} />
+                      <div className="h-full bg-[--color-success]" style={{ width: barWidth }} />
                     </div>
                   </div>
                 );
@@ -655,7 +655,7 @@ export default async function MarketTrendsPage() {
 
       {/* Internal Region Links */}
       <section className="mb-8">
-        <h2 className="mb-4 font-heading text-xl font-bold text-neutral-900">
+        <h2 className="mb-4 font-heading text-xl font-bold text-on-surface">
           Explore Area Guides by Region
         </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

@@ -75,10 +75,10 @@ const CATEGORY_ICON_MAP: Record<string, React.ComponentType<{ className?: string
 
 function OfstedBadge({ rating }: Readonly<{ rating: "Outstanding" | "Good" | "Requires Improvement" | "Inadequate" }>) {
   const classes: Record<string, string> = {
-    Outstanding: "bg-emerald-100 text-emerald-800",
-    Good: "bg-blue-100 text-blue-800",
-    "Requires Improvement": "bg-amber-100 text-amber-800",
-    Inadequate: "bg-red-100 text-red-800",
+    Outstanding: "bg-brand-primary-lighter text-brand-primary",
+    Good: "bg-[--color-info-light] text-[--color-info]",
+    "Requires Improvement": "bg-brand-secondary-light text-[--color-brand-secondary-dark]",
+    Inadequate: "bg-[--color-error-light] text-[--color-error]",
   };
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${classes[rating]}`}>
@@ -167,7 +167,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
               zoom={13}
               className="w-full h-full"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md p-3 flex justify-between items-center">
+            <div className="absolute bottom-0 left-0 right-0 bg-surface-container-lowest/90 backdrop-blur-md p-3 flex justify-between items-center">
               <div className="flex items-center gap-2 text-sm font-medium text-[#1a1c1c]">
                 <MapPin className="size-4 text-brand-primary" />
                 {area.postcode} Boundary Overview
@@ -181,7 +181,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
         {/* ── Tabs ── */}
         <Tabs defaultValue="overview">
-          <TabsList variant="line" className="w-full border-b border-neutral-200 mb-10 rounded-none h-auto pb-0">
+          <TabsList variant="line" className="w-full border-b border-[--color-outline-variant] mb-10 rounded-none h-auto pb-0">
             {["overview", "market", "transport", "schools", "lifestyle"].map((tab) => (
               <TabsTrigger
                 key={tab}
@@ -202,7 +202,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {area.localFavourites.map(({ label, desc, category }) => {
                     const Icon = CATEGORY_ICON_MAP[category] ?? Trees;
-                    const colorMap: Record<string, string> = { park: "text-emerald-600", cafe: "text-amber-600", pub: "text-amber-600", attraction: "text-blue-600" };
+                    const colorMap: Record<string, string> = { park: "text-[--color-brand-primary-light]", cafe: "text-[--color-brand-secondary-dark]", pub: "text-[--color-brand-secondary-dark]", attraction: "text-[--color-info]" };
                     const color = colorMap[category] ?? "text-brand-primary";
                     return (
                       <div key={label} className="bg-[#faf9f8] rounded-xl p-4 hover:bg-[#f4f3f2] transition-colors">
@@ -237,7 +237,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
               <div className="grid lg:grid-cols-3 gap-10">
                 <div className="lg:col-span-2 space-y-6">
                   <h2 className="text-2xl font-bold font-heading">About {area.name}</h2>
-                  <p className="text-neutral-600 leading-relaxed">
+                  <p className="text-[--color-on-surface-variant] leading-relaxed">
                     {area.description}
                   </p>
                 </div>
@@ -248,7 +248,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                     <div className="size-16 rounded-full bg-brand-primary/10 flex items-center justify-center">
                       <span className="text-brand-primary font-bold text-xl">{area.agent.initials}</span>
                     </div>
-                    <span className="absolute bottom-0 right-0 bg-green-500 size-4 rounded-full border-2 border-white" />
+                    <span className="absolute bottom-0 right-0 bg-[--color-success] size-4 rounded-full border-2 border-surface-container-lowest" />
                   </div>
                   <p className="text-lg font-bold text-[#1a1c1c]">{area.agent.name}</p>
                   <p className="text-sm text-brand-primary font-semibold mb-3">{area.agent.role}</p>
@@ -269,10 +269,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   {MOCK_LISTINGS.map((listing) => (
                     <div
                       key={listing.address}
-                      className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                      className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div className="relative h-40 bg-[#f4f3f2]">
-                        <span className="absolute top-2 left-2 bg-white/95 text-brand-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                        <span className="absolute top-2 left-2 bg-surface-container-lowest/95 text-brand-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                           {listing.status}
                         </span>
                       </div>
@@ -306,7 +306,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                       placeholder="Your email"
                       className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/50 border border-white/20 outline-none text-sm"
                     />
-                    <button className="bg-white text-primary font-bold px-6 py-3 rounded-xl text-sm hover:bg-neutral-100 transition-colors">
+                    <button className="bg-white text-primary font-bold px-6 py-3 rounded-xl text-sm hover:bg-[--color-surface-container-low] transition-colors">
                       Join Waitlist
                     </button>
                   </div>
@@ -350,7 +350,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 {/* Main column (2/3) */}
                 <div className="lg:col-span-2 space-y-6">
                   {/* Price Trend Card */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                       <h3 className="font-bold text-[#1a1c1c]">Average Property Price Trends</h3>
                       <select className="text-sm bg-[#faf9f8] rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-brand-primary/20 text-[#1a1c1c]">
@@ -364,7 +364,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                         <p className="text-xs text-[#404945] font-medium">Current avg price</p>
                         <p className="text-3xl font-bold text-brand-primary font-heading">{area.avgPriceFormatted}</p>
                       </div>
-                      <p className="text-emerald-600 flex items-center gap-1 font-semibold">
+                      <p className="text-[--color-success] flex items-center gap-1 font-semibold">
                         <TrendingUp className="size-4" /> {area.yoyChange} YoY
                       </p>
                     </div>
@@ -372,7 +372,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   </div>
 
                   {/* Listings vs Sold Volume */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <h3 className="font-bold text-[#1a1c1c] mb-4">New Listings vs Sold Volume</h3>
                     <ListingVolumeClient />
                     <DataAttribution source="Britestate Market Intelligence" />
@@ -382,13 +382,13 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 {/* Sidebar (1/3) */}
                 <div className="space-y-6">
                   {/* Property Types Donut */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <h3 className="font-bold text-[#1a1c1c] mb-4">Property Types</h3>
                     <PropertyDonutClient />
                   </div>
 
                   {/* Demographics */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <h3 className="font-bold text-[#1a1c1c] mb-4">Demographics</h3>
                     <div className="space-y-3">
                       {[
@@ -434,15 +434,15 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   </div>
 
                   {/* Crime Index */}
-                  <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <ShieldCheck className="size-5 text-brand-primary" />
                       <h3 className="font-bold text-[#1a1c1c]">Crime Index</h3>
                     </div>
                     <div className="space-y-3">
                       {[
-                        { label: area.name, level: area.crimeIndex.local <= 60 ? "Low" : area.crimeIndex.local <= 90 ? "Average" : "High", color: area.crimeIndex.local <= 60 ? "bg-emerald-500" : area.crimeIndex.local <= 90 ? "bg-amber-400" : "bg-red-500", pct: Math.min(area.crimeIndex.local, 100) },
-                        { label: area.borough, level: area.crimeIndex.borough <= 60 ? "Low" : area.crimeIndex.borough <= 90 ? "Average" : "High", color: area.crimeIndex.borough <= 60 ? "bg-emerald-500" : area.crimeIndex.borough <= 90 ? "bg-amber-400" : "bg-red-500", pct: Math.min(area.crimeIndex.borough, 100) },
+                        { label: area.name, level: area.crimeIndex.local <= 60 ? "Low" : area.crimeIndex.local <= 90 ? "Average" : "High", color: area.crimeIndex.local <= 60 ? "bg-[--color-success]" : area.crimeIndex.local <= 90 ? "bg-amber-400" : "bg-red-500", pct: Math.min(area.crimeIndex.local, 100) },
+                        { label: area.borough, level: area.crimeIndex.borough <= 60 ? "Low" : area.crimeIndex.borough <= 90 ? "Average" : "High", color: area.crimeIndex.borough <= 60 ? "bg-[--color-success]" : area.crimeIndex.borough <= 90 ? "bg-amber-400" : "bg-red-500", pct: Math.min(area.crimeIndex.borough, 100) },
                         { label: area.cityName, level: area.crimeIndex.city <= 60 ? "Low" : area.crimeIndex.city <= 90 ? "Average" : "High", color: "bg-[#e3e2e1]", pct: Math.min(area.crimeIndex.city, 100) },
                       ].map((row) => (
                         <div key={row.label}>
@@ -490,7 +490,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
           <TabsContent value="schools">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold font-heading">Schools in Catchment</h2>
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="bg-brand-primary/10 text-brand-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                     {area.schools.length} schools
@@ -526,7 +526,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
               <div className="grid md:grid-cols-3 gap-6">
                 {area.localFavourites.map(({ label, desc, category }) => {
                   const Icon = CATEGORY_ICON_MAP[category] ?? Trees;
-                  const colorMap: Record<string, string> = { park: "text-emerald-600", cafe: "text-amber-600", pub: "text-amber-600", attraction: "text-blue-600" };
+                  const colorMap: Record<string, string> = { park: "text-[--color-brand-primary-light]", cafe: "text-[--color-brand-secondary-dark]", pub: "text-[--color-brand-secondary-dark]", attraction: "text-[--color-info]" };
                   const color = colorMap[category] ?? "text-brand-primary";
                   return (
                     <div key={label} className="bg-[#faf9f8] rounded-xl p-6">
