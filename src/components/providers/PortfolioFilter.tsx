@@ -36,10 +36,10 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
 
   if (items.length === 0) {
     return (
-      <div className="py-16 rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822] text-center">
-        <ImageIcon className="w-10 h-10 text-[#9ca3af] mx-auto mb-3" aria-hidden="true" />
-        <p className="text-[#6b7280] dark:text-[#9ca3af] font-medium">No portfolio items yet</p>
-        <p className="text-sm text-[#9ca3af] mt-1">
+      <div className="py-16 rounded-2xl bg-surface-container-low dark:bg-neutral-900 text-center">
+        <ImageIcon className="w-10 h-10 text-neutral-400 mx-auto mb-3" aria-hidden="true" />
+        <p className="text-neutral-500 dark:text-neutral-400 font-medium">No portfolio items yet</p>
+        <p className="text-sm text-neutral-400 mt-1">
           {providerName} hasn&apos;t added project photos yet.
         </p>
       </div>
@@ -57,8 +57,8 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
             aria-pressed={activeCategory === null}
             className={`min-h-[36px] px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
               activeCategory === null
-                ? "bg-[#1B4D3E] text-white shadow-sm"
-                : "bg-[#f4f3f2] dark:bg-[#1a2822] text-[#6b7280] dark:text-[#9ca3af] hover:bg-[#eceae8] dark:hover:bg-[#243330]"
+                ? "bg-brand-primary text-white shadow-sm"
+                : "bg-surface-container-low dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800"
             }`}
           >
             All
@@ -71,8 +71,8 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
               aria-pressed={activeCategory === cat}
               className={`min-h-[36px] px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                 activeCategory === cat
-                  ? "bg-[#1B4D3E] text-white shadow-sm"
-                  : "bg-[#f4f3f2] dark:bg-[#1a2822] text-[#6b7280] dark:text-[#9ca3af] hover:bg-[#eceae8] dark:hover:bg-[#243330]"
+                  ? "bg-brand-primary text-white shadow-sm"
+                  : "bg-surface-container-low dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800"
               }`}
             >
               {cat}
@@ -89,8 +89,8 @@ export function PortfolioFilter({ items, providerName }: PortfolioFilterProps) {
       </div>
 
       {filteredItems.length === 0 && activeCategory !== null && (
-        <div className="py-12 rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822] text-center mt-4">
-          <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm font-medium">
+        <div className="py-12 rounded-2xl bg-surface-container-low dark:bg-neutral-900 text-center mt-4">
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm font-medium">
             No items in this category
           </p>
         </div>

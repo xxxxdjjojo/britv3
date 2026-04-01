@@ -353,13 +353,13 @@ export function SurveyorCredentials({
       </h2>
 
       {/* RICS membership card */}
-      <div className="bg-green-50 dark:bg-[#1B4D3E]/10 border border-green-200 dark:border-[#1B4D3E]/30 p-4 rounded-xl">
+      <div className="bg-green-50 dark:bg-brand-primary/10 border border-green-200 dark:border-brand-primary/30 p-4 rounded-xl">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-9 h-9 bg-[#1B4D3E] rounded-full flex items-center justify-center">
+          <div className="shrink-0 w-9 h-9 bg-brand-primary rounded-full flex items-center justify-center">
             <Building2 className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs font-bold text-[#1B4D3E] dark:text-green-400 uppercase tracking-wide">
+            <p className="text-xs font-bold text-brand-primary dark:text-green-400 uppercase tracking-wide">
               RICS Membership
             </p>
             <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">
@@ -383,7 +383,7 @@ export function SurveyorCredentials({
               key={survey.key}
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl"
             >
-              <p className="text-xs font-bold text-[#1B4D3E] dark:text-green-400 uppercase tracking-wide">
+              <p className="text-xs font-bold text-brand-primary dark:text-green-400 uppercase tracking-wide">
                 {survey.level}
               </p>
               <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">

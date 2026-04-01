@@ -67,7 +67,7 @@ export function ServicesTab({ services, providerId: _providerId }: ServicesTabPr
         {services.map((service) => (
           <div
             key={service.id}
-            className="p-5 rounded-2xl bg-surface-container-low dark:bg-neutral-800 hover:bg-[#eceae8] dark:hover:bg-[#1f302a] transition-colors flex flex-col"
+            className="p-5 rounded-2xl bg-surface-container-low dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors flex flex-col"
           >
             {/* Service name + pricing badge */}
             <div className="flex items-start justify-between gap-2 mb-2">

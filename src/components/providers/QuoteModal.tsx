@@ -168,7 +168,7 @@ export function QuoteModal({
                   <select
                     value={formData.serviceType}
                     onChange={(e) => updateField("serviceType", e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   >
                     <option value="">Select a service...</option>
                     {services.map((svc) => (
@@ -189,7 +189,7 @@ export function QuoteModal({
                   type="date"
                   value={formData.preferredDate}
                   onChange={(e) => updateField("preferredDate", e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
 
@@ -201,7 +201,7 @@ export function QuoteModal({
                 <select
                   value={formData.budget}
                   onChange={(e) => updateField("budget", e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                 >
                   <option value="">Select budget...</option>
@@ -221,7 +221,7 @@ export function QuoteModal({
                 <select
                   value={formData.timeline}
                   onChange={(e) => updateField("timeline", e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                 >
                   <option value="">When do you need this done?</option>
@@ -244,7 +244,7 @@ export function QuoteModal({
                   onChange={(e) => updateField("description", e.target.value)}
                   rows={4}
                   placeholder="Please describe what you need done (minimum 20 characters)..."
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB] resize-none"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
                   required
                   minLength={20}
                 />
@@ -257,7 +257,7 @@ export function QuoteModal({
                 type="button"
                 disabled={!step1Valid}
                 onClick={() => setStep(2)}
-                className="w-full bg-[#2563EB] text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-brand-accent text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-brand-accent/90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next &rarr;
               </button>
@@ -284,7 +284,7 @@ export function QuoteModal({
                   value={formData.name}
                   onChange={(e) => updateField("name", e.target.value)}
                   placeholder="Your full name"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                   autoComplete="name"
                 />
@@ -300,7 +300,7 @@ export function QuoteModal({
                   value={formData.email}
                   onChange={(e) => updateField("email", e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                   autoComplete="email"
                 />
@@ -316,7 +316,7 @@ export function QuoteModal({
                   value={formData.phone}
                   onChange={(e) => updateField("phone", e.target.value)}
                   placeholder="+44 7700 000000"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   autoComplete="tel"
                 />
               </div>
@@ -348,7 +348,7 @@ export function QuoteModal({
                   type="button"
                   disabled={!step2Valid || submitting}
                   onClick={handleSubmit}
-                  className="flex-1 bg-[#2563EB] text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-brand-accent text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-brand-accent/90 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? "Sending..." : "Submit Request \u2192"}
                 </button>
@@ -360,7 +360,7 @@ export function QuoteModal({
         {/* Step 3 — Confirmation */}
         {step === 3 && (
           <div className="py-6 text-center space-y-4">
-            <CheckCircle className="w-12 h-12 text-[#1B4D3E] mx-auto" />
+            <CheckCircle className="w-12 h-12 text-brand-primary mx-auto" />
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Request Sent!
@@ -373,7 +373,7 @@ export function QuoteModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="bg-[#1B4D3E] text-white py-2.5 px-8 rounded-lg font-semibold hover:bg-emerald-800 transition-colors text-sm"
+              className="bg-brand-primary text-white py-2.5 px-8 rounded-lg font-semibold hover:bg-brand-primary/90 transition-colors text-sm"
             >
               Done
             </button>

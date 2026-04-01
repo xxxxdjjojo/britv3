@@ -67,7 +67,7 @@ export function PortfolioLightbox({ item, siblings, initialIndex = 0 }: Portfoli
       {/* Thumbnail trigger */}
       <button
         type="button"
-        className="w-full text-left [break-inside:avoid] mb-3 relative group cursor-pointer rounded-2xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2"
+        className="w-full text-left [break-inside:avoid] mb-3 relative group cursor-pointer rounded-2xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
         onClick={handleOpen}
         aria-label={`View ${item.title} — full size`}
       >
@@ -99,7 +99,7 @@ export function PortfolioLightbox({ item, siblings, initialIndex = 0 }: Portfoli
       {/* Fullscreen lightbox dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="max-w-5xl w-full p-0 bg-[#0d1a16] rounded-2xl overflow-hidden shadow-2xl"
+          className="max-w-5xl w-full p-0 bg-neutral-950 rounded-2xl overflow-hidden shadow-2xl"
           aria-label={`Portfolio image: ${currentItem.title}`}
         >
           <DialogTitle className="sr-only">{currentItem.title}</DialogTitle>
@@ -158,9 +158,9 @@ export function PortfolioLightbox({ item, siblings, initialIndex = 0 }: Portfoli
 
             {/* Details sidebar */}
             {(currentItem.title || currentItem.description || currentItem.category) && (
-              <div className="md:w-72 p-6 bg-[#111f19] flex flex-col gap-3">
+              <div className="md:w-72 p-6 bg-neutral-900 flex flex-col gap-3">
                 {currentItem.category && (
-                  <span className="inline-flex self-start px-3 py-1 rounded-xl text-xs font-semibold bg-[#1B4D3E]/30 text-[#4ade80]">
+                  <span className="inline-flex self-start px-3 py-1 rounded-xl text-xs font-semibold bg-brand-primary/30 text-success">
                     {currentItem.category}
                   </span>
                 )}
@@ -168,7 +168,7 @@ export function PortfolioLightbox({ item, siblings, initialIndex = 0 }: Portfoli
                   {currentItem.title}
                 </h3>
                 {currentItem.description && (
-                  <p className="text-sm text-[#9ca3af] leading-relaxed">
+                  <p className="text-sm text-neutral-400 leading-relaxed">
                     {currentItem.description}
                   </p>
                 )}

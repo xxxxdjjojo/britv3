@@ -178,42 +178,42 @@ async function CategoryLocationPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localJsonLd) }}
       />
-      <div className="min-h-screen bg-[#faf9f8] dark:bg-[#0f1a17]">
+      <div className="min-h-screen bg-surface dark:bg-neutral-950">
         <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
           {/* Breadcrumb */}
-          <nav className="flex text-xs text-[#9ca3af] mb-4 gap-2 items-center flex-wrap" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-[#1B4D3E] transition-colors">
+          <nav className="flex text-xs text-neutral-400 mb-4 gap-2 items-center flex-wrap" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-brand-primary transition-colors">
               Home
             </Link>
             <span aria-hidden="true">/</span>
-            <Link href="/marketplace" className="hover:text-[#1B4D3E] transition-colors">
+            <Link href="/marketplace" className="hover:text-brand-primary transition-colors">
               Services
             </Link>
             <span aria-hidden="true">/</span>
-            <Link href={`/services/${category}`} className="hover:text-[#1B4D3E] transition-colors">
+            <Link href={`/services/${category}`} className="hover:text-brand-primary transition-colors">
               {categoryDisplay}
             </Link>
             <span aria-hidden="true">/</span>
-            <span className="text-[#1B4D3E] font-medium">{locationDisplay}</span>
+            <span className="text-brand-primary font-medium">{locationDisplay}</span>
           </nav>
 
           {/* Hero */}
           <section className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-neutral-950 dark:text-white mb-4">
               {`Verified ${categoryDisplay} in `}
-              <span className="text-[#1B4D3E] dark:text-[#4ade80]">
+              <span className="text-brand-primary dark:text-success">
                 {locationDisplay}
               </span>
             </h1>
-            <p className="text-lg text-[#6b7280] dark:text-[#9ca3af] mb-6">
+            <p className="text-lg text-neutral-500 dark:text-neutral-400 mb-6">
               {meta.intro}
             </p>
-            <div className="inline-flex gap-6 bg-[#f4f3f2] dark:bg-[#1a2822] p-4 rounded-2xl text-sm">
+            <div className="inline-flex gap-6 bg-surface-container-low dark:bg-neutral-900 p-4 rounded-2xl text-sm">
               <span>
-                <strong className="text-[#1B4D3E] dark:text-[#4ade80] text-lg font-bold">
+                <strong className="text-brand-primary dark:text-success text-lg font-bold">
                   {providers?.length ?? 0}
                 </strong>{" "}
-                <span className="text-[#6b7280] dark:text-[#9ca3af]">Pros Verified</span>
+                <span className="text-neutral-500 dark:text-neutral-400">Pros Verified</span>
               </span>
             </div>
           </section>
@@ -221,15 +221,15 @@ async function CategoryLocationPage({
           {/* Provider cards */}
           <div className="space-y-4 mb-16">
             {(providers ?? []).length === 0 ? (
-              <div className="text-center py-16 rounded-2xl bg-[#f4f3f2] dark:bg-[#1a2822]">
-                <p className="text-lg font-medium text-[#6b7280] dark:text-[#9ca3af]">
+              <div className="text-center py-16 rounded-2xl bg-surface-container-low dark:bg-neutral-900">
+                <p className="text-lg font-medium text-neutral-500 dark:text-neutral-400">
                   No verified {categoryDisplay.toLowerCase()} found in{" "}
                   {locationDisplay}.
                 </p>
                 <p className="mt-2 text-sm">
                   <Link
                     href="/marketplace"
-                    className="text-[#1B4D3E] dark:text-[#4ade80] hover:underline font-medium"
+                    className="text-brand-primary dark:text-success hover:underline font-medium"
                   >
                     Browse all services
                   </Link>
@@ -254,8 +254,8 @@ async function CategoryLocationPage({
           />
 
           {/* Related categories */}
-          <section className="mt-16 pt-12 border-t border-[#e8e6e3] dark:border-[#1a2822]">
-            <h2 className="text-xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-4">
+          <section className="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-900">
+            <h2 className="text-xl font-bold font-heading tracking-tight text-neutral-950 dark:text-white mb-4">
               Also Looking For?
             </h2>
             <div className="flex flex-wrap gap-3">
@@ -266,7 +266,7 @@ async function CategoryLocationPage({
                   <a
                     key={slug}
                     href={`/services/${slug}/${location}`}
-                    className="px-4 py-2 rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822] hover:bg-[#eceae8] dark:hover:bg-[#243330] text-[#6b7280] dark:text-[#9ca3af] hover:text-[#1B4D3E] dark:hover:text-[#4ade80] text-sm font-medium transition-colors"
+                    className="px-4 py-2 rounded-xl bg-surface-container-low dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-brand-primary dark:hover:text-success text-sm font-medium transition-colors"
                   >
                     {formatCategoryDisplay(slug)} in {locationDisplay}
                   </a>
@@ -315,7 +315,7 @@ export default async function TradespersonProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-[#faf9f8] dark:bg-[#0f1a17]">
+      <div className="min-h-screen bg-surface dark:bg-neutral-950">
         <ProviderHero provider={provider} category={category} />
         <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 relative">
           <div className="flex flex-col lg:flex-row gap-8">
@@ -325,10 +325,10 @@ export default async function TradespersonProfilePage({ params }: Params) {
                   <div className="space-y-8">
                     {/* About section */}
                     <section>
-                      <h3 className="text-2xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-4">
+                      <h3 className="text-2xl font-bold font-heading tracking-tight text-neutral-950 dark:text-white mb-4">
                         About {provider.business_name}
                       </h3>
-                      <p className="text-[#6b7280] dark:text-[#9ca3af] leading-relaxed max-w-3xl">
+                      <p className="text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-3xl">
                         {provider.description ?? "No description provided."}
                       </p>
                     </section>
@@ -341,10 +341,10 @@ export default async function TradespersonProfilePage({ params }: Params) {
                     {/* Recent reviews preview */}
                     {reviews.total > 0 && (
                       <section>
-                        <h3 className="text-xl font-bold font-heading tracking-tight text-[#1a1a1a] dark:text-white mb-2">
+                        <h3 className="text-xl font-bold font-heading tracking-tight text-neutral-950 dark:text-white mb-2">
                           Recent Reviews
                         </h3>
-                        <p className="text-[#9ca3af] text-sm">
+                        <p className="text-neutral-400 text-sm">
                           See Reviews tab for all {reviews.total} reviews.
                         </p>
                       </section>

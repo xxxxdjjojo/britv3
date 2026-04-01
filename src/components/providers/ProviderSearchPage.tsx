@@ -289,7 +289,7 @@ export function ProviderSearchPage({
   return (
     <div className="min-h-screen bg-surface">
       {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] py-16 px-4">
+      <div className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-brand-primary-dark py-16 px-4">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
         <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-secondary/10 blur-3xl" />

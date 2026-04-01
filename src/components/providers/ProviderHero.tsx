@@ -48,7 +48,7 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
     : null;
 
   return (
-    <div className="relative bg-surface dark:bg-[#0f1a17]">
+    <div className="relative bg-surface dark:bg-neutral-950">
       {/* Cover photo — tall on desktop, medium on mobile */}
       <div className="relative w-full h-[240px] md:h-[340px] overflow-hidden bg-neutral-200 dark:bg-neutral-900">
         {provider.profiles.avatar_url ? (
@@ -62,10 +62,10 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
             blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlNmUzIi8+PC9zdmc+"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-brand-primary/20 via-neutral-200 to-brand-secondary/10 dark:from-brand-primary/40 dark:to-[#0f1a17]" />
+          <div className="w-full h-full bg-gradient-to-br from-brand-primary/20 via-neutral-200 to-brand-secondary/10 dark:from-brand-primary/40 dark:to-neutral-950" />
         )}
         {/* Glassmorphism gradient overlay — fades into page background */}
-        <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent dark:from-[#0f1a17] dark:via-[#0f1a17]/30 dark:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent dark:from-neutral-950 dark:via-neutral-950/30 dark:to-transparent" />
 
         {/* Floating glassmorphism stats pill — visible on md+ */}
         {avg !== null && (
@@ -167,7 +167,7 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
               {provider.phone && (
                 <a
                   href={`tel:${provider.phone}`}
-                  className="inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 bg-surface-container-low dark:bg-neutral-800 text-neutral-950 dark:text-white text-sm font-semibold rounded-xl hover:bg-[#eceae8] dark:hover:bg-neutral-800 transition-colors"
+                  className="inline-flex items-center gap-2 min-h-[44px] px-6 py-2.5 bg-surface-container-low dark:bg-neutral-800 text-neutral-950 dark:text-white text-sm font-semibold rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                   aria-label={`Call ${provider.business_name}`}
                 >
                   <Phone className="w-4 h-4" />
