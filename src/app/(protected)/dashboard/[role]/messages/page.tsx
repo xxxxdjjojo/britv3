@@ -32,7 +32,7 @@ function UnreadBadge() {
   if (unreadCount === 0) return null;
 
   return (
-    <span className="ml-2 rounded-full bg-[#003629] px-2 py-0.5 text-xs font-medium text-white">
+    <span className="ml-2 rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
       {unreadCount > 99 ? "99+" : unreadCount}
     </span>
   );
@@ -45,14 +45,14 @@ function UnreadBadge() {
 function NoConversationSelected() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16 text-center">
-      <div className="flex size-16 items-center justify-center rounded-full bg-[#f4f3f2]">
+      <div className="flex size-16 items-center justify-center rounded-full bg-surface-container-low">
         <Mail className="size-8 text-zinc-400" strokeWidth={1.25} />
       </div>
       <div>
-        <p className="font-['Plus_Jakarta_Sans'] font-bold text-[#1a1c1c]">
+        <p className="font-heading font-bold text-on-surface">
           Select a conversation
         </p>
-        <p className="mt-1 text-sm text-zinc-500 font-['Inter']">
+        <p className="mt-1 text-sm text-zinc-500 font-sans">
           Choose from the list on the left to start messaging
         </p>
       </div>
@@ -119,27 +119,27 @@ export default function MessagesPage() {
   }, [user?.id, queryClient]);
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] text-[#1a1c1c] flex flex-col gap-6">
+    <div className="min-h-screen bg-surface text-on-surface flex flex-col gap-6">
       {/* ── Page header ────────────────────────────────────────── */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-['Plus_Jakarta_Sans'] text-2xl font-bold tracking-tight text-[#1a1c1c] flex items-center">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-on-surface flex items-center">
             Messages
             <UnreadBadge />
           </h1>
-          <p className="text-sm text-zinc-500 font-['Inter'] mt-0.5">
+          <p className="text-sm text-zinc-500 font-sans mt-0.5">
             Your conversations with agents and sellers
           </p>
         </div>
       </div>
 
       {/* ── Two-pane messaging panel ───────────────────────────── */}
-      <div className="overflow-hidden rounded-2xl bg-[#faf9f8] shadow-[0_4px_24px_rgba(26,28,28,0.06)]">
+      <div className="overflow-hidden rounded-2xl bg-surface shadow-[0_4px_24px_rgba(26,28,28,0.06)]">
         <div className="flex h-[calc(100vh-16rem)] min-h-[400px]">
           {/* ── Left pane: conversation list ────────────────── */}
           <div
             className={cn(
-              "bg-[#f4f3f2] flex flex-col",
+              "bg-surface-container-low flex flex-col",
               "w-full sm:w-96 sm:flex-shrink-0",
               activeConversation
                 ? "hidden sm:flex"
@@ -148,7 +148,7 @@ export default function MessagesPage() {
           >
             {/* Pane header */}
             <div className="px-5 pt-6 pb-3">
-              <p className="font-['Plus_Jakarta_Sans'] font-bold text-xl text-[#1a1c1c] mb-5">
+              <p className="font-heading font-bold text-xl text-on-surface mb-5">
                 Messages
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function MessagesPage() {
           {/* ── Right pane: message thread ──────────────────── */}
           <div
             className={cn(
-              "flex-1 min-w-0 bg-[#faf9f8]",
+              "flex-1 min-w-0 bg-surface",
               activeConversation
                 ? "flex flex-col"
                 : "hidden sm:flex sm:flex-col",
@@ -177,10 +177,10 @@ export default function MessagesPage() {
             {activeConversation ? (
               <div className="flex h-full flex-col">
                 {/* Mobile back button */}
-                <div className="flex items-center gap-2 border-b border-[#eeeeed] px-4 py-3 sm:hidden bg-white/80 backdrop-blur-sm">
+                <div className="flex items-center gap-2 border-b border-surface-container px-4 py-3 sm:hidden bg-surface-container-lowest/80 backdrop-blur-sm">
                   <button
                     onClick={() => setActiveConversation(null)}
-                    className="flex items-center gap-1.5 text-sm text-zinc-600 hover:text-[#003629] transition-colors"
+                    className="flex items-center gap-1.5 text-sm text-zinc-600 hover:text-brand-primary transition-colors"
                     aria-label="Back to conversations"
                   >
                     <ArrowLeft className="size-4" strokeWidth={1.25} />
