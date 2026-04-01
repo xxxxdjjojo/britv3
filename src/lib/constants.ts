@@ -199,6 +199,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
   "/conveyancers",
   "/surveyors",
   "/architects",
+  "/letting-agents",
   "/post-a-job",
   "/compare",
   "/help",
