@@ -126,7 +126,7 @@ async function PageContent() {
         <span className="text-xs font-bold tracking-[0.2em] text-[--color-brand-secondary-dark] uppercase block mb-2">
           Welcome Back
         </span>
-        <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary-dark] leading-tight font-['Plus_Jakarta_Sans']">
+        <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary] leading-tight font-['Plus_Jakarta_Sans']">
           Property Performance Overview
         </h1>
       </header>
@@ -143,7 +143,7 @@ async function PageContent() {
               {card.label}
             </span>
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-4xl font-extrabold text-[--color-brand-primary-dark] leading-none">
+              <span className="text-4xl font-extrabold text-[--color-brand-primary] leading-none">
                 {card.value}
               </span>
               {card.badge && (
@@ -161,8 +161,8 @@ async function PageContent() {
 
       {/* Empty State */}
       {kpis.active_listings === 0 && (
-        <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-[--color-surface-container-high]">
-          <h2 className="text-xl font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans'] mb-3">
+        <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-12 text-center border border-outline-variant/20">
+          <h2 className="text-xl font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] mb-3">
             No listings yet
           </h2>
           <p className="text-zinc-500 text-sm mb-6 max-w-md mx-auto">
@@ -170,7 +170,7 @@ async function PageContent() {
           </p>
           <Link
             href="/dashboard/seller/listings/create?step=1"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[--color-brand-primary-dark] text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm"
           >
             Create Your First Listing
           </Link>
@@ -180,9 +180,9 @@ async function PageContent() {
       {/* Analytics & Quick Actions Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Views Trend Chart */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-3xl shadow-[0_20px_50px_rgba(26,28,28,0.05)] border border-[--color-surface-container-high]/30">
+        <div className="lg:col-span-2 bg-surface-container-lowest p-8 rounded-3xl shadow-[0_20px_50px_rgba(26,28,28,0.05)] border border-[--color-surface-container-high]/30">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
               Views Trend
             </h2>
             <Link
@@ -197,54 +197,54 @@ async function PageContent() {
 
         {/* Immediate Actions */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-xl font-bold tracking-tight text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans'] mb-2">
+          <h2 className="text-xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] mb-2">
             Immediate Actions
           </h2>
           <Link
             href="/dashboard/seller/listings"
-            className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-[--color-brand-primary-dark] transition-all duration-300"
+            className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-brand-primary transition-all duration-300"
           >
             <div className="flex flex-col items-start">
-              <span className="text-[--color-brand-primary-dark] group-hover:text-white font-bold transition-colors font-['Plus_Jakarta_Sans']">
+              <span className="text-[--color-brand-primary] group-hover:text-white font-bold transition-colors font-['Plus_Jakarta_Sans']">
                 Manage Photos
               </span>
               <span className="text-zinc-500 group-hover:text-white/60 text-xs transition-colors mt-0.5">
                 Update listing images
               </span>
             </div>
-            <svg className="w-4 h-4 text-[--color-brand-primary-dark] group-hover:text-white transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-[--color-brand-primary] group-hover:text-white transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
           <Link
             href="/dashboard/seller/viewings"
-            className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-[--color-brand-primary-dark] transition-all duration-300"
+            className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-brand-primary transition-all duration-300"
           >
             <div className="flex flex-col items-start">
-              <span className="text-[--color-brand-primary-dark] group-hover:text-white font-bold transition-colors font-['Plus_Jakarta_Sans']">
+              <span className="text-[--color-brand-primary] group-hover:text-white font-bold transition-colors font-['Plus_Jakarta_Sans']">
                 Manage Viewings
               </span>
               <span className="text-zinc-500 group-hover:text-white/60 text-xs transition-colors mt-0.5">
                 {kpis.upcoming_viewings} pending requests
               </span>
             </div>
-            <svg className="w-4 h-4 text-[--color-brand-primary-dark] group-hover:text-white transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-[--color-brand-primary] group-hover:text-white transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
           <Link
             href="/dashboard/seller/valuation"
-            className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-[#fdcd74] transition-all duration-300"
+            className="group flex items-center justify-between p-6 bg-[--color-surface-container-low] rounded-2xl hover:bg-secondary-container transition-all duration-300"
           >
             <div className="flex flex-col items-start">
-              <span className="text-[--color-brand-primary-dark] font-bold font-['Plus_Jakarta_Sans']">
+              <span className="text-[--color-brand-primary] font-bold font-['Plus_Jakarta_Sans']">
                 Request Valuation
               </span>
               <span className="text-zinc-500 text-xs mt-0.5">
                 Professional assessment
               </span>
             </div>
-            <svg className="w-4 h-4 text-[--color-brand-primary-dark] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-[--color-brand-primary] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </Link>
@@ -256,7 +256,7 @@ async function PageContent() {
         {/* Recent Enquiries */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
               Recent Enquiries
             </h2>
             <Link
@@ -279,13 +279,13 @@ async function PageContent() {
                   className="flex items-start gap-6 p-3 rounded-xl hover:bg-[--color-surface-container-low] transition-colors group"
                 >
                   <div className="w-12 h-12 rounded-full bg-[--color-surface-container-high] flex-shrink-0 flex items-center justify-center">
-                    <span className="text-sm font-bold text-[--color-brand-primary-dark]">
+                    <span className="text-sm font-bold text-[--color-brand-primary]">
                       {enq.buyer_name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1 gap-2">
-                      <h4 className="font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
+                      <h4 className="font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
                         {enq.buyer_name}
                       </h4>
                       <span className="text-[10px] font-bold text-zinc-400 uppercase flex-shrink-0">
@@ -299,7 +299,7 @@ async function PageContent() {
                     <div className="mt-3 flex gap-4">
                       <Link
                         href="/dashboard/seller/enquiries"
-                        className="text-xs font-bold text-[--color-brand-primary-dark] hover:underline"
+                        className="text-xs font-bold text-[--color-brand-primary] hover:underline"
                       >
                         Reply
                       </Link>
@@ -318,7 +318,7 @@ async function PageContent() {
         {/* Upcoming Viewings + Market Insight */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
+            <h2 className="text-2xl font-bold tracking-tight text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
               Upcoming Viewings
             </h2>
             <Link
@@ -346,18 +346,18 @@ async function PageContent() {
                 return (
                   <div
                     key={v.id}
-                    className={`bg-[--color-surface-container-low] p-6 rounded-2xl flex items-center gap-6 border-l-4 ${idx === 0 ? "border-[--color-brand-primary-dark]" : "border-[--color-brand-secondary-dark]"}`}
+                    className={`bg-[--color-surface-container-low] p-6 rounded-2xl flex items-center gap-6 border-l-4 ${idx === 0 ? "border-[--color-brand-primary]" : "border-[--color-brand-secondary-dark]"}`}
                   >
                     <div className="text-center min-w-[50px]">
                       <span className="block text-xs font-bold text-zinc-400 uppercase">
                         {month}
                       </span>
-                      <span className="block text-2xl font-black text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
+                      <span className="block text-2xl font-black text-[--color-brand-primary] font-['Plus_Jakarta_Sans']">
                         {day}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans'] truncate">
+                      <h4 className="font-bold text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] truncate">
                         {v.buyer_name}
                       </h4>
                       <div className="flex items-center gap-4 mt-1 flex-wrap">
@@ -369,10 +369,10 @@ async function PageContent() {
                     </div>
                     <Link
                       href="/dashboard/seller/viewings"
-                      className="p-2 rounded-full hover:bg-white transition-colors flex-shrink-0"
+                      className="p-2 rounded-full hover:bg-surface-container-lowest transition-colors flex-shrink-0"
                       aria-label="Edit viewing"
                     >
-                      <svg className="w-4 h-4 text-[--color-brand-primary-dark]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className="w-4 h-4 text-[--color-brand-primary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                     </Link>
@@ -387,7 +387,7 @@ async function PageContent() {
           </div>
 
           {/* Market Insight Card */}
-          <div className="mt-8 p-6 bg-[--color-brand-primary-dark] rounded-3xl text-white relative overflow-hidden">
+          <div className="mt-8 p-6 bg-brand-primary rounded-3xl text-white relative overflow-hidden">
             <div className="relative z-10">
               <h4 className="text-lg font-bold mb-1 font-['Plus_Jakarta_Sans']">Market Insight</h4>
               <p className="text-xs text-[--color-brand-primary-lighter]/80 leading-relaxed max-w-[240px]">
