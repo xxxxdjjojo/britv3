@@ -76,7 +76,7 @@ async function PageContent({ searchParams }: Props) {
           <span className="text-xs font-bold tracking-[0.2em] text-[--color-brand-secondary-dark] uppercase block mb-2">
             My Portfolio
           </span>
-          <h1 className="text-3xl font-extrabold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans'] tracking-tight leading-tight">
+          <h1 className="text-3xl font-extrabold text-[--color-brand-primary] font-['Plus_Jakarta_Sans'] tracking-tight leading-tight">
             My Listings
           </h1>
           <p className="text-zinc-500 mt-1 text-sm">
@@ -85,7 +85,7 @@ async function PageContent({ searchParams }: Props) {
         </div>
         <Link
           href="/dashboard/seller/listings/create?step=1"
-          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[--color-brand-primary-dark] text-white text-sm font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm flex-shrink-0"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-primary text-white text-sm font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm flex-shrink-0"
         >
           <Plus size={16} strokeWidth={2} />
           List New Property
@@ -97,9 +97,9 @@ async function PageContent({ searchParams }: Props) {
 
       {/* Listings */}
       {displayed.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-[--color-brand-primary-dark]/5 flex items-center justify-center mb-4">
-            <svg className="w-7 h-7 text-[--color-brand-primary-dark]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.25}>
+        <div className="text-center py-20 bg-surface-container-lowest rounded-xl">
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-[--color-brand-primary]/5 flex items-center justify-center mb-4">
+            <svg className="w-7 h-7 text-[--color-brand-primary]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.25}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75v-5.25h-4.5V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
             </svg>
           </div>
@@ -111,7 +111,7 @@ async function PageContent({ searchParams }: Props) {
           </p>
           <Link
             href="/dashboard/seller/listings/create?step=1"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[--color-brand-primary-dark] text-white text-sm font-bold hover:opacity-90 transition-opacity"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-bold hover:opacity-90 transition-opacity"
           >
             <Plus size={14} strokeWidth={2} /> Create your first listing
           </Link>
