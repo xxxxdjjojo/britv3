@@ -31,9 +31,9 @@ export default function MaintenancePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* ── Header ─────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-white px-6 py-6 md:px-20">
+      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-6 md:px-20">
         <Logo />
         <div className="hidden items-center gap-4 md:flex">
           <span className="rounded-full border border-brand-primary/10 bg-brand-primary-lighter px-4 py-1.5 text-sm font-medium text-brand-primary">
@@ -82,7 +82,7 @@ export default function MaintenancePage() {
 
           {/* Heading */}
           <div className="mb-10 flex flex-col gap-4">
-            <h1 className="font-heading text-4xl font-black tracking-tight text-neutral-900 md:text-6xl">
+            <h1 className="font-heading text-4xl font-black tracking-tight text-foreground md:text-6xl">
               We&apos;ll be right back
             </h1>
             <p className="mx-auto max-w-lg text-lg leading-relaxed text-neutral-600 md:text-xl">
@@ -93,7 +93,7 @@ export default function MaintenancePage() {
 
           {/* Info cards */}
           <div className="mb-12 grid w-full max-w-xl grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="flex flex-col gap-2 rounded-xl border border-brand-primary/10 bg-white p-6 shadow-sm">
+            <div className="flex flex-col gap-2 rounded-xl border border-brand-primary/10 bg-card p-6 shadow-sm">
               <Clock
                 className="mb-2 size-5 text-brand-primary"
                 aria-hidden="true"
@@ -105,7 +105,7 @@ export default function MaintenancePage() {
                 2 Hours
               </p>
             </div>
-            <div className="flex flex-col gap-2 rounded-xl border border-brand-primary/10 bg-white p-6 shadow-sm">
+            <div className="flex flex-col gap-2 rounded-xl border border-brand-primary/10 bg-card p-6 shadow-sm">
               <Wrench
                 className="mb-2 size-5 text-brand-primary"
                 aria-hidden="true"
@@ -120,14 +120,14 @@ export default function MaintenancePage() {
           </div>
 
           {/* Subscribe form */}
-          <div className="w-full max-w-md rounded-2xl border border-brand-primary/10 bg-white p-6 shadow-md">
+          <div className="w-full max-w-md rounded-2xl border border-brand-primary/10 bg-card p-6 shadow-md">
             {submitted ? (
               <div className="flex flex-col items-center gap-3 py-4">
                 <CheckCircle2
                   className="size-10 text-success"
                   aria-hidden="true"
                 />
-                <p className="font-heading font-semibold text-neutral-900">
+                <p className="font-heading font-semibold text-foreground">
                   You&apos;re on the list!
                 </p>
                 <p className="text-sm text-neutral-500">
@@ -136,7 +136,7 @@ export default function MaintenancePage() {
               </div>
             ) : (
               <>
-                <h2 className="mb-4 font-heading text-lg font-bold text-neutral-900">
+                <h2 className="mb-4 font-heading text-lg font-bold text-foreground">
                   Subscribe to updates
                 </h2>
                 <form

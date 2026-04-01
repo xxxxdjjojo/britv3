@@ -50,10 +50,8 @@ export default function LegalRightToc({ sections }: LegalRightTocProps) {
 
   return (
     <nav aria-label="On this page">
-      <p className="mb-3 font-body text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
-        On This Page
-      </p>
-      <ul className="space-y-2">
+      <h4 className="font-heading font-bold text-brand-primary-dark mb-5 text-base">On this page</h4>
+      <ul className="flex flex-col gap-4">
         {sections.map(({ id, label }) => {
           const isActive = activeId === id;
           return (
@@ -62,8 +60,8 @@ export default function LegalRightToc({ sections }: LegalRightTocProps) {
                 href={`#${id}`}
                 className={
                   isActive
-                    ? "block border-l-2 border-brand-primary pl-3 font-body text-sm font-medium text-brand-primary"
-                    : "block border-l-2 border-transparent pl-3 font-body text-sm text-neutral-500 hover:text-foreground transition-colors"
+                    ? "font-body text-sm font-medium text-brand-primary hover:text-brand-secondary-dark transition-colors"
+                    : "font-body text-sm text-neutral-500 hover:text-brand-primary-dark transition-colors"
                 }
                 aria-current={isActive ? "location" : undefined}
               >

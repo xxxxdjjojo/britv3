@@ -27,7 +27,7 @@ const STAGES: { key: PipelineStage; label: string; color: string }[] = [
   { key: "initial_consultation", label: "Initial Consultation", color: "bg-amber-500" },
   { key: "application_submitted", label: "Application Submitted", color: "bg-purple-500" },
   { key: "underwriting", label: "Underwriting", color: "bg-orange-500" },
-  { key: "approved", label: "Approved", color: "bg-emerald-500" },
+  { key: "approved", label: "Approved", color: "bg-success" },
   { key: "completed", label: "Completed", color: "bg-neutral-400" },
 ];
 
@@ -146,7 +146,10 @@ export default function PipelinePage() {
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="font-heading text-xl font-semibold text-foreground">Client Pipeline</h1>
+        <span className="block font-body text-[10px] font-bold uppercase tracking-[0.2em] text-brand-secondary-dark mb-1">
+          Client Management
+        </span>
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground">Client Pipeline</h1>
         <p className="mt-1 font-body text-sm text-neutral-500">
           Track your mortgage clients from initial enquiry through to completion.
         </p>

@@ -62,7 +62,7 @@ export function UpgradePrompt({ feature, planDisplayName, role, message }: Props
         {message ??
           `This feature is available on the ${planDisplayName} plan. Upgrade to get access to ${featureLabel} and more.`}
       </p>
-      <Button asChild className="mt-6 bg-[#1B4D3E] hover:bg-[#2D7A5F]">
+      <Button asChild className="mt-6 bg-brand-primary hover:bg-brand-primary-light">
         <Link href={billingUrl}>Upgrade to {planDisplayName}</Link>
       </Button>
       <Link

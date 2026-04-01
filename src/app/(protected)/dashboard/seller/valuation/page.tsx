@@ -55,13 +55,13 @@ export default function InstantValuationPage() {
             onChange={(e) => setPostcode(e.target.value.toUpperCase())}
             onKeyDown={(e) => { if (e.key === "Enter") void handleGetValuation(); }}
             placeholder="e.g. SW1A 1AA"
-            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+            className="flex-1 px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
           />
           <button
             type="button"
             onClick={() => void handleGetValuation()}
             disabled={loading || !postcode.trim()}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors disabled:opacity-50"
           >
             {loading ? (
               <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />

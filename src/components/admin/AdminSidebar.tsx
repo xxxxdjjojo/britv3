@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -142,10 +142,10 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        "flex items-center gap-2.5 rounded-md px-3 py-1.5 font-body text-sm transition-colors ml-1",
+        "flex items-center gap-2.5 rounded-md px-3 py-1.5 font-body text-sm transition-all duration-200 ml-1",
         isActive
-          ? "bg-brand-primary/10 text-brand-primary font-medium"
-          : "text-neutral-600 hover:bg-neutral-100 hover:text-foreground dark:text-neutral-400 dark:hover:bg-neutral-800",
+          ? "bg-emerald-800/50 text-emerald-300 border-l-2 border-amber-400 font-semibold"
+          : "text-emerald-100/70 hover:bg-emerald-800/30 hover:text-emerald-50",
       )}
     >
       <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -161,23 +161,27 @@ function CollapsibleGroup({
   group: NavGroup;
   pathname: string;
 }>) {
-  const [open, setOpen] = useState(() => isGroupActive(group, pathname));
+  // Track whether the user has manually collapsed an active group
+  const [userCollapsed, setUserCollapsed] = useState(false);
   const GroupIcon = group.icon;
 
-  useEffect(() => {
-    const shouldBeOpen = isGroupActive(group, pathname);
-    if (shouldBeOpen) {
-      setOpen(true); // auto-expand when navigating into this group
-      // Don't auto-collapse — let user control closing
-    }
-  }, [pathname, group]);
+  const isActive = isGroupActive(group, pathname);
+  // Open if active (unless user collapsed it); open if previously user-opened
+  const [manuallyOpened, setManuallyOpened] = useState(!isActive);
+  const open = isActive ? !userCollapsed : manuallyOpened;
 
   return (
     <div>
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between px-3 py-2 font-body text-xs font-medium uppercase tracking-wider text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+        onClick={() => {
+          if (isActive) {
+            setUserCollapsed((prev) => !prev);
+          } else {
+            setManuallyOpened((prev) => !prev);
+          }
+        }}
+        className="flex w-full items-center justify-between px-3 py-2 font-body text-[10px] font-semibold uppercase tracking-widest text-emerald-400/60 hover:text-emerald-200/80 transition-colors"
       >
         <div className="flex items-center gap-2">
           <GroupIcon className="h-3.5 w-3.5" />
@@ -213,13 +217,16 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
 
   return (
     <>
-      <div className="flex h-16 shrink-0 items-center px-4 bg-brand-primary">
-        <span className="font-heading text-sm font-semibold uppercase tracking-widest text-white">
+      <div className="flex h-16 shrink-0 flex-col items-start justify-center px-6 bg-emerald-950">
+        <span className="font-heading text-base font-bold tracking-tighter text-emerald-50 leading-none">
+          Britestate
+        </span>
+        <span className="font-body text-[10px] font-medium tracking-[0.15em] text-emerald-400/60 uppercase mt-0.5">
           Admin Console
         </span>
       </div>
 
-      <nav className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
+      <nav className="flex flex-col gap-0.5 p-3 flex-1 overflow-y-auto">
         {NAV_GROUPS.filter((group) => accessibleGroups.includes(group.label)).map((group) => (
           <CollapsibleGroup
             key={group.label}
@@ -229,10 +236,10 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
         ))}
       </nav>
 
-      <div className="border-t border-neutral-200/60 p-3 dark:border-neutral-700/60">
+      <div className="border-t border-emerald-900/40 p-3">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-md px-3 py-2 font-body text-sm text-neutral-500 hover:bg-neutral-100 hover:text-foreground dark:text-neutral-400 dark:hover:bg-neutral-800 transition-colors"
+          className="flex items-center gap-2.5 rounded-md px-3 py-2 font-body text-sm text-emerald-100/70 hover:bg-emerald-800/30 hover:text-emerald-50 transition-colors"
         >
           <LogOut className="h-3.5 w-3.5 shrink-0" />
           Back to Platform
@@ -244,7 +251,7 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
 
 export function AdminSidebar({ adminRole }: Readonly<{ adminRole: AdminRole }>) {
   return (
-    <ResponsiveSidebar className="border-neutral-200/60 bg-card dark:border-neutral-700/60">
+    <ResponsiveSidebar className="border-0 bg-emerald-950">
       <SidebarContent adminRole={adminRole} />
     </ResponsiveSidebar>
   );

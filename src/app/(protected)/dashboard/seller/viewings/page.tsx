@@ -58,7 +58,7 @@ export default function ManageViewingsPage() {
             onClick={() => setViewMode(mode)}
             className={cn(
               "px-4 py-3 text-sm font-medium border-b-2 -mb-px capitalize transition-colors duration-150",
-              viewMode === mode ? "border-[#1B4D3E] text-[#1B4D3E]" : "border-transparent text-slate-500 hover:text-slate-700",
+              viewMode === mode ? "border-brand-primary text-brand-primary" : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {mode} viewings

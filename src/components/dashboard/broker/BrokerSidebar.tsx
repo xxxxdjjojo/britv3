@@ -91,8 +91,8 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
       href={item.href}
       className={
         isActive
-          ? "flex items-center gap-2 rounded-lg px-3 py-2 font-body text-sm font-medium transition-colors bg-brand-primary/10 text-brand-primary"
-          : "flex items-center gap-2 rounded-lg px-3 py-2 font-body text-sm transition-colors text-neutral-600 hover:bg-neutral-100 hover:text-foreground dark:text-neutral-400 dark:hover:bg-neutral-800"
+          ? "flex items-center gap-3 px-4 py-2 font-heading text-sm font-bold transition-all border-r-4 border-brand-primary-dark text-brand-primary-dark"
+          : "flex items-center gap-3 px-4 py-2 font-heading text-sm transition-all text-brand-primary/60 hover:text-brand-primary hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-50"
       }
     >
       <Icon className="size-4 shrink-0" />
@@ -103,7 +103,7 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
 
 function SidebarInner(props: Readonly<{ pathname: string }>) {
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-card dark:bg-card">
+    <div className="flex h-full flex-col overflow-y-auto bg-neutral-50 dark:bg-neutral-900">
       {/* Logo */}
       <div className="flex items-center gap-3 border-b border-neutral-200/60 dark:border-neutral-700/60 px-5 py-5">
         <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary text-white">
@@ -111,7 +111,7 @@ function SidebarInner(props: Readonly<{ pathname: string }>) {
         </div>
         <div>
           <h1 className="font-heading text-base font-semibold tracking-tight text-foreground">BRITESTATE</h1>
-          <p className="font-body text-[10px] font-medium uppercase tracking-wider text-neutral-400">Mortgage Broker</p>
+          <p className="font-body text-[10px] font-bold uppercase tracking-widest text-brand-primary/60">Mortgage Portal</p>
         </div>
       </div>
 
@@ -140,7 +140,7 @@ export function BrokerSidebar() {
   return (
     <>
       {/* Desktop permanent sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 bg-card border-r border-neutral-200/60 dark:border-neutral-700/60 lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 bg-neutral-50 border-r border-neutral-200/60 dark:bg-neutral-900 dark:border-neutral-700/60 lg:block">
         <SidebarInner pathname={pathname} />
       </aside>
 
@@ -153,7 +153,7 @@ export function BrokerSidebar() {
           >
             <Menu className="size-5" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0 bg-card dark:bg-card" showCloseButton={true}>
+          <SheetContent side="left" className="w-64 p-0 bg-neutral-50 dark:bg-neutral-900" showCloseButton={true}>
             <SidebarInner pathname={pathname} />
           </SheetContent>
         </Sheet>

@@ -292,8 +292,8 @@ export default function NotificationsSettingsPage() {
 
         <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-amber-50 p-2 dark:bg-amber-900/20">
-              <ShieldAlert className="size-5 text-amber-600 dark:text-amber-400" />
+            <div className="rounded-lg bg-warning-light p-2 dark:bg-warning/10">
+              <ShieldAlert className="size-5 text-warning" />
             </div>
             <div className="flex-1 space-y-3">
               <div>
@@ -309,7 +309,7 @@ export default function NotificationsSettingsPage() {
               <button
                 type="button"
                 onClick={handleUnsubscribeMarketing}
-                className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90"
+                className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 Unsubscribe from all marketing
               </button>

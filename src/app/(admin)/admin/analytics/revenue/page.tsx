@@ -98,15 +98,12 @@ function KpiCard({
   subtitle,
 }: Readonly<{ label: string; value: string; subtitle?: string }>) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5">
-      <p className="text-xs text-neutral-500 mb-0.5">{label}</p>
-      <p
-        className="text-2xl font-semibold text-neutral-900"
-        style={{ fontFamily: "Plus Jakarta Sans" }}
-      >
+    <div className="group rounded-xl bg-white p-6 shadow-[0_20px_50px_rgba(26,28,28,0.03)] transition-all duration-500 hover:bg-brand-primary-dark cursor-default">
+      <p className="font-body text-[10px] tracking-[0.1em] text-neutral-500 group-hover:text-emerald-200/70 uppercase mb-4">{label}</p>
+      <p className="font-heading text-3xl font-extrabold text-brand-primary-dark group-hover:text-white leading-none">
         {value}
       </p>
-      {subtitle && <p className="text-xs text-neutral-400 mt-1">{subtitle}</p>}
+      {subtitle && <p className="font-body text-xs text-neutral-400 group-hover:text-emerald-300 mt-2">{subtitle}</p>}
     </div>
   );
 }
@@ -159,11 +156,8 @@ async function RevenueContent() {
 
       {/* Subscription breakdown */}
       {stripeData && stripeData.planBreakdown.length > 0 && (
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
-          <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
-          >
+        <div className="rounded-xl bg-white p-6 shadow-[0_20px_50px_rgba(26,28,28,0.03)]">
+          <h2 className="font-heading text-base font-semibold text-brand-primary-dark mb-4">
             Subscription Breakdown
           </h2>
           <table className="w-full text-sm">
@@ -188,11 +182,8 @@ async function RevenueContent() {
       )}
 
       {/* Monthly Revenue Chart */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6">
-        <h2
-          className="text-base font-semibold text-neutral-900 mb-1"
-          style={{ fontFamily: "Plus Jakarta Sans" }}
-        >
+      <div className="rounded-xl bg-white p-6 shadow-[0_20px_50px_rgba(26,28,28,0.03)]">
+        <h2 className="font-heading text-base font-semibold text-brand-primary-dark mb-1">
           Monthly Revenue
         </h2>
         <p className="text-xs text-neutral-400 mb-4">
@@ -224,6 +215,7 @@ export default function RevenueReportsPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Revenue Reports"
+        label="Performance Overview"
         description="Subscription MRR, transaction volume, and platform commission."
       />
       <Suspense fallback={<RevenueSkeleton />}>

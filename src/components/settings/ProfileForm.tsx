@@ -378,7 +378,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
       {/* Agent role fields */}
       {activeRole === "agent" && (
         <fieldset className="space-y-4 pt-4">
-          <legend className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          <legend className="font-heading text-base font-semibold text-foreground">
             Agency Details
           </legend>
           <div className="space-y-1.5">
@@ -416,7 +416,7 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
       {/* Provider role fields */}
       {activeRole === "service_provider" && (
         <fieldset className="space-y-4 pt-4">
-          <legend className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+          <legend className="font-heading text-base font-semibold text-foreground">
             Business Details
           </legend>
           <div className="space-y-1.5">

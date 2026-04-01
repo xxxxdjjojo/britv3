@@ -32,23 +32,22 @@ export default function ErrorPage({
       <main className="flex flex-1 items-center justify-center p-6">
         <div className="w-full max-w-md rounded-2xl bg-card p-8 text-center shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 md:p-12">
           {/* Illustration */}
-          <div className="relative mb-8 flex items-center justify-center">
-            <span
-              className="font-heading text-[120px] font-bold leading-none text-brand-primary/10 select-none"
-              aria-hidden="true"
-            >
-              500
-            </span>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full bg-brand-primary-lighter p-6 dark:bg-brand-primary/20">
-                <Wrench className="size-12 text-brand-primary" aria-hidden="true" />
-              </div>
+          <div className="mb-4 flex items-center justify-center">
+            <div className="rounded-full bg-brand-primary-lighter p-6 dark:bg-brand-primary/20">
+              <Wrench className="size-12 text-brand-primary" aria-hidden="true" />
             </div>
+          </div>
+
+          {/* Error badge */}
+          <div className="mb-4">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+              Error 500
+            </span>
           </div>
 
           {/* Text */}
           <div className="space-y-2">
-            <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
+            <h1 className="font-heading text-4xl font-bold text-brand-primary md:text-5xl">
               Something went wrong
             </h1>
             <p className="font-body text-base leading-relaxed text-neutral-500">
@@ -74,8 +73,7 @@ export default function ErrorPage({
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="h-12 w-full font-body text-sm font-medium"
+              className="h-12 w-full bg-amber-100 font-body text-sm font-medium text-amber-800 hover:bg-amber-200 dark:bg-amber-900/20 dark:text-amber-300"
             >
               <Link href="/">
                 <Home className="mr-2 size-4" aria-hidden="true" />

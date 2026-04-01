@@ -36,9 +36,9 @@ export default async function AdminLayout({
   const adminRole: AdminRole = "super_admin";
 
   return (
-    <div className="flex min-h-screen bg-neutral-50 dark:bg-neutral-950">
+    <div className="flex min-h-screen bg-neutral-50">
       <AdminSidebar adminRole={adminRole} />
-      <main className="flex-1 p-4 sm:p-6 lg:pl-72 lg:pr-8 lg:py-8">{children}</main>
+      <main className="flex-1 p-4 sm:p-6 lg:pl-72 lg:pr-8 lg:py-8 min-h-screen">{children}</main>
     </div>
   );
 }

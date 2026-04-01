@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LockKeyhole, Home, Headphones, BookOpen, Shield } from "lucide-react";
+import { LockKeyhole, Home, Headphones, BookOpen } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 
@@ -45,27 +45,26 @@ export default function ForbiddenPage() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-12 md:py-24">
         <div className="flex w-full max-w-[560px] flex-col items-center text-center">
           {/* Lock illustration */}
-          <div className="relative mb-10 flex items-center justify-center">
-            <span
-              className="font-heading text-[160px] font-bold leading-none text-brand-primary/10 select-none"
-              aria-hidden="true"
-            >
-              403
-            </span>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full bg-brand-primary-lighter p-8 dark:bg-brand-primary/20">
-                <LockKeyhole
-                  className="size-14 text-brand-primary"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                />
-              </div>
+          <div className="mb-6 flex items-center justify-center">
+            <div className="rounded-full bg-brand-primary-lighter p-8 dark:bg-brand-primary/20">
+              <LockKeyhole
+                className="size-14 text-brand-primary"
+                strokeWidth={1.5}
+                aria-hidden="true"
+              />
             </div>
+          </div>
+
+          {/* Error badge */}
+          <div className="mb-4">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+              Error 403
+            </span>
           </div>
 
           {/* Text */}
           <div className="mb-8 flex flex-col gap-3">
-            <h1 className="font-heading text-2xl font-bold text-foreground md:text-3xl">
+            <h1 className="font-heading text-4xl font-bold text-brand-primary md:text-5xl">
               Access denied
             </h1>
             <p className="mx-auto max-w-md font-body text-base leading-relaxed text-neutral-500">
@@ -85,7 +84,7 @@ export default function ForbiddenPage() {
             </Link>
             <Link
               href="/help"
-              className="inline-flex min-w-40 items-center justify-center rounded-lg border border-neutral-200/60 px-6 py-2.5 font-body text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2 dark:border-neutral-700/60"
+              className="inline-flex min-w-40 items-center justify-center rounded-lg bg-amber-100 px-6 py-2.5 font-body text-sm font-medium text-amber-800 transition-colors hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/30 focus-visible:ring-offset-2 dark:bg-amber-900/20 dark:text-amber-300"
             >
               <Headphones className="mr-2 size-4" aria-hidden="true" />
               Contact Support
@@ -93,26 +92,20 @@ export default function ForbiddenPage() {
           </div>
 
           {/* Helpful links grid */}
-          <div className="mt-14 grid w-full grid-cols-1 gap-4 border-t border-neutral-200/60 pt-10 dark:border-neutral-700/60 sm:grid-cols-3">
+          <div className="mt-14 grid w-full grid-cols-1 gap-4 border-t border-neutral-200/60 pt-10 dark:border-neutral-700/60 md:grid-cols-2">
             {(
               [
                 {
                   href: "/help",
                   icon: Headphones,
                   label: "Help Centre",
-                  description: "Browse our support articles.",
+                  description: "Browse our support articles and get answers fast.",
                 },
                 {
                   href: "/about",
                   icon: BookOpen,
                   label: "Documentation",
-                  description: "Learn about Britestate features.",
-                },
-                {
-                  href: "/contact",
-                  icon: Shield,
-                  label: "Security Status",
-                  description: "View our security overview.",
+                  description: "Learn about Britestate features and how they work.",
                 },
               ] as const
             ).map(({ href, icon: Icon, label, description }) => (

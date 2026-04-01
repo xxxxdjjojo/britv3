@@ -50,12 +50,13 @@ export default async function ConversationPage({ params }: PageProps) {
       <div className="flex items-center gap-3 pb-4 border-b mb-0">
         <Link
           href="/inbox"
+          aria-label="Back to Inbox"
           className="inline-flex items-center justify-center rounded-md text-sm font-medium h-8 px-3 hover:bg-accent hover:text-accent-foreground transition-colors"
         >
           Back
         </Link>
         <div className="flex items-center gap-2">
-          <h1 className="text-lg font-semibold">{participantName}</h1>
+          <h1 className="font-heading text-lg font-semibold text-foreground">{participantName}</h1>
           <Badge variant="secondary" className="capitalize">
             {conversation.context_type}
           </Badge>

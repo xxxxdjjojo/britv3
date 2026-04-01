@@ -61,7 +61,7 @@ export default function LegalLeftNav() {
         <ul className="space-y-5">
           {NAV_CATEGORIES.map((category) => (
             <li key={category.heading}>
-              <p className="mb-2 font-body text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
+              <p className="mb-2 font-body text-[0.6875rem] font-bold uppercase tracking-widest text-brand-secondary-dark dark:text-neutral-500">
                 {category.heading}
               </p>
               <ul className="space-y-0.5">

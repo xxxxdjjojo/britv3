@@ -15,20 +15,26 @@ export function CountCard({ title, count, href, icon }: CountCardProps) {
   return (
     <Link
       href={href}
-      className="block rounded-xl bg-card p-5 shadow-sm ring-1 ring-neutral-200/60 transition hover:shadow-md dark:ring-neutral-700/60"
+      className="group block rounded-xl bg-white p-6 shadow-[0_20px_50px_rgba(26,28,28,0.03)] transition-all duration-500 hover:bg-brand-primary-dark cursor-pointer"
     >
-      <div className="flex items-center gap-3">
+      <p className="font-body text-[10px] tracking-[0.1em] text-neutral-500 group-hover:text-emerald-200/70 uppercase mb-4">
+        {title}
+      </p>
+      <div className="flex flex-col">
         {Icon ? (
-          <div className="rounded-lg bg-brand-primary-lighter p-2.5 dark:bg-brand-primary/20">
-            <Icon className="size-5 text-brand-primary" />
+          <div className="flex items-end justify-between">
+            <p className="font-heading text-3xl font-extrabold text-brand-primary-dark group-hover:text-white leading-none">
+              {count.toLocaleString()}
+            </p>
+            <div className="rounded-lg bg-brand-primary-lighter p-2 group-hover:bg-white/10">
+              <Icon className="size-4 text-brand-primary group-hover:text-emerald-300" />
+            </div>
           </div>
-        ) : null}
-        <div>
-          <p className="font-body text-xs text-neutral-500">{title}</p>
-          <p className="font-heading text-2xl font-bold text-foreground">
+        ) : (
+          <p className="font-heading text-3xl font-extrabold text-brand-primary-dark group-hover:text-white leading-none">
             {count.toLocaleString()}
           </p>
-        </div>
+        )}
       </div>
     </Link>
   );

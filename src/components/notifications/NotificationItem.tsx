@@ -5,6 +5,7 @@
  */
 
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import {
   MessageSquare,
   FileText,
@@ -132,9 +133,10 @@ export default function NotificationItem({
     <Link
       href={url}
       aria-label={ariaLabel}
-      className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50 ${
-        isUnread ? "bg-primary/5" : ""
-      }`}
+      className={cn(
+        "flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/50",
+        isUnread && "bg-primary/5",
+      )}
       onClick={() => {
         posthog.capture("notification_clicked", {
           event_type: event.event_type,
@@ -143,21 +145,23 @@ export default function NotificationItem({
       }}
     >
       <div
-        className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-          isUnread ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-        }`}
+        className={cn(
+          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+          isUnread ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground",
+        )}
       >
         <Icon className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
         <p
-          className={`text-sm ${
-            isUnread ? "font-medium text-foreground" : "text-muted-foreground"
-          }`}
+          className={cn(
+            "font-body text-sm",
+            isUnread ? "font-medium text-foreground" : "text-muted-foreground",
+          )}
         >
           {description}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <p className="mt-0.5 font-body text-xs text-muted-foreground">
           {time}
         </p>
       </div>

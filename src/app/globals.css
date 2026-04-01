@@ -117,11 +117,23 @@
 
   /* --- Surface Hierarchy (Invisible Estate design system) --- */
   --color-surface: #faf9f8;
+  --color-surface-container-lowest: #ffffff;
   --color-surface-container-low: #f4f3f2;
   --color-surface-container: #eeedec;
   --color-surface-container-high: #e8e7e6;
   --color-surface-container-highest: #e3e2e1;
   --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #3f4946;
+
+  /* --- Material You / Stitch color tokens --- */
+  --color-outline-variant: #c0c9c3;
+  --color-outline: #6f7972;
+  --color-primary-container: #1b4d3e;
+  --color-on-primary-container: #8abda9;
+  --color-secondary-container: #fdcd74;
+  --color-on-secondary-container: #251a00;
+  --color-secondary-fixed-dim: #eec068;
+  --color-on-secondary-fixed-dim: #271900;
 
   /* --- Custom Breakpoints (britestatestyle.txt) --- */
   --breakpoint-xs: 375px;
@@ -199,12 +211,23 @@
   --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: #2D7A5F;
   --color-on-surface: #F8F8FA;
+  --color-on-surface-variant: #bec9c3;
   /* Surface hierarchy (dark) */
   --color-surface: #171719;
+  --color-surface-container-lowest: #111113;
   --color-surface-container-low: #1e1e20;
   --color-surface-container: #252527;
   --color-surface-container-high: #2e2e33;
   --color-surface-container-highest: #373739;
+  /* Material You / Stitch tokens (dark) */
+  --color-outline-variant: #404943;
+  --color-outline: #899390;
+  --color-primary-container: #005140;
+  --color-on-primary-container: #9ed3be;
+  --color-secondary-container: #5c3d00;
+  --color-on-secondary-container: #ffdf9e;
+  --color-secondary-fixed-dim: #dfb857;
+  --color-on-secondary-fixed-dim: #1c0f00;
 }
 
 /* === Mobile / Touch Utilities === */

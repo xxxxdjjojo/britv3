@@ -131,12 +131,13 @@ export function MilestoneTracker({
             <div key={milestone.id} className="flex gap-4">
               {/* Timeline column */}
               <div className="flex flex-col items-center">
-                <div
-                  className={cn(canEdit && "cursor-pointer")}
+                <button
+                  type="button"
+                  className={cn(canEdit && "cursor-pointer", "bg-transparent border-0 p-0")}
                   onClick={() => handleExpand(milestone)}
                 >
                   <StatusDot status={milestone.status} />
-                </div>
+                </button>
                 {!isLast && (
                   <div
                     className={cn(
@@ -152,8 +153,9 @@ export function MilestoneTracker({
               {/* Content column */}
               <div className={cn("flex-1", isLast ? "pb-0" : "pb-6")}>
                 <div className="flex items-start justify-between gap-2">
-                  <div
-                    className={cn(canEdit && "cursor-pointer")}
+                  <button
+                    type="button"
+                    className={cn(canEdit && "cursor-pointer", "bg-transparent border-0 p-0 text-left")}
                     onClick={() => handleExpand(milestone)}
                   >
                     <p className="font-body text-sm font-medium text-foreground">
@@ -162,7 +164,7 @@ export function MilestoneTracker({
                     <p className="font-body text-xs text-neutral-500 line-clamp-1">
                       {milestone.description}
                     </p>
-                  </div>
+                  </button>
                   <span
                     className={cn(
                       "shrink-0 rounded-full px-2 py-0.5 font-body text-xs font-medium",

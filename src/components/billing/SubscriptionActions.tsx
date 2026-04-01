@@ -36,7 +36,7 @@ export function SubscriptionActions({ returnUrl }: Props) {
       <Button
         onClick={() => void handlePortal()}
         disabled={isRedirecting}
-        className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-1.5"
+        className="bg-brand-primary text-white hover:bg-brand-primary-light gap-1.5"
       >
         {isRedirecting ? (
           <Loader2 size={14} className="animate-spin" />

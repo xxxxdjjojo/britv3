@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function SessionExpiredPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-6 py-4 md:px-10">
+      <header className="flex items-center justify-between border-b border-brand-primary/10 bg-card px-6 py-4 md:px-10">
         <Logo />
         <Button asChild size="sm" variant="ghost" aria-label="Go to Help Centre">
           <Link href="/help">Help Centre</Link>
@@ -22,15 +22,22 @@ export default function SessionExpiredPage() {
 
       {/* Main */}
       <main className="flex flex-1 items-center justify-center px-6 py-16">
-        <div className="flex w-full max-w-md flex-col items-center rounded-2xl bg-white p-8 shadow-lg md:p-12">
+        <div className="flex w-full max-w-md flex-col items-center rounded-2xl bg-card p-8 shadow-lg md:p-12">
           {/* Icon */}
-          <div className="mb-8 flex size-20 items-center justify-center rounded-full bg-[#1B4D3E]">
+          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-brand-primary">
             <Clock className="size-10 text-white" aria-hidden="true" />
+          </div>
+
+          {/* Error badge */}
+          <div className="mb-4">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+              Session Expired
+            </span>
           </div>
 
           {/* Text */}
           <div className="mb-8 flex flex-col items-center gap-3 text-center">
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-neutral-900 md:text-3xl">
+            <h1 className="font-heading text-4xl font-bold tracking-tight text-brand-primary md:text-5xl">
               Your session has expired
             </h1>
             <p className="max-w-sm text-sm leading-relaxed text-neutral-600">
@@ -43,7 +50,7 @@ export default function SessionExpiredPage() {
             <Button
               asChild
               size="lg"
-              className="h-12 w-full bg-[#1B4D3E] text-white hover:bg-[#163d31]"
+              className="h-12 w-full bg-brand-primary text-white hover:bg-brand-primary/90"
               aria-label="Sign in to your account"
             >
               <Link href="/login">
@@ -69,14 +76,14 @@ export default function SessionExpiredPage() {
           </p>
 
           {/* Gold security badge */}
-          <p className="mt-4 text-[11px] font-medium tracking-[0.1em] text-[#D4A853]">
+          <p className="mt-4 text-[11px] font-medium tracking-[0.1em] text-brand-secondary">
             ★ Editorial Security
           </p>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-100 px-6 py-5 text-center">
+      <footer className="border-t border-brand-primary/5 px-6 py-5 text-center">
         <p className="text-xs text-neutral-400">
           © 2026 Britestate. All rights reserved.{" "}
           <Link href="/privacy" className="underline hover:text-neutral-600">

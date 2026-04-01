@@ -10,7 +10,7 @@ type KPICardProps = Readonly<{
 
 export function KPICard({ title, value, icon: Icon, trend }: KPICardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
+    <div className="bg-card rounded-2xl shadow-sm border border-neutral-200/60 dark:border-neutral-700/60 p-6">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex size-11 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
           <Icon className="size-5" />
@@ -34,8 +34,8 @@ export function KPICard({ title, value, icon: Icon, trend }: KPICardProps) {
           </span>
         )}
       </div>
-      <p className="mb-1 text-sm font-medium text-neutral-500">{title}</p>
-      <p className="text-3xl font-black tracking-tight text-neutral-900">{value}</p>
+      <p className="mb-1 font-body text-[11px] font-bold uppercase tracking-wider text-neutral-500">{title}</p>
+      <p className="font-heading text-3xl font-bold tracking-tight text-foreground">{value}</p>
     </div>
   );
 }

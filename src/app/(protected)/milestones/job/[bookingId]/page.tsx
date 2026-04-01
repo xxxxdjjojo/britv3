@@ -14,7 +14,10 @@ export default async function JobMilestonePage({ params }: PageProps) {
 
   return (
     <div className="container max-w-2xl py-8">
-      <h1 className="text-2xl font-bold mb-6">Service Job Milestones</h1>
+      <div className="mb-6">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Service Job Milestones</h1>
+        <p className="mt-1 font-body text-sm text-neutral-500">Track the progress of your service job.</p>
+      </div>
       <JobMilestones bookingId={bookingId} />
     </div>
   );

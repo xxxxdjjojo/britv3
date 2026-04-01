@@ -35,26 +35,50 @@ export default function PrivacyPage() {
   return (
     <LegalPageShell toc={SECTIONS}>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 font-body text-sm text-neutral-500">
+      <nav className="mb-8 flex items-center gap-2 font-body text-xs text-neutral-500">
         <Link href="/" className="hover:text-foreground transition-colors">
           Home
         </Link>
-        <span>/</span>
+        <span aria-hidden="true">/</span>
         <Link href="/legal" className="hover:text-foreground transition-colors">
           Legal
         </Link>
-        <span>/</span>
+        <span aria-hidden="true">/</span>
         <span className="text-foreground">Privacy Policy</span>
       </nav>
 
-      <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">Privacy Policy</h1>
-      <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
+      {/* Page Hero */}
+      <div className="mb-12">
+        <span className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-brand-secondary-dark mb-4 block">
+          Legal Documentation
+        </span>
+        <h1 className="font-heading text-4xl md:text-5xl font-extrabold tracking-tight text-brand-primary-dark mb-6">
+          Privacy Policy
+        </h1>
+        <div className="flex flex-col md:flex-row md:items-center gap-4 text-neutral-500 text-sm">
+          <p className="flex items-center gap-2">
+            <span aria-hidden="true">📅</span>
+            Last updated: {LAST_UPDATED}
+          </p>
+          <div className="flex gap-3">
+            <button className="flex items-center gap-2 px-4 py-2 bg-surface-container-low hover:bg-surface-container-high transition-all rounded-lg font-body text-sm font-medium text-brand-primary-dark">
+              Print
+            </button>
+            <Link
+              href="/legal/privacy.pdf"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary-dark text-white hover:opacity-90 transition-all rounded-lg font-body text-sm font-medium"
+            >
+              Download PDF
+            </Link>
+          </div>
+        </div>
+      </div>
 
-      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
+      <div className="mb-10 rounded-xl bg-brand-primary-lighter border border-brand-primary/10 p-5 font-body text-sm text-brand-primary">
         This policy explains how Britestate Ltd processes your personal data in compliance with UK
         GDPR, the Data Protection Act 2018, and the Data (Use and Access) Act 2025. To exercise
         your data rights, visit our{" "}
-        <Link href="/legal/gdpr-rights" className="underline hover:no-underline">
+        <Link href="/legal/gdpr-rights" className="font-medium underline hover:no-underline">
           GDPR Rights page
         </Link>
         .
@@ -62,7 +86,7 @@ export default function PrivacyPage() {
 
       <div className="prose prose-neutral dark:prose-invert max-w-none">
         <section id="introduction">
-          <h2 className="font-heading text-lg font-semibold text-foreground">1. Introduction</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">1. Introduction</h2>
           <p>
             1.1. Britestate Ltd (&ldquo;Britestate&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is
             the data controller for the personal data processed through the britestate.co.uk
@@ -82,7 +106,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-we-collect">
-          <h2 className="font-heading text-lg font-semibold text-foreground">2. Data We Collect</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">2. Data We Collect</h2>
           <p>We collect the following categories of personal data:</p>
           <p>
             <strong>2.1. Account Data:</strong> Name, email address, phone number, password
@@ -126,7 +150,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="legal-basis">
-          <h2 className="font-heading text-lg font-semibold text-foreground">3. Legal Basis for Processing</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">3. Legal Basis for Processing</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -222,7 +246,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="how-we-use">
-          <h2 className="font-heading text-lg font-semibold text-foreground">4. How We Use Your Data</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">4. How We Use Your Data</h2>
           <p>
             4.1. To operate and maintain the Platform, including account management, listing
             display, search functionality, and communication features.
@@ -247,7 +271,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-sharing">
-          <h2 className="font-heading text-lg font-semibold text-foreground">5. Data Sharing</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">5. Data Sharing</h2>
           <p>We share your data with the following categories of recipients:</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -301,7 +325,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-retention">
-          <h2 className="font-heading text-lg font-semibold text-foreground">6. Data Retention</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">6. Data Retention</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -368,7 +392,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="international-transfers">
-          <h2 className="font-heading text-lg font-semibold text-foreground">7. International Transfers</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">7. International Transfers</h2>
           <p>
             7.1. Some of our sub-processors operate outside the United Kingdom. Where data is
             transferred outside the UK, we ensure appropriate safeguards are in place.
@@ -389,7 +413,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="automated-decisions">
-          <h2 className="font-heading text-lg font-semibold text-foreground">
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">
             8. Automated Decision-Making and Profiling
           </h2>
           <p>
@@ -414,7 +438,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="your-rights">
-          <h2 className="font-heading text-lg font-semibold text-foreground">9. Your Rights</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">9. Your Rights</h2>
           <p>Under UK GDPR, you have the following rights:</p>
           <p>
             <strong>9.1. Right of Access (Art. 15):</strong> You may request a copy of all
@@ -477,7 +501,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="cookies">
-          <h2 className="font-heading text-lg font-semibold text-foreground">10. Cookies</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">10. Cookies</h2>
           <p>
             We use cookies and similar technologies. Please see our{" "}
             <Link href="/legal/cookies" className="text-brand-primary hover:underline">
@@ -488,7 +512,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="childrens-data">
-          <h2 className="font-heading text-lg font-semibold text-foreground">11. Children&rsquo;s Data</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">11. Children&rsquo;s Data</h2>
           <p>
             The Platform is not directed at children under 18. We do not knowingly collect personal
             data from children. If we become aware that we have collected data from a child under
@@ -497,7 +521,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="data-security">
-          <h2 className="font-heading text-lg font-semibold text-foreground">12. Data Security</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">12. Data Security</h2>
           <p>
             12.1. We implement appropriate technical and organisational measures to protect your
             data, including encryption in transit (TLS 1.3) and at rest (AES-256), role-based
@@ -511,7 +535,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="changes">
-          <h2 className="font-heading text-lg font-semibold text-foreground">13. Changes to This Policy</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">13. Changes to This Policy</h2>
           <p>
             We will notify you of material changes to this policy by email or in-app notification
             at least 30 days before they take effect. The &ldquo;last updated&rdquo; date at the
@@ -520,7 +544,7 @@ export default function PrivacyPage() {
         </section>
 
         <section id="dpo-contact">
-          <h2 className="font-heading text-lg font-semibold text-foreground">14. Contact</h2>
+          <h2 className="font-heading text-2xl font-bold text-brand-primary-dark tracking-tight">14. Contact</h2>
           <p>
             Data Protection Officer:{" "}
             <a href="mailto:privacy@britestate.co.uk">privacy@britestate.co.uk</a>

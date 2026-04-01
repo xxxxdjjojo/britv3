@@ -41,7 +41,7 @@ export default async function BillingPage() {
     )?.subscription_renewal_date ?? null;
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] p-10">
+    <div className="min-h-screen bg-surface p-10">
       <div className="max-w-7xl mx-auto">
         {/* Page header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-10">
@@ -77,7 +77,7 @@ export default async function BillingPage() {
               </svg>
               Export Statement
             </button>
-            <button className="px-5 py-2.5 bg-[#003629] text-white rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-[#1b4d3e] transition-colors shadow-md">
+            <button className="px-5 py-2.5 bg-brand-primary-dark text-white rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-brand-primary transition-colors shadow-md">
               <svg
                 className="size-4"
                 fill="none"

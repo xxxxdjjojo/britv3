@@ -103,11 +103,11 @@ export default function SecuritySettingsPage() {
         setMfaState("DISABLED");
         setFactorId(null);
         setTotpData(null);
-      } else if (totpFactor.status === "unverified") {
+      } else if ((totpFactor.status as string) === "unverified") {
         setMfaState("PENDING");
         setFactorId(totpFactor.id);
         setTotpData(null);
-      } else if (totpFactor.status === "verified") {
+      } else if ((totpFactor.status as string) === "verified") {
         setMfaState("ENABLED");
         setFactorId(totpFactor.id);
       }

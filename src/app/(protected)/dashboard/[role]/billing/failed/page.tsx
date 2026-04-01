@@ -149,12 +149,9 @@ function PaymentFailedContent() {
               </div>
               <div className="flex items-start gap-2 font-body text-sm text-foreground">
                 <Phone size={16} className="mt-0.5 shrink-0 text-neutral-500" />
-                <a
-                  href="tel:+44"
-                  className="underline hover:text-brand-primary"
-                >
+                <span className="text-foreground">
                   Contact your bank to authorise the payment
-                </a>
+                </span>
               </div>
             </div>
           </CardContent>

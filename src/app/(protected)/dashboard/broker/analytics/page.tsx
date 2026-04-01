@@ -56,7 +56,10 @@ export default function AnalyticsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="font-heading text-xl font-semibold text-foreground">Analytics</h1>
+        <span className="block font-body text-[10px] font-bold uppercase tracking-[0.2em] text-brand-secondary-dark mb-1">
+          Growth
+        </span>
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground">Analytics</h1>
         <p className="mt-1 font-body text-sm text-neutral-500">
           Track your business performance and identify growth opportunities.
         </p>

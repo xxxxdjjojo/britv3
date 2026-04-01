@@ -155,9 +155,9 @@ export default async function BlogPostPage({
   const post = MOCK_ARTICLE;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-6 py-12">
       {/* Breadcrumbs */}
-      <nav className="mb-8 flex flex-wrap items-center gap-2 font-body text-sm text-neutral-500" aria-label="Breadcrumb">
+      <nav className="mb-8 flex flex-wrap items-center gap-2 font-body text-xs text-neutral-500" aria-label="Breadcrumb">
         <Link href="/" className="transition-colors hover:text-brand-primary">
           Home
         </Link>
@@ -182,14 +182,16 @@ export default async function BlogPostPage({
         {/* ── Main Article Column ── */}
         <div className="min-w-0">
           {/* Article Header */}
-          <header className="mb-8">
-            <span className="inline-block rounded-full bg-brand-primary-lighter px-3 py-1 font-body text-xs font-medium text-brand-primary">
-              {post.category}
-            </span>
-            <h1 className="mt-3 font-heading text-2xl font-bold text-foreground leading-snug lg:text-3xl">
+          <header className="mb-12">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="inline-block rounded bg-brand-primary-lighter px-2.5 py-0.5 font-body text-[10px] font-bold uppercase tracking-widest text-brand-primary">
+                {post.category}
+              </span>
+            </div>
+            <h1 className="mt-3 font-heading text-3xl font-extrabold text-brand-primary-dark leading-tight tracking-tight md:text-4xl lg:text-5xl">
               {post.title}
             </h1>
-            <p className="mt-2 font-body text-base text-neutral-500 leading-relaxed">
+            <p className="mt-4 font-body text-xl text-neutral-500 leading-relaxed font-light">
               {post.excerpt}
             </p>
 
@@ -249,11 +251,11 @@ export default async function BlogPostPage({
           <div className="mb-8 aspect-[16/9] w-full rounded-xl bg-muted/30" aria-hidden="true" />
 
           {/* Article Body */}
-          <div className="prose prose-neutral dark:prose-invert max-w-none mb-12">
+          <div className="max-w-none mb-12 space-y-6">
             {post.body.map((block, i) => {
               if (block.type === "paragraph") {
                 return (
-                  <p key={i} className="mb-5 font-body text-base leading-relaxed text-foreground">
+                  <p key={i} className="font-body text-base leading-loose text-neutral-700">
                     {block.text}
                   </p>
                 );
@@ -262,7 +264,7 @@ export default async function BlogPostPage({
                 return (
                   <h2
                     key={i}
-                    className="mb-4 mt-10 font-heading text-xl font-semibold text-foreground"
+                    className="mt-10 mb-4 font-heading text-2xl font-bold text-brand-primary-dark"
                   >
                     {block.text}
                   </h2>
@@ -272,7 +274,7 @@ export default async function BlogPostPage({
                 return (
                   <h3
                     key={i}
-                    className="mb-3 mt-8 font-heading text-lg font-semibold text-foreground"
+                    className="mt-8 mb-3 font-heading text-xl font-bold text-brand-primary-dark"
                   >
                     {block.text}
                   </h3>
@@ -282,7 +284,7 @@ export default async function BlogPostPage({
                 return (
                   <blockquote
                     key={i}
-                    className="my-6 rounded-r-xl border-l-4 border-brand-primary bg-brand-primary-lighter px-6 py-4 font-body text-sm font-medium italic leading-relaxed text-brand-primary"
+                    className="my-10 border-l-4 border-brand-secondary pl-8 py-4 font-heading text-2xl font-medium italic text-brand-primary-dark"
                   >
                     &ldquo;{block.text}&rdquo;
                   </blockquote>
@@ -290,7 +292,7 @@ export default async function BlogPostPage({
               }
               if (block.type === "list") {
                 return (
-                  <ul key={i} className="mb-5 list-inside list-disc space-y-2 font-body text-sm text-foreground">
+                  <ul key={i} className="mb-5 list-inside list-disc space-y-2 font-body text-base text-neutral-700">
                     {block.items.map((item, j) => (
                       <li key={j} className="leading-relaxed">
                         {item}
@@ -317,7 +319,7 @@ export default async function BlogPostPage({
 
           {/* More from Category */}
           <section>
-            <h2 className="mb-6 font-heading text-lg font-semibold text-foreground">
+            <h2 className="mb-6 font-heading text-2xl font-bold text-brand-primary-dark">
               More from {post.category}
             </h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -359,8 +361,8 @@ export default async function BlogPostPage({
         <aside className="hidden lg:block">
           <div className="sticky top-8 flex flex-col gap-6">
             {/* Related Articles */}
-            <div className="rounded-xl bg-card p-5 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-              <h3 className="mb-4 font-heading text-base font-semibold text-foreground">
+            <div className="rounded-2xl bg-white border border-neutral-100 p-6 shadow-sm">
+              <h3 className="mb-6 font-body text-sm font-bold uppercase tracking-wider text-neutral-400">
                 Related Articles
               </h3>
               <div className="flex flex-col gap-2">
@@ -386,15 +388,15 @@ export default async function BlogPostPage({
             </div>
 
             {/* Newsletter Widget */}
-            <div className="rounded-xl bg-brand-primary-lighter p-5 ring-1 ring-brand-primary/10">
-              <div className="mb-2 flex items-center gap-2">
-                <Mail className="size-4 text-brand-primary" />
-                <h3 className="font-heading text-base font-semibold text-brand-primary">
-                  Property insights, weekly
-                </h3>
+            <div className="rounded-2xl bg-brand-primary-dark p-6 text-white">
+              <div className="mb-2 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                <Mail className="size-5 text-white" />
               </div>
-              <p className="mb-4 font-body text-sm leading-relaxed text-neutral-500">
-                Get expert guidance for every stage of your property journey, straight to your inbox.
+              <h3 className="font-heading text-xl font-bold mb-2">
+                Weekly Briefing
+              </h3>
+              <p className="font-body text-sm leading-relaxed text-white/70 mb-6">
+                Join 12,000+ readers receiving curated property insights every Tuesday.
               </p>
               <label htmlFor="sidebar-email" className="sr-only">
                 Email address
@@ -402,11 +404,11 @@ export default async function BlogPostPage({
               <input
                 id="sidebar-email"
                 type="email"
-                placeholder="Your email address"
-                className="mb-3 w-full rounded-lg border border-brand-primary/20 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-brand-primary/30"
+                placeholder="email@example.com"
+                className="mb-3 w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-body text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-white/20"
               />
-              <Button className="w-full bg-brand-primary font-body text-sm font-medium text-white hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
-                Subscribe
+              <Button className="w-full rounded-xl bg-white text-brand-primary font-heading font-bold text-sm hover:bg-white/90 transition-colors focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2">
+                Subscribe Now
               </Button>
             </div>
           </div>

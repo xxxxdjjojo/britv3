@@ -10,6 +10,7 @@ import {
   PackageSearch,
   ShieldCheck,
   ArrowRight,
+  Plus,
 } from "lucide-react";
 
 const RECENT_ACTIVITY = [
@@ -23,17 +24,28 @@ const RECENT_ACTIVITY = [
 export default function BrokerDashboardPage() {
   return (
     <div className="p-6 space-y-6 max-w-7xl">
-      {/* Page Header */}
-      <div>
-        <h1 className="font-heading text-xl font-semibold text-foreground">
-          Mortgage Broker Dashboard
-        </h1>
-        <p className="mt-1 font-body text-sm text-neutral-500">
-          Here&apos;s an overview of your mortgage business today.
-        </p>
+      {/* Page Header — Stitch greeting pattern */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <span className="block font-body text-[10px] font-bold uppercase tracking-[0.2em] text-brand-secondary-dark mb-1">
+            Executive Overview
+          </span>
+          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground">
+            Good morning, Alistair.
+          </h1>
+          <p className="mt-2 font-body text-sm text-neutral-500">
+            Your pipeline is looking strong today with 6 new leads requiring attention.
+          </p>
+        </div>
+        <Link href="/dashboard/broker/leads">
+          <Button className="rounded-md bg-brand-primary px-6 py-3 font-heading text-sm font-semibold text-white hover:bg-brand-primary/90 transition-colors focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2 gap-2 shrink-0">
+            <Plus className="size-4" />
+            Create New Application
+          </Button>
+        </Link>
       </div>
 
-      {/* 4 KPI Cards */}
+      {/* 4 KPI Cards — tonal surface styling from Stitch */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KPICard
           title="Active Leads"
@@ -97,7 +109,7 @@ export default function BrokerDashboardPage() {
               { stage: "Initial Consultation", count: 3, color: "bg-amber-500" },
               { stage: "Application Submitted", count: 2, color: "bg-purple-500" },
               { stage: "Underwriting", count: 1, color: "bg-orange-500" },
-              { stage: "Approved", count: 1, color: "bg-emerald-500" },
+              { stage: "Approved", count: 1, color: "bg-success" },
               { stage: "Completed", count: 5, color: "bg-neutral-400" },
             ].map((item) => (
               <div key={item.stage} className="flex items-center justify-between">
@@ -119,7 +131,7 @@ export default function BrokerDashboardPage() {
         </div>
         <div className="p-6 flex flex-wrap gap-3">
           <Link href="/dashboard/broker/leads">
-            <Button className="rounded-lg bg-brand-primary px-4 py-2 font-body text-sm font-medium text-white transition-colors hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
+            <Button className="rounded-lg bg-brand-secondary-light px-4 py-2 font-heading text-sm font-semibold text-brand-secondary-dark transition-colors hover:bg-brand-secondary-light/80 focus-visible:ring-2 focus-visible:ring-brand-secondary/30 focus-visible:ring-offset-2">
               <Inbox className="mr-2 size-4" />
               View Leads
             </Button>

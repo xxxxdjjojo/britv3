@@ -92,7 +92,10 @@ export default function ProductsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="font-heading text-xl font-semibold text-foreground">Mortgage Products</h1>
+        <span className="block font-body text-[10px] font-bold uppercase tracking-[0.2em] text-brand-secondary-dark mb-1">
+          Tools
+        </span>
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground">Mortgage Products</h1>
         <p className="mt-1 font-body text-sm text-neutral-500">
           Compare mortgage products across lenders to find the best deal for your clients.
         </p>
@@ -209,7 +212,7 @@ export default function ProductsPage() {
                   <td className="px-4 py-3 text-right font-body text-sm text-foreground">{product.maxLtv}%</td>
                   <td className="px-4 py-3 text-right font-body text-sm text-foreground">
                     {product.fees === 0 ? (
-                      <span className="text-emerald-600 font-medium">Free</span>
+                      <span className="text-success font-medium">Free</span>
                     ) : (
                       formatCurrency(product.fees)
                     )}

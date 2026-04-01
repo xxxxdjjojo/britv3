@@ -139,13 +139,13 @@ function FinancialBento() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
       {/* Large featured card — Available to Withdraw */}
-      <div className="md:col-span-2 lg:col-span-2 bg-white p-8 rounded-2xl border border-stone-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+      <div className="md:col-span-2 lg:col-span-2 bg-white p-8 rounded-2xl border border-border shadow-sm relative overflow-hidden flex flex-col justify-between">
         <div className="relative z-10">
           <span className="text-emerald-900 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-lg">
             Available to Withdraw
           </span>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-5xl font-extrabold text-stone-950 tracking-tighter">
+            <span className="text-5xl font-extrabold text-foreground tracking-tighter">
               £12,450.80
             </span>
             <span className="text-emerald-600 font-bold flex items-center text-sm">
@@ -165,17 +165,17 @@ function FinancialBento() {
               12%
             </span>
           </div>
-          <p className="text-stone-500 text-sm mt-2">
+          <p className="text-muted-foreground text-sm mt-2">
             Next auto-payout: June 15th, 2024
           </p>
         </div>
         <div className="mt-8 flex items-center gap-4 relative z-10">
-          <button className="flex-1 py-3 bg-[#003629] text-white rounded-xl font-bold hover:bg-[#1b4d3e] transition-all shadow-lg active:scale-95 text-sm">
+          <button className="flex-1 py-3 bg-brand-primary-dark text-white rounded-xl font-bold hover:bg-brand-primary transition-all shadow-lg active:scale-95 text-sm">
             Withdraw Now
           </button>
-          <button className="p-3 bg-stone-50 border border-stone-200 rounded-xl hover:bg-stone-100 transition-colors">
+          <button className="p-3 bg-muted border border-border rounded-xl hover:bg-muted/80 transition-colors">
             <svg
-              className="size-5 text-stone-600"
+              className="size-5 text-muted-foreground"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -194,9 +194,9 @@ function FinancialBento() {
       </div>
 
       {/* Pending Payments */}
-      <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+      <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
         <div>
-          <div className="w-10 h-10 rounded-full bg-[#ffdea6] flex items-center justify-center text-[#7b5804] mb-4">
+          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 mb-4">
             <svg
               className="size-5"
               fill="none"
@@ -211,14 +211,14 @@ function FinancialBento() {
               />
             </svg>
           </div>
-          <p className="text-stone-500 text-sm font-medium">Pending Payments</p>
-          <h3 className="text-2xl font-bold text-stone-900 mt-1">£2,180.00</h3>
+          <p className="text-muted-foreground text-sm font-medium">Pending Payments</p>
+          <h3 className="text-2xl font-bold text-foreground mt-1">£2,180.00</h3>
         </div>
-        <p className="text-xs text-stone-400 mt-4">4 jobs currently in processing</p>
+        <p className="text-xs text-muted-foreground mt-4">4 jobs currently in processing</p>
       </div>
 
       {/* Tax Estimate */}
-      <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between">
+      <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
         <div>
           <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 mb-4">
             <svg
@@ -235,10 +235,10 @@ function FinancialBento() {
               />
             </svg>
           </div>
-          <p className="text-stone-500 text-sm font-medium">Tax Estimate (YTD)</p>
-          <h3 className="text-2xl font-bold text-stone-900 mt-1">£4,890.45</h3>
+          <p className="text-muted-foreground text-sm font-medium">Tax Estimate (YTD)</p>
+          <h3 className="text-2xl font-bold text-foreground mt-1">£4,890.45</h3>
         </div>
-        <p className="text-xs text-stone-400 mt-4">Calculated at 20% effective rate</p>
+        <p className="text-xs text-muted-foreground mt-4">Calculated at 20% effective rate</p>
       </div>
     </div>
   );
@@ -261,17 +261,17 @@ function RevenueAndPayoutSection() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
       {/* Revenue chart */}
-      <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+      <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-border shadow-sm">
         <div className="flex items-center justify-between mb-7">
           <div>
-            <h3 className="font-bold text-lg font-heading text-stone-900">
+            <h3 className="font-bold text-lg font-heading text-foreground">
               Monthly Revenue
             </h3>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm text-muted-foreground">
               Earnings performance over the last 6 months
             </p>
           </div>
-          <select className="text-sm border-stone-200 rounded-lg py-1 pl-3 pr-8 focus:ring-[#003629] text-stone-700 bg-white border">
+          <select className="text-sm border-border rounded-lg py-1 pl-3 pr-8 focus:ring-brand-primary-dark text-foreground bg-white border">
             <option>Last 6 Months</option>
             <option>Last Year</option>
           </select>
@@ -285,7 +285,7 @@ function RevenueAndPayoutSection() {
               <div
                 className={`w-full rounded-t-lg transition-all ${
                   bar.dark
-                    ? "bg-[#003629] group-hover:bg-[#1b4d3e]"
+                    ? "bg-brand-primary-dark group-hover:bg-brand-primary"
                     : bar.bold
                       ? "bg-emerald-200 group-hover:bg-emerald-300"
                       : "bg-emerald-100 group-hover:bg-emerald-200"
@@ -294,7 +294,7 @@ function RevenueAndPayoutSection() {
               />
               <span
                 className={`text-[10px] font-medium ${
-                  bar.dark || bar.bold ? "text-stone-900 font-bold" : "text-stone-400"
+                  bar.dark || bar.bold ? "text-foreground font-bold" : "text-muted-foreground"
                 }`}
               >
                 {bar.label}
@@ -305,7 +305,7 @@ function RevenueAndPayoutSection() {
       </div>
 
       {/* Payout Method — dark card */}
-      <div className="bg-[#003629] text-white p-6 rounded-2xl shadow-xl flex flex-col">
+      <div className="bg-brand-primary-dark text-white p-6 rounded-2xl shadow-xl flex flex-col">
         <h3 className="font-bold text-lg mb-5 font-heading">Payout Method</h3>
         <div className="bg-white/10 border border-white/20 rounded-xl p-4 mb-5">
           <div className="flex items-center justify-between mb-4">
@@ -328,7 +328,7 @@ function RevenueAndPayoutSection() {
           </div>
           <div className="flex items-center gap-4">
             <div className="w-12 h-8 bg-white rounded flex items-center justify-center">
-              <span className="text-[10px] font-bold text-[#003629]">HSBC</span>
+              <span className="text-[10px] font-bold text-brand-primary-dark">HSBC</span>
             </div>
             <div>
               <p className="font-bold text-sm">•••• •••• 4492</p>
@@ -346,7 +346,7 @@ function RevenueAndPayoutSection() {
             <span className="font-medium">1-3 Business Days</span>
           </div>
         </div>
-        <button className="mt-auto w-full py-3.5 bg-white text-[#003629] rounded-xl font-extrabold hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 text-sm">
+        <button className="mt-auto w-full py-3.5 bg-white text-brand-primary-dark rounded-xl font-extrabold hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 text-sm">
           Change Account
           <svg
             className="size-4"
@@ -378,10 +378,10 @@ function CurrentPlanBanner(
   const plan = PLANS.find((p) => p.id === currentPlanId) ?? PLANS[0];
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+    <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-[#003629] text-white">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-brand-primary-dark text-white">
             {renderPlanIcon(currentPlanId, "size-6")}
           </div>
           <div>
@@ -395,7 +395,7 @@ function CurrentPlanBanner(
                 </span>
               )}
             </div>
-            <p className="mt-1 text-sm text-stone-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               {plan.priceMonthly !== null
                 ? `£${plan.priceMonthly}/month`
                 : "Free forever"}
@@ -427,12 +427,12 @@ function PlanComparisonTable(
   const { currentPlanId, onUpgrade } = props;
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-stone-200">
-      <div className="border-b border-stone-100 px-6 py-4">
-        <h2 className="font-heading text-base font-semibold text-stone-900">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-border">
+      <div className="border-b border-border px-6 py-4">
+        <h2 className="font-heading text-base font-semibold text-foreground">
           Choose Your Plan
         </h2>
-        <p className="mt-0.5 text-sm text-stone-500">
+        <p className="mt-0.5 text-sm text-muted-foreground">
           Upgrade at any time. Changes take effect immediately.
         </p>
       </div>
@@ -441,8 +441,8 @@ function PlanComparisonTable(
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-stone-100">
-              <th className="w-40 py-4 pl-6 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-stone-400">
+            <tr className="border-b border-border">
+              <th className="w-40 py-4 pl-6 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Feature
               </th>
               {PLANS.map((plan) => {
@@ -451,20 +451,20 @@ function PlanComparisonTable(
                   <th
                     key={plan.id}
                     className={`px-4 py-4 text-center ${
-                      isCurrent ? "bg-emerald-50" : plan.highlight ? "bg-stone-50/50" : ""
+                      isCurrent ? "bg-emerald-50" : plan.highlight ? "bg-muted/50" : ""
                     }`}
                   >
                     <div className="flex flex-col items-center gap-1">
                       {renderPlanIcon(
                         plan.id,
-                        `size-5 ${isCurrent ? "text-[#003629]" : "text-stone-400"}`,
+                        `size-5 ${isCurrent ? "text-brand-primary-dark" : "text-muted-foreground"}`,
                       )}
                       <span
-                        className={`font-heading text-sm font-bold ${isCurrent ? "text-[#003629]" : "text-stone-900"}`}
+                        className={`font-heading text-sm font-bold ${isCurrent ? "text-brand-primary-dark" : "text-foreground"}`}
                       >
                         {plan.name}
                       </span>
-                      <span className="text-xs text-stone-500">
+                      <span className="text-xs text-muted-foreground">
                         {plan.priceMonthly !== null
                           ? `£${plan.priceMonthly}/mo`
                           : "Free"}
@@ -475,7 +475,7 @@ function PlanComparisonTable(
                         </span>
                       )}
                       {isCurrent && (
-                        <span className="rounded-full bg-[#003629] px-2 py-0.5 text-xs font-medium text-white">
+                        <span className="rounded-full bg-brand-primary-dark px-2 py-0.5 text-xs font-medium text-white">
                           Current
                         </span>
                       )}
@@ -487,8 +487,8 @@ function PlanComparisonTable(
           </thead>
           <tbody>
             {FEATURE_ROWS.map((row) => (
-              <tr key={row.key} className="border-b border-stone-100 last:border-0">
-                <td className="py-3 pl-6 pr-4 text-sm font-medium text-stone-800">
+              <tr key={row.key} className="border-b border-border last:border-0">
+                <td className="py-3 pl-6 pr-4 text-sm font-medium text-foreground">
                   {row.label}
                 </td>
                 {PLANS.map((plan) => {
@@ -499,13 +499,13 @@ function PlanComparisonTable(
                       key={plan.id}
                       className={`px-4 py-3 text-center text-sm ${
                         isCurrent
-                          ? "bg-emerald-50 font-medium text-[#003629]"
-                          : "text-stone-500"
+                          ? "bg-emerald-50 font-medium text-brand-primary-dark"
+                          : "text-muted-foreground"
                       }`}
                     >
                       {typeof value === "number" ? (
                         value === 0 ? (
-                          <span className="text-stone-300">—</span>
+                          <span className="text-muted-foreground/50">—</span>
                         ) : (
                           <span className="font-semibold">{value}</span>
                         )
@@ -519,8 +519,8 @@ function PlanComparisonTable(
             ))}
 
             {/* CTA row */}
-            <tr className="border-t border-stone-100 bg-stone-50/50">
-              <td className="py-4 pl-6 pr-4 text-sm font-medium text-stone-500">
+            <tr className="border-t border-border bg-muted/50">
+              <td className="py-4 pl-6 pr-4 text-sm font-medium text-muted-foreground">
                 Action
               </td>
               {PLANS.map((plan) => {
@@ -535,13 +535,13 @@ function PlanComparisonTable(
                     className={`px-4 py-4 text-center ${isCurrent ? "bg-emerald-50" : ""}`}
                   >
                     {isCurrent ? (
-                      <span className="inline-flex items-center gap-1 text-sm font-medium text-[#003629]">
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-brand-primary-dark">
                         <Check className="size-4" /> Current
                       </span>
                     ) : isDowngrade ? (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-xl border border-stone-200 px-4 py-1.5 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100"
+                        className="rounded-xl border border-border px-4 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/80"
                         aria-label={`Downgrade to ${plan.name}`}
                       >
                         Downgrade
@@ -549,7 +549,7 @@ function PlanComparisonTable(
                     ) : (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-xl bg-[#003629] px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#1b4d3e]"
+                        className="rounded-xl bg-brand-primary-dark px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primary"
                         aria-label={`Upgrade to ${plan.name}`}
                       >
                         Upgrade
@@ -564,7 +564,7 @@ function PlanComparisonTable(
       </div>
 
       {/* Mobile plan cards */}
-      <div className="divide-y divide-stone-100 md:hidden">
+      <div className="divide-y divide-border md:hidden">
         {PLANS.map((plan) => {
           const isCurrent = plan.id === currentPlanId;
           const isDowngrade =
@@ -574,31 +574,31 @@ function PlanComparisonTable(
           return (
             <div
               key={plan.id}
-              className={`p-5 ${isCurrent ? "border-l-4 border-[#003629] bg-emerald-50" : ""}`}
+              className={`p-5 ${isCurrent ? "border-l-4 border-brand-primary-dark bg-emerald-50" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {renderPlanIcon(
                     plan.id,
-                    `size-5 ${isCurrent ? "text-[#003629]" : "text-stone-400"}`,
+                    `size-5 ${isCurrent ? "text-brand-primary-dark" : "text-muted-foreground"}`,
                   )}
                   <div>
-                    <p className={`font-heading text-sm font-bold ${isCurrent ? "text-[#003629]" : "text-stone-900"}`}>
+                    <p className={`font-heading text-sm font-bold ${isCurrent ? "text-brand-primary-dark" : "text-foreground"}`}>
                       {plan.name}
                     </p>
-                    <p className="text-xs text-stone-500">
+                    <p className="text-xs text-muted-foreground">
                       {plan.priceMonthly !== null ? `£${plan.priceMonthly}/mo` : "Free"}
                     </p>
                   </div>
                 </div>
                 {isCurrent ? (
-                  <span className="rounded-full bg-[#003629] px-2 py-0.5 text-xs font-medium text-white">
+                  <span className="rounded-full bg-brand-primary-dark px-2 py-0.5 text-xs font-medium text-white">
                     Current
                   </span>
                 ) : isDowngrade ? (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-xl border border-stone-200 px-3 py-1 text-xs font-medium text-stone-700"
+                    className="rounded-xl border border-border px-3 py-1 text-xs font-medium text-foreground"
                     aria-label={`Downgrade to ${plan.name}`}
                   >
                     Downgrade
@@ -606,7 +606,7 @@ function PlanComparisonTable(
                 ) : (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-xl bg-[#003629] px-3 py-1 text-xs font-semibold text-white hover:bg-[#1b4d3e]"
+                    className="rounded-xl bg-brand-primary-dark px-3 py-1 text-xs font-semibold text-white hover:bg-brand-primary"
                     aria-label={`Upgrade to ${plan.name}`}
                   >
                     Upgrade
@@ -618,8 +618,8 @@ function PlanComparisonTable(
                   const value = plan[row.key];
                   return (
                     <li key={row.key} className="flex items-center justify-between text-xs">
-                      <span className="text-stone-500">{row.label}</span>
-                      <span className={`font-medium ${isCurrent ? "text-[#003629]" : "text-stone-800"}`}>
+                      <span className="text-muted-foreground">{row.label}</span>
+                      <span className={`font-medium ${isCurrent ? "text-brand-primary-dark" : "text-foreground"}`}>
                         {typeof value === "number"
                           ? value === 0 ? "—" : String(value)
                           : String(value)}
@@ -645,14 +645,14 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
 
   if (!stripeEnabled) {
     return (
-      <div className="rounded-2xl border border-dashed border-stone-200 bg-stone-50 p-6">
+      <div className="rounded-2xl border border-dashed border-border bg-muted p-6">
         <div className="flex items-center gap-3">
-          <CreditCard className="size-5 text-stone-400" />
+          <CreditCard className="size-5 text-muted-foreground" />
           <div>
-            <p className="text-sm font-medium text-stone-800">
+            <p className="text-sm font-medium text-foreground">
               Payment Method
             </p>
-            <p className="mt-0.5 text-xs text-stone-500">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Stripe billing is not yet configured. Check back soon.
             </p>
           </div>
@@ -662,24 +662,24 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
-      <h2 className="font-heading text-base font-semibold text-stone-900 mb-4">
+    <div className="bg-white rounded-2xl p-6 shadow-sm border border-border">
+      <h2 className="font-heading text-base font-semibold text-foreground mb-4">
         Payment Method
       </h2>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl border border-stone-200 bg-stone-50">
-            <CreditCard className="size-6 text-stone-500" />
+          <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-muted">
+            <CreditCard className="size-6 text-muted-foreground" />
           </div>
           <div>
-            <p className="text-sm font-medium text-stone-900">
+            <p className="text-sm font-medium text-foreground">
               Visa ending in{" "}
               <span className="font-bold tracking-widest">4242</span>
             </p>
-            <p className="mt-0.5 text-xs text-stone-500">Expires 12 / 2028</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Expires 12 / 2028</p>
           </div>
         </div>
-        <button className="rounded-xl border border-stone-200 px-4 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50">
+        <button className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted">
           Update
         </button>
       </div>
@@ -708,19 +708,19 @@ function BillingHistorySection(props: Readonly<{ rows: BillingRow[] }>) {
   const { rows } = props;
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-stone-200">
-      <div className="border-b border-stone-100 px-6 py-4 flex items-center justify-between">
-        <h2 className="font-heading text-base font-semibold text-stone-900">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-border">
+      <div className="border-b border-border px-6 py-4 flex items-center justify-between">
+        <h2 className="font-heading text-base font-semibold text-foreground">
           Transaction History
         </h2>
         <div className="flex gap-2">
-          <button className="px-3 py-1.5 bg-stone-50 text-stone-600 rounded-lg text-xs font-semibold hover:bg-stone-100 transition-colors">
+          <button className="px-3 py-1.5 bg-muted text-muted-foreground rounded-lg text-xs font-semibold hover:bg-muted/80 transition-colors">
             All
           </button>
-          <button className="px-3 py-1.5 text-stone-500 rounded-lg text-xs font-semibold hover:bg-stone-50 transition-colors">
+          <button className="px-3 py-1.5 text-muted-foreground rounded-lg text-xs font-semibold hover:bg-muted transition-colors">
             Paid
           </button>
-          <button className="px-3 py-1.5 text-stone-500 rounded-lg text-xs font-semibold hover:bg-stone-50 transition-colors">
+          <button className="px-3 py-1.5 text-muted-foreground rounded-lg text-xs font-semibold hover:bg-muted transition-colors">
             Pending
           </button>
         </div>
@@ -728,13 +728,13 @@ function BillingHistorySection(props: Readonly<{ rows: BillingRow[] }>) {
 
       {rows.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm text-stone-500">No billing history yet.</p>
+          <p className="text-sm text-muted-foreground">No billing history yet.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-stone-50 text-stone-500 text-[10px] uppercase tracking-wider font-bold border-b border-stone-100">
+              <tr className="bg-muted text-muted-foreground text-[10px] uppercase tracking-wider font-bold border-b border-border">
                 <th className="px-6 py-4">Job ID</th>
                 <th className="px-6 py-4">Client</th>
                 <th className="px-6 py-4">Date</th>
@@ -743,28 +743,28 @@ function BillingHistorySection(props: Readonly<{ rows: BillingRow[] }>) {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-border">
               {rows.map((row) => {
                 const { pill, dot } = billingStatusConfig(row.status);
                 return (
-                  <tr key={row.id} className="hover:bg-stone-50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-mono text-stone-600">
+                  <tr key={row.id} className="hover:bg-muted/50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-mono text-muted-foreground">
                       #{row.id.toUpperCase()}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-xs font-bold text-stone-600">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
                           P
                         </div>
-                        <span className="text-sm font-semibold text-stone-900">
+                        <span className="text-sm font-semibold text-foreground">
                           Platform Subscription
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-stone-500">
+                    <td className="px-6 py-4 text-sm text-muted-foreground">
                       {formatDate(row.date)}
                     </td>
-                    <td className="px-6 py-4 text-sm font-bold text-stone-900">
+                    <td className="px-6 py-4 text-sm font-bold text-foreground">
                       {formatGBP(row.amount)}
                     </td>
                     <td className="px-6 py-4">
@@ -779,14 +779,14 @@ function BillingHistorySection(props: Readonly<{ rows: BillingRow[] }>) {
                       {row.invoiceUrl ? (
                         <a
                           href={row.invoiceUrl}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-[#003629] hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-brand-primary-dark hover:underline"
                           aria-label={`Download invoice for ${formatDate(row.date)}`}
                         >
                           <Download className="size-3" />
                           Download
                         </a>
                       ) : (
-                        <span className="text-xs text-stone-400">—</span>
+                        <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </td>
                   </tr>
@@ -797,18 +797,18 @@ function BillingHistorySection(props: Readonly<{ rows: BillingRow[] }>) {
         </div>
       )}
 
-      <div className="p-4 border-t border-stone-100 bg-stone-50 flex items-center justify-between">
-        <p className="text-xs text-stone-500 font-medium">
+      <div className="p-4 border-t border-border bg-muted flex items-center justify-between">
+        <p className="text-xs text-muted-foreground font-medium">
           Showing {rows.length} of {rows.length} transactions
         </p>
         <div className="flex gap-2">
           <button
             disabled
-            className="px-3 py-1 border border-stone-200 rounded text-xs hover:bg-white transition-colors disabled:opacity-50 text-stone-600"
+            className="px-3 py-1 border border-border rounded text-xs hover:bg-white transition-colors disabled:opacity-50 text-muted-foreground"
           >
             Previous
           </button>
-          <button className="px-3 py-1 border border-stone-200 rounded text-xs hover:bg-white transition-colors text-stone-600">
+          <button className="px-3 py-1 border border-border rounded text-xs hover:bg-white transition-colors text-muted-foreground">
             Next
           </button>
         </div>

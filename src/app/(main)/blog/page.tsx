@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -132,155 +132,157 @@ export default function BlogPage({
   void searchParams;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* Breadcrumbs */}
-      <nav className="mb-8 flex items-center gap-2 font-body text-sm text-neutral-500" aria-label="Breadcrumb">
-        <Link href="/" className="transition-colors hover:text-brand-primary">
-          Home
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span className="font-medium text-foreground">Blog</span>
-      </nav>
-
+    <div className="mx-auto max-w-7xl px-6 pt-12 pb-20">
       {/* Hero */}
-      <div className="mb-10 text-center">
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          Britestate Advice &amp; Insights
-        </h1>
-        <p className="mx-auto mt-2 max-w-2xl font-body text-base text-neutral-500">
-          Expert guidance for every stage of your property journey.
-        </p>
-        {/* Newsletter signup */}
-        <div className="mx-auto mt-6 flex max-w-md items-center overflow-hidden rounded-lg bg-card ring-1 ring-neutral-200/60 shadow-sm dark:ring-neutral-700/60">
-          <div className="flex items-center pl-3 text-neutral-400">
-            <Mail className="size-4" />
-          </div>
-          <label htmlFor="hero-email" className="sr-only">
-            Email address
-          </label>
-          <input
-            id="hero-email"
-            type="email"
-            placeholder="Enter your email"
-            className="flex-1 bg-transparent px-3 py-2.5 font-body text-sm text-foreground placeholder:text-neutral-400 outline-none"
-          />
-          <Button className="rounded-none rounded-r-lg bg-brand-primary px-5 font-body text-sm font-medium text-white hover:bg-brand-primary/90 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2">
-            Subscribe
-          </Button>
-        </div>
-      </div>
-
-      {/* Featured Post */}
-      <article className="mb-10 overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 group hover:shadow-md transition-shadow">
-        <div className="grid lg:grid-cols-2">
-          <div className="aspect-[16/9] lg:aspect-auto min-h-[260px] bg-muted/30" aria-hidden="true" />
-          <div className="flex flex-col justify-center p-8 lg:p-10">
-            <span className="inline-block w-fit rounded-full bg-brand-primary-lighter px-3 py-1 font-body text-xs font-medium text-brand-primary">
-              {featuredPost.category}
+      <section className="mb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="space-y-2">
+            <span className="font-heading text-xs font-bold uppercase tracking-widest text-brand-secondary-dark">
+              Property Insights
             </span>
-            <h2 className="mt-3 font-heading text-xl font-semibold text-foreground leading-snug group-hover:text-brand-primary transition-colors">
+            <h1 className="font-heading text-4xl md:text-6xl font-extrabold text-brand-primary-dark leading-tight tracking-tight">
+              Britestate Advice<br />&amp; Insights
+            </h1>
+            <p className="max-w-xl font-body text-base text-neutral-500">
+              Expert guidance for every stage of your property journey.
+            </p>
+          </div>
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap gap-3">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat}
+                href={cat === "All" ? "/blog" : `/blog?category=${encodeURIComponent(cat)}`}
+                className="shrink-0 rounded-full border border-neutral-200 bg-card px-5 py-2 font-body text-sm font-semibold text-neutral-600 transition-colors hover:bg-brand-primary-lighter hover:text-brand-primary whitespace-nowrap focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+              >
+                {cat}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Featured Post */}
+        <article className="group relative overflow-hidden rounded-2xl bg-brand-primary min-h-[480px] lg:min-h-[500px]">
+          <div className="absolute inset-0 bg-muted/20" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-primary-dark/90 via-brand-primary-dark/20 to-transparent" aria-hidden="true" />
+          <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
+            <div className="flex items-center gap-4 mb-4">
+              <span className="bg-brand-secondary-light text-brand-secondary-dark text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                {featuredPost.category}
+              </span>
+              <span className="text-white/60 text-xs font-mono uppercase tracking-widest">
+                {featuredPost.readTime}
+              </span>
+            </div>
+            <h2 className="font-heading text-2xl md:text-4xl font-bold text-white mb-4 max-w-2xl leading-tight">
               {featuredPost.title}
             </h2>
-            <p className="mt-2 font-body text-sm text-neutral-500 leading-relaxed line-clamp-3">
+            <p className="font-body text-white/80 text-base mb-6 max-w-xl hidden md:block leading-relaxed">
               {featuredPost.excerpt}
             </p>
-            <div className="mt-4 flex items-center gap-3 font-body text-sm text-neutral-500">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
+            <div className="flex items-center gap-4">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
                 {featuredPost.author.initials}
               </span>
-              <span className="font-medium text-foreground">{featuredPost.author.name}</span>
-              <span aria-hidden="true">·</span>
-              <span>{featuredPost.date}</span>
-              <span aria-hidden="true">·</span>
-              <span>{featuredPost.readTime}</span>
-            </div>
-            <Link
-              href={`/blog/${featuredPost.slug}`}
-              className="mt-5 inline-flex items-center gap-2 font-body text-sm font-semibold text-brand-primary hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
-            >
-              Read Article <ArrowRight className="size-4" />
-            </Link>
-          </div>
-        </div>
-      </article>
-
-      {/* Category Filter Pills */}
-      <div className="mb-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-        {CATEGORIES.map((cat) => (
-          <Link
-            key={cat}
-            href={cat === "All" ? "/blog" : `/blog?category=${encodeURIComponent(cat)}`}
-            className="shrink-0 rounded-full bg-card px-4 py-1.5 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 transition-colors hover:bg-muted hover:text-brand-primary whitespace-nowrap dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
-          >
-            {cat}
-          </Link>
-        ))}
-      </div>
-
-      {/* Blog Card Grid */}
-      <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {gridPosts.map((post) => (
-          <article
-            key={post.slug}
-            className="group flex flex-col overflow-hidden rounded-xl bg-card shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 hover:shadow-md transition-all duration-300"
-          >
-            <div className="aspect-[16/9] w-full bg-muted/30" aria-hidden="true" />
-            <div className="flex flex-1 flex-col p-5">
-              <span className="inline-block w-fit rounded-full bg-brand-primary-lighter px-2.5 py-0.5 font-body text-xs font-medium text-brand-primary">
-                {post.category}
-              </span>
-              <h3 className="mt-2 font-heading text-base font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-brand-primary transition-colors">
-                {post.title}
-              </h3>
-              <p className="mt-1 flex-1 font-body text-xs text-neutral-500 leading-relaxed line-clamp-2">
-                {post.excerpt}
-              </p>
-              <div className="mt-auto flex items-center gap-2 border-t border-neutral-100 pt-3 font-body text-xs text-neutral-500 dark:border-neutral-800">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
-                  {post.author.initials}
-                </span>
-                <span className="truncate font-medium text-foreground">{post.author.name}</span>
-                <span aria-hidden="true" className="shrink-0">·</span>
-                <span className="shrink-0">{post.date}</span>
-                <span aria-hidden="true" className="shrink-0">·</span>
-                <span className="shrink-0">{post.readTime}</span>
+              <div className="text-sm">
+                <p className="font-body font-bold text-white">{featuredPost.author.name}</p>
+                <p className="font-body text-white/60">{featuredPost.date}</p>
               </div>
               <Link
-                href={`/blog/${post.slug}`}
-                className="mt-4 inline-flex items-center gap-1 font-body text-sm font-semibold text-brand-primary hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+                href={`/blog/${featuredPost.slug}`}
+                className="ml-auto inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-5 py-2 font-body text-sm font-semibold text-white hover:bg-white/20 transition-colors focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2"
               >
-                Read more <ArrowRight className="size-3.5" />
+                Read Article <ArrowRight className="size-4" />
               </Link>
             </div>
-          </article>
-        ))}
-      </div>
+          </div>
+        </article>
+      </section>
 
-      {/* Load More */}
-      <div className="flex justify-center">
-        <Button
-          variant="outline"
-          className="px-8 py-3 font-body text-sm font-medium text-neutral-600 ring-1 ring-neutral-200/60 hover:text-brand-primary hover:ring-brand-primary dark:ring-neutral-700/60 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
-        >
-          Load More Articles
-        </Button>
-      </div>
+      {/* Article Feed */}
+      <section>
+        <div className="flex items-center justify-between mb-8 border-b border-neutral-200 pb-4">
+          <h3 className="font-heading text-2xl font-bold text-brand-primary-dark">Latest Articles</h3>
+        </div>
+
+        {/* Blog Card Grid */}
+        <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+          {gridPosts.map((post) => (
+            <article
+              key={post.slug}
+              className="group flex flex-col cursor-pointer"
+            >
+              <div className="relative aspect-[16/10] rounded-2xl overflow-hidden mb-5 bg-surface-container">
+                <div className="absolute inset-0 bg-muted/20" aria-hidden="true" />
+                <div className="absolute top-4 left-4">
+                  <span className="bg-white/90 text-brand-primary-dark text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tight shadow-sm">
+                    {post.category}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 font-mono text-[11px] text-neutral-500 mb-3 tracking-widest uppercase">
+                <span>{post.date}</span>
+                <span className="w-1 h-1 bg-neutral-300 rounded-full" aria-hidden="true" />
+                <span>{post.readTime}</span>
+              </div>
+              <h4 className="font-heading text-xl font-bold text-brand-primary-dark mb-3 group-hover:text-brand-secondary-dark transition-colors leading-snug">
+                {post.title}
+              </h4>
+              <p className="font-body text-sm text-neutral-500 leading-relaxed mb-6 line-clamp-2">
+                {post.excerpt}
+              </p>
+              <div className="mt-auto flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-primary-lighter font-bold text-xs text-brand-primary">
+                    {post.author.initials}
+                  </span>
+                  <span className="font-body text-xs font-semibold text-brand-primary-dark">{post.author.name}</span>
+                </div>
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="inline-flex items-center gap-1 font-body text-sm font-semibold text-brand-primary hover:underline focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+                  aria-label={`Read ${post.title}`}
+                >
+                  <ArrowRight className="size-4 text-neutral-400 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Load More */}
+        <div className="mt-4 flex justify-center">
+          <Button
+            variant="outline"
+            className="px-8 py-3 rounded-full border-brand-primary-dark text-brand-primary-dark font-heading font-bold hover:bg-brand-primary-dark hover:text-white transition-all focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+          >
+            Load More Articles
+          </Button>
+        </div>
+      </section>
 
       {/* Newsletter CTA */}
-      <div className="mt-12 rounded-xl bg-brand-primary p-8 text-center text-white">
-        <h2 className="font-heading text-xl font-semibold">Subscribe to our newsletter</h2>
-        <p className="mt-2 font-body text-sm text-white/70">Stay updated with the latest property insights.</p>
-        <div className="mt-4 flex justify-center gap-2">
-          <input
-            type="email"
-            placeholder="Your email address"
-            aria-label="Email address for newsletter"
-            className="rounded-lg border border-white/20 bg-white/10 px-4 py-2 font-body text-sm text-white placeholder:text-white/50 outline-none focus:ring-2 focus:ring-white/30"
-          />
-          <button className="rounded-lg bg-white px-4 py-2 font-body text-sm font-medium text-brand-primary hover:bg-white/90 focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2">
-            Subscribe
-          </button>
+      <div className="mt-16 rounded-3xl bg-brand-primary-dark p-10 text-white text-center relative overflow-hidden">
+        <div className="relative z-10 max-w-lg mx-auto">
+          <h2 className="font-heading text-3xl font-bold mb-4">Stay in the Loop</h2>
+          <p className="font-body text-white/80 mb-8">
+            Get the weekly property digest delivered directly to your inbox. Expert market intelligence, no fluff.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+            <input
+              id="newsletter-email"
+              type="email"
+              placeholder="Your email address"
+              aria-label="Email address for newsletter"
+              className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-body text-sm text-white placeholder:text-white/40 outline-none focus:ring-2 focus:ring-brand-secondary/40"
+            />
+            <button className="rounded-xl bg-brand-secondary-light text-brand-secondary-dark px-6 py-3 font-heading font-bold text-sm hover:opacity-90 transition-opacity focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2">
+              Subscribe
+            </button>
+          </div>
         </div>
+        <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-brand-secondary-dark opacity-20 blur-[100px] rounded-full" aria-hidden="true" />
       </div>
     </div>
   );

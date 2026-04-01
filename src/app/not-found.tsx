@@ -50,22 +50,21 @@ export default async function NotFound() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
         <div className="mx-auto max-w-2xl">
           {/* Illustration */}
-          <div className="relative mb-16 flex items-center justify-center">
-            <span
-              className="font-heading text-[180px] font-bold leading-none text-brand-primary/10 select-none"
-              aria-hidden="true"
-            >
-              404
-            </span>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full bg-brand-primary-lighter p-8 dark:bg-brand-primary/20">
-                <SearchX className="size-16 text-brand-primary" aria-hidden="true" />
-              </div>
+          <div className="mb-6 flex items-center justify-center">
+            <div className="rounded-full bg-brand-primary-lighter p-8 dark:bg-brand-primary/20">
+              <SearchX className="size-16 text-brand-primary" aria-hidden="true" />
             </div>
           </div>
 
+          {/* Error badge */}
+          <div className="mb-4">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+              Error 404
+            </span>
+          </div>
+
           {/* Heading */}
-          <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
+          <h1 className="font-heading text-4xl font-bold text-brand-primary md:text-5xl">
             Page not found
           </h1>
           <p className="mx-auto mt-3 max-w-lg font-body text-base leading-relaxed text-neutral-500">
@@ -84,7 +83,7 @@ export default async function NotFound() {
             </Link>
             <Link
               href="/search"
-              className="inline-flex items-center rounded-lg border border-neutral-200/60 px-6 py-2.5 font-body text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2 dark:border-neutral-700/60"
+              className="inline-flex items-center rounded-lg bg-amber-100 px-6 py-2.5 font-body text-sm font-medium text-amber-800 transition-colors hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/30 focus-visible:ring-offset-2 dark:bg-amber-900/20 dark:text-amber-300"
             >
               <SearchX className="mr-2 size-4" aria-hidden="true" />
               Search Properties

@@ -41,25 +41,25 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
         : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
 
   return (
-    <div className="flex items-center justify-between rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-      <div className="flex items-center gap-3">
-        <div className="rounded-lg bg-brand-primary-lighter p-2 dark:bg-brand-primary/20">
+    <div className="flex items-center justify-between rounded-xl bg-white p-5 shadow-[0_20px_50px_rgba(26,28,28,0.03)]">
+      <div className="flex items-center gap-4">
+        <div className="rounded-lg bg-brand-primary-lighter p-2.5">
           <Icon className="h-4 w-4 text-brand-primary" />
         </div>
         <div>
-          <p className="font-body text-sm font-medium text-foreground">{service.name}</p>
+          <p className="font-body text-sm font-semibold text-brand-primary-dark">{service.name}</p>
           {service.error && (
             <p className="font-body text-xs text-neutral-500 truncate max-w-xs">{service.error}</p>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {service.latencyMs !== null && (
-          <span className="font-body text-sm text-neutral-500">{service.latencyMs}ms</span>
+          <span className="font-body text-sm font-medium text-neutral-400">{service.latencyMs}ms</span>
         )}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <StatusIcon status={service.status} />
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium capitalize ${statusPill}`}>
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-semibold capitalize ${statusPill}`}>
             {service.status}
           </span>
         </div>
@@ -91,18 +91,21 @@ async function PageContent() {
   const allUp = services.every((s) => s.status === "up");
   const anyDown = services.some((s) => s.status === "down");
   const overallStatus = allUp ? "All systems operational" : anyDown ? "Some services degraded" : "Minor issues detected";
-  const overallColor = allUp ? "text-green-700 dark:text-green-400" : anyDown ? "text-red-700 dark:text-red-400" : "text-amber-700 dark:text-amber-400";
 
   return (
     <div>
       <AdminPageHeader
         title="System Health"
+        label="Real-time Performance"
         description="Real-time status checks for all external services."
       />
 
-      <div className="mb-6 rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-        <p className={`font-body text-sm font-semibold ${overallColor}`}>{overallStatus}</p>
-        <p className="font-body text-xs text-neutral-400 mt-0.5">
+      <div className="mb-6 rounded-xl bg-brand-primary-dark p-6 text-white">
+        <div className="flex items-center gap-3 mb-1">
+          <span className={`flex h-2.5 w-2.5 rounded-full ${allUp ? "bg-emerald-400" : anyDown ? "bg-red-400" : "bg-amber-400"} animate-pulse`} />
+          <p className="font-heading text-base font-bold">{overallStatus}</p>
+        </div>
+        <p className="font-body text-xs text-emerald-200/60">
           Checked at {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
         </p>
       </div>

@@ -52,8 +52,8 @@ function PreSendPreview(
       )}
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm truncate">{file.name}</p>
-        <p className="text-xs text-muted-foreground">{sizeKB} KB</p>
+        <p className="font-body text-sm truncate">{file.name}</p>
+        <p className="font-body text-xs text-muted-foreground">{sizeKB} KB</p>
       </div>
 
       <Button

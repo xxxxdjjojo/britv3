@@ -132,6 +132,7 @@ export default function BookingsPage() {
           {/* Tabs */}
           <div className="flex gap-1 border-b border-neutral-100/60 dark:border-neutral-700/60 overflow-x-auto">
             <button
+              type="button"
               onClick={() => setActiveTab("all")}
               className={cn(
                 "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors whitespace-nowrap focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2",
@@ -145,6 +146,7 @@ export default function BookingsPage() {
             {STATUS_TABS.map((status) => (
               <button
                 key={status}
+                type="button"
                 onClick={() => setActiveTab(status)}
                 className={cn(
                   "-mb-px border-b-2 px-4 py-2 font-body text-sm font-medium capitalize transition-colors whitespace-nowrap focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2",

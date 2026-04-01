@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Gauge, Home, RefreshCw } from "lucide-react";
@@ -80,7 +78,7 @@ export default function RateLimitedPage() {
                 cy="50"
                 r="45"
                 fill="none"
-                stroke="#FEF9C3"
+                stroke="var(--color-warning-light)"
                 strokeWidth="6"
               />
               {/* Progress */}
@@ -89,7 +87,7 @@ export default function RateLimitedPage() {
                 cy="50"
                 r="45"
                 fill="none"
-                stroke="#CA8A04"
+                stroke="var(--color-warning)"
                 strokeWidth="6"
                 strokeLinecap="round"
                 strokeDasharray={circumference}

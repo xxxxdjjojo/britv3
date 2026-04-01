@@ -60,7 +60,10 @@ export default function BrokerProfilePage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-xl font-semibold text-foreground">Broker Profile</h1>
+          <span className="block font-body text-[10px] font-bold uppercase tracking-[0.2em] text-brand-secondary-dark mb-1">
+            Profile &amp; Trust
+          </span>
+          <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground">Broker Profile</h1>
           <p className="mt-1 font-body text-sm text-neutral-500">
             Manage your public-facing profile information.
           </p>

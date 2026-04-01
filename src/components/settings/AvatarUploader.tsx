@@ -158,7 +158,7 @@ export function AvatarUploader({
 
       {/* Remove button */}
       <div className="flex flex-col gap-1">
-        <p className="font-body text-sm font-medium text-neutral-900 dark:text-white">
+        <p className="font-body text-sm font-medium text-foreground">
           Profile photo
         </p>
         <p className="font-body text-xs text-neutral-500">

@@ -176,6 +176,7 @@ export default function SettingsLayout({
                     key={tab.href}
                     href={tab.disabled ? "#" : tab.href}
                     aria-disabled={tab.disabled}
+                    tabIndex={tab.disabled ? -1 : undefined}
                     className={cn(
                       "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 font-body text-sm transition-colors",
                       isActive

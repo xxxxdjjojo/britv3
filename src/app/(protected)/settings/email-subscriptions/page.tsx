@@ -402,8 +402,8 @@ export default function EmailSubscriptionsPage() {
 
         <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-amber-50 p-2 dark:bg-amber-900/20">
-              <ShieldAlert className="size-5 text-amber-600 dark:text-amber-400" />
+            <div className="rounded-lg bg-warning-light p-2 dark:bg-warning/10">
+              <ShieldAlert className="size-5 text-warning" />
             </div>
             <div className="flex-1 space-y-3">
               <div>

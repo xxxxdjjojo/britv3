@@ -41,6 +41,7 @@ async function PageContent({
     <div>
       <AdminPageHeader
         title="Listing Moderation"
+        label="Moderation Queue"
         description="Review, approve, reject, and flag property listings."
       />
 

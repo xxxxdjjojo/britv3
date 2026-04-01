@@ -2,6 +2,17 @@
 /**
  * Homebuyer dashboard — Stitch design system restyle.
  * Sections: welcome hero, stats, new-properties carousel, next viewing + activity, recommended services.
+ *
+ * Color tokens (from globals.css / Stitch design):
+ *   bg-brand-primary         → #1B4D3E  (primary-container / welcome banner bg)
+ *   bg-brand-primary-dark    → #003629  (primary / active button fill)
+ *   bg-secondary-fixed-dim   → #eec068  (golden CTA — CSS var --color-secondary-fixed-dim)
+ *   bg-surface               → #faf9f8
+ *   bg-surface-container-low → #f4f3f2
+ *   bg-surface-container     → #eeedec
+ *   text-on-surface          → #1a1c1c
+ *   text-on-primary-container→ #8abda9
+ *   border-outline-variant   → #c0c9c3
  */
 
 import Link from "next/link";
@@ -141,19 +152,31 @@ export function HomebuyerDashboard({
   return (
     <div className="flex flex-col gap-12 pb-12">
       {/* ── 1. Welcome Banner ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-2xl bg-brand-primary-dark p-8 lg:p-10">
+      {/*
+        Stitch: bg = primary-container (#1b4d3e) = --color-brand-primary
+        Decorative orb stays, sub-text colour = on-primary-container (#8abda9)
+        CTA = secondary-fixed-dim (#eec068) via CSS var
+      */}
+      <section className="relative overflow-hidden rounded-2xl bg-brand-primary p-8 lg:p-10">
         <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-white lg:text-3xl">
               Good morning, {userName}!
             </h2>
-            <p className="text-lg text-emerald-200">
+            <p
+              className="text-lg"
+              style={{ color: "var(--color-on-primary-container, #8abda9)" }}
+            >
               You have 3 new properties matching your searches in Isleworth.
             </p>
           </div>
           <Link href="/dashboard/homebuyer/ai-match">
             <Button
-              className="shrink-0 rounded-full bg-[#eec068] px-6 py-3 text-sm font-bold uppercase tracking-wide text-[#271900] hover:opacity-90"
+              className="shrink-0 rounded-full px-6 py-3 text-sm font-bold uppercase tracking-wide hover:opacity-90"
+              style={{
+                backgroundColor: "var(--color-secondary-fixed-dim, #eec068)",
+                color: "var(--color-on-secondary-fixed-dim, #271900)",
+              }}
               aria-label="View AI property matches"
             >
               View Matches
@@ -195,7 +218,7 @@ export function HomebuyerDashboard({
       <section className="flex flex-col gap-8">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-1">
-            <h3 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+            <h3 className="font-heading text-2xl font-bold tracking-tight text-on-surface">
               New Properties for You
             </h3>
             <p className="text-sm text-neutral-500">
@@ -203,13 +226,15 @@ export function HomebuyerDashboard({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Previous — surface-container */}
             <button
               type="button"
-              className="flex size-10 items-center justify-center rounded-full bg-[#eeeeed] text-neutral-700 transition-colors hover:bg-[#e3e2e1]"
+              className="flex size-10 items-center justify-center rounded-full bg-surface-container text-on-surface transition-colors hover:bg-surface-container-high"
               aria-label="Previous properties"
             >
               <ChevronLeft className="size-5" strokeWidth={1.5} />
             </button>
+            {/* Next — brand-primary-dark (primary = #003629) */}
             <button
               type="button"
               className="flex size-10 items-center justify-center rounded-full bg-brand-primary-dark text-white transition-opacity hover:opacity-90"
@@ -231,13 +256,14 @@ export function HomebuyerDashboard({
       <section className="grid grid-cols-1 gap-12 lg:grid-cols-3">
         {/* Left 2/3 — Next Viewing */}
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <h3 className="font-heading text-xl font-bold tracking-tight text-neutral-900">
+          <h3 className="font-heading text-xl font-bold tracking-tight text-on-surface">
             Next Viewing
           </h3>
-          <div className="relative overflow-hidden rounded-3xl bg-[#f4f3f2] p-8">
+          {/* bg-surface-container-low = #f4f3f2 */}
+          <div className="relative overflow-hidden rounded-3xl bg-surface-container-low p-8">
             <div className="flex flex-col gap-8 md:flex-row md:items-start">
               {/* Property thumbnail placeholder */}
-              <div className="aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-neutral-200 md:w-48">
+              <div className="aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-surface-container-high md:w-48">
                 <div className="flex size-full items-center justify-center">
                   <MapPin className="size-10 text-neutral-300" strokeWidth={1.25} />
                 </div>
@@ -246,16 +272,17 @@ export function HomebuyerDashboard({
               <div className="flex flex-1 flex-col gap-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-primary">
                       Tomorrow at 10:30 AM
                     </p>
-                    <h4 className="font-heading text-2xl font-bold text-neutral-900">
+                    <h4 className="font-heading text-2xl font-bold text-on-surface">
                       22 Oak Lane
                     </h4>
                     <p className="text-sm text-neutral-500">
                       Isleworth, London, TW7 4JP
                     </p>
                   </div>
+                  {/* Confirmed badge */}
                   <span className="shrink-0 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
                     Confirmed
                   </span>
@@ -271,7 +298,7 @@ export function HomebuyerDashboard({
                   </button>
                   <button
                     type="button"
-                    className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition-colors hover:bg-neutral-50"
+                    className="flex items-center gap-2 rounded-xl border border-outline-variant bg-white px-6 py-3 text-sm font-semibold text-on-surface transition-colors hover:bg-surface-container-low"
                   >
                     <RefreshCw className="size-4" strokeWidth={1.5} />
                     Reschedule
@@ -284,7 +311,7 @@ export function HomebuyerDashboard({
 
         {/* Right 1/3 — Recent Activity */}
         <div className="flex flex-col gap-4">
-          <h3 className="font-heading text-xl font-bold tracking-tight text-neutral-900">
+          <h3 className="font-heading text-xl font-bold tracking-tight text-on-surface">
             Recent Activity
           </h3>
           <div className="flex flex-col gap-6">
@@ -296,7 +323,7 @@ export function HomebuyerDashboard({
                   <item.Icon className={`size-4 ${item.iconColor}`} strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-semibold text-neutral-800">
+                  <p className="text-sm font-semibold text-on-surface">
                     {item.title}
                   </p>
                   <p className="text-xs text-neutral-500">{item.description}</p>
@@ -319,7 +346,7 @@ export function HomebuyerDashboard({
 
       {/* ── 5. Recommended Services ───────────────────────────────────── */}
       <section className="flex flex-col gap-8">
-        <h3 className="font-heading text-2xl font-bold tracking-tight text-neutral-900">
+        <h3 className="font-heading text-2xl font-bold tracking-tight text-on-surface">
           Recommended Services
         </h3>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -346,12 +373,12 @@ function StatCard({
   value: string | number;
 }>) {
   return (
-    <div className="flex flex-col items-center rounded-2xl bg-white p-6 text-center shadow-sm">
-      <Icon className="mb-4 size-6 text-emerald-900" strokeWidth={1.25} />
+    <div className="flex flex-col items-center rounded-2xl border border-outline-variant/10 bg-white p-6 text-center shadow-sm">
+      <Icon className="mb-4 size-6 text-brand-primary" strokeWidth={1.25} />
       <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
         {label}
       </p>
-      <p className="font-heading text-3xl font-extrabold text-neutral-900">
+      <p className="font-heading text-3xl font-extrabold text-on-surface">
         {value}
       </p>
     </div>
@@ -375,15 +402,17 @@ type PropertyCardData = {
 };
 
 function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
+  // Stitch: "New Listing" = brand-primary bg, white text
+  //         "Reduced"     = secondary-container (#fdcd74) bg, dark amber text
   const tagClasses =
     property.tagVariant === "secondary"
-      ? "bg-[#fdcd74] text-[#785601]"
-      : "bg-brand-primary-dark/90 text-white";
+      ? "bg-secondary-container text-on-secondary-container"
+      : "bg-brand-primary/90 text-white";
 
   return (
-    <div className="group overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md">
-      {/* Image placeholder */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+    <div className="group overflow-hidden rounded-3xl border border-outline-variant/10 bg-white shadow-sm transition-shadow hover:shadow-md">
+      {/* Image placeholder — 4:5 aspect ratio per Stitch */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-surface-container-low">
         <div className="flex size-full items-center justify-center">
           <Heart className="size-12 text-neutral-200" strokeWidth={1} />
         </div>
@@ -409,13 +438,14 @@ function PropertyCard({ property }: Readonly<{ property: PropertyCardData }>) {
       </div>
 
       <div className="p-6">
-        <p className="font-heading text-2xl font-bold text-emerald-950">
+        {/* Price — Stitch: 2xl bold, on-surface (dark) */}
+        <p className="font-heading text-2xl font-bold text-on-surface">
           {property.price}
         </p>
         <p className="mb-4 mt-1 text-sm text-neutral-500">
           {property.name}, {property.location}
         </p>
-        <div className="flex items-center gap-4 border-t border-neutral-100 pt-4 text-sm text-neutral-500">
+        <div className="flex items-center gap-4 border-t border-outline-variant/20 pt-4 text-sm text-neutral-500">
           <span className="flex items-center gap-1.5">
             <Bed className="size-4" strokeWidth={1.25} />
             {property.beds}
@@ -449,11 +479,12 @@ type ServiceData = {
 
 function ServiceCard({ service }: Readonly<{ service: ServiceData }>) {
   return (
-    <div className="group overflow-hidden rounded-3xl border border-neutral-100 bg-white p-8 transition-all hover:border-emerald-200 hover:shadow-sm">
-      <div className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-[#f4f3f2] transition-colors group-hover:bg-emerald-50">
-        <service.Icon className="size-6 text-emerald-900" strokeWidth={1.25} />
+    <div className="group overflow-hidden rounded-3xl border border-outline-variant/10 bg-white p-8 transition-all hover:border-brand-primary/20 hover:shadow-sm">
+      {/* Icon container — bg-surface-container-low per Stitch */}
+      <div className="mb-6 flex size-12 items-center justify-center rounded-2xl bg-surface-container-low transition-colors group-hover:bg-brand-primary-lighter">
+        <service.Icon className="size-6 text-brand-primary" strokeWidth={1.25} />
       </div>
-      <h4 className="font-heading mb-2 text-lg font-bold text-emerald-950">
+      <h4 className="font-heading mb-2 text-lg font-bold text-on-surface">
         {service.title}
       </h4>
       <p className="mb-6 text-sm leading-relaxed text-neutral-500">
@@ -461,7 +492,7 @@ function ServiceCard({ service }: Readonly<{ service: ServiceData }>) {
       </p>
       <Link
         href={service.href}
-        className="flex items-center gap-2 text-sm font-bold text-emerald-800 transition-transform hover:translate-x-1"
+        className="flex items-center gap-2 text-sm font-bold text-brand-primary transition-transform hover:translate-x-1"
       >
         {service.cta}
         <ArrowRight className="size-4" strokeWidth={1.5} />

@@ -85,7 +85,7 @@ export default function ContactForm(
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-1.5">
-        <h3 className="text-sm font-medium">
+        <h3 className="font-heading text-sm font-medium text-foreground">
           Contact {recipientName ?? "this user"}
         </h3>
       </div>
