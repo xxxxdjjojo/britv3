@@ -139,7 +139,7 @@ const STATUS_CONFIG: Record<UserDocument["status"], StatusConfig> = {
   },
   verified: {
     label: "Verified",
-    badgeClass: "bg-emerald-100 text-emerald-800",
+    badgeClass: "bg-primary-container/20 text-brand-primary",
   },
   rejected: {
     label: "Rejected",
@@ -188,36 +188,36 @@ function UploadCategoryCard({
         : "other";
 
   return (
-    <section className="bg-[#f4f3f2] p-7 rounded-2xl transition-all hover:bg-[#eeeeed] group">
+    <section className="bg-surface-container-low p-7 rounded-2xl transition-all hover:bg-surface-container group">
       <div className="flex items-center justify-between mb-7">
-        <div className="p-3 bg-white rounded-xl">
-          <Icon className="size-5 text-[#003629]" strokeWidth={1.25} />
+        <div className="p-3 bg-surface-container-lowest rounded-xl">
+          <Icon className="size-5 text-brand-primary" strokeWidth={1.25} />
         </div>
         <span className="text-[10px] uppercase tracking-[0.2em] font-['Inter'] text-zinc-500">
           {config.priority}
         </span>
       </div>
-      <h3 className="text-xl font-['Plus_Jakarta_Sans'] font-bold mb-2 text-[#1a1c1c]">
+      <h3 className="text-xl font-['Plus_Jakarta_Sans'] font-bold mb-2 text-on-surface">
         {config.label}
       </h3>
       <p className="text-sm text-zinc-500 mb-7 leading-relaxed">
         {config.description}
       </p>
       <button
-        className="w-full border-2 border-dashed border-zinc-300 rounded-xl p-7 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[#003629]/40 transition-colors group/drop"
+        className="w-full border-2 border-dashed border-zinc-300 rounded-xl p-7 flex flex-col items-center justify-center text-center cursor-pointer hover:border-brand-primary/40 transition-colors group/drop"
         onClick={() => onUpload(docType)}
         disabled={isUploading}
         aria-label={`Upload ${config.label} document`}
       >
         {isUploading ? (
           <Loader2
-            className="size-7 text-[#003629] mb-2 animate-spin"
+            className="size-7 text-brand-primary mb-2 animate-spin"
             strokeWidth={1.25}
           />
         ) : (
-          <Upload className="size-7 text-[#003629] mb-2" strokeWidth={1.25} />
+          <Upload className="size-7 text-brand-primary mb-2" strokeWidth={1.25} />
         )}
-        <span className="text-sm font-medium text-[#1a1c1c]">
+        <span className="text-sm font-medium text-on-surface">
           {config.uploadLabel}
         </span>
         <span className="text-xs text-zinc-500 mt-1">{config.uploadSub}</span>
@@ -248,17 +248,17 @@ function DocumentTableRow({
       ? "bg-[#ffdad6]/20"
       : doc.status === "pending_review"
         ? "bg-[#fdcd74]/20"
-        : "bg-[#1b4d3e]/10";
+        : "bg-primary-container/20";
 
   const iconColor =
     doc.status === "rejected"
       ? "text-[#93000a]"
       : doc.status === "pending_review"
         ? "text-[#7b5804]"
-        : "text-[#1b4d3e]";
+        : "text-brand-primary";
 
   return (
-    <tr className="hover:bg-[#f4f3f2]/50 transition-colors">
+    <tr className="hover:bg-surface-container-low/50 transition-colors">
       <td className="px-7 py-5">
         <div className="flex items-center gap-4">
           <div
@@ -267,7 +267,7 @@ function DocumentTableRow({
             <FileText className={`size-5 ${iconColor}`} strokeWidth={1.25} />
           </div>
           <div>
-            <div className="text-sm font-bold text-[#1a1c1c]">{doc.file_name}</div>
+            <div className="text-sm font-bold text-on-surface">{doc.file_name}</div>
             <div className="text-xs text-zinc-500 mt-0.5">
               {typeConfig.description}
             </div>
@@ -296,7 +296,7 @@ function DocumentTableRow({
       <td className="px-7 py-5 text-right">
         <div className="flex items-center justify-end gap-1">
           <button
-            className="p-1.5 text-zinc-400 hover:text-[#003629] transition-colors rounded-lg hover:bg-[#f4f3f2]"
+            className="p-1.5 text-zinc-400 hover:text-brand-primary transition-colors rounded-lg hover:bg-surface-container-low"
             aria-label={`View ${doc.file_name}`}
           >
             <Eye className="size-4" strokeWidth={1.25} />
@@ -314,7 +314,7 @@ function DocumentTableRow({
             )}
           </button>
           <button
-            className="p-1.5 text-zinc-400 hover:text-[#1a1c1c] transition-colors rounded-lg hover:bg-[#f4f3f2]"
+            className="p-1.5 text-zinc-400 hover:text-on-surface transition-colors rounded-lg hover:bg-surface-container-low"
             aria-label="More options"
           >
             <MoreVertical className="size-4" strokeWidth={1.25} />
@@ -408,7 +408,7 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] text-[#1a1c1c]">
+    <div className="min-h-screen bg-surface-container-low text-on-surface">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -421,12 +421,12 @@ export default function DocumentsPage() {
 
       {/* ── Header ──────────────────────────────────────────────── */}
       <div className="mb-12">
-        <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tight text-[#1a1c1c] mb-4">
+        <h1 className="font-['Plus_Jakarta_Sans'] text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
           Document Vault
         </h1>
         <p className="text-zinc-500 max-w-2xl leading-relaxed text-base font-['Inter']">
           Manage your essential documentation with institutional-grade security.{" "}
-          <span className="block mt-2 text-sm font-medium text-[#1b4d3e]">
+          <span className="block mt-2 text-sm font-medium text-brand-primary">
             Your documents are encrypted and only shared with your consent.
           </span>
         </p>
@@ -453,14 +453,14 @@ export default function DocumentsPage() {
       </div>
 
       {/* ── Recent Uploads table ─────────────────────────────────── */}
-      <section className="bg-white rounded-3xl overflow-hidden shadow-[0_4px_32px_rgba(26,28,28,0.04)]">
+      <section className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-[0_4px_32px_rgba(26,28,28,0.04)]">
         <div className="px-7 py-8 flex items-center justify-between">
-          <h2 className="text-2xl font-['Plus_Jakarta_Sans'] font-bold text-[#1a1c1c]">
+          <h2 className="text-2xl font-['Plus_Jakarta_Sans'] font-bold text-on-surface">
             Recent Uploads
           </h2>
           <div className="flex items-center gap-5">
             <button
-              className="flex items-center text-sm text-zinc-500 cursor-pointer hover:text-[#003629] transition-colors gap-2"
+              className="flex items-center text-sm text-zinc-500 cursor-pointer hover:text-brand-primary transition-colors gap-2"
               aria-label="Filter documents"
             >
               <Filter className="size-4" strokeWidth={1.25} />
@@ -469,7 +469,7 @@ export default function DocumentsPage() {
             <button
               onClick={handleUploadClick}
               disabled={isUploading}
-              className="flex items-center gap-2 px-4 py-2 bg-[#003629] text-white text-sm font-semibold rounded-lg hover:bg-[#1b4d3e] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-brand-primary transition-colors"
               aria-label="Upload a document"
             >
               {isUploading ? (
@@ -485,7 +485,7 @@ export default function DocumentsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#f4f3f2]">
+              <tr className="bg-surface-container-low">
                 {[
                   "Document Name",
                   "Category",
@@ -506,7 +506,7 @@ export default function DocumentsPage() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#eeeeed]">
+            <tbody className="divide-y divide-outline-variant/20">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-7 py-8">
@@ -521,14 +521,14 @@ export default function DocumentsPage() {
                 <tr>
                   <td colSpan={6} className="px-7 py-16 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="flex size-14 items-center justify-center rounded-full bg-[#f4f3f2]">
+                      <div className="flex size-14 items-center justify-center rounded-full bg-surface-container-low">
                         <FolderOpen
                           strokeWidth={1.25}
                           className="size-7 text-zinc-400"
                         />
                       </div>
                       <div>
-                        <p className="font-['Plus_Jakarta_Sans'] font-semibold text-[#1a1c1c]">
+                        <p className="font-['Plus_Jakarta_Sans'] font-semibold text-on-surface">
                           No documents yet
                         </p>
                         <p className="mt-1 text-sm text-zinc-500">
@@ -553,7 +553,7 @@ export default function DocumentsPage() {
         </div>
 
         {/* Pagination footer */}
-        <div className="px-7 py-6 bg-[#f4f3f2]/30 flex items-center justify-between text-sm text-zinc-500">
+        <div className="px-7 py-6 bg-surface-container-low/30 flex items-center justify-between text-sm text-zinc-500">
           <span>
             {isLoading
               ? "Loading…"
@@ -561,13 +561,13 @@ export default function DocumentsPage() {
           </span>
           <div className="flex items-center gap-2">
             <button
-              className="p-2 hover:bg-[#eeeeed] rounded-lg transition-colors"
+              className="p-2 hover:bg-surface-container rounded-lg transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft className="size-4" strokeWidth={1.25} />
             </button>
             <button
-              className="p-2 hover:bg-[#eeeeed] rounded-lg transition-colors"
+              className="p-2 hover:bg-surface-container rounded-lg transition-colors"
               aria-label="Next page"
             >
               <ChevronRight className="size-4" strokeWidth={1.25} />
