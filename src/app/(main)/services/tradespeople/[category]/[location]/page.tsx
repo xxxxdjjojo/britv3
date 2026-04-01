@@ -126,9 +126,9 @@ function FaqSection({
   ];
 
   return (
-    <section className="mt-12 bg-[#f4f3f2] rounded-2xl p-8">
+    <section className="mt-12 bg-surface-container-low rounded-2xl p-8">
       <h2
-        className="font-heading text-xl font-bold text-[#1B4D3E] mb-6"
+        className="font-heading text-xl font-bold text-brand-primary mb-6"
         style={{ letterSpacing: "-0.01em" }}
       >
         Frequently Asked Questions
@@ -136,10 +136,10 @@ function FaqSection({
       <div className="space-y-6">
         {faqs.map((faq) => (
           <div key={faq.q}>
-            <h3 className="font-semibold text-[#1B4D3E] mb-1">
+            <h3 className="font-semibold text-brand-primary mb-1">
               {faq.q}
             </h3>
-            <p className="text-sm text-[#1B4D3E]/60 leading-relaxed">
+            <p className="text-sm text-brand-primary/60 leading-relaxed">
               {faq.a}
             </p>
           </div>
@@ -164,11 +164,11 @@ function Breadcrumb({
 }>) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-[#1B4D3E]/50">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-brand-primary/50">
         <li>
           <Link
             href="/"
-            className="hover:text-[#1B4D3E] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             Home
           </Link>
@@ -177,7 +177,7 @@ function Breadcrumb({
         <li>
           <Link
             href="/services/tradespeople"
-            className="hover:text-[#1B4D3E] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             Services
           </Link>
@@ -186,14 +186,14 @@ function Breadcrumb({
         <li>
           <Link
             href={`/services/tradespeople?category=${categorySlug}`}
-            className="hover:text-[#1B4D3E] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             {categoryDisplay}
           </Link>
         </li>
         <li aria-hidden="true">/</li>
         <li
-          className="text-[#1B4D3E] font-medium"
+          className="text-brand-primary font-medium"
           aria-current="page"
         >
           {locationDisplay}
@@ -263,14 +263,14 @@ export default async function CategoryLocationPage({ params }: PageProps) {
         {/* Provider grid */}
         {providers.length === 0 ? (
           <div className="rounded-2xl bg-surface-container-low py-16 text-center">
-            <p className="font-semibold text-[#1B4D3E]">
+            <p className="font-semibold text-brand-primary">
               No {categoryDisplay.toLowerCase()} found in {locationDisplay}
             </p>
-            <p className="text-sm mt-1 text-[#1B4D3E]/60">
+            <p className="text-sm mt-1 text-brand-primary/60">
               Try{" "}
               <Link
                 href="/services/tradespeople"
-                className="text-[#1B4D3E] font-semibold hover:underline"
+                className="text-brand-primary font-semibold hover:underline"
               >
                 searching all tradespeople
               </Link>{" "}
@@ -279,8 +279,8 @@ export default async function CategoryLocationPage({ params }: PageProps) {
           </div>
         ) : (
           <>
-            <p className="text-sm text-[#1B4D3E]/60 mb-4">
-              <span className="font-semibold text-[#1B4D3E]">
+            <p className="text-sm text-brand-primary/60 mb-4">
+              <span className="font-semibold text-brand-primary">
                 {providers.length}
               </span>{" "}
               {categoryDisplay.toLowerCase()}
