@@ -41,7 +41,7 @@ export default async function SurveyorsPage({ searchParams }: Props) {
 
   return (
     <ProviderSearchPage
-      pageTitle="Find a Surveyor"
+      pageTitle="Chartered Surveyors"
       pageSubtitle="Compare RICS-accredited surveyors for HomeBuyer Reports, Building Surveys and Valuations."
       defaultCategory={"surveying" as ServiceCategory}
       specialistBadge="RICS"

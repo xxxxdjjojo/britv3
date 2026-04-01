@@ -88,10 +88,8 @@ export default async function ServicesPage() {
           <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/90 backdrop-blur-sm">
             World-Class Trade Marketplace
           </span>
-          <h1 className="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" style={{ letterSpacing: "-0.02em" }}>
-            Find Trusted{" "}
-            <span className="italic text-brand-secondary">Tradespeople</span>{" "}
-            Near You
+          <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl" style={{ letterSpacing: "-0.02em" }}>
+            Professional Services for Your Sanctuary
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">
             Connect with over 5,000+ verified professionals across every trade.

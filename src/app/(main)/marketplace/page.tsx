@@ -82,8 +82,8 @@ export default async function MarketplaceLandingPage() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-brand-primary to-brand-accent text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl font-extrabold mb-4 tracking-tight">
-            Find Trusted Professionals Near You
+          <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight mb-4 text-white">
+            Connect with the industry&apos;s most discrete professionals.
           </h1>
           <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
             Connect with verified tradespeople, estate agents, mortgage brokers,

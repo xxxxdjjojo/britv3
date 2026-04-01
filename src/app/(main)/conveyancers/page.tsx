@@ -41,7 +41,7 @@ export default async function ConveyancersPage({ searchParams }: Props) {
 
   return (
     <ProviderSearchPage
-      pageTitle="Find a Conveyancer"
+      pageTitle="Conveyancers"
       pageSubtitle="Compare SRA-regulated solicitors and licensed conveyancers for your property purchase, sale or remortgage."
       defaultCategory={"conveyancing" as ServiceCategory}
       specialistBadge="SRA"

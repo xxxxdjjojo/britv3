@@ -87,7 +87,7 @@ export default async function TradespersonSearchPage({ searchParams }: PageProps
 
   return (
     <ProviderSearchPage
-      pageTitle="Find a Tradesperson"
+      pageTitle="Find Your Master Craftsman"
       pageSubtitle="Compare verified tradespeople near you — read reviews, check badges, get quotes."
       defaultCategory={serviceCategory ?? null}
       categoryOptions={TRADESPERSON_CATEGORIES}

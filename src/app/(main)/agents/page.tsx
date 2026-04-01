@@ -125,7 +125,7 @@ export default async function AgentsPage({ searchParams }: Props) {
             className="font-heading text-4xl font-bold text-white sm:text-5xl"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Find an Estate Agent
+            Find &amp; Compare Estate Agents
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/70">
             Compare local estate agents — check reviews, sold prices, and fees

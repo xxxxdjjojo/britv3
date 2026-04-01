@@ -41,7 +41,7 @@ export default async function ArchitectsPage({ searchParams }: Props) {
 
   return (
     <ProviderSearchPage
-      pageTitle="Find an Architect"
+      pageTitle="Architects"
       pageSubtitle="Compare RIBA-accredited architects for residential extensions, new builds, planning applications and design projects."
       defaultCategory={"architect" as ServiceCategory}
       specialistBadge={null}

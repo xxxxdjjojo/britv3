@@ -41,7 +41,7 @@ export default async function MortgageBrokersPage({ searchParams }: Props) {
 
   return (
     <ProviderSearchPage
-      pageTitle="Find a Mortgage Broker"
+      pageTitle="Mortgage Advisors"
       pageSubtitle="Connect with FCA-authorised mortgage brokers — whole-of-market advisers, first-time buyer specialists, and buy-to-let experts."
       defaultCategory={"mortgage_broker" as ServiceCategory}
       specialistBadge="FCA"
