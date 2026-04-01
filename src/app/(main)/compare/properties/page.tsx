@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { GitCompareArrows, ArrowRight, Home, Bed, Bath, Maximize, Zap, PoundSterling } from "lucide-react";
@@ -98,7 +98,7 @@ const COMPARE_FIELDS: Array<{
   },
 ];
 
-export default function ComparePropertiesPage() {
+function ComparePropertiesContent() {
   const searchParams = useSearchParams();
   const ids = (searchParams.get("ids") ?? "")
     .split(",")
@@ -311,5 +311,19 @@ export default function ComparePropertiesPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ComparePropertiesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#faf9f8] flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full" />
+        </div>
+      }
+    >
+      <ComparePropertiesContent />
+    </Suspense>
   );
 }
