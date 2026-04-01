@@ -16,6 +16,9 @@ import {
   GraduationCap,
   BarChart3,
   Layers,
+  Landmark,
+  Gauge,
+  BadgePoundSterling,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Property Tools & Calculators | Britestate",
     description:
-      "Free UK property calculators. Mortgage, stamp duty, rental yield, affordability and more.",
+      "Free UK property calculators. Mortgage, stamp duty, rental yield, affordability, investment, LTV, overpayment and more.",
     type: "website",
   },
 };
@@ -164,12 +167,45 @@ const TOOLS: Tool[] = [
     stat: "10-yr",
     statLabel: "Equity growth projection",
   },
+  {
+    href: "/tools/investment-calculator",
+    icon: Landmark,
+    title: "Investment Calculator",
+    description:
+      "Analyse buy-to-let returns with precision. Model rental income, interest rates, capital growth, and calculate gross yield, net yield, and cash-on-cash ROI over your chosen projection period.",
+    color:
+      "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+    stat: "6.8%",
+    statLabel: "Example net ROI",
+  },
+  {
+    href: "/tools/ltv-calculator",
+    icon: Gauge,
+    title: "LTV Calculator",
+    description:
+      "Calculate your Loan-to-Value ratio and see which mortgage rate tier you qualify for. Understand how your deposit, outstanding mortgage, and property value affect your borrowing costs.",
+    color:
+      "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
+    stat: "60%",
+    statLabel: "Elite LTV threshold",
+  },
+  {
+    href: "/tools/overpayment-calculator",
+    icon: BadgePoundSterling,
+    title: "Overpayment Calculator",
+    description:
+      "See how much you could save by overpaying your mortgage. Calculate interest savings, term reduction, and find your mortgage-free date with our ERC-aware overpayment modeller.",
+    color:
+      "bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-400",
+    stat: "£23k",
+    statLabel: "Average interest saved",
+  },
 ];
 
 const STATS = [
   { value: "50,000+", label: "Monthly Users" },
   { value: "£0", label: "Completely Free" },
-  { value: "11", label: "Property Tools" },
+  { value: "14", label: "Property Tools" },
   { value: "4.9★", label: "User Rating" },
 ];
 
