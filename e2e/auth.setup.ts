@@ -3,12 +3,13 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 
 const TEST_USERS: Record<string, { email: string; password: string }> = {
-  homebuyer: { email: "test-buyer@britestate.test", password: "TestPassword123!" },
-  seller: { email: "test-seller@britestate.test", password: "TestPassword123!" },
-  landlord: { email: "test-landlord@britestate.test", password: "TestPassword123!" },
-  agent: { email: "test-agent@britestate.test", password: "TestPassword123!" },
-  provider: { email: "test-provider@britestate.test", password: "TestPassword123!" },
-  admin: { email: "test-admin@britestate.test", password: "TestPassword123!" },
+  homebuyer: { email: "james.buyer@demo.britestate.co.uk", password: "DemoPass123!" },
+  renter:    { email: "sophie.renter@demo.britestate.co.uk", password: "DemoPass123!" },
+  seller:    { email: "david.seller@demo.britestate.co.uk", password: "DemoPass123!" },
+  landlord:  { email: "mike.landlord@demo.britestate.co.uk", password: "DemoPass123!" },
+  agent:     { email: "sarah.agent@demo.britestate.co.uk", password: "DemoPass123!" },
+  provider:  { email: "tom.provider@demo.britestate.co.uk", password: "DemoPass123!" },
+  admin:     { email: "admin@demo.britestate.co.uk", password: "DemoPass123!" },
 };
 
 for (const [role, creds] of Object.entries(TEST_USERS)) {

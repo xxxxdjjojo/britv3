@@ -4,6 +4,7 @@ import { isAuthenticated } from "./helpers";
 /** User roles matching the application. */
 export type UserRole =
   | "homebuyer"
+  | "renter"
   | "seller"
   | "landlord"
   | "agent"

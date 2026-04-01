@@ -16,8 +16,8 @@ export default async function ProviderReferralsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900">Referral Programme</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="text-2xl font-bold text-on-surface">Referral Programme</h1>
+        <p className="mt-1 text-sm text-[--color-on-surface-variant]">
           Invite quality tradespeople to Britestate. Earn free months for every successful referral.
         </p>
       </div>

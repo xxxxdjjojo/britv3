@@ -68,19 +68,19 @@ async function PageContent({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/dashboard/seller/agents" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
+        <Link href="/dashboard/seller/agents" className="flex items-center gap-2 text-sm text-[--color-on-surface-variant] hover:text-on-surface">
           <ArrowLeft size={16} />
           Find Agent
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans'] mt-2">Agent Comparison</h1>
-        <p className="text-slate-500 mt-1">Comparing {agents.length} agent{agents.length !== 1 ? "s" : ""}</p>
+        <h1 className="text-2xl font-bold text-on-surface font-['Plus_Jakarta_Sans'] mt-2">Agent Comparison</h1>
+        <p className="text-[--color-on-surface-variant] mt-1">Comparing {agents.length} agent{agents.length !== 1 ? "s" : ""}</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-[--color-outline-variant] overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-100">
-              <th className="text-left text-xs font-semibold text-slate-500 px-6 py-4 w-40">Detail</th>
+            <tr className="border-b border-[--color-outline-variant]">
+              <th className="text-left text-xs font-semibold text-[--color-on-surface-variant] px-6 py-4 w-40">Detail</th>
               {agents.map((agent) => (
                 <th key={agent.id} className="text-left px-6 py-4">
                   <div className="flex items-center gap-3">
@@ -92,7 +92,7 @@ async function PageContent({ searchParams }: Props) {
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-bold text-slate-900">{agent.full_name}</p>
+                      <p className="text-sm font-bold text-on-surface">{agent.full_name}</p>
                       <Link href={`/dashboard/seller/agents/${agent.id}`} className="text-xs text-[#1B4D3E] hover:underline">
                         View profile
                       </Link>
@@ -104,14 +104,14 @@ async function PageContent({ searchParams }: Props) {
           </thead>
           <tbody>
             {rows.map(({ label, getValue }) => (
-              <tr key={label} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
-                <td className="text-xs font-semibold text-slate-500 px-6 py-3">{label}</td>
+              <tr key={label} className="border-b border-[--color-outline-variant]/30 last:border-0 hover:bg-[--color-surface-container-low]/50">
+                <td className="text-xs font-semibold text-[--color-on-surface-variant] px-6 py-3">{label}</td>
                 {agents.map((agent) => (
-                  <td key={agent.id} className="text-sm text-slate-700 px-6 py-3">{getValue(agent)}</td>
+                  <td key={agent.id} className="text-sm text-on-surface px-6 py-3">{getValue(agent)}</td>
                 ))}
               </tr>
             ))}
-            <tr className="border-t border-slate-100">
+            <tr className="border-t border-[--color-outline-variant]">
               <td className="px-6 py-4" />
               {agents.map((agent) => (
                 <td key={agent.id} className="px-6 py-4">

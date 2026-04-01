@@ -68,14 +68,14 @@ async function PageContent({ params }: Props) {
       label: "Total Views",
       value: summary.total_views.toLocaleString(),
       badge: "+12%",
-      badgeColor: "text-emerald-600 bg-emerald-50",
+      badgeColor: "text-[--color-brand-primary-light] bg-brand-primary-lighter",
       iconBg: "bg-[--color-brand-primary-lighter]",
     },
     {
       label: "Unique Viewers",
       value: Math.floor(summary.total_views * 0.65).toLocaleString(),
       badge: "+8%",
-      badgeColor: "text-emerald-600 bg-emerald-50",
+      badgeColor: "text-[--color-brand-primary-light] bg-brand-primary-lighter",
       iconBg: "bg-[--color-surface-container-high]",
     },
     {
@@ -89,14 +89,14 @@ async function PageContent({ params }: Props) {
       label: "Enquiries",
       value: summary.total_enquiries.toLocaleString(),
       badge: "+24%",
-      badgeColor: "text-emerald-600 bg-emerald-50",
+      badgeColor: "text-[--color-brand-primary-light] bg-brand-primary-lighter",
       iconBg: "bg-[--color-brand-accent-light]",
     },
     {
       label: "Avg. Duration",
       value: "—",
       badge: "Stable",
-      badgeColor: "text-zinc-400 bg-zinc-50",
+      badgeColor: "text-[--color-on-surface-variant] bg-[--color-surface-container-low]",
       iconBg: "bg-[--color-brand-secondary-light]",
     },
   ];
@@ -137,7 +137,7 @@ async function PageContent({ params }: Props) {
           <h1 className="text-4xl font-extrabold tracking-tight text-[--color-brand-primary-dark] leading-tight font-['Plus_Jakarta_Sans']">
             {address || "Listing Analytics"}
           </h1>
-          <p className="text-zinc-500 text-sm flex items-center gap-1.5">
+          <p className="text-[--color-on-surface-variant] text-sm flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
             </svg>
@@ -147,13 +147,13 @@ async function PageContent({ params }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-2 bg-[--color-surface-container-low] p-1 rounded-xl">
-          <button className="px-5 py-2 text-xs font-semibold text-[--color-brand-primary-dark] bg-white rounded-lg shadow-sm">
+          <button className="px-5 py-2 text-xs font-semibold text-[--color-brand-primary-dark] bg-surface-container-lowest rounded-lg shadow-sm">
             Last 30 Days
           </button>
-          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary-dark] transition-colors">
+          <button className="px-5 py-2 text-xs font-semibold text-[--color-on-surface-variant] hover:text-[--color-brand-primary-dark] transition-colors">
             90 Days
           </button>
-          <button className="px-5 py-2 text-xs font-semibold text-zinc-400 hover:text-[--color-brand-primary-dark] transition-colors">
+          <button className="px-5 py-2 text-xs font-semibold text-[--color-on-surface-variant] hover:text-[--color-brand-primary-dark] transition-colors">
             All Time
           </button>
         </div>
@@ -162,7 +162,7 @@ async function PageContent({ params }: Props) {
       {/* Key Stats Bento Grid */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {kpiCards.map((card) => (
-          <div key={card.label} className="bg-white p-7 rounded-2xl space-y-4 shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
+          <div key={card.label} className="bg-surface-container-lowest p-7 rounded-2xl space-y-4 shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
             <div className="flex justify-between items-start">
               <span className={`w-9 h-9 rounded-lg flex items-center justify-center ${card.iconBg}`}>
                 <svg className="w-4 h-4 text-[--color-brand-primary-dark]" fill="currentColor" viewBox="0 0 24 24">
@@ -177,7 +177,7 @@ async function PageContent({ params }: Props) {
             </div>
             <div>
               <p className="text-3xl font-bold tracking-tight text-[--color-on-surface]">{card.value}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mt-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant] mt-1">
                 {card.label}
               </p>
             </div>
@@ -190,17 +190,17 @@ async function PageContent({ params }: Props) {
         {/* Primary Chart Area */}
         <div className="lg:col-span-2 space-y-8">
           {/* Engagement Trends chart (recharts) */}
-          <div className="bg-white p-10 rounded-3xl space-y-6 shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
+          <div className="bg-surface-container-lowest p-10 rounded-3xl space-y-6 shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
             <div className="flex justify-between items-center flex-wrap gap-4">
               <h2 className="text-xl font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
                 Engagement Trends
               </h2>
               <div className="flex gap-4">
-                <span className="flex items-center gap-2 text-xs font-semibold text-zinc-500">
+                <span className="flex items-center gap-2 text-xs font-semibold text-[--color-on-surface-variant]">
                   <span className="w-3 h-3 rounded-full bg-[--color-brand-primary-dark] inline-block" />
                   Views
                 </span>
-                <span className="flex items-center gap-2 text-xs font-semibold text-zinc-500">
+                <span className="flex items-center gap-2 text-xs font-semibold text-[--color-on-surface-variant]">
                   <span className="w-3 h-3 rounded-full bg-[--color-brand-secondary-dark] inline-block" />
                   Saves
                 </span>
@@ -221,7 +221,7 @@ async function PageContent({ params }: Props) {
                 <h2 className="text-xl font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
                   Regional Benchmark
                 </h2>
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-[--color-on-surface-variant]">
                   How you compare to similar properties nearby
                 </p>
               </div>
@@ -229,9 +229,9 @@ async function PageContent({ params }: Props) {
             <div className="space-y-6 pt-2">
               {/* Weekly Unique Visitors */}
               <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-zinc-500">
+                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
                   <span>Weekly Unique Visitors</span>
-                  <span className="text-emerald-600">Above Average</span>
+                  <span className="text-[--color-brand-primary-light]">Above Average</span>
                 </div>
                 <div className="h-3 w-full bg-[--color-surface-container-high] rounded-full overflow-hidden flex">
                   <div className="h-full bg-[--color-brand-primary-dark] rounded-full" style={{ width: "75%" }} />
@@ -240,14 +240,14 @@ async function PageContent({ params }: Props) {
                   <span className="text-[--color-brand-primary-dark]">
                     {Math.floor(summary.total_views / 4)} (You)
                   </span>
-                  <span className="text-zinc-400">Avg in area</span>
+                  <span className="text-[--color-on-surface-variant]">Avg in area</span>
                 </div>
               </div>
               {/* Conversion Rate */}
               <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-zinc-500">
+                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
                   <span>Conversion Rate (Saves → Enquiries)</span>
-                  <span className={ctrAsNum >= 8 ? "text-emerald-600" : "text-[--color-error]"}>
+                  <span className={ctrAsNum >= 8 ? "text-[--color-brand-primary-light]" : "text-[--color-error]"}>
                     {ctrAsNum >= 8 ? "Above Average" : "Below Average"}
                   </span>
                 </div>
@@ -259,7 +259,7 @@ async function PageContent({ params }: Props) {
                 </div>
                 <div className="flex justify-between text-[10px] font-semibold">
                   <span className="text-[--color-brand-primary-dark]">{ctrAsNum}% (You)</span>
-                  <span className="text-zinc-400">8.2% (Avg)</span>
+                  <span className="text-[--color-on-surface-variant]">8.2% (Avg)</span>
                 </div>
               </div>
             </div>
@@ -269,7 +269,7 @@ async function PageContent({ params }: Props) {
         {/* Sidebar Insights */}
         <div className="space-y-8">
           {/* Lead Distribution */}
-          <div className="bg-white p-8 rounded-3xl space-y-6 shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
+          <div className="bg-surface-container-lowest p-8 rounded-3xl space-y-6 shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
             <h3 className="text-lg font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
               Lead Distribution
             </h3>
@@ -302,7 +302,7 @@ async function PageContent({ params }: Props) {
                 <p className="text-2xl font-bold text-[--color-brand-primary-dark] font-['Plus_Jakarta_Sans']">
                   {totalLeads}
                 </p>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
                   Total Leads
                 </p>
               </div>
@@ -312,7 +312,7 @@ async function PageContent({ params }: Props) {
                 <div key={item.name} className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <span className={`w-2.5 h-2.5 rounded-full ${item.color} flex-shrink-0`} />
-                    <span className="text-sm font-medium text-zinc-500">{item.name}</span>
+                    <span className="text-sm font-medium text-[--color-on-surface-variant]">{item.name}</span>
                   </div>
                   <span className="text-sm font-bold text-[--color-on-surface]">{item.pct}%</span>
                 </div>
@@ -364,7 +364,7 @@ async function PageContent({ params }: Props) {
                       {loc.name}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-zinc-500">{loc.pct}</span>
+                  <span className="text-xs font-bold text-[--color-on-surface-variant]">{loc.pct}</span>
                 </div>
               ))}
             </div>
@@ -385,10 +385,10 @@ async function PageContent({ params }: Props) {
             </svg>
           </button>
         </div>
-        <div className="bg-white rounded-3xl overflow-hidden shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
+        <div className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-[0_2px_8px_rgba(26,28,28,0.04)]">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-[--color-surface-container-low] text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+              <tr className="bg-[--color-surface-container-low] text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
                 <th className="px-8 py-5">Date</th>
                 <th className="px-8 py-5">Viewer</th>
                 <th className="px-8 py-5">Source</th>
@@ -404,16 +404,16 @@ async function PageContent({ params }: Props) {
                 </td>
                 <td className="px-8 py-5 font-semibold text-[--color-brand-primary-dark] text-sm">
                   Anonymous
-                  <span className="text-xs font-normal text-zinc-400 ml-2">(Private)</span>
+                  <span className="text-xs font-normal text-[--color-on-surface-variant] ml-2">(Private)</span>
                 </td>
                 <td className="px-8 py-5">
-                  <span className="px-3 py-1 bg-[--color-surface-container-high] rounded-full text-[10px] font-bold text-zinc-500">
+                  <span className="px-3 py-1 bg-[--color-surface-container-high] rounded-full text-[10px] font-bold text-[--color-on-surface-variant]">
                     PORTAL
                   </span>
                 </td>
                 <td className="px-8 py-5">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                    <span className="w-2 h-2 rounded-full bg-brand-primary inline-block" />
                     <span className="text-xs font-medium">Active</span>
                   </div>
                 </td>
@@ -424,7 +424,7 @@ async function PageContent({ params }: Props) {
             </tbody>
           </table>
           <div className="p-6 bg-[--color-surface-container-low]/30 text-center border-t border-[--color-surface-container-low]">
-            <p className="text-xs font-medium text-zinc-400">
+            <p className="text-xs font-medium text-[--color-on-surface-variant]">
               Detailed viewer tracking available with Premium Analytics
             </p>
           </div>

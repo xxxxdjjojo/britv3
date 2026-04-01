@@ -96,8 +96,8 @@ export function ApiKeyManager({ initialKeys }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">API Keys</h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <h2 className="text-xl font-semibold text-on-surface dark:text-gray-100">API Keys</h2>
+          <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-gray-400">
             API keys allow programmatic access to your Britestate account for custom integrations,
             automations, and third-party tools. Keep your keys secret — treat them like passwords.
           </p>
@@ -114,8 +114,8 @@ export function ApiKeyManager({ initialKeys }: Props) {
       {/* Generate Key Dialog */}
       {showDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-900 p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="w-full max-w-md rounded-lg bg-surface-container-lowest dark:bg-gray-900 p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-on-surface dark:text-gray-100 mb-4">
               {hasRevealed ? "API Key Generated" : "Generate API Key"}
             </h3>
 
@@ -129,7 +129,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                 <div className="mb-4">
                   <label
                     htmlFor="key-name"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    className="block text-sm font-medium text-on-surface dark:text-gray-300 mb-1"
                   >
                     Key Name
                   </label>
@@ -139,7 +139,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                     value={newKeyName}
                     onChange={(e) => setNewKeyName(e.target.value)}
                     placeholder="e.g. My CRM Integration"
-                    className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-md border border-[--color-outline-variant] dark:border-gray-700 bg-surface-container-lowest dark:bg-gray-800 px-3 py-2 text-sm text-on-surface dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
                   />
                 </div>
@@ -147,7 +147,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                   <button
                     type="button"
                     onClick={handleCloseDialog}
-                    className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="rounded-md border border-[--color-outline-variant] dark:border-gray-600 px-4 py-2 text-sm font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800"
                   >
                     Cancel
                   </button>
@@ -164,15 +164,15 @@ export function ApiKeyManager({ initialKeys }: Props) {
             ) : (
               <>
                 {/* One-time key reveal */}
-                <div className="mb-4 rounded-md bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 p-4">
-                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                <div className="mb-4 rounded-md bg-brand-secondary-light dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 p-4">
+                  <p className="text-sm font-semibold text-[--color-brand-secondary-dark] dark:text-amber-200 mb-2">
                     This is the only time you will see the full key. Copy it now.
                   </p>
-                  <p className="text-xs text-amber-700 dark:text-amber-300 mb-3">
+                  <p className="text-xs text-[--color-brand-secondary-dark] dark:text-amber-300 mb-3">
                     After closing this dialog, only the first 8 characters will be visible.
                   </p>
-                  <div className="flex items-center gap-2 rounded-md bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 px-3 py-2">
-                    <code className="flex-1 break-all text-xs font-mono text-gray-900 dark:text-gray-100">
+                  <div className="flex items-center gap-2 rounded-md bg-surface-container-lowest dark:bg-gray-800 border border-amber-200 dark:border-amber-700 px-3 py-2">
+                    <code className="flex-1 break-all text-xs font-mono text-on-surface dark:text-gray-100">
                       {generateState.key}
                     </code>
                     <button
@@ -188,7 +188,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                   <button
                     type="button"
                     onClick={handleCloseDialog}
-                    className="rounded-md bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200"
+                    className="rounded-md bg-on-surface dark:bg-gray-100 px-4 py-2 text-sm font-medium text-white dark:text-gray-900 hover:bg-on-surface/80 dark:hover:bg-gray-200"
                   >
                     I have copied my key
                   </button>
@@ -202,18 +202,18 @@ export function ApiKeyManager({ initialKeys }: Props) {
       {/* Revoke Confirmation Dialog */}
       {confirmRevoke && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-lg bg-white dark:bg-gray-900 p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="w-full max-w-sm rounded-lg bg-surface-container-lowest dark:bg-gray-900 p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-on-surface dark:text-gray-100 mb-2">
               Revoke API Key?
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <p className="text-sm text-[--color-on-surface-variant] dark:text-gray-400 mb-6">
               This key will immediately stop working. This action cannot be undone.
             </p>
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setConfirmRevoke(null)}
-                className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="rounded-md border border-[--color-outline-variant] dark:border-gray-600 px-4 py-2 text-sm font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800"
               >
                 Cancel
               </button>
@@ -232,56 +232,56 @@ export function ApiKeyManager({ initialKeys }: Props) {
 
       {/* Keys Table */}
       {keys.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="rounded-lg border border-dashed border-[--color-outline-variant] dark:border-gray-700 p-12 text-center">
+          <p className="text-sm text-[--color-on-surface-variant] dark:text-gray-400">
             No API keys yet. Generate your first key to get started.
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+        <div className="overflow-x-auto rounded-lg border border-[--color-outline-variant] dark:border-gray-800">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-800/50">
+            <thead className="bg-[--color-surface-container-low] dark:bg-gray-800/50">
               <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Key Prefix</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Rate Limit</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Created</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Last Used</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Usage</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Status</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">Actions</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Name</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Key Prefix</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Rate Limit</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Created</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Last Used</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Usage</th>
+                <th className="px-4 py-3 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">Status</th>
+                <th className="px-4 py-3 text-right font-medium text-[--color-on-surface-variant] dark:text-gray-400">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+            <tbody className="divide-y divide-[--color-outline-variant] dark:divide-gray-800">
               {keys.map((key) => (
                 <tr
                   key={key.id}
                   className={
                     key.is_active
-                      ? "bg-white dark:bg-gray-900"
-                      : "bg-gray-50 dark:bg-gray-800/30 opacity-60"
+                      ? "bg-surface-container-lowest dark:bg-gray-900"
+                      : "bg-[--color-surface-container-low] dark:bg-gray-800/30 opacity-60"
                   }
                 >
-                  <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                  <td className="px-4 py-3 font-medium text-on-surface dark:text-gray-100">
                     {key.name}
                   </td>
                   <td className="px-4 py-3">
-                    <code className="rounded bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-xs font-mono text-gray-700 dark:text-gray-300">
+                    <code className="rounded bg-[--color-surface-container-low] dark:bg-gray-800 px-2 py-0.5 text-xs font-mono text-on-surface dark:text-gray-300">
                       {key.key_prefix}...
                     </code>
                   </td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                  <td className="px-4 py-3 text-on-surface dark:text-gray-300">
                     {key.rate_limit_per_minute}/min
                   </td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                  <td className="px-4 py-3 text-[--color-on-surface-variant] dark:text-gray-400">
                     {new Date(key.created_at).toLocaleDateString("en-GB")}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                  <td className="px-4 py-3 text-[--color-on-surface-variant] dark:text-gray-400">
                     {key.last_used_at
                       ? new Date(key.last_used_at).toLocaleDateString("en-GB")
                       : "Never"}
                   </td>
-                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                  <td className="px-4 py-3 text-on-surface dark:text-gray-300">
                     {key.usage_count.toLocaleString()}
                   </td>
                   <td className="px-4 py-3">
@@ -290,7 +290,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                         Active
                       </span>
                     ) : (
-                      <span className="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <span className="inline-flex items-center rounded-full bg-[--color-surface-container-high] dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-[--color-on-surface-variant] dark:text-gray-400">
                         Revoked{" "}
                         {key.revoked_at
                           ? new Date(key.revoked_at).toLocaleDateString("en-GB")

@@ -38,8 +38,8 @@ export default function FindAgentPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Find an Estate Agent</h1>
-          <p className="text-slate-500 mt-1">Compare agents in your area by fees, ratings, and performance</p>
+          <h1 className="text-2xl font-bold text-on-surface font-['Plus_Jakarta_Sans']">Find an Estate Agent</h1>
+          <p className="text-[--color-on-surface-variant] mt-1">Compare agents in your area by fees, ratings, and performance</p>
         </div>
         {selectedIds.length >= 2 && (
           <Link
@@ -53,14 +53,14 @@ export default function FindAgentPage() {
 
       <div className="flex gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[--color-on-surface-variant]" />
           <input
             type="text"
             value={area}
             onChange={(e) => setArea(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") void loadAgents(area); }}
             placeholder="Search by area, town, or postcode prefix..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+            className="w-full pl-10 pr-4 py-3 rounded-xl border border-[--color-outline-variant] text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
           />
         </div>
         <button
@@ -75,13 +75,13 @@ export default function FindAgentPage() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse h-64" />
+            <div key={i} className="bg-surface-container-lowest rounded-2xl border border-[--color-outline-variant] p-6 animate-pulse h-64" />
           ))}
         </div>
       ) : agents.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-          <p className="text-slate-400">No agents found{area ? ` in "${area}"` : ""}</p>
-          <p className="text-slate-300 text-xs mt-1">Agents register via the agent dashboard</p>
+        <div className="text-center py-20 bg-surface-container-lowest rounded-2xl border border-[--color-outline-variant]">
+          <p className="text-[--color-on-surface-variant]">No agents found{area ? ` in "${area}"` : ""}</p>
+          <p className="text-[--color-on-surface-variant] text-xs mt-1">Agents register via the agent dashboard</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

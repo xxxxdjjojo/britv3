@@ -44,8 +44,8 @@ const SYNC_STATUS_CONFIG: Record<
 > = {
   disconnected: {
     label: "Disconnected",
-    classes: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400",
-    dotClass: "bg-gray-400",
+    classes: "bg-[--color-surface-container-low] dark:bg-gray-800 text-[--color-on-surface-variant] dark:text-gray-400",
+    dotClass: "bg-[--color-on-surface-variant]",
   },
   connected: {
     label: "Connected",
@@ -256,10 +256,10 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-semibold text-on-surface dark:text-gray-100">
             Property Feed Integrations
           </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-gray-400">
             Connect your estate agent software to sync property listings automatically.
             Supports Reapit, Alto, and Jupix.
           </p>
@@ -276,9 +276,9 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
       {/* Add/Edit Dialog */}
       {dialogState.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-2xl rounded-lg bg-white dark:bg-gray-900 shadow-xl overflow-y-auto max-h-[90vh]">
+          <div className="w-full max-w-2xl rounded-lg bg-surface-container-lowest dark:bg-gray-900 shadow-xl overflow-y-auto max-h-[90vh]">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h3 className="text-lg font-semibold text-on-surface dark:text-gray-100 mb-4">
                 {dialogState.mode === "edit" ? "Edit Integration" : "Add Feed Integration"}
               </h3>
 
@@ -290,7 +290,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
 
               {/* Provider selection */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-on-surface dark:text-gray-300 mb-2">
                   Provider
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -302,7 +302,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                       className={`rounded-lg border-2 p-3 text-left transition-colors ${
                         formProvider === provider
                           ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                          : "border-[--color-outline-variant] dark:border-gray-700 hover:border-[--color-outline-variant] dark:hover:border-gray-600"
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -317,11 +317,11 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                         >
                           {provider[0]?.toUpperCase()}
                         </span>
-                        <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                        <span className="font-medium text-sm text-on-surface dark:text-gray-100">
                           {PROVIDER_LABELS[provider]}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-[--color-on-surface-variant] dark:text-gray-400">
                         {PROVIDER_DESCRIPTIONS[provider]}
                       </p>
                     </button>
@@ -333,11 +333,11 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
               <div className="mb-4">
                 <label
                   htmlFor="feed-api-key"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  className="block text-sm font-medium text-on-surface dark:text-gray-300 mb-1"
                 >
                   API Key{" "}
                   {dialogState.mode === "edit" && (
-                    <span className="text-gray-400 font-normal">(leave blank to keep current)</span>
+                    <span className="text-[--color-on-surface-variant] font-normal">(leave blank to keep current)</span>
                   )}
                 </label>
                 <div className="flex gap-2">
@@ -347,13 +347,13 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                     value={formApiKey}
                     onChange={(e) => setFormApiKey(e.target.value)}
                     placeholder="Enter your provider API key"
-                    className="flex-1 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 rounded-md border border-[--color-outline-variant] dark:border-gray-700 bg-surface-container-lowest dark:bg-gray-800 px-3 py-2 text-sm text-on-surface dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button
                     type="button"
                     onClick={handleTestConnection}
                     disabled={testingConnection}
-                    className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
+                    className="rounded-md border border-[--color-outline-variant] dark:border-gray-600 px-3 py-2 text-sm font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
                   >
                     {testingConnection ? "Testing..." : "Test Connection"}
                   </button>
@@ -372,16 +372,16 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
               {/* Webhook URL (display only) */}
               {dialogState.mode === "edit" && dialogState.integration.id && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-on-surface dark:text-gray-300 mb-1">
                     Webhook URL
                   </label>
-                  <div className="rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2">
-                    <code className="text-xs text-gray-600 dark:text-gray-400 break-all">
+                  <div className="rounded-md bg-[--color-surface-container-low] dark:bg-gray-800 border border-[--color-outline-variant] dark:border-gray-700 px-3 py-2">
+                    <code className="text-xs text-[--color-on-surface-variant] dark:text-gray-400 break-all">
                       {typeof window !== "undefined" ? window.location.origin : "https://app.britestate.co.uk"}
                       /api/agent/feeds/webhook/{dialogState.integration.id}
                     </code>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 text-xs text-[--color-on-surface-variant] dark:text-gray-400">
                     Configure this URL in your provider&apos;s webhook settings to receive push updates.
                   </p>
                 </div>
@@ -389,30 +389,30 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
 
               {/* Field Mapping */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-on-surface dark:text-gray-300 mb-2">
                   Field Mapping
                 </label>
-                <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="rounded-md border border-[--color-outline-variant] dark:border-gray-700 overflow-hidden">
                   <table className="w-full text-xs">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+                    <thead className="bg-[--color-surface-container-low] dark:bg-gray-800">
                       <tr>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        <th className="px-3 py-2 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">
                           Source Field ({PROVIDER_LABELS[formProvider]})
                         </th>
-                        <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                        <th className="px-3 py-2 text-left font-medium text-[--color-on-surface-variant] dark:text-gray-400">
                           Britestate Field
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody className="divide-y divide-[--color-outline-variant] dark:divide-gray-800">
                       {Object.entries(formFieldMapping).map(([source, dest]) => (
-                        <tr key={source} className="bg-white dark:bg-gray-900">
+                        <tr key={source} className="bg-surface-container-lowest dark:bg-gray-900">
                           <td className="px-3 py-2">
                             <input
                               type="text"
                               value={source}
                               readOnly
-                              className="w-full bg-transparent text-gray-600 dark:text-gray-400 focus:outline-none"
+                              className="w-full bg-transparent text-[--color-on-surface-variant] dark:text-gray-400 focus:outline-none"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -425,7 +425,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                                   [source]: e.target.value,
                                 }))
                               }
-                              className="w-full bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                              className="w-full bg-transparent text-on-surface dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
                             />
                           </td>
                         </tr>
@@ -439,7 +439,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                 <button
                   type="button"
                   onClick={closeDialog}
-                  className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="rounded-md border border-[--color-outline-variant] dark:border-gray-600 px-4 py-2 text-sm font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>
@@ -460,11 +460,11 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
       {/* Confirm Delete Dialog */}
       {confirmDeleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-lg bg-white dark:bg-gray-900 p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="w-full max-w-sm rounded-lg bg-surface-container-lowest dark:bg-gray-900 p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-on-surface dark:text-gray-100 mb-2">
               Delete Integration?
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <p className="text-sm text-[--color-on-surface-variant] dark:text-gray-400 mb-6">
               This will remove the feed connection and stop all syncing. This action cannot be
               undone.
             </p>
@@ -472,7 +472,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
               <button
                 type="button"
                 onClick={() => setConfirmDeleteId(null)}
-                className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="rounded-md border border-[--color-outline-variant] dark:border-gray-600 px-4 py-2 text-sm font-medium text-on-surface dark:text-gray-300 hover:bg-[--color-surface-container-low] dark:hover:bg-gray-800"
               >
                 Cancel
               </button>
@@ -492,22 +492,22 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
       {/* Error Log Panel */}
       {errorLogState.open && activeErrorLogIntegration && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-2xl rounded-lg bg-white dark:bg-gray-900 shadow-xl max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div className="w-full max-w-2xl rounded-lg bg-surface-container-lowest dark:bg-gray-900 shadow-xl max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[--color-outline-variant] dark:border-gray-800">
+              <h3 className="text-lg font-semibold text-on-surface dark:text-gray-100">
                 Error Log — {PROVIDER_LABELS[activeErrorLogIntegration.provider]}
               </h3>
               <button
                 type="button"
                 onClick={() => setErrorLogState({ open: false })}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl"
+                className="text-[--color-on-surface-variant] hover:text-on-surface dark:hover:text-gray-200 text-xl"
               >
                 ×
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {(activeErrorLogIntegration.error_log ?? []).length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400">No errors recorded.</p>
+                <p className="text-sm text-[--color-on-surface-variant] dark:text-gray-400">No errors recorded.</p>
               ) : (
                 <div className="space-y-3">
                   {(activeErrorLogIntegration.error_log ?? []).slice(-10).map((entry, idx) => {
@@ -544,8 +544,8 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
 
       {/* Integration cards */}
       {integrations.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="rounded-lg border border-dashed border-[--color-outline-variant] dark:border-gray-700 p-12 text-center">
+          <p className="text-sm text-[--color-on-surface-variant] dark:text-gray-400">
             No feed integrations configured. Add an integration to sync property listings from your
             CRM software.
           </p>
@@ -557,7 +557,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
             return (
               <div
                 key={integration.id}
-                className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4"
+                className="rounded-lg border border-[--color-outline-variant] dark:border-gray-800 bg-surface-container-lowest dark:bg-gray-900 p-4"
               >
                 {/* Provider header */}
                 <div className="flex items-center justify-between mb-3">
@@ -573,7 +573,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                     >
                       {integration.provider[0]?.toUpperCase()}
                     </span>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                    <span className="font-semibold text-on-surface dark:text-gray-100">
                       {PROVIDER_LABELS[integration.provider]}
                     </span>
                   </div>
@@ -586,7 +586,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                 </div>
 
                 {/* Metadata */}
-                <div className="space-y-1 mb-4 text-xs text-gray-500 dark:text-gray-400">
+                <div className="space-y-1 mb-4 text-xs text-[--color-on-surface-variant] dark:text-gray-400">
                   <div>
                     Last sync:{" "}
                     {integration.last_sync_at

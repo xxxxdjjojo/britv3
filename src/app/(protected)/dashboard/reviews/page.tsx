@@ -16,10 +16,10 @@ import { Badge } from "@/components/ui/badge";
 import type { Review, ModerationStatus } from "@/types/marketplace";
 
 const MODERATION_COLORS: Record<ModerationStatus, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  approved: "bg-green-100 text-green-800",
-  rejected: "bg-red-100 text-red-800",
-  flagged: "bg-orange-100 text-orange-800",
+  pending: "bg-brand-secondary-light text-[--color-brand-secondary-dark]",
+  approved: "bg-brand-primary-lighter text-brand-primary",
+  rejected: "bg-error/10 text-error",
+  flagged: "bg-warning/10 text-warning",
 };
 
 export default function ReviewsPage() {

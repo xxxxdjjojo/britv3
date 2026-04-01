@@ -56,14 +56,14 @@ async function PageContent({ params }: Props) {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <Link href="/dashboard/seller/agents" className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
+        <Link href="/dashboard/seller/agents" className="flex items-center gap-2 text-sm text-[--color-on-surface-variant] hover:text-on-surface">
           <ArrowLeft size={16} />
           Find Agent
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans'] mt-2">Agent Profile</h1>
+        <h1 className="text-2xl font-bold text-on-surface font-['Plus_Jakarta_Sans'] mt-2">Agent Profile</h1>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-sm border border-[--color-outline-variant] p-8">
         <div className="flex items-start gap-6">
           {agent.avatar_url ? (
             <Image src={agent.avatar_url} alt={agent.full_name} width={80} height={80} className="rounded-2xl object-cover flex-shrink-0" />
@@ -73,15 +73,15 @@ async function PageContent({ params }: Props) {
             </div>
           )}
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">{agent.full_name}</h2>
-            <p className="text-slate-500 mt-0.5">{agent.agency_name}</p>
+            <h2 className="text-xl font-bold text-on-surface font-['Plus_Jakarta_Sans']">{agent.full_name}</h2>
+            <p className="text-[--color-on-surface-variant] mt-0.5">{agent.agency_name}</p>
             {agent.average_rating !== null && (
               <div className="flex items-center gap-1.5 mt-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} size={16}
-                    className={i < Math.round(agent.average_rating!) ? "text-[#D4A853] fill-[#D4A853]" : "text-slate-200"} />
+                    className={i < Math.round(agent.average_rating!) ? "text-[#D4A853] fill-[#D4A853]" : "text-[--color-outline-variant]"} />
                 ))}
-                <span className="text-sm text-slate-500 ml-1">
+                <span className="text-sm text-[--color-on-surface-variant] ml-1">
                   {agent.average_rating.toFixed(1)} ({agent.review_count} reviews)
                 </span>
               </div>
@@ -89,31 +89,31 @@ async function PageContent({ params }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-100">
+        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-[--color-outline-variant]">
           {agent.fee_percentage !== null && (
             <div className="text-center">
-              <p className="text-2xl font-extrabold text-slate-900">{agent.fee_percentage}%</p>
-              <p className="text-xs text-slate-500 mt-0.5">Commission Fee</p>
+              <p className="text-2xl font-extrabold text-on-surface">{agent.fee_percentage}%</p>
+              <p className="text-xs text-[--color-on-surface-variant] mt-0.5">Commission Fee</p>
             </div>
           )}
           <div className="text-center">
-            <p className="text-2xl font-extrabold text-slate-900">{agent.sold_count}</p>
-            <p className="text-xs text-slate-500 mt-0.5">Sold Last Year</p>
+            <p className="text-2xl font-extrabold text-on-surface">{agent.sold_count}</p>
+            <p className="text-xs text-[--color-on-surface-variant] mt-0.5">Sold Last Year</p>
           </div>
           {agent.average_days_to_sell !== null && (
             <div className="text-center">
-              <p className="text-2xl font-extrabold text-slate-900">{agent.average_days_to_sell}</p>
-              <p className="text-xs text-slate-500 mt-0.5">Avg Days to Sell</p>
+              <p className="text-2xl font-extrabold text-on-surface">{agent.average_days_to_sell}</p>
+              <p className="text-xs text-[--color-on-surface-variant] mt-0.5">Avg Days to Sell</p>
             </div>
           )}
         </div>
 
         {agent.areas_covered.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <p className="text-xs font-semibold text-slate-500 mb-2">Areas Covered</p>
+          <div className="mt-6 pt-6 border-t border-[--color-outline-variant]">
+            <p className="text-xs font-semibold text-[--color-on-surface-variant] mb-2">Areas Covered</p>
             <div className="flex flex-wrap gap-2">
               {agent.areas_covered.map((area) => (
-                <span key={area} className="flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-600">
+                <span key={area} className="flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-[--color-surface-container-low] text-[--color-on-surface-variant]">
                   <MapPin size={10} />{area}
                 </span>
               ))}
@@ -122,9 +122,9 @@ async function PageContent({ params }: Props) {
         )}
 
         {agent.bio && (
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <p className="text-xs font-semibold text-slate-500 mb-2">About</p>
-            <p className="text-sm text-slate-600 leading-relaxed">{agent.bio}</p>
+          <div className="mt-6 pt-6 border-t border-[--color-outline-variant]">
+            <p className="text-xs font-semibold text-[--color-on-surface-variant] mb-2">About</p>
+            <p className="text-sm text-[--color-on-surface-variant] leading-relaxed">{agent.bio}</p>
           </div>
         )}
       </div>
