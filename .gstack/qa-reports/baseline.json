@@ -1,12 +1,20 @@
 {
-  "date": "2026-04-01",
+  "date": "2026-04-02",
   "url": "http://localhost:3000",
   "branch": "style/stage8-calculators",
-  "healthScore": 85,
+  "healthScore": 82,
   "issues": [
-    {"id": "ISSUE-001", "title": "Help Centre renders inside dashboard layout when authenticated", "severity": "high", "category": "routing"},
-    {"id": "ISSUE-002", "title": "Error pages redirect to login instead of rendering", "severity": "medium", "category": "routing"},
-    {"id": "ISSUE-003", "title": "PostHog config console errors on all pages", "severity": "low", "category": "console"}
+    { "id": "ISSUE-001", "title": "Hydration mismatch in RedirectErrorBoundary", "severity": "medium", "category": "console", "status": "deferred" },
+    { "id": "ISSUE-002", "title": "Unknown paths redirect to login instead of 404", "severity": "low", "category": "ux", "status": "deferred" }
   ],
-  "categoryScores": {"console": 70, "links": 100, "visual": 95, "functional": 85, "ux": 80, "performance": 80, "content": 95, "accessibility": 90}
+  "categoryScores": {
+    "console": 70,
+    "links": 100,
+    "visual": 90,
+    "functional": 85,
+    "ux": 75,
+    "performance": 80,
+    "content": 90,
+    "accessibility": 75
+  }
 }

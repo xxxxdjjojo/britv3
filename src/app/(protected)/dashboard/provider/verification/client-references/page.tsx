@@ -8,7 +8,8 @@ export const metadata = {
 };
 
 export default async function ClientReferencesPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -46,5 +47,14 @@ export default async function ClientReferencesPage() {
         />
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-8 p-6 max-w-3xl">
+        <h1 className="text-2xl font-bold text-neutral-900">Client References</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load references. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

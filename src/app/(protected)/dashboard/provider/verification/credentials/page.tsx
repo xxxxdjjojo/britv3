@@ -38,7 +38,8 @@ const STATUS_CONFIG = {
 } as const;
 
 export default async function CredentialsPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -359,5 +360,14 @@ export default async function CredentialsPage() {
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <h1 className="text-4xl font-headline font-extrabold text-on-surface">Professional Credentials</h1>
+        <p className="mt-4 text-on-surface-variant">Unable to load credentials data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

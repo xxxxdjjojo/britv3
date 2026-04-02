@@ -35,22 +35,30 @@ async function PageContent() {
   }
 
   // Fetch active listings for property selector
-  const { data: listingsData } = await supabase
-    .from("listings")
-    .select("id, title, address_line_1")
-    .eq("user_id", user.id)
-    .eq("status", "active");
-
-  const listings: Listing[] = (listingsData ?? []) as Listing[];
+  let listings: Listing[] = [];
+  try {
+    const { data: listingsData } = await supabase
+      .from("listings")
+      .select("id, title, address_line_1")
+      .eq("user_id", user.id)
+      .eq("status", "active");
+    listings = (listingsData ?? []) as Listing[];
+  } catch {
+    // Fall through with empty array
+  }
 
   // Fetch existing reports (newest first)
-  const { data: reportsData } = await supabase
-    .from("agent_vendor_reports")
-    .select("*")
-    .eq("agent_id", user.id)
-    .order("generated_at", { ascending: false });
-
-  const reports: AgentVendorReport[] = (reportsData ?? []) as AgentVendorReport[];
+  let reports: AgentVendorReport[] = [];
+  try {
+    const { data: reportsData } = await supabase
+      .from("agent_vendor_reports")
+      .select("*")
+      .eq("agent_id", user.id)
+      .order("generated_at", { ascending: false });
+    reports = (reportsData ?? []) as AgentVendorReport[];
+  } catch {
+    // Fall through with empty array
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6">

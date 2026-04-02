@@ -4,7 +4,8 @@ import { getProviderProfile } from "@/services/provider/provider-profile-service
 import { ProfileEditForm } from "@/components/dashboard/provider/ProfileEditForm";
 
 export default async function ProviderProfilePage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -111,5 +112,14 @@ export default async function ProviderProfilePage() {
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-5xl px-6 py-12">
+        <h1 className="font-headline text-4xl font-extrabold text-primary">Public Profile Management</h1>
+        <p className="mt-4 text-on-surface-variant">Unable to load profile data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

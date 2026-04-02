@@ -1,291 +1,468 @@
-# Britestate Stitch — New Screens (Added 2026-03-30)
+# Britestate — Missing Stitch Screens
 
-**Project ID:** `15021896094385971092`
-**New screens found:** 122
-**Previous total:** 177 | **New total:** 297
-
----
-
-## Section 1: Account States & Security (5 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 1 | Account Deletion Confirmation | `e50fa5b41b8b4538b70c262dfdf43ca8` |
-| 2 | Account Locked State | `48517f1b138642f8b73b2ba07899aa36` |
-| 3 | Account Suspended State | `a73b7aee4e3f4cf7b9ef84331b0ccb3e` |
-| 4 | Verification Hub Overview | `07419fc42a6b44f7a2394aa575823621` |
-| 5 | FCA Verification | `50999796d0084a328bf026acf6f991d9` |
-
-## Section 2: Agent Dashboard Extensions (7 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 6 | Agent CRM — Contact Management | `47e362c107c947a8bd3b51b5e7eda543` |
-| 7 | Agent Dashboard — Branding Settings | `2fa40e0fa8c54284bc775d901c3cdd33` |
-| 8 | Agent Dashboard — Lead Detail | `759ee4727a8e493497893b6114a69972` |
-| 9 | Agent Dashboard — Leads Pipeline | `295c3e8d7f62460c859a58306b7ba817` |
-| 10 | Agent Dashboard — Offers Management | `5222dd8fc13a49beb30b749b84bc8642` |
-| 11 | CRM Contact Detail | `488492a37eba436b830a8640d8966526` |
-| 12 | Team & Branch Management | `950da4e46b944167a68591c4a385fe6a` |
-
-## Section 3: Landlord Dashboard Extensions (12 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 13 | Compliance Management | `72809b5640ae4f46954582f7f41e55ee` |
-| 14 | Deposit Management | `ddea4a8196d249c0ab8733503fad0a` |
-| 15 | Inventory Check-In | `186e1d320364457a8942076530df3798` |
-| 16 | Landlord Analytics | `154c5c6aef924ded9d3a8f42c83a781c` |
-| 17 | Maintenance Request Detail | `33d15c43547d4e08aa5b030fffc02aa0` |
-| 18 | New Listing (Replacement/Sublet) | `d46699f77dec49d99a6927642908bed9` |
-| 19 | Portfolio Properties List | `7a7b3b89e0cc4799a85bfdc9f9d14437` |
-| 20 | Property Management Hub | `b8dc9123b25148129c85898d32934f09` |
-| 21 | Property Tenancy History | `3d24bcfbfc51453cb6d8d275e6b99294` |
-| 22 | Rent by Property Tracker | `c7768ffa1cad4d69b29081f1242f782b` |
-| 23 | Rent Collection Overview | `83d1c5fe5b374ff1b33ad691214f6350` |
-| 24 | Rental Applications List | `39949e384f304af198b2a03997eb8207` |
-
-## Section 4: Tenant & Tenancy Management (5 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 25 | Tenancy Agreement Builder | `e7ce995ff54a42e8b96655cd69e1a7e1` |
-| 26 | Tenancy Management | `da8c2bb0d9d840fba965399ab0491bef` |
-| 27 | Tenant Application Review | `4a4339e9a1514d539bf969397ec1aae2` |
-| 28 | Tenant Management List | `b45b62d9d6434574b90257dd507ce4d1` |
-| 29 | Renter Onboarding | `e03a56e89b174f01ace8e452cf179793` |
-
-## Section 5: Provider Dashboard Extensions (10 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 30 | Provider Job Detail | `c2575e99b4b54c848e477a07bdcb5530` |
-| 31 | Provider Job Leads | `90f0352b5fdc4decb824844adf5aa3b1` |
-| 32 | Provider Jobs Overview | `1bf6885e6b804bc994a1e3d99b78f23b` |
-| 33 | Provider Payments Overview | `b4c407f198bd4fbd97dd16f021fd66e5` |
-| 34 | Provider Performance Analytics | `955e25e2bad34c8880579113e37d8494` |
-| 35 | Provider Profile Settings | `4a5686c82177496ea49754e172071ba8` |
-| 36 | Provider Work Portfolio | `4c92c8b20d0345ddb6f068820d18eaa2` |
-| 37 | Credentials & Documents | `2efca7c05f2343d49af1760f7c874f43` |
-| 38 | Availability Management | `92794e9c5140494c987d8bf6f12300fd` |
-| 39 | Billing & Earnings Dashboard | `6f7f39b6af624d989a530f1f61c5fecb` |
-
-## Section 6: Broker Dashboard Extensions (4 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 40 | Broker Analytics | `b78559684ff94286b8376a23ea8531ea` |
-| 41 | Broker Billing | `cb9e7999979942558fdd25f7a052b838` |
-| 42 | Broker Calculators | `141431463c4c427ca9b1d7b76a6c19f5` |
-| 43 | Subscription Management | `ac5b0acc1ade46e881ee8b2d89ef8ba4` |
-
-## Section 7: Quotes, RFQs & Jobs (6 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 44 | Create New RFQ | `747a2d5955344f89a9dcf1d938675328` |
-| 45 | RFQ Detail View | `eb037babb3604c48b92f840dcd67feee` |
-| 46 | RFQ List Overview | `6c935fb3be23434a8c4b509904bb9483` |
-| 47 | Quote Builder Tool | `2187d52e49fb491996181c7d523814e5` |
-| 48 | Quotes Overview | `d977b225de3f4a3b8bf8e76ade7d679a` |
-| 49 | Assign Tradesperson | `aa3693db64d64e1f82bc18a807125d06` |
-
-## Section 8: Offers, Viewings & Sale Progress (6 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 50 | Offers Received | `d4fca67bf3ea4b7d8f956c66e37150a1` |
-| 51 | Enquiries & Viewings | `21d323bf503f45d1bc663b565692a7c7` |
-| 52 | Viewings Calendar | `918a1d0c5d3e4ea2ada642fc2f0beb85` |
-| 53 | Reschedule Viewing | `82300fe1389f43a890da9d3093a08113` |
-| 54 | Sale Progress Tracker | `d3e46486df2f496f9d6ab831635f33ea` |
-| 55 | Transaction Progress Tracker | `3c3b7021ec2540f0a45834b9d099071a` |
-
-## Section 9: Booking & Service Tracking (2 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 56 | Booking Tracking Hub | `46ee9720df45480fac40a33c13f40c32` |
-| 57 | Bookings Overview | `50e97689df8942c1be04e8d2d77169e3` |
-
-## Section 10: Calculators & Financial Tools (6 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 58 | Equity Calculator | `f05a01fbda6b44f3a6f24275109285a1` |
-| 59 | In-Dashboard Yield Calculator | `36b24d7f230d4ddf9f08314fe370d7a7` |
-| 60 | Investment Calculator | `2cac16e3828c47de9ce249df4c9e0d4d` |
-| 61 | LTV Calculator | `b6235bcc543044948cea39f872f7dab4` |
-| 62 | Moving Cost Calculator | `2a2693082974441fabc5013ece20a70d` |
-| 63 | Overpayment Calculator | `1aa569179d254a57abf4b3ff2738a767` |
-
-## Section 11: Property Detail Extensions (3 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 64 | Property Comparison Tool | `5d178a94a8334b2792db2a55c962afb2` |
-| 65 | Property Financials View | `b44c73993b5c48d7a79ce367e56f89d0` |
-| 66 | Property Insurance | `709ec9bdef2e4911a90a6949818298f0` |
-
-## Section 12: Reviews & Reputation (3 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 67 | Review Management | `1e4d10353361444bbab5d77a8ad363d4` |
-| 68 | Reviews Management | `78495c93b4d340ba8d460f66df768b09` |
-| 69 | Badge Management | `ea191b5152b740bfa0aceaa141a3eae9` |
-
-## Section 13: Professional Directories (7 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 70 | Architects Directory | `1f10bbe96cc143a88cd1a2180c378d91` |
-| 71 | Architect Profile — Elena Rodriguez | `50311612205a41e9ba57a36b716d716f` |
-| 72 | Estate Agents Directory | `f9a2b465c3f54402ad452e23d8bf17bc` |
-| 73 | Find & Compare Agents | `4ac18bb808334040910a7688192303b7` |
-| 74 | Find Letting Agent | `a3c5643b033c44a184f82a5e75c0b0a1` |
-| 75 | Mortgage Brokers Directory | `e55be6fc82364b43b3742d9b59d4a0b3` |
-| 76 | Surveyors Directory | `27d0f0c971324e05bbed26a4690a4628` |
-
-## Section 14: Find a Mortgage Advisor Variants (3 screens)
-
-| # | Screen Title | Stitch Screen ID | Notes |
-|---|-------------|-------------------|-------|
-| 77 | Find a Mortgage Advisor | `5d7bdca63c09426abd8ba5eb2f437dbc` | **DUPLICATE?** |
-| 78 | Find a Mortgage Advisor | `de9c2e01ec374ddd8f64b286c2e6e137` | **DUPLICATE?** |
-| 79 | Find a Mortgage Advisor | `e73b3feedea24c188f9dcadc5a27bd12` | **DUPLICATE?** |
-
-> Note: There is also 1 existing "Find a Mortgage Advisor" in the original reference (`dfa82a62af8244cfa924f05ef08083f2`). Total 4 variants.
-
-## Section 15: Service Category Landings (5 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 80 | Cleaning Services Landing | `0b1a9fe5de0947c1aa62c21947063aea` |
-| 81 | Electrical Services Landing | `9ee2fab0f27643a795154d152270d5ea` |
-| 82 | Gardening Services Landing | `09f6cb6b452d4bf3b691f2c6e3202a49` |
-| 83 | Service Category Template | `b950fff5aab6468f8e6cac55779b4a2b` |
-| 84 | Services Index | `c7d0cdcb0cc048b384d898c072ed126c` |
-
-## Section 16: Seller Dashboard Extensions (3 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 85 | Apply for Listing | `041590b9187640968dd14f8692faa026` |
-| 86 | Appraisals & Reports | `bf369b1f28d24154b3d21727ce7a29c6` |
-| 87 | Listing Boost Manager | `2e2c6bc2d15f48d8a6e6088a8e1ff67d` |
-
-## Section 17: Search & Discovery (2 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 88 | Find Tradespeople | `dc77cd57ba584178809ae0601599f13b` |
-| 89 | Search Analytics | `51e372727d034fcc8ca8e52034e58486` |
-
-## Section 18: Admin Dashboard Extensions (8 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 90 | API Usage Monitoring | `161ad79c62e141d29b6b1e81120069bd` |
-| 91 | Financial Reporting | `28180ae3c31147f2a20bbc19ea1ba6e3` |
-| 92 | Fraud Detection Dashboard | `d9b081be16cc4dd0a38ccf8a68f29bef` |
-| 93 | Platform Analytics | `f280565b6dee4d92b36d3da96b35979a` |
-| 94 | Revenue Analytics | `8f49922fdc664feca81ee0b367f10455` |
-| 95 | System Audit Log | `bae0f777004748b2bd62da295bf3ad97` |
-| 96 | User Behaviour Analytics | `fd35d62e2f044e82b5cd7e9c3826876d` |
-| 97 | User Profile View | `d5f4a9555ce840b38468d7f40f3950cb` |
-
-## Section 19: Blog & Content (4 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 98 | Blog CMS Management | `11dd2892c8e840bdbd681950a63c7438` |
-| 99 | Blog Index — Sanctuary Journal | `747ca43d312c44a390bc50d7741f124d` |
-| 100 | Blog Post — Article Template | `191eaefc91644c4798a07411a26c3b1d` |
-| 101 | Landing Page CMS | `bfbbec0953004ead8ad5659488d2a674` |
-
-## Section 20: Help Centre (4 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 102 | Help Centre Hub | `3a2446af445e4445ab96a3750d8b1285` |
-| 103 | Help Article — Documentation View | `e7e078472e974a2eb96ad3ffe5720e41` |
-| 104 | Help Content Management | `2ac41c615d07405292f6fe2e58d77e97` |
-| 105 | Edit Help Article | `4b07e7463a464a08a7026fe3ce04e505` |
-
-## Section 21: Legal & Compliance Pages (8 screens)
-
-| # | Screen Title | Stitch Screen ID | Notes |
-|---|-------------|-------------------|-------|
-| 106 | Fair Housing Policy | `462bfd6d054f419ba6fadc45be366ba0` | |
-| 107 | Fair Housing Policy | `f5850cf96ec142658685f0f902ecc43a` | **DUPLICATE?** |
-| 108 | Legal Index — Governance Hub | `2c4ec96b0c3e432b9b93b215e876c87d` | |
-| 109 | Legal Index Hub | `6b164285a0d0446d93e81f909be98c38` | **DUPLICATE?** |
-| 110 | Legal Notices | `52292f7c19d244839bbc5148dcef5f83` | |
-| 111 | Professional Standards | `d204a93c375d4954b7274da819ac50c2` | |
-| 112 | Professional Standards | `f1585f88e33c4b3f9d8710db84ac9774` | **DUPLICATE?** |
-| 113 | Refund Policy | `7d21cfd98b37453e97c717edf2dcbc48` | |
-
-## Section 22: Regulatory & Disclosure (3 screens)
-
-| # | Screen Title | Stitch Screen ID | Notes |
-|---|-------------|-------------------|-------|
-| 114 | Regulatory Information | `023bfad6bd8e429bbf8edf240458bbe2` | |
-| 115 | Regulatory Information | `986c2223bdf244f3b51cf3bf6480a83f` | **DUPLICATE?** |
-| 116 | Third-Party Services Disclosure | `b86fdcbc20b24a05b6859ded58afa0c7` | |
-
-## Section 23: Miscellaneous (5 screens)
-
-| # | Screen Title | Stitch Screen ID |
-|---|-------------|-------------------|
-| 117 | Reference Requests | `ac043f71c4ef434dab9ad61849c534d7` |
-| 118 | Edit Blog Post | `76d4e0463ed148798781d3ba44cff50c` |
-| 119 | Market Competitor Analytics | `04a7ab2a89d34f258a76911284911782` |
-| 120 | Welcome Page | `1b0ae60b544e4b7cbeb594bcd637f207` |
-| 121 | Screenshot (not a screen) | `4801608655630945484` |
+**Purpose:** Gap analysis between pages inventory (309 pages) and Stitch screens reference (~160 screens).
+**Generated:** 2026-03-30
 
 ---
 
-## New Duplicate Candidates (within new screens)
+## Summary
 
-| Pair | Screen A | Screen B |
-|------|----------|----------|
-| D9 | Find a Mortgage Advisor ×3 new + 1 existing | Pick canonical variant |
-| D10 | Fair Housing Policy (×2) | `462bfd6d...` vs `f5850cf9...` |
-| D11 | Legal Index — Governance Hub vs Legal Index Hub | `2c4ec96b...` vs `6b164285...` |
-| D12 | Professional Standards (×2) | `d204a93c...` vs `f1585f88...` |
-| D13 | Regulatory Information (×2) | `023bfad6...` vs `986c2223...` |
-| D14 | Review Management vs Reviews Management | `1e4d1035...` vs `78495c93...` |
-| D15 | Booking Tracking Hub (new) vs Booking Tracking — Live Timeline (existing) | May be same |
-| D16 | Edit Blog Post (#118) overlaps Blog CMS Management (#98) | Check scope |
+| Category | Total Pages | Has Screen | Missing | Coverage |
+|---|---|---|---|---|
+| (auth) | 14 | 9 | 5 | 64% |
+| (main) — Company | 11 | 6 | 5 | 55% |
+| (main) — Properties & Search | 4 | 3 | 1 | 75% |
+| (main) — Areas & Sold Prices | 7 | 5 | 2 | 71% |
+| (main) — Marketplace & Reviews | 5 | 2 | 3 | 40% |
+| (main) — Professional Directories | 10 | 5 | 5 | 50% |
+| (main) — Services | 8 | 3 | 5 | 38% |
+| (main) — Calculators & Tools | 10 | 5 | 5 | 50% |
+| (main) — Blog & Help | 6 | 0 | 6 | 0% |
+| (main) — Legal | 17 | 4 | 13 | 24% |
+| (protected) — Shared Dashboard | 13 | 5 | 8 | 38% |
+| (protected) — Buyer/Renter | 12 | 7 | 5 | 58% |
+| (protected) — Seller | 14 | 3 | 11 | 21% |
+| (protected) — Agent | 30 | 6 | 24 | 20% |
+| (protected) — Broker | 11 | 5 | 6 | 45% |
+| (protected) — Landlord | 35 | 4 | 31 | 11% |
+| (protected) — Provider | 31 | 4 | 27 | 13% |
+| (protected) — General | 15 | 5 | 10 | 33% |
+| (admin) | 29 | 9 | 20 | 31% |
+| Root Utility | 7 | 7 | 0 | 100% |
+| **TOTAL** | **309** | **~102** | **~191** | **~33%** |
+
+**~191 screens still needed.**
 
 ---
 
-## Summary by Section
+## Missing Screens by Category
 
-| Section | Count | Category |
-|---------|-------|----------|
-| 1 | 5 | Account States & Security |
-| 2 | 7 | Agent Dashboard Extensions |
-| 3 | 12 | Landlord Dashboard Extensions |
-| 4 | 5 | Tenant & Tenancy Management |
-| 5 | 10 | Provider Dashboard Extensions |
-| 6 | 4 | Broker Dashboard Extensions |
-| 7 | 6 | Quotes, RFQs & Jobs |
-| 8 | 6 | Offers, Viewings & Sale Progress |
-| 9 | 2 | Booking & Service Tracking |
-| 10 | 6 | Calculators & Financial Tools |
-| 11 | 3 | Property Detail Extensions |
-| 12 | 3 | Reviews & Reputation |
-| 13 | 7 | Professional Directories |
-| 14 | 3 | Find a Mortgage Advisor Variants |
-| 15 | 5 | Service Category Landings |
-| 16 | 3 | Seller Dashboard Extensions |
-| 17 | 2 | Search & Discovery |
-| 18 | 8 | Admin Dashboard Extensions |
-| 19 | 4 | Blog & Content |
-| 20 | 4 | Help Centre |
-| 21 | 8 | Legal & Compliance Pages |
-| 22 | 3 | Regulatory & Disclosure |
-| 23 | 5 | Miscellaneous |
-| **Total** | **122** | **new screens** |
+### 1. Authentication & Onboarding — 5 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M1 | `/account-locked` | Account Locked | May be a variant of Account States (#138) — verify |
+| M2 | `/account-suspended` | Account Suspended | May be a variant of Account States (#138) — verify |
+| M3 | `/account-deletion-confirm` | Account Deletion Confirmation | Confirmation dialog/page for GDPR account deletion |
+| M4 | `/welcome` | Welcome Page | Post-registration welcome/next-steps page |
+| M5 | `/register/onboarding/[role]` | Renter Onboarding | Buyer, landlord, agent, provider have screens — renter does not |
+
+> **Note:** Seller onboarding and broker onboarding also have no dedicated screens, but may share buyer/agent flows respectively.
+
+---
+
+### 2. Homepage & Company Pages — 5 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M6 | `/investors` | Investors | Investor relations / funding info page |
+| M7 | `/jobs` | Jobs | Job listings page (distinct from /careers) |
+| M8 | `/partners` | Partners | Partner programme / integrations page |
+| M9 | `/press` | Press | Press releases / media kit page |
+| M10 | `/sitemap-page` | HTML Sitemap | SEO sitemap page — low design priority |
+
+---
+
+### 3. Properties & Search — 1 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M11 | `/compare` | Property Comparison | Side-by-side property comparison tool |
+
+> **Covered:** /search (12 variants), /properties/[slug] (5 screens), /valuation (could map to seller valuation flow)
+
+---
+
+### 4. Areas & Sold Prices — 2 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M12 | `/areas` | Area Guides Index | Landing page listing all areas/cities |
+| M13 | `/areas/[city]/stats` | City Statistics | Dedicated stats dashboard per city |
+
+> **Covered:** /areas/[city] and /areas/[city]/[area] (screens #47-49), /sold-prices (screens #50-51), /market-trends (screens #52-53)
+
+---
+
+### 5. Marketplace & Reviews — 3 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M14 | `/marketplace` | Marketplace Index | Service marketplace landing/directory |
+| M15 | `/marketplace/[slug]` | Marketplace Listing Detail | Individual marketplace listing page |
+| M16 | `/reviews` | Reviews Landing | Public reviews aggregation page |
+
+> **Covered:** Marketplace search results (#125) exists but may not cover the index/landing page
+
+---
+
+### 6. Professional Directories — 5 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M17 | `/agents` | Estate Agents Directory | Agent listing/search page |
+| M18 | `/architects` | Architects Directory | Architect listing/search page |
+| M19 | `/architects/[slug]` | Architect Profile | Individual architect public profile |
+| M20 | `/surveyors` | Surveyors Directory | Surveyor listing/search page |
+| M21 | `/mortgage-brokers` | Mortgage Brokers Directory | Broker listing/search page |
+
+> **Covered:** Individual profiles for agents (#110), conveyancers (#102-106), surveyors (#107-108), mortgage brokers (#109). Directory LISTING pages are the gap — these are search/filter pages, not individual profiles.
+
+---
+
+### 7. Services — 5 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M22 | `/services` | Services Index | Main services landing page |
+| M23 | `/services/[category]` | Service Category Page | Generic category template (partially covered by #94-95) |
+| M24 | `/services/cleaning` | Cleaning Services | Category-specific landing |
+| M25 | `/services/electrical` | Electrical Services | Category-specific landing |
+| M26 | `/services/gardening` | Gardening Services | Category-specific landing |
+
+> **Covered:** /services/moving, /services/plumbing may be covered by category page screens (#94-95). /services/[category]/[slug] covered by tradesperson profile screens (#96-99).
+
+> **Recommendation:** Design ONE category template screen + one services index screen. The 5 specific categories use the same template.
+
+---
+
+### 8. Calculators & Tools — 5 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M27 | `/tools/equity-calculator` | Equity Calculator | Home equity estimator |
+| M28 | `/tools/investment-calculator` | Investment Calculator | Property investment ROI tool |
+| M29 | `/tools/ltv-calculator` | LTV Calculator | Loan-to-value calculator |
+| M30 | `/tools/moving-cost-calculator` | Moving Cost Calculator | Moving expense estimator |
+| M31 | `/tools/overpayment-calculator` | Overpayment Calculator | Mortgage overpayment savings |
+
+> **Covered:** Mortgage (#54), affordability (#56), stamp duty (#58), buy-vs-rent (#59), rental yield (#60). Also energy bill estimator (#61) and mortgage comparison (#62) which are bonus screens not in the page inventory.
+
+> **Recommendation:** Design ONE calculator template. All 10 calculators share the same layout — input panel left, results right. Only the fields change.
+
+---
+
+### 9. Blog & Help — 6 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M32 | `/blog` | Blog Index | Blog listing with categories and featured posts |
+| M33 | `/blog/[slug]` | Blog Post | Individual article page with rich content |
+| M34 | `/blog/category/[slug]` | Blog Category | Filtered blog listing by category |
+| M35 | `/help` | Help Centre | Help centre landing with search and categories |
+| M36 | `/help/[slug]` | Help Article | Individual help article page |
+| M37 | `/help/contact` | Help Contact | Contact form within help centre context |
+
+> **Recommendation:** 4 templates needed: blog index, blog post, help centre, help article. Category page reuses blog index with filter active. Help contact reuses contact page layout.
+
+---
+
+### 10. Legal Pages — 
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M38 | `/legal` | Legal Index | Legal pages hub/directory |
+| M44 | `/legal/fair-housing` | Fair Housing Policy | | |
+| M47 | `/legal/professional-standards` | Professional Standards | |
+| M48 | `/legal/refund-policy` | Refund Policy | |
+| M49 | `/legal/regulatory` | Regulatory Information | |
+| M50 | `/legal/third-party-services` | Third-Party Services | |
+
+> **Covered:** Privacy policy (#169), terms of service (#170), accessibility (#171), cookie policy (#172).
+
+> **Recommendation:** Design ONE legal page template + one legal index. All 16 legal pages share the same long-form content layout (TOC sidebar + content area). Only the text changes.
+
+---
+
+### 11. Shared Dashboard Features — 8 Missing
+
+These are per-role pages that every dashboard user sees.
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M51 | `/dashboard/[role]/referrals` | Referral Programme | Invite friends, track rewards |
+| M52 | `/dashboard/[role]/billing` | Billing Overview | Payment overview per role |
+| M53 | `/dashboard/[role]/billing/payment-methods` | Payment Methods | Manage cards/bank accounts |
+| M54 | `/dashboard/[role]/billing/invoices` | Invoices | Invoice history with download |
+| M55 | `/dashboard/[role]/billing/refund` | Refund Request | Request a refund form |
+| M56 | `/dashboard/[role]/calculators` | Calculators Hub | In-dashboard calculator access |
+| M57 | `/dashboard/[role]/moving` | Moving Checklist | Interactive moving checklist |
+| M58 | `/dashboard/[role]/services` | Services | Browse services from dashboard |
+
+> **Covered:** AI match (#69), documents (#70), saved searches (#66), billing/checkout (#139-141), billing/subscription (#142-144). The gap is the generic billing sub-pages and utility features.
+
+---
+
+### 12. Buyer/Renter Dashboard — 5 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M59 | `/dashboard/[role]/applications` | Rental Applications List | Renter's submitted applications |
+| M60 | `/dashboard/[role]/applications/apply/[listingId]` | Apply for Listing | Rental application form |
+| M61 | `/dashboard/[role]/tenancy` | Tenancy Management | Active tenancy details, payments, documents |
+| M62 | `/dashboard/[role]/listings/new` | New Listing | Create new listing (buyer/renter context) |
+| M63 | `/dashboard/[role]/viewings/[id]/reschedule` | Reschedule Viewing | Viewing reschedule form |
+
+> **Covered:** Home (#63), saved (#64), searches (#66), viewings (#67), offers (#68), AI match (#69), documents (#70), messages (#71)
+
+---
+
+### 13. Seller Dashboard — 11 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M64 | `/dashboard/seller/agents` | Find Agents | Agent search/comparison for sellers |
+| M65 | `/dashboard/seller/agents/[id]` | Agent Detail | Agent profile viewed by seller |
+| M66 | `/dashboard/seller/agents/compare` | Compare Agents | Side-by-side agent comparison |
+| M67 | `/dashboard/seller/enquiries` | Enquiries | Buyer enquiries received |
+| M68 | `/dashboard/seller/listings/[id]/edit` | Edit Listing | Edit existing listing |
+| M69 | `/dashboard/seller/listings/create` | Create Listing | New listing wizard (seller context) |
+| M70 | `/dashboard/seller/offers` | Offers Received | Offers management for sellers |
+| M71 | `/dashboard/seller/sale-progress/[id]` | Sale Progress Tracker | Conveyancing milestone tracker |
+| M72 | `/dashboard/seller/valuation` | Valuation Tool | In-dashboard property valuation |
+| M73 | `/dashboard/seller/viewings` | Viewings Management | Manage scheduled viewings |
+| M74 | `/dashboard/seller/analytics` | Seller Analytics | Full analytics dashboard |
+
+> **Covered:** Home (#73), listings (#74), listing analytics (#75)
+
+---
+
+### 14. Agent Dashboard — 24 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M75 | `/dashboard/agent/analytics/behaviour` | Behavioural Analytics | User engagement analytics |
+| M76 | `/dashboard/agent/analytics/branch` | Branch Analytics | Per-branch performance |
+| M77 | `/dashboard/agent/analytics/competitors` | Competitor Analytics | Market competitor comparison |
+| M78 | `/dashboard/agent/billing` | Agent Billing | Agent-specific billing |
+| M79 | `/dashboard/agent/boost` | Listing Boost | Paid promotion for listings |
+| M80 | `/dashboard/agent/crm` | CRM | Contact relationship manager |
+| M81 | `/dashboard/agent/crm/[id]` | CRM Contact Detail | Individual contact view |
+| M82 | `/dashboard/agent/feeds` | Property Feeds | Portal feed integration (Rightmove, Zoopla) |
+| M83 | `/dashboard/agent/leads` | Leads | Lead pipeline |
+| M84 | `/dashboard/agent/leads/[id]` | Lead Detail | Individual lead view |
+| M85 | `/dashboard/agent/listings/[id]/analytics` | Listing Analytics | Per-listing performance |
+| M86 | `/dashboard/agent/listings/archived` | Archived Listings | Archived/withdrawn listings |
+| M87 | `/dashboard/agent/listings/sold` | Sold Listings | Completed sale listings |
+| M88 | `/dashboard/agent/offers` | Offers | Offer management |
+| M89 | `/dashboard/agent/offers/[id]` | Offer Detail | Individual offer negotiation |
+| M90 | `/dashboard/agent/profile` | Agent Profile | Profile management |
+| M91 | `/dashboard/agent/profile/branding` | Brand Settings | Logo, colours, brand customisation |
+| M92 | `/dashboard/agent/revenue` | Revenue | Revenue tracking dashboard |
+| M93 | `/dashboard/agent/reviews` | Reviews | Review management |
+| M94 | `/dashboard/agent/reviews/[id]/respond` | Respond to Review | Review response form |
+| M95 | `/dashboard/agent/sales/appraisal` | Appraisal Tool | Market appraisal generator |
+| M96 | `/dashboard/agent/sales/reports` | Sales Reports | Sales performance reports |
+| M97 | `/dashboard/agent/team` | Team Management | Team members & permissions |
+| M98 | `/dashboard/agent/team/branches` | Branch Management | Multi-branch management |
+| M99 | `/dashboard/agent/team/roles` | Role Management | Team role permissions |
+| M100 | `/dashboard/agent/viewings` | Viewings | Agent viewings calendar |
+| M101 | `/dashboard/agent/viewings/feedback` | Viewing Feedback | Post-viewing feedback forms |
+
+> **Covered:** Home (#80), active listings (#81), listings management (#82), sale progression (#83), create listing step 1 (#84), create listing step 2 (#85)
+
+---
+
+### 15. Broker Dashboard — 6 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M102 | `/dashboard/broker/analytics` | Broker Analytics | Performance analytics |
+| M103 | `/dashboard/broker/billing` | Broker Billing | Billing management |
+| M104 | `/dashboard/broker/calculators` | Broker Calculators | In-dashboard mortgage tools |
+| M105 | `/dashboard/broker/fca-verification` | FCA Verification | FCA registration verification flow |
+| M106 | `/dashboard/broker/leads` | Leads | Lead management |
+| M107 | `/dashboard/broker/reviews` | Reviews | Review management |
+
+> **Covered:** Home (#86), pipeline (#87), profile (#88), products (#89)
+
+---
+
+### 16. Landlord Dashboard — 31 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M108 | `/dashboard/landlord/analytics` | Landlord Analytics | Portfolio performance |
+| M109 | `/dashboard/landlord/compliance-guide` | Compliance Guide | Regulatory compliance guide |
+| M110 | `/dashboard/landlord/compliance/alerts` | Compliance Alerts | Expiry/renewal alerts |
+| M111 | `/dashboard/landlord/compliance/upload` | Upload Compliance Docs | Document upload for compliance |
+| M112 | `/dashboard/landlord/deposits` | Deposit Management | Tenant deposit tracking |
+| M113 | `/dashboard/landlord/finance/expenses` | Expenses | Expense tracking |
+| M114 | `/dashboard/landlord/finance/report` | Financial Reports | Portfolio financial reports |
+| M115 | `/dashboard/landlord/finance/tax` | Tax Reporting | Section 24 tax calculations |
+| M116 | `/dashboard/landlord/find-agent` | Find Letting Agent | Agent search for landlords |
+| M117 | `/dashboard/landlord/find-tradespeople` | Find Tradespeople | Tradesperson search for landlords |
+| M118 | `/dashboard/landlord/insurance` | Insurance | Property insurance management |
+| M119 | `/dashboard/landlord/inventory/check-in` | Inventory Check-In | Move-in inventory report |
+| M120 | `/dashboard/landlord/inventory/check-out` | Inventory Check-Out | Move-out inventory report |
+| M121 | `/dashboard/landlord/legal/notices` | Legal Notices | Section 21/Section 8 notices |
+| M122 | `/dashboard/landlord/maintenance/[id]` | Maintenance Request Detail | Individual request view |
+| M123 | `/dashboard/landlord/maintenance/[id]/assign` | Assign Tradesperson | Assign tradesperson to request |
+| M124 | `/dashboard/landlord/properties` | Properties List | Portfolio property list |
+| M125 | `/dashboard/landlord/properties/[id]` | Property Detail | Property management hub |
+| M126 | `/dashboard/landlord/properties/[id]/documents` | Property Documents | Per-property documents |
+| M127 | `/dashboard/landlord/properties/[id]/financials` | Property Financials | Per-property income/expenses |
+| M128 | `/dashboard/landlord/properties/[id]/listing` | Property Listing | Manage property listing |
+| M129 | `/dashboard/landlord/properties/[id]/maintenance` | Property Maintenance | Per-property maintenance |
+| M130 | `/dashboard/landlord/properties/[id]/overview` | Property Overview | Per-property dashboard |
+| M131 | `/dashboard/landlord/properties/[id]/tenancies` | Property Tenancies | Per-property tenancy history |
+| M132 | `/dashboard/landlord/rent` | Rent Overview | Rent collection dashboard |
+| M133 | `/dashboard/landlord/rent/[propertyId]` | Rent by Property | Per-property rent tracking |
+| M134 | `/dashboard/landlord/tenants` | Tenants | Tenant management list |
+| M135 | `/dashboard/landlord/tenants/[applicationId]` | Tenant Application | Application review |
+| M136 | `/dashboard/landlord/tenants/decision` | Tenant Decision | Accept/reject tenant |
+| M137 | `/dashboard/landlord/tenants/agreement` | Tenancy Agreement | Agreement generation |
+| M138 | `/dashboard/landlord/tools/yield-calculator` | Yield Calculator | In-dashboard yield tool |
+
+> **Covered:** Home (#76), portfolio (#77), compliance matrix (#78), maintenance inbox (#79)
+
+---
+
+### 17. Provider/Tradesperson Dashboard — 27 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M139 | `/dashboard/provider/analytics` | Provider Analytics | Performance dashboard |
+| M140 | `/dashboard/provider/availability` | Availability Calendar | Availability management |
+| M141 | `/dashboard/provider/billing` | Provider Billing | Billing management |
+| M142 | `/dashboard/provider/boost` | Profile Boost | Paid promotion |
+| M143 | `/dashboard/provider/documents` | Documents | Document management |
+| M144 | `/dashboard/provider/field/jobs` | Field Jobs | Mobile-first field view |
+| M145 | `/dashboard/provider/field/payments` | Field Payments | Mobile-first payment tracking |
+| M146 | `/dashboard/provider/jobs` | Jobs Overview | All jobs list |
+| M147 | `/dashboard/provider/jobs/[id]` | Job Detail | Individual job view |
+| M148 | `/dashboard/provider/jobs/[id]/certificates` | Job Certificates | Upload certificates for job |
+| M149 | `/dashboard/provider/jobs/active` | Active Jobs | In-progress jobs |
+| M150 | `/dashboard/provider/jobs/completed` | Completed Jobs | Completed job history |
+| M151 | `/dashboard/provider/jobs/leads` | Job Leads | New job opportunities |
+| M152 | `/dashboard/provider/payments` | Payments Overview | Payment tracking |
+| M153 | `/dashboard/provider/payments/[id]` | Payment Detail | Individual payment view |
+| M154 | `/dashboard/provider/portfolio` | Portfolio | Work portfolio management |
+| M155 | `/dashboard/provider/profile` | Provider Profile | Profile management |
+| M156 | `/dashboard/provider/quotes` | Quotes Overview | Quote management |
+| M157 | `/dashboard/provider/quotes/[id]/invoice` | Quote Invoice | Invoice from quote |
+| M158 | `/dashboard/provider/quotes/builder` | Quote Builder | Quote creation tool |
+| M159 | `/dashboard/provider/referrals` | Referrals | Referral programme |
+| M160 | `/dashboard/provider/reviews` | Reviews | Review management |
+| M161 | `/dashboard/provider/reviews/[id]/respond` | Respond to Review | Review response form |
+| M162 | `/dashboard/provider/services` | Services Offered | Manage services |
+| M163 | `/dashboard/provider/services/areas` | Service Areas | Coverage area management |
+| M164 | `/dashboard/provider/verification` | Verification Overview | Verification hub |
+| M165 | `/dashboard/provider/verification/badges` | Verification Badges | Badge management |
+| M166 | `/dashboard/provider/verification/client-references` | Client References | Client reference requests |
+| M167 | `/dashboard/provider/verification/credentials` | Credentials | Credential upload/management |
+| M168 | `/dashboard/provider/verification/peer-references` | Peer References | Peer reference requests |
+
+> **Covered:** Public-facing screens (#91-101) cover search/discovery. Dashboard screens are the gap — only tradesperson onboarding (#26-29) exists in Stitch.
+
+---
+
+### 18. General Protected Routes — 10 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M169 | `/dashboard/rfqs` | RFQ List | Request for quotes list |
+| M170 | `/dashboard/rfqs/[id]` | RFQ Detail | Individual RFQ |
+| M171 | `/dashboard/rfqs/create` | Create RFQ | New RFQ form |
+| M172 | `/dashboard/bookings` | Bookings | Booking list |
+| M173 | `/dashboard/bookings/[id]` | Booking Detail | Individual booking |
+| M174 | `/dashboard/reviews` | Reviews | User's reviews |
+| M175 | `/milestones/transaction/[id]` | Transaction Milestones | Property transaction tracker |
+| M176 | `/milestones/job/[bookingId]` | Job Milestones | Job progress tracker |
+| M177 | `/profile` | User Profile | Public-facing profile page |
+| M178 | `/profile/settings` | Profile Settings | Profile editing |
+
+> **Covered:** Inbox (#126-127), notifications (#128), settings (#129-136)
+
+---
+
+### 19. Admin Dashboard — 20 Missing
+
+| # | Route | Page | Notes |
+|---|---|---|---|
+| M179 | `/admin/analytics/behaviour` | User Behaviour Analytics | User engagement data |
+| M180 | `/admin/analytics/platform` | Platform Analytics | Platform health metrics |
+| M181 | `/admin/analytics/search` | Search Analytics | Search usage patterns |
+| M182 | `/admin/api-usage` | API Usage | API usage monitoring |
+| M183 | `/admin/audit-log` | Audit Log | System audit trail |
+| M184 | `/admin/cms/blog` | Blog CMS | Blog content management |
+| M185 | `/admin/cms/blog/[id]` | Edit Blog Post | Blog editor |
+| M186 | `/admin/cms/help` | Help CMS | Help content management |
+| M187 | `/admin/cms/help/[id]` | Edit Help Article | Help article editor |
+| M188 | `/admin/cms/landing` | Landing Page CMS | Landing page builder |
+| M189 | `/admin/cms/landing/[id]` | Edit Landing Page | Landing page editor |
+| M190 | `/admin/email-campaigns` | Email Campaigns | Campaign management |
+| M191 | `/admin/fraud` | Fraud Detection | Fraud alerts dashboard |
+| M192 | `/admin/gdpr` | GDPR Management | Data requests management |
+| M193 | `/admin/promo-codes` | Promo Codes | Promotion management |
+| M194 | `/admin/reported` | Reported Content | User reports queue |
+| M195 | `/admin/reviews` | Review Moderation | Review moderation queue |
+| M196 | `/admin/roles` | Role Management | System role configuration |
+| M197 | `/admin/seo` | SEO Management | SEO settings & metadata |
+| M198 | `/admin/subscriptions` | Subscription Management | Plan & subscription admin |
+| M199 | `/admin/team` | Admin Team | Admin user management |
+| M200 | `/admin/verifications` | Verification Queue | Professional verification queue |
+
+> **Covered:** Dashboard overview (#145), user management (#147-148), moderation (#149-150), system health (#151), revenue analytics (#152), activity overview (#153)
+
+---
+
+## Priority Recommendations
+
+### Tier 1 — Template Screens (design once, reuse many times)
+
+These templates eliminate the most gaps with the fewest screens.
+
+| Template | Eliminates | Count |
+|---|---|---|
+| Legal page template + index | M38–M50 | 13 pages |
+| Calculator template | M27–M31 | 5 pages |
+| Blog index + post + help centre + article | M32–M37 | 6 pages |
+| Professional directory listing template | M17–M21 | 5 pages |
+| Service category template + index | M22–M26 | 5 pages |
+| Admin CMS editor template | M184–M189 | 6 pages |
+| Admin analytics template | M179–M181 | 3 pages |
+| **Subtotal** | | **43 pages from ~8 templates** |
+
+### Tier 2 — High-Impact Dashboard Screens
+
+These are core user flows that need unique designs.
+
+| Screen | Why | Gaps Covered |
+|---|---|---|
+| Landlord — Property Detail Hub | Central management page, 6 sub-tabs | M125–M131 |
+| Landlord — Tenant Management Flow | Application → decision → agreement | M134–M137 |
+| Landlord — Finance Dashboard | Expenses, reports, tax | M113–M115 |
+| Agent — CRM | Core agent workflow | M80–M81 |
+| Agent — Leads Pipeline | Lead management | M83–M84 |
+| Agent — Analytics Suite | 3 analytics views | M75–M77 |
+| Provider — Jobs Hub | Jobs list + detail + states | M146–M151 |
+| Provider — Quotes & Invoicing | Quote management + invoice | M156–M158 |
+| Provider — Verification Hub | Badges, credentials, references | M164–M168 |
+| Seller — Sale Progress Tracker | Conveyancing milestones | M71 |
+| Seller — Agent Comparison | Find + compare agents | M64–M66 |
+| Transaction/Job Milestones | Progress timeline | M175–M176 |
+
+### Tier 3 — Lower Priority
+
+| Category | Screens | Reason |
+|---|---|---|
+| Company pages (investors, press, partners, jobs) | M6–M10 | Marketing pages, can launch later |
+| Admin detailed pages (fraud, GDPR, campaigns, etc.) | M190–M200 | Internal tools, functional > beautiful |
+| Field views (provider mobile) | M144–M145 | Mobile-specific, can adapt desktop |
+| Boost/promotion pages | M79, M142 | Revenue feature, not launch-critical |
+
+---
+
+## Screen Count Summary
+
+| | Count |
+|---|---|
+| **Total pages in inventory** | 309 |
+| **Pages with Stitch screens** | ~102 |
+| **Missing screens** | ~191 |
+| **Eliminated by templates (Tier 1)** | ~43 |
+| **Unique screens still needed** | ~148 |
+| **High-priority (Tier 2)** | ~45 |
+| **Lower priority (Tier 3)** | ~30 |
+| **Remaining dashboard sub-pages** | ~73 |

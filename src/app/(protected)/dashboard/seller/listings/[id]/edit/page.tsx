@@ -28,10 +28,11 @@ function PageSkeleton() {
 }
 
 async function PageContent({ params, searchParams }: Props) {
-  const { id } = await params;
-  const { step: stepStr } = await searchParams;
+  try {
+    const { id } = await params;
+    const { step: stepStr } = await searchParams;
 
-  const supabase = await createClient();
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
@@ -56,7 +57,16 @@ async function PageContent({ params, searchParams }: Props) {
     7: <Step7Review listing={listing} listingId={id} />,
   };
 
-  return stepComponents[step];
+    return stepComponents[step];
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-on-surface">Edit Listing</h1>
+        <p className="mt-4 text-sm text-[--color-on-surface-variant]">Unable to load listing data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function EditListingPage({ params, searchParams }: Props) {

@@ -9,7 +9,8 @@ export const metadata = {
 };
 
 export default async function ProviderPortfolioPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -91,5 +92,14 @@ export default async function ProviderPortfolioPage() {
       {/* Grid */}
       <PortfolioGrid initialItems={items} providerId={providerId} />
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <h1 className="text-4xl font-extrabold font-headline text-primary">Manage Projects</h1>
+        <p className="mt-4 text-on-surface-variant">Unable to load portfolio data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

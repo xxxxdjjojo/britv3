@@ -8,7 +8,8 @@ export const metadata = {
 };
 
 export default async function ProviderServicesPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -40,5 +41,14 @@ export default async function ProviderServicesPage() {
     <div className="p-6 max-w-5xl">
       <ServicesManager initialServices={safeServices} providerId={providerId} />
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 max-w-5xl">
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">My Services</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load services. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

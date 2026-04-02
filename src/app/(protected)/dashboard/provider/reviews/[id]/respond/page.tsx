@@ -8,8 +8,9 @@ export const metadata = { title: "Respond to Review — Provider Dashboard" };
 export default async function RespondToReviewPage(props: Readonly<{
   params: Promise<{ id: string }>;
 }>) {
-  const { id } = await props.params;
-  const supabase = await createClient();
+  try {
+    const { id } = await props.params;
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -71,5 +72,14 @@ export default async function RespondToReviewPage(props: Readonly<{
 
       <ReviewResponseForm review={review} />
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 max-w-2xl">
+        <h1 className="text-2xl font-bold text-neutral-900">Respond to Review</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load review data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

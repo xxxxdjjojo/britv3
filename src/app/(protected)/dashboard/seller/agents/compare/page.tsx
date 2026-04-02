@@ -25,10 +25,11 @@ function PageSkeleton() {
 }
 
 async function PageContent({ searchParams }: Props) {
-  const { ids } = await searchParams;
-  if (!ids) redirect("/dashboard/seller/agents");
+  try {
+    const { ids } = await searchParams;
+    if (!ids) redirect("/dashboard/seller/agents");
 
-  const supabase = await createClient();
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
@@ -128,7 +129,16 @@ async function PageContent({ searchParams }: Props) {
         </table>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-on-surface">Agent Comparison</h1>
+        <p className="text-sm text-[--color-on-surface-variant]">Unable to load comparison data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function AgentComparisonPage({ searchParams }: Props) {

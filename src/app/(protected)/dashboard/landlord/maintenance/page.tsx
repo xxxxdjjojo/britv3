@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { getPortfolioMaintenanceRequests } from "@/services/landlord/maintenance-service";
+import { getPortfolioMaintenanceRequests, type MaintenanceRequestWithProperty } from "@/services/landlord/maintenance-service";
 import { MaintenanceInboxClient } from "./MaintenanceInboxClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -19,7 +19,12 @@ function PageSkeleton() {
 
 async function PageContent() {
   const supabase = await createClient();
-  const requests = await getPortfolioMaintenanceRequests(supabase);
+  let requests: MaintenanceRequestWithProperty[];
+  try {
+    requests = await getPortfolioMaintenanceRequests(supabase);
+  } catch {
+    requests = [];
+  }
 
   return <MaintenanceInboxClient initialData={requests} />;
 }

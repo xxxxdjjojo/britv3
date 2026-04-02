@@ -8,9 +8,10 @@ export const metadata = { title: "Transaction Detail — Provider Dashboard" };
 export default async function TransactionDetailPage(
   props: Readonly<{ params: Promise<{ id: string }> }>,
 ) {
-  const { id } = await props.params;
+  try {
+    const { id } = await props.params;
 
-  const supabase = await createClient();
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -43,9 +44,18 @@ export default async function TransactionDetailPage(
     notFound();
   }
 
-  return (
-    <div className="max-w-2xl p-6">
-      <TransactionDetail transaction={transaction} />
-    </div>
-  );
+    return (
+      <div className="max-w-2xl p-6">
+        <TransactionDetail transaction={transaction} />
+      </div>
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="max-w-2xl p-6">
+        <h1 className="text-2xl font-bold text-neutral-900">Transaction Detail</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load transaction data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

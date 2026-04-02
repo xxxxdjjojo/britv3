@@ -12,7 +12,12 @@ export const metadata = {
 
 async function MatrixContent() {
   const supabase = await createClient();
-  const matrixData = await getComplianceMatrix(supabase);
+  let matrixData;
+  try {
+    matrixData = await getComplianceMatrix(supabase);
+  } catch {
+    matrixData = { properties: [], categories: [] };
+  }
   return <ComplianceMatrix data={matrixData} />;
 }
 

@@ -29,10 +29,10 @@ async function PropertyDetailContent(props: Readonly<{ id: string }>) {
   const [property, tenancies, financialEntries, documents, maintenanceRequests] =
     await Promise.all([
       getPropertyDetail(supabase, props.id).catch(() => null),
-      getTenancies(supabase, props.id),
-      getFinancialEntries(supabase, props.id),
-      getDocuments(supabase, props.id),
-      getMaintenanceRequests(supabase, props.id),
+      getTenancies(supabase, props.id).catch(() => []),
+      getFinancialEntries(supabase, props.id).catch(() => []),
+      getDocuments(supabase, props.id).catch(() => []),
+      getMaintenanceRequests(supabase, props.id).catch(() => []),
     ]);
 
   if (!property) {

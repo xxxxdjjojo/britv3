@@ -46,8 +46,9 @@ function PageSkeleton() {
 }
 
 async function PageContent({ params }: Props) {
-  const { id } = await params;
-  const supabase = await createClient();
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -431,7 +432,16 @@ async function PageContent({ params }: Props) {
         </div>
       </section>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-12 max-w-6xl">
+        <h1 className="text-4xl font-extrabold text-[--color-brand-primary-dark]">Listing Analytics</h1>
+        <p className="text-sm text-[--color-on-surface-variant]">Unable to load analytics. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function ListingAnalyticsPage({ params }: Props) {

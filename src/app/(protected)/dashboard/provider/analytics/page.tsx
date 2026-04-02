@@ -26,7 +26,8 @@ const PERIOD_LABELS: Record<AnalyticsPeriod, string> = {
 };
 
 export default async function ProviderAnalyticsPage({ searchParams }: PageProps) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   let providerId: string;
   try {
@@ -371,5 +372,14 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <h1 className="text-3xl font-headline font-bold text-primary-container">Performance Overview</h1>
+        <p className="mt-4 text-on-surface-variant">Unable to load analytics data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

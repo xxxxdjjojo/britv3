@@ -23,17 +23,35 @@ import {
 } from "lucide-react";
 
 export default async function ProviderDashboardPage() {
-  const supabase = await createClient();
-  const { providerId, businessName } = await resolveProviderId(supabase);
+  let supabase;
+  let providerId: string;
+  let businessName: string | null;
+  let stats: Awaited<ReturnType<typeof getProviderDashboardStats>>;
+  let activity: Awaited<ReturnType<typeof getRecentActivity>>;
+  let upcomingJobs: Awaited<ReturnType<typeof getUpcomingJobs>>;
+  let cashPosition: Awaited<ReturnType<typeof getCashPosition>>;
+  let smartActions: Awaited<ReturnType<typeof getSmartActions>>;
 
-  // Fetch dashboard data in parallel
-  const [stats, activity, upcomingJobs, cashPosition, smartActions] = await Promise.all([
-    getProviderDashboardStats(providerId, supabase),
-    getRecentActivity(providerId, 8, supabase),
-    getUpcomingJobs(providerId, 5, supabase),
-    getCashPosition(providerId, supabase),
-    getSmartActions(providerId, supabase),
-  ]);
+  try {
+    supabase = await createClient();
+    ({ providerId, businessName } = await resolveProviderId(supabase));
+
+    [stats, activity, upcomingJobs, cashPosition, smartActions] = await Promise.all([
+      getProviderDashboardStats(providerId, supabase),
+      getRecentActivity(providerId, 8, supabase),
+      getUpcomingJobs(providerId, 5, supabase),
+      getCashPosition(providerId, supabase),
+      getSmartActions(providerId, supabase),
+    ]);
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error; // Re-throw Next.js redirects
+    return (
+      <div className="p-6 max-w-7xl">
+        <h1 className="text-2xl font-bold font-heading text-emerald-900">Jobs Overview</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load dashboard data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 
   const isVerified = stats.verificationStatus === "verified";
   const verificationProgress =

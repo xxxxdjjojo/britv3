@@ -6,14 +6,15 @@ import { ReferralDashboard } from "@/components/referrals/ReferralDashboard";
 export const metadata = { title: "Referral Programme — Britestate" };
 
 export default async function ProviderReferralsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+    if (!user) redirect("/login");
 
-  const stats = await getReferralDashboard(supabase, user.id);
+    const stats = await getReferralDashboard(supabase, user.id);
 
-  return (
+    return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-on-surface">Referral Programme</h1>
@@ -24,5 +25,14 @@ export default async function ProviderReferralsPage() {
 
       <ReferralDashboard stats={stats} />
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-8">
+        <h1 className="text-2xl font-bold text-on-surface">Referral Programme</h1>
+        <p className="mt-4 text-sm text-[--color-on-surface-variant]">Unable to load referral data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

@@ -9,7 +9,8 @@ export const metadata = {
 };
 
 export default async function ServiceAreasPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -76,5 +77,14 @@ export default async function ServiceAreasPage() {
         <ServiceAreaMapEditorWrapper initialAreas={safeAreas} />
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-6 p-6 max-w-5xl">
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Service Areas</h1>
+        <p className="text-sm text-neutral-500">Unable to load service areas. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

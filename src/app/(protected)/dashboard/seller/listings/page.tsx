@@ -45,8 +45,9 @@ function PageSkeleton() {
 }
 
 async function PageContent({ searchParams }: Props) {
-  const { status } = await searchParams;
-  const supabase = await createClient();
+  try {
+    const { status } = await searchParams;
+    const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -124,7 +125,16 @@ async function PageContent({ searchParams }: Props) {
         </div>
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-8 max-w-6xl">
+        <h1 className="text-3xl font-extrabold text-[--color-brand-primary] font-heading">My Listings</h1>
+        <p className="text-sm text-[--color-on-surface-variant]">Unable to load listings. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function MyListingsPage({ searchParams }: Props) {

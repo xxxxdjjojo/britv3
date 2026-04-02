@@ -83,8 +83,8 @@ export default async function CompliancePage() {
 
   // Fetch compliance docs and portfolio in parallel
   const [docs, properties] = await Promise.all([
-    getComplianceSummary(supabase),
-    getPortfolioProperties(supabase),
+    getComplianceSummary(supabase).catch(() => [] as ComplianceDocument[]),
+    getPortfolioProperties(supabase).catch(() => []),
   ]);
 
   const totalProperties = properties.length;

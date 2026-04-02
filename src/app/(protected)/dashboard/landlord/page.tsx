@@ -25,7 +25,7 @@ export const metadata = {
 async function DashboardContent() {
   const supabase = await createClient();
 
-  const [kpis, complianceDocs, healthScore, rentGroups, keyDatesResult] = await Promise.all([
+  const [kpisResult, complianceResult, healthResult, rentResult, keyDatesResult] = await Promise.allSettled([
     getPortfolioKPIs(supabase),
     getComplianceSummary(supabase),
     getHealthScore(supabase),
@@ -33,8 +33,22 @@ async function DashboardContent() {
     supabase.rpc("get_key_dates", { p_days_ahead: 60 }),
   ]);
 
+  const kpis = kpisResult.status === "fulfilled" ? kpisResult.value : {
+    total_properties: 0, occupied: 0, vacant: 0, occupancy_rate: 0,
+    total_monthly_rent: 0, open_maintenance: 0,
+  };
+  const complianceDocs = complianceResult.status === "fulfilled" ? complianceResult.value : [];
+  const healthScore = healthResult.status === "fulfilled" ? healthResult.value : {
+    total_score: 0, compliance_score: 0, compliance_max: 40, rent_score: 0,
+    rent_max: 30, maintenance_score: 0, maintenance_max: 20, deposit_score: 0,
+    deposit_max: 10, weakest_area: "compliance" as const,
+  };
+  const rentGroups = rentResult.status === "fulfilled" ? rentResult.value : {
+    upcoming: [], overdue: [], received: [],
+  };
+
   // Key dates from RPC
-  const keyDates: KeyDate[] = (keyDatesResult.data ?? []) as KeyDate[];
+  const keyDates: KeyDate[] = (keyDatesResult.status === "fulfilled" ? keyDatesResult.value.data ?? [] : []) as KeyDate[];
 
   // Filter to only expired or expiring_soon documents
   const alerts = complianceDocs.filter(

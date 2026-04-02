@@ -182,8 +182,9 @@ const EXAMPLE_DOCS = [
 ];
 
 export default async function NegotiationHubPage({ params }: Props) {
-  const { id } = await params;
-  const supabase = await createClient();
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -565,5 +566,14 @@ export default async function NegotiationHubPage({ params }: Props) {
         </aside>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6">
+        <h1 className="font-['Plus_Jakarta_Sans'] text-2xl font-extrabold text-brand-primary">Offer Details</h1>
+        <p className="mt-4 text-sm text-stone-500">Unable to load offer data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

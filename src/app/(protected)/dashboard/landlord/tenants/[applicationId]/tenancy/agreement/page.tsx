@@ -52,7 +52,7 @@ async function PageContent({ params }: Props) {
       .from("profiles")
       .select("full_name")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
     if (profile?.full_name) landlordName = profile.full_name;
   }
 
@@ -62,7 +62,7 @@ async function PageContent({ params }: Props) {
     .from("properties")
     .select("address_line_1, city, postcode")
     .eq("id", tenancy.property_id)
-    .single();
+    .maybeSingle();
 
   if (property) {
     propertyAddress = [property.address_line_1, property.city, property.postcode]

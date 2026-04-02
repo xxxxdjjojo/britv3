@@ -50,7 +50,7 @@ async function PageContent({
     .from("listings")
     .select("address_line_1, address_line_2, city, postcode")
     .eq("id", propertyId)
-    .single();
+    .maybeSingle();
 
   const propertyAddress = property
     ? [
@@ -68,7 +68,7 @@ async function PageContent({
     .from("profiles")
     .select("full_name")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const landlordName = profile?.full_name ?? user.email ?? "Landlord";
 

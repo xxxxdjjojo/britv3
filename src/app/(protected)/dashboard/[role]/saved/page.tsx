@@ -35,7 +35,13 @@ export default async function SavedPropertiesPage() {
     redirect("/login");
   }
 
-  const savedProperties = await getSavedProperties(supabase, user.id);
+  let savedProperties: Awaited<ReturnType<typeof getSavedProperties>> = [];
+  try {
+    savedProperties = await getSavedProperties(supabase, user.id);
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    // Fall through with empty array
+  }
 
   const count = savedProperties.length;
 

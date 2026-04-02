@@ -56,7 +56,7 @@ export default function VerificationPage({
             .from("profiles")
             .select("identity_verified, provider_verification_status")
             .eq("id", user.id)
-            .single();
+            .maybeSingle();
 
           if (profile) {
             setIdentityVerified(!!profile.identity_verified);

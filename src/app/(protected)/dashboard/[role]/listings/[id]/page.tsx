@@ -30,7 +30,13 @@ export default async function EditListingPage(
     redirect("/login");
   }
 
-  const result = await getListing(supabase, id);
+  let result;
+  try {
+    result = await getListing(supabase, id);
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    notFound();
+  }
 
   if (!result) {
     notFound();

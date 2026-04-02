@@ -6,7 +6,8 @@ import { Shield, RefreshCw } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function ProviderAvailabilityPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -196,5 +197,14 @@ export default async function ProviderAvailabilityPage() {
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold font-heading text-neutral-900">Availability Calendar</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load availability data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

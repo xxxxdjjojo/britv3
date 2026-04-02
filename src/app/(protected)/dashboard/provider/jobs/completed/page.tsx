@@ -162,7 +162,8 @@ type SearchParams = Readonly<{
 export default async function CompletedJobsPage(props: Readonly<{
   searchParams: Promise<SearchParams>;
 }>) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -250,5 +251,14 @@ export default async function CompletedJobsPage(props: Readonly<{
         </>
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 max-w-7xl">
+        <h1 className="text-2xl font-bold font-heading text-neutral-900">Completed Jobs</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load completed jobs. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

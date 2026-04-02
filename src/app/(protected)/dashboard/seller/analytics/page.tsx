@@ -29,11 +29,12 @@ function PageSkeleton() {
 }
 
 async function PageContent() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) redirect("/login");
 
   const [kpis, listings] = await Promise.all([
     getSellerKPIs(supabase),
@@ -253,7 +254,16 @@ async function PageContent() {
         </section>
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-10 max-w-6xl">
+        <h1 className="text-4xl font-extrabold text-[--color-brand-primary] font-heading">Market Analytics</h1>
+        <p className="text-sm text-[--color-on-surface-variant]">Unable to load analytics data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function MarketAnalyticsPage() {

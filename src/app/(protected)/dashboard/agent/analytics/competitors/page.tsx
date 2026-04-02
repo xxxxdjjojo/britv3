@@ -44,7 +44,7 @@ async function PageContent() {
     .from("agent_agency_profiles")
     .select("coverage_areas")
     .eq("agent_id", user.id)
-    .single();
+    .maybeSingle();
 
   const coverageAreas: string[] = (agencyProfile as { coverage_areas?: string[] } | null)
     ?.coverage_areas ?? [];

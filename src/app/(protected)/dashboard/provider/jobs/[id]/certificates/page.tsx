@@ -111,9 +111,10 @@ function CertificateCard({ cert }: { cert: Certificate }) {
 // ---------------------------------------------------------------------------
 
 export default async function CertificatesPage({ params }: Params) {
-  const { id: bookingId } = await params;
+  try {
+    const { id: bookingId } = await params;
 
-  const supabase = await createClient();
+    const supabase = await createClient();
 
   // Auth + provider resolution
   let providerId: string;
@@ -203,5 +204,14 @@ export default async function CertificatesPage({ params }: Params) {
         </CardContent>
       </Card>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <h1 className="text-xl font-bold text-neutral-900">Certificates</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load certificate data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

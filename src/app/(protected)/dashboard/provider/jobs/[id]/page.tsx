@@ -75,9 +75,10 @@ async function fetchSidebarData(
 // ---------------------------------------------------------------------------
 
 export default async function JobDetailPage({ params }: Params) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
 
-  const supabase = await createClient();
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -112,5 +113,14 @@ export default async function JobDetailPage({ params }: Params) {
   // Fetch sidebar supplemental data
   const sidebar = await fetchSidebarData(id, supabase);
 
-  return <JobDetailView job={job} sidebar={sidebar} />;
+    return <JobDetailView job={job} sidebar={sidebar} />;
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 max-w-7xl">
+        <h1 className="text-2xl font-bold font-heading text-neutral-900">Job Detail</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load job data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

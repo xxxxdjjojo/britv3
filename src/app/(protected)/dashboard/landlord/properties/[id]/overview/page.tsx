@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getPropertyDetail } from "@/services/landlord/portfolio-service";
 import PropertyOverview from "@/components/landlord/PropertyOverview";
@@ -24,7 +25,8 @@ async function PageContent(
 ) {
   const { id } = await props.params;
   const supabase = await createClient();
-  const property = await getPropertyDetail(supabase, id);
+  const property = await getPropertyDetail(supabase, id).catch(() => null);
+  if (!property) notFound();
 
   return <PropertyOverview property={property} />;
 }

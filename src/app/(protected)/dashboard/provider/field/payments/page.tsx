@@ -14,7 +14,8 @@ type SentInvoiceRow = {
 };
 
 export default async function FieldPaymentsPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -137,5 +138,14 @@ export default async function FieldPaymentsPage() {
         View all payments
       </Link>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-6 pt-2">
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Payments</h1>
+        <p className="text-sm text-neutral-500">Unable to load payment data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

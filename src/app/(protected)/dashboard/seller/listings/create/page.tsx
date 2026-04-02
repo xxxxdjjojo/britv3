@@ -26,8 +26,9 @@ function PageSkeleton() {
 }
 
 async function PageContent({ searchParams }: Props) {
-  const { step: stepStr, id: listingId } = await searchParams;
-  const supabase = await createClient();
+  try {
+    const { step: stepStr, id: listingId } = await searchParams;
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
@@ -79,7 +80,16 @@ async function PageContent({ searchParams }: Props) {
     7: <Step7Review listing={listing} listingId={listingId!} />,
   };
 
-  return stepComponents[step];
+    return stepComponents[step];
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-on-surface">Create Listing</h1>
+        <p className="mt-4 text-sm text-[--color-on-surface-variant]">Unable to load listing wizard. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function CreateListingPage({ searchParams }: Props) {

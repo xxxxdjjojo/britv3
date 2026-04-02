@@ -12,8 +12,9 @@ type SearchParams = { rating?: string };
 export default async function ProviderReviewsPage(props: Readonly<{
   searchParams: Promise<SearchParams>;
 }>) {
-  const searchParams = await props.searchParams;
-  const supabase = await createClient();
+  try {
+    const searchParams = await props.searchParams;
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -153,5 +154,14 @@ export default async function ProviderReviewsPage(props: Readonly<{
         </div>
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="space-y-6 p-6 max-w-3xl">
+        <h1 className="font-heading text-2xl font-bold text-neutral-900">Reviews</h1>
+        <p className="text-sm text-neutral-500">Unable to load reviews. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

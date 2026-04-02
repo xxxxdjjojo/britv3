@@ -105,7 +105,8 @@ function getStatusForStep(stepId: string, stepsMap: Map<string, string>): string
 const INSURANCE_EXPIRING = true;
 
 export default async function VerificationOverviewPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -425,5 +426,14 @@ export default async function VerificationOverviewPage() {
         </div>
       </section>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <h1 className="text-4xl font-extrabold font-headline text-on-surface">Verification Centre</h1>
+        <p className="mt-4 text-on-surface-variant">Unable to load verification data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

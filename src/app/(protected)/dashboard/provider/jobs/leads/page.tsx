@@ -6,7 +6,8 @@ import { JobLeadsClient } from "@/components/dashboard/provider/JobLeadsClient";
 export const metadata = { title: "Job Leads — Provider Dashboard" };
 
 export default async function ProviderLeadsPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -44,5 +45,14 @@ export default async function ProviderLeadsPage() {
 
       <JobLeadsClient initialLeads={leads} providerId={providerId} />
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold font-heading text-emerald-900">Marketplace Opportunities</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load leads. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

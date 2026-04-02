@@ -105,7 +105,8 @@ function ActiveJobCard({ job }: Readonly<{ job: ActiveJob }>) {
 // ---------------------------------------------------------------------------
 
 export default async function ActiveJobsPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -189,5 +190,14 @@ export default async function ActiveJobsPage() {
         </>
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="p-6 max-w-7xl">
+        <h1 className="text-2xl font-bold font-heading text-neutral-900">Active Jobs</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load active jobs. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

@@ -165,7 +165,7 @@ async function PageContent({ searchParams }: Props) {
     .from("profiles")
     .select("full_name")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const landlordName = (profile?.full_name as string | null) ?? user.email ?? "Landlord";
 

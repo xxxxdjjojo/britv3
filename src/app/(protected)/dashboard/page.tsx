@@ -15,7 +15,7 @@ export default async function DashboardPage() {
     .from("profiles")
     .select("active_role")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   if (!profile?.active_role) {
     // No roles assigned yet -- send to role selection

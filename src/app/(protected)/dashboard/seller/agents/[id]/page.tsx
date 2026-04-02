@@ -25,8 +25,9 @@ function PageSkeleton() {
 }
 
 async function PageContent({ params }: Props) {
-  const { id } = await params;
-  const supabase = await createClient();
+  try {
+    const { id } = await params;
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
@@ -151,7 +152,16 @@ async function PageContent({ params }: Props) {
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="max-w-3xl space-y-6">
+        <h1 className="text-2xl font-bold text-on-surface">Agent Profile</h1>
+        <p className="text-sm text-[--color-on-surface-variant]">Unable to load agent profile. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }
 
 export default function AgentProfilePage({ params }: Props) {

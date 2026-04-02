@@ -6,7 +6,8 @@ import { BoostSelector } from "@/components/dashboard/provider/BoostSelector";
 export const metadata = { title: "Boost & Promote — Provider Dashboard" };
 
 export default async function BoostPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -46,5 +47,14 @@ export default async function BoostPage() {
 
       <BoostSelector activeBoosts={activeBoosts} stripeEnabled={stripeEnabled} />
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-8">
+        <h1 className="text-2xl font-bold text-neutral-900">Boost &amp; Promote</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load boost data. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

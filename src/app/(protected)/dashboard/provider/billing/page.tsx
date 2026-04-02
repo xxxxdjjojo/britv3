@@ -5,8 +5,9 @@ import { SubscriptionBilling } from "@/components/dashboard/provider/Subscriptio
 export const metadata = { title: "Billing & Earnings — Provider Dashboard" };
 
 export default async function BillingPage() {
-  // ── Auth ──────────────────────────────────────────────────────────────────
-  const supabase = await createClient();
+  try {
+    // ── Auth ──────────────────────────────────────────────────────────────────
+    const supabase = await createClient();
 
   const {
     data: { user },
@@ -103,5 +104,16 @@ export default async function BillingPage() {
         />
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="min-h-screen bg-surface p-10">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-extrabold text-stone-950 font-heading">Billing &amp; Earnings</h1>
+          <p className="mt-4 text-sm text-stone-500">Unable to load billing data. Please try refreshing the page.</p>
+        </div>
+      </div>
+    );
+  }
 }

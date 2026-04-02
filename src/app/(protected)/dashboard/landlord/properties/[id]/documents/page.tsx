@@ -40,14 +40,15 @@ async function PageContent({
 
   // Fetch documents and expiring documents in parallel
   const [documents, expiringDocs, tenanciesResult] = await Promise.all([
-    getDocuments(supabase, propertyId),
-    getExpiringDocuments(supabase, propertyId),
+    getDocuments(supabase, propertyId).catch(() => []),
+    getExpiringDocuments(supabase, propertyId).catch(() => []),
     supabase
       .from("tenancies")
       .select("id, tenant_name, status")
       .eq("property_id", propertyId)
       .eq("status", "active")
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .then((res) => res, () => ({ data: null })),
   ]);
 
   const tenancies = (tenanciesResult.data ?? []) as Tenancy[];

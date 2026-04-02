@@ -37,13 +37,14 @@ async function PageContent(
 
   // Fetch recent entries and active tenancies in parallel
   const [entries, tenanciesResult] = await Promise.all([
-    getFinancialEntries(supabase, propertyId),
+    getFinancialEntries(supabase, propertyId).catch(() => [] as FinancialEntry[]),
     supabase
       .from("tenancies")
       .select("*")
       .eq("property_id", propertyId)
       .in("status", ["active", "ending_soon"])
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .then((res) => res, () => ({ data: null })),
   ]);
 
   const tenancies = (tenanciesResult.data ?? []) as Tenancy[];

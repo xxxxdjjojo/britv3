@@ -56,38 +56,63 @@ export default async function PaymentsPage() {
   }
 
   // ── Auth ──────────────────────────────────────────────────────────────────
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+    if (!user) {
+      redirect("/login");
+    }
 
-  // ── Resolve provider id ───────────────────────────────────────────────────
-  const { data: providerProfile } = await supabase
-    .from("service_provider_details")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+    // ── Resolve provider id ───────────────────────────────────────────────────
+    const { data: providerProfile } = await supabase
+      .from("service_provider_details")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-  const providerId = (providerProfile as { user_id: string } | null)?.user_id ?? user.id;
+    const providerId = (providerProfile as { user_id: string } | null)?.user_id ?? user.id;
 
-  // ── Stripe Connect account status ─────────────────────────────────────────
-  const connectAccount = await getStripeConnectAccount(supabase, providerId);
+    // ── Stripe Connect account status ─────────────────────────────────────────
+    const connectAccount = await getStripeConnectAccount(supabase, providerId);
 
-  const isOnboarded =
-    connectAccount !== null &&
-    connectAccount.onboarding_complete &&
-    connectAccount.charges_enabled;
+    const isOnboarded =
+      connectAccount !== null &&
+      connectAccount.onboarding_complete &&
+      connectAccount.charges_enabled;
 
-  // ── Not connected — show onboarding banner ───────────────────────────────
-  if (!isOnboarded) {
+    // ── Not connected — show onboarding banner ───────────────────────────────
+    if (!isOnboarded) {
+      return (
+        <div className="min-h-screen bg-[#faf9f8] p-10">
+          <div className="max-w-7xl mx-auto space-y-8">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] mb-2 block">
+                Provider Dashboard
+              </span>
+              <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
+                Financial Health
+              </h1>
+            </div>
+            <StripeConnectOnboarding />
+          </div>
+        </div>
+      );
+    }
+
+    // ── Connected — fetch balance + payout history in parallel ───────────────
+    const [balance, payouts] = await Promise.all([
+      getStripeBalance(providerId, supabase),
+      getPayoutHistory(providerId, 20, supabase),
+    ]);
+
     return (
       <div className="min-h-screen bg-[#faf9f8] p-10">
         <div className="max-w-7xl mx-auto space-y-8">
+          {/* Page header */}
           <div>
             <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] mb-2 block">
               Provider Dashboard
@@ -96,33 +121,20 @@ export default async function PaymentsPage() {
               Financial Health
             </h1>
           </div>
-          <StripeConnectOnboarding />
+
+          <PaymentsOverview balance={balance} payouts={payouts} />
+        </div>
+      </div>
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error; // Re-throw Next.js redirects
+    return (
+      <div className="min-h-screen bg-[#faf9f8] p-10">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">Financial Health</h1>
+          <p className="mt-4 text-sm text-stone-500">Unable to load payment data. Please try refreshing the page.</p>
         </div>
       </div>
     );
   }
-
-  // ── Connected — fetch balance + payout history in parallel ───────────────
-  const [balance, payouts] = await Promise.all([
-    getStripeBalance(providerId, supabase),
-    getPayoutHistory(providerId, 20, supabase),
-  ]);
-
-  return (
-    <div className="min-h-screen bg-[#faf9f8] p-10">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Page header */}
-        <div>
-          <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] mb-2 block">
-            Provider Dashboard
-          </span>
-          <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
-            Financial Health
-          </h1>
-        </div>
-
-        <PaymentsOverview balance={balance} payouts={payouts} />
-      </div>
-    </div>
-  );
 }

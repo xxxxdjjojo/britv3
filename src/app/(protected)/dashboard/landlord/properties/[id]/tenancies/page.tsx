@@ -5,7 +5,7 @@ import { getTenancies } from "@/services/landlord/tenancy-service";
 import { TenancyStatusBadge } from "@/components/landlord/TenancyStatusBadge";
 import { TenancyForm } from "@/components/landlord/TenancyForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { TenancyStatus } from "@/types/landlord";
+import type { Tenancy, TenancyStatus } from "@/types/landlord";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users, Plus, ChevronRight, Clock, CalendarDays } from "lucide-react";
 
@@ -35,7 +35,12 @@ async function PageContent(
   const showForm = searchParams.new === "true";
 
   const supabase = await createClient();
-  const tenancies = await getTenancies(supabase, id);
+  let tenancies: Tenancy[];
+  try {
+    tenancies = await getTenancies(supabase, id);
+  } catch {
+    tenancies = [];
+  }
 
   const activeTenancies = tenancies.filter(
     (t) => t.status === "active" || t.status === "ending_soon",

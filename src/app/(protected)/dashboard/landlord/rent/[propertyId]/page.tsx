@@ -55,7 +55,11 @@ async function PageContent({ params }: PageProps) {
   const supabase = await createClient();
 
   // Fetch rent entries for this property (queries financial_entries WHERE category='rent')
-  const rentGroups = await getRentCollection(supabase, propertyId);
+  const rentGroups = await getRentCollection(supabase, propertyId).catch(() => ({
+    paid: [] as RentCollectionEntry[],
+    partial: [] as RentCollectionEntry[],
+    overdue: [] as RentCollectionEntry[],
+  }));
   const allEntries: RentCollectionEntry[] = [
     ...rentGroups.paid,
     ...rentGroups.partial,

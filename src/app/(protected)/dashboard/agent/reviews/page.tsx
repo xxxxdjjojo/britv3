@@ -30,13 +30,27 @@ async function PageContent() {
     redirect("/login");
   }
 
-  const { data: rawReviews } = await supabase
-    .from("reviews")
-    .select("*")
-    .eq("reviewee_id", user.id)
-    .order("created_at", { ascending: false });
+  type Review = {
+    id: string;
+    rating: number;
+    review_text?: string;
+    reviewer_name?: string;
+    created_at: string;
+    agent_response?: string;
+    responded_at?: string;
+  };
 
-  const reviews = rawReviews ?? [];
+  let reviews: Review[] = [];
+  try {
+    const { data: rawReviews } = await supabase
+      .from("reviews")
+      .select("id, rating, review_text, reviewer_name, created_at, agent_response, responded_at")
+      .eq("reviewee_id", user.id)
+      .order("created_at", { ascending: false });
+    reviews = (rawReviews ?? []) as Review[];
+  } catch {
+    // Fall through with empty array
+  }
 
   // Compute stats
   const totalCount = reviews.length;
@@ -44,10 +58,9 @@ async function PageContent() {
   let ratingSum = 0;
 
   for (const r of reviews) {
-    const rating = r.rating as number;
-    ratingSum += rating;
-    if (rating >= 1 && rating <= 5) {
-      byStar[rating] = (byStar[rating] ?? 0) + 1;
+    ratingSum += r.rating;
+    if (r.rating >= 1 && r.rating <= 5) {
+      byStar[r.rating] = (byStar[r.rating] ?? 0) + 1;
     }
   }
 

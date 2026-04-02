@@ -11,7 +11,22 @@ export default async function ReferralsPage() {
 
   if (!user) redirect("/login");
 
-  const stats = await getReferralDashboard(supabase, user.id);
+  let stats;
+  try {
+    stats = await getReferralDashboard(supabase, user.id);
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    stats = {
+      referral_code: "",
+      referral_url: "",
+      tier: "none" as const,
+      successful_referrals: 0,
+      pending_referrals: 0,
+      total_rewards_pence: 0,
+      next_tier_threshold: null,
+      referrals: [],
+    };
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">

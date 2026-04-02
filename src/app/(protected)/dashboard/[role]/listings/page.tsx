@@ -85,9 +85,18 @@ export default async function MyListingsPage(
       : undefined;
 
   // For "sold" tab, include both sold and let statuses
-  const { data: listings, count } = await getMyListings(supabase, user.id, {
-    status: statusFilter === "sold" ? undefined : statusFilter,
-  });
+  let listings: Awaited<ReturnType<typeof getMyListings>>["data"] = [];
+  let count = 0;
+  try {
+    const result = await getMyListings(supabase, user.id, {
+      status: statusFilter === "sold" ? undefined : statusFilter,
+    });
+    listings = result.data;
+    count = result.count;
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    // Fall through with empty listings
+  }
 
   // Filter for sold tab client-side (includes sold + let)
   const filteredListings =

@@ -9,7 +9,8 @@ type Props = {
 };
 
 export default async function QuoteBuilderPage({ searchParams }: Props) {
-  const params = await searchParams;
+  try {
+    const params = await searchParams;
   const requestId =
     typeof params["request_id"] === "string" ? params["request_id"] : undefined;
 
@@ -85,5 +86,14 @@ export default async function QuoteBuilderPage({ searchParams }: Props) {
         />
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    return (
+      <div className="min-h-screen bg-[#faf9f8] pt-8 px-10">
+        <h1 className="text-3xl font-bold font-heading text-[#003629]">Create Professional Bid</h1>
+        <p className="mt-4 text-sm text-stone-500">Unable to load quote builder. Please try refreshing the page.</p>
+      </div>
+    );
+  }
 }

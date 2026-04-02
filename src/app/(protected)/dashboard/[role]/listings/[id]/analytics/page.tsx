@@ -36,7 +36,13 @@ export default async function ListingAnalyticsPage(
     redirect("/login");
   }
 
-  const listing = await getListing(supabase, id);
+  let listing;
+  try {
+    listing = await getListing(supabase, id);
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    notFound();
+  }
 
   if (!listing) {
     notFound();
@@ -47,10 +53,18 @@ export default async function ListingAnalyticsPage(
     redirect(`/dashboard/${role}/listings`);
   }
 
-  const [analytics, priceHistory] = await Promise.all([
-    getListingAnalytics(supabase, id),
-    getPriceHistory(supabase, id),
-  ]);
+  let analytics: Awaited<ReturnType<typeof getListingAnalytics>>;
+  let priceHistory: Awaited<ReturnType<typeof getPriceHistory>>;
+  try {
+    [analytics, priceHistory] = await Promise.all([
+      getListingAnalytics(supabase, id),
+      getPriceHistory(supabase, id),
+    ]);
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    analytics = { view_count: 0, favorite_count: 0, enquiry_count: 0 };
+    priceHistory = [];
+  }
 
   return (
     <div className="space-y-6">
