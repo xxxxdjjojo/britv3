@@ -10,7 +10,9 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "analyze": "ANALYZE=true pnpm build"
+    "analyze": "ANALYZE=true pnpm build",
+    "seed:demo": "node --env-file=.env.local --import tsx/esm scripts/seed-demo.ts",
+    "seed:reset": "node --env-file=.env.local --import tsx/esm scripts/seed-reset.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

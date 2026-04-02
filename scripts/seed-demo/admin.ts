@@ -234,7 +234,7 @@ function buildAuditLogRows(): Record<string, unknown>[] {
       target_id: ra.target_id,
       metadata: JSON.stringify(ra.metadata),
       ip_address: "127.0.0.1",
-      created_at: ("hoursAgo" in ra ? hoursAgo(ra.hoursAgo) : daysAgo(ra.daysAgo)).toISOString(),
+      created_at: ("hoursAgo" in ra ? hoursAgo(ra.hoursAgo as number) : daysAgo(ra.daysAgo as number)).toISOString(),
     });
   }
 
