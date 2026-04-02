@@ -26,7 +26,7 @@ export default async function FieldLayout({
   // Resolve provider identity
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id, business_name")
+    .select("user_id, business_name")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -37,7 +37,7 @@ export default async function FieldLayout({
     .maybeSingle();
 
   const initialData = {
-    providerId: (providerProfile?.id as string | null) ?? user.id,
+    providerId: (providerProfile?.user_id as string | null) ?? user.id,
     userId: user.id,
     businessName: (providerProfile?.business_name as string | null) ?? "",
     stripeAccountId: (stripeAccount?.stripe_account_id as string | null) ?? null,

@@ -72,60 +72,73 @@ export async function getProviderAnalytics(
   providerId: string,
   period: AnalyticsPeriod,
 ): Promise<ProviderAnalyticsSummary> {
-  const startDate = startDateForPeriod(period);
-
-  const { data, error } = await supabase
-    .from("provider_analytics_daily")
-    .select("*")
-    .eq("provider_id", providerId)
-    .gte("date", startDate)
-    .order("date", { ascending: true });
-
-  if (error) throw new Error(error.message);
-
-  const rows = (data ?? []) as ProviderAnalyticsDaily[];
-
-  // -- profile_views_total
-  const profile_views_total = rows.reduce((sum, r) => sum + r.profile_views, 0);
-
-  // -- profile_views_by_day
-  const profile_views_by_day: ProfileViewsByDay[] = rows.map((r) => ({
-    date: r.date,
-    views: r.profile_views,
-  }));
-
-  // -- enquiry_rate_pct
-  const totalEnquiries = rows.reduce((sum, r) => sum + r.enquiries_received, 0);
-  const enquiry_rate_pct =
-    profile_views_total > 0
-      ? Math.min(100, Math.round((totalEnquiries / profile_views_total) * 100 * 100) / 100)
-      : 0;
-
-  // -- conversion_by_stage
-  const conversion_by_stage = await getConversionFunnel(supabase, providerId, period, rows);
-
-  // -- earnings_by_month (group by YYYY-MM)
-  const earningsMap = new Map<string, number>();
-  for (const row of rows) {
-    const month = row.date.slice(0, 7); // YYYY-MM
-    earningsMap.set(month, (earningsMap.get(month) ?? 0) + row.earnings_pence);
-  }
-  const earnings_by_month: EarningsByMonth[] = Array.from(earningsMap.entries())
-    .map(([month, earnings_pence]) => ({ month, earnings_pence }))
-    .sort((a, b) => a.month.localeCompare(b.month));
-
-  // -- top_categories: requires bookings data; not available in analytics_daily
-  // TODO: query provider_bookings joined to provider_services for category breakdown
-  const top_categories: TopCategory[] = [];
-
-  return {
-    profile_views_total,
-    profile_views_by_day,
-    enquiry_rate_pct,
-    conversion_by_stage,
-    earnings_by_month,
-    top_categories,
+  const EMPTY: ProviderAnalyticsSummary = {
+    profile_views_total: 0,
+    profile_views_by_day: [],
+    enquiry_rate_pct: 0,
+    conversion_by_stage: { viewed: 0, enquired: 0, quoted: 0, booked: 0 },
+    earnings_by_month: [],
+    top_categories: [],
   };
+
+  try {
+    const startDate = startDateForPeriod(period);
+
+    const { data, error } = await supabase
+      .from("provider_analytics_daily")
+      .select("*")
+      .eq("provider_id", providerId)
+      .gte("date", startDate)
+      .order("date", { ascending: true });
+
+    if (error || !data) return EMPTY;
+
+    const rows = data as ProviderAnalyticsDaily[];
+
+    // -- profile_views_total
+    const profile_views_total = rows.reduce((sum, r) => sum + r.profile_views, 0);
+
+    // -- profile_views_by_day
+    const profile_views_by_day: ProfileViewsByDay[] = rows.map((r) => ({
+      date: r.date,
+      views: r.profile_views,
+    }));
+
+    // -- enquiry_rate_pct
+    const totalEnquiries = rows.reduce((sum, r) => sum + r.enquiries_received, 0);
+    const enquiry_rate_pct =
+      profile_views_total > 0
+        ? Math.min(100, Math.round((totalEnquiries / profile_views_total) * 100 * 100) / 100)
+        : 0;
+
+    // -- conversion_by_stage
+    const conversion_by_stage = await getConversionFunnel(supabase, providerId, period, rows);
+
+    // -- earnings_by_month (group by YYYY-MM)
+    const earningsMap = new Map<string, number>();
+    for (const row of rows) {
+      const month = row.date.slice(0, 7); // YYYY-MM
+      earningsMap.set(month, (earningsMap.get(month) ?? 0) + row.earnings_pence);
+    }
+    const earnings_by_month: EarningsByMonth[] = Array.from(earningsMap.entries())
+      .map(([month, earnings_pence]) => ({ month, earnings_pence }))
+      .sort((a, b) => a.month.localeCompare(b.month));
+
+    // -- top_categories: requires bookings data; not available in analytics_daily
+    // TODO: query provider_bookings joined to provider_services for category breakdown
+    const top_categories: TopCategory[] = [];
+
+    return {
+      profile_views_total,
+      profile_views_by_day,
+      enquiry_rate_pct,
+      conversion_by_stage,
+      earnings_by_month,
+      top_categories,
+    };
+  } catch {
+    return EMPTY;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -157,8 +170,8 @@ export async function getConversionFunnel(
       .eq("provider_id", providerId)
       .gte("date", startDate);
 
-    if (error) throw new Error(error.message);
-    dailyRows = (data ?? []) as ProviderAnalyticsDaily[];
+    if (error || !data) return { viewed: 0, enquired: 0, quoted: 0, booked: 0 };
+    dailyRows = data as ProviderAnalyticsDaily[];
   }
 
   const viewed = dailyRows.reduce((sum, r) => sum + r.profile_views, 0);

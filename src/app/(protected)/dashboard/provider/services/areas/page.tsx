@@ -21,11 +21,11 @@ export default async function ServiceAreasPage() {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   const { data: areas } = await supabase
     .from("provider_service_areas")

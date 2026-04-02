@@ -126,7 +126,7 @@ export async function getProviderDashboardStats(
       supabase
         .from("reviews")
         .select("overall_rating")
-        .eq("reviewee_id", providerId),
+        .eq("provider_id", providerId),
 
       // Total earnings (paid invoices)
       supabase
@@ -138,8 +138,8 @@ export async function getProviderDashboardStats(
       // Verification documents
       supabase
         .from("provider_documents")
-        .select("status")
-        .eq("provider_id", providerId),
+        .select("verification_status")
+        .eq("user_id", providerId),
     ]);
 
     // Total leads
@@ -188,8 +188,8 @@ export async function getProviderDashboardStats(
     let verificationStatus = "unverified";
     if (verificationResult.status === "fulfilled" && !verificationResult.value.error) {
       const docs = verificationResult.value.data ?? [];
-      const hasApproved = docs.some((d: { status: string }) => d.status === "approved");
-      const hasPending = docs.some((d: { status: string }) => d.status === "pending");
+      const hasApproved = docs.some((d: { verification_status: string }) => d.verification_status === "approved");
+      const hasPending = docs.some((d: { verification_status: string }) => d.verification_status === "pending");
       if (hasApproved) verificationStatus = "verified";
       else if (hasPending) verificationStatus = "pending";
     }
@@ -234,7 +234,7 @@ export async function getRecentActivity(
       supabase
         .from("reviews")
         .select("id, overall_rating, comment, created_at, booking_id")
-        .eq("reviewee_id", providerId)
+        .eq("provider_id", providerId)
         .order("created_at", { ascending: false })
         .limit(limit),
     ]);

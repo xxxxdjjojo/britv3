@@ -25,7 +25,7 @@ export default async function SellerDashboardLayout(
         userName={profile?.full_name ?? "Seller"}
         avatarUrl={profile?.avatar_url ?? null}
       />
-      <main className="flex-1 min-h-screen p-4 sm:p-6 lg:pl-72 lg:pr-8 lg:py-8">
+      <main className="flex-1 min-h-screen p-4 sm:p-6 lg:pr-8 lg:py-8">
         {props.children}
       </main>
     </div>

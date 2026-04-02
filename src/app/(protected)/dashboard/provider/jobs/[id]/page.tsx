@@ -90,11 +90,11 @@ export default async function JobDetailPage({ params }: Params) {
   // Resolve provider id
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = providerProfile?.id ?? user.id;
+  const providerId = providerProfile?.user_id ?? user.id;
 
   // Fetch job detail
   let job;

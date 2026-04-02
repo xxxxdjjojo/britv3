@@ -69,11 +69,11 @@ export default async function PaymentsPage() {
   // ── Resolve provider id ───────────────────────────────────────────────────
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = (providerProfile as { id: string } | null)?.id ?? user.id;
+  const providerId = (providerProfile as { user_id: string } | null)?.user_id ?? user.id;
 
   // ── Stripe Connect account status ─────────────────────────────────────────
   const connectAccount = await getStripeConnectAccount(supabase, providerId);

@@ -20,7 +20,7 @@ export default async function BrokerLayout({ children }: Readonly<{ children: Re
   return (
     <div className="flex min-h-screen bg-background">
       <BrokerSidebar />
-      <main className="flex-1 overflow-auto p-4 sm:p-6 lg:pl-72 lg:pr-8 lg:py-8">
+      <main className="flex-1 overflow-auto p-4 sm:p-6 lg:pr-8 lg:py-8">
         {children}
       </main>
     </div>

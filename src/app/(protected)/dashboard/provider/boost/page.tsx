@@ -20,7 +20,7 @@ export default async function BoostPage() {
 
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -30,7 +30,7 @@ export default async function BoostPage() {
 
   let activeBoosts: Awaited<ReturnType<typeof getActiveBoosts>> = [];
   try {
-    activeBoosts = await getActiveBoosts(supabase, providerProfile.id);
+    activeBoosts = await getActiveBoosts(supabase, providerProfile.user_id);
   } catch {
     activeBoosts = [];
   }

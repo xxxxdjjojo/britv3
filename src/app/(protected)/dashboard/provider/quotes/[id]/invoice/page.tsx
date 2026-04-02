@@ -26,11 +26,11 @@ export default async function InvoicePage({ params }: Props) {
   // Resolve provider details
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id, business_name, email")
+    .select("user_id, business_name, email")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = (providerProfile?.id as string | null | undefined) ?? user.id;
+  const providerId = (providerProfile?.user_id as string | null | undefined) ?? user.id;
   const providerName =
     (providerProfile?.business_name as string | null | undefined) ??
     user.email ??

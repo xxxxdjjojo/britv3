@@ -43,11 +43,11 @@ export default async function FieldTodayPage() {
   // Resolve provider id
   const { data: providerProfile } = await supabase
     .from("service_provider_details")
-    .select("id")
+    .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const providerId = (providerProfile?.id as string | null) ?? user.id;
+  const providerId = (providerProfile?.user_id as string | null) ?? user.id;
 
   const jobs = await getUpcomingJobs(providerId, 20, supabase);
   const today = new Date();
