@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useFilterParams } from "@/hooks/useFilterParams";
+import { PropertyContextBanner } from "@/components/landlord/PropertyContextBanner";
 import { formatDistanceToNow } from "date-fns";
 import {
   Wrench,
@@ -52,16 +55,16 @@ export function MaintenanceInboxClient(
     initialData: MaintenanceRequestWithProperty[];
   }>,
 ) {
-  const [priorityFilter, setPriorityFilter] = useState<
-    MaintenancePriority | "all"
-  >("all");
-  const [statusFilter, setStatusFilter] = useState<MaintenanceStatus | "all">(
-    "all",
-  );
+  const [filters, setFilter] = useFilterParams({ priority: "all", status: "all" });
+  const priorityFilter = filters.priority as MaintenancePriority | "all";
+  const statusFilter = filters.status as MaintenanceStatus | "all";
+  const searchParams = useSearchParams();
+  const propertyFilter = searchParams.get("property");
 
   const filtered = useMemo(() => {
     return props.initialData
       .filter((r) => {
+        if (propertyFilter && r.property_id !== propertyFilter) return false;
         if (priorityFilter !== "all" && r.priority !== priorityFilter)
           return false;
         if (statusFilter !== "all" && r.status !== statusFilter) return false;
@@ -72,7 +75,17 @@ export function MaintenanceInboxClient(
           PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority] ||
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
-  }, [props.initialData, priorityFilter, statusFilter]);
+  }, [props.initialData, priorityFilter, statusFilter, propertyFilter]);
+
+  const uniqueProperties = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const r of props.initialData) {
+      if (!seen.has(r.property_id)) {
+        seen.set(r.property_id, `${r.property_address}, ${r.property_postcode}`);
+      }
+    }
+    return Array.from(seen.entries()).map(([id, address]) => ({ id, address }));
+  }, [props.initialData]);
 
   const urgentCount = props.initialData.filter(
     (r) => r.priority === "emergency",
@@ -83,6 +96,8 @@ export function MaintenanceInboxClient(
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <PropertyContextBanner properties={uniqueProperties} />
+
       {/* Page header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
@@ -145,7 +160,7 @@ export function MaintenanceInboxClient(
               <button
                 key={p}
                 type="button"
-                onClick={() => setPriorityFilter(p)}
+                onClick={() => setFilter("priority", p)}
                 aria-label={`Filter by priority: ${p === "all" ? "all priorities" : p}`}
                 aria-pressed={priorityFilter === p}
                 className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -168,7 +183,7 @@ export function MaintenanceInboxClient(
             <button
               key={s}
               type="button"
-              onClick={() => setStatusFilter(s)}
+              onClick={() => setFilter("status", s)}
               aria-label={`Filter by status: ${s === "all" ? "all statuses" : s.replace("_", " ")}`}
               aria-pressed={statusFilter === s}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${

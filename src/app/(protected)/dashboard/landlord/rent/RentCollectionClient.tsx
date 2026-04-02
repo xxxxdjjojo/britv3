@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
+import { PropertyContextBanner } from "@/components/landlord/PropertyContextBanner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { RentCollectionGroup, RentCollectionEntry } from "@/types/landlord";
@@ -57,6 +59,8 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [logPaymentOpen, setLogPaymentOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const propertyFilter = searchParams.get("property");
 
   const { data } = useQuery<RentCollectionGroup>({
     queryKey: ["rent-collection"],
@@ -106,6 +110,20 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
 
   const currentEntries = tabEntries[activeTab];
 
+  const displayEntries = propertyFilter
+    ? currentEntries.filter((e) => e.entry.property_id === propertyFilter)
+    : currentEntries;
+
+  const uniqueProperties = (() => {
+    const seen = new Map<string, string>();
+    for (const e of allEntries) {
+      if (!seen.has(e.entry.property_id)) {
+        seen.set(e.entry.property_id, e.property_address);
+      }
+    }
+    return Array.from(seen.entries()).map(([id, address]) => ({ id, address }));
+  })();
+
   const TABS: { key: TabKey; label: string; count: number }[] = [
     { key: "all", label: "All Payments", count: allEntries.length },
     { key: "overdue", label: "Overdue", count: overdueCount },
@@ -118,6 +136,8 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
 
   return (
     <div className="space-y-6">
+      <PropertyContextBanner properties={uniqueProperties} />
+
       {/* Overdue alert banner */}
       {overdueCount > 0 && (
         <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/40 dark:bg-red-900/10">
@@ -243,7 +263,7 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
 
       {/* Rent payment table */}
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-        {currentEntries.length === 0 ? (
+        {displayEntries.length === 0 ? (
           <div className="flex h-40 items-center justify-center">
             <div className="text-center">
               <CheckCircle2 className="mx-auto mb-2 size-8 text-emerald-500" />
@@ -267,7 +287,7 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentEntries.map((item) => (
+                {displayEntries.map((item) => (
                   <RentPaymentRow
                     key={item.entry.id}
                     entry={{

@@ -26,8 +26,16 @@ export function useDashboard() {
     queryKey: ["dashboard"],
     queryFn: async () => {
       const res = await fetch("/api/dashboard");
+      if (res.status === 401) {
+        window.location.href = "/login";
+        throw new Error("Session expired");
+      }
       if (!res.ok) throw new Error("Failed to fetch dashboard data");
       return res.json();
+    },
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message === "Session expired") return false;
+      return failureCount < 3;
     },
     staleTime: 300_000, // 5 min, matches Redis TTL
   });
@@ -46,6 +54,10 @@ export function useRefreshDashboard() {
 
     // Refetch with refresh flag to also invalidate Redis
     const res = await fetch("/api/dashboard?refresh=true");
+    if (res.status === 401) {
+      window.location.href = "/login";
+      throw new Error("Session expired");
+    }
     if (!res.ok) throw new Error("Failed to refresh dashboard data");
     const data = await res.json();
 
@@ -80,6 +92,10 @@ export function useActivityLog() {
       }
 
       const res = await fetch(url.toString());
+      if (res.status === 401) {
+        window.location.href = "/login";
+        throw new Error("Session expired");
+      }
       if (!res.ok) throw new Error("Failed to fetch activity log");
       return res.json();
     },

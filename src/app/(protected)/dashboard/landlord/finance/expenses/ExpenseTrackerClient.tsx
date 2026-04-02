@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useFilterParams } from "@/hooks/useFilterParams";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -97,10 +98,16 @@ function formatDate(dateStr: string) {
 
 export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
   const [entries, setEntries] = useState<FinancialEntry[]>(initialEntries);
-  const [filterType, setFilterType] = useState<"all" | "income" | "expense">("all");
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [filterProperty, setFilterProperty] = useState("all");
-  const [filterMonth, setFilterMonth] = useState("all");
+  const [filters, setFilter] = useFilterParams({
+    type: "all",
+    category: "all",
+    property: "all",
+    month: "all",
+  });
+  const filterType = filters.type as "all" | "income" | "expense";
+  const filterCategory = filters.category;
+  const filterProperty = filters.property;
+  const filterMonth = filters.month;
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<FinancialEntry | null>(null);
@@ -233,7 +240,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <Select value={filterType} onValueChange={(v) => setFilterType(v as "all" | "income" | "expense")}>
+        <Select value={filterType} onValueChange={(v) => setFilter("type", v ?? "all")}>
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
@@ -244,7 +251,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filterCategory} onValueChange={(v) => setFilterCategory(v ?? "all")}>
+        <Select value={filterCategory} onValueChange={(v) => setFilter("category", v ?? "all")}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
@@ -258,7 +265,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filterProperty} onValueChange={(v) => setFilterProperty(v ?? "all")}>
+        <Select value={filterProperty} onValueChange={(v) => setFilter("property", v ?? "all")}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Property" />
           </SelectTrigger>
@@ -272,7 +279,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
           </SelectContent>
         </Select>
 
-        <Select value={filterMonth} onValueChange={(v) => setFilterMonth(v ?? "all")}>
+        <Select value={filterMonth} onValueChange={(v) => setFilter("month", v ?? "all")}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="Month" />
           </SelectTrigger>
