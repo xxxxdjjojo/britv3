@@ -108,7 +108,7 @@ function buildTenancies(): Record<string, unknown>[] {
       monthsAgo: 9,
       rent: 1500,
       deposit: 1500,
-      scheme: "mydeposits" as const,
+      scheme: "TDS" as const,
     },
   ];
 
@@ -123,11 +123,12 @@ function buildTenancies(): Record<string, unknown>[] {
       landlord_id: LANDLORD.id,
       tenant_name: t.tenantName,
       tenant_email: t.tenantEmail,
-      tenant_user_id: t.tenantUserId,
+      // tenant_user_id column doesn't exist in live DB yet (migration not applied)
       status: "active",
       lease_start_date: leaseStart.toISOString().split("T")[0],
       lease_end_date: leaseEnd.toISOString().split("T")[0],
       rent_amount: t.rent,
+      monthly_rent: t.rent,
       rent_frequency: "monthly",
       deposit_amount: t.deposit,
       deposit_scheme: t.scheme,
@@ -341,21 +342,14 @@ function buildDepositRegistrations(): Record<string, unknown>[] {
   const configs = [
     { tenancyId: TENANCY_IDS.T1, amount: 1200, scheme: "TDS" as const },
     { tenancyId: TENANCY_IDS.T2, amount: 950, scheme: "DPS" as const },
-    { tenancyId: TENANCY_IDS.T3, amount: 1500, scheme: "mydeposits" as const },
+    { tenancyId: TENANCY_IDS.T3, amount: 1500, scheme: "DPS" as const },
   ];
 
+  // Live DB only has: id, tenancy_id, scheme, status, created_at, updated_at
   return configs.map((c, idx) => ({
     id: DEPOSIT_IDS[idx],
     tenancy_id: c.tenancyId,
-    landlord_id: LANDLORD.id,
-    amount: c.amount,
     scheme: c.scheme,
-    scheme_reference: `${c.scheme.toUpperCase()}-2025-${String(100000 + idx * 11111).slice(0, 6)}`,
-    registration_date: daysAgo(
-      idx === 0 ? 180 : idx === 1 ? 90 : 270,
-    )
-      .toISOString()
-      .split("T")[0],
     status: "registered",
   }));
 }
