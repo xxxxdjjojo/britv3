@@ -7,6 +7,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import type { TenantApplication, TenantApplicationStatus } from "@/types/landlord";
 import { escapeHtml } from "@/lib/escape-html";
+import { createTenancy } from "./tenancy-service";
 
 // -- State machine -----------------------------------------------------------
 
@@ -274,6 +275,43 @@ export async function acceptApplication(
 ): Promise<void> {
   const application = await updateApplicationStatus(supabase, applicationId, "approved");
 
+  // Look up listing rent price for the tenancy
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("price")
+    .eq("property_id", application.property_id)
+    .eq("listing_type", "rent")
+    .limit(1)
+    .maybeSingle();
+
+  // Create tenancy from approved application
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    const oneYearLater = new Date();
+    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+
+    const tenancy = await createTenancy(supabase, application.property_id, {
+      tenant_name: application.applicant_name,
+      tenant_email: application.applicant_email ?? "",
+      lease_start_date: today,
+      lease_end_date: oneYearLater.toISOString().split("T")[0],
+      rent_amount: Number(listing?.price) || 1000,
+      rent_frequency: "monthly",
+    });
+
+    // Link the tenant's user account to the tenancy
+    if (application.applicant_user_id) {
+      await supabase
+        .from("tenancies")
+        .update({ tenant_user_id: application.applicant_user_id })
+        .eq("id", tenancy.id);
+    }
+  } catch (tenancyError) {
+    // Log but don't throw — the approval succeeded, tenancy creation is best-effort
+    console.error("[tenant-application-service] Failed to create tenancy:", tenancyError);
+  }
+
+  // Send acceptance email
   const resend = getResend();
   if (resend) {
     try {

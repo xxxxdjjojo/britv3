@@ -129,22 +129,35 @@ async function buildRenterDashboard(
 ): Promise<RenterDashboard> {
   const [savedCount, applications, tenancy, activity] = await Promise.all([
     safeCount(supabase, "saved_properties", "user_id", userId),
-    safeQuery<{ id: string; property_address: string; status: string; submitted_at: string }>(
+    safeQuery<{ id: string; status: string; created_at: string; properties: { address_line1: string; city: string } | null }>(
       supabase,
-      "rental_applications",
-      "id, property_address, status, submitted_at",
-      { user_id: userId },
+      "tenant_applications",
+      "id, status, created_at, properties(address_line1, city)",
+      { applicant_user_id: userId },
       10,
     ),
-    safeQuerySingle<{
-      property_address: string;
-      lease_start: string;
-      lease_end: string;
-      monthly_rent: number;
-    }>(supabase, "tenancies", "property_address, lease_start, lease_end, monthly_rent", {
-      tenant_id: userId,
-      status: "active",
-    }),
+    (async (): Promise<{ property_address: string | null; lease_start: Date | null; lease_end: Date | null; monthly_rent: number | null } | null> => {
+      try {
+        const { data } = await supabase
+          .from("tenancies")
+          .select("rent_amount, lease_start_date, lease_end_date, properties(address_line1, city, postcode)")
+          .eq("tenant_user_id", userId)
+          .in("status", ["active", "ending_soon"])
+          .order("lease_start_date", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (!data) return null;
+        const prop = data.properties as unknown as { address_line1: string; city: string; postcode: string } | null;
+        return {
+          property_address: prop ? `${prop.address_line1}, ${prop.city} ${prop.postcode}` : null,
+          lease_start: data.lease_start_date ? new Date(data.lease_start_date) : null,
+          lease_end: data.lease_end_date ? new Date(data.lease_end_date) : null,
+          monthly_rent: Number(data.rent_amount),
+        };
+      } catch {
+        return null;
+      }
+    })(),
     getRecentActivity(supabase, userId, 5),
   ]);
 
@@ -153,18 +166,11 @@ async function buildRenterDashboard(
     saved_rentals_count: savedCount,
     application_status: applications.map((a) => ({
       id: a.id,
-      property_address: a.property_address,
+      property_address: a.properties ? `${a.properties.address_line1}, ${a.properties.city}` : "",
       status: a.status as "submitted" | "under_review" | "approved" | "rejected",
-      submitted_at: new Date(a.submitted_at),
+      submitted_at: new Date(a.created_at),
     })),
-    tenancy_details: tenancy
-      ? {
-          property_address: tenancy.property_address,
-          lease_start: new Date(tenancy.lease_start),
-          lease_end: new Date(tenancy.lease_end),
-          monthly_rent: tenancy.monthly_rent,
-        }
-      : null,
+    tenancy_details: tenancy,
     recent_activity: activity,
   };
 }
@@ -176,20 +182,19 @@ async function buildSellerDashboard(
   const [listings, viewingRequests, offers, activity] = await Promise.all([
     safeQuery<{
       id: string;
-      address: string;
       price: number;
-      views_count: number;
-      saves_count: number;
-      enquiries_count: number;
+      view_count: number;
+      favorite_count: number;
+      enquiry_count: number;
       status: string;
     }>(
       supabase,
       "listings",
-      "id, address, price, views_count, saves_count, enquiries_count, status",
-      { seller_id: userId },
+      "id, price, view_count, favorite_count, enquiry_count, status",
+      { user_id: userId },
       20,
     ),
-    safeViewingsQuery(supabase, { seller_id: userId }, 10),
+    safeViewingsQuery(supabase, { user_id: userId }, 10),
     safeQuery<{
       id: string;
       property_address: string;
@@ -198,7 +203,7 @@ async function buildSellerDashboard(
       submitted_at: string;
     }>(
       supabase,
-      "offers",
+      "seller_offers",
       "id, property_address, amount, status, submitted_at",
       { seller_id: userId },
       10,
@@ -210,11 +215,11 @@ async function buildSellerDashboard(
     role: "seller",
     listings: listings.map((l) => ({
       id: l.id,
-      address: l.address,
+      address: "",
       price: l.price,
-      views_count: l.views_count,
-      saves_count: l.saves_count,
-      enquiries_count: l.enquiries_count,
+      views_count: l.view_count ?? 0,
+      saves_count: l.favorite_count ?? 0,
+      enquiries_count: l.enquiry_count ?? 0,
       status: l.status as "active" | "under_offer" | "sold" | "withdrawn",
     })),
     viewing_requests: viewingRequests.map((v) => ({
@@ -238,41 +243,41 @@ async function buildLandlordDashboard(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<LandlordDashboard> {
-  const [properties, activity] = await Promise.all([
+  const [listingsCount, tenancies, activity] = await Promise.all([
+    safeCount(supabase, "listings", "user_id", userId),
     safeQuery<{
       id: string;
-      address: string;
       status: string;
-      monthly_rent: number;
+      rent_amount: number;
       tenant_name: string | null;
-      lease_end: string | null;
+      lease_end_date: string | null;
     }>(
       supabase,
-      "landlord_properties",
-      "id, address, status, monthly_rent, tenant_name, lease_end",
+      "tenancies",
+      "id, status, rent_amount, tenant_name, lease_end_date",
       { landlord_id: userId },
       50,
     ),
     getRecentActivity(supabase, userId, 5),
   ]);
 
-  const portfolioCount = properties.length;
-  const occupiedCount = properties.filter((p) => p.status === "occupied").length;
+  const portfolioCount = listingsCount;
+  const occupiedCount = tenancies.filter((t) => t.status === "active").length;
   const occupancyRate = portfolioCount > 0 ? occupiedCount / portfolioCount : 0;
-  const totalIncome = properties.reduce((sum, p) => sum + (p.monthly_rent || 0), 0);
+  const totalIncome = tenancies.reduce((sum, t) => sum + (t.rent_amount || 0), 0);
 
   return {
     role: "landlord",
     portfolio_count: portfolioCount,
     occupancy_rate: occupancyRate,
     total_income: totalIncome,
-    properties: properties.map((p) => ({
-      id: p.id,
-      address: p.address,
-      status: p.status as "occupied" | "vacant" | "maintenance",
-      monthly_rent: p.monthly_rent,
-      tenant_name: p.tenant_name,
-      lease_end: p.lease_end ? new Date(p.lease_end) : null,
+    properties: tenancies.map((t) => ({
+      id: t.id,
+      address: "",
+      status: (t.status === "active" ? "occupied" : "vacant") as "occupied" | "vacant" | "maintenance",
+      monthly_rent: t.rent_amount,
+      tenant_name: t.tenant_name,
+      lease_end: t.lease_end_date ? new Date(t.lease_end_date) : null,
     })),
     recent_activity: activity,
   };
@@ -283,21 +288,38 @@ async function buildAgentDashboard(
   userId: string,
 ): Promise<AgentDashboard> {
   const [listingsCount, leads, viewings, revenue, activity] = await Promise.all([
-    safeCount(supabase, "listings", "agent_id", userId),
+    safeCount(supabase, "listings", "user_id", userId),
     safeQuery<{ stage: string }>(
       supabase,
-      "leads",
+      "agent_leads",
       "stage",
       { agent_id: userId },
       500,
     ),
     safeViewingsQuery(supabase, { agent_id: userId }, 10),
-    safeQuerySingle<{ current_month: number; previous_month: number; year_to_date: number }>(
-      supabase,
-      "agent_revenue_summary",
-      "current_month, previous_month, year_to_date",
-      { agent_id: userId },
-    ),
+    // Sum commissions for revenue (no dedicated summary view exists)
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("agent_commissions")
+          .select("commission_amount, created_at")
+          .eq("agent_id", userId);
+        const now = new Date();
+        const thisMonth = now.getMonth();
+        const thisYear = now.getFullYear();
+        let current_month = 0, previous_month = 0, year_to_date = 0;
+        for (const c of data ?? []) {
+          const d = new Date(c.created_at);
+          const amt = c.commission_amount ?? 0;
+          if (d.getFullYear() === thisYear) year_to_date += amt;
+          if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) current_month += amt;
+          if (d.getMonth() === thisMonth - 1 && d.getFullYear() === thisYear) previous_month += amt;
+        }
+        return { current_month, previous_month, year_to_date };
+      } catch {
+        return null;
+      }
+    })(),
     getRecentActivity(supabase, userId, 5),
   ]);
 
@@ -342,19 +364,27 @@ async function buildProviderDashboard(
         "provider_details",
         { id: userId },
       ),
-      safeCount(supabase, "service_bookings", "provider_id", userId),
+      safeCount(supabase, "bookings", "provider_id", userId),
       safeQuerySingle<{ average_rating: number }>(
         supabase,
         "provider_rating_stats",
         "average_rating",
         { provider_id: userId },
       ),
-      safeQuerySingle<{ total: number }>(
-        supabase,
-        "provider_earnings_summary",
-        "total",
-        { provider_id: userId },
-      ),
+      // Sum invoices for total earnings (no dedicated summary view exists)
+      (async () => {
+        try {
+          const { data } = await supabase
+            .from("provider_invoices")
+            .select("total_amount")
+            .eq("provider_id", userId)
+            .eq("status", "paid");
+          const total = (data ?? []).reduce((s: number, r: { total_amount: number }) => s + (r.total_amount ?? 0), 0);
+          return { total };
+        } catch {
+          return null;
+        }
+      })(),
       safeCount(supabase, "quotes", "provider_id", userId),
       getRecentActivity(supabase, userId, 5),
     ]);

@@ -210,6 +210,16 @@ export async function updateOfferStatus(
     } catch (saleError) {
       console.error("Failed to create sale progression:", saleError);
     }
+
+    // Update listing status to under_offer
+    try {
+      await supabase
+        .from("listings")
+        .update({ status: "under_offer", updated_at: new Date().toISOString() })
+        .eq("id", current.property_id);
+    } catch (listingError) {
+      console.error("Failed to update listing status to under_offer:", listingError);
+    }
   }
 
   return updated as AgentOffer;

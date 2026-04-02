@@ -27,7 +27,7 @@ const addPropertySchema = z.object({
   postcode: z
     .string()
     .regex(/^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$/i, "Valid UK postcode required"),
-  property_type: z.enum(["house", "flat", "bungalow", "studio", "room"]),
+  property_type: z.enum(["detached", "semi_detached", "terraced", "flat", "bungalow", "studio", "other"]),
   bedrooms: z.coerce.number().min(0).max(20),
   bathrooms: z.coerce.number().min(1).max(10),
   purchase_price: z.coerce.number().positive().optional().or(z.literal(undefined)),
@@ -36,11 +36,13 @@ const addPropertySchema = z.object({
 type AddPropertyFormData = z.infer<typeof addPropertySchema>;
 
 const PROPERTY_TYPES = [
-  { value: "house", label: "House" },
+  { value: "detached", label: "House (Detached)" },
+  { value: "semi_detached", label: "Semi-Detached" },
+  { value: "terraced", label: "Terraced" },
   { value: "flat", label: "Flat" },
   { value: "bungalow", label: "Bungalow" },
   { value: "studio", label: "Studio" },
-  { value: "room", label: "Room" },
+  { value: "other", label: "Other" },
 ];
 
 function FormField(
@@ -101,31 +103,47 @@ export default function AddPropertyPage() {
         return;
       }
 
-      const { data: newProperty, error } = await supabase
-        .from("listings")
+      const { data: property, error: propError } = await supabase
+        .from("properties")
         .insert({
-          user_id: user.id,
-          address_line_1: data.address_line_1,
-          address_line_2: data.address_line_2 || null,
+          address_line1: data.address_line_1,
+          address_line2: data.address_line_2 || null,
           city: data.city,
           postcode: data.postcode.toUpperCase(),
           property_type: data.property_type,
           bedrooms: data.bedrooms,
           bathrooms: data.bathrooms,
-          purchase_price: data.purchase_price ?? null,
-          listing_type: "rental",
-          is_rental: true,
-          status: "draft",
+          title: `${data.bedrooms} bed ${data.property_type.replace("_", "-")} in ${data.city}`,
+          description: `${data.bedrooms} bedroom ${data.property_type.replace("_", " ")} located in ${data.city}, ${data.postcode.toUpperCase()}.`,
         })
         .select("id")
         .single();
 
-      if (error || !newProperty) {
-        throw new Error(error?.message ?? "Failed to create property");
+      if (propError || !property) {
+        throw new Error(propError?.message ?? "Failed to create property record");
       }
 
+      const { data: listing, error: listError } = await supabase
+        .from("listings")
+        .insert({
+          property_id: property.id,
+          user_id: user.id,
+          listing_type: "rent",
+          status: "draft",
+          price: data.purchase_price ?? 0,
+          rent_frequency: "monthly",
+        })
+        .select("id")
+        .single();
+
+      if (listError || !listing) {
+        throw new Error(listError?.message ?? "Failed to create listing");
+      }
+
+      fetch("/api/dashboard?refresh=true").catch(() => {});
       toast.success("Property added to your portfolio.");
-      router.push(`/dashboard/landlord/properties/${newProperty.id}`);
+      router.push(`/dashboard/landlord/properties/${listing.id}`);
+      router.refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong.";
       toast.error(message);
