@@ -99,6 +99,7 @@
 **Effort:** M | **Priority:** P1
 **Where to start:** Install Playwright, create `e2e/responsive/` test directory. One test per dashboard role × 3 viewports.
 **Depends on:** Playwright being installed (currently planned but not set up).
+**Completed:** v0.0.4.0 (2026-04-02)
 
 ### Migrate existing pages to Container component
 **What:** Replace ad-hoc `px-4 sm:px-6 lg:px-8` + `max-w-*` + `mx-auto` patterns with `<Container>` component across ~30 pages.
@@ -293,6 +294,7 @@ _From CEO plan review, 2026-03-21. EXPANSION mode. 11 items._
 **Effort:** S | **Priority:** P1
 **Depends on:** Nothing.
 **Where to start:** `cd britv3.0 && pnpm add -D @playwright/test && npx playwright install`
+**Completed:** v0.0.4.0 (2026-04-02)
 
 ### Post-seed verification SQL script
 **What:** `supabase/seed/verify.sql` that runs `SELECT COUNT(*)` on every seeded table, then queries AS each demo user (via `SET LOCAL role`) to verify RLS allows the expected rows.
@@ -300,6 +302,7 @@ _From CEO plan review, 2026-03-21. EXPANSION mode. 11 items._
 **Effort:** S | **Priority:** P1
 **Depends on:** Seed SQL files being written.
 **Where to start:** Create `supabase/seed/verify.sql`. For each demo user UUID, run: `SET LOCAL role 'authenticated'; SET LOCAL request.jwt.claims = '{"sub":"<uuid>"}'; SELECT COUNT(*) FROM listings;`
+**Completed:** v0.0.4.0 (2026-04-02)
 
 ### Merge unmerged dashboard feature branches to main
 **What:** Merge 5 feature branches to main: `feature/15-estate-agent-dashboard` (78 files, 13K lines), `feature/phase-16-tradesperson-dashboard` (25+ pages), `feature/buyer-renter-dashboard` (viewings/offers/docs), `feature/phase-18-payments-billing` (billing flows), `feature/phase-19-account-settings` (settings pages).
@@ -321,6 +324,7 @@ _From CEO plan review, 2026-03-21. EXPANSION mode. 11 items._
 **Effort:** S | **Priority:** P2
 **Depends on:** Seed SQL files with known demo UUIDs.
 **Where to start:** DELETE FROM auth.users WHERE id IN ('11111111-...', '22222222-...', ...); — FKs cascade.
+**Completed:** v0.0.4.0 (2026-04-02) — Implemented as `scripts/seed-demo/cleanup.ts`
 
 ### CI pipeline: seed validation after migrations
 **What:** GitHub Action that spins up Supabase local (`supabase start`), runs all migrations, runs seed SQL, then runs `verify.sql`. Fails CI if any seed INSERT errors or verification counts are zero.
@@ -570,6 +574,7 @@ _From /cso daily audit. 4 findings, all VERIFIED. Report at `.gstack/security-re
 **Why:** Without CODEOWNERS, no mandatory domain-expert review for admin routes, middleware, migrations, or webhooks.
 **Effort:** S | **Priority:** P2
 **Where to start:** Create `.github/CODEOWNERS` covering `/src/app/api/webhooks/`, `/src/middleware.ts`, `/supabase/migrations/`.
+**Completed:** v0.0.2.0 (2026-03-25)
 
 ### GitHub Actions not pinned to commit SHA
 **What:** Pin `actions/checkout` and `supabase/setup-cli` to immutable commit SHAs.

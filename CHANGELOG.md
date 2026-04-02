@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4.0] - 2026-04-02
+
+### Added
+- **Stitch Design System** — Complete visual overhaul of every page to use Stitch semantic design tokens (108 commits). Auth, onboarding, all 7 role dashboards, marketplace, areas, legal, tools, and public pages all share a consistent token-driven design language
+- **Demo Data Seeding** — Full seed infrastructure with per-role modules (landlord, agent, provider, seller, homebuyer, renter), cross-role messaging/reviews, orchestrator, cleanup, scenarios, and reset scripts. Top-tier subscriptions auto-provisioned for all demo users
+- **Provider Reference System** — Reference requests via email with HMAC-verified tokens, public referee submission page, trust score computation from verified references, Inngest event handlers for the full lifecycle (request → submit → verify → badge award)
+- **Inngest Automations** — Daily reference auto-reminder cron, weekly stalled verification re-engagement cron, document rejection email notification, verification-complete badge handler
+- **Letting Agent Directory** — Browse and profile pages at `/letting-agents` with search and filtering
+- **5 Legal Pages** — Fair Housing Policy, Professional Standards, Regulatory Information, Third-Party Services Disclosure, Refund Policy. Legal Index hub updated with all new pages
+- **Property Comparison Tool** — Side-by-side property comparison page with Suspense boundary
+- **Viewings Calendar** — Standalone viewings calendar page for managing scheduled viewings
+- **Verification Hub** — Overview page consolidating verification status across documents and references
+- **Seller Enquiries & Viewings** — Combined enquiries and viewings management page
+- **Email Subscription Management** — Settings page for managing email notification preferences
+- **E2E Test Suites** — UX flow tests, agent dashboard tests, mobile responsive flow tests, Stage 8 calculator Playwright tests
+- RLS policy for tenant tenancy access
+- `/services/[category]` redirect routing and `/reviews` landing page
+
+### Changed
+- Provider analytics service refactored with trust score integration
+- Dashboard filter persistence, property context awareness, and entity search across role dashboards
+- Admin middleware no longer depends on `admin_role` column
+
+### Fixed
+- 7 critical dashboard data connectivity bugs blocking demo readiness
+- `/letting-agents` added to PUBLIC_ROUTES (was incorrectly requiring authentication)
+- Agent profile, listings, team, and reviews queries repaired
+- Focus-visible ring styles added to all restyled interactive elements (a11y)
+- PostHog config corrected (`disable_surveys` instead of non-existent `advanced_disable_toolbar`)
+- Auth onboarding: landlord property data and agent CRM now persist correctly, full alert preferences saved from onboarding matrix
+- Navigation: tradespeople links, compare breadcrumb, and Get Quotes href corrected
+- Services page: category labels fixed (Roofers to Builders, HVAC to Handymen)
+- Provider fuzzy location slug heuristic removed (was causing business name false positives)
+- Find Services hero link now points to `/services`
+
 ## [0.0.3.0] - 2026-03-26
 
 ### Added
