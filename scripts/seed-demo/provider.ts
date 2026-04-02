@@ -774,7 +774,7 @@ function buildProviderDocuments(): Record<string, unknown>[] {
     {
       id: DOCUMENT_IDS[0],
       user_id: PROVIDER.id,
-      document_type: "gas_safe_certificate",
+      document_type: "qualification_certificate",
       file_name: "Gas_Safe_Certificate_543210.pdf",
       file_url: "/demo/provider-docs/gas-safe-cert.pdf",
       file_size: 245000,
@@ -789,7 +789,7 @@ function buildProviderDocuments(): Record<string, unknown>[] {
     {
       id: DOCUMENT_IDS[1],
       user_id: PROVIDER.id,
-      document_type: "public_liability_insurance",
+      document_type: "insurance_certificate",
       file_name: "Public_Liability_Insurance_Hiscox.pdf",
       file_url: "/demo/provider-docs/public-liability-insurance.pdf",
       file_size: 312000,

@@ -29,7 +29,7 @@ function buildUserRolesRows(): Array<{
   const entries = Object.values(DEMO_USERS) as DemoUserEntry[];
   for (const user of entries) {
     rows.push({
-      id: `r0000000-0000-4000-8000-${user.id.slice(-12)}`,
+      id: `a0000000-0000-4000-8000-${user.id.slice(-12)}`,
       user_id: user.id,
       role: user.role,
     });
@@ -37,7 +37,7 @@ function buildUserRolesRows(): Array<{
 
   // Agent also gets 'seller' role
   rows.push({
-    id: "r0000000-0000-4000-8000-a00000000005",
+    id: "a0000000-0000-4000-8000-a00000000005",
     user_id: DEMO_USERS.AGENT.id,
     role: "seller",
   });

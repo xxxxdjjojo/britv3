@@ -219,7 +219,7 @@ export const DEMO_PROPERTIES: DemoProperty[] = [
     postcode: "M20 6WJ",
     property_type: "semi_detached",
     bedrooms: 4,
-    bathrooms: 2.5,
+    bathrooms: 3,
     reception_rooms: 2,
     square_footage: 1650,
     title: "Spacious Semi-Detached in Didsbury",
