@@ -1,5 +1,14 @@
 # TODOs
 
+## Design System — Deferred TODOs
+
+### Create DESIGN.md from Stitch design system
+**What:** Run `/design-consultation` to generate a formal DESIGN.md documenting the Stitch/Material You design system already in use across the platform.
+**Why:** The design system exists implicitly in `globals.css` (50+ Stitch tokens, surface hierarchy, brand colors) but isn't documented. As more pages get restyled to Stitch tokens, drift is inevitable without a single source of truth. DESIGN.md would codify: color tokens, typography scale (Plus Jakarta Sans/Inter), spacing, component vocabulary, border radius, shadows, motion curves.
+**Effort:** S (human: ~2 hours / CC: ~10 min) | **Priority:** P2
+**Where to start:** Run `/design-consultation` which reads the existing `globals.css`, `britestatestyle.txt`, and Stitch MCP screens to generate a complete DESIGN.md.
+**Depends on:** Nothing. Can be done anytime.
+
 ## Wave 1 Pricing Foundation — Deferred TODOs
 
 ### Error logging in getUserEntitlements

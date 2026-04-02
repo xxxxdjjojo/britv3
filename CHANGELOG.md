@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4.1] - 2026-04-02
+
+### Added
+- **Inbox 3-Pane Layout** — Stitch-faithful inbox with conversation list, message thread, and property action sidebar showing facts, scheduled viewings, engagement stats, and location
+- **Conversation Status Badges** — Visual context per conversation type (Property Enquiry, Viewing, Quote Request) for faster inbox scanning
+- **Action Sidebar** — Right panel shows property data for listing conversations, contact card fallback for general conversations. Loading skeleton and error states included
+- **Inbox Route Consolidation** — `/inbox` and `/inbox/[conversationId]` now redirect to role-based `/dashboard/[role]/messages`
+- 22 new unit tests for inbox logic (badge derivation, property facts, price formatting, redirect resolution)
+
+### Changed
+- All 7 messaging components restyled from mixed Shadcn/neutral tokens to Stitch design tokens (surface hierarchy, outline, primary-container)
+- Message bubbles match Stitch design: rounded-2xl with sender name and timestamps
+- Composer restyled with unified container and Stitch send button
+- Attachment previews use inline card pattern with file icon, name, and size badge
+- UnreadBadge uses brand-primary pill instead of destructive Badge component
+
+### Removed
+- `/inbox/InboxPageClient.tsx` and `/inbox/loading.tsx` (consolidated into dashboard messages route)
+
 ## [0.0.4.0] - 2026-04-02
 
 ### Added
