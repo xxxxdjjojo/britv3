@@ -348,7 +348,7 @@ export async function middleware(request: NextRequest) {
         const isAgent = pathname.startsWith("/dashboard/agent");
 
         const providerVerified =
-          profileData?.provider_verification_status === "approved";
+          profileData?.provider_verification_status === "verified";
         const agentVerified =
           profileData?.verification_level === "professional";
 
