@@ -30,7 +30,7 @@ function buildCsp(nonce: string): string {
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com https://appleid.cdn-apple.com https://eu.i.posthog.com https://eu-assets.i.posthog.com https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://eu.i.posthog.com https://eu-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://eu.i.posthog.com https://eu-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com",
     "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com",
     "worker-src 'self' blob:",
     "form-action 'self'",
@@ -341,6 +341,7 @@ export async function middleware(request: NextRequest) {
         VERIFICATION_GATED_PREFIXES.some((prefix) => pathname === prefix) || // overview exact match
         pathname.includes("/billing") ||
         pathname.includes("/verification") ||
+        pathname.includes("/profile") ||
         pathname.includes("/referrals");
 
       if (!isVerificationExempt) {

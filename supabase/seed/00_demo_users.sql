@@ -246,10 +246,12 @@ BEGIN
   )
   ON CONFLICT (user_id) DO NOTHING;
 
-  -- Set provider verification status on the profile
+  -- Set provider verification status on ALL provider profiles (not just demo user)
+  -- This ensures the middleware verification gate doesn't block dashboard access
   UPDATE profiles
   SET provider_verification_status = 'verified'::provider_verification_status
-  WHERE id = v_provider_id;
+  WHERE active_role = 'service_provider'
+    AND (provider_verification_status IS NULL OR provider_verification_status != 'verified');
 
   RAISE NOTICE 'service_provider_details created.';
 
