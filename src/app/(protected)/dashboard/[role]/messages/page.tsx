@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Buyer Dashboard — Messages Inbox
- * Two-pane layout: conversation list (left) + message thread (right).
- * Styled to match Stitch buyer-messages design.
+ * Dashboard Messages — Unified Inbox
+ * 3-pane layout: conversation list (left) + message thread (center) + action sidebar (right).
+ * Styled to match Stitch "Inbox — All Conversations" design.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -11,32 +11,13 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import InboxList from "@/components/messaging/InboxList";
 import MessageThread from "@/components/messaging/MessageThread";
+import ActionSidebar from "@/components/messaging/ActionSidebar";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useInbox } from "@/hooks/useInbox";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Mail } from "lucide-react";
-
-// ---------------------------------------------------------------------------
-// Unread count badge
-// ---------------------------------------------------------------------------
-
-function UnreadBadge() {
-  const { data } = useInbox({});
-  const unreadCount =
-    data?.conversations.reduce(
-      (sum, c) => sum + (c.unread_count ?? 0),
-      0,
-    ) ?? 0;
-
-  if (unreadCount === 0) return null;
-
-  return (
-    <span className="ml-2 rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
-      {unreadCount > 99 ? "99+" : unreadCount}
-    </span>
-  );
-}
+import type { ContextType } from "@/types/messaging";
 
 // ---------------------------------------------------------------------------
 // Empty thread placeholder
@@ -74,6 +55,13 @@ export default function MessagesPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const channelRef = useRef<RealtimeChannel | null>(null);
+
+  // Get active conversation metadata for the sidebar
+  const { data: inboxData } = useInbox({});
+  const activeConvData = inboxData?.conversations.find(
+    (c) => c.id === activeConversation,
+  );
+  const activeCount = inboxData?.conversations.length ?? 0;
 
   // Realtime subscription — invalidates inbox on any conversation change
   useEffect(() => {
@@ -119,41 +107,36 @@ export default function MessagesPage() {
   }, [user?.id, queryClient]);
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface flex flex-col gap-6">
+    <div className="min-h-screen bg-surface text-on-surface flex flex-col gap-4">
       {/* ── Page header ────────────────────────────────────────── */}
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-on-surface flex items-center">
-            Messages
-            <UnreadBadge />
+      <header className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="font-heading text-lg font-bold tracking-tight text-brand-primary">
+            Conversations
           </h1>
-          <p className="text-sm text-on-surface-variant font-sans mt-0.5">
-            Your conversations with agents and sellers
-          </p>
+          {activeCount > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold tracking-wider uppercase">
+              {activeCount} Active
+            </span>
+          )}
         </div>
-      </div>
+      </header>
 
-      {/* ── Two-pane messaging panel ───────────────────────────── */}
+      {/* ── Three-pane messaging layout ─────────────────────────── */}
       <div className="overflow-hidden rounded-2xl bg-surface shadow-[0_4px_24px_rgba(26,28,28,0.06)]">
-        <div className="flex h-[calc(100vh-16rem)] min-h-[400px]">
+        <div className="flex h-[calc(100vh-12rem)] min-h-[400px]">
           {/* ── Left pane: conversation list ────────────────── */}
           <div
             className={cn(
               "bg-surface-container-low flex flex-col",
-              "w-full sm:w-96 sm:flex-shrink-0",
+              "w-full sm:w-80 sm:flex-shrink-0",
               activeConversation
                 ? "hidden sm:flex"
                 : "flex",
             )}
+            role="navigation"
+            aria-label="Conversation list"
           >
-            {/* Pane header */}
-            <div className="px-5 pt-6 pb-3">
-              <p className="font-heading font-bold text-xl text-on-surface mb-5">
-                Messages
-              </p>
-            </div>
-
-            {/* InboxList fills remaining height */}
             <div className="flex-1 overflow-hidden">
               <InboxList
                 activeId={activeConversation ?? undefined}
@@ -165,7 +148,7 @@ export default function MessagesPage() {
             </div>
           </div>
 
-          {/* ── Right pane: message thread ──────────────────── */}
+          {/* ── Center pane: message thread ──────────────────── */}
           <div
             className={cn(
               "flex-1 min-w-0 bg-surface",
@@ -173,6 +156,7 @@ export default function MessagesPage() {
                 ? "flex flex-col"
                 : "hidden sm:flex sm:flex-col",
             )}
+            role="main"
           >
             {activeConversation ? (
               <div className="flex h-full flex-col">
@@ -191,6 +175,8 @@ export default function MessagesPage() {
                   <MessageThread
                     conversationId={activeConversation}
                     recipientId={activeRecipientId ?? ""}
+                    participantName={activeConvData?.participant_name ?? undefined}
+                    contextType={activeConvData?.context_type}
                   />
                 </div>
               </div>
@@ -198,6 +184,16 @@ export default function MessagesPage() {
               <NoConversationSelected />
             )}
           </div>
+
+          {/* ── Right pane: action sidebar (lg+ only) ────────── */}
+          {activeConversation && activeConvData && (
+            <ActionSidebar
+              conversationId={activeConversation}
+              contextType={activeConvData.context_type as ContextType}
+              contextId={activeConvData.context_id ?? null}
+              participantName={activeConvData.participant_name}
+            />
+          )}
         </div>
       </div>
     </div>
