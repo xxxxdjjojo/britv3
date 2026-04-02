@@ -22,16 +22,16 @@ type DemoUserEntry = (typeof DEMO_USERS)[keyof typeof DEMO_USERS];
 function buildUserRolesRows(): Array<{
   id: string;
   user_id: string;
-  role_name: string;
+  role: string;
 }> {
-  const rows: Array<{ id: string; user_id: string; role_name: string }> = [];
+  const rows: Array<{ id: string; user_id: string; role: string }> = [];
 
   const entries = Object.values(DEMO_USERS) as DemoUserEntry[];
   for (const user of entries) {
     rows.push({
       id: `r0000000-0000-4000-8000-${user.id.slice(-12)}`,
       user_id: user.id,
-      role_name: user.role,
+      role: user.role,
     });
   }
 
@@ -39,7 +39,7 @@ function buildUserRolesRows(): Array<{
   rows.push({
     id: "r0000000-0000-4000-8000-a00000000005",
     user_id: DEMO_USERS.AGENT.id,
-    role_name: "seller",
+    role: "seller",
   });
 
   return rows;

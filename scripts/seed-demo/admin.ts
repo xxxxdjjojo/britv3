@@ -4,7 +4,7 @@
  * Seeds 50+ admin audit log entries and 100+ user activity log entries
  * spanning 30 days. Activity is densest in the last 24 hours.
  *
- * UUID prefix: m0000000
+ * UUID prefix: c0000000
  *
  * NOTE: activity_log uses BIGSERIAL PK (auto-generated), so we omit `id`
  * and use direct insert instead of seedTable() upsert.
@@ -31,12 +31,12 @@ const ALL_USERS = [SARAH, JAMES, EMMA, ROBERT, VICTORIA, MIKE, ADMIN];
 const NON_ADMIN_USERS = [SARAH, JAMES, EMMA, ROBERT, VICTORIA, MIKE];
 
 // ---------------------------------------------------------------------------
-// Hardcoded UUIDs (m0000000 prefix)
+// Hardcoded UUIDs (c0000000 prefix)
 // ---------------------------------------------------------------------------
 
 /** Audit log IDs */
 function auditId(n: number): string {
-  return `m0000000-01${String(n).padStart(2, "0")}-4000-8000-000000000001`;
+  return `c0000000-01${String(n).padStart(2, "0")}-4000-8000-000000000001`;
 }
 
 // ---------------------------------------------------------------------------

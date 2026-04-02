@@ -22,33 +22,35 @@ const SELLER_PROPERTIES = DEMO_PROPERTIES.filter(
 );
 
 // ---------------------------------------------------------------------------
-// Hardcoded UUIDs (h7000000 prefix pattern)
+// Hardcoded UUIDs (a7000000 prefix pattern)
 // ---------------------------------------------------------------------------
 
 const SELLER_LISTING_IDS = {
-  SL1: "h7000000-0001-4000-8000-000000000001", // 14 Rosemary Lane
-  SL2: "h7000000-0002-4000-8000-000000000002", // Flat 7, The Meridian
-  SL3: "h7000000-0003-4000-8000-000000000003", // 8 Oakfield Drive
-  SL4: "h7000000-0004-4000-8000-000000000004", // The Old Rectory
-  SL5: "h7000000-0005-4000-8000-000000000005", // Flat 22, Deansgate Towers (draft)
+  SL1: "a7000000-0001-4000-8000-000000000001", // 14 Rosemary Lane
+  SL2: "a7000000-0002-4000-8000-000000000002", // Flat 7, The Meridian
+  SL3: "a7000000-0003-4000-8000-000000000003", // 8 Oakfield Drive
+  SL4: "a7000000-0004-4000-8000-000000000004", // The Old Rectory
+  SL5: "a7000000-0005-4000-8000-000000000005", // Flat 22, Deansgate Towers (draft)
 } as const;
 
 const SELLER_LISTING_IDS_ARR = Object.values(SELLER_LISTING_IDS);
 
 function enquiryId(n: number): string {
-  return `h7000000-1${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `a7000000-1${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function viewingId(n: number): string {
-  return `h7000000-2${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `a7000000-2${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function offerId(n: number): string {
-  return `h7000000-3${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `a7000000-3${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function analyticsId(listing: number, n: number): string {
-  return `h7000000-4${listing}${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  // Encode listing + event index into the last 12 hex digits to avoid exceeding 4-char UUID groups
+  const suffix = String(listing * 10000 + n).padStart(12, "0");
+  return `a7000000-4000-4000-8000-${suffix}`;
 }
 
 // ---------------------------------------------------------------------------

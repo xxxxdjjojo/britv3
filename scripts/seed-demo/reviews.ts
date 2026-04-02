@@ -10,7 +10,7 @@
  *
  * NOTE: The reviews_update_rating_stats trigger auto-updates provider_rating_stats.
  *
- * UUID prefix: l9000000
+ * UUID prefix: b9000000
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -29,27 +29,27 @@ const JAMES = DEMO_USERS.RENTER;
 
 // Existing completed booking IDs from provider.ts
 const EXISTING_BOOKING_IDS = [
-  "g6000000-0301-4000-8000-000000000001", // Landlord - tap repair
-  "g6000000-0302-4000-8000-000000000002", // Landlord - boiler service
-  "g6000000-0303-4000-8000-000000000003", // Landlord - burst pipe
-  "g6000000-0304-4000-8000-000000000004", // Homebuyer - boiler repair
-  "g6000000-0305-4000-8000-000000000005", // Landlord - radiator bleed
-  "g6000000-0306-4000-8000-000000000006", // Seller - unblock drain
-  "g6000000-0307-4000-8000-000000000007", // Landlord - stopcock replacement
+  "a6000000-0301-4000-8000-000000000001", // Landlord - tap repair
+  "a6000000-0302-4000-8000-000000000002", // Landlord - boiler service
+  "a6000000-0303-4000-8000-000000000003", // Landlord - burst pipe
+  "a6000000-0304-4000-8000-000000000004", // Homebuyer - boiler repair
+  "a6000000-0305-4000-8000-000000000005", // Landlord - radiator bleed
+  "a6000000-0306-4000-8000-000000000006", // Seller - unblock drain
+  "a6000000-0307-4000-8000-000000000007", // Landlord - stopcock replacement
 ] as const;
 
 // ---------------------------------------------------------------------------
-// Hardcoded UUIDs (l9000000 prefix)
+// Hardcoded UUIDs (b9000000 prefix)
 // ---------------------------------------------------------------------------
 
 /** Additional booking IDs for extra reviews */
 function extraBookingId(n: number): string {
-  return `l9000000-01${String(n).padStart(2, "0")}-4000-8000-000000000001`;
+  return `b9000000-01${String(n).padStart(2, "0")}-4000-8000-000000000001`;
 }
 
 /** Review IDs */
 function reviewId(n: number): string {
-  return `l9000000-02${String(n).padStart(2, "0")}-4000-8000-000000000001`;
+  return `b9000000-02${String(n).padStart(2, "0")}-4000-8000-000000000001`;
 }
 
 // ---------------------------------------------------------------------------

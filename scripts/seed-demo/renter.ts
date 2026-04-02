@@ -22,16 +22,19 @@ const LANDLORD_RENTALS = DEMO_PROPERTIES.filter(
   (p) => p.owner_key === "LANDLORD" && p.listing_type === "rent",
 );
 
+/** First rental property ID (the one James rents) */
+const JAMES_PROPERTY_ID = LANDLORD_RENTALS[0].id;
+
 // ---------------------------------------------------------------------------
-// Hardcoded UUIDs (j9000000 prefix pattern)
+// Hardcoded UUIDs (09000000 prefix pattern)
 // ---------------------------------------------------------------------------
 
 function applicationId(n: number): string {
-  return `j9000000-1${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `09000000-1${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function financialEntryId(n: number): string {
-  return `j9000000-2${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `09000000-2${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 // ---------------------------------------------------------------------------
@@ -113,14 +116,15 @@ function buildAdditionalFinancialEntries(): Record<string, unknown>[] {
 
     rows.push({
       id: financialEntryId(month + 1),
+      property_id: JAMES_PROPERTY_ID,
       tenancy_id: "e4000000-0001-4000-8000-000000000001", // T1 from landlord.ts
       user_id: RENTER.id,
       type: "expense",
       category: "rent",
       amount: rent,
-      date: paymentDate.toISOString().split("T")[0],
+      entry_date: paymentDate.toISOString().split("T")[0],
       description: `Rent payment - ${paymentDate.toLocaleString("en-GB", { month: "long", year: "numeric" })}`,
-      status: "completed",
+      payment_status: "paid",
     });
   }
 

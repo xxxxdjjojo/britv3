@@ -28,6 +28,9 @@ const RENTAL_LISTING_IDS = LANDLORD_RENTALS.map(
   (p) => DEMO_LISTING_IDS[p.id],
 );
 
+/** Property IDs for landlord's rental properties */
+const RENTAL_PROPERTY_IDS = LANDLORD_RENTALS.map((p) => p.id);
+
 // ---------------------------------------------------------------------------
 // Hardcoded UUIDs (e4000000 prefix pattern)
 // ---------------------------------------------------------------------------
@@ -76,8 +79,10 @@ function buildTenancies(): Record<string, unknown>[] {
   const tenancyConfigs = [
     {
       id: TENANCY_IDS.T1,
-      listingId: RENTAL_LISTING_IDS[0], // property 0008
-      tenantId: RENTER.id,
+      propertyId: RENTAL_PROPERTY_IDS[0], // property 0008
+      tenantUserId: RENTER.id,
+      tenantName: RENTER.name,
+      tenantEmail: RENTER.email,
       monthsAgo: 6,
       rent: 1200,
       deposit: 1200,
@@ -85,8 +90,10 @@ function buildTenancies(): Record<string, unknown>[] {
     },
     {
       id: TENANCY_IDS.T2,
-      listingId: RENTAL_LISTING_IDS[1], // property 0009
-      tenantId: LANDLORD.id, // fictional tenant (use landlord ID for simplicity)
+      propertyId: RENTAL_PROPERTY_IDS[1], // property 0009
+      tenantUserId: null,
+      tenantName: "Alex Turner",
+      tenantEmail: "alex.turner@example.com",
       monthsAgo: 3,
       rent: 950,
       deposit: 950,
@@ -94,8 +101,10 @@ function buildTenancies(): Record<string, unknown>[] {
     },
     {
       id: TENANCY_IDS.T3,
-      listingId: RENTAL_LISTING_IDS[2], // property 0010
-      tenantId: LANDLORD.id, // fictional tenant (use landlord ID for simplicity)
+      propertyId: RENTAL_PROPERTY_IDS[2], // property 0010
+      tenantUserId: null,
+      tenantName: "Priya Sharma",
+      tenantEmail: "priya.sharma@example.com",
       monthsAgo: 9,
       rent: 1500,
       deposit: 1500,
@@ -110,9 +119,11 @@ function buildTenancies(): Record<string, unknown>[] {
 
     return {
       id: t.id,
-      listing_id: t.listingId,
+      property_id: t.propertyId,
       landlord_id: LANDLORD.id,
-      tenant_id: t.tenantId,
+      tenant_name: t.tenantName,
+      tenant_email: t.tenantEmail,
+      tenant_user_id: t.tenantUserId,
       status: "active",
       lease_start_date: leaseStart.toISOString().split("T")[0],
       lease_end_date: leaseEnd.toISOString().split("T")[0],
@@ -129,9 +140,9 @@ function buildFinancialEntries(scenario: Scenario): Record<string, unknown>[] {
   const rows: Record<string, unknown>[] = [];
 
   const tenancies = [
-    { id: TENANCY_IDS.T1, rent: 1200, tenancyIdx: 1 },
-    { id: TENANCY_IDS.T2, rent: 950, tenancyIdx: 2 },
-    { id: TENANCY_IDS.T3, rent: 1500, tenancyIdx: 3 },
+    { id: TENANCY_IDS.T1, rent: 1200, tenancyIdx: 1, propertyId: RENTAL_PROPERTY_IDS[0] },
+    { id: TENANCY_IDS.T2, rent: 950, tenancyIdx: 2, propertyId: RENTAL_PROPERTY_IDS[1] },
+    { id: TENANCY_IDS.T3, rent: 1500, tenancyIdx: 3, propertyId: RENTAL_PROPERTY_IDS[2] },
   ];
 
   for (const tenancy of tenancies) {
@@ -148,14 +159,15 @@ function buildFinancialEntries(scenario: Scenario): Record<string, unknown>[] {
 
       rows.push({
         id: financialEntryId(tenancy.tenancyIdx, month + 1),
+        property_id: tenancy.propertyId,
         tenancy_id: tenancy.id,
         user_id: LANDLORD.id,
         type: "income",
         category: "rent",
         amount: tenancy.rent,
-        date: paymentDate.toISOString().split("T")[0],
+        entry_date: paymentDate.toISOString().split("T")[0],
         description: `Rent payment - ${paymentDate.toLocaleString("en-GB", { month: "long", year: "numeric" })}`,
-        status: isFireDrillOverdue ? "overdue" : "completed",
+        payment_status: isFireDrillOverdue ? "overdue" : "paid",
       });
     }
   }
@@ -167,14 +179,14 @@ function buildPropertyDocuments(scenario: Scenario): Record<string, unknown>[] {
   const rows: Record<string, unknown>[] = [];
   const now = new Date();
 
-  // Document types to seed per property
+  // Document categories to seed per property (must match document_category enum)
   const docTypes: Array<{
-    type: string;
+    category: string;
     label: string;
   }> = [
-    { type: "gas_safety", label: "Gas Safety Certificate" },
-    { type: "eicr", label: "Electrical Installation Condition Report" },
-    { type: "epc", label: "Energy Performance Certificate" },
+    { category: "gas_safety", label: "Gas Safety Certificate" },
+    { category: "electrical_eicr", label: "Electrical Installation Condition Report" },
+    { category: "epc", label: "Energy Performance Certificate" },
   ];
 
   // Use all 4 landlord rental properties for documents (up to 12 docs = 4 x 3)
@@ -182,7 +194,6 @@ function buildPropertyDocuments(scenario: Scenario): Record<string, unknown>[] {
 
   for (let pIdx = 0; pIdx < propertiesToDocument.length; pIdx++) {
     const property = propertiesToDocument[pIdx];
-    const listingId = DEMO_LISTING_IDS[property.id];
 
     for (let dIdx = 0; dIdx < docTypes.length; dIdx++) {
       const doc = docTypes[dIdx];
@@ -194,24 +205,14 @@ function buildPropertyDocuments(scenario: Scenario): Record<string, unknown>[] {
       // Fire-drill overrides
       if (scenario === "fire-drill") {
         // First property's gas_safety: expired yesterday
-        if (pIdx === 0 && doc.type === "gas_safety") {
+        if (pIdx === 0 && doc.category === "gas_safety") {
           expiryDate = daysAgo(1);
         }
-        // Second property's eicr: expiring in 7 days
-        if (pIdx === 1 && doc.type === "eicr") {
+        // Second property's electrical_eicr: expiring in 7 days
+        if (pIdx === 1 && doc.category === "electrical_eicr") {
           expiryDate = new Date(now);
           expiryDate.setDate(expiryDate.getDate() + 7);
         }
-      }
-
-      // Calculate status from expiry_date
-      let status: string;
-      if (expiryDate < now) {
-        status = "expired";
-      } else {
-        const thirtyDaysOut = new Date(now);
-        thirtyDaysOut.setDate(thirtyDaysOut.getDate() + 30);
-        status = expiryDate <= thirtyDaysOut ? "expiring" : "valid";
       }
 
       // Reminder date: 30 days before expiry
@@ -220,14 +221,13 @@ function buildPropertyDocuments(scenario: Scenario): Record<string, unknown>[] {
 
       rows.push({
         id: documentId(pIdx, dIdx),
-        listing_id: listingId,
-        document_type: doc.type,
-        file_url: `/demo/documents/${doc.type}_${property.postcode.replace(/\s/g, "")}.pdf`,
-        file_name: `${doc.label} - ${property.address_line1}.pdf`,
+        property_id: property.id,
+        uploaded_by: LANDLORD.id,
+        name: `${doc.label} - ${property.address_line1}.pdf`,
+        category: doc.category,
+        file_url: `/demo/documents/${doc.category}_${property.postcode.replace(/\s/g, "")}.pdf`,
         expiry_date: expiryDate.toISOString().split("T")[0],
-        reminder_date: reminderDate.toISOString().split("T")[0],
-        status,
-        notes: null,
+        next_reminder_date: reminderDate.toISOString().split("T")[0],
       });
     }
   }
@@ -238,88 +238,78 @@ function buildPropertyDocuments(scenario: Scenario): Record<string, unknown>[] {
 function buildMaintenanceRequests(
   scenario: Scenario,
 ): Record<string, unknown>[] {
-  const tenancy1ListingId = RENTAL_LISTING_IDS[0]; // property 0008
-  const tenancy2ListingId = RENTAL_LISTING_IDS[1]; // property 0009
+  const tenancy1PropertyId = RENTAL_PROPERTY_IDS[0]; // property 0008
+  const tenancy2PropertyId = RENTAL_PROPERTY_IDS[1]; // property 0009
 
   const rows: Record<string, unknown>[] = [
-    // Open requests
+    // New requests
     {
       id: MAINTENANCE_IDS[0],
-      listing_id: tenancy1ListingId,
-      tenant_id: RENTER.id,
+      property_id: tenancy1PropertyId,
       reported_by: RENTER.id,
       title: "Leaking kitchen tap",
       description:
         "The kitchen mixer tap has started dripping constantly. Water pools around the base when in use. Tried tightening but it hasn't helped.",
       priority: "medium",
-      status: "open",
-      category: "plumbing",
-      photos: JSON.stringify([]),
+      status: "new",
+      photo_urls: [],
       resolution_notes: null,
       resolved_at: null,
       created_at: daysAgo(3).toISOString(),
     },
     {
       id: MAINTENANCE_IDS[1],
-      listing_id: tenancy1ListingId,
-      tenant_id: RENTER.id,
+      property_id: tenancy1PropertyId,
       reported_by: RENTER.id,
       title: "Boiler not heating",
       description:
         "The boiler fires up but radiators remain cold. Hot water is working fine but central heating won't come on. Tried resetting the thermostat.",
       priority: "high",
-      status: "open",
-      category: "plumbing",
-      photos: JSON.stringify([]),
+      status: "new",
+      photo_urls: [],
       resolution_notes: null,
       resolved_at: null,
       created_at: daysAgo(1).toISOString(),
     },
-    // Completed requests
+    // Resolved requests
     {
       id: MAINTENANCE_IDS[2],
-      listing_id: tenancy1ListingId,
-      tenant_id: RENTER.id,
+      property_id: tenancy1PropertyId,
       reported_by: RENTER.id,
       title: "Broken window lock",
       description:
         "The lock mechanism on the bedroom window has snapped. Window can't be secured properly.",
       priority: "medium",
-      status: "completed",
-      category: "structural",
-      photos: JSON.stringify([]),
+      status: "resolved",
+      photo_urls: [],
       resolution_notes: "Lock replaced with new UPVC mechanism. Window fully functional.",
       resolved_at: daysAgo(14).toISOString(),
       created_at: daysAgo(21).toISOString(),
     },
     {
       id: MAINTENANCE_IDS[3],
-      listing_id: tenancy2ListingId,
-      tenant_id: LANDLORD.id,
+      property_id: tenancy2PropertyId,
       reported_by: LANDLORD.id,
       title: "Smoke alarm battery",
       description:
         "Smoke alarm in the hallway is chirping intermittently, indicating low battery.",
       priority: "low",
-      status: "completed",
-      category: "electrical",
-      photos: JSON.stringify([]),
+      status: "resolved",
+      photo_urls: [],
       resolution_notes: "Battery replaced in all smoke alarms during routine check.",
       resolved_at: daysAgo(7).toISOString(),
       created_at: daysAgo(10).toISOString(),
     },
     {
       id: MAINTENANCE_IDS[4],
-      listing_id: tenancy2ListingId,
-      tenant_id: LANDLORD.id,
+      property_id: tenancy2PropertyId,
       reported_by: LANDLORD.id,
       title: "Blocked drain",
       description:
         "Kitchen sink is draining very slowly. Tried using drain cleaner but it hasn't cleared the blockage.",
       priority: "medium",
-      status: "completed",
-      category: "plumbing",
-      photos: JSON.stringify([]),
+      status: "resolved",
+      photo_urls: [],
       resolution_notes: "Drain cleared by plumber. Grease buildup was the cause.",
       resolved_at: daysAgo(30).toISOString(),
       created_at: daysAgo(35).toISOString(),
@@ -330,16 +320,14 @@ function buildMaintenanceRequests(
   if (scenario === "fire-drill") {
     rows.push({
       id: MAINTENANCE_IDS[5],
-      listing_id: tenancy1ListingId,
-      tenant_id: RENTER.id,
+      property_id: tenancy1PropertyId,
       reported_by: RENTER.id,
       title: "Burst pipe in bathroom",
       description:
         "A pipe has burst under the bathroom sink. Water is spraying everywhere. I've turned off the stopcock but there's significant water on the floor.",
       priority: "emergency",
-      status: "open",
-      category: "plumbing",
-      photos: JSON.stringify([]),
+      status: "new",
+      photo_urls: [],
       resolution_notes: null,
       resolved_at: null,
       created_at: hoursAgo(8).toISOString(),
@@ -359,15 +347,15 @@ function buildDepositRegistrations(): Record<string, unknown>[] {
   return configs.map((c, idx) => ({
     id: DEPOSIT_IDS[idx],
     tenancy_id: c.tenancyId,
+    landlord_id: LANDLORD.id,
     amount: c.amount,
     scheme: c.scheme,
-    registration_number: `${c.scheme.toUpperCase()}-2025-${String(100000 + idx * 11111).slice(0, 6)}`,
-    registered_date: daysAgo(
+    scheme_reference: `${c.scheme.toUpperCase()}-2025-${String(100000 + idx * 11111).slice(0, 6)}`,
+    registration_date: daysAgo(
       idx === 0 ? 180 : idx === 1 ? 90 : 270,
     )
       .toISOString()
       .split("T")[0],
-    certificate_url: `/demo/deposits/${c.scheme.toLowerCase()}_cert_${idx + 1}.pdf`,
     status: "registered",
   }));
 }

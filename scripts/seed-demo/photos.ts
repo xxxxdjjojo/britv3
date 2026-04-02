@@ -56,7 +56,6 @@ function buildPhotoRows(): Record<string, unknown>[] {
         thumbnail_url: thumbnailUrl,
         caption: PHOTO_CAPTIONS[photoIdx] ?? `Photo ${photoNum}`,
         sort_order: photoIdx,
-        is_primary: photoIdx === 0,
       });
     }
   });

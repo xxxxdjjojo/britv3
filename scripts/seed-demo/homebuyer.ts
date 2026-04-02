@@ -23,23 +23,23 @@ const SALE_LISTINGS = DEMO_PROPERTIES.filter(
 );
 
 // ---------------------------------------------------------------------------
-// Hardcoded UUIDs (i8000000 prefix pattern)
+// Hardcoded UUIDs (08000000 prefix pattern)
 // ---------------------------------------------------------------------------
 
 function savedPropertyId(n: number): string {
-  return `i8000000-1${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `08000000-1${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function savedSearchId(n: number): string {
-  return `i8000000-2${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `08000000-2${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function viewingSlotId(n: number): string {
-  return `i8000000-3${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `08000000-3${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 function viewingRecordId(n: number): string {
-  return `i8000000-4${String(n).padStart(3, "0")}-4000-8000-000000000001`;
+  return `08000000-4${String(n).padStart(3, "0")}-4000-8000-000000000001`;
 }
 
 // ---------------------------------------------------------------------------

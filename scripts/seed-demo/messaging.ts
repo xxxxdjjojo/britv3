@@ -4,7 +4,7 @@
  * Creates 8 conversations between connected demo users with
  * 4-8 realistic messages each. Total: 40+ messages.
  *
- * UUID prefix: k8000000
+ * UUID prefix: b8000000
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -24,17 +24,17 @@ const VICTORIA = DEMO_USERS.AGENT;
 const MIKE = DEMO_USERS.PROVIDER;
 
 // ---------------------------------------------------------------------------
-// Hardcoded UUIDs (k8000000 prefix)
+// Hardcoded UUIDs (b8000000 prefix)
 // ---------------------------------------------------------------------------
 
-/** Conversation IDs: k8000000-01NN */
+/** Conversation IDs: b8000000-01NN */
 function convId(n: number): string {
-  return `k8000000-01${String(n).padStart(2, "0")}-4000-8000-000000000001`;
+  return `b8000000-01${String(n).padStart(2, "0")}-4000-8000-000000000001`;
 }
 
-/** Message IDs: k8000000-02NN */
+/** Message IDs: b8000000-02NN */
 function msgId(n: number): string {
-  return `k8000000-02${String(n).padStart(2, "0")}-4000-8000-000000000001`;
+  return `b8000000-02${String(n).padStart(2, "0")}-4000-8000-000000000001`;
 }
 
 // Property IDs referenced in conversations

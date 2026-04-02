@@ -43,7 +43,7 @@ function buildPropertyRows(): Record<string, unknown>[] {
     square_footage: p.square_footage || null,
     title: p.title,
     description: p.description,
-    epc_rating: p.epc_rating,
+    epc_rating: p.epc_rating === "N" ? null : p.epc_rating,
     tenure: p.tenure,
     year_built: p.year_built || null,
     new_build: p.new_build,
