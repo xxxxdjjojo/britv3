@@ -81,7 +81,7 @@ export const DEMO_PROFILES: Array<{
   id: u.id,
   display_name: u.name,
   active_role: u.role,
-  verification_level: "verified",
+  verification_level: "professional",
   avatar_url: null,
   phone: `07${String(Math.floor(100000000 + Math.random() * 899999999)).slice(0, 9)}`,
   phone_verified: true,
