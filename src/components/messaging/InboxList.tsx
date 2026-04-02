@@ -86,10 +86,10 @@ function SwipeableConversationRow(
   }
 
   return (
-    <div className="relative overflow-hidden rounded-lg">
+    <div className="relative overflow-hidden rounded-xl">
       {/* Archive action revealed behind the row */}
       <div
-        className="absolute right-0 inset-y-0 flex items-center bg-destructive px-4 text-destructive-foreground text-sm font-medium"
+        className="absolute right-0 inset-y-0 flex items-center bg-error px-4 text-white text-sm font-medium"
         aria-hidden="true"
       >
         Archive
@@ -140,6 +140,16 @@ function ConversationRow(
   const timestamp = relativeTime(conv.last_message_at);
   const hasUnread = conv.unread_count > 0;
 
+  const contextType = conv.context_type;
+  const badgeConfig =
+    contextType === "rfq"
+      ? { label: "Quote Request", className: "text-on-secondary-container bg-secondary-container" }
+      : contextType === "booking"
+        ? { label: "Viewing", className: "text-info bg-info-light" }
+        : contextType === "listing"
+          ? { label: "Property Enquiry", className: "text-white bg-brand-primary" }
+          : null;
+
   const ariaLabel = `${name}, ${lastMessage}, ${timestamp}${hasUnread ? ", unread" : ""}`;
 
   return (
@@ -157,39 +167,43 @@ function ConversationRow(
         onSelect(conv.id, otherUserId);
       }}
       className={cn(
-        "flex items-center gap-3 w-full text-left px-4 py-3 cursor-pointer transition-colors hover:bg-muted/50",
-        isActive && "bg-brand-primary/5 border-l-2 border-brand-primary",
+        "w-full text-left p-4 mx-2 rounded-xl cursor-pointer transition-colors mb-2",
+        isActive
+          ? "bg-surface-container-lowest shadow-[0_4px_20px_rgba(0,0,0,0.03)] border-l-4 border-brand-primary"
+          : "hover:bg-surface-container-high",
       )}
     >
-      <div className="relative">
-        <Avatar>
-          <AvatarFallback className="bg-muted text-foreground text-sm font-medium">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
-        {hasUnread && (
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-brand-primary border-2 border-card" />
+      {/* Status badge + timestamp row */}
+      <div className="flex justify-between items-start mb-1">
+        {badgeConfig ? (
+          <span className={cn("text-[10px] font-bold tracking-widest uppercase px-1.5 py-0.5 rounded", badgeConfig.className)}>
+            {badgeConfig.label}
+          </span>
+        ) : (
+          <span />
         )}
+        <span className="text-[10px] text-outline">{timestamp}</span>
       </div>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              "font-body text-sm truncate text-foreground",
-              hasUnread ? "font-bold" : "font-medium",
-            )}
-          >
-            {name}
-          </span>
-          <span className="font-body text-xs text-neutral-400 whitespace-nowrap">
-            {timestamp}
-          </span>
-        </div>
-        <p className="font-body text-xs truncate mt-0.5 text-neutral-500">
-          {lastMessage}
-        </p>
-      </div>
+      {/* Name */}
+      <h4
+        className={cn(
+          "font-heading text-sm truncate text-on-surface",
+          hasUnread ? "font-bold" : "font-semibold",
+        )}
+      >
+        {name}
+      </h4>
+
+      {/* Preview */}
+      <p className="text-xs text-outline line-clamp-1 mt-1">
+        {lastMessage}
+      </p>
+
+      {/* Unread dot */}
+      {hasUnread && (
+        <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-brand-primary" />
+      )}
     </button>
   );
 }
@@ -200,12 +214,13 @@ function ConversationRow(
 
 function SkeletonRow() {
   return (
-    <div className="flex items-center gap-3 px-3 py-3 animate-pulse">
-      <div className="h-10 w-10 rounded-full bg-muted shrink-0" />
-      <div className="flex-1 space-y-2">
-        <div className="h-3 w-1/2 rounded bg-muted" />
-        <div className="h-3 w-3/4 rounded bg-muted" />
+    <div className="p-4 mx-2 rounded-xl animate-pulse mb-2">
+      <div className="flex justify-between mb-2">
+        <div className="h-2.5 w-20 rounded bg-surface-container" />
+        <div className="h-2.5 w-10 rounded bg-surface-container" />
       </div>
+      <div className="h-3 w-2/3 rounded bg-surface-container mb-1.5" />
+      <div className="h-2.5 w-3/4 rounded bg-surface-container" />
     </div>
   );
 }
@@ -284,15 +299,14 @@ export default function InboxList(
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-neutral-100/60 dark:border-neutral-700/60">
-        <h2 className="font-heading text-xl font-semibold text-foreground mb-3">Messages</h2>
+      <div className="p-6 space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
           <Input
-            placeholder="Search conversations..."
+            placeholder="Search inquiries..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-10 pr-4 py-2.5 bg-surface-container-lowest border-none rounded-lg text-sm focus:ring-1 focus:ring-brand-primary/20 placeholder:text-outline/60"
           />
         </div>
       </div>
@@ -314,13 +328,13 @@ export default function InboxList(
           )}
 
           {!isLoading && error && (
-            <div className="p-6 text-center font-body text-sm text-destructive">
+            <div className="p-6 text-center font-body text-sm text-error">
               Failed to load conversations
             </div>
           )}
 
           {!isLoading && !error && conversations.length === 0 && (
-            <div className="p-6 text-center font-body text-sm text-neutral-500">
+            <div className="p-6 text-center font-body text-sm text-outline">
               No conversations found
             </div>
           )}

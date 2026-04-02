@@ -55,35 +55,40 @@ function ThreadHeader(
     .toUpperCase();
 
   return (
-    <div className="flex items-center justify-between border-b border-neutral-100/60 dark:border-neutral-700/60 px-4 py-3 bg-card">
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <Avatar>
-            <AvatarFallback className="bg-muted text-foreground text-sm font-medium">
-              {initials || "?"}
-            </AvatarFallback>
-          </Avatar>
-        </div>
+    <div className="flex items-center justify-between border-b border-surface-container px-6 py-4 bg-surface-container-lowest">
+      <div className="flex items-center gap-4">
+        <Avatar className="h-10 w-10">
+          <AvatarFallback className="bg-primary-container text-on-primary-container text-sm font-bold">
+            {initials || "?"}
+          </AvatarFallback>
+        </Avatar>
         <div>
-          <p className="font-heading text-base font-semibold text-foreground">{displayName}</p>
+          <p className="font-heading text-lg font-bold tracking-tight text-brand-primary">{displayName}</p>
           {propertyInfo && (
-            <div className="flex items-center gap-2 font-body text-xs text-neutral-500 border border-neutral-200/60 dark:border-neutral-700/60 rounded-lg px-2 py-1 bg-muted/30 mt-1">
-              <span className="font-medium truncate max-w-48">{propertyInfo.address}</span>
+            <div className="flex items-center gap-3 mt-0.5">
+              <span className="font-label text-[10px] font-bold tracking-widest uppercase text-outline">
+                {propertyInfo.address}
+              </span>
               {propertyInfo.price && (
-                <span className="text-brand-primary font-semibold">{propertyInfo.price}</span>
+                <>
+                  <span className="w-1 h-1 rounded-full bg-outline-variant" />
+                  <span className="font-label text-[10px] font-bold tracking-widest uppercase text-brand-secondary">
+                    {propertyInfo.price}
+                  </span>
+                </>
               )}
             </div>
           )}
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <button type="button" aria-label="Call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2">
+        <button type="button" aria-label="Call" className="rounded-lg p-2 text-outline hover:text-brand-primary transition-colors">
           <Phone className="h-4 w-4" />
         </button>
-        <button type="button" aria-label="Video call" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2">
+        <button type="button" aria-label="Video call" className="rounded-lg p-2 text-outline hover:text-brand-primary transition-colors">
           <Video className="h-4 w-4" />
         </button>
-        <button type="button" aria-label="More options" className="rounded-lg p-2 text-neutral-400 hover:bg-muted hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2">
+        <button type="button" aria-label="More options" className="rounded-lg p-2 text-outline hover:text-brand-primary transition-colors">
           <MoreVertical className="h-4 w-4" />
         </button>
       </div>
@@ -94,9 +99,9 @@ function ThreadHeader(
 function DateSeparator(props: Readonly<{ label: string }>) {
   return (
     <div className="flex items-center gap-3 py-4">
-      <div className="flex-1 h-px bg-neutral-100/60 dark:bg-neutral-700/60" />
-      <span className="font-body text-xs text-neutral-400">{props.label}</span>
-      <div className="flex-1 h-px bg-neutral-100/60 dark:bg-neutral-700/60" />
+      <div className="flex-1 h-px bg-outline-variant/30" />
+      <span className="font-body text-xs text-outline">{props.label}</span>
+      <div className="flex-1 h-px bg-outline-variant/30" />
     </div>
   );
 }
@@ -119,56 +124,60 @@ function MessageBubble(
   return (
     <div
       className={cn(
-        "flex gap-2 max-w-[75%]",
+        "flex gap-4 max-w-3xl",
         isOwn ? "ml-auto flex-row-reverse" : "mr-auto",
       )}
     >
       {!isOwn && (
-        <Avatar className="h-8 w-8 shrink-0 mt-1">
-          <AvatarFallback className="bg-muted text-foreground text-xs font-medium">
+        <Avatar className="h-10 w-10 shrink-0 mt-1">
+          <AvatarFallback className="bg-primary-container text-on-primary-container text-xs font-bold">
             {senderInitials}
           </AvatarFallback>
         </Avatar>
       )}
+      {isOwn && (
+        <div className="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container font-bold text-xs shrink-0">
+          {senderInitials}
+        </div>
+      )}
       <div
         className={cn(
-          "flex flex-col",
+          "flex flex-col space-y-2",
           isOwn ? "items-end" : "items-start",
         )}
       >
+        <div className={cn("flex items-center gap-3", isOwn && "justify-end")}>
+          {isOwn && <span className="text-[10px] text-outline font-medium">{time}</span>}
+          <span className="font-heading text-sm font-bold text-brand-primary">
+            {message.sender_name ?? "You"}
+          </span>
+          {!isOwn && <span className="text-[10px] text-outline font-medium">{time}</span>}
+        </div>
         <div
           className={cn(
-            "rounded-2xl px-4 py-2 font-body text-sm",
+            "p-5 font-body text-sm leading-relaxed",
             isOwn
-              ? "bg-brand-primary text-white rounded-br-sm"
-              : "bg-muted text-foreground rounded-bl-sm",
+              ? "bg-brand-primary text-white rounded-2xl rounded-tr-none"
+              : "bg-surface-container-low text-on-surface-variant rounded-2xl rounded-tl-none",
           )}
         >
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
-          {message.attachment_url && (
-            <div className="mt-1">
-              {message.attachment_type === "image" ? (
-                <img
-                  src={message.attachment_url}
-                  alt="attachment"
-                  className="rounded-lg max-w-48 aspect-video object-cover"
-                />
-              ) : (
-                <a
-                  href={message.attachment_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs underline"
-                >
-                  <FileText className="h-3 w-3" /> Download PDF
-                </a>
-              )}
-            </div>
-          )}
         </div>
-        <span className="font-body text-xs text-neutral-400 mt-1">
-          {time}
-        </span>
+        {message.attachment_url && (
+          <div className="inline-flex items-center gap-3 p-3 bg-surface-container-low rounded-xl border border-outline-variant/10 text-xs">
+            <FileText className="h-4 w-4 text-brand-primary" />
+            <span className="font-medium">
+              {message.attachment_type === "image" ? "Image" : "Document"}
+            </span>
+            {message.attachment_size_bytes && (
+              <span className="text-outline uppercase text-[9px] font-bold tracking-wider">
+                {message.attachment_size_bytes > 1048576
+                  ? `${(message.attachment_size_bytes / 1048576).toFixed(1)} MB`
+                  : `${Math.round(message.attachment_size_bytes / 1024)} KB`}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -176,14 +185,14 @@ function MessageBubble(
 
 function QuickActionsBar() {
   return (
-    <div className="flex gap-2 px-4 py-2 border-t border-neutral-100/60 dark:border-neutral-700/60 overflow-x-auto">
+    <div className="flex gap-2 px-6 py-2 border-t border-surface-container overflow-x-auto">
       {QUICK_ACTIONS.map((action) => {
         const Icon = action.icon;
         return (
           <button
             key={action.label}
             type="button"
-            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
+            className="flex items-center gap-1.5 shrink-0 rounded-lg border border-outline-variant/20 px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:text-brand-primary hover:border-brand-primary/30 transition-colors"
           >
             <Icon className="h-3.5 w-3.5" />
             {action.label}
@@ -310,7 +319,7 @@ export default function MessageThread(
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+      <div className="flex-1 flex items-center justify-center text-sm text-outline">
         Loading messages...
       </div>
     );
@@ -318,19 +327,19 @@ export default function MessageThread(
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center text-sm text-destructive">
+      <div className="flex-1 flex items-center justify-center text-sm text-error">
         Failed to load messages
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-surface">
       <ThreadHeader participantName={participantName} propertyInfo={propertyInfo} />
 
       {/* Message feed */}
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-3" role="log" aria-label="Message history">
+        <div className="px-8 py-4 space-y-8" role="log" aria-label="Message history">
           {/* Load earlier messages */}
           {hasNextPage && (
             <div className="flex justify-center py-2">
@@ -367,7 +376,7 @@ export default function MessageThread(
 
       <QuickActionsBar />
       {isOtherTyping && (
-        <div className="px-4 py-1 font-body text-xs text-neutral-400 italic flex items-center gap-1">
+        <div className="px-6 py-1 font-body text-xs text-outline italic flex items-center gap-1">
           <span className="inline-flex gap-0.5">
             <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
             <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>

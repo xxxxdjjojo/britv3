@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -75,21 +76,23 @@ export function RoleSwitcher() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" sideOffset={4}>
-        <DropdownMenuLabel>Switch Role</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {roles.map((role) => {
-          const def = getRoleDefinition(role);
-          const Icon = def ? ICON_MAP[def.icon] : null;
-          const isActive = role === activeRole;
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Switch Role</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {roles.map((role) => {
+            const def = getRoleDefinition(role);
+            const Icon = def ? ICON_MAP[def.icon] : null;
+            const isActive = role === activeRole;
 
-          return (
-            <DropdownMenuItem key={role} onClick={() => handleSwitch(role)}>
-              {Icon && <Icon className="size-4" />}
-              <span className="flex-1">{def?.label ?? role}</span>
-              {isActive && <Check className="size-4 text-brand-primary" />}
-            </DropdownMenuItem>
-          );
-        })}
+            return (
+              <DropdownMenuItem key={role} onClick={() => handleSwitch(role)}>
+                {Icon && <Icon className="size-4" />}
+                <span className="flex-1">{def?.label ?? role}</span>
+                {isActive && <Check className="size-4 text-brand-primary" />}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -6,7 +6,6 @@
  */
 
 import { useUnreadCount } from "@/hooks/useInbox";
-import { Badge } from "@/components/ui/badge";
 
 export default function UnreadBadge() {
   const { data } = useUnreadCount();
@@ -15,8 +14,8 @@ export default function UnreadBadge() {
   if (count === 0) return null;
 
   return (
-    <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+    <span className="ml-1 rounded-full bg-brand-primary px-2 py-0.5 text-[10px] font-bold text-white">
       {count > 99 ? "99+" : count}
-    </Badge>
+    </span>
   );
 }

@@ -117,7 +117,7 @@ export default function MessageComposer(
   const charCount = content.length;
 
   return (
-    <div className="border-t border-neutral-100/60 dark:border-neutral-700/60 bg-card px-4 py-3 space-y-2">
+    <div className="px-8 pb-6 pt-0 space-y-2">
       {/* Attachment preview */}
       {selectedFile && (
         <AttachmentPreview
@@ -133,7 +133,7 @@ export default function MessageComposer(
             <button
               key={suggestion}
               type="button"
-              className="rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
+              className="rounded-lg border border-outline-variant/20 px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:text-brand-primary hover:border-brand-primary/30 transition-colors"
               onClick={() => setContent(suggestion)}
             >
               {suggestion}
@@ -143,12 +143,12 @@ export default function MessageComposer(
       )}
 
       {/* Composer row */}
-      <div className="flex items-end gap-2">
+      <div className="bg-surface-container-low rounded-2xl p-4 flex items-end gap-4 border border-transparent focus-within:bg-surface-container-lowest focus-within:border-outline-variant/20 transition-all">
         {/* Attach button */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 rounded-lg p-2 text-neutral-400 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-neutral-400/30 focus-visible:ring-offset-2"
+          className="shrink-0 p-2 text-outline hover:text-brand-primary transition-colors"
           title="Attach file"
         >
           <svg
@@ -175,9 +175,9 @@ export default function MessageComposer(
         />
 
         {/* Message input */}
-        <div className="flex-1 relative rounded-xl bg-muted/50 border border-neutral-200/60 dark:border-neutral-700/60">
+        <div className="flex-1">
           <Textarea
-            placeholder="Type a message... (Ctrl+Enter to send)"
+            placeholder="Type your message..."
             value={content}
             onChange={(e) => {
               setContent(e.target.value.slice(0, MAX_CHARS));
@@ -189,11 +189,8 @@ export default function MessageComposer(
             }}
             onKeyDown={handleKeyDown}
             rows={1}
-            className="pr-16 min-h-10 max-h-32 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+            className="w-full bg-transparent border-none focus:ring-0 text-sm py-2 resize-none placeholder:text-outline/50 min-h-10 max-h-32"
           />
-          <span className="absolute right-2 bottom-1 font-body text-[10px] text-neutral-400">
-            {charCount}/{MAX_CHARS}
-          </span>
         </div>
 
         {/* Send button */}
@@ -203,15 +200,9 @@ export default function MessageComposer(
           disabled={
             sendMutation.isPending || isUploading || (!content.trim() && !selectedFile)
           }
-          className="shrink-0 rounded-lg bg-brand-primary p-2 text-white hover:bg-brand-primary/90 transition-colors disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+          className="px-6 py-2.5 bg-brand-primary text-white rounded-lg font-heading text-xs font-bold tracking-widest uppercase hover:bg-primary-container transition-colors disabled:opacity-50"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-          <span className="sr-only">
-            {isUploading ? "Uploading..." : sendMutation.isPending ? "Sending..." : "Send"}
-          </span>
+          {isUploading ? "..." : sendMutation.isPending ? "..." : "Send"}
         </button>
       </div>
     </div>

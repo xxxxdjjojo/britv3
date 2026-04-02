@@ -77,12 +77,12 @@ export default function ConversationQuickActions({
   return (
     <>
       {/* Quick action chips */}
-      <div className="flex gap-2 px-4 py-2 border-t overflow-x-auto">
+      <div className="flex gap-2 px-6 py-2 border-t border-surface-container overflow-x-auto">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="rounded-full shrink-0 text-xs gap-1.5"
+          className="shrink-0 text-xs gap-1.5 rounded-lg border-outline-variant/20 text-on-surface-variant hover:text-brand-primary hover:border-brand-primary/30"
           onClick={() => setViewingOpen(true)}
         >
           <Calendar className="h-3.5 w-3.5" />
@@ -92,7 +92,7 @@ export default function ConversationQuickActions({
           type="button"
           variant="outline"
           size="sm"
-          className="rounded-full shrink-0 text-xs gap-1.5"
+          className="shrink-0 text-xs gap-1.5 rounded-lg border-outline-variant/20 text-on-surface-variant hover:text-brand-primary hover:border-brand-primary/30"
           disabled
           title="Coming soon"
         >
@@ -104,7 +104,7 @@ export default function ConversationQuickActions({
             type="button"
             variant="outline"
             size="sm"
-            className="rounded-full shrink-0 text-xs gap-1.5"
+            className="shrink-0 text-xs gap-1.5 rounded-lg border-outline-variant/20 text-on-surface-variant hover:text-brand-primary hover:border-brand-primary/30"
             onClick={() => hasRfq && setQuoteOpen(true)}
             disabled={!hasRfq}
             title={hasRfq ? undefined : "No active service request"}
