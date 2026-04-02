@@ -156,8 +156,9 @@ export async function cleanup(supabase: SupabaseClient): Promise<void> {
   await deleteWhere(supabase, "listings", "user_id", DEMO_USER_IDS);
   await deleteWhere(supabase, "properties", "id", DEMO_PROPERTY_IDS);
 
-  // ── Step 16: Profiles ──────────────────────────────────────────────────
-  console.log("\nStep 16: Profiles");
+  // ── Step 16: Subscriptions, user_roles, profiles ────────────────────────
+  console.log("\nStep 16: Subscriptions, user_roles, profiles");
+  await deleteWhere(supabase, "subscriptions", "user_id", DEMO_USER_IDS);
   await deleteWhere(supabase, "user_roles", "user_id", DEMO_USER_IDS);
   await deleteWhere(supabase, "profiles", "id", DEMO_USER_IDS);
 

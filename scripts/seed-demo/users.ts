@@ -117,12 +117,55 @@ export async function seedUsers(
     userRolesRows as unknown as Record<string, unknown>[],
   );
 
+  // 4. Seed subscriptions so demo users bypass paywalls
+  console.log("\n--- Seeding Subscriptions ---\n");
+
+  const subscriptionRows = [
+    {
+      id: "e4000000-a001-4000-8000-000000000001",
+      user_id: DEMO_USERS.LANDLORD.id,
+      plan_name: "landlord_pro",
+      status: "active",
+      stripe_customer_id: "cus_demo_landlord",
+      stripe_subscription_id: "sub_demo_landlord",
+      current_period_end: new Date(Date.now() + 365 * 86400000).toISOString(),
+      cancel_at_period_end: false,
+    },
+    {
+      id: "e4000000-a002-4000-8000-000000000002",
+      user_id: DEMO_USERS.AGENT.id,
+      plan_name: "agent_enterprise",
+      status: "active",
+      stripe_customer_id: "cus_demo_agent",
+      stripe_subscription_id: "sub_demo_agent",
+      current_period_end: new Date(Date.now() + 365 * 86400000).toISOString(),
+      cancel_at_period_end: false,
+    },
+    {
+      id: "e4000000-a003-4000-8000-000000000003",
+      user_id: DEMO_USERS.PROVIDER.id,
+      plan_name: "provider_elite",
+      status: "active",
+      stripe_customer_id: "cus_demo_provider",
+      stripe_subscription_id: "sub_demo_provider",
+      current_period_end: new Date(Date.now() + 365 * 86400000).toISOString(),
+      cancel_at_period_end: false,
+    },
+  ];
+
+  await seedTable(
+    supabase,
+    "subscriptions",
+    subscriptionRows as unknown as Record<string, unknown>[],
+  );
+
   const profilesSeeded = profileResult.success ? profileResult.count : 0;
 
   console.log("\n--- Users Summary ---");
   console.log(`  Auth users created: ${usersCreated}`);
   console.log(`  Auth users skipped: ${usersSkipped}`);
   console.log(`  Profiles seeded:    ${profilesSeeded}`);
+  console.log(`  Subscriptions:      ${subscriptionRows.length} (all paywalls bypassed)`);
 
   return { usersCreated, usersSkipped, profilesSeeded };
 }
