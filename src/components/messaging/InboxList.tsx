@@ -46,10 +46,10 @@ function ConversationRow(
     currentUserId: string;
     onSelect: (id: string, recipientId: string) => void;
     onArchive: () => void;
-    buttonRef: (el: HTMLButtonElement | null) => void;
+    rowRef: (el: HTMLDivElement | null) => void;
   }>,
 ) {
-  const { conversation: conv, isActive, currentUserId, onSelect, onArchive, buttonRef } = props;
+  const { conversation: conv, isActive, currentUserId, onSelect, onArchive, rowRef } = props;
 
   const otherUserId =
     conv.participant_1_id === currentUserId
@@ -77,19 +77,27 @@ function ConversationRow(
 
   const ariaLabel = `${name}, ${lastMessage}, ${timestamp}${hasUnread ? ", unread" : ""}`;
 
+  const handleSelect = () => {
+    posthog.capture("conversation_opened", {
+      conversation_id: conv.id,
+      has_unread: hasUnread,
+    });
+    onSelect(conv.id, otherUserId);
+  };
+
   return (
-    <button
-      ref={buttonRef}
-      type="button"
+    <div
+      ref={rowRef}
       role="option"
+      tabIndex={0}
       aria-selected={isActive}
       aria-label={ariaLabel}
-      onClick={() => {
-        posthog.capture("conversation_opened", {
-          conversation_id: conv.id,
-          has_unread: hasUnread,
-        });
-        onSelect(conv.id, otherUserId);
+      onClick={handleSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleSelect();
+        }
       }}
       className={cn(
         "group relative w-full text-left p-4 mx-2 rounded-xl cursor-pointer transition-colors mb-2",
@@ -142,7 +150,7 @@ function ConversationRow(
       {hasUnread && (
         <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-brand-primary" />
       )}
-    </button>
+    </div>
   );
 }
 
@@ -177,17 +185,17 @@ export default function InboxList(
   const { user } = useAuth();
   const currentUserId = user?.id ?? "";
   const [search, setSearch] = useState("");
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const setItemRef = useCallback(
-    (index: number) => (el: HTMLButtonElement | null) => {
+    (index: number) => (el: HTMLDivElement | null) => {
       itemRefs.current[index] = el;
     },
     [],
   );
 
   function handleListKeyDown(e: React.KeyboardEvent) {
-    const items = itemRefs.current.filter(Boolean) as HTMLButtonElement[];
+    const items = itemRefs.current.filter(Boolean) as HTMLDivElement[];
     const currentIndex = items.findIndex((el) => el === document.activeElement);
 
     switch (e.key) {
@@ -287,7 +295,7 @@ export default function InboxList(
                 currentUserId={currentUserId}
                 onSelect={onSelectConversation ?? (() => {})}
                 onArchive={() => handleArchive(conv.id)}
-                buttonRef={setItemRef(index)}
+                rowRef={setItemRef(index)}
               />
             ))}
         </div>
