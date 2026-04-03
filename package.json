@@ -16,7 +16,9 @@
     "seed:rls-check": "tsx --env-file=.env.local scripts/seed-demo/rls-check-cli.ts",
     "seed:verify": "tsx scripts/verify-demo.ts",
     "db:gen-types": "bash scripts/gen-types.sh",
-    "db:lint": "bash scripts/lint-migrations.sh"
+    "db:lint": "bash scripts/lint-migrations.sh",
+    "db:push": "bash scripts/lint-migrations.sh && npx supabase db push --include-all",
+    "db:push:force": "npx supabase db push --include-all"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
