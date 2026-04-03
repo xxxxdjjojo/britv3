@@ -15,7 +15,8 @@
     "seed:reset": "tsx --env-file=.env.local scripts/seed-reset.ts",
     "seed:rls-check": "tsx --env-file=.env.local scripts/seed-demo/rls-check-cli.ts",
     "seed:verify": "tsx scripts/verify-demo.ts",
-    "db:gen-types": "bash scripts/gen-types.sh"
+    "db:gen-types": "bash scripts/gen-types.sh",
+    "db:lint": "bash scripts/lint-migrations.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
