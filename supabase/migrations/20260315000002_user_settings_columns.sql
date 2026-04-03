@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS user_backup_codes (
 
 ALTER TABLE user_backup_codes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own backup codes" ON user_backup_codes;
 CREATE POLICY "Users can view their own backup codes"
   ON user_backup_codes FOR SELECT
   USING (auth.uid() = user_id);

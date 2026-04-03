@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS property_insights (
 ALTER TABLE property_insights ENABLE ROW LEVEL SECURITY;
 
 -- Public can read insights where the property has at least one active listing
+DROP POLICY IF EXISTS property_insights_public_read ON property_insights;
 CREATE POLICY property_insights_public_read ON property_insights
   FOR SELECT USING (
     EXISTS (
@@ -31,6 +32,7 @@ CREATE POLICY property_insights_public_read ON property_insights
   );
 
 -- Service role (background jobs, API workers) can write
+DROP POLICY IF EXISTS property_insights_service_write ON property_insights;
 CREATE POLICY property_insights_service_write ON property_insights
   FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 
@@ -48,10 +50,12 @@ CREATE TABLE IF NOT EXISTS property_views (
 ALTER TABLE property_views ENABLE ROW LEVEL SECURITY;
 
 -- Anyone (including anonymous) can record a view
+DROP POLICY IF EXISTS property_views_insert ON property_views;
 CREATE POLICY property_views_insert ON property_views
   FOR INSERT WITH CHECK (true);
 
 -- Only service role can read raw view rows (aggregation happens server-side)
+DROP POLICY IF EXISTS property_views_service_read ON property_views;
 CREATE POLICY property_views_service_read ON property_views
   FOR SELECT USING (auth.role() = 'service_role');
 
@@ -74,6 +78,7 @@ CREATE TABLE IF NOT EXISTS property_renovation_scenarios (
 ALTER TABLE property_renovation_scenarios ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see and manage their own scenarios
+DROP POLICY IF EXISTS renovation_scenarios_own ON property_renovation_scenarios;
 CREATE POLICY renovation_scenarios_own ON property_renovation_scenarios
   FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
@@ -97,10 +102,12 @@ CREATE TABLE IF NOT EXISTS renovation_type_benchmarks (
 ALTER TABLE renovation_type_benchmarks ENABLE ROW LEVEL SECURITY;
 
 -- Public read — benchmark data is non-sensitive
+DROP POLICY IF EXISTS renovation_benchmarks_public_read ON renovation_type_benchmarks;
 CREATE POLICY renovation_benchmarks_public_read ON renovation_type_benchmarks
   FOR SELECT USING (true);
 
 -- Service role manages seed data and updates
+DROP POLICY IF EXISTS renovation_benchmarks_admin_write ON renovation_type_benchmarks;
 CREATE POLICY renovation_benchmarks_admin_write ON renovation_type_benchmarks
   FOR ALL USING (auth.role() = 'service_role') WITH CHECK (auth.role() = 'service_role');
 

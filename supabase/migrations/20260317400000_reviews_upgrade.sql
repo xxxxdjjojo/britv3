@@ -10,9 +10,8 @@ ALTER TABLE public.reviews
   ADD COLUMN IF NOT EXISTS edit_history jsonb DEFAULT '[]'::jsonb;
 
 -- 3. Prevent duplicate flags per user per review
-ALTER TABLE public.review_flags
-  ADD CONSTRAINT review_flags_user_review_unique
-  UNIQUE (review_id, user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS review_flags_user_review_unique
+  ON public.review_flags (review_id, user_id);
 
 -- 4. Atomic vote increment RPC (replaces race-condition-prone read-modify-write)
 CREATE OR REPLACE FUNCTION public.atomic_vote_review(

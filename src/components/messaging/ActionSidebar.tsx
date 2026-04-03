@@ -172,15 +172,31 @@ export default function ActionSidebar({
     queryKey: ["action-sidebar-property", contextId],
     queryFn: async () => {
       const supabase = createClient();
+
+      // Fetch listing + property in two queries to avoid PostgREST embed issues
       const { data: listing } = await supabase
         .from("listings")
-        .select("price, properties(square_footage, epc_rating, tenure)")
+        .select("price, property_id")
         .eq("id", contextId!)
         .single();
 
-      if (!listing?.properties) return null;
-      const props = listing.properties as unknown as Omit<PropertyData, "price" | "latitude" | "longitude">;
-      return { ...props, price: listing.price ? Number(listing.price) : null, latitude: null, longitude: null } as PropertyData;
+      if (!listing?.property_id) return null;
+
+      const { data: property } = await supabase
+        .from("properties")
+        .select("square_footage, epc_rating, tenure")
+        .eq("id", listing.property_id)
+        .single();
+
+      if (!property) return null;
+      return {
+        square_footage: property.square_footage,
+        epc_rating: property.epc_rating,
+        tenure: property.tenure,
+        price: listing.price ? Number(listing.price) : null,
+        latitude: null,
+        longitude: null,
+      } as PropertyData;
     },
     enabled: isListing,
     staleTime: 60_000,
@@ -190,21 +206,25 @@ export default function ActionSidebar({
     queryKey: ["action-sidebar-viewing", contextId],
     queryFn: async () => {
       const supabase = createClient();
-      const { data: viewings } = await supabase
-        .from("viewings")
-        .select("id, viewing_slots(date, start_time, end_time)")
+      const now = new Date().toISOString();
+
+      // Fetch upcoming viewing slots for this listing directly
+      const { data: slots } = await supabase
+        .from("viewing_slots")
+        .select("start_time, end_time")
         .eq("listing_id", contextId!)
-        .gte("viewing_slots.date", new Date().toISOString().split("T")[0])
-        .order("viewing_slots(date)", { ascending: true })
+        .eq("status", "available")
+        .gte("start_time", now)
+        .order("start_time", { ascending: true })
         .limit(1);
 
-      if (!viewings?.length) return null;
-      const slot = (viewings[0] as Record<string, unknown>).viewing_slots as Record<string, string> | null;
-      if (!slot) return null;
+      if (!slots?.length) return null;
+      const slot = slots[0];
+      const startDate = new Date(slot.start_time);
       return {
-        date: slot.date,
-        start_time: slot.start_time,
-        end_time: slot.end_time,
+        date: startDate.toISOString().split("T")[0],
+        start_time: startDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
+        end_time: new Date(slot.end_time).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
         label: "Upcoming Viewing",
       } as ViewingData;
     },

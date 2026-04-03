@@ -137,8 +137,10 @@ CREATE TABLE IF NOT EXISTS agent_profiles (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE agent_profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Agents manage own profile" ON agent_profiles;
 CREATE POLICY "Agents manage own profile" ON agent_profiles
   FOR ALL USING (id = auth.uid());
+DROP POLICY IF EXISTS "Anyone can read agent profiles" ON agent_profiles;
 CREATE POLICY "Anyone can read agent profiles" ON agent_profiles
   FOR SELECT USING (true);
 
@@ -165,12 +167,16 @@ RETURNS TRIGGER AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_seller_listings_updated_at ON seller_listings;
 CREATE TRIGGER update_seller_listings_updated_at
   BEFORE UPDATE ON seller_listings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_seller_viewings_updated_at ON seller_viewings;
 CREATE TRIGGER update_seller_viewings_updated_at
   BEFORE UPDATE ON seller_viewings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_seller_offers_updated_at ON seller_offers;
 CREATE TRIGGER update_seller_offers_updated_at
   BEFORE UPDATE ON seller_offers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DROP TRIGGER IF EXISTS update_sale_progression_updated_at ON sale_progression_stages;
 CREATE TRIGGER update_sale_progression_updated_at
   BEFORE UPDATE ON sale_progression_stages FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -183,27 +189,35 @@ ALTER TABLE seller_offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sale_progression_stages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE agent_enquiries ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Sellers manage own listings" ON seller_listings;
 CREATE POLICY "Sellers manage own listings" ON seller_listings
   FOR ALL USING (seller_id = auth.uid());
 
+DROP POLICY IF EXISTS "Anyone can record analytics" ON listing_analytics_events;
 CREATE POLICY "Anyone can record analytics" ON listing_analytics_events
   FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Sellers read own listing analytics" ON listing_analytics_events;
 CREATE POLICY "Sellers read own listing analytics" ON listing_analytics_events
   FOR SELECT USING (
     listing_id IN (SELECT id FROM seller_listings WHERE seller_id = auth.uid())
   );
 
+DROP POLICY IF EXISTS "Sellers manage own attempts" ON listing_description_attempts;
 CREATE POLICY "Sellers manage own attempts" ON listing_description_attempts
   FOR ALL USING (seller_id = auth.uid());
 
+DROP POLICY IF EXISTS "Sellers manage own viewings" ON seller_viewings;
 CREATE POLICY "Sellers manage own viewings" ON seller_viewings
   FOR ALL USING (seller_id = auth.uid());
 
+DROP POLICY IF EXISTS "Sellers manage own offers" ON seller_offers;
 CREATE POLICY "Sellers manage own offers" ON seller_offers
   FOR ALL USING (seller_id = auth.uid());
 
+DROP POLICY IF EXISTS "Sellers manage own sale progression" ON sale_progression_stages;
 CREATE POLICY "Sellers manage own sale progression" ON sale_progression_stages
   FOR ALL USING (seller_id = auth.uid());
 
+DROP POLICY IF EXISTS "Sellers manage own agent enquiries" ON agent_enquiries;
 CREATE POLICY "Sellers manage own agent enquiries" ON agent_enquiries
   FOR ALL USING (seller_id = auth.uid());

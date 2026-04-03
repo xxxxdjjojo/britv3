@@ -44,6 +44,7 @@ CREATE TRIGGER reviews_restrict_provider_update
   FOR EACH ROW EXECUTE FUNCTION restrict_provider_review_update();
 
 -- Add reviewer UPDATE RLS policy (reviewers could not edit before)
+DROP POLICY IF EXISTS "Reviewers can edit own reviews" ON reviews;
 CREATE POLICY "Reviewers can edit own reviews" ON reviews
   FOR UPDATE TO authenticated
   USING (reviewer_id = auth.uid())
@@ -211,8 +212,11 @@ $$ LANGUAGE plpgsql;
 -- FIX 5 — BUG-8: Text length constraints
 -- Enforce min/max lengths on review_text and title
 -- ---------------------------------------------------------------------------
-ALTER TABLE public.reviews
-  ADD CONSTRAINT review_text_min_length CHECK (char_length(review_text) >= 20),
-  ADD CONSTRAINT review_text_max_length CHECK (char_length(review_text) <= 2000),
-  ADD CONSTRAINT review_title_min_length CHECK (char_length(title) >= 3),
-  ADD CONSTRAINT review_title_max_length CHECK (char_length(title) <= 200);
+DO $$ BEGIN
+  ALTER TABLE public.reviews
+    ADD CONSTRAINT review_text_min_length CHECK (char_length(review_text) >= 20),
+    ADD CONSTRAINT review_text_max_length CHECK (char_length(review_text) <= 2000),
+    ADD CONSTRAINT review_title_min_length CHECK (char_length(title) >= 3),
+    ADD CONSTRAINT review_title_max_length CHECK (char_length(title) <= 200);
+EXCEPTION WHEN duplicate_object OR duplicate_table THEN NULL;
+END $$;

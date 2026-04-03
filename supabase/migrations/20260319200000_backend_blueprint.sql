@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS public.jwt_claims_errors (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_jwt_claims_errors_created ON public.jwt_claims_errors (created_at);
+CREATE INDEX IF NOT EXISTS idx_jwt_claims_errors_created ON public.jwt_claims_errors (created_at);
 
 ALTER TABLE public.jwt_claims_errors ENABLE ROW LEVEL SECURITY;
 

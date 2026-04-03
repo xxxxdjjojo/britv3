@@ -71,6 +71,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_services_provider_id
 
 ALTER TABLE provider_services ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_services_select_own" ON provider_services;
 CREATE POLICY "provider_services_select_own"
   ON provider_services FOR SELECT
   USING (
@@ -79,6 +80,7 @@ CREATE POLICY "provider_services_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_services_insert_own" ON provider_services;
 CREATE POLICY "provider_services_insert_own"
   ON provider_services FOR INSERT
   WITH CHECK (
@@ -87,6 +89,7 @@ CREATE POLICY "provider_services_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_services_update_own" ON provider_services;
 CREATE POLICY "provider_services_update_own"
   ON provider_services FOR UPDATE
   USING (
@@ -100,6 +103,7 @@ CREATE POLICY "provider_services_update_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_services_delete_own" ON provider_services;
 CREATE POLICY "provider_services_delete_own"
   ON provider_services FOR DELETE
   USING (
@@ -108,6 +112,7 @@ CREATE POLICY "provider_services_delete_own"
     )
   );
 
+DROP TRIGGER IF EXISTS provider_services_updated_at ON provider_services;
 CREATE TRIGGER provider_services_updated_at
   BEFORE UPDATE ON provider_services
   FOR EACH ROW
@@ -139,6 +144,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_references_status
 
 ALTER TABLE provider_references ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_references_select_own" ON provider_references;
 CREATE POLICY "provider_references_select_own"
   ON provider_references FOR SELECT
   USING (
@@ -147,6 +153,7 @@ CREATE POLICY "provider_references_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_references_insert_own" ON provider_references;
 CREATE POLICY "provider_references_insert_own"
   ON provider_references FOR INSERT
   WITH CHECK (
@@ -155,6 +162,7 @@ CREATE POLICY "provider_references_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_references_update_own" ON provider_references;
 CREATE POLICY "provider_references_update_own"
   ON provider_references FOR UPDATE
   USING (
@@ -168,6 +176,7 @@ CREATE POLICY "provider_references_update_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_references_delete_own" ON provider_references;
 CREATE POLICY "provider_references_delete_own"
   ON provider_references FOR DELETE
   USING (
@@ -198,6 +207,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_badges_is_active
 
 ALTER TABLE provider_badges ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_badges_select_own" ON provider_badges;
 CREATE POLICY "provider_badges_select_own"
   ON provider_badges FOR SELECT
   USING (
@@ -206,6 +216,7 @@ CREATE POLICY "provider_badges_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_badges_insert_own" ON provider_badges;
 CREATE POLICY "provider_badges_insert_own"
   ON provider_badges FOR INSERT
   WITH CHECK (
@@ -214,6 +225,7 @@ CREATE POLICY "provider_badges_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_badges_update_own" ON provider_badges;
 CREATE POLICY "provider_badges_update_own"
   ON provider_badges FOR UPDATE
   USING (
@@ -227,6 +239,7 @@ CREATE POLICY "provider_badges_update_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_badges_delete_own" ON provider_badges;
 CREATE POLICY "provider_badges_delete_own"
   ON provider_badges FOR DELETE
   USING (
@@ -237,10 +250,21 @@ CREATE POLICY "provider_badges_delete_own"
 
 -- ============================================================
 -- SECTION 7: provider_portfolio_items (Phase 16 extended version)
--- Note: 017_public_profiles.sql already created provider_portfolio_items.
--- This migration adds before_image_path, after_image_path, is_featured,
--- display_order columns if they do not exist.
+-- Ensure base table exists (017_public_profiles.sql may not have applied fully)
 -- ============================================================
+
+CREATE TABLE IF NOT EXISTS provider_portfolio_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  provider_id UUID NOT NULL REFERENCES service_provider_details(user_id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  title TEXT NOT NULL DEFAULT '',
+  description TEXT,
+  category TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_portfolio_items_provider ON provider_portfolio_items(provider_id, sort_order);
+ALTER TABLE provider_portfolio_items ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE provider_portfolio_items
   ADD COLUMN IF NOT EXISTS before_image_path TEXT,
@@ -287,6 +311,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_invoices_stripe_payment_intent
 ALTER TABLE provider_invoices ENABLE ROW LEVEL SECURITY;
 
 -- Provider can manage own invoices
+DROP POLICY IF EXISTS "provider_invoices_select_own" ON provider_invoices;
 CREATE POLICY "provider_invoices_select_own"
   ON provider_invoices FOR SELECT
   USING (
@@ -295,6 +320,7 @@ CREATE POLICY "provider_invoices_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_invoices_insert_own" ON provider_invoices;
 CREATE POLICY "provider_invoices_insert_own"
   ON provider_invoices FOR INSERT
   WITH CHECK (
@@ -303,6 +329,7 @@ CREATE POLICY "provider_invoices_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_invoices_update_own" ON provider_invoices;
 CREATE POLICY "provider_invoices_update_own"
   ON provider_invoices FOR UPDATE
   USING (
@@ -316,6 +343,7 @@ CREATE POLICY "provider_invoices_update_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_invoices_delete_own" ON provider_invoices;
 CREATE POLICY "provider_invoices_delete_own"
   ON provider_invoices FOR DELETE
   USING (
@@ -325,10 +353,12 @@ CREATE POLICY "provider_invoices_delete_own"
   );
 
 -- Client can view invoices addressed to them
+DROP POLICY IF EXISTS "provider_invoices_select_client" ON provider_invoices;
 CREATE POLICY "provider_invoices_select_client"
   ON provider_invoices FOR SELECT
   USING (client_id = auth.uid());
 
+DROP TRIGGER IF EXISTS provider_invoices_updated_at ON provider_invoices;
 CREATE TRIGGER provider_invoices_updated_at
   BEFORE UPDATE ON provider_invoices
   FOR EACH ROW
@@ -361,6 +391,7 @@ CREATE INDEX IF NOT EXISTS idx_stripe_connect_accounts_stripe_account_id
 
 ALTER TABLE stripe_connect_accounts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "stripe_connect_accounts_select_own" ON stripe_connect_accounts;
 CREATE POLICY "stripe_connect_accounts_select_own"
   ON stripe_connect_accounts FOR SELECT
   USING (
@@ -369,6 +400,7 @@ CREATE POLICY "stripe_connect_accounts_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "stripe_connect_accounts_insert_own" ON stripe_connect_accounts;
 CREATE POLICY "stripe_connect_accounts_insert_own"
   ON stripe_connect_accounts FOR INSERT
   WITH CHECK (
@@ -377,6 +409,7 @@ CREATE POLICY "stripe_connect_accounts_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "stripe_connect_accounts_update_own" ON stripe_connect_accounts;
 CREATE POLICY "stripe_connect_accounts_update_own"
   ON stripe_connect_accounts FOR UPDATE
   USING (
@@ -390,6 +423,7 @@ CREATE POLICY "stripe_connect_accounts_update_own"
     )
   );
 
+DROP TRIGGER IF EXISTS stripe_connect_accounts_updated_at ON stripe_connect_accounts;
 CREATE TRIGGER stripe_connect_accounts_updated_at
   BEFORE UPDATE ON stripe_connect_accounts
   FOR EACH ROW
@@ -421,6 +455,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_boosts_active
 
 ALTER TABLE provider_boosts ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_boosts_select_own" ON provider_boosts;
 CREATE POLICY "provider_boosts_select_own"
   ON provider_boosts FOR SELECT
   USING (
@@ -429,6 +464,7 @@ CREATE POLICY "provider_boosts_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_boosts_insert_own" ON provider_boosts;
 CREATE POLICY "provider_boosts_insert_own"
   ON provider_boosts FOR INSERT
   WITH CHECK (
@@ -437,6 +473,7 @@ CREATE POLICY "provider_boosts_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_boosts_update_own" ON provider_boosts;
 CREATE POLICY "provider_boosts_update_own"
   ON provider_boosts FOR UPDATE
   USING (
@@ -450,6 +487,7 @@ CREATE POLICY "provider_boosts_update_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_boosts_delete_own" ON provider_boosts;
 CREATE POLICY "provider_boosts_delete_own"
   ON provider_boosts FOR DELETE
   USING (
@@ -483,6 +521,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_referrals_referred_user_id
 
 ALTER TABLE provider_referrals ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_referrals_select_own" ON provider_referrals;
 CREATE POLICY "provider_referrals_select_own"
   ON provider_referrals FOR SELECT
   USING (
@@ -491,6 +530,7 @@ CREATE POLICY "provider_referrals_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_referrals_insert_own" ON provider_referrals;
 CREATE POLICY "provider_referrals_insert_own"
   ON provider_referrals FOR INSERT
   WITH CHECK (
@@ -499,6 +539,7 @@ CREATE POLICY "provider_referrals_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_referrals_update_own" ON provider_referrals;
 CREATE POLICY "provider_referrals_update_own"
   ON provider_referrals FOR UPDATE
   USING (
@@ -537,6 +578,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_service_areas_zone
 
 ALTER TABLE provider_service_areas ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_service_areas_select_own" ON provider_service_areas;
 CREATE POLICY "provider_service_areas_select_own"
   ON provider_service_areas FOR SELECT
   USING (
@@ -545,6 +587,7 @@ CREATE POLICY "provider_service_areas_select_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_service_areas_insert_own" ON provider_service_areas;
 CREATE POLICY "provider_service_areas_insert_own"
   ON provider_service_areas FOR INSERT
   WITH CHECK (
@@ -553,6 +596,7 @@ CREATE POLICY "provider_service_areas_insert_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_service_areas_update_own" ON provider_service_areas;
 CREATE POLICY "provider_service_areas_update_own"
   ON provider_service_areas FOR UPDATE
   USING (
@@ -566,6 +610,7 @@ CREATE POLICY "provider_service_areas_update_own"
     )
   );
 
+DROP POLICY IF EXISTS "provider_service_areas_delete_own" ON provider_service_areas;
 CREATE POLICY "provider_service_areas_delete_own"
   ON provider_service_areas FOR DELETE
   USING (
@@ -574,6 +619,7 @@ CREATE POLICY "provider_service_areas_delete_own"
     )
   );
 
+DROP TRIGGER IF EXISTS provider_service_areas_updated_at ON provider_service_areas;
 CREATE TRIGGER provider_service_areas_updated_at
   BEFORE UPDATE ON provider_service_areas
   FOR EACH ROW
@@ -602,6 +648,7 @@ CREATE INDEX IF NOT EXISTS idx_stripe_events_processed_at
 -- Service role only — no user-level access
 ALTER TABLE stripe_events ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "stripe_events_service_role_only" ON stripe_events;
 CREATE POLICY "stripe_events_service_role_only"
   ON stripe_events FOR ALL
   USING (false)
@@ -630,6 +677,7 @@ CREATE INDEX IF NOT EXISTS idx_provider_analytics_daily_provider_date
 ALTER TABLE provider_analytics_daily ENABLE ROW LEVEL SECURITY;
 
 -- Providers can only SELECT their own analytics (no direct write — computed by cron)
+DROP POLICY IF EXISTS "provider_analytics_daily_select_own" ON provider_analytics_daily;
 CREATE POLICY "provider_analytics_daily_select_own"
   ON provider_analytics_daily FOR SELECT
   USING (

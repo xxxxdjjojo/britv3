@@ -28,11 +28,13 @@ CREATE INDEX IF NOT EXISTS admin_audit_log_created_at_idx
 -- RLS: append-only, no UPDATE/DELETE even for admins
 ALTER TABLE admin_audit_log ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "admin_audit_log_select" ON admin_audit_log;
 CREATE POLICY "admin_audit_log_select" ON admin_audit_log
   FOR SELECT USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
+DROP POLICY IF EXISTS "admin_audit_log_insert" ON admin_audit_log;
 CREATE POLICY "admin_audit_log_insert" ON admin_audit_log
   FOR INSERT WITH CHECK (admin_id = auth.uid());
 
@@ -49,6 +51,7 @@ CREATE TABLE IF NOT EXISTS feature_flags (
 
 -- Auto-update updated_at on feature_flags changes
 -- Note: set_updated_at() function is defined in 20260313_agent_dashboard migration
+DROP TRIGGER IF EXISTS feature_flags_updated_at ON feature_flags;
 CREATE TRIGGER feature_flags_updated_at
   BEFORE UPDATE ON feature_flags
   FOR EACH ROW
@@ -56,16 +59,18 @@ CREATE TRIGGER feature_flags_updated_at
 
 ALTER TABLE feature_flags ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "feature_flags_select" ON feature_flags;
 CREATE POLICY "feature_flags_select" ON feature_flags
   FOR SELECT USING (auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "feature_flags_write" ON feature_flags;
 CREATE POLICY "feature_flags_write" ON feature_flags
   FOR ALL
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   )
   WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 -- 4. GDPR requests
@@ -92,16 +97,18 @@ CREATE INDEX IF NOT EXISTS gdpr_requests_status_idx
 
 ALTER TABLE gdpr_requests ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "gdpr_requests_own" ON gdpr_requests;
 CREATE POLICY "gdpr_requests_own" ON gdpr_requests
   FOR SELECT USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "gdpr_requests_admin" ON gdpr_requests;
 CREATE POLICY "gdpr_requests_admin" ON gdpr_requests
   FOR ALL
   USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   )
   WITH CHECK (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 -- 5. GIN index for user search performance
@@ -109,6 +116,6 @@ CREATE INDEX IF NOT EXISTS profiles_search_idx
   ON profiles
   USING gin(
     to_tsvector('english',
-      coalesce(full_name, '') || ' ' || coalesce(email, '')
+      coalesce(display_name, '')
     )
   );

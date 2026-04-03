@@ -14,27 +14,42 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- Enums
 -- ===========================================================================
 
-CREATE TYPE property_type AS ENUM (
+DO $$ BEGIN
+  CREATE TYPE property_type AS ENUM (
   'detached', 'semi_detached', 'terraced', 'flat', 'bungalow',
   'land', 'cottage', 'penthouse', 'studio', 'maisonette', 'other'
 );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE listing_type AS ENUM ('sale', 'rent');
+DO $$ BEGIN
+  CREATE TYPE listing_type AS ENUM ('sale', 'rent');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE listing_status AS ENUM (
+DO $$ BEGIN
+  CREATE TYPE listing_status AS ENUM (
   'draft', 'active', 'under_offer', 'sold', 'let', 'withdrawn', 'archived'
 );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE tenure_type AS ENUM ('freehold', 'leasehold', 'shared_ownership');
+DO $$ BEGIN
+  CREATE TYPE tenure_type AS ENUM ('freehold', 'leasehold', 'shared_ownership');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE media_type AS ENUM ('image', 'floor_plan', 'epc_document');
+DO $$ BEGIN
+  CREATE TYPE media_type AS ENUM ('image', 'floor_plan', 'epc_document');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ===========================================================================
 -- Tables
 -- ===========================================================================
 
 -- Properties table (physical asset)
-CREATE TABLE properties (
+CREATE TABLE IF NOT EXISTS properties (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   address_line1 TEXT NOT NULL,
   address_line2 TEXT,
@@ -65,7 +80,7 @@ CREATE TABLE properties (
 );
 
 -- Listings table (market offering)
-CREATE TABLE listings (
+CREATE TABLE IF NOT EXISTS listings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -91,7 +106,7 @@ CREATE TABLE listings (
 );
 
 -- Property media (images, floor plans, EPC documents)
-CREATE TABLE property_media (
+CREATE TABLE IF NOT EXISTS property_media (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   listing_id UUID NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
   media_type media_type NOT NULL,
@@ -107,7 +122,7 @@ CREATE TABLE property_media (
 );
 
 -- Price history (tracked via trigger)
-CREATE TABLE price_history (
+CREATE TABLE IF NOT EXISTS price_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   listing_id UUID NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
   old_price NUMERIC(12,2) NOT NULL,
@@ -117,7 +132,7 @@ CREATE TABLE price_history (
 );
 
 -- Saved properties (user shortlist)
-CREATE TABLE saved_properties (
+CREATE TABLE IF NOT EXISTS saved_properties (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   listing_id UUID NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
@@ -127,7 +142,7 @@ CREATE TABLE saved_properties (
 );
 
 -- Saved searches (with alert preferences)
-CREATE TABLE saved_searches (
+CREATE TABLE IF NOT EXISTS saved_searches (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
@@ -141,7 +156,7 @@ CREATE TABLE saved_searches (
 );
 
 -- Search analytics (query logging)
-CREATE TABLE search_analytics (
+CREATE TABLE IF NOT EXISTS search_analytics (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   filters JSONB NOT NULL,
@@ -151,7 +166,7 @@ CREATE TABLE search_analytics (
 );
 
 -- Viewing history (track which listings user has viewed)
-CREATE TABLE viewing_history (
+CREATE TABLE IF NOT EXISTS viewing_history (
   id BIGSERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   listing_id UUID NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
@@ -175,6 +190,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_update_properties_tsv ON properties;
 CREATE TRIGGER trg_update_properties_tsv
   BEFORE INSERT OR UPDATE ON properties
   FOR EACH ROW EXECUTE FUNCTION update_properties_tsv();
@@ -188,11 +204,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_update_properties_updated_at ON properties;
 CREATE TRIGGER trg_update_properties_updated_at
   BEFORE UPDATE ON properties
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Auto-update updated_at on listings
+DROP TRIGGER IF EXISTS trg_update_listings_updated_at ON listings;
 CREATE TRIGGER trg_update_listings_updated_at
   BEFORE UPDATE ON listings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -209,6 +227,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS trg_track_price_changes ON listings;
 CREATE TRIGGER trg_track_price_changes
   AFTER UPDATE ON listings
   FOR EACH ROW EXECUTE FUNCTION track_price_changes();
@@ -250,6 +269,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_generate_listing_slug ON listings;
 CREATE TRIGGER trg_generate_listing_slug
   BEFORE INSERT ON listings
   FOR EACH ROW EXECUTE FUNCTION generate_listing_slug();
@@ -259,33 +279,34 @@ CREATE TRIGGER trg_generate_listing_slug
 -- ===========================================================================
 
 -- Geospatial index on property coordinates
-CREATE INDEX idx_properties_coordinates ON properties USING GIST (coordinates);
+CREATE INDEX IF NOT EXISTS idx_properties_coordinates ON properties USING GIST (coordinates);
 
 -- Full-text search index
-CREATE INDEX idx_properties_description_tsv ON properties USING GIN (description_tsv);
+CREATE INDEX IF NOT EXISTS idx_properties_description_tsv ON properties USING GIN (description_tsv);
 
 -- Features JSONB index
-CREATE INDEX idx_properties_features ON properties USING GIN (features);
+CREATE INDEX IF NOT EXISTS idx_properties_features ON properties USING GIN (features);
 
 -- Composite index for filtered searches (listing_type + status + price)
-CREATE INDEX idx_listings_search ON listings (listing_type, status, price);
+CREATE INDEX IF NOT EXISTS idx_listings_search ON listings (listing_type, status, price);
 
 -- Index for sorting by date
-CREATE INDEX idx_listings_listed_date ON listings (listed_date DESC);
+CREATE INDEX IF NOT EXISTS idx_listings_listed_date ON listings (listed_date DESC);
 
 -- Index for my-listings queries
-CREATE INDEX idx_listings_user_id ON listings (user_id);
+CREATE INDEX IF NOT EXISTS idx_listings_user_id ON listings (user_id);
 
 -- Index on property_media for listing media queries
-CREATE INDEX idx_property_media_listing_sort ON property_media (listing_id, sort_order);
+CREATE INDEX IF NOT EXISTS idx_property_media_listing_sort ON property_media (listing_id, sort_order);
 
 -- Index on saved_searches by user
-CREATE INDEX idx_saved_searches_user_id ON saved_searches (user_id);
+CREATE INDEX IF NOT EXISTS idx_saved_searches_user_id ON saved_searches (user_id);
 
 -- ===========================================================================
 -- Materialized View: search_listings
 -- ===========================================================================
 
+DROP MATERIALIZED VIEW IF EXISTS search_listings;
 CREATE MATERIALIZED VIEW search_listings AS
 SELECT
   l.id AS listing_id,
@@ -323,12 +344,12 @@ WHERE l.status = 'active'
   AND p.deleted_at IS NULL;
 
 -- Unique index required for CONCURRENTLY refresh
-CREATE UNIQUE INDEX idx_search_listings_listing_id ON search_listings (listing_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_search_listings_listing_id ON search_listings (listing_id);
 
 -- Additional indexes on materialized view for search performance
-CREATE INDEX idx_search_listings_type_price ON search_listings (listing_type, price);
-CREATE INDEX idx_search_listings_coordinates ON search_listings USING GIST (coordinates);
-CREATE INDEX idx_search_listings_tsv ON search_listings USING GIN (description_tsv);
+CREATE INDEX IF NOT EXISTS idx_search_listings_type_price ON search_listings (listing_type, price);
+CREATE INDEX IF NOT EXISTS idx_search_listings_coordinates ON search_listings USING GIST (coordinates);
+CREATE INDEX IF NOT EXISTS idx_search_listings_tsv ON search_listings USING GIN (description_tsv);
 
 -- ===========================================================================
 -- RPC Functions
@@ -512,14 +533,17 @@ ALTER TABLE search_analytics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE viewing_history ENABLE ROW LEVEL SECURITY;
 
 -- Properties: SELECT for all authenticated
+DROP POLICY IF EXISTS properties_select ON properties;
 CREATE POLICY properties_select ON properties
   FOR SELECT TO authenticated USING (TRUE);
 
 -- Properties: INSERT for authenticated users
+DROP POLICY IF EXISTS properties_insert ON properties;
 CREATE POLICY properties_insert ON properties
   FOR INSERT TO authenticated WITH CHECK (TRUE);
 
 -- Properties: UPDATE for owner (via listing user_id)
+DROP POLICY IF EXISTS properties_update ON properties;
 CREATE POLICY properties_update ON properties
   FOR UPDATE TO authenticated USING (
     EXISTS (
@@ -529,26 +553,32 @@ CREATE POLICY properties_update ON properties
   );
 
 -- Listings: SELECT active listings for anyone (including anon)
+DROP POLICY IF EXISTS listings_select_active ON listings;
 CREATE POLICY listings_select_active ON listings
   FOR SELECT USING (status = 'active' AND deleted_at IS NULL);
 
 -- Listings: SELECT all own listings for owner
+DROP POLICY IF EXISTS listings_select_own ON listings;
 CREATE POLICY listings_select_own ON listings
   FOR SELECT TO authenticated USING (user_id = auth.uid());
 
 -- Listings: INSERT for authenticated
+DROP POLICY IF EXISTS listings_insert ON listings;
 CREATE POLICY listings_insert ON listings
   FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 
 -- Listings: UPDATE for owner
+DROP POLICY IF EXISTS listings_update ON listings;
 CREATE POLICY listings_update ON listings
   FOR UPDATE TO authenticated USING (user_id = auth.uid());
 
 -- Listings: DELETE (soft) for owner
+DROP POLICY IF EXISTS listings_delete ON listings;
 CREATE POLICY listings_delete ON listings
   FOR DELETE TO authenticated USING (user_id = auth.uid());
 
 -- Property media: SELECT via listing access (same visibility as listing)
+DROP POLICY IF EXISTS property_media_select ON property_media;
 CREATE POLICY property_media_select ON property_media
   FOR SELECT USING (
     EXISTS (
@@ -559,6 +589,7 @@ CREATE POLICY property_media_select ON property_media
   );
 
 -- Property media: INSERT for listing owner
+DROP POLICY IF EXISTS property_media_insert ON property_media;
 CREATE POLICY property_media_insert ON property_media
   FOR INSERT TO authenticated WITH CHECK (
     EXISTS (
@@ -568,6 +599,7 @@ CREATE POLICY property_media_insert ON property_media
   );
 
 -- Property media: UPDATE for listing owner
+DROP POLICY IF EXISTS property_media_update ON property_media;
 CREATE POLICY property_media_update ON property_media
   FOR UPDATE TO authenticated USING (
     EXISTS (
@@ -577,6 +609,7 @@ CREATE POLICY property_media_update ON property_media
   );
 
 -- Property media: DELETE for listing owner
+DROP POLICY IF EXISTS property_media_delete ON property_media;
 CREATE POLICY property_media_delete ON property_media
   FOR DELETE TO authenticated USING (
     EXISTS (
@@ -586,6 +619,7 @@ CREATE POLICY property_media_delete ON property_media
   );
 
 -- Price history: SELECT for all authenticated
+DROP POLICY IF EXISTS price_history_select ON price_history;
 CREATE POLICY price_history_select ON price_history
   FOR SELECT TO authenticated USING (TRUE);
 
@@ -593,35 +627,45 @@ CREATE POLICY price_history_select ON price_history
 -- The trigger uses SECURITY DEFINER to bypass RLS
 
 -- Saved properties: Full CRUD for own records
+DROP POLICY IF EXISTS saved_properties_select ON saved_properties;
 CREATE POLICY saved_properties_select ON saved_properties
   FOR SELECT TO authenticated USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS saved_properties_insert ON saved_properties;
 CREATE POLICY saved_properties_insert ON saved_properties
   FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS saved_properties_update ON saved_properties;
 CREATE POLICY saved_properties_update ON saved_properties
   FOR UPDATE TO authenticated USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS saved_properties_delete ON saved_properties;
 CREATE POLICY saved_properties_delete ON saved_properties
   FOR DELETE TO authenticated USING (user_id = auth.uid());
 
 -- Saved searches: Full CRUD for own records
+DROP POLICY IF EXISTS saved_searches_select ON saved_searches;
 CREATE POLICY saved_searches_select ON saved_searches
   FOR SELECT TO authenticated USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS saved_searches_insert ON saved_searches;
 CREATE POLICY saved_searches_insert ON saved_searches
   FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS saved_searches_update ON saved_searches;
 CREATE POLICY saved_searches_update ON saved_searches
   FOR UPDATE TO authenticated USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS saved_searches_delete ON saved_searches;
 CREATE POLICY saved_searches_delete ON saved_searches
   FOR DELETE TO authenticated USING (user_id = auth.uid());
 
 -- Search analytics: INSERT for authenticated, SELECT for admin only
+DROP POLICY IF EXISTS search_analytics_insert ON search_analytics;
 CREATE POLICY search_analytics_insert ON search_analytics
   FOR INSERT TO authenticated WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS search_analytics_select ON search_analytics;
 CREATE POLICY search_analytics_select ON search_analytics
   FOR SELECT TO authenticated USING (
     EXISTS (
@@ -631,15 +675,19 @@ CREATE POLICY search_analytics_select ON search_analytics
   );
 
 -- Viewing history: Full CRUD for own records
+DROP POLICY IF EXISTS viewing_history_select ON viewing_history;
 CREATE POLICY viewing_history_select ON viewing_history
   FOR SELECT TO authenticated USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS viewing_history_insert ON viewing_history;
 CREATE POLICY viewing_history_insert ON viewing_history
   FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS viewing_history_update ON viewing_history;
 CREATE POLICY viewing_history_update ON viewing_history
   FOR UPDATE TO authenticated USING (user_id = auth.uid());
 
+DROP POLICY IF EXISTS viewing_history_delete ON viewing_history;
 CREATE POLICY viewing_history_delete ON viewing_history
   FOR DELETE TO authenticated USING (user_id = auth.uid());
 

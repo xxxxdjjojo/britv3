@@ -144,9 +144,14 @@ BEGIN
     (v_agent_id,    'Sarah Mitchell', 'agent'::user_role,            'professional'::verification_level, NULL, FALSE, v_now, v_now),
     (v_provider_id, 'Tom Richards',   'service_provider'::user_role, 'professional'::verification_level, NULL, FALSE, v_now, v_now),
     (v_admin_id,    'Admin User',     'homebuyer'::user_role,        'professional'::verification_level, NULL, TRUE,  v_now, v_now)
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE SET
+    display_name = EXCLUDED.display_name,
+    active_role = EXCLUDED.active_role,
+    verification_level = EXCLUDED.verification_level,
+    is_admin = EXCLUDED.is_admin,
+    updated_at = EXCLUDED.updated_at;
 
-  RAISE NOTICE 'profiles created.';
+  RAISE NOTICE 'profiles created (upserted).';
 
   -- ===========================================================================
   -- 3. INSERT INTO user_roles

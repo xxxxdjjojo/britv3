@@ -20,12 +20,15 @@ CREATE INDEX IF NOT EXISTS idx_sr_lat_lng ON service_requests (lat, lng)
 -- ============================================================
 -- 3. Add completing transitions to booking_state_transitions
 -- ============================================================
-INSERT INTO booking_state_transitions (from_status, to_status, allowed_actors, requires_reason)
-VALUES
-  ('in_progress', 'completing', '{"provider"}',  false),
-  ('completing',  'completed',  '{"system"}',    false),
-  ('completing',  'in_progress','{"system"}',    true)
-ON CONFLICT DO NOTHING;
+DO $$ BEGIN
+  INSERT INTO booking_state_transitions (from_status, to_status, allowed_actors, requires_reason)
+  VALUES
+    ('in_progress', 'completing', '{"provider"}',  false),
+    ('completing',  'completed',  '{"system"}',    false),
+    ('completing',  'in_progress','{"system"}',    true)
+  ON CONFLICT DO NOTHING;
+EXCEPTION WHEN undefined_column OR undefined_table THEN NULL;
+END $$;
 
 -- ============================================================
 -- 4. Create payment_schedules table
@@ -62,6 +65,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS trg_payment_schedules_updated_at ON payment_schedules;
+DROP TRIGGER IF EXISTS trg_payment_schedules_updated_at ON payment_schedules;
 CREATE TRIGGER trg_payment_schedules_updated_at
   BEFORE UPDATE ON payment_schedules
   FOR EACH ROW EXECUTE FUNCTION update_payment_schedules_updated_at();
@@ -69,19 +73,23 @@ CREATE TRIGGER trg_payment_schedules_updated_at
 -- RLS
 ALTER TABLE payment_schedules ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_select_own_payment_schedules" ON payment_schedules;
 CREATE POLICY "provider_select_own_payment_schedules"
   ON payment_schedules FOR SELECT
   USING (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "provider_insert_own_payment_schedules" ON payment_schedules;
 CREATE POLICY "provider_insert_own_payment_schedules"
   ON payment_schedules FOR INSERT
   WITH CHECK (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "provider_update_own_payment_schedules" ON payment_schedules;
 CREATE POLICY "provider_update_own_payment_schedules"
   ON payment_schedules FOR UPDATE
   USING (provider_id = auth.uid())
   WITH CHECK (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "provider_delete_own_payment_schedules" ON payment_schedules;
 CREATE POLICY "provider_delete_own_payment_schedules"
   ON payment_schedules FOR DELETE
   USING (provider_id = auth.uid());
@@ -130,6 +138,7 @@ END;
 $$;
 
 DROP TRIGGER IF EXISTS trg_certificates_updated_at ON certificates;
+DROP TRIGGER IF EXISTS trg_certificates_updated_at ON certificates;
 CREATE TRIGGER trg_certificates_updated_at
   BEFORE UPDATE ON certificates
   FOR EACH ROW EXECUTE FUNCTION update_certificates_updated_at();
@@ -137,14 +146,17 @@ CREATE TRIGGER trg_certificates_updated_at
 -- RLS (no DELETE — certificates are immutable)
 ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "provider_select_own_certificates" ON certificates;
 CREATE POLICY "provider_select_own_certificates"
   ON certificates FOR SELECT
   USING (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "provider_insert_own_certificates" ON certificates;
 CREATE POLICY "provider_insert_own_certificates"
   ON certificates FOR INSERT
   WITH CHECK (provider_id = auth.uid());
 
+DROP POLICY IF EXISTS "provider_update_own_certificates" ON certificates;
 CREATE POLICY "provider_update_own_certificates"
   ON certificates FOR UPDATE
   USING (provider_id = auth.uid())

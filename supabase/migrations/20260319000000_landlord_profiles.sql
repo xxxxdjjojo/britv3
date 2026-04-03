@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.landlord_profiles (
 
 ALTER TABLE public.landlord_profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can manage own landlord profile" ON public.landlord_profiles;
 CREATE POLICY "Users can manage own landlord profile"
   ON public.landlord_profiles
   FOR ALL

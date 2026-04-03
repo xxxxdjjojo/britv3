@@ -40,7 +40,7 @@ CREATE POLICY "buyer_documents_delete" ON storage.objects
 -- =============================================================================
 
 -- 1. viewing_slots — created by agents, booked by buyers
-CREATE TABLE public.viewing_slots (
+CREATE TABLE IF NOT EXISTS public.viewing_slots (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   listing_id  uuid NOT NULL,
   agent_id    uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -55,7 +55,7 @@ CREATE TABLE public.viewing_slots (
 ALTER TABLE public.viewing_slots ENABLE ROW LEVEL SECURITY;
 
 -- 2. viewings — buyer's booked viewing (references viewing_slots)
-CREATE TABLE public.viewings (
+CREATE TABLE IF NOT EXISTS public.viewings (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   slot_id     uuid NOT NULL REFERENCES public.viewing_slots(id),
@@ -70,7 +70,7 @@ CREATE TABLE public.viewings (
 ALTER TABLE public.viewings ENABLE ROW LEVEL SECURITY;
 
 -- 3. offers — buyer's offer on a listing
-CREATE TABLE public.offers (
+CREATE TABLE IF NOT EXISTS public.offers (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   listing_id          uuid NOT NULL,
@@ -95,7 +95,7 @@ ALTER TABLE public.offers ENABLE ROW LEVEL SECURITY;
 
 -- 4. offer_status_history — immutable audit trail for offer state machine
 -- No updated_at — append-only log
-CREATE TABLE public.offer_status_history (
+CREATE TABLE IF NOT EXISTS public.offer_status_history (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   offer_id    uuid NOT NULL REFERENCES public.offers(id) ON DELETE CASCADE,
   from_status text,
@@ -107,7 +107,7 @@ CREATE TABLE public.offer_status_history (
 ALTER TABLE public.offer_status_history ENABLE ROW LEVEL SECURITY;
 
 -- 5. user_documents — buyer's uploaded identity/funds/AIP documents
-CREATE TABLE public.user_documents (
+CREATE TABLE IF NOT EXISTS public.user_documents (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   offer_id        uuid REFERENCES public.offers(id) ON DELETE SET NULL,
@@ -126,7 +126,7 @@ CREATE TABLE public.user_documents (
 ALTER TABLE public.user_documents ENABLE ROW LEVEL SECURITY;
 
 -- 6. ai_match_preferences — buyer's AI match criteria (one row per user, UNIQUE on user_id)
-CREATE TABLE public.ai_match_preferences (
+CREATE TABLE IF NOT EXISTS public.ai_match_preferences (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             uuid NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   location            text,
@@ -141,7 +141,7 @@ CREATE TABLE public.ai_match_preferences (
 ALTER TABLE public.ai_match_preferences ENABLE ROW LEVEL SECURITY;
 
 -- 7. ai_match_results — cached AI match scores, expire after 24 hours
-CREATE TABLE public.ai_match_results (
+CREATE TABLE IF NOT EXISTS public.ai_match_results (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   listing_id      uuid NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE public.ai_match_results (
 ALTER TABLE public.ai_match_results ENABLE ROW LEVEL SECURITY;
 
 -- 8. moving_checklist_items — per-user per-offer checklist items
-CREATE TABLE public.moving_checklist_items (
+CREATE TABLE IF NOT EXISTS public.moving_checklist_items (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   offer_id        uuid REFERENCES public.offers(id) ON DELETE SET NULL,
@@ -169,7 +169,7 @@ CREATE TABLE public.moving_checklist_items (
 ALTER TABLE public.moving_checklist_items ENABLE ROW LEVEL SECURITY;
 
 -- 9. referral_codes — one permanent code per user (UNIQUE on user_id AND code)
-CREATE TABLE public.referral_codes (
+CREATE TABLE IF NOT EXISTS public.referral_codes (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     uuid NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   code        text NOT NULL UNIQUE,
@@ -178,7 +178,7 @@ CREATE TABLE public.referral_codes (
 ALTER TABLE public.referral_codes ENABLE ROW LEVEL SECURITY;
 
 -- 10. referral_conversions — tracks who signed up via which code
-CREATE TABLE public.referral_conversions (
+CREATE TABLE IF NOT EXISTS public.referral_conversions (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   referrer_id     uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   referred_id     uuid NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -366,37 +366,37 @@ CREATE POLICY "referral_conversions_select" ON public.referral_conversions
 -- =============================================================================
 
 -- Viewings
-CREATE INDEX idx_viewings_user_id ON public.viewings (user_id);
-CREATE INDEX idx_viewings_listing_id ON public.viewings (listing_id);
-CREATE INDEX idx_viewings_slot_id ON public.viewings (slot_id);
+CREATE INDEX IF NOT EXISTS idx_viewings_user_id ON public.viewings (user_id);
+CREATE INDEX IF NOT EXISTS idx_viewings_listing_id ON public.viewings (listing_id);
+CREATE INDEX IF NOT EXISTS idx_viewings_slot_id ON public.viewings (slot_id);
 
 -- Viewing slots
-CREATE INDEX idx_viewing_slots_listing_id ON public.viewing_slots (listing_id);
-CREATE INDEX idx_viewing_slots_agent_id ON public.viewing_slots (agent_id);
-CREATE INDEX idx_viewing_slots_start_time ON public.viewing_slots (start_time);
+CREATE INDEX IF NOT EXISTS idx_viewing_slots_listing_id ON public.viewing_slots (listing_id);
+CREATE INDEX IF NOT EXISTS idx_viewing_slots_agent_id ON public.viewing_slots (agent_id);
+CREATE INDEX IF NOT EXISTS idx_viewing_slots_start_time ON public.viewing_slots (start_time);
 
 -- Offers
-CREATE INDEX idx_offers_user_id ON public.offers (user_id);
-CREATE INDEX idx_offers_listing_id ON public.offers (listing_id);
-CREATE INDEX idx_offers_status ON public.offers (status);
+CREATE INDEX IF NOT EXISTS idx_offers_user_id ON public.offers (user_id);
+CREATE INDEX IF NOT EXISTS idx_offers_listing_id ON public.offers (listing_id);
+CREATE INDEX IF NOT EXISTS idx_offers_status ON public.offers (status);
 
 -- Offer status history
-CREATE INDEX idx_offer_status_history_offer_id ON public.offer_status_history (offer_id);
+CREATE INDEX IF NOT EXISTS idx_offer_status_history_offer_id ON public.offer_status_history (offer_id);
 
 -- User documents
-CREATE INDEX idx_user_documents_user_id ON public.user_documents (user_id);
-CREATE INDEX idx_user_documents_offer_id ON public.user_documents (offer_id);
+CREATE INDEX IF NOT EXISTS idx_user_documents_user_id ON public.user_documents (user_id);
+CREATE INDEX IF NOT EXISTS idx_user_documents_offer_id ON public.user_documents (offer_id);
 
 -- AI match results (expiry-aware queries)
-CREATE INDEX idx_ai_match_results_user_id ON public.ai_match_results (user_id);
-CREATE INDEX idx_ai_match_results_expires_at ON public.ai_match_results (expires_at);
+CREATE INDEX IF NOT EXISTS idx_ai_match_results_user_id ON public.ai_match_results (user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_match_results_expires_at ON public.ai_match_results (expires_at);
 
 -- Moving checklist
-CREATE INDEX idx_moving_checklist_items_user_id ON public.moving_checklist_items (user_id);
-CREATE INDEX idx_moving_checklist_items_offer_id ON public.moving_checklist_items (offer_id);
+CREATE INDEX IF NOT EXISTS idx_moving_checklist_items_user_id ON public.moving_checklist_items (user_id);
+CREATE INDEX IF NOT EXISTS idx_moving_checklist_items_offer_id ON public.moving_checklist_items (offer_id);
 
 -- Referral
-CREATE INDEX idx_referral_conversions_referrer_id ON public.referral_conversions (referrer_id);
+CREATE INDEX IF NOT EXISTS idx_referral_conversions_referrer_id ON public.referral_conversions (referrer_id);
 
 -- =============================================================================
 -- Section 5: RPCs (SECURITY DEFINER functions)

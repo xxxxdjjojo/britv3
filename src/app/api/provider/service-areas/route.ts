@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Basic GeoJSON structure check
-  const geo = body.zone as { type?: string; coordinates?: unknown };
+  const geo = body.zone as { type?: string; coordinates?: unknown[] };
   if (!geo.type || !geo.coordinates) {
     return NextResponse.json(
       { error: "zone must be a valid GeoJSON geometry." },
@@ -90,12 +90,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // The DB column is geometry(MultiPolygon, 4326) — terra-draw emits Polygon
+  // geometry, so wrap it when needed.
+  const zoneGeometry =
+    geo.type === "Polygon"
+      ? { type: "MultiPolygon" as const, coordinates: [geo.coordinates] }
+      : geo;
+
   const { data, error } = await supabase
     .from("provider_service_areas")
     .insert({
       provider_id: providerId,
       name: body.name ?? null,
-      zone: body.zone,
+      zone: zoneGeometry,
       radius_km: body.radius_km ?? null,
       zone_type: body.zone_type as "radius" | "polygon",
       is_primary: body.is_primary ?? false,

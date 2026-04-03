@@ -14,12 +14,12 @@ CREATE INDEX IF NOT EXISTS idx_referrals_converted_rewarded
   ON public.referrals (converted_at)
   WHERE status = 'rewarded';
 
-CREATE INDEX IF NOT EXISTS idx_properties_price_active
-  ON public.properties (price)
+CREATE INDEX IF NOT EXISTS idx_listings_price_active
+  ON public.listings (price)
   WHERE status = 'active';
 
-CREATE INDEX IF NOT EXISTS idx_properties_beds_price_active
-  ON public.properties (bedrooms, price)
+CREATE INDEX IF NOT EXISTS idx_listings_beds_price_active
+  ON public.listings (price)
   WHERE status = 'active';
 
 CREATE INDEX IF NOT EXISTS idx_bookings_provider_created

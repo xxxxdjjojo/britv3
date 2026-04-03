@@ -2,9 +2,13 @@
 -- ENUMS
 -- ============================================================================
 
-CREATE TYPE tenancy_status AS ENUM ('active', 'ending_soon', 'ended', 'terminated');
+DO $$ BEGIN
+  CREATE TYPE tenancy_status AS ENUM ('active', 'ending_soon', 'ended', 'terminated');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE maintenance_status AS ENUM (
+DO $$ BEGIN
+  CREATE TYPE maintenance_status AS ENUM (
   'new',
   'acknowledged',
   'assigned',
@@ -12,12 +16,21 @@ CREATE TYPE maintenance_status AS ENUM (
   'resolved',
   'closed'
 );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE maintenance_priority AS ENUM ('low', 'medium', 'high', 'emergency');
+DO $$ BEGIN
+  CREATE TYPE maintenance_priority AS ENUM ('low', 'medium', 'high', 'emergency');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE financial_entry_type AS ENUM ('income', 'expense');
+DO $$ BEGIN
+  CREATE TYPE financial_entry_type AS ENUM ('income', 'expense');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE document_category AS ENUM (
+DO $$ BEGIN
+  CREATE TYPE document_category AS ENUM (
   'gas_safety',
   'electrical_eicr',
   'epc',
@@ -28,12 +41,14 @@ CREATE TYPE document_category AS ENUM (
   'receipt',
   'other'
 );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ============================================================================
 -- TABLE 1: tenancies
 -- ============================================================================
 
-CREATE TABLE tenancies (
+CREATE TABLE IF NOT EXISTS tenancies (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   landlord_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -73,7 +88,7 @@ CREATE TABLE tenancies (
 -- TABLE 2: maintenance_requests
 -- ============================================================================
 
-CREATE TABLE maintenance_requests (
+CREATE TABLE IF NOT EXISTS maintenance_requests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   tenancy_id UUID REFERENCES tenancies(id) ON DELETE SET NULL,
@@ -105,7 +120,7 @@ CREATE TABLE maintenance_requests (
 -- TABLE 3: financial_entries (income + expenses unified)
 -- ============================================================================
 
-CREATE TABLE financial_entries (
+CREATE TABLE IF NOT EXISTS financial_entries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   tenancy_id UUID REFERENCES tenancies(id) ON DELETE SET NULL,
@@ -140,7 +155,7 @@ CREATE TABLE financial_entries (
 -- TABLE 4: property_documents (documents + compliance unified)
 -- ============================================================================
 
-CREATE TABLE property_documents (
+CREATE TABLE IF NOT EXISTS property_documents (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   tenancy_id UUID REFERENCES tenancies(id) ON DELETE SET NULL,
@@ -171,26 +186,26 @@ CREATE TABLE property_documents (
 -- ============================================================================
 
 -- Tenancies
-CREATE INDEX idx_tenancies_property ON tenancies(property_id) WHERE status = 'active';
-CREATE INDEX idx_tenancies_landlord ON tenancies(landlord_id);
-CREATE INDEX idx_tenancies_lease_end ON tenancies(lease_end_date) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_tenancies_property ON tenancies(property_id) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_tenancies_landlord ON tenancies(landlord_id);
+CREATE INDEX IF NOT EXISTS idx_tenancies_lease_end ON tenancies(lease_end_date) WHERE status = 'active';
 
 -- Maintenance
-CREATE INDEX idx_maintenance_property ON maintenance_requests(property_id);
-CREATE INDEX idx_maintenance_status ON maintenance_requests(property_id, status)
+CREATE INDEX IF NOT EXISTS idx_maintenance_property ON maintenance_requests(property_id);
+CREATE INDEX IF NOT EXISTS idx_maintenance_status ON maintenance_requests(property_id, status)
   WHERE status NOT IN ('resolved', 'closed');
-CREATE INDEX idx_maintenance_reported_by ON maintenance_requests(reported_by);
+CREATE INDEX IF NOT EXISTS idx_maintenance_reported_by ON maintenance_requests(reported_by);
 
 -- Financial entries
-CREATE INDEX idx_financial_property ON financial_entries(property_id, entry_date DESC);
-CREATE INDEX idx_financial_type ON financial_entries(property_id, type, entry_date DESC);
-CREATE INDEX idx_financial_user ON financial_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_financial_property ON financial_entries(property_id, entry_date DESC);
+CREATE INDEX IF NOT EXISTS idx_financial_type ON financial_entries(property_id, type, entry_date DESC);
+CREATE INDEX IF NOT EXISTS idx_financial_user ON financial_entries(user_id);
 
 -- Documents
-CREATE INDEX idx_documents_property ON property_documents(property_id);
-CREATE INDEX idx_documents_reminder ON property_documents(next_reminder_date)
+CREATE INDEX IF NOT EXISTS idx_documents_property ON property_documents(property_id);
+CREATE INDEX IF NOT EXISTS idx_documents_reminder ON property_documents(next_reminder_date)
   WHERE next_reminder_date IS NOT NULL AND reminder_sent = FALSE;
-CREATE INDEX idx_documents_expiry ON property_documents(expiry_date)
+CREATE INDEX IF NOT EXISTS idx_documents_expiry ON property_documents(expiry_date)
   WHERE expiry_date IS NOT NULL;
 
 -- ============================================================================
@@ -198,10 +213,12 @@ CREATE INDEX idx_documents_expiry ON property_documents(expiry_date)
 -- ============================================================================
 
 -- Auto-update timestamps
+DROP TRIGGER IF EXISTS set_tenancies_updated_at ON tenancies;
 CREATE TRIGGER set_tenancies_updated_at
   BEFORE UPDATE ON tenancies
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS set_maintenance_updated_at ON maintenance_requests;
 CREATE TRIGGER set_maintenance_updated_at
   BEFORE UPDATE ON maintenance_requests
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -220,6 +237,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS set_reminder_date ON property_documents;
 CREATE TRIGGER set_reminder_date
   BEFORE INSERT OR UPDATE OF expiry_date ON property_documents
   FOR EACH ROW EXECUTE FUNCTION calculate_reminder_date();
@@ -234,11 +252,13 @@ ALTER TABLE financial_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE property_documents ENABLE ROW LEVEL SECURITY;
 
 -- Tenancies: landlord manages own tenancies
+DROP POLICY IF EXISTS "Landlords manage own tenancies" ON tenancies;
 CREATE POLICY "Landlords manage own tenancies"
   ON tenancies FOR ALL TO authenticated
   USING (landlord_id = auth.uid());
 
 -- Maintenance: property owner or reporter can access
+DROP POLICY IF EXISTS "Property owners manage maintenance" ON maintenance_requests;
 CREATE POLICY "Property owners manage maintenance"
   ON maintenance_requests FOR ALL TO authenticated
   USING (
@@ -249,11 +269,13 @@ CREATE POLICY "Property owners manage maintenance"
   );
 
 -- Financial entries: user manages own entries
+DROP POLICY IF EXISTS "Users manage own financial entries" ON financial_entries;
 CREATE POLICY "Users manage own financial entries"
   ON financial_entries FOR ALL TO authenticated
   USING (user_id = auth.uid());
 
 -- Documents: uploader and property owner can access
+DROP POLICY IF EXISTS "Property owners manage documents" ON property_documents;
 CREATE POLICY "Property owners manage documents"
   ON property_documents FOR ALL TO authenticated
   USING (
@@ -333,8 +355,9 @@ VALUES
   ('property-documents', 'property-documents', false, 2097152);    -- 2MB limit
 
 -- RLS: Users can upload to their own properties
+DROP POLICY IF EXISTS "Users upload to own property folders" ON storage.objects;
 CREATE POLICY "Users upload to own property folders"
-ON storage.objects FOR INSERT TO authenticated
+  ON storage.objects FOR INSERT TO authenticated
 WITH CHECK (
   bucket_id IN ('maintenance-photos', 'expense-receipts', 'property-documents')
   AND (storage.foldername(name))[1] IN (
@@ -345,8 +368,9 @@ WITH CHECK (
 );
 
 -- RLS: Users can read their own uploads
+DROP POLICY IF EXISTS "Users read own property files" ON storage.objects;
 CREATE POLICY "Users read own property files"
-ON storage.objects FOR SELECT TO authenticated
+  ON storage.objects FOR SELECT TO authenticated
 USING (
   bucket_id IN ('maintenance-photos', 'expense-receipts', 'property-documents')
   AND (storage.foldername(name))[1] IN (
@@ -357,8 +381,9 @@ USING (
 );
 
 -- RLS: Users can delete their own uploads
+DROP POLICY IF EXISTS "Users delete own files" ON storage.objects;
 CREATE POLICY "Users delete own files"
-ON storage.objects FOR DELETE TO authenticated
+  ON storage.objects FOR DELETE TO authenticated
 USING (
   bucket_id IN ('maintenance-photos', 'expense-receipts', 'property-documents')
   AND (storage.foldername(name))[1] IN (

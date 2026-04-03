@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS public.agent_agency_profiles (
 
 ALTER TABLE public.agent_agency_profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own agency profile" ON public.agent_agency_profiles;
 CREATE POLICY "Agents can manage their own agency profile"
   ON public.agent_agency_profiles FOR ALL
   USING (agent_id = auth.uid())
@@ -71,6 +72,7 @@ CREATE POLICY "Agents can manage their own agency profile"
 
 CREATE INDEX idx_agent_agency_profiles_agent_id ON public.agent_agency_profiles (agent_id);
 
+DROP TRIGGER IF EXISTS update_agent_agency_profiles_updated_at ON public.agent_agency_profiles;
 CREATE TRIGGER update_agent_agency_profiles_updated_at
   BEFORE UPDATE ON public.agent_agency_profiles
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -98,6 +100,7 @@ CREATE TABLE IF NOT EXISTS public.agent_leads (
 
 ALTER TABLE public.agent_leads ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own leads" ON public.agent_leads;
 CREATE POLICY "Agents can manage their own leads"
   ON public.agent_leads FOR ALL
   USING (agent_id = auth.uid())
@@ -106,6 +109,7 @@ CREATE POLICY "Agents can manage their own leads"
 CREATE INDEX idx_agent_leads_agent_id ON public.agent_leads (agent_id);
 CREATE INDEX idx_agent_leads_agent_stage ON public.agent_leads (agent_id, stage);
 
+DROP TRIGGER IF EXISTS update_agent_leads_updated_at ON public.agent_leads;
 CREATE TRIGGER update_agent_leads_updated_at
   BEFORE UPDATE ON public.agent_leads
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -127,6 +131,7 @@ CREATE TABLE IF NOT EXISTS public.agent_lead_activities (
 
 ALTER TABLE public.agent_lead_activities ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can view activities on their leads" ON public.agent_lead_activities;
 CREATE POLICY "Agents can view activities on their leads"
   ON public.agent_lead_activities FOR SELECT
   USING (
@@ -137,6 +142,7 @@ CREATE POLICY "Agents can view activities on their leads"
     )
   );
 
+DROP POLICY IF EXISTS "Agents can insert activities on their leads" ON public.agent_lead_activities;
 CREATE POLICY "Agents can insert activities on their leads"
   ON public.agent_lead_activities FOR INSERT
   WITH CHECK (
@@ -178,6 +184,7 @@ CREATE TABLE IF NOT EXISTS public.agent_offers (
 
 ALTER TABLE public.agent_offers ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own offers" ON public.agent_offers;
 CREATE POLICY "Agents can manage their own offers"
   ON public.agent_offers FOR ALL
   USING (agent_id = auth.uid())
@@ -186,6 +193,7 @@ CREATE POLICY "Agents can manage their own offers"
 CREATE INDEX idx_agent_offers_agent_id ON public.agent_offers (agent_id);
 CREATE INDEX idx_agent_offers_agent_status ON public.agent_offers (agent_id, status);
 
+DROP TRIGGER IF EXISTS update_agent_offers_updated_at ON public.agent_offers;
 CREATE TRIGGER update_agent_offers_updated_at
   BEFORE UPDATE ON public.agent_offers
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -207,6 +215,7 @@ CREATE TABLE IF NOT EXISTS public.agent_offer_history (
 
 ALTER TABLE public.agent_offer_history ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can view history for their offers" ON public.agent_offer_history;
 CREATE POLICY "Agents can view history for their offers"
   ON public.agent_offer_history FOR SELECT
   USING (
@@ -217,6 +226,7 @@ CREATE POLICY "Agents can view history for their offers"
     )
   );
 
+DROP POLICY IF EXISTS "Agents can insert history for their offers" ON public.agent_offer_history;
 CREATE POLICY "Agents can insert history for their offers"
   ON public.agent_offer_history FOR INSERT
   WITH CHECK (
@@ -254,6 +264,7 @@ CREATE TABLE IF NOT EXISTS public.agent_sale_progressions (
 
 ALTER TABLE public.agent_sale_progressions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own sale progressions" ON public.agent_sale_progressions;
 CREATE POLICY "Agents can manage their own sale progressions"
   ON public.agent_sale_progressions FOR ALL
   USING (agent_id = auth.uid())
@@ -261,6 +272,7 @@ CREATE POLICY "Agents can manage their own sale progressions"
 
 CREATE INDEX idx_agent_sale_progressions_agent_id ON public.agent_sale_progressions (agent_id);
 
+DROP TRIGGER IF EXISTS update_agent_sale_progressions_updated_at ON public.agent_sale_progressions;
 CREATE TRIGGER update_agent_sale_progressions_updated_at
   BEFORE UPDATE ON public.agent_sale_progressions
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -285,6 +297,7 @@ CREATE TABLE IF NOT EXISTS public.agent_commissions (
 
 ALTER TABLE public.agent_commissions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own commissions" ON public.agent_commissions;
 CREATE POLICY "Agents can manage their own commissions"
   ON public.agent_commissions FOR ALL
   USING (agent_id = auth.uid())
@@ -316,6 +329,7 @@ CREATE TABLE IF NOT EXISTS public.agent_team_members (
 
 ALTER TABLE public.agent_team_members ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own team members" ON public.agent_team_members;
 CREATE POLICY "Agents can manage their own team members"
   ON public.agent_team_members FOR ALL
   USING (agent_id = auth.uid())
@@ -345,6 +359,7 @@ CREATE TABLE IF NOT EXISTS public.agent_branches (
 
 ALTER TABLE public.agent_branches ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own branches" ON public.agent_branches;
 CREATE POLICY "Agents can manage their own branches"
   ON public.agent_branches FOR ALL
   USING (agent_id = auth.uid())
@@ -352,6 +367,7 @@ CREATE POLICY "Agents can manage their own branches"
 
 CREATE INDEX idx_agent_branches_agent_id ON public.agent_branches (agent_id);
 
+DROP TRIGGER IF EXISTS update_agent_branches_updated_at ON public.agent_branches;
 CREATE TRIGGER update_agent_branches_updated_at
   BEFORE UPDATE ON public.agent_branches
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -385,6 +401,7 @@ CREATE TABLE IF NOT EXISTS public.agent_crm_clients (
 
 ALTER TABLE public.agent_crm_clients ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own CRM clients" ON public.agent_crm_clients;
 CREATE POLICY "Agents can manage their own CRM clients"
   ON public.agent_crm_clients FOR ALL
   USING (agent_id = auth.uid())
@@ -392,6 +409,7 @@ CREATE POLICY "Agents can manage their own CRM clients"
 
 CREATE INDEX idx_agent_crm_clients_agent_id ON public.agent_crm_clients (agent_id);
 
+DROP TRIGGER IF EXISTS update_agent_crm_clients_updated_at ON public.agent_crm_clients;
 CREATE TRIGGER update_agent_crm_clients_updated_at
   BEFORE UPDATE ON public.agent_crm_clients
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -415,6 +433,7 @@ CREATE TABLE IF NOT EXISTS public.agent_viewing_slots (
 
 ALTER TABLE public.agent_viewing_slots ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own viewing slots" ON public.agent_viewing_slots;
 CREATE POLICY "Agents can manage their own viewing slots"
   ON public.agent_viewing_slots FOR ALL
   USING (agent_id = auth.uid())
@@ -445,6 +464,7 @@ CREATE TABLE IF NOT EXISTS public.agent_viewing_feedback (
 
 ALTER TABLE public.agent_viewing_feedback ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own viewing feedback" ON public.agent_viewing_feedback;
 CREATE POLICY "Agents can manage their own viewing feedback"
   ON public.agent_viewing_feedback FOR ALL
   USING (agent_id = auth.uid())
@@ -474,6 +494,7 @@ CREATE TABLE IF NOT EXISTS public.agent_api_keys (
 
 ALTER TABLE public.agent_api_keys ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own API keys" ON public.agent_api_keys;
 CREATE POLICY "Agents can manage their own API keys"
   ON public.agent_api_keys FOR ALL
   USING (agent_id = auth.uid())
@@ -504,6 +525,7 @@ CREATE TABLE IF NOT EXISTS public.agent_feed_integrations (
 
 ALTER TABLE public.agent_feed_integrations ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own feed integrations" ON public.agent_feed_integrations;
 CREATE POLICY "Agents can manage their own feed integrations"
   ON public.agent_feed_integrations FOR ALL
   USING (agent_id = auth.uid())
@@ -511,6 +533,7 @@ CREATE POLICY "Agents can manage their own feed integrations"
 
 CREATE INDEX idx_agent_feed_integrations_agent_id ON public.agent_feed_integrations (agent_id);
 
+DROP TRIGGER IF EXISTS update_agent_feed_integrations_updated_at ON public.agent_feed_integrations;
 CREATE TRIGGER update_agent_feed_integrations_updated_at
   BEFORE UPDATE ON public.agent_feed_integrations
   FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
@@ -533,6 +556,7 @@ CREATE TABLE IF NOT EXISTS public.agent_vendor_reports (
 
 ALTER TABLE public.agent_vendor_reports ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Agents can manage their own vendor reports" ON public.agent_vendor_reports;
 CREATE POLICY "Agents can manage their own vendor reports"
   ON public.agent_vendor_reports FOR ALL
   USING (agent_id = auth.uid())

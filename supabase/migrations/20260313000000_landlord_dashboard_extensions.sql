@@ -7,7 +7,7 @@
 -- TABLE 1: tenant_applications
 -- ============================================================================
 
-CREATE TABLE tenant_applications (
+CREATE TABLE IF NOT EXISTS tenant_applications (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   landlord_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -32,7 +32,7 @@ CREATE TABLE tenant_applications (
 -- TABLE 2: inventory_reports
 -- ============================================================================
 
-CREATE TABLE inventory_reports (
+CREATE TABLE IF NOT EXISTS inventory_reports (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   tenancy_id UUID REFERENCES tenancies(id) ON DELETE SET NULL,
@@ -52,7 +52,7 @@ CREATE TABLE inventory_reports (
 -- TABLE 3: deposit_registrations
 -- ============================================================================
 
-CREATE TABLE deposit_registrations (
+CREATE TABLE IF NOT EXISTS deposit_registrations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tenancy_id UUID NOT NULL REFERENCES tenancies(id) ON DELETE CASCADE,
   landlord_id UUID NOT NULL REFERENCES auth.users(id),
@@ -71,7 +71,7 @@ CREATE TABLE deposit_registrations (
 -- TABLE 4: legal_notices
 -- ============================================================================
 
-CREATE TABLE legal_notices (
+CREATE TABLE IF NOT EXISTS legal_notices (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   tenancy_id UUID REFERENCES tenancies(id) ON DELETE SET NULL,
@@ -96,12 +96,12 @@ CREATE TABLE legal_notices (
 -- INDEXES
 -- ============================================================================
 
-CREATE INDEX idx_tenant_applications_landlord_id ON tenant_applications(landlord_id);
-CREATE INDEX idx_tenant_applications_property_id ON tenant_applications(property_id);
-CREATE INDEX idx_tenant_applications_status ON tenant_applications(status);
-CREATE INDEX idx_inventory_reports_property_id ON inventory_reports(property_id);
-CREATE INDEX idx_deposit_registrations_tenancy_id ON deposit_registrations(tenancy_id);
-CREATE INDEX idx_legal_notices_landlord_id ON legal_notices(landlord_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_applications_landlord_id ON tenant_applications(landlord_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_applications_property_id ON tenant_applications(property_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_applications_status ON tenant_applications(status);
+CREATE INDEX IF NOT EXISTS idx_inventory_reports_property_id ON inventory_reports(property_id);
+CREATE INDEX IF NOT EXISTS idx_deposit_registrations_tenancy_id ON deposit_registrations(tenancy_id);
+CREATE INDEX IF NOT EXISTS idx_legal_notices_landlord_id ON legal_notices(landlord_id);
 
 -- ============================================================================
 -- ROW LEVEL SECURITY

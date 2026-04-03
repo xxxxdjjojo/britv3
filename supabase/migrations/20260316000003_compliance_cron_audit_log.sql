@@ -1,6 +1,6 @@
 -- Compliance cron audit log table
 -- Records each run of the compliance-reminders Edge Function
-CREATE TABLE compliance_cron_runs (
+CREATE TABLE IF NOT EXISTS compliance_cron_runs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   run_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   properties_checked INTEGER NOT NULL DEFAULT 0,
@@ -15,6 +15,7 @@ ALTER TABLE compliance_cron_runs ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS, so no INSERT policy needed.
 -- Admin read policy: uses is_admin flag on profiles table.
+DROP POLICY IF EXISTS "Admins can read cron audit logs" ON compliance_cron_runs;
 CREATE POLICY "Admins can read cron audit logs"
   ON compliance_cron_runs FOR SELECT
   USING (

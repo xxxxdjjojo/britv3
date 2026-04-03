@@ -11,9 +11,9 @@ CREATE TABLE IF NOT EXISTS chain_links (
   CONSTRAINT chain_links_unique_pair UNIQUE (upstream_progression_id, downstream_progression_id)
 );
 
-CREATE INDEX idx_chain_links_upstream ON chain_links(upstream_progression_id);
-CREATE INDEX idx_chain_links_downstream ON chain_links(downstream_progression_id);
-CREATE INDEX idx_chain_links_group ON chain_links(chain_group_id);
+CREATE INDEX IF NOT EXISTS idx_chain_links_upstream ON chain_links(upstream_progression_id);
+CREATE INDEX IF NOT EXISTS idx_chain_links_downstream ON chain_links(downstream_progression_id);
+CREATE INDEX IF NOT EXISTS idx_chain_links_group ON chain_links(chain_group_id);
 
 -- Pre-computed chain risk scores (one per sale progression in a chain)
 CREATE TABLE IF NOT EXISTS chain_risk_scores (
@@ -34,14 +34,15 @@ CREATE TABLE IF NOT EXISTS chain_risk_scores (
   CONSTRAINT chain_risk_scores_unique_progression UNIQUE (progression_id)
 );
 
-CREATE INDEX idx_chain_risk_scores_progression ON chain_risk_scores(progression_id);
-CREATE INDEX idx_chain_risk_scores_group ON chain_risk_scores(chain_group_id);
-CREATE INDEX idx_chain_risk_scores_level ON chain_risk_scores(risk_level);
+CREATE INDEX IF NOT EXISTS idx_chain_risk_scores_progression ON chain_risk_scores(progression_id);
+CREATE INDEX IF NOT EXISTS idx_chain_risk_scores_group ON chain_risk_scores(chain_group_id);
+CREATE INDEX IF NOT EXISTS idx_chain_risk_scores_level ON chain_risk_scores(risk_level);
 
 -- RLS
 ALTER TABLE chain_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chain_risk_scores ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "agent_read_own_chain_links" ON chain_links;
 CREATE POLICY "agent_read_own_chain_links" ON chain_links
   FOR SELECT USING (
     EXISTS (
@@ -52,6 +53,7 @@ CREATE POLICY "agent_read_own_chain_links" ON chain_links
     )
   );
 
+DROP POLICY IF EXISTS "agent_insert_own_chain_links" ON chain_links;
 CREATE POLICY "agent_insert_own_chain_links" ON chain_links
   FOR INSERT WITH CHECK (
     EXISTS (
@@ -62,6 +64,7 @@ CREATE POLICY "agent_insert_own_chain_links" ON chain_links
     )
   );
 
+DROP POLICY IF EXISTS "agent_delete_own_chain_links" ON chain_links;
 CREATE POLICY "agent_delete_own_chain_links" ON chain_links
   FOR DELETE USING (
     EXISTS (
@@ -72,6 +75,7 @@ CREATE POLICY "agent_delete_own_chain_links" ON chain_links
     )
   );
 
+DROP POLICY IF EXISTS "agent_read_own_risk_scores" ON chain_risk_scores;
 CREATE POLICY "agent_read_own_risk_scores" ON chain_risk_scores
   FOR SELECT USING (
     EXISTS (
@@ -82,10 +86,12 @@ CREATE POLICY "agent_read_own_risk_scores" ON chain_risk_scores
   );
 
 -- Updated-at triggers
+DROP TRIGGER IF EXISTS chain_links_updated_at ON chain_links;
 CREATE TRIGGER chain_links_updated_at
   BEFORE UPDATE ON chain_links
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS chain_risk_scores_updated_at ON chain_risk_scores;
 CREATE TRIGGER chain_risk_scores_updated_at
   BEFORE UPDATE ON chain_risk_scores
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

@@ -16,14 +16,17 @@ CREATE TABLE IF NOT EXISTS public.renter_preferences (
 
 ALTER TABLE public.renter_preferences ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own renter preferences" ON public.renter_preferences;
 CREATE POLICY "Users can view own renter preferences"
   ON public.renter_preferences FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can upsert own renter preferences" ON public.renter_preferences;
 CREATE POLICY "Users can upsert own renter preferences"
   ON public.renter_preferences FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own renter preferences" ON public.renter_preferences;
 CREATE POLICY "Users can update own renter preferences"
   ON public.renter_preferences FOR UPDATE
   USING (auth.uid() = user_id);

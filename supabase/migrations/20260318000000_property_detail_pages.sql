@@ -7,7 +7,7 @@
 -- Cache for external API data (land registry, ofsted, crime, broadband, ROI)
 -- ============================================================================
 
-CREATE TABLE property_insights (
+CREATE TABLE IF NOT EXISTS property_insights (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   insight_type TEXT NOT NULL,
@@ -20,12 +20,13 @@ CREATE TABLE property_insights (
 ALTER TABLE property_insights ENABLE ROW LEVEL SECURITY;
 
 -- Public can read insights for active properties
+DROP POLICY IF EXISTS "public_read_insights" ON property_insights;
 CREATE POLICY "public_read_insights" ON property_insights
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM properties p
       WHERE p.id = property_insights.property_id
-      AND p.status = 'active'
+      AND p.deleted_at IS NULL
     )
   );
 
@@ -34,18 +35,19 @@ CREATE POLICY "public_read_insights" ON property_insights
 -- Real-time view tracking (anonymous session-based, not user_id)
 -- ============================================================================
 
-CREATE TABLE property_views (
+CREATE TABLE IF NOT EXISTS property_views (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   session_id TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_property_views_property_id_created ON property_views(property_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_property_views_property_id_created ON property_views(property_id, created_at);
 
 ALTER TABLE property_views ENABLE ROW LEVEL SECURITY;
 
 -- Allow anonymous insert (no read required via client)
+DROP POLICY IF EXISTS "anon_insert_views" ON property_views;
 CREATE POLICY "anon_insert_views" ON property_views
   FOR INSERT WITH CHECK (true);
 
@@ -54,7 +56,7 @@ CREATE POLICY "anon_insert_views" ON property_views
 -- Saved "What if" renovation scenarios per user
 -- ============================================================================
 
-CREATE TABLE property_renovation_scenarios (
+CREATE TABLE IF NOT EXISTS property_renovation_scenarios (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -66,11 +68,12 @@ CREATE TABLE property_renovation_scenarios (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_property_renovation_scenarios_user_property ON property_renovation_scenarios(user_id, property_id);
+CREATE INDEX IF NOT EXISTS idx_property_renovation_scenarios_user_property ON property_renovation_scenarios(user_id, property_id);
 
 ALTER TABLE property_renovation_scenarios ENABLE ROW LEVEL SECURITY;
 
 -- Users can only see and create their own scenarios
+DROP POLICY IF EXISTS "users_own_scenarios" ON property_renovation_scenarios;
 CREATE POLICY "users_own_scenarios" ON property_renovation_scenarios
   FOR ALL USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
@@ -81,7 +84,7 @@ CREATE POLICY "users_own_scenarios" ON property_renovation_scenarios
 -- Regional cost and value uplift benchmarks by renovation type
 -- ============================================================================
 
-CREATE TABLE renovation_type_benchmarks (
+CREATE TABLE IF NOT EXISTS renovation_type_benchmarks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   renovation_type TEXT NOT NULL,
   region TEXT NOT NULL,
@@ -97,6 +100,7 @@ CREATE TABLE renovation_type_benchmarks (
 ALTER TABLE renovation_type_benchmarks ENABLE ROW LEVEL SECURITY;
 
 -- Public read-only (not user data, lookup only)
+DROP POLICY IF EXISTS "public_read_benchmarks" ON renovation_type_benchmarks;
 CREATE POLICY "public_read_benchmarks" ON renovation_type_benchmarks
   FOR SELECT USING (true);
 
@@ -105,13 +109,17 @@ CREATE POLICY "public_read_benchmarks" ON renovation_type_benchmarks
 -- Delight feature allowing users to add personal notes to saved properties
 -- ============================================================================
 
-ALTER TABLE saved_properties RENAME COLUMN notes TO note;
+DO $$ BEGIN
+  ALTER TABLE saved_properties RENAME COLUMN notes TO note;
+EXCEPTION WHEN undefined_column OR duplicate_column THEN NULL;
+END $$;
 
 -- ============================================================================
 -- INDEXES FOR PROPERTY DETAIL QUERIES
 -- ============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_properties_slug ON properties(slug);
+-- slug lives on listings, not properties
+CREATE INDEX IF NOT EXISTS idx_listings_slug ON listings(slug);
 
 -- ============================================================================
 -- SEED DATA: renovation_type_benchmarks

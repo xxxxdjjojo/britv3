@@ -39,6 +39,7 @@ WHERE booking_id IS NOT NULL;
 -- ---------------------------------------------------------------------------
 DROP POLICY IF EXISTS "Users can create reviews for own completed bookings" ON reviews;
 
+DROP POLICY IF EXISTS "Users can create verified reviews" ON reviews;
 CREATE POLICY "Users can create verified reviews" ON reviews
   FOR INSERT TO authenticated
   WITH CHECK (
