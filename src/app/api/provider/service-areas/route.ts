@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import {
+  apiSuccess,
+  apiUnauthorized,
+  apiValidationError,
+  apiDatabaseError,
+} from "@/lib/api-response";
 
 /** GET /api/provider/service-areas — fetch all service areas for authenticated provider */
 export async function GET() {
@@ -9,7 +15,7 @@ export async function GET() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+    return apiUnauthorized();
   }
 
   const { data: providerProfile } = await supabase
@@ -27,10 +33,10 @@ export async function GET() {
     .order("created_at", { ascending: true });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiDatabaseError(error, "api/provider/service-areas");
   }
 
-  return NextResponse.json(data ?? []);
+  return apiSuccess(data ?? []);
 }
 
 /** POST /api/provider/service-areas — create a new service area zone */
@@ -41,7 +47,7 @@ export async function POST(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+    return apiUnauthorized();
   }
 
   const { data: providerProfile } = await supabase
@@ -63,31 +69,22 @@ export async function POST(request: NextRequest) {
   try {
     body = (await request.json()) as typeof body;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiValidationError({ body: "Invalid JSON" });
   }
 
   // Validate
   if (!body.zone) {
-    return NextResponse.json(
-      { error: "zone (GeoJSON geometry) is required." },
-      { status: 400 },
-    );
+    return apiValidationError({ zone: "GeoJSON geometry is required" });
   }
 
   if (!["radius", "polygon"].includes(body.zone_type)) {
-    return NextResponse.json(
-      { error: "zone_type must be 'radius' or 'polygon'." },
-      { status: 400 },
-    );
+    return apiValidationError({ zone_type: "Must be 'radius' or 'polygon'" });
   }
 
   // Basic GeoJSON structure check
   const geo = body.zone as { type?: string; coordinates?: unknown[] };
   if (!geo.type || !geo.coordinates) {
-    return NextResponse.json(
-      { error: "zone must be a valid GeoJSON geometry." },
-      { status: 400 },
-    );
+    return apiValidationError({ zone: "Must be a valid GeoJSON geometry" });
   }
 
   // The DB column is geometry(MultiPolygon, 4326) — terra-draw emits Polygon
@@ -111,10 +108,10 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiDatabaseError(error, "api/provider/service-areas");
   }
 
-  return NextResponse.json(data, { status: 201 });
+  return apiSuccess(data, 201);
 }
 
 /** DELETE /api/provider/service-areas?id=<id> — delete a zone */
@@ -125,13 +122,13 @@ export async function DELETE(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+    return apiUnauthorized();
   }
 
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) {
-    return NextResponse.json({ error: "id query param required" }, { status: 400 });
+    return apiValidationError({ id: "Query param required" });
   }
 
   const { data: providerProfile } = await supabase
@@ -149,7 +146,7 @@ export async function DELETE(request: NextRequest) {
     .eq("provider_id", providerId); // ownership guard
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiDatabaseError(error, "api/provider/service-areas");
   }
 
   return new NextResponse(null, { status: 204 });
