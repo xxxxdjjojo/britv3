@@ -6,9 +6,8 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Archive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useInbox } from "@/hooks/useInbox";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,81 +36,6 @@ function relativeTime(date: Date): string {
 }
 
 // ---------------------------------------------------------------------------
-// SwipeableConversationRow — wraps ConversationRow with swipe-to-archive
-// ---------------------------------------------------------------------------
-
-const SWIPE_THRESHOLD = 80;
-
-function SwipeableConversationRow(
-  props: Readonly<{
-    children: React.ReactNode;
-    onArchive: () => void;
-  }>,
-) {
-  const { children, onArchive } = props;
-  const [offset, setOffset] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const touchStartX = useRef<number | null>(null);
-
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-    setIsAnimating(false);
-  }
-
-  function handleTouchMove(e: React.TouchEvent) {
-    if (touchStartX.current === null) return;
-    const dx = e.touches[0].clientX - touchStartX.current;
-    // Only allow left swipe (negative direction)
-    if (dx < 0) {
-      // Cap at -SWIPE_THRESHOLD * 1.5 to prevent over-drag
-      setOffset(Math.max(dx, -SWIPE_THRESHOLD * 1.5));
-    }
-  }
-
-  function handleTouchEnd() {
-    setIsAnimating(true);
-    if (offset <= -SWIPE_THRESHOLD) {
-      // Snap to reveal position briefly, then call onArchive
-      setOffset(-SWIPE_THRESHOLD);
-      // Allow a moment to see the revealed action before snapping back
-      setTimeout(() => {
-        onArchive();
-        setOffset(0);
-      }, 200);
-    } else {
-      // Snap back
-      setOffset(0);
-    }
-    touchStartX.current = null;
-  }
-
-  return (
-    <div className="relative overflow-hidden rounded-xl">
-      {/* Archive action revealed behind the row */}
-      <div
-        className="absolute right-0 inset-y-0 flex items-center bg-error px-4 text-white text-sm font-medium"
-        aria-hidden="true"
-      >
-        Archive
-      </div>
-
-      {/* Swipeable row */}
-      <div
-        style={{
-          transform: `translateX(${offset}px)`,
-          transition: isAnimating ? "transform 0.2s ease" : "none",
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // ConversationRow
 // ---------------------------------------------------------------------------
 
@@ -121,10 +45,11 @@ function ConversationRow(
     isActive: boolean;
     currentUserId: string;
     onSelect: (id: string, recipientId: string) => void;
+    onArchive: () => void;
     buttonRef: (el: HTMLButtonElement | null) => void;
   }>,
 ) {
-  const { conversation: conv, isActive, currentUserId, onSelect, buttonRef } = props;
+  const { conversation: conv, isActive, currentUserId, onSelect, onArchive, buttonRef } = props;
 
   const otherUserId =
     conv.participant_1_id === currentUserId
@@ -167,10 +92,10 @@ function ConversationRow(
         onSelect(conv.id, otherUserId);
       }}
       className={cn(
-        "w-full text-left p-4 mx-2 rounded-xl cursor-pointer transition-colors mb-2",
+        "group relative w-full text-left p-4 mx-2 rounded-xl cursor-pointer transition-colors mb-2",
         isActive
           ? "bg-surface-container-lowest shadow-[0_4px_20px_rgba(0,0,0,0.03)] border-l-4 border-brand-primary"
-          : "hover:bg-surface-container-high",
+          : "bg-surface-container-low hover:bg-surface-container-high",
       )}
     >
       {/* Status badge + timestamp row */}
@@ -182,7 +107,20 @@ function ConversationRow(
         ) : (
           <span />
         )}
-        <span className="text-[10px] text-outline">{timestamp}</span>
+        <span className="flex items-center gap-1.5">
+          <button
+            type="button"
+            aria-label="Archive conversation"
+            onClick={(e) => {
+              e.stopPropagation();
+              onArchive();
+            }}
+            className="sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity p-1 rounded-md text-outline hover:text-error hover:bg-error/10"
+          >
+            <Archive className="h-3 w-3" />
+          </button>
+          <span className="text-[10px] text-outline">{timestamp}</span>
+        </span>
       </div>
 
       {/* Name */}
@@ -342,18 +280,15 @@ export default function InboxList(
           {!isLoading &&
             !error &&
             conversations.map((conv, index) => (
-              <SwipeableConversationRow
+              <ConversationRow
                 key={conv.id}
+                conversation={conv}
+                isActive={conv.id === activeId}
+                currentUserId={currentUserId}
+                onSelect={onSelectConversation ?? (() => {})}
                 onArchive={() => handleArchive(conv.id)}
-              >
-                <ConversationRow
-                  conversation={conv}
-                  isActive={conv.id === activeId}
-                  currentUserId={currentUserId}
-                  onSelect={onSelectConversation ?? (() => {})}
-                  buttonRef={setItemRef(index)}
-                />
-              </SwipeableConversationRow>
+                buttonRef={setItemRef(index)}
+              />
             ))}
         </div>
       </ScrollArea>

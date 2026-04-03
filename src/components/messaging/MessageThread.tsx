@@ -185,7 +185,7 @@ function MessageBubble(
 
 function QuickActionsBar() {
   return (
-    <div className="flex gap-2 px-6 py-2 border-t border-surface-container overflow-x-auto">
+    <div className="flex gap-2 px-6 py-2 border-t border-surface-container overflow-x-auto shrink-0">
       {QUICK_ACTIONS.map((action) => {
         const Icon = action.icon;
         return (
@@ -374,23 +374,26 @@ export default function MessageThread(
         </div>
       </ScrollArea>
 
-      <QuickActionsBar />
-      {isOtherTyping && (
-        <div className="px-6 py-1 font-body text-xs text-outline italic flex items-center gap-1">
-          <span className="inline-flex gap-0.5">
-            <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
-            <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>
-            <span className="animate-bounce" style={{ animationDelay: "300ms" }}>•</span>
-          </span>
-          {participantName ?? "Someone"} is typing...
-        </div>
-      )}
-      <MessageComposer
-        conversationId={conversationId}
-        recipientId={recipientId ?? ""}
-        contextType={contextType}
-        currentUserId={user?.id ?? ""}
-      />
+      {/* Bottom action area — constrained to prevent overlap */}
+      <div className="shrink-0 max-h-[40%] flex flex-col">
+        <QuickActionsBar />
+        {isOtherTyping && (
+          <div className="px-6 py-1 font-body text-xs text-outline italic flex items-center gap-1">
+            <span className="inline-flex gap-0.5">
+              <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
+              <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>
+              <span className="animate-bounce" style={{ animationDelay: "300ms" }}>•</span>
+            </span>
+            {participantName ?? "Someone"} is typing...
+          </div>
+        )}
+        <MessageComposer
+          conversationId={conversationId}
+          recipientId={recipientId ?? ""}
+          contextType={contextType}
+          currentUserId={user?.id ?? ""}
+        />
+      </div>
     </div>
   );
 }

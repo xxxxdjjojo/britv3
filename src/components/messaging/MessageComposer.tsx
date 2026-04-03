@@ -117,7 +117,7 @@ export default function MessageComposer(
   const charCount = content.length;
 
   return (
-    <div className="px-8 pb-6 pt-0 space-y-2">
+    <div className="px-8 pb-6 pt-0 space-y-2 min-h-0 flex flex-col">
       {/* Attachment preview */}
       {selectedFile && (
         <AttachmentPreview
@@ -128,7 +128,7 @@ export default function MessageComposer(
 
       {/* Smart reply chips */}
       {suggestions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 max-h-16 overflow-y-auto">
           {suggestions.map((suggestion) => (
             <button
               key={suggestion}
@@ -143,7 +143,7 @@ export default function MessageComposer(
       )}
 
       {/* Composer row */}
-      <div className="bg-surface-container-low rounded-2xl p-4 flex items-end gap-4 border border-transparent focus-within:bg-surface-container-lowest focus-within:border-outline-variant/20 transition-all">
+      <div className="bg-surface-container-low rounded-2xl p-4 flex items-end gap-4 border border-transparent focus-within:bg-surface-container-lowest focus-within:border-outline-variant/20 transition-all shrink-0">
         {/* Attach button */}
         <button
           type="button"
