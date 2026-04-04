@@ -7,7 +7,7 @@ This is v3.0, a ground-up rebuild. Authentication, property search, property det
 ## Tech Stack
 
 - **Framework:** Next.js 16, React 19, TypeScript 5
-- **Styling:** Tailwind CSS v4, Shadcn UI + Radix
+- **Styling:** Tailwind CSS v4, Shadcn UI + Radix, Stitch design system (Material You tokens)
 - **Backend:** Supabase (Auth, PostgreSQL, Realtime, Storage)
 - **AI:** Anthropic Claude SDK + pgvector for embeddings
 - **Maps:** MapTiler + MapLibre GL JS

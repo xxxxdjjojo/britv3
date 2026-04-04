@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4.2] - 2026-04-04
+
+### Changed
+- **Full-Site Design Token Migration** — Every page and component now uses Stitch design system tokens exclusively. 375 files updated, replacing ~2,200 hardcoded hex colors and non-standard Tailwind classes (blue-500, green-600, gray-200) with semantic tokens (brand-primary, success, warning, error, neutral-*)
+- `globals.css` patched: focus-ring uses token variable, text-balance heading utility added, dark mode brand-accent-light variant added
+- Email templates now import from centralized `src/emails/_constants/colors.ts` instead of scattered inline hex values
+- Chart components (Recharts) migrated from hardcoded hex to CSS variable references
+- PDF components annotated with token name comments for maintainability
+- Changing a brand color in `globals.css` now propagates across the entire platform automatically
+
 ## [0.0.4.1] - 2026-04-02
 
 ### Added

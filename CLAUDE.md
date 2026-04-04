@@ -104,8 +104,10 @@ pnpm test:e2e              # E2E tests (Playwright)
 
 ### Styling
 - Tailwind v4 utility classes in JSX `className`
-- Theme via CSS custom properties in `globals.css`
-- Dark mode via `prefers-color-scheme` + `dark:` prefix
+- **Stitch design system**: all colors use design tokens defined in `globals.css` `@theme inline` block — use `brand-primary`, `brand-accent`, `success`, `warning`, `error`, `neutral-*`, `surface-*` etc. Never hardcode hex or use default Tailwind colors (`blue-500`, `green-600`, `gray-200`)
+- Shadcn UI components use semantic tokens (`primary`, `secondary`, `muted`, `accent`, `destructive`) which map to Britestate colors via `:root`
+- Email templates use `src/emails/_constants/colors.ts` for centralized hex values (emails require inline styles, not Tailwind classes)
+- Dark mode via `prefers-color-scheme` + `dark:` prefix — design tokens auto-switch via CSS variables
 - No CSS modules
 
 ### Formatting
