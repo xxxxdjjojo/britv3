@@ -79,8 +79,8 @@ export default function BookingsPage() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-yellow-50 p-2 dark:bg-yellow-900/20">
-              <Calendar className="size-4 text-yellow-600 dark:text-yellow-400" />
+            <div className="rounded-lg bg-warning-light p-2 dark:bg-warning/20">
+              <Calendar className="size-4 text-warning dark:text-warning" />
             </div>
             <div>
               <p className="font-heading text-lg font-semibold text-foreground">{counts.pending_confirmation}</p>
@@ -90,8 +90,8 @@ export default function BookingsPage() {
         </div>
         <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-blue-50 p-2 dark:bg-blue-900/20">
-              <Calendar className="size-4 text-blue-600 dark:text-blue-400" />
+            <div className="rounded-lg bg-brand-accent-light p-2 dark:bg-brand-accent/20">
+              <Calendar className="size-4 text-brand-accent dark:text-brand-accent" />
             </div>
             <div>
               <p className="font-heading text-lg font-semibold text-foreground">{counts.confirmed}</p>
@@ -101,8 +101,8 @@ export default function BookingsPage() {
         </div>
         <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-orange-50 p-2 dark:bg-orange-900/20">
-              <Package className="size-4 text-orange-600 dark:text-orange-400" />
+            <div className="rounded-lg bg-warning-light p-2 dark:bg-warning/20">
+              <Package className="size-4 text-warning dark:text-warning" />
             </div>
             <div>
               <p className="font-heading text-lg font-semibold text-foreground">{counts.in_progress}</p>
@@ -112,8 +112,8 @@ export default function BookingsPage() {
         </div>
         <div className="rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-green-50 p-2 dark:bg-green-900/20">
-              <Package className="size-4 text-green-600 dark:text-green-400" />
+            <div className="rounded-lg bg-success-light p-2 dark:bg-success/20">
+              <Package className="size-4 text-success dark:text-success" />
             </div>
             <div>
               <p className="font-heading text-lg font-semibold text-foreground">{counts.completed}</p>

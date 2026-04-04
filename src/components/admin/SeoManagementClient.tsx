@@ -161,8 +161,7 @@ export function SeoManagementClient({ articles }: Props) {
                     size="sm"
                     onClick={() => saveEdit(article.id)}
                     disabled={saving}
-                    style={{ backgroundColor: "#1B4D3E" }}
-                    className="text-white hover:opacity-90"
+                    className="bg-brand-primary text-white hover:bg-brand-primary/90"
                   >
                     <Check className="h-3.5 w-3.5 mr-1" />
                     {saving ? "Saving..." : "Save"}

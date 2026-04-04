@@ -105,10 +105,10 @@ export default function BrokerDashboardPage() {
           </div>
           <div className="p-6 space-y-3">
             {[
-              { stage: "New Lead", count: 4, color: "bg-blue-500" },
-              { stage: "Initial Consultation", count: 3, color: "bg-amber-500" },
-              { stage: "Application Submitted", count: 2, color: "bg-purple-500" },
-              { stage: "Underwriting", count: 1, color: "bg-orange-500" },
+              { stage: "New Lead", count: 4, color: "bg-brand-accent" },
+              { stage: "Initial Consultation", count: 3, color: "bg-warning" },
+              { stage: "Application Submitted", count: 2, color: "bg-brand-accent" },
+              { stage: "Underwriting", count: 1, color: "bg-warning" },
               { stage: "Approved", count: 1, color: "bg-success" },
               { stage: "Completed", count: 5, color: "bg-neutral-400" },
             ].map((item) => (

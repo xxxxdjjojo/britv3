@@ -164,7 +164,7 @@ export function EditReviewForm({ review, onSuccess, onCancel }: EditReviewFormPr
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Edit window indicator */}
-      <div className="flex items-center gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+      <div className="flex items-center gap-2 rounded-md bg-warning-light px-3 py-2 text-sm text-warning dark:bg-warning/20 dark:text-warning">
         <Clock className="size-4 shrink-0" />
         <span>{remaining}</span>
         {review.edit_count > 0 && (

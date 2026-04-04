@@ -131,8 +131,8 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
             <AreaChart data={earningsData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="earningsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1B4D3E" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#1B4D3E" stopOpacity={0} />
+                  <stop offset="0%" stopColor="var(--color-brand-primary)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="var(--color-brand-primary)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -153,11 +153,11 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
               <Area
                 type="monotone"
                 dataKey="earnings"
-                stroke="#1B4D3E"
+                stroke="var(--color-brand-primary)"
                 strokeWidth={2.5}
                 fill="url(#earningsGradient)"
                 dot={false}
-                activeDot={{ r: 4, fill: "#1B4D3E", strokeWidth: 0 }}
+                activeDot={{ r: 4, fill: "var(--color-brand-primary)", strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -196,7 +196,7 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
                 width={120}
               />
               <Tooltip content={<CategoriesBarTooltip />} />
-              <Bar dataKey="bookings" fill="#1B4D3E" radius={[0, 6, 6, 0]} barSize={20} />
+              <Bar dataKey="bookings" fill="var(--color-brand-primary)" radius={[0, 6, 6, 0]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
         )}

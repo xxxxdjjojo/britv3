@@ -70,7 +70,7 @@ export function PriceHistory(
                 </div>
                 <div
                   className={`flex items-center gap-1 text-sm font-medium ${
-                    isIncrease ? "text-green-600" : "text-red-600"
+                    isIncrease ? "text-success" : "text-error"
                   }`}
                 >
                   {isIncrease ? (

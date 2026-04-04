@@ -26,7 +26,7 @@ function LogoFallback({ name }: Readonly<{ name: string | null }>) {
         .toUpperCase()
     : "AG";
   return (
-    <div className="w-full h-full flex items-center justify-center bg-[#1B4D3E] text-white text-2xl font-bold">
+    <div className="w-full h-full flex items-center justify-center bg-brand-primary text-white text-2xl font-bold">
       {initials}
     </div>
   );
@@ -40,7 +40,7 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
   const totalReviews = stats.total_reviews;
 
   return (
-    <div className="bg-[#faf9f8] dark:bg-[#0f1a17] rounded-xl shadow-sm overflow-hidden mb-8">
+    <div className="bg-neutral-50 dark:bg-neutral-950 rounded-xl shadow-sm overflow-hidden mb-8">
       {/* Cover photo / gradient */}
       <div className="relative h-48">
         {logoUrl ? (
@@ -52,9 +52,9 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
             priority
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1B4D3E]/20 via-[#e8e6e3] to-[#D4A853]/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/20 via-neutral-200 to-brand-secondary/10" />
         {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#faf9f8]/60 dark:to-[#0f1a17]/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-neutral-50/60 dark:to-neutral-950/60" />
       </div>
 
       {/* Content below cover */}
@@ -63,7 +63,7 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
         <div className="flex flex-col md:flex-row items-start md:items-end -mt-16 gap-6">
           {/* Logo */}
           <div className="relative flex-shrink-0">
-            <div className="w-32 h-32 rounded-xl ring-4 ring-[#1B4D3E] shadow-md bg-[#faf9f8] overflow-hidden">
+            <div className="w-32 h-32 rounded-xl ring-4 ring-brand-primary shadow-md bg-neutral-50 overflow-hidden">
               {logoUrl ? (
                 <Image
                   src={logoUrl}
@@ -76,7 +76,7 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
               )}
             </div>
             {/* Verified badge */}
-            <div className="absolute -bottom-2 -right-2 bg-[#1B4D3E] text-white p-1 rounded-full border-2 border-[#faf9f8] dark:border-[#0f1a17]">
+            <div className="absolute -bottom-2 -right-2 bg-brand-primary text-white p-1 rounded-full border-2 border-neutral-50 dark:border-neutral-950">
               <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -84,20 +84,20 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
           {/* Identity */}
           <div className="flex-1 pt-4 md:pt-0">
             <div className="flex flex-wrap items-center gap-3 mb-1">
-              <h1 className="text-3xl font-heading font-bold tracking-tight text-[#1a1a1a] dark:text-white">
+              <h1 className="text-3xl font-heading font-bold tracking-tight text-neutral-900 dark:text-white">
                 {agencyName}
               </h1>
-              <span className="inline-flex items-center rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E] text-xs font-semibold px-2.5 py-0.5">
+              <span className="inline-flex items-center rounded-full bg-brand-primary/10 text-brand-primary text-xs font-semibold px-2.5 py-0.5">
                 Premium Partner
               </span>
             </div>
 
             {/* Rating + location row */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
               {avgRating != null && (
                 <span className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-[#D4A853] text-[#D4A853]" />
-                  <span className="font-semibold text-[#1a1a1a] dark:text-white">
+                  <Star className="w-4 h-4 fill-brand-secondary text-brand-secondary" />
+                  <span className="font-semibold text-neutral-900 dark:text-white">
                     {avgRating}
                   </span>
                   <span>({totalReviews} Reviews)</span>
@@ -105,7 +105,7 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
               )}
               {city && (
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-[#9ca3af]" />
+                  <MapPin className="w-4 h-4 text-neutral-400" />
                   {city}
                 </span>
               )}
@@ -115,13 +115,13 @@ export default function AgencyHero({ agency, stats }: AgencyHeroProps) {
             <div className="flex flex-wrap gap-3 mt-4">
               <button
                 type="button"
-                className="px-4 py-2 min-h-[44px] rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822] text-sm font-medium text-[#1a1a1a] dark:text-white hover:bg-[#eceae8] dark:hover:bg-[#243330] transition-colors"
+                className="px-4 py-2 min-h-[44px] rounded-xl bg-neutral-100 dark:bg-neutral-900 text-sm font-medium text-neutral-900 dark:text-white hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
               >
                 Follow
               </button>
               <button
                 type="button"
-                className="px-4 py-2 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-medium hover:bg-[#163d31] active:bg-[#0f2b22] transition-colors"
+                className="px-4 py-2 min-h-[44px] rounded-xl bg-brand-primary text-white text-sm font-medium hover:bg-brand-primary/90 active:bg-brand-primary-dark transition-colors"
               >
                 Contact Agent
               </button>

@@ -28,11 +28,11 @@ const STATUS_TABS = [
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-neutral-100 text-neutral-600",
-  active: "bg-green-100 text-green-700",
-  under_offer: "bg-amber-100 text-amber-700",
-  sold: "bg-blue-100 text-blue-700",
-  let: "bg-blue-100 text-blue-700",
-  withdrawn: "bg-red-100 text-red-700",
+  active: "bg-success-light text-success",
+  under_offer: "bg-warning-light text-warning",
+  sold: "bg-brand-accent-light text-brand-accent",
+  let: "bg-brand-accent-light text-brand-accent",
+  withdrawn: "bg-error-light text-error",
   archived: "bg-neutral-100 text-neutral-500",
 };
 

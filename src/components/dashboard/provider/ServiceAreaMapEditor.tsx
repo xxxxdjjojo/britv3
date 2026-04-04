@@ -25,8 +25,8 @@ type ServiceAreaMapEditorProps = Readonly<{
 
 const MAP_CENTER: [number, number] = [-0.1278, 51.5074]; // [lng, lat] for MapLibre
 const MAP_ZOOM = 8;
-const ZONE_FILL_COLOR = "rgba(27,77,62,0.15)";
-const ZONE_STROKE_COLOR = "#1B4D3E";
+const ZONE_FILL_COLOR = "var(--color-brand-primary-lighter)";
+const ZONE_STROKE_COLOR = "var(--color-brand-primary)";
 
 export function ServiceAreaMapEditor({
   initialAreas,

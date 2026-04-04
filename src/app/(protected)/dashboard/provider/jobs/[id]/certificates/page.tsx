@@ -84,7 +84,7 @@ function CertificateCard({ cert }: { cert: Certificate }) {
         <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-neutral-500">
           <span>Issued: {formatDate(cert.issuedAt) ?? "—"}</span>
           {cert.expiresAt && (
-            <span className={expiring ? "text-amber-600 font-medium" : ""}>
+            <span className={expiring ? "text-warning font-medium" : ""}>
               Expires: {formatDate(cert.expiresAt)}
             </span>
           )}

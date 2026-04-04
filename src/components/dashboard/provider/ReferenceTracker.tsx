@@ -278,7 +278,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <label htmlFor="referee_name" className="text-sm font-medium text-neutral-900">
-                Full Name <span className="text-red-500">*</span>
+                Full Name <span className="text-error">*</span>
               </label>
               <input
                 id="referee_name"
@@ -292,7 +292,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
 
             <div className="space-y-1.5">
               <label htmlFor="referee_email" className="text-sm font-medium text-neutral-900">
-                Email Address <span className="text-red-500">*</span>
+                Email Address <span className="text-error">*</span>
               </label>
               <input
                 id="referee_email"

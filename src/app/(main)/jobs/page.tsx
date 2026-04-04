@@ -21,22 +21,22 @@ const URGENCY_CONFIG: Record<
   emergency: {
     label: "Emergency",
     className:
-      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+      "bg-error-light text-error dark:bg-error/20 dark:text-error/80",
   },
   high: {
     label: "High Priority",
     className:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+      "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning/80",
   },
   normal: {
     label: "Normal",
     className:
-      "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+      "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent/80",
   },
   low: {
     label: "Low Priority",
     className:
-      "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+      "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
   },
 };
 
@@ -133,9 +133,9 @@ export default async function JobBoardPage({
   }
 
   return (
-    <div className="min-h-screen bg-surface-container-lowest dark:bg-slate-950">
+    <div className="min-h-screen bg-surface-container-lowest dark:bg-neutral-950">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] text-white py-16 px-6">
+      <section className="bg-gradient-to-br from-brand-primary to-brand-accent text-white py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 tracking-tight">
             Job Board
@@ -147,7 +147,7 @@ export default async function JobBoardPage({
       </section>
 
       {/* Filter bar — SSR form, works without JS */}
-      <section className="border-b border-[--color-outline-variant] dark:border-slate-800 bg-[--color-surface-container-low] dark:bg-slate-900/60 py-4 px-6">
+      <section className="border-b border-[--color-outline-variant] dark:border-neutral-800 bg-[--color-surface-container-low] dark:bg-neutral-900/60 py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <form
             action="/jobs"
@@ -158,7 +158,7 @@ export default async function JobBoardPage({
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="category-filter"
-                className="text-xs font-medium text-[--color-on-surface-variant] dark:text-slate-400 uppercase tracking-wide"
+                className="text-xs font-medium text-[--color-on-surface-variant] dark:text-neutral-400 uppercase tracking-wide"
               >
                 Category
               </label>
@@ -166,7 +166,7 @@ export default async function JobBoardPage({
                 id="category-filter"
                 name="category"
                 defaultValue={categoryParam ?? ""}
-                className="px-3 py-2 rounded-lg border border-[--color-outline-variant] dark:border-slate-700 bg-surface-container-lowest dark:bg-slate-800 text-on-surface dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="px-3 py-2 rounded-lg border border-[--color-outline-variant] dark:border-neutral-700 bg-surface-container-lowest dark:bg-neutral-800 text-on-surface dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="">All categories</option>
                 {(Object.keys(CATEGORY_LABELS) as ServiceCategory[]).map(
@@ -183,7 +183,7 @@ export default async function JobBoardPage({
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="urgency-filter"
-                className="text-xs font-medium text-[--color-on-surface-variant] dark:text-slate-400 uppercase tracking-wide"
+                className="text-xs font-medium text-[--color-on-surface-variant] dark:text-neutral-400 uppercase tracking-wide"
               >
                 Urgency
               </label>
@@ -191,7 +191,7 @@ export default async function JobBoardPage({
                 id="urgency-filter"
                 name="urgency"
                 defaultValue={urgencyParam ?? ""}
-                className="px-3 py-2 rounded-lg border border-[--color-outline-variant] dark:border-slate-700 bg-surface-container-lowest dark:bg-slate-800 text-on-surface dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="px-3 py-2 rounded-lg border border-[--color-outline-variant] dark:border-neutral-700 bg-surface-container-lowest dark:bg-neutral-800 text-on-surface dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="">All urgency levels</option>
                 {(
@@ -218,7 +218,7 @@ export default async function JobBoardPage({
               <div className="flex flex-col justify-end mt-auto pt-5">
                 <a
                   href="/jobs"
-                  className="px-5 py-2 text-[--color-on-surface-variant] hover:text-on-surface dark:hover:text-slate-300 text-sm transition-colors"
+                  className="px-5 py-2 text-[--color-on-surface-variant] hover:text-on-surface dark:hover:text-neutral-300 text-sm transition-colors"
                 >
                   Clear
                 </a>
@@ -230,10 +230,10 @@ export default async function JobBoardPage({
 
       {/* Results summary */}
       <div className="max-w-5xl mx-auto px-6 pt-6 pb-2">
-        <p className="text-sm text-[--color-on-surface-variant] dark:text-slate-400">
+        <p className="text-sm text-[--color-on-surface-variant] dark:text-neutral-400">
           {totalCount > 0 ? (
             <>
-              <span className="font-semibold text-on-surface dark:text-slate-200">
+              <span className="font-semibold text-on-surface dark:text-neutral-200">
                 {totalCount.toLocaleString("en-GB")}
               </span>{" "}
               {totalCount === 1 ? "job" : "jobs"} found
@@ -254,11 +254,11 @@ export default async function JobBoardPage({
       <main className="max-w-5xl mx-auto px-6 pb-16 pt-4">
         {jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <Briefcase className="w-14 h-14 text-[--color-on-surface-variant] dark:text-slate-600 mb-5" />
-            <h2 className="text-xl font-bold text-on-surface dark:text-slate-200 mb-2">
+            <Briefcase className="w-14 h-14 text-[--color-on-surface-variant] dark:text-neutral-600 mb-5" />
+            <h2 className="text-xl font-bold text-on-surface dark:text-neutral-200 mb-2">
               No jobs found
             </h2>
-            <p className="text-[--color-on-surface-variant] dark:text-slate-400 max-w-sm">
+            <p className="text-[--color-on-surface-variant] dark:text-neutral-400 max-w-sm">
               No open jobs match your current filters — try expanding your
               service area or check back later.
             </p>
@@ -285,7 +285,7 @@ export default async function JobBoardPage({
                 <a
                   key={job.id}
                   href={`/post-a-job/quote/${job.id}`}
-                  className="group flex flex-col gap-3 bg-surface-container-lowest dark:bg-slate-900 rounded-xl border border-[--color-outline-variant] dark:border-slate-700 p-5 hover:border-brand-primary hover:shadow-md transition-all"
+                  className="group flex flex-col gap-3 bg-surface-container-lowest dark:bg-neutral-900rounded-xl border border-[--color-outline-variant] dark:border-neutral-700 p-5 hover:border-brand-primary hover:shadow-md transition-all"
                 >
                   {/* Title + badges row */}
                   <div className="flex items-start justify-between gap-3">
@@ -302,13 +302,13 @@ export default async function JobBoardPage({
 
                   {/* Category badge */}
                   <div>
-                    <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-[--color-surface-container-low] text-on-surface dark:bg-slate-800 dark:text-slate-300">
+                    <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-[--color-surface-container-low] text-on-surface dark:bg-neutral-800 dark:text-neutral-300">
                       {CATEGORY_LABELS[job.service_category]}
                     </span>
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[--color-on-surface-variant] dark:text-slate-400">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[--color-on-surface-variant] dark:text-neutral-400">
                     {/* Location — masked postcode */}
                     <span className="flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
@@ -317,22 +317,22 @@ export default async function JobBoardPage({
 
                     {/* Budget */}
                     <span className="flex items-center gap-1">
-                      <span className="font-medium text-on-surface dark:text-slate-200">
+                      <span className="font-medium text-on-surface dark:text-neutral-200">
                         {budget}
                       </span>
                     </span>
                   </div>
 
                   {/* Footer row */}
-                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-[--color-outline-variant] dark:border-slate-800">
+                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-[--color-outline-variant] dark:border-neutral-800">
                     {/* Posted date */}
-                    <span className="flex items-center gap-1 text-xs text-[--color-on-surface-variant] dark:text-slate-500">
+                    <span className="flex items-center gap-1 text-xs text-[--color-on-surface-variant] dark:text-neutral-500">
                       <Clock className="w-3.5 h-3.5 shrink-0" />
                       {postedAgo}
                     </span>
 
                     {/* Quote count */}
-                    <span className="flex items-center gap-1 text-xs text-[--color-on-surface-variant] dark:text-slate-400">
+                    <span className="flex items-center gap-1 text-xs text-[--color-on-surface-variant] dark:text-neutral-400">
                       <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                       {job.quote_count === 0
                         ? "No quotes yet"
@@ -350,13 +350,13 @@ export default async function JobBoardPage({
         {/* Pagination */}
         {(hasPrev || hasNext) && (
           <nav
-            className="flex items-center justify-between mt-10 pt-6 border-t border-[--color-outline-variant] dark:border-slate-800"
+            className="flex items-center justify-between mt-10 pt-6 border-t border-[--color-outline-variant] dark:border-neutral-800"
             aria-label="Pagination"
           >
             {hasPrev ? (
               <a
                 href={buildUrl(pageParam - 1)}
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-on-surface dark:text-slate-200 bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-700 rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-on-surface dark:text-neutral-200 bg-surface-container-lowest dark:bg-neutral-900border border-[--color-outline-variant] dark:border-neutral-700 rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors"
               >
                 ← Previous
               </a>
@@ -364,14 +364,14 @@ export default async function JobBoardPage({
               <div />
             )}
 
-            <span className="text-sm text-[--color-on-surface-variant] dark:text-slate-400">
+            <span className="text-sm text-[--color-on-surface-variant] dark:text-neutral-400">
               Page {pageParam} of {totalPages}
             </span>
 
             {hasNext ? (
               <a
                 href={buildUrl(pageParam + 1)}
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-on-surface dark:text-slate-200 bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-700 rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-on-surface dark:text-neutral-200 bg-surface-container-lowest dark:bg-neutral-900border border-[--color-outline-variant] dark:border-neutral-700 rounded-lg hover:border-brand-primary hover:text-brand-primary transition-colors"
               >
                 Next →
               </a>
@@ -383,7 +383,7 @@ export default async function JobBoardPage({
       </main>
 
       {/* CTA for tradespeople who aren't signed in */}
-      <section className="bg-gradient-to-r from-[#1B4D3E] to-[#2563EB] py-14 px-6">
+      <section className="bg-gradient-to-r from-brand-primary to-brand-accent py-14 px-6">
         <div className="max-w-3xl mx-auto text-center text-white">
           <h2 className="text-2xl font-bold mb-3">
             Ready to send a quote?

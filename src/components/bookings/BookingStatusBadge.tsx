@@ -12,27 +12,27 @@ const STATUS_CONFIG: Record<
 > = {
   pending_confirmation: {
     label: "Pending",
-    className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+    className: "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
   },
   confirmed: {
     label: "Confirmed",
-    className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+    className: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
   },
   in_progress: {
     label: "In Progress",
-    className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+    className: "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
   },
   completed: {
     label: "Completed",
-    className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+    className: "bg-success-light text-success dark:bg-success/20 dark:text-success",
   },
   cancelled: {
     label: "Cancelled",
-    className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    className: "bg-error-light text-error dark:bg-error/20 dark:text-error",
   },
   disputed: {
     label: "Disputed",
-    className: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+    className: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
   },
 };
 

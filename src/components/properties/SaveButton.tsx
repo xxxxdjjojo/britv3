@@ -61,7 +61,7 @@ export function SaveButton({ listingId, size = "default" }: SaveButtonProps) {
       size={buttonSize}
       onClick={handleClick}
       className={`rounded-full bg-background/80 backdrop-blur-sm hover:bg-background ${
-        isSaved ? "text-red-500 hover:text-red-600" : "text-muted-foreground hover:text-foreground"
+        isSaved ? "text-error hover:text-error/80" : "text-muted-foreground hover:text-foreground"
       }`}
       aria-label={isSaved ? "Remove from saved" : "Save property"}
     >

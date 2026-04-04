@@ -205,13 +205,13 @@ export function SavePropertyButton({
         aria-pressed={isSaved}
         className={cn(
           "gap-1.5 transition-colors",
-          isSaved && "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E] hover:bg-[#E8F5EE]/80",
+          isSaved && "border-brand-primary bg-brand-primary-lighter text-brand-primary hover:bg-brand-primary-lighter/80",
         )}
       >
         <Heart
           className={cn(
             "size-4 transition-all",
-            isSaved ? "fill-[#1B4D3E] text-[#1B4D3E]" : "text-muted-foreground",
+            isSaved ? "fill-brand-primary text-brand-primary" : "text-muted-foreground",
           )}
         />
         <span className="hidden sm:inline">{isSaved ? "Saved" : "Save"}</span>
@@ -221,7 +221,7 @@ export function SavePropertyButton({
       {error && (
         <p
           role="alert"
-          className="absolute left-0 top-full mt-1 w-56 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 shadow-md z-30"
+          className="absolute left-0 top-full mt-1 w-56 rounded-md border border-error/20 bg-error-light px-3 py-2 text-xs text-error shadow-md z-30"
         >
           {error}
           <button
@@ -281,7 +281,7 @@ export function SavePropertyButton({
           <div className="flex flex-col gap-1.5">
             <Button
               size="sm"
-              className="w-full bg-[#1B4D3E] text-white hover:bg-[#1B4D3E]/90"
+              className="w-full bg-brand-primary text-white hover:bg-brand-primary/90"
               onClick={() => handleConfirmSave(true)}
               disabled={isBusy}
             >
@@ -329,7 +329,7 @@ export function SavePropertyButton({
 
           <Button
             size="sm"
-            className="w-full gap-1.5 bg-[#1B4D3E] text-white hover:bg-[#1B4D3E]/90"
+            className="w-full gap-1.5 bg-brand-primary text-white hover:bg-brand-primary/90"
             onClick={handleSignInRedirect}
           >
             <LogIn className="size-4" />

@@ -20,7 +20,7 @@ export function ValuationResult({
 }: Props) {
   return (
     <div className="space-y-6">
-      <div className="bg-[#1B4D3E] rounded-2xl p-8 text-white">
+      <div className="bg-brand-primary rounded-2xl p-8 text-white">
         <p className="text-white/60 text-sm font-medium">Estimated Value for {postcode}</p>
         <p className="text-5xl font-extrabold mt-2 font-['Plus_Jakarta_Sans']">
           {poundStr(aiEstimate)}
@@ -47,21 +47,21 @@ export function ValuationResult({
       </div>
 
       {comparables.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-900 font-['Plus_Jakarta_Sans']">Recent Sales Nearby</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Land Registry data (free public data)</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-neutral-100">
+            <h3 className="font-semibold text-neutral-900 font-['Plus_Jakarta_Sans']">Recent Sales Nearby</h3>
+            <p className="text-xs text-neutral-400 mt-0.5">Land Registry data (free public data)</p>
           </div>
-          <ul className="divide-y divide-slate-50">
+          <ul className="divide-y divide-neutral-50">
             {comparables.map((comp, i) => (
               <li key={i} className="flex items-center justify-between px-6 py-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-700">{comp.address || "Address withheld"}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-sm font-medium text-neutral-600">{comp.address || "Address withheld"}</p>
+                  <p className="text-xs text-neutral-400 mt-0.5">
                     {comp.property_type} · {comp.tenure} · {new Date(comp.sale_date).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
                   </p>
                 </div>
-                <p className="text-sm font-bold text-slate-900 flex-shrink-0 ml-4">
+                <p className="text-sm font-bold text-neutral-900 flex-shrink-0 ml-4">
                   {poundStr(comp.price)}
                 </p>
               </li>
@@ -71,9 +71,9 @@ export function ValuationResult({
       )}
 
       {comparables.length === 0 && (
-        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-          <p className="text-sm text-amber-800 font-medium">No recent sales found</p>
-          <p className="text-xs text-amber-700 mt-1">
+        <div className="bg-warning-light rounded-xl p-4 border border-warning/30">
+          <p className="text-sm text-warning font-medium">No recent sales found</p>
+          <p className="text-xs text-warning mt-1">
             The Land Registry database may not have recent sales for this postcode area. Try a nearby postcode.
           </p>
         </div>

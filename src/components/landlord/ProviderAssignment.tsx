@@ -52,25 +52,25 @@ export function ProviderAssignment(
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+    <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
+      <h3 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
         Contractor Assignment
       </h3>
 
       {props.currentProviderName ? (
         <div className="mt-2">
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Assigned to:{" "}
             <span className="font-medium">{props.currentProviderName}</span>
           </p>
           {props.currentProviderId && (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-neutral-500 dark:text-neutral-500">
               ID: {props.currentProviderId}
             </p>
           )}
         </div>
       ) : (
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-500">
           Unassigned
         </p>
       )}
@@ -80,14 +80,14 @@ export function ProviderAssignment(
           href="/marketplace/search?category=maintenance"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="inline-flex items-center rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 shadow-sm hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-600"
         >
           Find Provider
         </a>
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}
-          className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="inline-flex items-center rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 shadow-sm hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-600"
         >
           Assign Manually
         </button>
@@ -98,7 +98,7 @@ export function ProviderAssignment(
           <div>
             <label
               htmlFor="provider-name"
-              className="block text-xs font-medium text-gray-700 dark:text-gray-300"
+              className="block text-xs font-medium text-neutral-600 dark:text-neutral-300"
             >
               Provider Name *
             </label>
@@ -107,14 +107,14 @@ export function ProviderAssignment(
               type="text"
               value={providerName}
               onChange={(e) => setProviderName(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               placeholder="e.g., ABC Plumbing Ltd"
             />
           </div>
           <div>
             <label
               htmlFor="provider-id"
-              className="block text-xs font-medium text-gray-700 dark:text-gray-300"
+              className="block text-xs font-medium text-neutral-600 dark:text-neutral-300"
             >
               Provider User ID (optional)
             </label>
@@ -123,14 +123,14 @@ export function ProviderAssignment(
               type="text"
               value={providerId}
               onChange={(e) => setProviderId(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-1.5 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               placeholder="UUID from marketplace"
             />
           </div>
           <button
             type="submit"
             disabled={isAssigning}
-            className="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-brand-primary px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-brand-primary-light disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isAssigning ? "Assigning..." : "Assign Provider"}
           </button>

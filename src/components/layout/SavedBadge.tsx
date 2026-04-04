@@ -25,7 +25,7 @@ export function SavedBadge({ count = 0, className, transparent = false }: SavedB
     >
       <Heart className="size-5" />
       {count > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+        <span className="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-error text-[10px] font-bold text-white">
           {count > 99 ? "99+" : count}
         </span>
       )}

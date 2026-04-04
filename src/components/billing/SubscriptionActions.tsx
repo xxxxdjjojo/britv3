@@ -45,7 +45,7 @@ export function SubscriptionActions({ returnUrl }: Props) {
         )}
         {isRedirecting ? "Opening portal…" : "Manage via Stripe"}
       </Button>
-      <p className="text-xs text-gray-400 dark:text-gray-500">
+      <p className="text-xs text-neutral-400 dark:text-neutral-500">
         Upgrade, downgrade, cancel, or update payment via Stripe
       </p>
     </div>

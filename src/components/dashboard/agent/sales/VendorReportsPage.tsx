@@ -60,9 +60,9 @@ const REPORT_LABELS: Record<ReportType, string> = {
 };
 
 const REPORT_BADGE_CLASS: Record<ReportType, string> = {
-  listing_performance: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  viewing_summary: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  market_analysis: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  listing_performance: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
+  viewing_summary: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
+  market_analysis: "bg-success-light text-success dark:bg-success/20 dark:text-success",
 };
 
 // ============================================================================

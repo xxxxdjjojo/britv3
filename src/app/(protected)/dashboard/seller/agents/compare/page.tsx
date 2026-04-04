@@ -88,13 +88,13 @@ async function PageContent({ searchParams }: Props) {
                     {agent.avatar_url ? (
                       <Image src={agent.avatar_url} alt={agent.full_name} width={36} height={36} className="rounded-full object-cover" />
                     ) : (
-                      <div className="h-9 w-9 rounded-full bg-[#1B4D3E]/10 flex items-center justify-center text-[#1B4D3E] font-bold text-sm">
+                      <div className="h-9 w-9 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary font-bold text-sm">
                         {agent.full_name.charAt(0)}
                       </div>
                     )}
                     <div>
                       <p className="text-sm font-bold text-on-surface">{agent.full_name}</p>
-                      <Link href={`/dashboard/seller/agents/${agent.id}`} className="text-xs text-[#1B4D3E] hover:underline">
+                      <Link href={`/dashboard/seller/agents/${agent.id}`} className="text-xs text-brand-primary hover:underline">
                         View profile
                       </Link>
                     </div>
@@ -118,7 +118,7 @@ async function PageContent({ searchParams }: Props) {
                 <td key={agent.id} className="px-6 py-4">
                   <Link
                     href={`/dashboard/seller/agents/${agent.id}`}
-                    className="inline-flex px-4 py-2 rounded-xl bg-[#1B4D3E] text-white text-xs font-semibold hover:bg-[#2D7A5F] transition-colors"
+                    className="inline-flex px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-semibold hover:bg-brand-primary-light transition-colors"
                   >
                     Request Valuation
                   </Link>

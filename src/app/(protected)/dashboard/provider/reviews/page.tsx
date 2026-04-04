@@ -129,7 +129,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
                 : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Star className="size-3 fill-amber-400 text-amber-400" />
+            <Star className="size-3 fill-warning text-warning" />
             {star}★
           </a>
         ))}

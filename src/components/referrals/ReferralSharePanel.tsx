@@ -85,7 +85,7 @@ export function ReferralSharePanel({ referralUrl, referralCode }: Props) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => posthog.capture("referral.link_shared", { code: referralCode, channel: "linkedin" })}
-          className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+          className="inline-flex items-center gap-2 rounded-lg border border-brand-accent/20 bg-brand-accent-light px-4 py-2 text-sm font-medium text-brand-accent transition-colors hover:bg-brand-accent-light/80"
         >
           LinkedIn
         </a>

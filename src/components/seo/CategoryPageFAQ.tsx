@@ -26,7 +26,7 @@ export function CategoryPageFAQ({ faqs, category: _category, location: _location
   };
 
   return (
-    <section className="mt-16 border-t border-slate-200 dark:border-slate-800 pt-12">
+    <section className="mt-16 border-t border-neutral-200 dark:border-neutral-800 pt-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -36,13 +36,13 @@ export function CategoryPageFAQ({ faqs, category: _category, location: _location
         {faqs.map((faq, i) => (
           <details
             key={i}
-            className="group border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden"
+            className="group border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden"
           >
-            <summary className="flex items-center justify-between p-6 cursor-pointer font-semibold list-none hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+            <summary className="flex items-center justify-between p-6 cursor-pointer font-semibold list-none hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
               {faq.question}
-              <ChevronDown className="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
+              <ChevronDown className="w-5 h-5 text-neutral-400 group-open:rotate-180 transition-transform" />
             </summary>
-            <div className="px-6 pb-6 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+            <div className="px-6 pb-6 text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed">
               {faq.answer}
             </div>
           </details>

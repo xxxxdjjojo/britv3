@@ -149,7 +149,7 @@ export function SocialProofBadge({
         <span
           className={[
             "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium",
-            "bg-[color:var(--brand-secondary)]/10 text-amber-800",
+            "bg-[color:var(--brand-secondary)]/10 text-brand-secondary-dark",
             "border border-[color:var(--brand-secondary)]/30",
             "transition-opacity duration-500",
             saveVisible ? "opacity-100" : "opacity-0",

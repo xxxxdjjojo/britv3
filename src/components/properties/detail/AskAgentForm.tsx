@@ -100,19 +100,19 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
   if (isLoggedIn === null) {
     // Auth state not yet resolved — render a minimal skeleton to avoid layout shift
     return (
-      <div className="rounded-xl border border-[var(--color-border,#e5e7eb)] bg-white p-6 shadow-sm">
-        <div className="mb-4 h-6 w-40 animate-pulse rounded bg-gray-100" />
-        <div className="h-24 w-full animate-pulse rounded-lg bg-gray-100" />
-        <div className="mt-4 h-10 w-full animate-pulse rounded-lg bg-gray-100" />
+      <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 h-6 w-40 animate-pulse rounded bg-neutral-100" />
+        <div className="h-24 w-full animate-pulse rounded-lg bg-neutral-100" />
+        <div className="mt-4 h-10 w-full animate-pulse rounded-lg bg-neutral-100" />
       </div>
     );
   }
 
   if (formState === "success") {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center shadow-sm">
+      <div className="rounded-xl border border-success/20 bg-success-light p-6 text-center shadow-sm">
         <svg
-          className="mx-auto mb-3 h-10 w-10 text-green-500"
+          className="mx-auto mb-3 h-10 w-10 text-success"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -121,18 +121,18 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
         </svg>
-        <p className="text-base font-semibold text-green-800">Message sent!</p>
-        <p className="mt-1 text-sm text-green-700">The agent will be in touch.</p>
+        <p className="text-base font-semibold text-success-dark">Message sent!</p>
+        <p className="mt-1 text-sm text-success">The agent will be in touch.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-[var(--color-border,#e5e7eb)] bg-white p-6 shadow-sm">
-      <h2 className="mb-1 text-lg font-semibold text-[var(--brand-primary,#1B4D3E)]">
+    <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+      <h2 className="mb-1 text-lg font-semibold text-brand-primary">
         Contact {agentName}
       </h2>
-      <p className="mb-4 text-sm text-gray-500">
+      <p className="mb-4 text-sm text-neutral-500">
         Ask about this property — we&apos;ll forward your message to the agent.
       </p>
 
@@ -143,9 +143,9 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
             <div>
               <label
                 htmlFor="ask-agent-name"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="mb-1 block text-sm font-medium text-neutral-700"
               >
-                Your name <span className="text-red-500" aria-hidden="true">*</span>
+                Your name <span className="text-error" aria-hidden="true">*</span>
               </label>
               <input
                 id="ask-agent-name"
@@ -156,15 +156,15 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
                 required
                 disabled={formState === "loading"}
                 placeholder="Jane Smith"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary disabled:cursor-not-allowed disabled:bg-neutral-50 disabled:opacity-60"
               />
             </div>
             <div>
               <label
                 htmlFor="ask-agent-email"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="mb-1 block text-sm font-medium text-neutral-700"
               >
-                Email address <span className="text-red-500" aria-hidden="true">*</span>
+                Email address <span className="text-error" aria-hidden="true">*</span>
               </label>
               <input
                 id="ask-agent-email"
@@ -175,7 +175,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
                 required
                 disabled={formState === "loading"}
                 placeholder="jane@example.com"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary disabled:cursor-not-allowed disabled:bg-neutral-50 disabled:opacity-60"
               />
             </div>
           </div>
@@ -185,9 +185,9 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
         <div className="mb-4">
           <label
             htmlFor="ask-agent-message"
-            className="mb-1 block text-sm font-medium text-gray-700"
+            className="mb-1 block text-sm font-medium text-neutral-700"
           >
-            Message <span className="text-red-500" aria-hidden="true">*</span>
+            Message <span className="text-error" aria-hidden="true">*</span>
           </label>
           <textarea
             id="ask-agent-message"
@@ -198,10 +198,10 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
             onChange={(e) => setMessage(e.target.value)}
             disabled={formState === "loading"}
             placeholder={`Hi ${agentName}, I'm interested in this property and would like to arrange a viewing...`}
-            className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-[var(--brand-primary,#1B4D3E)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary,#1B4D3E)] disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60"
+            className="w-full resize-none rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary disabled:cursor-not-allowed disabled:bg-neutral-50 disabled:opacity-60"
           />
           <p
-            className={`mt-1 text-right text-xs ${charsRemaining <= 50 ? "text-amber-600" : "text-gray-400"}`}
+            className={`mt-1 text-right text-xs ${charsRemaining <= 50 ? "text-warning" : "text-neutral-400"}`}
             aria-live="polite"
           >
             {charsRemaining} character{charsRemaining !== 1 ? "s" : ""} remaining
@@ -212,7 +212,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
         {!isOnline && (
           <p
             role="alert"
-            className="mb-3 flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700"
+            className="mb-3 flex items-center gap-1.5 rounded-lg bg-warning-light px-3 py-2 text-sm text-warning"
           >
             <svg
               className="h-4 w-4 shrink-0"
@@ -236,7 +236,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
         {formState === "error" && errorMessage && (
           <p
             role="alert"
-            className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+            className="mb-3 rounded-lg bg-error-light px-3 py-2 text-sm text-error"
           >
             {errorMessage}
           </p>
@@ -246,7 +246,7 @@ export default function AskAgentForm({ propertyId, agentId, agentName }: Props) 
         <button
           type="submit"
           disabled={isSubmitDisabled}
-          className="w-full rounded-lg bg-[var(--brand-primary,#1B4D3E)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[var(--brand-primary,#1B4D3E)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary,#1B4D3E)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-lg bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {formState === "loading" ? (
             <span className="flex items-center justify-center gap-2">

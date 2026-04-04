@@ -48,7 +48,7 @@ export default function ProfessionalStandardsPage() {
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Blue callout */}
-      <div className="mb-8 rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4 ring-1 ring-blue-200/60 dark:ring-blue-700/60 font-body text-sm text-blue-800 dark:text-blue-300">
+      <div className="mb-8 rounded-xl bg-info-light dark:bg-info/10 p-4 ring-1 ring-info/30 dark:ring-info/40 font-body text-sm text-info dark:text-info">
         All professional users on Britestate must meet the regulatory standards for their industry.
         We verify credentials and monitor compliance to protect consumers. See our{" "}
         <Link href="/legal/complaints" className="underline hover:no-underline">

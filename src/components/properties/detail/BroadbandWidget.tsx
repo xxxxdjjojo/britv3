@@ -25,24 +25,24 @@ function speedRating(mbps: number): {
     return {
       label: "Ultrafast",
       badgeClass:
-        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+        "bg-success-light text-success-dark dark:bg-success/20 dark:text-success",
     };
   if (mbps >= 100)
     return {
       label: "Superfast",
       badgeClass:
-        "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-400",
+        "bg-success-light text-success dark:bg-success/20 dark:text-success",
     };
   if (mbps >= 10)
     return {
       label: "Standard",
       badgeClass:
-        "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+        "bg-warning-light text-warning-dark dark:bg-warning/20 dark:text-warning",
     };
   return {
     label: "Basic",
     badgeClass:
-      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+      "bg-error-light text-error-dark dark:bg-error/20 dark:text-error",
   };
 }
 

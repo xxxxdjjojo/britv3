@@ -94,7 +94,7 @@ async function PageContent() {
         </a>
         <a
           href="/dashboard/agent/analytics/branch"
-          className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1"
+          className="text-sm font-medium text-brand-accent border-b-2 border-brand-accent pb-1"
         >
           Branch Analytics
         </a>
@@ -110,7 +110,7 @@ async function PageContent() {
         <div className="rounded-lg border border-dashed p-8 text-center">
           <p className="text-muted-foreground text-sm">
             No branches found.{" "}
-            <a href="/dashboard/agent/team/branches" className="text-blue-600 hover:underline">
+            <a href="/dashboard/agent/team/branches" className="text-brand-accent hover:underline">
               Create a branch
             </a>{" "}
             to view branch analytics.

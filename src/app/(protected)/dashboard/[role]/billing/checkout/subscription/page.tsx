@@ -132,7 +132,7 @@ function EmbeddedCheckoutView() {
               <ul className="mt-4 space-y-2">
                 {features.map((f) => (
                   <li key={f} className="flex items-start gap-2 font-body text-sm text-foreground">
-                    <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-green-600 dark:text-green-400" />
+                    <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-success dark:text-success" />
                     {f}
                   </li>
                 ))}

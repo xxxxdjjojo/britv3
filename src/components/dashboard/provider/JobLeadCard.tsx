@@ -195,7 +195,7 @@ export function JobLeadCard({ lead, providerId, onRemove, layout = "card" }: Job
               <span className={[
                 "px-2 py-0.5 text-[10px] font-bold rounded shrink-0",
                 isUrgent
-                  ? "bg-amber-50 text-amber-700"
+                  ? "bg-warning-light text-warning"
                   : "bg-neutral-100 text-neutral-600",
               ].join(" ")}>
                 {isUrgent ? "URGENT" : "STANDARD"}
@@ -240,7 +240,7 @@ export function JobLeadCard({ lead, providerId, onRemove, layout = "card" }: Job
         <div className="flex justify-between items-start">
           <span className={[
             "px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase rounded",
-            isUrgent ? "bg-amber-50 text-amber-700" : "bg-neutral-100 text-neutral-500",
+            isUrgent ? "bg-warning-light text-warning" : "bg-neutral-100 text-neutral-500",
           ].join(" ")}>
             {isUrgent ? "URGENT" : "STANDARD"}
           </span>

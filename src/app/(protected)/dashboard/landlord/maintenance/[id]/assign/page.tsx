@@ -107,7 +107,7 @@ async function PageContent({
   return (
     <div className="space-y-6 p-6 max-w-3xl mx-auto">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-[--color-on-surface-variant] dark:text-slate-400">
+      <nav className="flex items-center gap-2 text-sm text-[--color-on-surface-variant] dark:text-neutral-400">
         <Link
           href="/dashboard/landlord/maintenance"
           className="hover:text-brand-primary transition-colors"
@@ -132,9 +132,9 @@ async function PageContent({
         <h1 className="text-2xl font-bold text-on-surface dark:text-white">
           Assign Tradesperson
         </h1>
-        <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-slate-400">
+        <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-neutral-400">
           Choose a verified marketplace provider for:{" "}
-          <span className="font-medium text-on-surface dark:text-slate-300">
+          <span className="font-medium text-on-surface dark:text-neutral-300">
             {request.title}
           </span>
         </p>
@@ -147,9 +147,9 @@ async function PageContent({
 
       {/* Provider note if table is empty */}
       {providers.length === 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+        <div className="rounded-xl border border-warning/30 bg-warning-light p-4 text-sm text-warning dark:border-warning/20 dark:bg-warning/10 dark:text-warning">
           <p className="font-semibold">No marketplace providers found.</p>
-          <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+          <p className="mt-1 text-xs text-warning dark:text-warning">
             {/* TODO: Marketplace integration pending Phase 4 data */}
             The Epic 4 marketplace provider data is not yet populated. You can
             still manually assign a provider by entering their name below.

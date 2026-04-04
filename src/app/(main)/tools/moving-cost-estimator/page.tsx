@@ -88,25 +88,25 @@ function getCostBreakdown(
       label: "Solicitor / Conveyancing",
       low: 1200,
       high: 1800,
-      color: "bg-blue-500",
+      color: "bg-brand-accent",
     },
     {
       label: "Survey / Valuation",
       low: 300,
       high: 700,
-      color: "bg-amber-500",
+      color: "bg-warning",
     },
     {
       label: "Removals",
       low: 500,
       high: 1500,
-      color: "bg-purple-500",
+      color: "bg-brand-accent",
     },
     {
       label: "EPC Certificate",
       low: 60,
       high: 120,
-      color: "bg-emerald-500",
+      color: "bg-success",
     },
   ];
 
@@ -353,7 +353,7 @@ export default function MovingCostEstimatorPage() {
                 </div>
                 <h3 className="text-lg font-bold">Find a Solicitor</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Get a competitive conveyancing quote from our panel of trusted
                 solicitors in minutes.
               </p>
@@ -363,7 +363,7 @@ export default function MovingCostEstimatorPage() {
               >
                 Get Quotes
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter/60">
                 Free, no-obligation quote
               </p>
             </div>

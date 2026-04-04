@@ -204,10 +204,10 @@ export function SubscriptionBilling({ subscription }: Props) {
         </p>
       </div>
 
-      <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+      <Card className="border-warning/30 bg-warning-light dark:bg-warning/10">
         <CardContent className="flex items-center gap-3 pt-4 pb-4">
-          <Zap className="size-5 text-amber-600 shrink-0" />
-          <p className="text-sm text-amber-800 dark:text-amber-300">
+          <Zap className="size-5 text-warning shrink-0" />
+          <p className="text-sm text-warning dark:text-warning">
             No active plan. Subscribe below to unlock your agent dashboard features.
           </p>
         </CardContent>

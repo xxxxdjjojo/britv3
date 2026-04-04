@@ -36,12 +36,12 @@ export function ListingVolume({ data = DEFAULT_DATA, className }: ListingVolumeP
         <BarChart data={data} barGap={4} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
           <XAxis
             dataKey="quarter"
-            tick={{ fontSize: 10, fill: "#9E9EAB" }}
+            tick={{ fontSize: 10, fill: "var(--color-neutral-400)" }}
             axisLine={false}
             tickLine={false}
           />
-          <YAxis tick={{ fontSize: 10, fill: "#9E9EAB" }} axisLine={false} tickLine={false} />
-          <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #E2E2E8", fontSize: 12 }} />
+          <YAxis tick={{ fontSize: 10, fill: "var(--color-neutral-400)" }} axisLine={false} tickLine={false} />
+          <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid var(--color-neutral-200)", fontSize: 12 }} />
           <Legend
             iconType="square"
             iconSize={10}
@@ -50,8 +50,8 @@ export function ListingVolume({ data = DEFAULT_DATA, className }: ListingVolumeP
             }
             wrapperStyle={{ fontSize: 11 }}
           />
-          <Bar dataKey="newListings" fill="#1B4D3E" radius={[3, 3, 0, 0]} />
-          <Bar dataKey="soldVolume" fill="rgba(27,77,62,0.3)" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="newListings" fill="var(--color-brand-primary)" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="soldVolume" fill="var(--color-brand-primary-light)" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

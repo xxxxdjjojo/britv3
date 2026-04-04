@@ -21,7 +21,7 @@ const DEFAULT_VIEW_STATE: Partial<MapViewState> = {
 
 const MAPTILER_STYLE = `https://api.maptiler.com/maps/streets-v2/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_API_KEY ?? ""}`;
 
-/** Britestate green */
+/** brand-primary — MapLibre GL requires hex strings for paint properties */
 const BRAND_GREEN = "#1B4D3E";
 
 type PropertyMapProps = Readonly<{

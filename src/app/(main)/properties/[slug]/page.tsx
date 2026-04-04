@@ -147,13 +147,13 @@ function postcodeDistrict(postcode: string): string {
 
 const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const EPC_COLORS: Record<string, string> = {
-  A: "bg-emerald-700",
-  B: "bg-emerald-500",
-  C: "bg-yellow-400",
-  D: "bg-orange-400",
-  E: "bg-orange-600",
-  F: "bg-red-500",
-  G: "bg-red-700",
+  A: "bg-success",
+  B: "bg-success",
+  C: "bg-warning",
+  D: "bg-warning",
+  E: "bg-warning",
+  F: "bg-error",
+  G: "bg-error",
 };
 
 // ---------------------------------------------------------------------------
@@ -287,7 +287,7 @@ export default async function PropertyPage({
   const canBookViewing = !isInactiveStatus && (listing.status as string) !== "draft";
 
   return (
-    <div className="min-h-screen bg-[#faf9f8]">
+    <div className="min-h-screen bg-neutral-50">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildPropertyJsonLd(detail)) }}
@@ -307,7 +307,7 @@ export default async function PropertyPage({
         {/* Inactive status banner */}
         {isInactiveStatus && (
           <div className="pt-4">
-            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
+            <div className="rounded-xl bg-warning-light border border-warning p-4 text-sm text-warning">
               This property is marked as <strong>{listing.status.replace(/_/g, " ")}</strong> and is no longer available for viewings.
             </div>
           </div>
@@ -316,18 +316,18 @@ export default async function PropertyPage({
         {/* Breadcrumbs */}
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-1.5 py-5 text-xs font-medium text-[#707974] overflow-x-auto whitespace-nowrap"
+          className="flex items-center gap-1.5 py-5 text-xs font-medium text-neutral-500 overflow-x-auto whitespace-nowrap"
         >
-          <Link href="/" className="hover:text-[#1B4D3E] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-brand-primary transition-colors">Home</Link>
           <ChevronRight className="size-3.5" />
           <Link
             href={`/properties?location=${encodeURIComponent(property.city)}`}
-            className="hover:text-[#1B4D3E] transition-colors"
+            className="hover:text-brand-primary transition-colors"
           >
             {property.city}
           </Link>
           <ChevronRight className="size-3.5" />
-          <span className="text-[#1a1c1c] truncate max-w-[200px]">{address}</span>
+          <span className="text-neutral-900 truncate max-w-[200px]">{address}</span>
         </nav>
 
         {/* Gallery */}
@@ -338,13 +338,13 @@ export default async function PropertyPage({
           <div className="grid gap-4 sm:grid-cols-2 mb-6">
             {virtualTourUrl && (
               <div>
-                <h3 className="text-sm font-semibold text-[#1a1c1c] mb-2">Virtual Tour</h3>
+                <h3 className="text-sm font-semibold text-neutral-900 mb-2">Virtual Tour</h3>
                 <VirtualTourViewer tourUrl={virtualTourUrl} />
               </div>
             )}
             {videoTourUrl && (
               <div>
-                <h3 className="text-sm font-semibold text-[#1a1c1c] mb-2">Video Tour</h3>
+                <h3 className="text-sm font-semibold text-neutral-900 mb-2">Video Tour</h3>
                 <VideoTourPlayer videoUrl={videoTourUrl} />
               </div>
             )}
@@ -355,15 +355,15 @@ export default async function PropertyPage({
         <div className="sticky top-16 z-30 -mx-4 md:-mx-8 px-4 md:px-8 py-4 bg-white/90 backdrop-blur-xl border-b border-neutral-100 mb-8 transition-shadow duration-300">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 max-w-[1440px] mx-auto">
             <div>
-              <h1 className="text-2xl md:text-3xl font-heading font-bold text-[#1B4D3E]">
+              <h1 className="text-2xl md:text-3xl font-heading font-bold text-brand-primary">
                 {priceFormatted}
               </h1>
               {priceReduced && originalPrice != null && (
-                <Badge className="mt-1 bg-green-100 text-green-800 border-0 text-xs">
+                <Badge className="mt-1 bg-success-light text-success border-0 text-xs">
                   Reduced from £{originalPrice.toLocaleString("en-GB")}
                 </Badge>
               )}
-              <p className="text-[#404945] font-medium text-sm flex items-center gap-1 mt-1">
+              <p className="text-neutral-600 font-medium text-sm flex items-center gap-1 mt-1">
                 <MapPin className="size-3.5 shrink-0" />
                 {address}
               </p>
@@ -379,23 +379,23 @@ export default async function PropertyPage({
 
             <div className="flex flex-wrap items-center gap-4 md:gap-6">
               {/* Key stats */}
-              <div className="flex items-center gap-5 text-sm text-[#404945]">
+              <div className="flex items-center gap-5 text-sm text-neutral-600">
                 <div className="flex items-center gap-1.5">
-                  <Bed className="size-4 text-[#D4A853]" />
-                  <span className="font-semibold text-[#1a1c1c]">{property.bedrooms} Bed</span>
+                  <Bed className="size-4 text-brand-secondary" />
+                  <span className="font-semibold text-neutral-900">{property.bedrooms} Bed</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Bath className="size-4 text-[#D4A853]" />
-                  <span className="font-semibold text-[#1a1c1c]">{property.bathrooms} Bath</span>
+                  <Bath className="size-4 text-brand-secondary" />
+                  <span className="font-semibold text-neutral-900">{property.bathrooms} Bath</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Home className="size-4 text-[#D4A853]" />
-                  <span className="font-semibold text-[#1a1c1c]">{propertyTypeLabel}</span>
+                  <Home className="size-4 text-brand-secondary" />
+                  <span className="font-semibold text-neutral-900">{propertyTypeLabel}</span>
                 </div>
                 {sqft > 0 && (
                   <div className="flex items-center gap-1.5">
-                    <Square className="size-4 text-[#D4A853]" />
-                    <span className="font-semibold text-[#1a1c1c]">
+                    <Square className="size-4 text-brand-secondary" />
+                    <span className="font-semibold text-neutral-900">
                       {sqft.toLocaleString("en-GB")} sq ft
                     </span>
                   </div>
@@ -407,7 +407,7 @@ export default async function PropertyPage({
                 {canBookViewing && (
                   <a
                     href="#book-viewing"
-                    className="bg-[#1B4D3E] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all hover:bg-[#003629]"
+                    className="bg-brand-primary text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all hover:bg-brand-primary-dark"
                   >
                     Book Viewing
                   </a>
@@ -434,10 +434,10 @@ export default async function PropertyPage({
 
             {/* About this property */}
             <section>
-              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+              <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                 About this property
               </h2>
-              <div className="text-[#404945] leading-relaxed text-sm whitespace-pre-line">
+              <div className="text-neutral-600 leading-relaxed text-sm whitespace-pre-line">
                 {property.description}
               </div>
               {features.length > 0 && (
@@ -445,10 +445,10 @@ export default async function PropertyPage({
                   {features.map((f) => (
                     <div
                       key={f}
-                      className="flex items-start gap-3 p-4 rounded-xl bg-[#f4f3f2]"
+                      className="flex items-start gap-3 p-4 rounded-xl bg-neutral-100"
                     >
-                      <CheckCircle2 className="size-4 text-[#1B4D3E] shrink-0 mt-0.5 fill-[#1B4D3E] stroke-white" />
-                      <p className="text-sm font-medium text-[#1a1c1c]">{f}</p>
+                      <CheckCircle2 className="size-4 text-brand-primary shrink-0 mt-0.5 fill-brand-primary stroke-white" />
+                      <p className="text-sm font-medium text-neutral-900">{f}</p>
                     </div>
                   ))}
                 </div>
@@ -457,7 +457,7 @@ export default async function PropertyPage({
 
             {/* Property details grid */}
             <section>
-              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+              <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                 Property details
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -484,15 +484,15 @@ export default async function PropertyPage({
                     : []),
                 ].map((item) => (
                   <div key={item.label} className="space-y-1">
-                    <p className="text-[10px] uppercase tracking-wider text-[#404945] font-bold">
+                    <p className="text-[10px] uppercase tracking-wider text-neutral-600 font-bold">
                       {item.label}
                     </p>
                     {item.label === "EPC Rating" && epc !== "N/A" ? (
-                      <span className="inline-block bg-green-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+                      <span className="inline-block bg-success text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold">
                         EPC {epc}
                       </span>
                     ) : (
-                      <p className="text-sm font-semibold text-[#1a1c1c]">{item.value}</p>
+                      <p className="text-sm font-semibold text-neutral-900">{item.value}</p>
                     )}
                   </div>
                 ))}
@@ -502,7 +502,7 @@ export default async function PropertyPage({
             {/* Floor Plans */}
             {floors.length > 0 && (
               <section>
-                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">Floor Plans</h2>
+                <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">Floor Plans</h2>
                 <FloorPlan floors={floors} />
               </section>
             )}
@@ -510,21 +510,21 @@ export default async function PropertyPage({
             {/* Location */}
             <section>
               <div className="flex justify-between items-end mb-5">
-                <h2 className="text-xl font-heading font-bold text-[#1B4D3E]">
+                <h2 className="text-xl font-heading font-bold text-brand-primary">
                   Location &amp; Connectivity
                 </h2>
                 <a
                   href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-bold text-[#D4A853] flex items-center gap-1 hover:underline"
+                  className="text-xs font-bold text-brand-secondary flex items-center gap-1 hover:underline"
                 >
                   Open in Google Maps
                 </a>
               </div>
-              <div className="h-64 rounded-2xl overflow-hidden bg-[#f4f3f2] relative flex items-center justify-center">
-                <MapPin className="size-8 text-[#c0c9c3]" />
-                <p className="absolute bottom-3 right-3 text-xs text-[#707974] bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
+              <div className="h-64 rounded-2xl overflow-hidden bg-neutral-100 relative flex items-center justify-center">
+                <MapPin className="size-8 text-neutral-300" />
+                <p className="absolute bottom-3 right-3 text-xs text-neutral-500 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">
                   {address}
                 </p>
               </div>
@@ -533,11 +533,11 @@ export default async function PropertyPage({
             {/* Market Insights / Price History */}
             {priceHistoryFormatted.length > 0 && (
               <section>
-                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                   Market Insights
                 </h2>
-                <div className="bg-[#f4f3f2] rounded-2xl p-6">
-                  <p className="text-sm font-bold text-[#404945] mb-4">Price History</p>
+                <div className="bg-neutral-100 rounded-2xl p-6">
+                  <p className="text-sm font-bold text-neutral-600 mb-4">Price History</p>
                   <PriceHistory history={priceHistoryFormatted} />
                 </div>
               </section>
@@ -546,16 +546,16 @@ export default async function PropertyPage({
             {/* EPC — Energy Performance */}
             {property.epcRating && (
               <section>
-                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                   Energy Performance
                 </h2>
-                <div className="bg-[#f4f3f2] rounded-2xl p-6 space-y-6">
+                <div className="bg-neutral-100 rounded-2xl p-6 space-y-6">
                   <div className="flex justify-between items-end">
                     <div className="space-y-1">
-                      <span className="text-[10px] font-medium text-[#404945] uppercase tracking-wider">
+                      <span className="text-[10px] font-medium text-neutral-600 uppercase tracking-wider">
                         Current Rating
                       </span>
-                      <div className="text-3xl font-heading font-extrabold text-[#1B4D3E]">
+                      <div className="text-3xl font-heading font-extrabold text-brand-primary">
                         {property.epcScore != null ? `${property.epcScore} | ` : ""}{epc}
                       </div>
                     </div>
@@ -566,7 +566,7 @@ export default async function PropertyPage({
                     {EPC_BANDS.map((band) => (
                       <div
                         key={band}
-                        className={`flex flex-1 items-center justify-center text-white text-xs font-bold ${EPC_COLORS[band]} ${band === epc ? "ring-4 ring-[#1B4D3E] ring-offset-1 z-10 rounded-sm" : ""}`}
+                        className={`flex flex-1 items-center justify-center text-white text-xs font-bold ${EPC_COLORS[band]} ${band === epc ? "ring-4 ring-brand-primary ring-offset-1 z-10 rounded-sm" : ""}`}
                       >
                         {band}
                       </div>
@@ -577,13 +577,13 @@ export default async function PropertyPage({
                     href={`https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode=${encodeURIComponent(property.postcode)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-[#1B4D3E] hover:underline font-medium"
+                    className="inline-flex items-center gap-1 text-xs text-brand-primary hover:underline font-medium"
                   >
                     View full EPC certificate
                   </a>
 
                   {listing.listingType === "rent" && epc !== "N/A" && ["D", "E", "F", "G"].includes(epc) && (
-                    <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 text-xs text-amber-800">
+                    <div className="rounded-xl bg-warning-light border border-warning p-4 text-xs text-warning">
                       <strong>MEES Notice:</strong> Rental properties may require a minimum EPC rating of C under upcoming regulations. This property holds a rating of {epc}.
                     </div>
                   )}
@@ -593,29 +593,29 @@ export default async function PropertyPage({
 
             {/* Environmental & Utility Insights */}
             <section>
-              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+              <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                 Environmental &amp; Connectivity
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-5 rounded-xl bg-white shadow-sm flex gap-4 items-center">
-                  <Wifi className="size-7 text-[#1B4D3E] shrink-0" />
+                  <Wifi className="size-7 text-brand-primary shrink-0" />
                   <div>
-                    <p className="text-[10px] font-bold uppercase text-[#404945] tracking-wider">Broadband</p>
-                    <p className="text-sm font-bold text-[#1a1c1c] mt-0.5">Check availability</p>
+                    <p className="text-[10px] font-bold uppercase text-neutral-600 tracking-wider">Broadband</p>
+                    <p className="text-sm font-bold text-neutral-900 mt-0.5">Check availability</p>
                   </div>
                 </div>
                 <div className="p-5 rounded-xl bg-white shadow-sm flex gap-4 items-center">
-                  <TrendingUp className="size-7 text-[#1B4D3E] shrink-0" />
+                  <TrendingUp className="size-7 text-brand-primary shrink-0" />
                   <div>
-                    <p className="text-[10px] font-bold uppercase text-[#404945] tracking-wider">Flood Risk</p>
-                    <p className="text-sm font-bold text-[#1a1c1c] mt-0.5">View report</p>
+                    <p className="text-[10px] font-bold uppercase text-neutral-600 tracking-wider">Flood Risk</p>
+                    <p className="text-sm font-bold text-neutral-900 mt-0.5">View report</p>
                   </div>
                 </div>
                 <div className="p-5 rounded-xl bg-white shadow-sm flex gap-4 items-center">
-                  <Car className="size-7 text-[#D4A853] shrink-0" />
+                  <Car className="size-7 text-brand-secondary shrink-0" />
                   <div>
-                    <p className="text-[10px] font-bold uppercase text-[#404945] tracking-wider">Transport</p>
-                    <p className="text-sm font-bold text-[#1a1c1c] mt-0.5">View connections</p>
+                    <p className="text-[10px] font-bold uppercase text-neutral-600 tracking-wider">Transport</p>
+                    <p className="text-sm font-bold text-neutral-900 mt-0.5">View connections</p>
                   </div>
                 </div>
               </div>
@@ -624,14 +624,14 @@ export default async function PropertyPage({
             {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
             {isFeatureEnabled("local_area_intelligence") && (
               <section>
-                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                   Local Area Intelligence
                 </h2>
                 <Suspense
                   fallback={
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <div key={n} className="h-48 bg-[#f4f3f2] rounded-2xl animate-pulse" />
+                        <div key={n} className="h-48 bg-neutral-100 rounded-2xl animate-pulse" />
                       ))}
                     </div>
                   }
@@ -655,17 +655,17 @@ export default async function PropertyPage({
             {/* ── ROI SECTION (Wave 4) ── */}
             {listing.listingType === "sale" && (
               <section id="roi-section">
-                <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">
+                <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">
                   Renovation ROI
                 </h2>
                 <div className="space-y-5">
                   <Suspense
                     fallback={
-                      <div className="rounded-2xl bg-[#f4f3f2] p-6 animate-pulse">
-                        <div className="h-5 w-48 bg-[#e3e2e1] rounded mb-4" />
+                      <div className="rounded-2xl bg-neutral-100 p-6 animate-pulse">
+                        <div className="h-5 w-48 bg-neutral-200 rounded mb-4" />
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {[1, 2, 3].map((n) => (
-                            <div key={n} className="h-28 bg-[#e3e2e1] rounded-xl" />
+                            <div key={n} className="h-28 bg-neutral-200 rounded-xl" />
                           ))}
                         </div>
                       </div>
@@ -686,7 +686,7 @@ export default async function PropertyPage({
 
             {/* ── ASK AGENT FORM ── */}
             <section id={`ask-agent-${property.id}`}>
-              <h2 className="text-xl font-heading font-bold text-[#1B4D3E] mb-5">Contact Agent</h2>
+              <h2 className="text-xl font-heading font-bold text-brand-primary mb-5">Contact Agent</h2>
               <div className="bg-white rounded-2xl p-6 shadow-sm">
                 <AskAgentForm
                   propertyId={property.id}
@@ -700,9 +700,9 @@ export default async function PropertyPage({
             <Suspense
               fallback={
                 <div className="space-y-3">
-                  <div className="h-4 w-40 bg-[#f4f3f2] rounded animate-pulse" />
+                  <div className="h-4 w-40 bg-neutral-100 rounded animate-pulse" />
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className="h-20 bg-[#f4f3f2] rounded-xl animate-pulse" />
+                    <div key={n} className="h-20 bg-neutral-100 rounded-xl animate-pulse" />
                   ))}
                 </div>
               }
@@ -724,13 +724,13 @@ export default async function PropertyPage({
               fallback={
                 <div className="rounded-2xl bg-white p-5 animate-pulse space-y-3 shadow-sm">
                   <div className="flex gap-3">
-                    <div className="size-12 rounded-full bg-[#f4f3f2] shrink-0" />
+                    <div className="size-12 rounded-full bg-neutral-100 shrink-0" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 w-32 bg-[#f4f3f2] rounded" />
-                      <div className="h-3 w-24 bg-[#f4f3f2] rounded" />
+                      <div className="h-4 w-32 bg-neutral-100 rounded" />
+                      <div className="h-3 w-24 bg-neutral-100 rounded" />
                     </div>
                   </div>
-                  <div className="h-10 bg-[#f4f3f2] rounded-xl" />
+                  <div className="h-10 bg-neutral-100 rounded-xl" />
                 </div>
               }
             >
@@ -740,15 +740,15 @@ export default async function PropertyPage({
             {/* Apply to Rent */}
             {listing.listingType === "rent" && listing.status === "active" && (
               <div className="rounded-2xl bg-white p-5 shadow-sm">
-                <h3 className="text-sm font-semibold text-[#1a1c1c] mb-2">Interested in renting?</h3>
-                <p className="text-xs text-[#404945] mb-4 leading-relaxed">
+                <h3 className="text-sm font-semibold text-neutral-900 mb-2">Interested in renting?</h3>
+                <p className="text-xs text-neutral-600 mb-4 leading-relaxed">
                   Submit a rental application to the landlord directly.
                 </p>
                 <Link
                   href={currentUserId
                     ? `/dashboard/renter/applications/apply/${property.id}`
                     : `/login?redirectTo=${encodeURIComponent(`/dashboard/renter/applications/apply/${property.id}`)}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4D3E] text-white text-sm font-bold h-11 px-4 transition-colors hover:bg-[#003629]"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-primary text-white text-sm font-bold h-11 px-4 transition-colors hover:bg-brand-primary-dark"
                 >
                   <FileText className="size-4" />
                   Apply to Rent
@@ -768,8 +768,8 @@ export default async function PropertyPage({
             )}
 
             {/* Financial Overview */}
-            <div className="rounded-2xl bg-[#f4f3f2] p-5 space-y-5">
-              <h3 className="text-sm font-heading font-bold text-[#1B4D3E]">Financial Overview</h3>
+            <div className="rounded-2xl bg-neutral-100 p-5 space-y-5">
+              <h3 className="text-sm font-heading font-bold text-brand-primary">Financial Overview</h3>
               <div className="bg-white rounded-xl p-4 shadow-sm">
                 <MortgageCalculator initialPrice={listing.price} />
               </div>
@@ -789,15 +789,15 @@ export default async function PropertyPage({
       {/* Mobile sticky bottom bar */}
       <div className="fixed bottom-0 inset-x-0 z-30 border-t bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between gap-4 lg:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
         <div>
-          <p className="font-heading font-bold text-lg text-[#1B4D3E]">{priceFormatted}</p>
-          <p className="text-xs text-[#404945]">
+          <p className="font-heading font-bold text-lg text-brand-primary">{priceFormatted}</p>
+          <p className="text-xs text-neutral-600">
             {property.bedrooms} bed · {propertyTypeLabel}
           </p>
         </div>
         {canBookViewing && (
           <a
             href="#book-viewing"
-            className="shrink-0 bg-[#1B4D3E] text-white font-bold text-sm rounded-xl h-10 px-5 flex items-center gap-2 transition-colors hover:bg-[#003629]"
+            className="shrink-0 bg-brand-primary text-white font-bold text-sm rounded-xl h-10 px-5 flex items-center gap-2 transition-colors hover:bg-brand-primary-dark"
           >
             <CalendarIcon className="size-4" />
             Book Viewing

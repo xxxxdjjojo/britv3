@@ -106,7 +106,7 @@ function buildHtmlQuote(quote: QuoteRow, providerName: string): string {
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111; background: #fff; padding: 48px; }
-    .header { background: #1B4D3E; color: #fff; padding: 16px 24px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+    .header { background: #1B4D3E /* BRAND_PRIMARY */; color: #fff; padding: 16px 24px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
     .header .brand { font-weight: 700; font-size: 18px; letter-spacing: 4px; }
     .header .label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
     .body { border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; padding: 32px; }
@@ -253,7 +253,7 @@ export async function GET(
     const styles = StyleSheet.create({
       page: { padding: 40, fontSize: 10, fontFamily: "Helvetica", color: "#111" },
       header: {
-        backgroundColor: "#1B4D3E",
+        backgroundColor: "#1B4D3E", // BRAND_PRIMARY
         padding: "12 16",
         marginBottom: 24,
         flexDirection: "row",

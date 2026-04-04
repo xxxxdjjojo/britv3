@@ -63,8 +63,8 @@ export default function RefundRequestPage() {
     return (
       <div className="flex min-h-screen items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
-            <CheckCircle2 className="text-green-500" size={36} />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-light dark:bg-success/20">
+            <CheckCircle2 className="text-success" size={36} />
           </div>
           <div>
             <h2 className="font-heading text-xl font-semibold text-foreground">
@@ -98,8 +98,8 @@ export default function RefundRequestPage() {
         </div>
       </div>
 
-      <div className="rounded-xl bg-amber-50 p-4 ring-1 ring-amber-200/60 dark:bg-amber-950/40 dark:ring-amber-800/60">
-        <p className="font-body text-sm text-amber-800 dark:text-amber-200">
+      <div className="rounded-xl bg-warning-light p-4 ring-1 ring-warning/20 dark:bg-warning/10 dark:ring-warning/30">
+        <p className="font-body text-sm text-warning dark:text-warning">
           <strong>14-day refund policy:</strong> Refund requests must be submitted within 14 days of your subscription starting. Refunds are processed within 5–10 business days.
         </p>
       </div>

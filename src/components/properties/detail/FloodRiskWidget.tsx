@@ -26,34 +26,34 @@ const RISK_CONFIG: Record<
   }
 > = {
   Low: {
-    badgeClass: "bg-green-100 text-green-800",
-    dotClass: "bg-green-500",
-    bgClass: "bg-green-50",
-    textClass: "text-green-700",
+    badgeClass: "bg-success-light text-success-dark",
+    dotClass: "bg-success",
+    bgClass: "bg-success-light",
+    textClass: "text-success",
     description:
       "Low probability of flooding. Less than 1 in 1,000 chance of river or sea flooding each year.",
   },
   Medium: {
-    badgeClass: "bg-amber-100 text-amber-800",
-    dotClass: "bg-amber-500",
-    bgClass: "bg-amber-50",
-    textClass: "text-amber-700",
+    badgeClass: "bg-warning-light text-warning-dark",
+    dotClass: "bg-warning",
+    bgClass: "bg-warning-light",
+    textClass: "text-warning",
     description:
       "Medium probability of flooding. Between 1 in 100 and 1 in 1,000 chance of river or sea flooding each year.",
   },
   High: {
-    badgeClass: "bg-orange-100 text-orange-800",
-    dotClass: "bg-orange-500",
-    bgClass: "bg-orange-50",
-    textClass: "text-orange-700",
+    badgeClass: "bg-warning-light text-warning-dark",
+    dotClass: "bg-warning",
+    bgClass: "bg-warning-light",
+    textClass: "text-warning",
     description:
       "High probability of flooding. Greater than 1 in 100 chance of river or sea flooding each year.",
   },
   "Very High": {
-    badgeClass: "bg-red-100 text-red-800",
-    dotClass: "bg-red-500",
-    bgClass: "bg-red-50",
-    textClass: "text-red-700",
+    badgeClass: "bg-error-light text-error-dark",
+    dotClass: "bg-error",
+    bgClass: "bg-error-light",
+    textClass: "text-error",
     description:
       "Very high probability of flooding. Property is in an area known to flood regularly. Consider specialist insurance and flood resilience measures.",
   },

@@ -26,7 +26,7 @@ export default function AgentSidebar({
   return (
     <aside className="space-y-6">
       {/* Valuation CTA card */}
-      <div className="bg-[#1B4D3E] text-white rounded-xl p-6 shadow-xl">
+      <div className="bg-brand-primary text-white rounded-xl p-6 shadow-xl">
         <h3 className="text-lg font-bold mb-1">Thinking of selling?</h3>
         <p className="text-white/70 text-sm mb-4">
           Get a free property valuation from our local experts.
@@ -38,25 +38,25 @@ export default function AgentSidebar({
       </div>
 
       {/* Office Information */}
-      <div className="bg-[#f4f3f2] dark:bg-[#1a2822] rounded-xl p-6">
-        <h3 className="text-base font-bold text-[#1a1a1a] dark:text-white mb-4">
+      <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl p-6">
+        <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-4">
           Office Information
         </h3>
         <ul className="space-y-3">
           {agencyAddress && (
-            <li className="flex items-start gap-3 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-              <MapPin className="w-4 h-4 mt-0.5 text-[#9ca3af] flex-shrink-0" />
+            <li className="flex items-start gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+              <MapPin className="w-4 h-4 mt-0.5 text-neutral-400 flex-shrink-0" />
               <span>{agencyAddress}</span>
             </li>
           )}
           {phone && (
-            <li className="flex items-center gap-3 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-              <Phone className="w-4 h-4 text-[#9ca3af] flex-shrink-0" />
+            <li className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+              <Phone className="w-4 h-4 text-neutral-400 flex-shrink-0" />
               <span>{phone}</span>
             </li>
           )}
-          <li className="flex items-start gap-3 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-            <Clock className="w-4 h-4 mt-0.5 text-[#9ca3af] flex-shrink-0" />
+          <li className="flex items-start gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+            <Clock className="w-4 h-4 mt-0.5 text-neutral-400 flex-shrink-0" />
             <div>
               <p>Mon–Fri: 9:00–18:30</p>
               <p>Sat: 10:00–16:00</p>
@@ -66,13 +66,13 @@ export default function AgentSidebar({
       </div>
 
       {/* Map placeholder */}
-      <div className="h-32 rounded-lg bg-[#f4f3f2] dark:bg-[#1a2822] flex items-center justify-center text-[#9ca3af] text-sm">
+      <div className="h-32 rounded-lg bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center text-neutral-400 text-sm">
         Map view
       </div>
 
       {/* Team preview */}
-      <div className="bg-[#f4f3f2] dark:bg-[#1a2822] rounded-xl p-6">
-        <h3 className="text-base font-bold text-[#1a1a1a] dark:text-white mb-4">
+      <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl p-6">
+        <h3 className="text-base font-bold text-neutral-900 dark:text-white mb-4">
           Meet the Team
         </h3>
         {previewMembers && previewMembers.length > 0 ? (
@@ -97,18 +97,18 @@ export default function AgentSidebar({
                       className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#1B4D3E] flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-xs font-bold">
                         {initials}
                       </span>
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#1a1a1a] dark:text-white truncate">
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
                       {member.full_name ?? "Team Member"}
                     </p>
                     {member.role && (
-                      <p className="text-xs text-[#6b7280] dark:text-[#9ca3af] truncate">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
                         {member.role}
                       </p>
                     )}
@@ -121,10 +121,10 @@ export default function AgentSidebar({
           <div className="space-y-3">
             {[1, 2].map((i) => (
               <div key={i} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#eceae8] dark:bg-[#243330] animate-pulse" />
+                <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-3 bg-[#eceae8] dark:bg-[#243330] rounded animate-pulse w-3/4" />
-                  <div className="h-2.5 bg-[#eceae8] dark:bg-[#243330] rounded animate-pulse w-1/2" />
+                  <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded animate-pulse w-3/4" />
+                  <div className="h-2.5 bg-neutral-200 dark:bg-neutral-800 rounded animate-pulse w-1/2" />
                 </div>
               </div>
             ))}

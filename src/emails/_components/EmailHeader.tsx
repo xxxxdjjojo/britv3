@@ -1,10 +1,11 @@
 import { Section, Text } from "@react-email/components";
+import { BRAND_PRIMARY } from "@/emails/_constants/colors";
 
 export function EmailHeader() {
   return (
     <Section
       style={{
-        backgroundColor: "#1B4D3E",
+        backgroundColor: BRAND_PRIMARY,
         padding: "24px 32px",
       }}
     >

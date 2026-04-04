@@ -140,8 +140,8 @@ function OneTimeCheckoutContent() {
           {/* Left: Boost details */}
           <div className="lg:col-span-2 space-y-5">
             <div className="rounded-xl bg-card p-6 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
-                <Zap className="text-green-700 dark:text-green-300" size={18} />
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-success-light dark:bg-success/20">
+                <Zap className="text-success dark:text-success" size={18} />
               </div>
               <h2 className="font-heading text-base font-semibold text-foreground">
                 {checkoutState.boost.label}
@@ -195,8 +195,8 @@ function OneTimeCheckoutContent() {
       </div>
 
       {!stripePromise && (
-        <div className="rounded-xl bg-red-50 p-4 ring-1 ring-red-200/60 dark:bg-red-900/20 dark:ring-red-700/60">
-          <p className="font-body text-sm text-red-700 dark:text-red-300">
+        <div className="rounded-xl bg-error-light p-4 ring-1 ring-error/20 dark:bg-error/10 dark:ring-error/30">
+          <p className="font-body text-sm text-error dark:text-error">
             Payment service is not configured. Please contact support.
           </p>
         </div>
@@ -215,20 +215,20 @@ function OneTimeCheckoutContent() {
           >
             {boost.highlighted && (
               <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                <span className="inline-flex items-center rounded-full bg-warning-light px-2.5 py-0.5 text-xs font-medium text-warning dark:bg-warning/20 dark:text-warning">
                   Best value
                 </span>
               </div>
             )}
             <CardContent className="pt-6 pb-4 text-center">
-              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
-                <Zap className="text-green-700 dark:text-green-300" size={18} />
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-success-light dark:bg-success/20">
+                <Zap className="text-success dark:text-success" size={18} />
               </div>
               <p className="font-body text-sm font-medium text-foreground">{boost.label}</p>
               <p className="mt-1 font-heading text-2xl font-bold text-foreground">{boost.price}</p>
               <p className="mt-1 font-body text-xs text-neutral-500">{boost.description}</p>
               {selectedBoost?.id === boost.id && (
-                <div className="mt-3 flex items-center justify-center gap-1 font-body text-xs font-medium text-green-700 dark:text-green-300">
+                <div className="mt-3 flex items-center justify-center gap-1 font-body text-xs font-medium text-success dark:text-success">
                   <CheckCircle2 size={14} />
                   Selected
                 </div>

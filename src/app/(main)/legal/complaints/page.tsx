@@ -47,7 +47,7 @@ export default function ComplaintsPage() {
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Yellow info callout */}
-      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
+      <div className="mb-8 rounded-xl bg-warning-light dark:bg-warning/10 p-4 ring-1 ring-warning/30 dark:ring-warning/40 font-body text-sm text-warning dark:text-warning">
         Britestate Ltd takes all complaints seriously and aims to resolve them fairly and promptly.
         To raise a complaint, email{" "}
         <a

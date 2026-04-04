@@ -169,7 +169,7 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
         </div>
       </section>
 
-      <main className="bg-[#faf9f8] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 pb-28">
+      <main className="bg-surface-container-lowest max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 pb-28">
 
         {/* ── 5-Year Price Trend ── */}
         <section>
@@ -227,7 +227,7 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
                 className="group bg-surface-container-lowest rounded-2xl p-4 hover:shadow-md transition-all"
               >
                 {/* Image placeholder */}
-                <div className="h-24 w-full rounded-xl overflow-hidden bg-[#f4f3f2] mb-3 group-hover:scale-[1.02] transition-transform duration-300" />
+                <div className="h-24 w-full rounded-xl overflow-hidden bg-surface-container-low mb-3 group-hover:scale-[1.02] transition-transform duration-300" />
                 <p className="font-black text-on-surface font-heading">{borough.name}</p>
                 <p className="text-sm text-[--color-on-surface-variant] mt-0.5">Avg {borough.avgPrice}</p>
               </Link>

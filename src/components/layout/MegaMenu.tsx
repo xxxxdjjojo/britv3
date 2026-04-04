@@ -93,7 +93,7 @@ export function MegaMenu() {
           className={cn(
             navLinkClasses(),
             "flex items-center gap-1 rounded-lg px-3 py-2 cursor-pointer",
-            item.isCta && "text-yellow-700 hover:text-yellow-800 font-semibold",
+            item.isCta && "text-warning hover:text-warning font-semibold",
             openIndex === index && "text-brand-primary",
           )}
           aria-expanded={openIndex === index}

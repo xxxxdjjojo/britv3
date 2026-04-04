@@ -113,8 +113,8 @@ function buildEmailHtml(data: {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
-<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#333;padding:20px;">
-  <h2 style="color:#1B4D3E;">New contact form submission</h2>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#46464F;padding:20px;"><!-- NEUTRAL_700 -->
+  <h2 style="color:#1B4D3E;">New contact form submission</h2><!-- BRAND_PRIMARY -->
   <table style="border-collapse:collapse;width:100%;max-width:600px;">
     <tr>
       <td style="padding:8px 16px 8px 0;font-weight:600;vertical-align:top;white-space:nowrap;">Name:</td>
@@ -129,7 +129,7 @@ function buildEmailHtml(data: {
       <td style="padding:8px 0;">${safeSubject}</td>
     </tr>
   </table>
-  <hr style="border:none;border-top:1px solid #eee;margin:16px 0;">
+  <hr style="border:none;border-top:1px solid #E2E2E8;margin:16px 0;"><!-- NEUTRAL_200 -->
   <p style="margin:0;line-height:1.6;">${safeMessage}</p>
 </body>
 </html>`;

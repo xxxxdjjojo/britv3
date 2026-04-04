@@ -70,7 +70,7 @@ export function AdminConfirmModal({
         <div className="space-y-4 py-2">
           <div className="space-y-1.5">
             <Label htmlFor="reason" className="font-body text-sm font-medium text-foreground">
-              Reason <span className="text-red-500">*</span>
+              Reason <span className="text-error">*</span>
             </Label>
             <Select value={reason} onValueChange={(v) => setReason(v ?? "")}>
               <SelectTrigger id="reason">

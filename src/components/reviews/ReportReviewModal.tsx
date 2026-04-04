@@ -79,7 +79,7 @@ export function ReportReviewModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <AlertTriangle className="size-5 text-amber-500" />
+            <AlertTriangle className="size-5 text-warning" />
             Report Review
           </DialogTitle>
           <DialogDescription>

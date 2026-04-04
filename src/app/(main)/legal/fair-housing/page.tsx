@@ -48,7 +48,7 @@ export default function FairHousingPage() {
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Emerald callout */}
-      <div className="mb-8 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 p-4 ring-1 ring-emerald-200/60 dark:ring-emerald-700/60 font-body text-sm text-emerald-800 dark:text-emerald-300">
+      <div className="mb-8 rounded-xl bg-success-light dark:bg-success/20 p-4 ring-1 ring-success/30 dark:ring-success/30 font-body text-sm text-success dark:text-success">
         Britestate is committed to providing equal access to housing for everyone. We do not
         tolerate discrimination based on any protected characteristic. If you experience or witness
         discrimination on our platform, please{" "}

@@ -4,28 +4,28 @@ type DisplayStatus = TenancyStatus | "expired";
 
 const STATUS_STYLES: Record<DisplayStatus, { bg: string; text: string; label: string }> = {
   active: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    text: "text-green-800 dark:text-green-300",
+    bg: "bg-success-light dark:bg-success/10",
+    text: "text-success dark:text-success",
     label: "Active",
   },
   ending_soon: {
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    text: "text-amber-800 dark:text-amber-300",
+    bg: "bg-warning-light dark:bg-warning/10",
+    text: "text-warning dark:text-warning",
     label: "Ending Soon",
   },
   ended: {
-    bg: "bg-gray-100 dark:bg-gray-800/30",
-    text: "text-gray-600 dark:text-gray-400",
+    bg: "bg-neutral-100 dark:bg-neutral-900/30",
+    text: "text-neutral-600 dark:text-neutral-500",
     label: "Ended",
   },
   terminated: {
-    bg: "bg-red-100 dark:bg-red-900/30",
-    text: "text-red-800 dark:text-red-300",
+    bg: "bg-error-light dark:bg-error/10",
+    text: "text-error dark:text-error",
     label: "Terminated",
   },
   expired: {
-    bg: "bg-red-100 dark:bg-red-900/30",
-    text: "text-red-800 dark:text-red-300",
+    bg: "bg-error-light dark:bg-error/10",
+    text: "text-error dark:text-error",
     label: "Expired",
   },
 };

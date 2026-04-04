@@ -22,9 +22,9 @@ type Invoice = {
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
-    paid: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-    open: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200",
-    uncollectible: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
+    paid: "bg-success-light text-success dark:bg-success/20 dark:text-success",
+    open: "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
+    uncollectible: "bg-error-light text-error dark:bg-error/20 dark:text-error",
     void: "bg-muted/60 text-muted-foreground",
   };
   const cls = map[status] ?? "bg-muted/60 text-muted-foreground";
@@ -131,7 +131,7 @@ export default function InvoicesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 gap-1.5 font-body text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                      className="h-8 gap-1.5 font-body text-xs text-brand-accent hover:text-brand-accent/80 dark:text-brand-accent"
                       onClick={() => void handleDownload(inv)}
                       disabled={refreshingId === inv.id}
                     >

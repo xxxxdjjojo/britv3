@@ -50,11 +50,11 @@ export function Gallery({ images, className }: GalleryProps) {
     return (
       <div
         className={cn(
-          "flex h-[400px] items-center justify-center rounded-2xl bg-[#f4f3f2]",
+          "flex h-[400px] items-center justify-center rounded-2xl bg-neutral-100",
           className,
         )}
       >
-        <ImageIcon className="size-12 text-[#c0c9c3]" />
+        <ImageIcon className="size-12 text-neutral-300" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ export function Gallery({ images, className }: GalleryProps) {
 
         {/* Top-right (col-span-1, row-span-1) */}
         <div
-          className="relative cursor-pointer overflow-hidden group bg-[#f4f3f2]"
+          className="relative cursor-pointer overflow-hidden group bg-neutral-100"
           onClick={() => openLightbox(1)}
         >
           {images[1] ? (
@@ -98,13 +98,13 @@ export function Gallery({ images, className }: GalleryProps) {
               sizes="25vw"
             />
           ) : (
-            <div className="w-full h-full bg-[#f4f3f2]" />
+            <div className="w-full h-full bg-neutral-100" />
           )}
         </div>
 
         {/* Top-right second (col-span-1, row-span-1) */}
         <div
-          className="relative cursor-pointer overflow-hidden group bg-[#f4f3f2]"
+          className="relative cursor-pointer overflow-hidden group bg-neutral-100"
           onClick={() => openLightbox(2)}
         >
           {images[2] ? (
@@ -116,13 +116,13 @@ export function Gallery({ images, className }: GalleryProps) {
               sizes="25vw"
             />
           ) : (
-            <div className="w-full h-full bg-[#f4f3f2]" />
+            <div className="w-full h-full bg-neutral-100" />
           )}
         </div>
 
         {/* Bottom-right spanning 2 cols */}
         <div
-          className="col-span-2 relative cursor-pointer overflow-hidden group bg-[#f4f3f2]"
+          className="col-span-2 relative cursor-pointer overflow-hidden group bg-neutral-100"
           onClick={() => openLightbox(3)}
         >
           {images[3] ? (
@@ -134,13 +134,13 @@ export function Gallery({ images, className }: GalleryProps) {
               sizes="50vw"
             />
           ) : (
-            <div className="w-full h-full bg-[#f4f3f2]" />
+            <div className="w-full h-full bg-neutral-100" />
           )}
         </div>
 
         {/* View all button */}
         <button
-          className="absolute bottom-5 right-5 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-semibold text-[#1B4D3E] shadow-lg hover:bg-white transition-all"
+          className="absolute bottom-5 right-5 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-semibold text-brand-primary shadow-lg hover:bg-white transition-all"
           onClick={() => openLightbox(0)}
         >
           <GalleryThumbnails className="size-4" />
@@ -165,18 +165,18 @@ export function Gallery({ images, className }: GalleryProps) {
             onClick={prev}
             aria-label="Previous image"
           >
-            <ChevronLeft className="size-4 text-[#1a1c1c]" />
+            <ChevronLeft className="size-4 text-neutral-900" />
           </button>
           <button
             className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-md backdrop-blur-sm"
             onClick={next}
             aria-label="Next image"
           >
-            <ChevronRight className="size-4 text-[#1a1c1c]" />
+            <ChevronRight className="size-4 text-neutral-900" />
           </button>
 
           {/* Counter */}
-          <div className="absolute bottom-3 right-3 rounded-full bg-white/80 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-[#1a1c1c]">
+          <div className="absolute bottom-3 right-3 rounded-full bg-white/80 backdrop-blur-sm px-3 py-1 text-xs font-semibold text-neutral-900">
             {activeIndex + 1} / {images.length}
           </div>
         </div>

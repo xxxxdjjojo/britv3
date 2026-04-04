@@ -114,7 +114,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
         {/* Profile Views */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-2 bg-emerald-50 text-emerald-700 rounded-lg">
+            <div className="p-2 bg-brand-primary-lighter text-success rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -128,7 +128,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
                 <circle cx="12" cy="12" r="3" />
               </svg>
             </div>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+            <span className="text-xs font-bold text-success flex items-center gap-1">
               ↑ 12%
             </span>
           </div>
@@ -143,7 +143,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
         {/* Total Earnings */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-2 bg-amber-50 text-amber-700 rounded-lg">
+            <div className="p-2 bg-warning-light text-warning rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -157,7 +157,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
                 <line x1="2" y1="10" x2="22" y2="10" />
               </svg>
             </div>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+            <span className="text-xs font-bold text-success flex items-center gap-1">
               ↑ 8.4%
             </span>
           </div>
@@ -172,7 +172,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
         {/* Average Rating */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-2 bg-blue-50 text-blue-700 rounded-lg">
+            <div className="p-2 bg-brand-accent-light text-brand-accent rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -201,7 +201,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
         {/* Enquiry Rate */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-2 bg-purple-50 text-purple-700 rounded-lg">
+            <div className="p-2 bg-brand-accent-light text-brand-accent rounded-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -217,7 +217,7 @@ export default async function ProviderAnalyticsPage({ searchParams }: PageProps)
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+            <span className="text-xs font-bold text-success flex items-center gap-1">
               ↑ 5%
             </span>
           </div>

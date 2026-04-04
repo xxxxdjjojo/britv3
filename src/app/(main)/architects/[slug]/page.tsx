@@ -60,7 +60,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-surface dark:bg-slate-950">
+      <div className="min-h-screen bg-surface dark:bg-neutral-950">
         <ProviderHero provider={provider} category="architect" />
         <main className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -79,8 +79,8 @@ export default async function ArchitectProfilePage({ params }: Params) {
                           {(provider.qualifications ?? []).some((q) =>
                             q.toLowerCase().startsWith("riba"),
                           ) && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
-                              <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide">
+                            <div className="bg-brand-accent-light dark:bg-brand-accent/10 border border-brand-accent/30 dark:border-brand-accent/40 p-4 rounded-xl">
+                              <p className="text-xs font-bold text-brand-accent dark:text-brand-accent/80 uppercase tracking-wide">
                                 RIBA Member
                               </p>
                               <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
@@ -91,8 +91,8 @@ export default async function ArchitectProfilePage({ params }: Params) {
                           {(provider.qualifications ?? []).some((q) =>
                             q.toLowerCase().startsWith("arb"),
                           ) && (
-                            <div className="bg-brand-primary-lighter dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 rounded-xl">
-                              <p className="text-xs font-bold text-[--color-brand-primary-light] dark:text-green-400 uppercase tracking-wide">
+                            <div className="bg-brand-primary-lighter dark:bg-success/10 border border-success/30 dark:border-success/40 p-4 rounded-xl">
+                              <p className="text-xs font-bold text-[--color-brand-primary-light] dark:text-success uppercase tracking-wide">
                                 ARB Registered
                               </p>
                               <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
@@ -102,8 +102,8 @@ export default async function ArchitectProfilePage({ params }: Params) {
                           )}
                           {provider.years_experience !== null &&
                             provider.years_experience > 0 && (
-                              <div className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 p-4 rounded-xl">
-                                <p className="text-xs font-bold text-[--color-on-surface-variant] dark:text-slate-400 uppercase tracking-wide">
+                              <div className="bg-surface-container-lowest dark:bg-neutral-900 border border-[--color-outline-variant] dark:border-neutral-800 p-4 rounded-xl">
+                                <p className="text-xs font-bold text-[--color-on-surface-variant] dark:text-neutral-400 uppercase tracking-wide">
                                   Experience
                                 </p>
                                 <p className="text-2xl font-bold text-on-surface dark:text-white mt-1">
@@ -119,7 +119,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
                           (q) => !q.includes(":"),
                         ).length > 0 && (
                           <div>
-                            <h3 className="text-sm font-bold text-on-surface dark:text-slate-300 mb-2">
+                            <h3 className="text-sm font-bold text-on-surface dark:text-neutral-300 mb-2">
                               Specialisms
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -128,7 +128,7 @@ export default async function ArchitectProfilePage({ params }: Params) {
                                 .map((q) => (
                                   <span
                                     key={q}
-                                    className="px-3 py-1 bg-[--color-surface-container-low] dark:bg-slate-800 text-on-surface dark:text-slate-300 text-xs font-medium rounded-full capitalize"
+                                    className="px-3 py-1 bg-[--color-surface-container-low] dark:bg-neutral-800 text-on-surface dark:text-neutral-300 text-xs font-medium rounded-full capitalize"
                                   >
                                     {q.replace(/_/g, " ")}
                                   </span>

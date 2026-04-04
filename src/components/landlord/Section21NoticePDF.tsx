@@ -16,13 +16,14 @@ import {
 } from "@react-pdf/renderer";
 import type { LegalNotice } from "@/types/landlord";
 
+/* @react-pdf/renderer requires inline hex — these map to design system tokens */
 const styles = StyleSheet.create({
   page: {
     padding: 48,
     fontFamily: "Helvetica",
     fontSize: 11,
     lineHeight: 1.5,
-    color: "#111827",
+    color: "#111827" /* neutral-900 */,
   },
   title: {
     fontSize: 14,
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     textAlign: "center",
     marginBottom: 24,
-    color: "#374151",
+    color: "#374151" /* neutral-700 */,
   },
   sectionLabel: {
     fontFamily: "Helvetica-Bold",
@@ -57,15 +58,15 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: "#D1D5DB",
+    borderBottomColor: "#D1D5DB" /* neutral-300 */,
     marginVertical: 12,
   },
   footer: {
     marginTop: 32,
     fontSize: 9,
-    color: "#6B7280",
+    color: "#6B7280" /* neutral-500 */,
     borderTopWidth: 1,
-    borderTopColor: "#D1D5DB",
+    borderTopColor: "#D1D5DB" /* neutral-300 */,
     paddingTop: 8,
   },
   signatureBlock: {
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   },
   signatureLine: {
     borderBottomWidth: 1,
-    borderBottomColor: "#111827",
+    borderBottomColor: "#111827" /* neutral-900 */,
     marginTop: 24,
     marginBottom: 4,
     width: 240,
@@ -195,7 +196,7 @@ function Section21PDFDocument({
             <Text style={styles.value}>{today}</Text>
           </View>
           <View style={styles.signatureLine} />
-          <Text style={{ fontSize: 9, color: "#6B7280" }}>Signature</Text>
+          <Text style={{ fontSize: 9, color: "#6B7280" /* neutral-500 */ }}>Signature</Text>
         </View>
 
         <View style={styles.footer}>
@@ -232,7 +233,7 @@ export function Section21NoticePDFDownload({
         />
       }
       fileName={`section21-notice-${noticeId}.pdf`}
-      className="inline-flex items-center gap-2 rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
+      className="inline-flex items-center gap-2 rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary/90"
     >
       {({ loading }) => (loading ? "Preparing PDF..." : "Download Section 21 Notice (PDF)")}
     </PDFDownloadLink>

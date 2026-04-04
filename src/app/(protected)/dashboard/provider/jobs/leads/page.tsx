@@ -34,7 +34,7 @@ export default async function ProviderLeadsPage() {
       {/* ── Page Header ─────────────────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold font-heading text-emerald-900 tracking-tight">
+          <h1 className="text-2xl font-bold font-heading text-brand-primary tracking-tight">
             Marketplace Opportunities
           </h1>
           <p className="text-neutral-500 text-sm">
@@ -50,7 +50,7 @@ export default async function ProviderLeadsPage() {
     if (error instanceof Error && "digest" in error) throw error;
     return (
       <div className="p-6 lg:p-10 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold font-heading text-emerald-900">Marketplace Opportunities</h1>
+        <h1 className="text-2xl font-bold font-heading text-brand-primary">Marketplace Opportunities</h1>
         <p className="mt-4 text-sm text-neutral-500">Unable to load leads. Please try refreshing the page.</p>
       </div>
     );

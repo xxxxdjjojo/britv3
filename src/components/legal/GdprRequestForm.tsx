@@ -57,12 +57,12 @@ export function GdprRequestForm() {
 
   if (status === "success" && success) {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-6">
-        <h3 className="font-semibold font-heading text-green-900 mb-2">Request Received</h3>
-        <p className="text-sm text-green-800 mb-3">
+      <div className="rounded-xl border border-success/20 bg-success-light p-6">
+        <h3 className="font-semibold font-heading text-success mb-2">Request Received</h3>
+        <p className="text-sm text-success mb-3">
           Your reference number is: <strong>{success.reference}</strong>
         </p>
-        <p className="text-sm text-green-800">
+        <p className="text-sm text-success">
           We will respond within 30 days. If your request is complex, we may extend by up to 2 months
           and will notify you. You have the right to{" "}
           <a
@@ -83,7 +83,7 @@ export function GdprRequestForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label htmlFor="gdpr-full-name" className="block text-sm font-medium text-neutral-900 mb-1.5">
-          Full Name <span className="text-red-500">*</span>
+          Full Name <span className="text-error">*</span>
         </label>
         <input
           id="gdpr-full-name"
@@ -99,7 +99,7 @@ export function GdprRequestForm() {
 
       <div>
         <label htmlFor="gdpr-email" className="block text-sm font-medium text-neutral-900 mb-1.5">
-          Email Address <span className="text-red-500">*</span>
+          Email Address <span className="text-error">*</span>
         </label>
         <input
           id="gdpr-email"
@@ -128,7 +128,7 @@ export function GdprRequestForm() {
 
       <div>
         <label htmlFor="gdpr-right-type" className="block text-sm font-medium text-neutral-900 mb-1.5">
-          Right Type <span className="text-red-500">*</span>
+          Right Type <span className="text-error">*</span>
         </label>
         <select
           id="gdpr-right-type"
@@ -147,7 +147,7 @@ export function GdprRequestForm() {
 
       <div>
         <label htmlFor="gdpr-description" className="block text-sm font-medium text-neutral-900 mb-1.5">
-          Description <span className="text-red-500">*</span>
+          Description <span className="text-error">*</span>
         </label>
         <textarea
           id="gdpr-description"
@@ -165,13 +165,13 @@ export function GdprRequestForm() {
       </div>
 
       {status === "rate-limited" && (
-        <p className="rounded-lg bg-orange-50 border border-orange-100 text-orange-800 px-4 py-3 text-sm">
+        <p className="rounded-lg bg-warning-light border border-warning/20 text-warning px-4 py-3 text-sm">
           You have already submitted a request recently. Please wait before submitting again.
         </p>
       )}
 
       {status === "error" && (
-        <p className="rounded-lg bg-red-50 border border-red-100 text-red-800 px-4 py-3 text-sm">
+        <p className="rounded-lg bg-error-light border border-error/10 text-error px-4 py-3 text-sm">
           {errorMessage}
         </p>
       )}

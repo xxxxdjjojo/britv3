@@ -22,9 +22,9 @@ type Props = Readonly<{ signals: FraudSignal[] }>;
 function RiskBadge({ score }: { score: number }) {
   const className =
     score >= 80
-      ? "bg-red-100 text-red-700"
+      ? "bg-error-light text-error"
       : score >= 50
-        ? "bg-yellow-100 text-yellow-700"
+        ? "bg-warning-light text-warning"
         : "bg-neutral-100 text-neutral-600";
   const label = score >= 80 ? "High" : score >= 50 ? "Medium" : "Low";
   return (
@@ -174,7 +174,7 @@ export function FraudDetectionClient({ signals }: Props) {
                 key={signal.userId}
                 className={cn(
                   "hover:bg-neutral-50 transition-colors",
-                  selected.has(signal.userId) && "bg-blue-50",
+                  selected.has(signal.userId) && "bg-brand-accent-light",
                 )}
               >
                 <td className="px-4 py-3">

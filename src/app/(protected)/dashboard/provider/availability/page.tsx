@@ -105,7 +105,7 @@ export default async function ProviderAvailabilityPage() {
           {/* Working Hours Card */}
           <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6">
             <h3 className="font-bold text-neutral-900 mb-4 flex items-center gap-2 text-sm">
-              <span className="text-emerald-700">⏰</span>
+              <span className="text-success">⏰</span>
               Default Working Hours
             </h3>
             <div className="space-y-4">
@@ -124,7 +124,7 @@ export default async function ProviderAvailabilityPage() {
                 </span>
               </div>
             </div>
-            <button className="w-full mt-6 py-2.5 text-xs font-bold text-emerald-900 border border-emerald-900/20 rounded-lg hover:bg-emerald-50 transition-colors">
+            <button className="w-full mt-6 py-2.5 text-xs font-bold text-brand-primary border border-brand-primary/20 rounded-lg hover:bg-brand-primary-lighter transition-colors">
               Edit Default Hours
             </button>
           </div>
@@ -135,7 +135,7 @@ export default async function ProviderAvailabilityPage() {
             <div className="space-y-3">
               {/* Google Calendar */}
               <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-100">
-                <div className="h-8 w-8 bg-white border border-neutral-200 rounded flex items-center justify-center text-blue-600 text-sm font-bold">
+                <div className="h-8 w-8 bg-white border border-neutral-200 rounded flex items-center justify-center text-brand-accent text-sm font-bold">
                   G
                 </div>
                 <div className="flex-1">
@@ -148,14 +148,14 @@ export default async function ProviderAvailabilityPage() {
               </div>
               {/* Outlook */}
               <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-100 opacity-60">
-                <div className="h-8 w-8 bg-white border border-neutral-200 rounded flex items-center justify-center text-blue-800 text-sm font-bold">
+                <div className="h-8 w-8 bg-white border border-neutral-200 rounded flex items-center justify-center text-brand-accent text-sm font-bold">
                   O
                 </div>
                 <div className="flex-1">
                   <p className="text-[13px] font-bold text-neutral-900 leading-none">Outlook</p>
                   <p className="text-[11px] text-neutral-500 mt-0.5">Not connected</p>
                 </div>
-                <button className="text-[11px] font-bold text-emerald-700 hover:underline">
+                <button className="text-[11px] font-bold text-success hover:underline">
                   Link
                 </button>
               </div>

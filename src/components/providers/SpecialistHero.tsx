@@ -71,14 +71,14 @@ function parseRegBadge(
 // ---------------------------------------------------------------------------
 
 const RING_CLASSES: Record<SpecialistType, string> = {
-  mortgage_broker: "ring-blue-800 bg-blue-800/10",
-  conveyancer: "ring-blue-700 bg-blue-700/10",
+  mortgage_broker: "ring-brand-accent bg-brand-accent/10",
+  conveyancer: "ring-brand-accent bg-brand-accent/10",
   surveyor: "ring-brand-primary bg-brand-primary/10",
 };
 
 const REG_BADGE_CLASSES: Record<SpecialistType, string> = {
-  mortgage_broker: "bg-blue-800",
-  conveyancer: "bg-blue-700",
+  mortgage_broker: "bg-brand-accent",
+  conveyancer: "bg-brand-accent",
   surveyor: "bg-brand-primary",
 };
 
@@ -146,7 +146,7 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
   const trustAccreditations = accreditations.map((a) => ({ type: a.type, number: a.number }));
 
   return (
-    <div className="bg-surface-container-lowest dark:bg-slate-900 rounded-xl border border-[--color-outline-variant] dark:border-slate-800 p-8 mb-8">
+    <div className="bg-surface-container-lowest dark:bg-neutral-900 rounded-xl border border-[--color-outline-variant] dark:border-neutral-800 p-8 mb-8">
       <div className="flex flex-col sm:flex-row gap-6">
         {/* Avatar with ring */}
         <div className="relative shrink-0">
@@ -251,7 +251,7 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
             {provider.phone && (
               <a
                 href={`tel:${provider.phone}`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 border border-[--color-outline-variant] dark:border-slate-600 text-on-surface dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-[--color-surface-container-low] dark:hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 border border-[--color-outline-variant] dark:border-neutral-600 text-on-surface dark:text-neutral-200 text-sm font-semibold rounded-lg hover:bg-[--color-surface-container-low] dark:hover:bg-neutral-800 transition-colors"
               >
                 Call
               </a>

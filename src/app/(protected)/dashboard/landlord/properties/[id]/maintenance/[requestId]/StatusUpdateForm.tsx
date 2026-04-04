@@ -72,8 +72,8 @@ export function StatusUpdateForm(
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+    <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-700">
+      <h3 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
         Update Status
       </h3>
       <form onSubmit={handleSubmit} className="mt-3 space-y-3">
@@ -85,8 +85,8 @@ export function StatusUpdateForm(
               onClick={() => setSelectedStatus(status)}
               className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
                 selectedStatus === status
-                  ? "border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-300"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                  ? "border-brand-primary bg-brand-primary-lighter text-brand-primary dark:bg-brand-primary/10 dark:text-brand-primary"
+                  : "border-neutral-300 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800"
               }`}
             >
               {STATUS_LABELS[status]}
@@ -98,7 +98,7 @@ export function StatusUpdateForm(
           <div>
             <label
               htmlFor="resolution-notes"
-              className="block text-xs font-medium text-gray-700 dark:text-gray-300"
+              className="block text-xs font-medium text-neutral-700 dark:text-neutral-300"
             >
               Resolution Notes *
             </label>
@@ -107,7 +107,7 @@ export function StatusUpdateForm(
               rows={3}
               value={resolutionNotes}
               onChange={(e) => setResolutionNotes(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100"
               placeholder="Describe how the issue was resolved..."
             />
           </div>
@@ -117,7 +117,7 @@ export function StatusUpdateForm(
           <button
             type="submit"
             disabled={isUpdating}
-            className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isUpdating
               ? "Updating..."

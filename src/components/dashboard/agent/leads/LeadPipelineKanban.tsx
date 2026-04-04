@@ -51,18 +51,18 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 // Column background shades using design-system tokens
 const STAGE_BG: Record<LeadStage, string> = {
   new_enquiry: "bg-muted/30",
-  qualified: "bg-blue-50/60 dark:bg-blue-900/10",
-  viewing_booked: "bg-amber-50/60 dark:bg-amber-900/10",
-  offer_made: "bg-emerald-50/60 dark:bg-emerald-900/10",
+  qualified: "bg-brand-accent-light/60 dark:bg-brand-accent/5",
+  viewing_booked: "bg-warning-light/60 dark:bg-warning/5",
+  offer_made: "bg-success-light/60 dark:bg-success/5",
   closed: "bg-muted/20",
 };
 
 // Status pill using design-system semantic tokens
 const STAGE_PILL: Record<LeadStage, string> = {
   new_enquiry: "bg-muted text-muted-foreground",
-  qualified: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
-  viewing_booked: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-  offer_made: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  qualified: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/10 dark:text-brand-accent",
+  viewing_booked: "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning",
+  offer_made: "bg-success-light text-success dark:bg-success/10 dark:text-success",
   closed: "bg-muted text-muted-foreground",
 };
 

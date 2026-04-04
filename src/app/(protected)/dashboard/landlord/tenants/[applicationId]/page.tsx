@@ -114,7 +114,7 @@ async function PageContent({ params }: Props) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <div className="size-16 shrink-0 rounded-2xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-xl font-heading">
+            <div className="size-16 shrink-0 rounded-2xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-brand-primary flex items-center justify-center font-bold text-xl font-heading">
               {initials}
             </div>
             <div>
@@ -236,14 +236,14 @@ async function PageContent({ params }: Props) {
 
           {/* Rejection reason */}
           {application.rejection_reason && (
-            <Card className="rounded-2xl border-red-200 dark:border-red-800/30">
+            <Card className="rounded-2xl border-error/30 dark:border-error/20">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-heading text-red-700 dark:text-red-400">
+                <CardTitle className="text-base font-heading text-error dark:text-error">
                   Rejection Reason
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-red-700 dark:text-red-400">
+                <p className="text-sm text-error dark:text-error">
                   {application.rejection_reason}
                 </p>
               </CardContent>
@@ -286,7 +286,7 @@ async function PageContent({ params }: Props) {
                   return (
                     <li key={step} className="flex items-center gap-3 py-1.5">
                       {isPast ? (
-                        <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
+                        <CheckCircle2 className="size-5 shrink-0 text-success" />
                       ) : isActive ? (
                         <CircleDot className="size-5 shrink-0 text-[color:var(--color-brand-primary)]" />
                       ) : (
@@ -295,7 +295,7 @@ async function PageContent({ params }: Props) {
                       <span
                         className={`text-sm font-medium ${
                           isActive
-                            ? "text-[color:var(--color-brand-primary)] dark:text-emerald-400"
+                            ? "text-[color:var(--color-brand-primary)] dark:text-brand-primary"
                             : isPast
                               ? "text-neutral-600 dark:text-neutral-300"
                               : isFuture
@@ -306,7 +306,7 @@ async function PageContent({ params }: Props) {
                         {STATUS_LABELS[step]}
                       </span>
                       {isActive && (
-                        <span className="ml-auto text-xs bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">
+                        <span className="ml-auto text-xs bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-brand-primary px-2 py-0.5 rounded-full font-medium">
                           Current
                         </span>
                       )}

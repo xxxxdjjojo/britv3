@@ -15,11 +15,11 @@ function StarDisplay({ rating }: { rating: number }) {
           className={`w-4 h-4 ${
             star <= Math.round(rating)
               ? "fill-brand-secondary text-brand-secondary"
-              : "fill-[#e3e2e1] text-[#e3e2e1]"
+              : "fill-neutral-200 text-neutral-200"
           }`}
         />
       ))}
-      <span className="ml-1 text-sm font-semibold text-[#1a1c1c]">
+      <span className="ml-1 text-sm font-semibold text-neutral-900">
         {rating.toFixed(1)}
       </span>
     </div>
@@ -31,12 +31,12 @@ function EmptySlot() {
     <td className="p-8 text-center align-top">
       <a
         href="/services"
-        className="flex flex-col items-center gap-3 rounded-2xl p-8 bg-[#f4f3f2] hover:bg-[#e3e2e1] transition-colors group"
+        className="flex flex-col items-center gap-3 rounded-2xl p-8 bg-neutral-100 hover:bg-neutral-200 transition-colors group"
       >
         <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
           <Plus className="w-5 h-5 text-brand-primary" />
         </div>
-        <span className="text-sm font-medium text-[#404945]">Add a Provider</span>
+        <span className="text-sm font-medium text-neutral-600">Add a Provider</span>
       </a>
     </td>
   );
@@ -81,13 +81,13 @@ export function CompareTable({ providers }: CompareTableProps) {
         p.provider_rating_stats ? (
           <StarDisplay rating={p.provider_rating_stats.average_rating} />
         ) : (
-          <span className="text-[#404945]/50 text-sm">No ratings yet</span>
+          <span className="text-neutral-600/50 text-sm">No ratings yet</span>
         ),
     },
     {
       label: "Reviews",
       render: (p) => (
-        <span className="text-[#1a1c1c] font-semibold text-sm">
+        <span className="text-neutral-900 font-semibold text-sm">
           {p.provider_rating_stats?.total_reviews ?? 0} reviews
         </span>
       ),
@@ -100,25 +100,25 @@ export function CompareTable({ providers }: CompareTableProps) {
             <ShieldCheck className="w-3.5 h-3.5" /> Verified
           </span>
         ) : (
-          <span className="text-[#404945]/50 text-sm">—</span>
+          <span className="text-neutral-600/50 text-sm">—</span>
         ),
     },
     {
       label: "Response Time",
       render: (p) =>
         p.response_time_hours != null ? (
-          <span className="inline-flex items-center gap-1.5 text-[#404945] text-sm">
-            <Clock className="w-4 h-4 text-[#404945]/50" />
+          <span className="inline-flex items-center gap-1.5 text-neutral-600 text-sm">
+            <Clock className="w-4 h-4 text-neutral-600/50" />
             {p.response_time_hours}h typical
           </span>
         ) : (
-          <span className="text-[#404945]/50 text-sm">—</span>
+          <span className="text-neutral-600/50 text-sm">—</span>
         ),
     },
     {
       label: "Price Range",
       render: (p) => (
-        <span className="text-[#1a1c1c] text-sm font-medium">
+        <span className="text-neutral-900 text-sm font-medium">
           {formatPricing(p.pricing)}
         </span>
       ),
@@ -126,8 +126,8 @@ export function CompareTable({ providers }: CompareTableProps) {
     {
       label: "Coverage Area",
       render: (p) => (
-        <span className="inline-flex items-center gap-1.5 text-[#404945] text-sm">
-          <MapPin className="w-4 h-4 flex-shrink-0 text-[#404945]/50" />
+        <span className="inline-flex items-center gap-1.5 text-neutral-600 text-sm">
+          <MapPin className="w-4 h-4 flex-shrink-0 text-neutral-600/50" />
           {p.city ? `${p.city} — ` : ""}
           {formatCoverage(p.service_postcodes)}
         </span>
@@ -141,14 +141,14 @@ export function CompareTable({ providers }: CompareTableProps) {
             {p.accreditations.map((acc, i) => (
               <span
                 key={i}
-                className="px-2.5 py-0.5 rounded-full bg-[#f4f3f2] text-[#404945] text-xs font-medium"
+                className="px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium"
               >
                 {acc.type}
               </span>
             ))}
           </div>
         ) : (
-          <span className="text-[#404945]/50 text-sm">—</span>
+          <span className="text-neutral-600/50 text-sm">—</span>
         ),
     },
   ];
@@ -158,10 +158,10 @@ export function CompareTable({ providers }: CompareTableProps) {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           {/* Header */}
-          <thead className="bg-[#faf9f8] border-b border-[#e3e2e1]">
+          <thead className="bg-neutral-50 border-b border-neutral-200">
             <tr>
               <th className="w-1/4 p-6 text-left">
-                <span className="text-xs font-bold uppercase tracking-widest text-[#404945]/60">
+                <span className="text-xs font-bold uppercase tracking-widest text-neutral-600/60">
                   Criteria
                 </span>
               </th>
@@ -170,7 +170,7 @@ export function CompareTable({ providers }: CompareTableProps) {
                   <th key={provider.id} className="w-1/4 p-6 text-center">
                     <div className="flex flex-col items-center gap-3">
                       {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full ring-2 ring-brand-primary ring-offset-2 bg-[#f4f3f2] overflow-hidden flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full ring-2 ring-brand-primary ring-offset-2 bg-neutral-100 overflow-hidden flex items-center justify-center">
                         {provider.profiles.avatar_url ? (
                           <img
                             src={provider.profiles.avatar_url}
@@ -184,10 +184,10 @@ export function CompareTable({ providers }: CompareTableProps) {
                         )}
                       </div>
                       <div>
-                        <h3 className="font-heading font-semibold text-[#1a1c1c] text-sm">
+                        <h3 className="font-heading font-semibold text-neutral-900 text-sm">
                           {provider.profiles.full_name}
                         </h3>
-                        <p className="text-xs text-[#404945] mt-0.5">
+                        <p className="text-xs text-neutral-600 mt-0.5">
                           {provider.business_name}
                         </p>
                       </div>
@@ -208,10 +208,10 @@ export function CompareTable({ providers }: CompareTableProps) {
                 className={
                   rowIdx % 2 === 0
                     ? "bg-white"
-                    : "bg-[#faf9f8]"
+                    : "bg-neutral-50"
                 }
               >
-                <td className="p-6 text-sm font-semibold text-[#404945] border-r border-[#e3e2e1]">
+                <td className="p-6 text-sm font-semibold text-neutral-600 border-r border-neutral-200">
                   {row.label}
                 </td>
                 {slots.map((provider, idx) =>
@@ -231,7 +231,7 @@ export function CompareTable({ providers }: CompareTableProps) {
           </tbody>
 
           {/* Footer CTAs */}
-          <tfoot className="bg-[#faf9f8] border-t border-[#e3e2e1]">
+          <tfoot className="bg-neutral-50 border-t border-neutral-200">
             <tr>
               <td className="p-6" />
               {slots.map((provider, idx) =>
@@ -246,7 +246,7 @@ export function CompareTable({ providers }: CompareTableProps) {
                       </a>
                       <button
                         onClick={() => remove(provider.id)}
-                        className="inline-flex items-center gap-1 text-xs text-[#404945]/60 hover:text-red-500 transition-colors"
+                        className="inline-flex items-center gap-1 text-xs text-neutral-600/60 hover:text-error transition-colors"
                       >
                         <X className="w-3 h-3" />
                         Remove

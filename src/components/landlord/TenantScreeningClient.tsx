@@ -264,7 +264,7 @@ function ApplicationListCard({ application }: Readonly<{ application: TenantAppl
   return (
     <div className="flex items-center gap-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-4 hover:shadow-sm hover:border-brand-primary/30 transition-all duration-150">
       {/* Avatar */}
-      <div className="size-10 shrink-0 rounded-xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-brand-primary/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-sm font-heading">
+      <div className="size-10 shrink-0 rounded-xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-brand-primary/20 text-[color:var(--color-brand-primary)] dark:text-brand-primary flex items-center justify-center font-bold text-sm font-heading">
         {initials}
       </div>
 
@@ -308,7 +308,7 @@ function ApplicationListCard({ application }: Readonly<{ application: TenantAppl
         asChild
         size="sm"
         variant="outline"
-        className="shrink-0 h-8 text-xs border-[color:var(--color-brand-primary)]/30 text-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-lighter)] dark:border-emerald-800/50 dark:text-emerald-400"
+        className="shrink-0 h-8 text-xs border-[color:var(--color-brand-primary)]/30 text-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-lighter)] dark:border-brand-primary/30 dark:text-brand-primary"
       >
         <Link href={`/dashboard/landlord/tenants/${application.id}`}>
           Manage
@@ -423,7 +423,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
               onClick={() => setViewMode("kanban")}
               className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 viewMode === "kanban"
-                  ? "bg-white dark:bg-slate-900 text-foreground shadow-sm"
+                  ? "bg-white dark:bg-neutral-900 text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -434,7 +434,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
               onClick={() => setViewMode("list")}
               className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 viewMode === "list"
-                  ? "bg-white dark:bg-slate-900 text-foreground shadow-sm"
+                  ? "bg-white dark:bg-neutral-900 text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -495,7 +495,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
             <TabsTrigger value="active" className="rounded-lg px-4">
               Active
               {activeApps.length > 0 && (
-                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-brand-primary/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 min-w-[1.25rem] px-1.5 py-0.5 text-xs font-bold">
+                <span className="ml-2 inline-flex items-center justify-center rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-brand-primary/20 text-[color:var(--color-brand-primary)] dark:text-brand-primary min-w-[1.25rem] px-1.5 py-0.5 text-xs font-bold">
                   {activeApps.length}
                 </span>
               )}

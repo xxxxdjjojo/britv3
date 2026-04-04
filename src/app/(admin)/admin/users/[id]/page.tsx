@@ -118,7 +118,7 @@ async function PageContent({
               {user.ban_reason && (
                 <div className="sm:col-span-2">
                   <dt className="text-xs text-neutral-500">Ban Reason</dt>
-                  <dd className="mt-0.5 text-sm font-medium text-red-700">
+                  <dd className="mt-0.5 text-sm font-medium text-error">
                     {user.ban_reason}
                   </dd>
                 </div>

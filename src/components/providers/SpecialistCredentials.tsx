@@ -93,13 +93,13 @@ export function MortgageBrokerCredentials({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* FCA authorisation */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
+        <div className="bg-brand-accent-light dark:bg-brand-accent/10 border border-brand-accent/30 dark:border-brand-accent/40 p-4 rounded-xl">
           <div className="flex items-start gap-3">
-            <div className="shrink-0 w-9 h-9 bg-blue-800 rounded-full flex items-center justify-center">
+            <div className="shrink-0 w-9 h-9 bg-brand-accent rounded-full flex items-center justify-center">
               <BadgeCheck className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide">
+              <p className="text-xs font-bold text-brand-accent dark:text-brand-accent/80 uppercase tracking-wide">
                 FCA Authorisation
               </p>
               <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
@@ -113,18 +113,18 @@ export function MortgageBrokerCredentials({
         </div>
 
         {/* Whole of market / tied */}
-        <div className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 p-4 rounded-xl">
+        <div className="bg-surface-container-lowest dark:bg-neutral-900 border border-[--color-outline-variant] dark:border-neutral-800 p-4 rounded-xl">
           <p className="text-xs font-bold text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] uppercase tracking-wide">
             Adviser Type
           </p>
           <div className="mt-1.5">
             {isWholeOfMarket ? (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-primary-lighter dark:bg-green-900/30 text-[--color-brand-primary-light] dark:text-green-400 text-xs font-bold rounded-full">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-primary-lighter dark:bg-success/20 text-[--color-brand-primary-light] dark:text-success text-xs font-bold rounded-full">
                 <CheckCircle2 className="w-3 h-3" />
                 Whole of Market
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-secondary-light dark:bg-amber-900/30 text-[--color-brand-secondary-dark] dark:text-amber-400 text-xs font-bold rounded-full">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-secondary-light dark:bg-warning/20 text-[--color-brand-secondary-dark] dark:text-warning text-xs font-bold rounded-full">
                 <XCircle className="w-3 h-3" />
                 Panel
               </span>
@@ -133,17 +133,17 @@ export function MortgageBrokerCredentials({
         </div>
 
         {/* Fee structure */}
-        <div className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 p-4 rounded-xl">
+        <div className="bg-surface-container-lowest dark:bg-neutral-900 border border-[--color-outline-variant] dark:border-neutral-800 p-4 rounded-xl">
           <p className="text-xs font-bold text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] uppercase tracking-wide">
             Fee Structure
           </p>
           <div className="mt-1.5">
             {feeType === "fee_free" ? (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-primary-lighter dark:bg-green-900/20 text-[--color-brand-primary-light] dark:text-green-400 text-xs font-semibold rounded-full border border-green-200 dark:border-green-800">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-primary-lighter dark:bg-success/10 text-[--color-brand-primary-light] dark:text-success text-xs font-semibold rounded-full border border-success/30 dark:border-success/40">
                 Fee-Free
               </span>
             ) : feeType === "fixed_fee" && feeAmount !== undefined ? (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-full border border-blue-200 dark:border-blue-800">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-accent-light dark:bg-brand-accent/10 text-brand-accent dark:text-brand-accent/80 text-xs font-semibold rounded-full border border-brand-accent/30 dark:border-brand-accent/40">
                 Fixed Fee: £{feeAmount.toLocaleString()}
               </span>
             ) : (
@@ -154,7 +154,7 @@ export function MortgageBrokerCredentials({
 
         {/* Lender panel */}
         {lenderCount !== undefined && (
-          <div className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 p-4 rounded-xl">
+          <div className="bg-surface-container-lowest dark:bg-neutral-900 border border-[--color-outline-variant] dark:border-neutral-800 p-4 rounded-xl">
             <p className="text-xs font-bold text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] uppercase tracking-wide">
               Lender Panel
             </p>
@@ -169,14 +169,14 @@ export function MortgageBrokerCredentials({
       {/* Specialisms chips */}
       {specialisms.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-on-surface dark:text-slate-300 mb-2">
+          <h3 className="text-sm font-bold text-on-surface dark:text-neutral-300 mb-2">
             Specialisms
           </h3>
           <div className="flex flex-wrap gap-2">
             {specialisms.map((s) => (
               <span
                 key={s}
-                className="px-3 py-1 bg-[--color-surface-container-low] dark:bg-slate-800 text-on-surface dark:text-slate-300 text-xs font-medium rounded-full capitalize"
+                className="px-3 py-1 bg-[--color-surface-container-low] dark:bg-neutral-800 text-on-surface dark:text-neutral-300 text-xs font-medium rounded-full capitalize"
               >
                 {s}
               </span>
@@ -219,13 +219,13 @@ export function ConveyancerCredentials({
       </h2>
 
       {/* Registration card */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
+      <div className="bg-brand-accent-light dark:bg-brand-accent/10 border border-brand-accent/30 dark:border-brand-accent/40 p-4 rounded-xl">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-9 h-9 bg-blue-700 rounded-full flex items-center justify-center">
+          <div className="shrink-0 w-9 h-9 bg-brand-accent rounded-full flex items-center justify-center">
             <Scale className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+            <p className="text-xs font-bold text-brand-accent dark:text-brand-accent/80 uppercase tracking-wide">
               {regType} Registration
             </p>
             <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
@@ -241,9 +241,9 @@ export function ConveyancerCredentials({
       </div>
 
       {/* Fee table */}
-      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-[--color-outline-variant] dark:border-slate-800">
-          <h3 className="text-sm font-bold text-on-surface dark:text-slate-300">
+      <div className="bg-surface-container-lowest dark:bg-neutral-900 border border-[--color-outline-variant] dark:border-neutral-800 rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b border-[--color-outline-variant] dark:border-neutral-800">
+          <h3 className="text-sm font-bold text-on-surface dark:text-neutral-300">
             Typical Fees (inc. VAT)
           </h3>
         </div>
@@ -252,7 +252,7 @@ export function ConveyancerCredentials({
             {feeRows.map(({ label, value }) => (
               <tr
                 key={label}
-                className="border-b border-[--color-outline-variant] dark:border-slate-800 last:border-0"
+                className="border-b border-[--color-outline-variant] dark:border-neutral-800 last:border-0"
               >
                 <td className="px-4 py-3 text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant]">{label}</td>
                 <td className="px-4 py-3 text-right font-semibold text-on-surface dark:text-white">
@@ -267,13 +267,13 @@ export function ConveyancerCredentials({
       {/* Turnaround + no-sale-no-fee row */}
       <div className="flex flex-wrap gap-3">
         {turnaroundWeeks && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[--color-surface-container-low] dark:bg-slate-800 text-on-surface dark:text-slate-300 text-xs font-semibold rounded-lg">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[--color-surface-container-low] dark:bg-neutral-800 text-on-surface dark:text-neutral-300 text-xs font-semibold rounded-lg">
             <Clock className="w-3.5 h-3.5" />
             {turnaroundWeeks} weeks typical turnaround
           </span>
         )}
         {noSaleNoFee === true && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary-lighter dark:bg-green-900/20 text-[--color-brand-primary-light] dark:text-green-400 text-xs font-semibold rounded-lg border border-green-200 dark:border-green-800">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary-lighter dark:bg-success/10 text-[--color-brand-primary-light] dark:text-success text-xs font-semibold rounded-lg border border-success/30 dark:border-success/40">
             <CheckCircle2 className="w-3.5 h-3.5" />
             No Sale, No Fee
           </span>
@@ -353,13 +353,13 @@ export function SurveyorCredentials({
       </h2>
 
       {/* RICS membership card */}
-      <div className="bg-brand-primary-lighter dark:bg-brand-primary/10 border border-green-200 dark:border-brand-primary/30 p-4 rounded-xl">
+      <div className="bg-brand-primary-lighter dark:bg-brand-primary/10 border border-success/30 dark:border-brand-primary/30 p-4 rounded-xl">
         <div className="flex items-start gap-3">
           <div className="shrink-0 w-9 h-9 bg-brand-primary rounded-full flex items-center justify-center">
             <Building2 className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs font-bold text-brand-primary dark:text-green-400 uppercase tracking-wide">
+            <p className="text-xs font-bold text-brand-primary dark:text-success uppercase tracking-wide">
               RICS Membership
             </p>
             <p className="text-sm font-semibold text-on-surface dark:text-white mt-0.5">
@@ -374,16 +374,16 @@ export function SurveyorCredentials({
 
       {/* Survey types grid */}
       <div>
-        <h3 className="text-sm font-bold text-on-surface dark:text-slate-300 mb-3">
+        <h3 className="text-sm font-bold text-on-surface dark:text-neutral-300 mb-3">
           Survey Types Offered
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {displaySurveys.map((survey) => (
             <div
               key={survey.key}
-              className="bg-surface-container-lowest dark:bg-slate-900 border border-[--color-outline-variant] dark:border-slate-800 p-4 rounded-xl"
+              className="bg-surface-container-lowest dark:bg-neutral-900 border border-[--color-outline-variant] dark:border-neutral-800 p-4 rounded-xl"
             >
-              <p className="text-xs font-bold text-brand-primary dark:text-green-400 uppercase tracking-wide">
+              <p className="text-xs font-bold text-brand-primary dark:text-success uppercase tracking-wide">
                 {survey.level}
               </p>
               <p className="text-sm font-bold text-on-surface dark:text-white mt-1">
@@ -411,7 +411,7 @@ export function SurveyorCredentials({
       {/* Coverage postcodes */}
       {servicePostcodes.length > 0 && (
         <div>
-          <h3 className="text-sm font-bold text-on-surface dark:text-slate-300 mb-2 flex items-center gap-1.5">
+          <h3 className="text-sm font-bold text-on-surface dark:text-neutral-300 mb-2 flex items-center gap-1.5">
             <MapPin className="w-4 h-4" />
             Coverage Area
           </h3>
@@ -419,13 +419,13 @@ export function SurveyorCredentials({
             {displayPostcodes.map((pc) => (
               <span
                 key={pc}
-                className="bg-[--color-surface-container-low] dark:bg-slate-800 text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] text-xs rounded px-2 py-1"
+                className="bg-[--color-surface-container-low] dark:bg-neutral-800 text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] text-xs rounded px-2 py-1"
               >
                 {pc}
               </span>
             ))}
             {extraPostcodeCount > 0 && (
-              <span className="bg-[--color-surface-container-low] dark:bg-slate-800 text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] text-xs rounded px-2 py-1 font-semibold">
+              <span className="bg-[--color-surface-container-low] dark:bg-neutral-800 text-[--color-on-surface-variant] dark:text-[--color-on-surface-variant] text-xs rounded px-2 py-1 font-semibold">
                 +{extraPostcodeCount} more
               </span>
             )}

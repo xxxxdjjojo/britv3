@@ -39,13 +39,13 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
   const statusLabel = listing.status === "let" ? "Let" : "Sold";
   const statusClass =
     listing.status === "let"
-      ? "bg-[#1B4D3E]/10 text-[#1B4D3E]"
-      : "bg-emerald-100 text-emerald-700";
+      ? "bg-brand-primary/10 text-brand-primary"
+      : "bg-success-light text-success";
 
   return (
-    <article className="group bg-[#faf9f8] dark:bg-[#0f1a17] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <article className="group bg-neutral-50 dark:bg-neutral-950 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-[#f4f3f2] dark:bg-[#1a2822]">
+      <div className="relative h-48 overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         {listing.cover_image_url ? (
           <Image
             src={listing.cover_image_url}
@@ -54,7 +54,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-[#9ca3af] text-xs">
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-xs">
             No image
           </div>
         )}
@@ -64,7 +64,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
         </span>
         {/* % of asking badge */}
         {pct != null && (
-          <span className="absolute bottom-3 right-3 bg-green-50 text-green-700 text-xs font-bold rounded-full px-2 py-0.5">
+          <span className="absolute bottom-3 right-3 bg-success-light text-success text-xs font-bold rounded-full px-2 py-0.5">
             {pct}% of asking
           </span>
         )}
@@ -73,30 +73,30 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
       {/* Body */}
       <div className="p-4">
         {/* Sold price */}
-        <h3 className="text-xl font-bold text-[#1B4D3E] dark:text-emerald-400">
+        <h3 className="text-xl font-bold text-brand-primary dark:text-success">
           {statusLabel} for {formatPrice(listing.sold_price)}
         </h3>
         {/* Asking price (struck through if differs) */}
         {listing.price != null && listing.sold_price !== listing.price && (
-          <p className="text-sm text-[#6b7280] line-through mt-0.5">
+          <p className="text-sm text-neutral-500 line-through mt-0.5">
             Asking {formatPrice(listing.price)}
           </p>
         )}
 
-        <p className="text-xs uppercase tracking-wide text-[#6b7280] mt-1">
+        <p className="text-xs uppercase tracking-wide text-neutral-500 mt-1">
           {listing.property_type ?? "Property"}
         </p>
-        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] mt-1 line-clamp-1">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-1">
           {address || listing.title}
         </p>
         {listing.sold_at && (
-          <p className="text-xs text-[#9ca3af] mt-1">
+          <p className="text-xs text-neutral-400 mt-1">
             {statusLabel} {formatDate(listing.sold_at)}
           </p>
         )}
 
         {/* Stats row */}
-        <div className="flex items-center gap-4 mt-4 pt-4 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+        <div className="flex items-center gap-4 mt-4 pt-4 text-sm text-neutral-500 dark:text-neutral-400">
           {listing.bedrooms != null && (
             <span className="flex items-center gap-1">
               <Bed className="w-4 h-4" />
@@ -118,7 +118,7 @@ function SoldCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
 export default function SoldLetTab({ listings, total }: SoldLetTabProps) {
   if (listings.length === 0) {
     return (
-      <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm py-8 text-center">
+      <p className="text-neutral-500 dark:text-neutral-400 text-sm py-8 text-center">
         No sold or let properties
       </p>
     );
@@ -127,7 +127,7 @@ export default function SoldLetTab({ listings, total }: SoldLetTabProps) {
   return (
     <div>
       {total > listings.length && (
-        <p className="text-sm text-[#6b7280] mb-4">
+        <p className="text-sm text-neutral-500 mb-4">
           Showing {listings.length} of {total} transactions
         </p>
       )}

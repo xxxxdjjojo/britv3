@@ -167,11 +167,11 @@ async function PageContent({ params }: PageProps) {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Total Collected
             </p>
-            <span className="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
-              <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="rounded-lg bg-success-light p-1.5 dark:bg-success/10">
+              <TrendingUp className="size-3.5 text-success dark:text-success" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-success dark:text-success">
             {gbpFormatter.format(totalCollected)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -185,11 +185,11 @@ async function PageContent({ params }: PageProps) {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Outstanding
             </p>
-            <span className="rounded-lg bg-red-100 p-1.5 dark:bg-red-900/30">
-              <PoundSterling className="size-3.5 text-red-600 dark:text-red-400" />
+            <span className="rounded-lg bg-error-light p-1.5 dark:bg-error/10">
+              <PoundSterling className="size-3.5 text-error dark:text-error" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-red-600 dark:text-red-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-error dark:text-error">
             {gbpFormatter.format(totalOwed)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">Overdue / partial</p>
@@ -201,8 +201,8 @@ async function PageContent({ params }: PageProps) {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Last Payment
             </p>
-            <span className="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
-              <Calendar className="size-3.5 text-blue-600 dark:text-blue-400" />
+            <span className="rounded-lg bg-brand-accent-light p-1.5 dark:bg-brand-accent/10">
+              <Calendar className="size-3.5 text-brand-accent dark:text-brand-accent" />
             </span>
           </div>
           <p className="mt-3 font-heading text-xl font-bold text-foreground">

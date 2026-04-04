@@ -190,7 +190,7 @@ export function FinancialEntryForm(
           onClick={() => setActiveType("income")}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             activeType === "income"
-              ? "bg-white text-green-700 shadow-sm dark:bg-gray-800 dark:text-green-400"
+              ? "bg-white text-success shadow-sm dark:bg-neutral-900 dark:text-success"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -201,7 +201,7 @@ export function FinancialEntryForm(
           onClick={() => setActiveType("expense")}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             activeType === "expense"
-              ? "bg-white text-red-700 shadow-sm dark:bg-gray-800 dark:text-red-400"
+              ? "bg-white text-error shadow-sm dark:bg-neutral-900 dark:text-error"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -216,14 +216,14 @@ export function FinancialEntryForm(
       <div>
         <label
           htmlFor="category"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Category
         </label>
         <select
           id="category"
           {...register("category")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         >
           <option value="">Select category...</option>
           {categories.map((c) => (
@@ -236,7 +236,7 @@ export function FinancialEntryForm(
           ))}
         </select>
         {errors.category && (
-          <p className="mt-1 text-xs text-red-600">{errors.category.message}</p>
+          <p className="mt-1 text-xs text-error">{errors.category.message}</p>
         )}
       </div>
 
@@ -245,7 +245,7 @@ export function FinancialEntryForm(
         <div>
           <label
             htmlFor="tenancy"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
           >
             Tenancy
           </label>
@@ -253,7 +253,7 @@ export function FinancialEntryForm(
             id="tenancy"
             value={selectedTenancy}
             onChange={(e) => setSelectedTenancy(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+            className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
           >
             <option value="">Select tenancy...</option>
             {props.tenancies
@@ -273,7 +273,7 @@ export function FinancialEntryForm(
           <div>
             <label
               htmlFor="rent_period_start"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
             >
               Period Start
             </label>
@@ -281,13 +281,13 @@ export function FinancialEntryForm(
               id="rent_period_start"
               type="date"
               {...register("rent_period_start")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
             />
           </div>
           <div>
             <label
               htmlFor="rent_period_end"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
             >
               Period End
             </label>
@@ -295,7 +295,7 @@ export function FinancialEntryForm(
               id="rent_period_end"
               type="date"
               {...register("rent_period_end")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+              className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
             />
           </div>
         </div>
@@ -305,7 +305,7 @@ export function FinancialEntryForm(
       <div>
         <label
           htmlFor="amount"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Amount (GBP)
         </label>
@@ -315,10 +315,10 @@ export function FinancialEntryForm(
           step="0.01"
           min="0.01"
           {...register("amount")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         />
         {errors.amount && (
-          <p className="mt-1 text-xs text-red-600">{errors.amount.message}</p>
+          <p className="mt-1 text-xs text-error">{errors.amount.message}</p>
         )}
       </div>
 
@@ -326,7 +326,7 @@ export function FinancialEntryForm(
       <div>
         <label
           htmlFor="entry_date"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Date
         </label>
@@ -334,10 +334,10 @@ export function FinancialEntryForm(
           id="entry_date"
           type="date"
           {...register("entry_date")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         />
         {errors.entry_date && (
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-error">
             {errors.entry_date.message}
           </p>
         )}
@@ -347,7 +347,7 @@ export function FinancialEntryForm(
       <div>
         <label
           htmlFor="description"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Description (optional)
         </label>
@@ -355,25 +355,25 @@ export function FinancialEntryForm(
           id="description"
           rows={2}
           {...register("description")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         />
       </div>
 
       {/* Receipt upload (for expenses primarily, but allowed for any entry) */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-300">
           Receipt (optional, PDF/JPG/PNG, max 2MB)
         </label>
         {receipt ? (
-          <div className="mt-2 flex items-center gap-3 rounded-md border p-3 dark:border-gray-600">
+          <div className="mt-2 flex items-center gap-3 rounded-md border p-3 dark:border-neutral-600">
             {receipt.previewUrl ? (
               <img
                 src={receipt.previewUrl}
                 alt="Receipt preview"
-                className="h-16 w-16 rounded border object-cover dark:border-gray-600"
+                className="h-16 w-16 rounded border object-cover dark:border-neutral-600"
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded border bg-gray-50 text-xs text-gray-500 dark:border-gray-600 dark:bg-gray-800">
+              <div className="flex h-16 w-16 items-center justify-center rounded border bg-neutral-50 text-xs text-neutral-500 dark:border-neutral-600 dark:bg-neutral-900">
                 PDF
               </div>
             )}
@@ -383,13 +383,13 @@ export function FinancialEntryForm(
             <button
               type="button"
               onClick={removeReceipt}
-              className="text-sm text-red-600 hover:text-red-700"
+              className="text-sm text-error hover:text-error/80"
             >
               Remove
             </button>
           </div>
         ) : (
-          <label className="mt-2 flex cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 transition-colors hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500">
+          <label className="mt-2 flex cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-neutral-300 px-4 py-3 text-sm text-neutral-500 transition-colors hover:border-neutral-500 dark:border-neutral-600 dark:hover:border-neutral-500">
             Click to upload receipt
             <input
               type="file"
@@ -406,7 +406,7 @@ export function FinancialEntryForm(
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-primary-light focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? "Saving..." : `Log ${activeType === "income" ? "Income" : "Expense"}`}
         </button>

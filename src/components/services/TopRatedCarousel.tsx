@@ -138,19 +138,19 @@ export default function TopRatedCarousel({
 
                 {/* Card body */}
                 <div className="p-5">
-                  <h3 className="font-heading text-lg font-semibold text-gray-900">
+                  <h3 className="font-heading text-lg font-semibold text-neutral-900">
                     {provider.business_name}
                   </h3>
-                  <p className="mt-0.5 text-sm text-gray-500">{categoryLabel}</p>
+                  <p className="mt-0.5 text-sm text-neutral-500">{categoryLabel}</p>
 
                   {/* Rating */}
                   {rating != null && (
                     <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-secondary/10 px-3 py-1">
                       <Star className="h-4 w-4 fill-brand-secondary text-brand-secondary" />
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold text-neutral-900">
                         {rating}
                       </span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-neutral-500">
                         ({totalReviews})
                       </span>
                     </div>
@@ -158,7 +158,7 @@ export default function TopRatedCarousel({
 
                   {/* City */}
                   {provider.city && (
-                    <div className="mt-3 flex items-center gap-1.5 text-sm text-gray-500">
+                    <div className="mt-3 flex items-center gap-1.5 text-sm text-neutral-500">
                       <MapPin className="h-4 w-4" />
                       <span>{provider.city}</span>
                     </div>

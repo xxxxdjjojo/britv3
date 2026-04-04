@@ -63,7 +63,7 @@ const TOOLS: Tool[] = [
     title: "Mortgage Affordability Calculator",
     description:
       "Find out how much you can borrow based on your income, outgoings, and deposit. Get an instant estimate of your maximum property budget.",
-    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    color: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
     stat: "4.5×",
     statLabel: "Average income multiplier",
   },
@@ -74,7 +74,7 @@ const TOOLS: Tool[] = [
     description:
       "Calculate your Stamp Duty Land Tax instantly. Supports first-time buyers, standard buyers, and additional property surcharge with a full band-by-band breakdown.",
     color:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+      "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
     stat: "£2,500",
     statLabel: "Average SDLT on £300k",
   },
@@ -85,7 +85,7 @@ const TOOLS: Tool[] = [
     description:
       "Calculate gross and net rental yields for buy-to-let investments. Include management fees, maintenance, and insurance to see your true return on investment.",
     color:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+      "bg-success-light text-success dark:bg-success/20 dark:text-success",
     stat: "5.2%",
     statLabel: "Average UK rental yield",
   },
@@ -96,7 +96,7 @@ const TOOLS: Tool[] = [
     description:
       "Should you buy or keep renting? Model 30 years of costs, equity growth, and investment returns to find the break-even point for your specific situation.",
     color:
-      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+      "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
     stat: "7 yrs",
     statLabel: "Typical break-even point",
   },
@@ -107,7 +107,7 @@ const TOOLS: Tool[] = [
     description:
       "Estimate monthly energy costs for any property type and EPC rating. See how much you could save by improving your energy efficiency rating.",
     color:
-      "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+      "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
     stat: "£145",
     statLabel: "Average monthly energy bill",
   },
@@ -118,7 +118,7 @@ const TOOLS: Tool[] = [
     description:
       "Compare illustrative mortgage products from major UK lenders side by side. See how property price, deposit, and term affect your monthly payments across different rates and LTV bands.",
     color:
-      "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+      "bg-info-light text-info dark:bg-info/20 dark:text-info",
     stat: "10+",
     statLabel: "Products compared",
   },
@@ -129,7 +129,7 @@ const TOOLS: Tool[] = [
     description:
       "Find out how much you could save by switching your mortgage deal. Compare your current repayments against a new rate and term to see monthly savings and total interest saved.",
     color:
-      "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+      "bg-error-light text-error dark:bg-error/20 dark:text-error",
     stat: "£187",
     statLabel: "Average monthly saving",
   },
@@ -140,7 +140,7 @@ const TOOLS: Tool[] = [
     description:
       "Get a complete breakdown of the costs involved in buying and moving home — stamp duty, solicitor fees, surveys, removals, and EPC. Supports England, Wales, Scotland, and Northern Ireland.",
     color:
-      "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+      "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
     stat: "£5,000",
     statLabel: "Typical additional costs",
   },
@@ -152,7 +152,7 @@ const TOOLS: Tool[] = [
       "Everything you need to know about buying your first home in the UK — eligibility, Help to Buy ISA, Lifetime ISA, Shared Ownership, and Right to Buy. Includes an affordability checker.",
     badge: "Guide",
     color:
-      "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
+      "bg-success-light text-success dark:bg-success/20 dark:text-success",
     stat: "5",
     statLabel: "Government schemes covered",
   },
@@ -174,7 +174,7 @@ const TOOLS: Tool[] = [
     description:
       "Analyse buy-to-let returns with precision. Model rental income, interest rates, capital growth, and calculate gross yield, net yield, and cash-on-cash ROI over your chosen projection period.",
     color:
-      "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
+      "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
     stat: "6.8%",
     statLabel: "Example net ROI",
   },
@@ -185,7 +185,7 @@ const TOOLS: Tool[] = [
     description:
       "Calculate your Loan-to-Value ratio and see which mortgage rate tier you qualify for. Understand how your deposit, outstanding mortgage, and property value affect your borrowing costs.",
     color:
-      "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
+      "bg-info-light text-info dark:bg-info/20 dark:text-info",
     stat: "60%",
     statLabel: "Elite LTV threshold",
   },
@@ -196,7 +196,7 @@ const TOOLS: Tool[] = [
     description:
       "See how much you could save by overpaying your mortgage. Calculate interest savings, term reduction, and find your mortgage-free date with our ERC-aware overpayment modeller.",
     color:
-      "bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-400",
+      "bg-success-light text-success dark:bg-success/20 dark:text-success",
     stat: "£23k",
     statLabel: "Average interest saved",
   },

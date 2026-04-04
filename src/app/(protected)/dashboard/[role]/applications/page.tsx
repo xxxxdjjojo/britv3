@@ -35,12 +35,12 @@ function statusVariant(status: TenantApplicationStatus): "default" | "destructiv
 function StatusIcon({ status }: Readonly<{ status: TenantApplicationStatus }>) {
   switch (status) {
     case "approved":
-      return <CheckCircle2 className="size-4 text-green-600" />;
+      return <CheckCircle2 className="size-4 text-success" />;
     case "rejected":
     case "withdrawn":
-      return <XCircle className="size-4 text-red-600" />;
+      return <XCircle className="size-4 text-error" />;
     default:
-      return <AlertCircle className="size-4 text-amber-600" />;
+      return <AlertCircle className="size-4 text-warning" />;
   }
 }
 
@@ -107,19 +107,19 @@ export default async function ApplicationsPage({
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Accepted</CardDescription>
-            <CardTitle className="text-3xl text-green-600">{acceptedCount}</CardTitle>
+            <CardTitle className="text-3xl text-success">{acceptedCount}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Under Review</CardDescription>
-            <CardTitle className="text-3xl text-amber-600">{pendingCount}</CardTitle>
+            <CardTitle className="text-3xl text-warning">{pendingCount}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Rejected</CardDescription>
-            <CardTitle className="text-3xl text-red-600">{rejectedCount}</CardTitle>
+            <CardTitle className="text-3xl text-error">{rejectedCount}</CardTitle>
           </CardHeader>
         </Card>
       </div>

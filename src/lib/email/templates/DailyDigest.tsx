@@ -14,6 +14,14 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_50,
+  NEUTRAL_200,
+  NEUTRAL_400,
+  NEUTRAL_600,
+  NEUTRAL_700,
+} from "@/emails/_constants/colors";
 
 type DigestEvent = Readonly<{
   title: string;
@@ -82,7 +90,7 @@ export default function DailyDigest({
 // ---------------------------------------------------------------------------
 
 const body = {
-  backgroundColor: "#f8f9fa",
+  backgroundColor: NEUTRAL_50,
   fontFamily:
     "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   margin: "0",
@@ -96,7 +104,7 @@ const container = {
 };
 
 const header = {
-  backgroundColor: "#1B4D3E",
+  backgroundColor: BRAND_PRIMARY,
   padding: "24px",
   borderRadius: "8px 8px 0 0",
 };
@@ -115,38 +123,38 @@ const content = {
 
 const greeting = {
   fontSize: "16px",
-  color: "#333333",
+  color: NEUTRAL_700,
   margin: "0 0 16px 0",
 };
 
 const mainText = {
   fontSize: "14px",
-  color: "#555555",
+  color: NEUTRAL_600,
   margin: "0 0 24px 0",
 };
 
 const emptyText = {
   fontSize: "14px",
-  color: "#888888",
+  color: NEUTRAL_400,
   textAlign: "center" as const,
   padding: "24px 0",
 };
 
 const eventRow = {
   padding: "12px 0",
-  borderBottom: "1px solid #eeeeee",
+  borderBottom: `1px solid ${NEUTRAL_200}`,
 };
 
 const eventTitle = {
   fontSize: "14px",
-  color: "#333333",
+  color: NEUTRAL_700,
   margin: "0 0 4px 0",
   fontWeight: "600",
 };
 
 const eventDescription = {
   fontSize: "13px",
-  color: "#888888",
+  color: NEUTRAL_400,
   margin: "0",
 };
 
@@ -157,7 +165,7 @@ const ctaSection = {
 
 const ctaButton = {
   display: "inline-block",
-  backgroundColor: "#1B4D3E",
+  backgroundColor: BRAND_PRIMARY,
   color: "#ffffff",
   padding: "12px 24px",
   borderRadius: "6px",
@@ -168,6 +176,6 @@ const ctaButton = {
 const footer = {
   textAlign: "center" as const,
   fontSize: "12px",
-  color: "#999999",
+  color: NEUTRAL_400,
   marginTop: "16px",
 };

@@ -79,7 +79,7 @@ export default function OfflinePage() {
             className={`flex items-center gap-2 rounded-full px-3 py-1 font-body text-xs font-semibold uppercase tracking-wider ${
               isOnline
                 ? "bg-brand-primary text-white"
-                : "bg-amber-100 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
+                : "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning"
             }`}
           >
             <CloudOff className="size-3.5" aria-hidden="true" />
@@ -94,9 +94,9 @@ export default function OfflinePage() {
 
           {/* Offline hero */}
           <div className="flex flex-col items-center justify-center rounded-xl bg-card px-4 py-12 shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60">
-            <div className="mb-6 rounded-full bg-amber-100 p-6 dark:bg-amber-900/20">
+            <div className="mb-6 rounded-full bg-warning-light p-6 dark:bg-warning/20">
               <CloudOff
-                className="size-12 text-amber-600 dark:text-amber-400"
+                className="size-12 text-warning dark:text-warning"
                 strokeWidth={1.5}
                 aria-hidden="true"
               />

@@ -162,13 +162,13 @@ export function QuoteModal({
               {/* Service type */}
               {services.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                     Service type
                   </label>
                   <select
                     value={formData.serviceType}
                     onChange={(e) => updateField("serviceType", e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                    className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   >
                     <option value="">Select a service...</option>
                     {services.map((svc) => (
@@ -182,26 +182,26 @@ export function QuoteModal({
 
               {/* Preferred date */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                   Preferred date (optional)
                 </label>
                 <input
                   type="date"
                   value={formData.preferredDate}
                   onChange={(e) => updateField("preferredDate", e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
 
               {/* Budget */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                  Budget range <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Budget range <span className="text-error">*</span>
                 </label>
                 <select
                   value={formData.budget}
                   onChange={(e) => updateField("budget", e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                 >
                   <option value="">Select budget...</option>
@@ -215,13 +215,13 @@ export function QuoteModal({
 
               {/* Timeline */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                  Timeline <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Timeline <span className="text-error">*</span>
                 </label>
                 <select
                   value={formData.timeline}
                   onChange={(e) => updateField("timeline", e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                 >
                   <option value="">When do you need this done?</option>
@@ -235,20 +235,20 @@ export function QuoteModal({
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                   Describe the work needed{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-error">*</span>
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => updateField("description", e.target.value)}
                   rows={4}
                   placeholder="Please describe what you need done (minimum 20 characters)..."
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
                   required
                   minLength={20}
                 />
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-neutral-400 mt-1">
                   {formData.description.length}/20 characters minimum
                 </p>
               </div>
@@ -276,15 +276,15 @@ export function QuoteModal({
             <div className="space-y-4 pt-2">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                  Full name <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Full name <span className="text-error">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => updateField("name", e.target.value)}
                   placeholder="Your full name"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                   autoComplete="name"
                 />
@@ -292,15 +292,15 @@ export function QuoteModal({
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                  Email address <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                  Email address <span className="text-error">*</span>
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => updateField("email", e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   required
                   autoComplete="email"
                 />
@@ -308,7 +308,7 @@ export function QuoteModal({
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                   Phone number (optional)
                 </label>
                 <input
@@ -316,20 +316,20 @@ export function QuoteModal({
                   value={formData.phone}
                   onChange={(e) => updateField("phone", e.target.value)}
                   placeholder="+44 7700 000000"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                   autoComplete="tel"
                 />
               </div>
 
               {/* Privacy note */}
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 We&apos;ll only share your details with {providerName}.
               </p>
 
               {/* Submit error */}
               {submitError && (
-                <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3">
-                  <p className="text-sm text-red-700 dark:text-red-400">
+                <div className="rounded-lg bg-error-light dark:bg-error/10 border border-error/30 dark:border-error/40 p-3">
+                  <p className="text-sm text-error dark:text-error/80">
                     {submitError}
                   </p>
                 </div>
@@ -340,7 +340,7 @@ export function QuoteModal({
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-2.5 px-4 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm"
+                  className="flex-1 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 py-2.5 px-4 rounded-lg font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-sm"
                 >
                   &larr; Back
                 </button>
@@ -362,10 +362,10 @@ export function QuoteModal({
           <div className="py-6 text-center space-y-4">
             <CheckCircle className="w-12 h-12 text-brand-primary mx-auto" />
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+              <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
                 Request Sent!
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-xs mx-auto">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-xs mx-auto">
                 We&apos;ll connect you with {providerName} within 24 hours.
                 Check your email for confirmation.
               </p>

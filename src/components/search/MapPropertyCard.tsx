@@ -51,13 +51,13 @@ export default function MapPropertyCard({ property, onClose }: MapPropertyCardPr
         <button
           type="button"
           onClick={() => setSaved((s) => !s)}
-          className="absolute left-2.5 top-2.5 flex size-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-neutral-400 transition-colors hover:bg-white hover:text-red-500"
+          className="absolute left-2.5 top-2.5 flex size-7 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-neutral-400 transition-colors hover:bg-white hover:text-error"
           aria-label="Save property"
         >
           <Heart
             className={cn(
               "size-3.5 transition-colors",
-              saved ? "fill-red-500 text-red-500" : "",
+              saved ? "fill-error text-error" : "",
             )}
           />
         </button>

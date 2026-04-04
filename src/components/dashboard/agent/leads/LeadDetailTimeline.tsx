@@ -48,9 +48,9 @@ const STAGE_LABELS: Record<LeadStage, string> = {
 
 const STAGE_COLORS: Record<LeadStage, string> = {
   new_enquiry: "bg-muted text-muted-foreground",
-  qualified: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
-  viewing_booked: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-  offer_made: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  qualified: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/10 dark:text-brand-accent",
+  viewing_booked: "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning",
+  offer_made: "bg-success-light text-success dark:bg-success/10 dark:text-success",
   closed: "bg-muted text-muted-foreground",
 };
 

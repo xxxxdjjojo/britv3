@@ -39,29 +39,29 @@ export function AreaPriceTrend({ data = DEFAULT_DATA, className }: AreaPriceTren
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#1B4D3E" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--color-brand-primary)" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="var(--color-brand-primary)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
             dataKey="year"
-            tick={{ fontSize: 10, fill: "#9E9EAB", fontWeight: 700 }}
+            tick={{ fontSize: 10, fill: "var(--color-neutral-400)", fontWeight: 700 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis hide />
           <Tooltip
             formatter={(value: number) => [formatPrice(value), "Avg Price"]}
-            contentStyle={{ borderRadius: 8, border: "1px solid #E2E2E8", fontSize: 12 }}
+            contentStyle={{ borderRadius: 8, border: "1px solid var(--color-neutral-200)", fontSize: 12 }}
           />
           <Area
             type="monotone"
             dataKey="price"
-            stroke="#1B4D3E"
+            stroke="var(--color-brand-primary)"
             strokeWidth={3}
             fill={`url(#${gradientId})`}
             dot={false}
-            activeDot={{ r: 5, fill: "#1B4D3E" }}
+            activeDot={{ r: 5, fill: "var(--color-brand-primary)" }}
           />
         </AreaChart>
       </ResponsiveContainer>

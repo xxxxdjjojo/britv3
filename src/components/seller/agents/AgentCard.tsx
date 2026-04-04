@@ -18,7 +18,7 @@ export function AgentCard({ agent, selected = false, onToggleCompare, compareCou
   return (
     <div className={cn(
       "bg-surface-container-lowest rounded-2xl shadow-sm border transition-all duration-200 overflow-hidden hover:shadow-xl",
-      selected ? "border-[#1B4D3E] ring-2 ring-[#1B4D3E]/20" : "border-[--color-outline-variant]",
+      selected ? "border-brand-primary ring-2 ring-brand-primary/20" : "border-[--color-outline-variant]",
     )}>
       <div className="p-6">
         <div className="flex items-start gap-4">
@@ -30,7 +30,7 @@ export function AgentCard({ agent, selected = false, onToggleCompare, compareCou
               className="h-14 w-14 rounded-full object-cover flex-shrink-0"
             />
           ) : (
-            <div className="h-14 w-14 rounded-full bg-gradient-to-br from-[#1B4D3E]/20 to-[#D4A853]/20 flex items-center justify-center text-[#1B4D3E] font-bold text-xl flex-shrink-0">
+            <div className="h-14 w-14 rounded-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center text-brand-primary font-bold text-xl flex-shrink-0">
               {agent.full_name.charAt(0)}
             </div>
           )}
@@ -39,7 +39,7 @@ export function AgentCard({ agent, selected = false, onToggleCompare, compareCou
             <p className="text-sm text-[--color-on-surface-variant] truncate">{agent.agency_name}</p>
             {agent.average_rating !== null && (
               <div className="flex items-center gap-1 mt-1">
-                <Star size={12} className="text-[#D4A853] fill-[#D4A853]" />
+                <Star size={12} className="text-brand-secondary fill-brand-secondary" />
                 <span className="text-xs font-semibold text-on-surface">{agent.average_rating.toFixed(1)}</span>
                 <span className="text-xs text-[--color-on-surface-variant]">({agent.review_count})</span>
               </div>
@@ -83,7 +83,7 @@ export function AgentCard({ agent, selected = false, onToggleCompare, compareCou
       <div className="px-6 pb-6 flex gap-2">
         <Link
           href={`/dashboard/seller/agents/${agent.id}`}
-          className="flex-1 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold text-center hover:bg-[#2D7A5F] transition-colors"
+          className="flex-1 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold text-center hover:bg-brand-primary-light transition-colors"
         >
           View Profile
         </Link>
@@ -95,7 +95,7 @@ export function AgentCard({ agent, selected = false, onToggleCompare, compareCou
             className={cn(
               "px-4 py-2.5 rounded-xl border text-sm font-semibold transition-all",
               selected
-                ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
+                ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
                 : "border-[--color-outline-variant] text-[--color-on-surface-variant] hover:border-[--color-outline] disabled:opacity-40",
             )}
           >

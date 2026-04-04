@@ -601,7 +601,7 @@ function SearchPageInner() {
         <button
           type="button"
           onClick={resetFilters}
-          className="flex items-center gap-1.5 text-[0.625rem] font-bold uppercase tracking-widest text-neutral-400 hover:text-red-500"
+          className="flex items-center gap-1.5 text-[0.625rem] font-bold uppercase tracking-widest text-neutral-400 hover:text-error"
         >
           <Trash2 className="size-3" />
           Clear All

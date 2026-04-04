@@ -15,12 +15,12 @@ describe("ResponsiveSidebar", () => {
 
   it("renders with custom className on aside", () => {
     const { container } = render(
-      <ResponsiveSidebar className="bg-green-900">
+      <ResponsiveSidebar className="bg-neutral-900">
         <nav>Nav</nav>
       </ResponsiveSidebar>,
     );
     const aside = container.querySelector("aside");
-    expect(aside?.className).toContain("bg-green-900");
+    expect(aside?.className).toContain("bg-neutral-900");
   });
 
   it("renders hamburger button for mobile", () => {

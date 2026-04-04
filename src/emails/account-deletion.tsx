@@ -3,6 +3,14 @@ import type { AccountDeletionEmailProps } from "@/types/email";
 import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
+import {
+  BRAND_PRIMARY,
+  BRAND_ACCENT,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_200,
+  NEUTRAL_50,
+} from "@/emails/_constants/colors";
 
 export function AccountDeletionEmail({
   firstName,
@@ -25,7 +33,7 @@ export function AccountDeletionEmail({
           style={{
             fontSize: "24px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -35,19 +43,19 @@ export function AccountDeletionEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 20px 0",
             lineHeight: "1.6",
           }}
         >
           Hi {firstName}, your Britestate account has been successfully deleted on{" "}
-          <strong style={{ color: "#0A0A0B" }}>{formattedDate}</strong>.
+          <strong style={{ color: NEUTRAL_950 }}>{formattedDate}</strong>.
         </Text>
 
         <div
           style={{
-            backgroundColor: "#F8F8FA",
-            border: "1px solid #E2E2E8",
+            backgroundColor: NEUTRAL_50,
+            border: `1px solid ${NEUTRAL_200}`,
             borderRadius: "8px",
             padding: "20px",
             marginBottom: "24px",
@@ -56,13 +64,13 @@ export function AccountDeletionEmail({
           <Text
             style={{
               fontSize: "14px",
-              color: "#5E5E6A",
+              color: NEUTRAL_600,
               margin: "0",
               lineHeight: "1.6",
             }}
           >
             Your personal data will be retained for{" "}
-            <strong style={{ color: "#0A0A0B" }}>{dataRetentionDays} days</strong> in accordance
+            <strong style={{ color: NEUTRAL_950 }}>{dataRetentionDays} days</strong> in accordance
             with our data retention policy, after which it will be permanently deleted.
           </Text>
         </div>
@@ -71,7 +79,7 @@ export function AccountDeletionEmail({
           <Text
             style={{
               fontSize: "14px",
-              color: "#5E5E6A",
+              color: NEUTRAL_600,
               margin: "0",
               lineHeight: "1.6",
             }}
@@ -80,7 +88,7 @@ export function AccountDeletionEmail({
             <Link
               href={supportUrl}
               style={{
-                color: "#2563EB",
+                color: BRAND_ACCENT,
                 textDecoration: "none",
               }}
             >

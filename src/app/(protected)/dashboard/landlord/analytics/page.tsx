@@ -131,11 +131,11 @@ async function PageContent() {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Total Income
             </p>
-            <span className="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
-              <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="rounded-lg bg-success-light p-1.5 dark:bg-success/10">
+              <TrendingUp className="size-3.5 text-success dark:text-success" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-success dark:text-success">
             {formatGBP(totalIncome)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">Last 12 months</p>
@@ -147,11 +147,11 @@ async function PageContent() {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Total Expenses
             </p>
-            <span className="rounded-lg bg-red-100 p-1.5 dark:bg-red-900/30">
-              <TrendingDown className="size-3.5 text-red-600 dark:text-red-400" />
+            <span className="rounded-lg bg-error-light p-1.5 dark:bg-error/10">
+              <TrendingDown className="size-3.5 text-error dark:text-error" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-red-600 dark:text-red-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-error dark:text-error">
             {formatGBP(totalExpenses)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">Last 12 months</p>
@@ -163,14 +163,14 @@ async function PageContent() {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Net Cashflow
             </p>
-            <span className={`rounded-lg p-1.5 ${netCashflow >= 0 ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-red-100 dark:bg-red-900/30"}`}>
+            <span className={`rounded-lg p-1.5 ${netCashflow >= 0 ? "bg-success-light dark:bg-success/10" : "bg-error-light dark:bg-error/10"}`}>
               {netCashflow >= 0
-                ? <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                : <TrendingDown className="size-3.5 text-red-600 dark:text-red-400" />
+                ? <TrendingUp className="size-3.5 text-success dark:text-success" />
+                : <TrendingDown className="size-3.5 text-error dark:text-error" />
               }
             </span>
           </div>
-          <p className={`mt-3 font-heading text-2xl font-bold ${netCashflow >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+          <p className={`mt-3 font-heading text-2xl font-bold ${netCashflow >= 0 ? "text-success dark:text-success" : "text-error dark:text-error"}`}>
             {formatGBP(netCashflow)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">Income minus expenses</p>
@@ -195,9 +195,9 @@ async function PageContent() {
 
       {/* Maintenance alert if needed */}
       {kpis.open_maintenance > 0 && (
-        <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/40 dark:bg-amber-900/10">
-          <Wrench className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
-          <p className="text-sm text-amber-700 dark:text-amber-400">
+        <div className="flex items-center gap-3 rounded-xl border border-warning/30 bg-warning-light p-4 dark:border-warning/20 dark:bg-warning/10">
+          <Wrench className="size-4 shrink-0 text-warning dark:text-warning" />
+          <p className="text-sm text-warning dark:text-warning">
             <span className="font-semibold">{kpis.open_maintenance}</span> open maintenance request{kpis.open_maintenance > 1 ? "s" : ""} across your portfolio
           </p>
         </div>

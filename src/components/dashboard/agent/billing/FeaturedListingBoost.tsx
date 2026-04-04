@@ -72,8 +72,8 @@ function ListingCard({
       onClick={onSelect}
       className={`w-full text-left rounded-lg border-2 p-3 transition-all ${
         selected
-          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-          : "border-border hover:border-blue-200"
+          ? "border-brand-accent bg-brand-accent-light dark:bg-brand-accent/10"
+          : "border-border hover:border-brand-accent/40"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -90,7 +90,7 @@ function ListingCard({
             </p>
           )}
         </div>
-        {selected && <Check className="size-4 text-blue-500 shrink-0 mt-0.5" />}
+        {selected && <Check className="size-4 text-brand-accent shrink-0 mt-0.5" />}
       </div>
     </button>
   );
@@ -149,7 +149,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Star className="size-4 text-yellow-500" />
+              <Star className="size-4 text-warning" />
               Currently Boosted Listings
             </CardTitle>
           </CardHeader>
@@ -162,7 +162,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
                 return (
                   <div
                     key={listing.id}
-                    className="flex items-center justify-between rounded-md bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 px-3 py-2"
+                    className="flex items-center justify-between rounded-md bg-warning-light dark:bg-warning/10 border border-warning/30 dark:border-warning/40 px-3 py-2"
                   >
                     <div>
                       <p className="text-sm font-medium">{listing.title ?? address}</p>
@@ -171,7 +171,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
                       )}
                     </div>
                     <div className="text-right">
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-yellow-700 dark:text-yellow-400">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-warning dark:text-warning">
                         <Star className="size-3" />
                         Featured
                       </span>
@@ -196,9 +196,9 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
             <div
               className={`flex size-7 items-center justify-center rounded-full text-sm font-medium ${
                 step === s
-                  ? "bg-blue-600 text-white"
+                  ? "bg-brand-accent text-white"
                   : step > s
-                  ? "bg-green-500 text-white"
+                  ? "bg-success text-white"
                   : "bg-muted text-muted-foreground"
               }`}
             >
@@ -229,7 +229,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
                 <p className="text-muted-foreground text-sm">No active listings available to boost.</p>
                 <a
                   href="/dashboard/agent/listings/create"
-                  className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+                  className="text-sm text-brand-accent hover:underline mt-2 inline-block"
                 >
                   Create a listing
                 </a>
@@ -250,7 +250,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
               <Button
                 onClick={() => setStep(2)}
                 disabled={!selectedListingId}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-brand-accent hover:bg-brand-accent/90"
               >
                 Continue
               </Button>
@@ -276,8 +276,8 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
                   onClick={() => setSelectedDuration(opt)}
                   className={`rounded-lg border-2 p-4 text-left transition-all ${
                     selectedDuration.days === opt.days
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                      : "border-border hover:border-blue-200"
+                      ? "border-brand-accent bg-brand-accent-light dark:bg-brand-accent/10"
+                      : "border-border hover:border-brand-accent/40"
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -289,11 +289,11 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
                       </p>
                     </div>
                     {selectedDuration.days === opt.days && (
-                      <Check className="size-4 text-blue-500" />
+                      <Check className="size-4 text-brand-accent" />
                     )}
                   </div>
                   {opt.days === 14 && (
-                    <span className="mt-2 inline-block text-xs font-medium text-blue-600 bg-blue-100 dark:bg-blue-900/30 rounded px-2 py-0.5">
+                    <span className="mt-2 inline-block text-xs font-medium text-brand-accent bg-brand-accent-light dark:bg-brand-accent/20 rounded px-2 py-0.5">
                       Popular
                     </span>
                   )}
@@ -306,7 +306,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
               </Button>
               <Button
                 onClick={() => setStep(3)}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-brand-accent hover:bg-brand-accent/90"
               >
                 Continue
               </Button>
@@ -326,9 +326,9 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Featured listing preview */}
-            <div className="rounded-lg border-2 border-yellow-400 bg-yellow-50 dark:bg-yellow-950/20 p-4">
+            <div className="rounded-lg border-2 border-warning bg-warning-light dark:bg-warning/10 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400 px-2.5 py-0.5 text-xs font-semibold text-yellow-900">
+                <span className="inline-flex items-center gap-1 rounded-full bg-warning px-2.5 py-0.5 text-xs font-semibold text-warning-foreground">
                   <Star className="size-3" />
                   Featured
                 </span>
@@ -393,7 +393,7 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
               <Button
                 onClick={() => void handlePurchase()}
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-brand-accent hover:bg-brand-accent/90"
               >
                 {loading ? "Redirecting to payment..." : `Purchase Boost — ${formatGbp(selectedDuration.price_gbp)}`}
               </Button>

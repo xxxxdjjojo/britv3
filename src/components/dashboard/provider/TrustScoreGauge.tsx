@@ -31,10 +31,10 @@ export function TrustScoreGauge({ score }: TrustScoreGaugeProps) {
 
   const scoreColor =
     clampedScore >= 80
-      ? "#1B4D3E"
+      ? "var(--color-brand-primary)"
       : clampedScore >= 50
-        ? "#CA8A04"
-        : "#DC2626";
+        ? "var(--color-warning)"
+        : "var(--color-error)";
 
   return (
     <div className="flex flex-col items-center gap-4">

@@ -48,7 +48,7 @@ export default function RefundPolicyPage() {
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Rose callout */}
-      <div className="mb-8 rounded-xl bg-rose-50 dark:bg-rose-900/20 p-4 ring-1 ring-rose-200/60 dark:ring-rose-700/60 font-body text-sm text-rose-800 dark:text-rose-300">
+      <div className="mb-8 rounded-xl bg-error-light dark:bg-error/20 p-4 ring-1 ring-error/30 dark:ring-error/30 font-body text-sm text-error dark:text-error">
         You have a 14-day cooling-off period for most online purchases under UK consumer law. If
         you&rsquo;re not satisfied with a paid service, contact us at{" "}
         <a href="mailto:billing@britestate.co.uk" className="underline hover:no-underline">

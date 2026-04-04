@@ -114,8 +114,8 @@ export function getNextTier(
  * Badge color map for use in UI components.
  */
 export const BADGE_COLORS: Record<TierConfig["badge"], { bg: string; text: string; border: string }> = {
-  bronze: { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-200" },
+  bronze: { bg: "bg-warning-light", text: "text-warning", border: "border-warning/30" },
   silver: { bg: "bg-neutral-100", text: "text-neutral-600", border: "border-neutral-300" },
-  gold: { bg: "bg-yellow-100", text: "text-yellow-700", border: "border-yellow-300" },
-  platinum: { bg: "bg-purple-100", text: "text-purple-700", border: "border-purple-300" },
+  gold: { bg: "bg-warning-light", text: "text-warning", border: "border-warning/50" },
+  platinum: { bg: "bg-brand-accent-light", text: "text-brand-accent", border: "border-brand-accent/30" },
 };

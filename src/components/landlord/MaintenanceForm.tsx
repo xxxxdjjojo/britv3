@@ -156,7 +156,7 @@ export function MaintenanceForm(
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Title
         </label>
@@ -165,13 +165,13 @@ export function MaintenanceForm(
           type="text"
           maxLength={200}
           {...register("title")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         />
         <div className="mt-1 flex items-center justify-between">
           {errors.title && (
-            <p className="text-xs text-red-600">{errors.title.message}</p>
+            <p className="text-xs text-error">{errors.title.message}</p>
           )}
-          <p className="ml-auto text-xs text-gray-400">
+          <p className="ml-auto text-xs text-neutral-500">
             {titleValue?.length ?? 0}/200
           </p>
         </div>
@@ -181,7 +181,7 @@ export function MaintenanceForm(
       <div>
         <label
           htmlFor="description"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Description
         </label>
@@ -190,15 +190,15 @@ export function MaintenanceForm(
           rows={4}
           maxLength={2000}
           {...register("description")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         />
         <div className="mt-1 flex items-center justify-between">
           {errors.description && (
-            <p className="text-xs text-red-600">
+            <p className="text-xs text-error">
               {errors.description.message}
             </p>
           )}
-          <p className="ml-auto text-xs text-gray-400">
+          <p className="ml-auto text-xs text-neutral-500">
             {descriptionValue?.length ?? 0}/2000
           </p>
         </div>
@@ -208,14 +208,14 @@ export function MaintenanceForm(
       <div>
         <label
           htmlFor="priority"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
         >
           Priority
         </label>
         <select
           id="priority"
           {...register("priority")}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
         >
           {MAINTENANCE_PRIORITIES.map((p) => (
             <option key={p} value={p}>
@@ -224,13 +224,13 @@ export function MaintenanceForm(
           ))}
         </select>
         {errors.priority && (
-          <p className="mt-1 text-xs text-red-600">{errors.priority.message}</p>
+          <p className="mt-1 text-xs text-error">{errors.priority.message}</p>
         )}
       </div>
 
       {/* Photos */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-neutral-600 dark:text-neutral-300">
           Photos (up to 3, max 1MB each)
         </label>
         <div className="mt-2 flex flex-wrap gap-3">
@@ -239,12 +239,12 @@ export function MaintenanceForm(
               <img
                 src={photo.previewUrl}
                 alt={`Preview ${index + 1}`}
-                className="h-24 w-24 rounded-md border object-cover dark:border-gray-600"
+                className="h-24 w-24 rounded-md border object-cover dark:border-neutral-600"
               />
               <button
                 type="button"
                 onClick={() => removePhoto(index)}
-                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white hover:bg-red-600"
+                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-error text-xs text-white hover:bg-error/90"
                 aria-label={`Remove photo ${index + 1}`}
               >
                 x
@@ -252,7 +252,7 @@ export function MaintenanceForm(
             </div>
           ))}
           {photos.length < 3 && (
-            <label className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-500 dark:border-gray-600 dark:hover:border-gray-500">
+            <label className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-neutral-300 text-neutral-500 transition-colors hover:border-neutral-500 hover:text-neutral-600 dark:border-neutral-600 dark:hover:border-neutral-500">
               <span className="text-2xl">+</span>
               <input
                 type="file"
@@ -270,7 +270,7 @@ export function MaintenanceForm(
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-primary-light focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? "Creating..." : "Create Request"}
         </button>

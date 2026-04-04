@@ -140,9 +140,9 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
 
       {/* Overdue alert banner */}
       {overdueCount > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/40 dark:bg-red-900/10">
-          <AlertCircle className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
-          <p className="text-sm font-medium text-red-700 dark:text-red-400">
+        <div className="flex items-start gap-3 rounded-xl border border-error/30 bg-error-light p-4 dark:border-error/20 dark:bg-error/10">
+          <AlertCircle className="mt-0.5 size-4 shrink-0 text-error dark:text-error" />
+          <p className="text-sm font-medium text-error dark:text-error">
             {overdueCount} overdue payment{overdueCount > 1 ? "s" : ""} require{overdueCount === 1 ? "s" : ""} attention
           </p>
         </div>
@@ -166,12 +166,12 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Collected
           </p>
-          <p className="mt-2 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="mt-2 font-heading text-2xl font-bold text-success dark:text-success">
             {gbpFormatter.format(totalCollected)}
           </p>
           <div className="mt-1 flex items-center gap-1">
-            <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
-            <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="size-3 text-success dark:text-success" />
+            <p className="text-xs text-success dark:text-success">
               {collectionRate}% collection rate
             </p>
           </div>
@@ -182,12 +182,12 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Outstanding
           </p>
-          <p className="mt-2 font-heading text-2xl font-bold text-amber-600 dark:text-amber-400">
+          <p className="mt-2 font-heading text-2xl font-bold text-warning dark:text-warning">
             {gbpFormatter.format(outstanding)}
           </p>
           <div className="mt-1 flex items-center gap-1">
-            <TrendingDown className="size-3 text-amber-600 dark:text-amber-400" />
-            <p className="text-xs text-amber-600 dark:text-amber-400">
+            <TrendingDown className="size-3 text-warning dark:text-warning" />
+            <p className="text-xs text-warning dark:text-warning">
               Partial / pending
             </p>
           </div>
@@ -198,16 +198,16 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Overdue
           </p>
-          <p className={`mt-2 font-heading text-2xl font-bold ${overdueCount > 0 ? "text-red-600 dark:text-red-400" : "text-foreground"}`}>
+          <p className={`mt-2 font-heading text-2xl font-bold ${overdueCount > 0 ? "text-error dark:text-error" : "text-foreground"}`}>
             {overdueCount}
           </p>
           <div className="mt-1 flex items-center gap-1">
             {overdueCount > 0 ? (
-              <TrendingUp className="size-3 text-red-600 dark:text-red-400" />
+              <TrendingUp className="size-3 text-error dark:text-error" />
             ) : (
-              <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+              <CheckCircle2 className="size-3 text-success dark:text-success" />
             )}
-            <p className={`text-xs ${overdueCount > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+            <p className={`text-xs ${overdueCount > 0 ? "text-error dark:text-error" : "text-success dark:text-success"}`}>
               {overdueCount > 0 ? "Late payments" : "All clear"}
             </p>
           </div>
@@ -266,7 +266,7 @@ export function RentCollectionClient({ initialData }: RentCollectionClientProps)
         {displayEntries.length === 0 ? (
           <div className="flex h-40 items-center justify-center">
             <div className="text-center">
-              <CheckCircle2 className="mx-auto mb-2 size-8 text-emerald-500" />
+              <CheckCircle2 className="mx-auto mb-2 size-8 text-success" />
               <p className="text-sm font-medium text-foreground">No rent entries found</p>
               <p className="text-xs text-muted-foreground">
                 {activeTab === "overdue" ? "No overdue payments — great!" : "Nothing to display"}

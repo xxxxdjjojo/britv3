@@ -69,7 +69,7 @@ async function PageContent({ params }: Props) {
           {agent.avatar_url ? (
             <Image src={agent.avatar_url} alt={agent.full_name} width={80} height={80} className="rounded-2xl object-cover flex-shrink-0" />
           ) : (
-            <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-[#1B4D3E]/20 to-[#D4A853]/20 flex items-center justify-center text-[#1B4D3E] font-bold text-3xl flex-shrink-0">
+            <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center text-brand-primary font-bold text-3xl flex-shrink-0">
               {agent.full_name.charAt(0)}
             </div>
           )}
@@ -80,7 +80,7 @@ async function PageContent({ params }: Props) {
               <div className="flex items-center gap-1.5 mt-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} size={16}
-                    className={i < Math.round(agent.average_rating!) ? "text-[#D4A853] fill-[#D4A853]" : "text-[--color-outline-variant]"} />
+                    className={i < Math.round(agent.average_rating!) ? "text-brand-secondary fill-brand-secondary" : "text-[--color-outline-variant]"} />
                 ))}
                 <span className="text-sm text-[--color-on-surface-variant] ml-1">
                   {agent.average_rating.toFixed(1)} ({agent.review_count} reviews)
@@ -130,7 +130,7 @@ async function PageContent({ params }: Props) {
         )}
       </div>
 
-      <div className="bg-[#1B4D3E] rounded-2xl p-8 text-white">
+      <div className="bg-brand-primary rounded-2xl p-8 text-white">
         <h3 className="text-xl font-bold font-['Plus_Jakarta_Sans']">Request a Valuation</h3>
         <p className="text-white/70 mt-2 text-sm">
           {agent.full_name} will visit your property and provide a professional market appraisal.
@@ -138,7 +138,7 @@ async function PageContent({ params }: Props) {
         <div className="flex gap-3 mt-6">
           <a
             href={`mailto:valuation@britestate.co.uk?subject=Valuation Request - ${encodeURIComponent(agent.full_name)}`}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#1B4D3E] text-sm font-bold hover:bg-white/90 active:scale-95 transition-all shadow-lg"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-brand-primary text-sm font-bold hover:bg-white/90 active:scale-95 transition-all shadow-lg"
           >
             <Mail size={16} />
             Request Valuation

@@ -114,8 +114,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
       <div className="flex justify-end">
         <Button
           onClick={() => setShowCreate((v) => !v)}
-          style={{ backgroundColor: "#1B4D3E" }}
-          className="text-white hover:opacity-90"
+          className="bg-brand-primary text-white hover:bg-brand-primary/90"
         >
           {showCreate ? (
             <>
@@ -240,8 +239,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
             <Button
               type="submit"
               disabled={creating}
-              style={{ backgroundColor: "#1B4D3E" }}
-              className="text-white hover:opacity-90"
+              className="bg-brand-primary text-white hover:bg-brand-primary/90"
             >
               {creating ? "Creating..." : "Create Code"}
             </Button>
@@ -303,7 +301,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-red-600 hover:text-red-700 hover:border-red-300"
+                      className="text-error hover:text-error/80 hover:border-error/30"
                       onClick={() => handleDelete(code.id)}
                       disabled={isPending}
                     >

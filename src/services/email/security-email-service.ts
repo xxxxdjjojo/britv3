@@ -58,25 +58,25 @@ export async function sendSecurityAlert(
       subject: `${subject} — Britestate`,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
-          <h2 style="color: #1B4D3E; margin-bottom: 16px;">Security Alert</h2>
-          <p style="color: #333; font-size: 15px; line-height: 1.6;">
+          <h2 style="color: #1B4D3E; margin-bottom: 16px;">Security Alert</h2><!-- BRAND_PRIMARY -->
+          <p style="color: #46464F; font-size: 15px; line-height: 1.6;"><!-- NEUTRAL_700 -->
             Hi ${escapeHtml(input.firstName || "there")},
           </p>
-          <p style="color: #333; font-size: 15px; line-height: 1.6;">
+          <p style="color: #46464F; font-size: 15px; line-height: 1.6;"><!-- NEUTRAL_700 -->
             ${description}
           </p>
-          <p style="color: #333; font-size: 15px; line-height: 1.6;">
+          <p style="color: #46464F; font-size: 15px; line-height: 1.6;"><!-- NEUTRAL_700 -->
             If you made this change, no action is needed.
           </p>
-          <p style="color: #dc2626; font-size: 15px; line-height: 1.6; font-weight: 600;">
+          <p style="color: #DC2626; font-size: 15px; line-height: 1.6; font-weight: 600;"><!-- ERROR -->
             If you did not make this change, please secure your account immediately by resetting your password.
           </p>
           <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/forgot-password"
-             style="display: inline-block; background: #1B4D3E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 8px;">
+             style="display: inline-block; background: #1B4D3E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 8px;"><!-- BRAND_PRIMARY -->
             Reset Password
           </a>
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;" />
-          <p style="color: #9ca3af; font-size: 12px;">
+          <hr style="border: none; border-top: 1px solid #E2E2E8; margin: 32px 0;" /><!-- NEUTRAL_200 -->
+          <p style="color: #9E9EAB; font-size: 12px;"><!-- NEUTRAL_400 -->
             This is an automated security notification from Britestate. You cannot unsubscribe from security alerts.
           </p>
         </div>

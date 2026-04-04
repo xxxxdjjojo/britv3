@@ -22,10 +22,10 @@ import {
 import type { RfqStatus } from "@/types/marketplace";
 
 const STATUS_COLORS: Record<RfqStatus, string> = {
-  open: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  quotes_received: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  awarded: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+  open: "bg-success-light text-success dark:bg-success/20 dark:text-success",
+  quotes_received: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
+  awarded: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
+  cancelled: "bg-error-light text-error dark:bg-error/20 dark:text-error",
   expired: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
 };
 

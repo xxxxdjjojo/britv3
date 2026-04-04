@@ -58,13 +58,13 @@ const STATUS_LABELS: Record<
   { label: string; className: string }
 > = {
   draft: { label: "Draft", className: "bg-neutral-100 text-neutral-600" },
-  active: { label: "For Sale", className: "bg-green-100 text-green-800" },
+  active: { label: "For Sale", className: "bg-success-light text-success-dark" },
   under_offer: {
     label: "Under Offer",
-    className: "bg-amber-100 text-amber-800",
+    className: "bg-warning-light text-warning-dark",
   },
-  sold: { label: "Sold", className: "bg-red-100 text-red-800" },
-  let: { label: "Let", className: "bg-blue-100 text-blue-800" },
+  sold: { label: "Sold", className: "bg-error-light text-error-dark" },
+  let: { label: "Let", className: "bg-brand-accent-light text-brand-accent" },
   withdrawn: {
     label: "Withdrawn",
     className: "bg-neutral-100 text-neutral-600",
@@ -116,7 +116,7 @@ function getPriceVelocity(listing: {
     return {
       label: "Hot market",
       icon: "🔥",
-      className: "bg-red-50 text-red-700 border border-red-200",
+      className: "bg-error-light text-error border border-error/20",
     };
   }
 
@@ -124,7 +124,7 @@ function getPriceVelocity(listing: {
     return {
       label: "High interest",
       icon: "↗",
-      className: "bg-amber-50 text-amber-700 border border-amber-200",
+      className: "bg-warning-light text-warning border border-warning/20",
     };
   }
 

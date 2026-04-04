@@ -57,7 +57,7 @@ export default function ForbiddenPage() {
 
           {/* Error badge */}
           <div className="mb-4">
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+            <span className="inline-block rounded-full bg-warning-light px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-warning dark:bg-warning/20 dark:text-warning">
               Error 403
             </span>
           </div>
@@ -84,7 +84,7 @@ export default function ForbiddenPage() {
             </Link>
             <Link
               href="/help"
-              className="inline-flex min-w-40 items-center justify-center rounded-lg bg-amber-100 px-6 py-2.5 font-body text-sm font-medium text-amber-800 transition-colors hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/30 focus-visible:ring-offset-2 dark:bg-amber-900/20 dark:text-amber-300"
+              className="inline-flex min-w-40 items-center justify-center rounded-lg bg-warning-light px-6 py-2.5 font-body text-sm font-medium text-warning transition-colors hover:bg-warning-light/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30 focus-visible:ring-offset-2 dark:bg-warning/20 dark:text-warning"
             >
               <Headphones className="mr-2 size-4" aria-hidden="true" />
               Contact Support

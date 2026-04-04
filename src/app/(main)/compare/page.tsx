@@ -32,26 +32,26 @@ export default function ComparePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf9f8] flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f8]">
+    <div className="min-h-screen bg-neutral-50">
       {/* Page header */}
-      <div className="bg-white border-b border-[#e3e2e1]">
+      <div className="bg-white border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div>
               <p className="text-sm font-semibold text-brand-secondary uppercase tracking-widest mb-2">
                 Compare
               </p>
-              <h1 className="font-heading font-bold text-[#1a1c1c] text-3xl sm:text-4xl mb-3">
+              <h1 className="font-heading font-bold text-neutral-900 text-3xl sm:text-4xl mb-3">
                 Compare Service Providers
               </h1>
-              <p className="text-[#404945] max-w-2xl text-base leading-relaxed">
+              <p className="text-neutral-600 max-w-2xl text-base leading-relaxed">
                 Compare your shortlisted professionals side-by-side to make the
                 most informed decision.
               </p>
@@ -75,10 +75,10 @@ export default function ComparePage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-primary/10 mb-6">
               <GitCompareArrows className="w-10 h-10 text-brand-primary" />
             </div>
-            <h2 className="font-heading font-bold text-[#1a1c1c] text-2xl mb-3">
+            <h2 className="font-heading font-bold text-neutral-900 text-2xl mb-3">
               No providers to compare yet
             </h2>
-            <p className="text-[#404945] mb-8 max-w-md mx-auto leading-relaxed">
+            <p className="text-neutral-600 mb-8 max-w-md mx-auto leading-relaxed">
               Browse provider profiles and click &ldquo;Compare&rdquo; to add up
               to 3 professionals side-by-side.
             </p>

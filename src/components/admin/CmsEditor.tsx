@@ -161,8 +161,7 @@ export function CmsEditor({ article, articleType, backHref }: Props) {
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            style={{ backgroundColor: "#1B4D3E" }}
-            className="text-white hover:opacity-90"
+            className="bg-brand-primary text-white hover:bg-brand-primary/90"
           >
             <Save className="h-4 w-4 mr-1.5" />
             {isSaving ? "Saving..." : "Save"}

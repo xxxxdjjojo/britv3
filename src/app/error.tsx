@@ -40,7 +40,7 @@ export default function ErrorPage({
 
           {/* Error badge */}
           <div className="mb-4">
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+            <span className="inline-block rounded-full bg-warning-light px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-warning dark:bg-warning/20 dark:text-warning">
               Error 500
             </span>
           </div>
@@ -73,7 +73,7 @@ export default function ErrorPage({
             <Button
               asChild
               size="lg"
-              className="h-12 w-full bg-amber-100 font-body text-sm font-medium text-amber-800 hover:bg-amber-200 dark:bg-amber-900/20 dark:text-amber-300"
+              className="h-12 w-full bg-warning-light font-body text-sm font-medium text-warning hover:bg-warning-light/80 dark:bg-warning/20 dark:text-warning"
             >
               <Link href="/">
                 <Home className="mr-2 size-4" aria-hidden="true" />

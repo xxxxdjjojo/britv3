@@ -60,9 +60,9 @@ export function ApplicationDetailActions({ application }: Props) {
   }
 
   return (
-    <Card className="rounded-2xl border-[color:var(--color-brand-primary)]/20 dark:border-emerald-800/30 bg-[color:var(--color-brand-primary-lighter)]/50 dark:bg-[color:var(--color-brand-primary)]/5">
+    <Card className="rounded-2xl border-[color:var(--color-brand-primary)]/20 dark:border-brand-primary/20 bg-[color:var(--color-brand-primary-lighter)]/50 dark:bg-[color:var(--color-brand-primary)]/5">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-heading text-[color:var(--color-brand-primary)] dark:text-emerald-400">
+        <CardTitle className="text-base font-heading text-[color:var(--color-brand-primary)] dark:text-brand-primary">
           Advance Stage
         </CardTitle>
       </CardHeader>

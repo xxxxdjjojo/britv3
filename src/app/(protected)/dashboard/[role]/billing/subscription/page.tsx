@@ -57,8 +57,8 @@ export default async function SubscriptionPage({
       </div>
 
       {!hasActivePlan ? (
-        <div className="rounded-xl bg-orange-50 p-6 text-center ring-1 ring-orange-200/60 dark:bg-orange-950/40 dark:ring-orange-800/60">
-          <AlertCircle className="mx-auto mb-3 text-orange-500" size={32} />
+        <div className="rounded-xl bg-warning-light p-6 text-center ring-1 ring-warning/20 dark:bg-warning/10 dark:ring-warning/30">
+          <AlertCircle className="mx-auto mb-3 text-warning" size={32} />
           <p className="font-heading text-base font-semibold text-foreground">No active subscription</p>
           <p className="mt-1 font-body text-sm text-neutral-500">
             Subscribe to unlock Britestate&apos;s full feature set.
@@ -80,8 +80,8 @@ export default async function SubscriptionPage({
                 subscription.status === "active"
                   ? "bg-brand-primary-lighter text-brand-primary"
                   : subscription.status === "past_due"
-                  ? "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300"
-                  : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
+                  ? "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning"
+                  : "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent"
               }`}>
                 {subscription.status.replace("_", " ")}
               </Badge>
@@ -107,7 +107,7 @@ export default async function SubscriptionPage({
                     <p className="font-body text-xs text-neutral-500">
                       {subscription.cancel_at_period_end ? "Cancels on" : "Next renewal"}
                     </p>
-                    <p className={`flex items-center gap-1 font-heading text-sm font-semibold ${subscription.cancel_at_period_end ? "text-orange-600" : "text-foreground"}`}>
+                    <p className={`flex items-center gap-1 font-heading text-sm font-semibold ${subscription.cancel_at_period_end ? "text-warning" : "text-foreground"}`}>
                       <Calendar size={13} />
                       {formatDate(subscription.current_period_end)}
                     </p>
@@ -116,7 +116,7 @@ export default async function SubscriptionPage({
               </div>
 
               {subscription.cancel_at_period_end && (
-                <div className="rounded-lg bg-orange-50 p-3 text-sm text-orange-800 ring-1 ring-orange-200/60 dark:bg-orange-950/40 dark:text-orange-200 dark:ring-orange-800/60">
+                <div className="rounded-lg bg-warning-light p-3 text-sm text-warning ring-1 ring-warning/20 dark:bg-warning/10 dark:text-warning dark:ring-warning/30">
                   Your subscription is set to cancel at the end of the current period. You can reactivate it at any time.
                 </div>
               )}

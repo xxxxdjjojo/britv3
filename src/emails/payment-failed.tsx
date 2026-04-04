@@ -4,6 +4,15 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  BRAND_ACCENT,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_400,
+  ERROR,
+  ERROR_LIGHT,
+} from "@/emails/_constants/colors";
 
 export function PaymentFailedEmail({
   firstName,
@@ -26,9 +35,9 @@ export function PaymentFailedEmail({
 
       <Section
         style={{
-          backgroundColor: "#FEE2E2",
+          backgroundColor: ERROR_LIGHT,
           padding: "16px 32px",
-          borderLeft: "4px solid #DC2626",
+          borderLeft: `4px solid ${ERROR}`,
         }}
       >
         <Text
@@ -49,7 +58,7 @@ export function PaymentFailedEmail({
           style={{
             fontSize: "22px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -59,22 +68,22 @@ export function PaymentFailedEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 16px 0",
             lineHeight: "1.6",
           }}
         >
           Hi {firstName}, we were unable to process your payment of{" "}
-          <strong style={{ color: "#0A0A0B" }}>
+          <strong style={{ color: NEUTRAL_950 }}>
             &pound;{amount.toLocaleString("en-GB")}
           </strong>{" "}
-          for <strong style={{ color: "#0A0A0B" }}>{description}</strong>.
+          for <strong style={{ color: NEUTRAL_950 }}>{description}</strong>.
         </Text>
 
         <Text
           style={{
             fontSize: "14px",
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}
@@ -90,7 +99,7 @@ export function PaymentFailedEmail({
           <Text
             style={{
               fontSize: "13px",
-              color: "#5E5E6A",
+              color: NEUTRAL_600,
               margin: "16px 0 0 0",
               lineHeight: "1.6",
             }}
@@ -99,7 +108,7 @@ export function PaymentFailedEmail({
             <Link
               href={supportUrl}
               style={{
-                color: "#2563EB",
+                color: BRAND_ACCENT,
                 textDecoration: "none",
               }}
             >

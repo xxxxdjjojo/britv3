@@ -36,17 +36,17 @@ const confidenceBadge: Record<
   high: {
     label: "High confidence",
     className:
-      "bg-green-100 text-green-800 border border-green-200",
+      "bg-success-light text-success border border-success/20",
   },
   medium: {
     label: "Medium confidence",
     className:
-      "bg-amber-100 text-amber-800 border border-amber-200",
+      "bg-warning-light text-warning border border-warning/20",
   },
   low: {
     label: "Low confidence",
     className:
-      "bg-gray-100 text-gray-600 border border-gray-200",
+      "bg-neutral-100 text-neutral-600 border border-neutral-200",
   },
 };
 
@@ -64,10 +64,10 @@ export function RenovationScenarioCard({ renovation }: Props) {
     : "0";
 
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+    <article className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
       {/* Header row: title + confidence badge */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-semibold text-[#1B4D3E] text-base leading-tight">
+        <h3 className="font-semibold text-brand-primary text-base leading-tight">
           {humaniseType(renovation.type)}
         </h3>
         <span
@@ -78,8 +78,8 @@ export function RenovationScenarioCard({ renovation }: Props) {
       </div>
 
       {/* Cost range */}
-      <div className="flex items-center gap-1.5 text-sm text-gray-700">
-        <span className="text-gray-400">Cost range:</span>
+      <div className="flex items-center gap-1.5 text-sm text-neutral-700">
+        <span className="text-neutral-400">Cost range:</span>
         <span className="font-medium">
           {costLow} &ndash; {costHigh}
         </span>
@@ -87,8 +87,8 @@ export function RenovationScenarioCard({ renovation }: Props) {
 
       {/* Value uplift */}
       <div className="flex items-center gap-1.5">
-        <span className="text-sm text-gray-400">Est. value uplift:</span>
-        <span className="font-semibold text-[#D4A853] text-sm">
+        <span className="text-sm text-neutral-400">Est. value uplift:</span>
+        <span className="font-semibold text-brand-secondary text-sm">
           +{upliftValue}%
         </span>
       </div>

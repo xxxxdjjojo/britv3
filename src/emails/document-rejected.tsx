@@ -3,6 +3,13 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_400,
+  ERROR_LIGHT,
+} from "@/emails/_constants/colors";
 
 type DocumentRejectedEmailProps = Readonly<{
   providerName: string;
@@ -25,7 +32,7 @@ export function DocumentRejectedEmail({
           style={{
             fontSize: "24px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -35,18 +42,18 @@ export function DocumentRejectedEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 16px 0",
             lineHeight: "1.6",
           }}
         >
-          Hi {providerName}, your <strong style={{ color: "#0A0A0B" }}>{documentType}</strong> could
+          Hi {providerName}, your <strong style={{ color: NEUTRAL_950 }}>{documentType}</strong> could
           not be verified.
         </Text>
 
         <div
           style={{
-            backgroundColor: "#FEF2F2",
+            backgroundColor: ERROR_LIGHT,
             border: "1px solid #FECACA",
             borderRadius: "8px",
             padding: "16px 20px",
@@ -78,7 +85,7 @@ export function DocumentRejectedEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}
@@ -93,7 +100,7 @@ export function DocumentRejectedEmail({
         <Text
           style={{
             fontSize: "13px",
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             margin: "24px 0 0 0",
             lineHeight: "1.5",
           }}

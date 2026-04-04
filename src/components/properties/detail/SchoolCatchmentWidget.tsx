@@ -18,24 +18,24 @@ type SchoolCatchmentWidgetProps = Readonly<{
 function ratingBadgeClass(rating: OfstedSchool["rating"]): string {
   switch (rating) {
     case "Outstanding":
-      return "bg-green-100 text-green-800";
+      return "bg-success-light text-success-dark";
     case "Good":
-      return "bg-blue-100 text-blue-800";
+      return "bg-brand-accent-light text-brand-accent";
     case "Requires improvement":
-      return "bg-amber-100 text-amber-800";
+      return "bg-warning-light text-warning-dark";
     case "Inadequate":
-      return "bg-red-100 text-red-800";
+      return "bg-error-light text-error-dark";
     case "Not yet inspected":
-      return "bg-gray-100 text-gray-800";
+      return "bg-neutral-100 text-neutral-800";
   }
 }
 
 function typeBadgeClass(type: string): string {
   const lower = type.toLowerCase();
-  if (lower.includes("secondary")) return "bg-purple-100 text-purple-800";
-  if (lower.includes("primary")) return "bg-sky-100 text-sky-800";
-  if (lower.includes("special")) return "bg-orange-100 text-orange-800";
-  return "bg-gray-100 text-gray-800";
+  if (lower.includes("secondary")) return "bg-brand-primary-lighter text-brand-primary";
+  if (lower.includes("primary")) return "bg-brand-accent-light text-brand-accent";
+  if (lower.includes("special")) return "bg-warning-light text-warning";
+  return "bg-neutral-100 text-neutral-800";
 }
 
 function formatDistance(miles: number): string {

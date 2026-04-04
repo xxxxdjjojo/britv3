@@ -35,15 +35,15 @@ export function RevenueBarChart({ data }: Props) {
         data={chartData}
         margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-neutral-200)" />
         <XAxis
           dataKey="month"
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "var(--color-neutral-500)" }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "var(--color-neutral-500)" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v: number) => `£${(v / 1000).toFixed(0)}k`}
@@ -55,11 +55,11 @@ export function RevenueBarChart({ data }: Props) {
           ]}
           contentStyle={{
             borderRadius: "8px",
-            border: "1px solid #e5e7eb",
+            border: "1px solid var(--color-neutral-200)",
             fontSize: "12px",
           }}
         />
-        <Bar dataKey="revenue" fill="#1B4D3E" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="revenue" fill="var(--color-brand-primary)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

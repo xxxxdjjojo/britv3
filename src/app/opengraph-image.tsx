@@ -8,7 +8,7 @@ export const contentType = "image/png";
 export default async function Image() {
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", backgroundColor: "#1B4D3E", color: "white", fontSize: 60, fontWeight: 700 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", backgroundColor: "#1B4D3E" /* brand-primary */, color: "white", fontSize: 60, fontWeight: 700 }}>
         <div>Britestate</div>
         <div style={{ fontSize: 28, marginTop: 16, opacity: 0.8 }}>UK Property Portal</div>
       </div>

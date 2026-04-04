@@ -43,8 +43,8 @@ export function UserTable({ users, onSuspend, onActivate, onViewDetails }: Props
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium ${
                     user.is_suspended
-                      ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
-                      : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                      ? "bg-error-light text-error dark:bg-error/20 dark:text-error"
+                      : "bg-success-light text-success dark:bg-success/20 dark:text-success"
                   }`}
                 >
                   {user.is_suspended ? "Suspended" : "Active"}

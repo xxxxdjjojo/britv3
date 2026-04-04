@@ -141,12 +141,12 @@ export default function ReviewsPage() {
                 </div>
               </div>
               {review.responded ? (
-                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 gap-1">
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-success-light text-success dark:bg-success/20 dark:text-success gap-1">
                   <ThumbsUp className="size-3" />
                   Responded
                 </span>
               ) : (
-                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-warning-light text-warning dark:bg-warning/20 dark:text-warning">
                   Awaiting Response
                 </span>
               )}

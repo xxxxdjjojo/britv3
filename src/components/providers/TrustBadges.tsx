@@ -34,20 +34,20 @@ const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
   },
   gas_safe: {
     label: "Gas Safe",
-    bg: "bg-orange-50 dark:bg-orange-900/20",
-    text: "text-orange-700 dark:text-orange-400",
+    bg: "bg-warning-light dark:bg-warning/10",
+    text: "text-warning dark:text-warning/80",
     Icon: Flame,
   },
   niceic: {
     label: "NICEIC",
-    bg: "bg-orange-50 dark:bg-orange-900/20",
-    text: "text-orange-700 dark:text-orange-400",
+    bg: "bg-warning-light dark:bg-warning/10",
+    text: "text-warning dark:text-warning/80",
     Icon: Zap,
   },
   fca: {
     label: "FCA Regulated",
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    text: "text-blue-800 dark:text-blue-400",
+    bg: "bg-brand-accent-light dark:bg-brand-accent/10",
+    text: "text-brand-accent dark:text-brand-accent/80",
     Icon: BadgeCheck,
   },
   rics: {
@@ -58,20 +58,20 @@ const BADGE_CONFIG: Record<BadgeKey, BadgeConfigEntry> = {
   },
   sra: {
     label: "SRA Regulated",
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    text: "text-blue-700 dark:text-blue-400",
+    bg: "bg-brand-accent-light dark:bg-brand-accent/10",
+    text: "text-brand-accent dark:text-brand-accent/80",
     Icon: Scale,
   },
   clc: {
     label: "CLC Regulated",
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    text: "text-blue-700 dark:text-blue-400",
+    bg: "bg-brand-accent-light dark:bg-brand-accent/10",
+    text: "text-brand-accent dark:text-brand-accent/80",
     Icon: Scale,
   },
   insured: {
     label: "Insured",
-    bg: "bg-emerald-50 dark:bg-emerald-900/20",
-    text: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-success-light dark:bg-success/10",
+    text: "text-success dark:text-success/80",
     Icon: Shield,
   },
 };

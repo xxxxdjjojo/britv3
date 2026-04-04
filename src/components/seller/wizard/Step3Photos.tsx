@@ -40,14 +40,14 @@ function SortablePhoto({ photo, onRemove }: SortablePhotoProps) {
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group rounded-xl overflow-hidden bg-slate-100 aspect-square">
+    <div ref={setNodeRef} style={style} className="relative group rounded-xl overflow-hidden bg-neutral-100 aspect-square">
       <Image src={photo.url} alt="" fill className="object-cover" sizes="(max-width: 640px) 33vw, 25vw" />
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
       <button
         type="button"
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 p-1 rounded-lg bg-white/80 text-slate-600 cursor-grab active:cursor-grabbing"
+        className="absolute top-2 left-2 p-1 rounded-lg bg-white/80 text-neutral-600 cursor-grab active:cursor-grabbing"
         aria-label="Drag to reorder"
       >
         <GripVertical size={14} />
@@ -55,13 +55,13 @@ function SortablePhoto({ photo, onRemove }: SortablePhotoProps) {
       <button
         type="button"
         onClick={() => onRemove(photo.localId)}
-        className="absolute top-2 right-2 p-1 rounded-lg bg-white/80 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-2 right-2 p-1 rounded-lg bg-white/80 text-error opacity-0 group-hover:opacity-100 transition-opacity"
         aria-label="Remove photo"
       >
         <X size={14} />
       </button>
       {photo.order === 0 && (
-        <span className="absolute bottom-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-[#1B4D3E] text-white">
+        <span className="absolute bottom-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-primary text-white">
           Cover
         </span>
       )}
@@ -168,27 +168,27 @@ export function Step3Photos({ listing, listingId }: Props) {
     <WizardShell step={3} listingId={listingId} onContinue={() => void handleContinue()} isLoading={saving}>
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Photos & Media</h2>
-          <p className="text-slate-500 text-sm mt-1">Add up to 30 photos. Drag to reorder — the first photo is the cover image.</p>
+          <h2 className="text-xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">Photos & Media</h2>
+          <p className="text-neutral-500 text-sm mt-1">Add up to 30 photos. Drag to reorder — the first photo is the cover image.</p>
         </div>
 
         <div
           {...getRootProps()}
           className={`border-2 border-dashed rounded-2xl p-8 text-center transition-colors ${
-            isDragActive ? "border-[#1B4D3E] bg-[#1B4D3E]/5" : "border-slate-200 hover:border-slate-300 bg-slate-50"
+            isDragActive ? "border-brand-primary bg-brand-primary/5" : "border-neutral-200 hover:border-neutral-300 bg-neutral-50"
           } ${photos.length >= 30 ? "opacity-50 pointer-events-none" : "cursor-pointer"}`}
         >
           <input {...getInputProps()} />
-          <div className="flex flex-col items-center gap-2 text-slate-500">
+          <div className="flex flex-col items-center gap-2 text-neutral-500">
             {uploading ? (
-              <div className="h-8 w-8 rounded-full border-2 border-[#1B4D3E]/30 border-t-[#1B4D3E] animate-spin" />
+              <div className="h-8 w-8 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />
             ) : (
-              <Upload size={32} className="text-slate-300" />
+              <Upload size={32} className="text-neutral-300" />
             )}
             <p className="text-sm font-medium">
               {uploading ? "Uploading..." : isDragActive ? "Drop here" : "Drop photos or click to upload"}
             </p>
-            <p className="text-xs text-slate-400">JPEG, PNG, WebP, HEIC · Max 20MB per file · {photos.length}/30 added</p>
+            <p className="text-xs text-neutral-400">JPEG, PNG, WebP, HEIC · Max 20MB per file · {photos.length}/30 added</p>
           </div>
         </div>
 
@@ -204,7 +204,7 @@ export function Step3Photos({ listing, listingId }: Props) {
           </DndContext>
         )}
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
       </div>
     </WizardShell>
   );

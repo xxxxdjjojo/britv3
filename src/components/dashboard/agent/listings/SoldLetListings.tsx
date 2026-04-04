@@ -92,7 +92,7 @@ function SoldLetCard({ listing }: Readonly<{ listing: Record<string, unknown> }>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           {completionDate && (
             <span className="flex items-center gap-1">
-              <CheckCircle2 className="size-3.5 text-emerald-600" strokeWidth={1.25} />
+              <CheckCircle2 className="size-3.5 text-success" strokeWidth={1.25} />
               {new Date(completionDate).toLocaleDateString("en-GB", {
                 day: "numeric",
                 month: "short",
@@ -108,9 +108,9 @@ function SoldLetCard({ listing }: Readonly<{ listing: Record<string, unknown> }>
 
         {/* Commission */}
         {commission > 0 && (
-          <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-warning-light px-3 py-2 dark:bg-amber-900/20">
-            <Banknote className="size-3.5 text-warning dark:text-amber-400" strokeWidth={1.25} />
-            <span className="text-xs font-semibold text-warning dark:text-amber-400">
+          <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-warning-light px-3 py-2 dark:bg-warning/10">
+            <Banknote className="size-3.5 text-warning dark:text-warning" strokeWidth={1.25} />
+            <span className="text-xs font-semibold text-warning dark:text-warning">
               Commission: {formatGbp(commission)}
             </span>
           </div>

@@ -127,13 +127,13 @@ function formatPrice(price: number, listingType?: ListingType | string): string 
 }
 
 const EPC_COLOURS: Record<string, string> = {
-  A: "bg-green-700 text-white",
-  B: "bg-green-500 text-white",
-  C: "bg-lime-500 text-white",
-  D: "bg-yellow-500 text-neutral-900",
-  E: "bg-amber-500 text-neutral-900",
-  F: "bg-orange-500 text-white",
-  G: "bg-red-500 text-white",
+  A: "bg-success text-white",
+  B: "bg-success text-white",
+  C: "bg-success-light text-success",
+  D: "bg-warning-light text-warning",
+  E: "bg-warning text-neutral-900",
+  F: "bg-warning text-white",
+  G: "bg-error text-white",
 };
 
 function EpcBadge({ rating }: Readonly<{ rating: string | null }>) {
@@ -264,10 +264,10 @@ function SearchPropertyCardGrid({ property }: Readonly<{ property: SearchPropert
               e.preventDefault();
               setSaved((s) => !s);
             }}
-            className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-500 shadow-sm backdrop-blur-sm transition-colors hover:bg-white hover:text-red-500"
+            className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-neutral-500 shadow-sm backdrop-blur-sm transition-colors hover:bg-white hover:text-error"
           >
             <Heart
-              className={cn("size-4 transition-colors", saved ? "fill-red-500 text-red-500" : "")}
+              className={cn("size-4 transition-colors", saved ? "fill-error text-error" : "")}
             />
           </button>
         </div>
@@ -354,10 +354,10 @@ function SearchPropertyCardHemnet({ property }: Readonly<{ property: SearchPrope
               e.preventDefault();
               setSaved((s) => !s);
             }}
-            className="mt-0.5 shrink-0 text-neutral-400 hover:text-red-500 transition-colors"
+            className="mt-0.5 shrink-0 text-neutral-400 hover:text-error transition-colors"
           >
             <Heart
-              className={cn("size-4", saved ? "fill-red-500 text-red-500" : "")}
+              className={cn("size-4", saved ? "fill-error text-error" : "")}
             />
           </button>
         </div>
@@ -436,10 +436,10 @@ function SearchPropertyCardList({ property }: Readonly<{ property: SearchPropert
                 e.preventDefault();
                 setSaved((s) => !s);
               }}
-              className="mt-1 shrink-0 text-neutral-400 hover:text-red-500 transition-colors"
+              className="mt-1 shrink-0 text-neutral-400 hover:text-error transition-colors"
             >
               <Heart
-                className={cn("size-5", saved ? "fill-red-500 text-red-500" : "")}
+                className={cn("size-5", saved ? "fill-error text-error" : "")}
               />
             </button>
           </div>
@@ -1138,7 +1138,7 @@ export function SearchClient({ initialProperties, initialFilters }: SearchClient
   const discoveryBody = (
     <div className="flex flex-1">
       {/* Desktop sidebar */}
-      <aside className="hidden w-72 shrink-0 bg-white lg:flex lg:flex-col" style={{ borderRight: "1px solid #f1f1f5" }}>
+      <aside className="hidden w-72 shrink-0 bg-white lg:flex lg:flex-col" style={{ borderRight: "1px solid var(--color-neutral-100)" }}>
         {filtersPanel}
       </aside>
 
@@ -1161,7 +1161,7 @@ export function SearchClient({ initialProperties, initialFilters }: SearchClient
   // ---------------------------------------------------------------------------
   const listBody = (
     <div className="flex flex-1">
-      <aside className="hidden w-72 shrink-0 bg-white lg:flex lg:flex-col" style={{ borderRight: "1px solid #f1f1f5" }}>
+      <aside className="hidden w-72 shrink-0 bg-white lg:flex lg:flex-col" style={{ borderRight: "1px solid var(--color-neutral-100)" }}>
         {filtersPanel}
       </aside>
       <main className="flex-1 overflow-y-auto p-5 pb-24 lg:pb-6">
@@ -1223,7 +1223,7 @@ export function SearchClient({ initialProperties, initialFilters }: SearchClient
       {/* Right sidebar */}
       <aside
         className="hidden w-[30%] min-w-[280px] max-w-[360px] shrink-0 bg-white lg:flex lg:flex-col"
-        style={{ borderLeft: "1px solid #f1f1f5" }}
+        style={{ borderLeft: "1px solid var(--color-neutral-100)" }}
       >
         {mapFiltersSidebar}
       </aside>
@@ -1243,7 +1243,7 @@ export function SearchClient({ initialProperties, initialFilters }: SearchClient
 
       {/* Cards bottom */}
       <div className="flex flex-1">
-        <aside className="hidden w-72 shrink-0 bg-white lg:flex lg:flex-col" style={{ borderRight: "1px solid #f1f1f5" }}>
+        <aside className="hidden w-72 shrink-0 bg-white lg:flex lg:flex-col" style={{ borderRight: "1px solid var(--color-neutral-100)" }}>
           {filtersPanel}
         </aside>
         <div className="flex-1 overflow-y-auto p-5 pb-24 lg:pb-6">
@@ -1277,7 +1277,7 @@ export function SearchClient({ initialProperties, initialFilters }: SearchClient
       {/* Compact list below */}
       <div className="flex flex-1">
         {/* Minimal sidebar */}
-        <aside className="hidden w-64 shrink-0 overflow-y-auto bg-white p-4 lg:block" style={{ borderRight: "1px solid #f1f1f5" }}>
+        <aside className="hidden w-64 shrink-0 overflow-y-auto bg-white p-4 lg:block" style={{ borderRight: "1px solid var(--color-neutral-100)" }}>
           <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-neutral-400">
             Filters
           </div>

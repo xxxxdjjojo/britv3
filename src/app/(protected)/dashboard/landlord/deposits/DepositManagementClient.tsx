@@ -229,13 +229,13 @@ export function DepositManagementClient({
     <div className="space-y-6">
       {/* Compliance warning banner */}
       {unregisteredDeposits.length > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/10">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+        <div className="flex items-start gap-3 rounded-xl border border-warning bg-warning-light p-4 dark:border-warning dark:bg-warning/10">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning dark:text-warning" />
           <div>
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+            <p className="text-sm font-semibold text-warning dark:text-warning">
               Compliance warning
             </p>
-            <p className="mt-0.5 text-sm text-amber-700 dark:text-amber-400">
+            <p className="mt-0.5 text-sm text-warning dark:text-warning">
               {unregisteredDeposits.length} deposit
               {unregisteredDeposits.length > 1 ? "s" : ""} unregistered for more
               than 30 days. Register with a government-approved scheme to avoid penalties.
@@ -252,8 +252,8 @@ export function DepositManagementClient({
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Total Held
             </p>
-            <span className="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
-              <PoundSterling className="size-3.5 text-blue-600 dark:text-blue-400" />
+            <span className="rounded-lg bg-brand-accent-light p-1.5 dark:bg-brand-accent/10">
+              <PoundSterling className="size-3.5 text-brand-accent dark:text-brand-accent" />
             </span>
           </div>
           <p className="mt-3 font-heading text-2xl font-bold text-foreground">
@@ -268,16 +268,16 @@ export function DepositManagementClient({
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Registered
             </p>
-            <span className="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
-              <Shield className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="rounded-lg bg-success-light p-1.5 dark:bg-success/10">
+              <Shield className="size-3.5 text-success dark:text-success" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-success dark:text-success">
             {registeredCount}
           </p>
           <div className="mt-1 flex items-center gap-1">
-            <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
-            <p className="text-xs text-emerald-600 dark:text-emerald-400">Protected</p>
+            <CheckCircle2 className="size-3 text-success dark:text-success" />
+            <p className="text-xs text-success dark:text-success">Protected</p>
           </div>
         </div>
 
@@ -287,14 +287,14 @@ export function DepositManagementClient({
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Pending
             </p>
-            <span className="rounded-lg bg-amber-100 p-1.5 dark:bg-amber-900/30">
-              <Clock className="size-3.5 text-amber-600 dark:text-amber-400" />
+            <span className="rounded-lg bg-warning-light p-1.5 dark:bg-warning/10">
+              <Clock className="size-3.5 text-warning dark:text-warning" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-amber-600 dark:text-amber-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-warning dark:text-warning">
             {pendingCount}
           </p>
-          <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+          <p className="mt-1 text-xs text-warning dark:text-warning">
             {pendingCount > 0 ? "Awaiting registration" : "All registered"}
           </p>
         </div>
@@ -305,11 +305,11 @@ export function DepositManagementClient({
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Disputed
             </p>
-            <span className="rounded-lg bg-red-100 p-1.5 dark:bg-red-900/30">
-              <AlertTriangle className="size-3.5 text-red-600 dark:text-red-400" />
+            <span className="rounded-lg bg-error-light p-1.5 dark:bg-error/10">
+              <AlertTriangle className="size-3.5 text-error dark:text-error" />
             </span>
           </div>
-          <p className="mt-3 font-heading text-2xl font-bold text-red-600 dark:text-red-400">
+          <p className="mt-3 font-heading text-2xl font-bold text-error dark:text-error">
             {disputedCount}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -365,14 +365,14 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="tenancy_id"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Tenancy
               </label>
               <select
                 id="tenancy_id"
                 {...register("tenancy_id")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
                 required
               >
                 <option value="">Select tenancy...</option>
@@ -388,7 +388,7 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="amount"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Deposit Amount (GBP)
               </label>
@@ -399,7 +399,7 @@ export function DepositManagementClient({
                 min="0.01"
                 {...register("amount")}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
@@ -407,14 +407,14 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="scheme"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Scheme
               </label>
               <select
                 id="scheme"
                 {...register("scheme")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               >
                 <option value="TDS">TDS</option>
                 <option value="DPS">DPS</option>
@@ -427,7 +427,7 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="scheme_reference"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Scheme Reference (optional)
               </label>
@@ -435,7 +435,7 @@ export function DepositManagementClient({
                 id="scheme_reference"
                 type="text"
                 {...register("scheme_reference")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
@@ -443,7 +443,7 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="registration_date"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Registration Date (optional)
               </label>
@@ -451,7 +451,7 @@ export function DepositManagementClient({
                 id="registration_date"
                 type="date"
                 {...register("registration_date")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
@@ -459,7 +459,7 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="prescribed_info_sent_date"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Prescribed Info Sent Date (optional)
               </label>
@@ -467,7 +467,7 @@ export function DepositManagementClient({
                 id="prescribed_info_sent_date"
                 type="date"
                 {...register("prescribed_info_sent_date")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 
@@ -475,14 +475,14 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="status"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Status
               </label>
               <select
                 id="status"
                 {...register("status")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               >
                 <option value="pending">Pending</option>
                 <option value="registered">Registered</option>
@@ -495,7 +495,7 @@ export function DepositManagementClient({
             <div>
               <label
                 htmlFor="notes"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-neutral-600 dark:text-neutral-300"
               >
                 Notes (optional)
               </label>
@@ -503,7 +503,7 @@ export function DepositManagementClient({
                 id="notes"
                 rows={3}
                 {...register("notes")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                className="mt-1 block w-full rounded-md border border-neutral-300 px-3 py-2 text-sm shadow-sm focus:border-brand-primary focus:outline-none dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100"
               />
             </div>
 

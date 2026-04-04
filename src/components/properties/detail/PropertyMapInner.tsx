@@ -61,7 +61,7 @@ export default function PropertyMapInner({
           {/* Property pin marker */}
           <Marker latitude={latitude} longitude={longitude}>
             <div
-              className="flex items-center justify-center size-7 rounded-full bg-[#1B4D3E] border-2 border-white shadow-md"
+              className="flex items-center justify-center size-7 rounded-full bg-brand-primary border-2 border-white shadow-md"
               aria-label={address}
               title={address}
             >
@@ -84,7 +84,7 @@ export default function PropertyMapInner({
               className={cn(
                 "text-xs h-7 px-3 rounded-full",
                 isActive
-                  ? "bg-[#1B4D3E]/10 text-[#1B4D3E] border border-[#1B4D3E]/30"
+                  ? "bg-brand-primary/10 text-brand-primary border border-brand-primary/30"
                   : "border text-muted-foreground hover:bg-muted",
               )}
             >

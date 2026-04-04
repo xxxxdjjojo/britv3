@@ -44,7 +44,7 @@ export default function FindAgentPage() {
         {selectedIds.length >= 2 && (
           <Link
             href={`/dashboard/seller/agents/compare?ids=${selectedIds.join(",")}`}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors"
           >
             Compare {selectedIds.length} Agents <ArrowRight size={16} />
           </Link>
@@ -66,7 +66,7 @@ export default function FindAgentPage() {
         <button
           type="button"
           onClick={() => void loadAgents(area)}
-          className="px-5 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors"
+          className="px-5 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors"
         >
           Search
         </button>

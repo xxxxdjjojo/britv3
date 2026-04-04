@@ -69,7 +69,7 @@ export function PlanGrid({ plans, role, disabled }: Props) {
       {/* Monthly / Annual toggle */}
       <div className="flex items-center justify-center gap-3">
         <span
-          className={`text-sm font-medium ${!isAnnual ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"}`}
+          className={`text-sm font-medium ${!isAnnual ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-400"}`}
         >
           Monthly
         </span>
@@ -80,7 +80,7 @@ export function PlanGrid({ plans, role, disabled }: Props) {
           aria-label="Toggle annual billing"
           onClick={() => setInterval(isAnnual ? "monthly" : "annual")}
           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 ${
-            isAnnual ? "bg-brand-primary" : "bg-gray-200 dark:bg-gray-700"
+            isAnnual ? "bg-brand-primary" : "bg-neutral-200 dark:bg-neutral-700"
           }`}
         >
           <span
@@ -91,12 +91,12 @@ export function PlanGrid({ plans, role, disabled }: Props) {
           />
         </button>
         <span
-          className={`text-sm font-medium ${isAnnual ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400"}`}
+          className={`text-sm font-medium ${isAnnual ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-400"}`}
         >
           Annual
         </span>
         {isAnnual && (
-          <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">
+          <Badge className="bg-success-light text-success dark:bg-success/20 dark:text-success text-xs">
             Save up to 20%
           </Badge>
         )}
@@ -130,25 +130,25 @@ export function PlanGrid({ plans, role, disabled }: Props) {
                 <div className="mt-2">
                   {isAnnual ? (
                     <>
-                      <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
                         {formatGBP(monthlyEquivalent)}
                       </span>
-                      <span className="text-sm text-gray-500">/mo</span>
-                      <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-sm text-neutral-500">/mo</span>
+                      <div className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                         {formatGBP(displayPrice)} billed annually
                       </div>
                       {monthlySaving > 0 && (
-                        <Badge className="mt-1.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs">
+                        <Badge className="mt-1.5 bg-success-light text-success dark:bg-success/20 dark:text-success text-xs">
                           Save {formatGBP(monthlySaving)}!
                         </Badge>
                       )}
                     </>
                   ) : (
                     <>
-                      <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                      <span className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
                         {formatGBP(displayPrice)}
                       </span>
-                      <span className="text-sm text-gray-500">/month</span>
+                      <span className="text-sm text-neutral-500">/month</span>
                     </>
                   )}
                 </div>
@@ -156,8 +156,8 @@ export function PlanGrid({ plans, role, disabled }: Props) {
               <CardContent className="flex flex-1 flex-col gap-4">
                 <ul className="flex-1 space-y-2">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-                      <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-brand-primary dark:text-emerald-400" />
+                    <li key={f} className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                      <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-brand-primary dark:text-success" />
                       {f}
                     </li>
                   ))}

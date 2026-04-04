@@ -171,7 +171,7 @@ export default function BillingPage() {
                     {formatCurrency(payment.amount)}
                   </td>
                   <td className="px-6 py-3 text-center">
-                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-body text-xs font-medium bg-success-light text-success dark:bg-success/20 dark:text-success">
                       Paid
                     </span>
                   </td>

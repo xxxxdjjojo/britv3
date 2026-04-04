@@ -47,38 +47,38 @@ function statusDisplay(status: string): StatusDisplay {
     case "paid":
       return {
         label: "Paid",
-        dotClass: "bg-emerald-500",
-        textClass: "text-emerald-700",
+        dotClass: "bg-success",
+        textClass: "text-success",
       };
     case "in_transit":
       return {
         label: "In Transit",
-        dotClass: "bg-blue-500",
-        textClass: "text-blue-700",
+        dotClass: "bg-brand-accent",
+        textClass: "text-brand-accent",
       };
     case "pending":
       return {
         label: "Processing",
-        dotClass: "bg-amber-500",
-        textClass: "text-amber-700",
+        dotClass: "bg-warning",
+        textClass: "text-warning",
       };
     case "failed":
       return {
         label: "Failed",
-        dotClass: "bg-red-500",
-        textClass: "text-red-700",
+        dotClass: "bg-error",
+        textClass: "text-error",
       };
     case "cancelled":
       return {
         label: "Cancelled",
-        dotClass: "bg-red-400",
-        textClass: "text-red-600",
+        dotClass: "bg-error/70",
+        textClass: "text-error",
       };
     default:
       return {
         label: status,
-        dotClass: "bg-stone-400",
-        textClass: "text-stone-600",
+        dotClass: "bg-neutral-400",
+        textClass: "text-neutral-600",
       };
   }
 }
@@ -92,17 +92,17 @@ function KpiCards(props: Readonly<{ balance: StripeBalance }>) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {/* Available for Withdrawal — hero */}
-      <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm flex flex-col justify-between">
+      <div className="bg-white p-6 rounded-2xl border border-success/10 shadow-sm flex flex-col justify-between">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-emerald-700/70">
+            <p className="text-xs font-bold uppercase tracking-wider text-success/70">
               Available for Withdrawal
             </p>
-            <p className="text-4xl font-extrabold text-emerald-900 tabular-nums">
+            <p className="text-4xl font-extrabold text-brand-primary tabular-nums">
               {formatGBP(balance.availablePence)}
             </p>
           </div>
-          <div className="bg-emerald-100 p-2.5 rounded-xl text-emerald-800">
+          <div className="bg-success-light p-2.5 rounded-xl text-success">
             <svg
               className="size-5"
               fill="none"
@@ -119,10 +119,10 @@ function KpiCards(props: Readonly<{ balance: StripeBalance }>) {
           </div>
         </div>
         <div className="mt-5 flex gap-3">
-          <button className="flex-1 bg-[#1b4d3e] text-white py-2.5 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#003629] transition-colors active:scale-95">
+          <button className="flex-1 bg-brand-primary text-white py-2.5 rounded-xl font-semibold text-sm shadow-sm hover:bg-brand-primary-dark transition-colors active:scale-95">
             Withdraw Funds
           </button>
-          <button className="px-3 border border-emerald-200 text-emerald-800 rounded-xl hover:bg-emerald-50 transition-colors">
+          <button className="px-3 border border-success/20 text-success rounded-xl hover:bg-brand-primary-lighter transition-colors">
             <svg
               className="size-5"
               fill="none"
@@ -141,17 +141,17 @@ function KpiCards(props: Readonly<{ balance: StripeBalance }>) {
       </div>
 
       {/* Total Earnings YTD */}
-      <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm flex flex-col justify-between">
+      <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm flex flex-col justify-between">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">
+            <p className="text-xs font-bold uppercase tracking-wider text-neutral-500">
               Total Earnings YTD
             </p>
-            <p className="text-4xl font-extrabold text-stone-900 tabular-nums">
+            <p className="text-4xl font-extrabold text-neutral-900 tabular-nums">
               {formatGBP(balance.pendingPence)}
             </p>
           </div>
-          <div className="bg-stone-100 p-2.5 rounded-xl text-stone-600">
+          <div className="bg-neutral-100 p-2.5 rounded-xl text-neutral-600">
             <svg
               className="size-5"
               fill="none"
@@ -168,7 +168,7 @@ function KpiCards(props: Readonly<{ balance: StripeBalance }>) {
           </div>
         </div>
         <div className="mt-5">
-          <div className="flex items-center gap-2 text-emerald-600 text-sm font-semibold">
+          <div className="flex items-center gap-2 text-success text-sm font-semibold">
             <svg
               className="size-4"
               fill="none"
@@ -184,26 +184,26 @@ function KpiCards(props: Readonly<{ balance: StripeBalance }>) {
             </svg>
             <span>12.4% vs last year</span>
           </div>
-          <p className="text-[10px] text-stone-400 mt-1 uppercase tracking-tight">
+          <p className="text-[10px] text-neutral-400 mt-1 uppercase tracking-tight">
             In transit · Not yet available
           </p>
         </div>
       </div>
 
       {/* Pending Payouts */}
-      <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm flex flex-col justify-between">
+      <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm flex flex-col justify-between">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#7b5804]">
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-secondary-dark">
               Pending Payouts
             </p>
-            <p className="text-4xl font-extrabold text-stone-900 tabular-nums">
+            <p className="text-4xl font-extrabold text-neutral-900 tabular-nums">
               {balance.nextPayoutAmountPence !== null
                 ? formatGBP(balance.nextPayoutAmountPence)
                 : "—"}
             </p>
           </div>
-          <div className="bg-[#ffdea6] p-2.5 rounded-xl text-[#7b5804]">
+          <div className="bg-brand-secondary-light p-2.5 rounded-xl text-brand-secondary-dark">
             <svg
               className="size-5"
               fill="none"
@@ -220,7 +220,7 @@ function KpiCards(props: Readonly<{ balance: StripeBalance }>) {
           </div>
         </div>
         <div className="mt-5">
-          <button className="w-full border border-stone-200 text-stone-700 py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-stone-50 transition-colors">
+          <button className="w-full border border-neutral-200 text-neutral-700 py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-neutral-50 transition-colors">
             <svg
               className="size-4"
               fill="none"
@@ -252,11 +252,11 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold font-heading text-stone-900">
+        <h3 className="text-lg font-bold font-heading text-neutral-900">
           Transaction History
         </h3>
         <div className="flex gap-2">
-          <button className="px-4 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold text-stone-600 flex items-center gap-2 hover:bg-stone-50 transition-colors">
+          <button className="px-4 py-2 bg-white border border-neutral-200 rounded-xl text-xs font-bold text-neutral-600 flex items-center gap-2 hover:bg-neutral-50 transition-colors">
             <svg
               className="size-4"
               fill="none"
@@ -272,7 +272,7 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
             </svg>
             Filters
           </button>
-          <button className="px-4 py-2 bg-white border border-stone-200 rounded-xl text-xs font-bold text-stone-600 flex items-center gap-2 hover:bg-stone-50 transition-colors">
+          <button className="px-4 py-2 bg-white border border-neutral-200 rounded-xl text-xs font-bold text-neutral-600 flex items-center gap-2 hover:bg-neutral-50 transition-colors">
             <svg
               className="size-4"
               fill="none"
@@ -291,11 +291,11 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden">
         {payouts.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-stone-500">No payouts yet</p>
-            <p className="mt-1 text-xs text-stone-400">
+            <p className="text-sm text-neutral-500">No payouts yet</p>
+            <p className="mt-1 text-xs text-neutral-400">
               Payouts will appear here once your balance is sufficient.
             </p>
           </div>
@@ -303,29 +303,29 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
           <>
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-stone-50/50 border-b border-stone-100">
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                <tr className="bg-neutral-50/50 border-b border-neutral-100">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                     Date
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                     Job Reference
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                     Account
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                     Category
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                     Amount
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                     Status
                   </th>
                   <th className="px-6 py-4" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-50">
+              <tbody className="divide-y divide-neutral-50">
                 {payouts.map((payout) => {
                   const { label, dotClass, textClass } = statusDisplay(
                     payout.status,
@@ -333,30 +333,30 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
                   return (
                     <tr
                       key={payout.id}
-                      className="hover:bg-stone-50/50 transition-colors"
+                      className="hover:bg-neutral-50/50 transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <span className="text-sm font-medium text-stone-900">
+                        <span className="text-sm font-medium text-neutral-900">
                           {formatDate(payout.initiatedAt)}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-xs text-stone-500">
+                        <span className="font-mono text-xs text-neutral-500">
                           #{payout.id.slice(0, 8).toUpperCase()}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm font-medium text-stone-600">
+                        <span className="text-sm font-medium text-neutral-600">
                           {payout.bankLast4 ? `···· ${payout.bankLast4}` : "—"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-1 rounded-full bg-stone-100 text-[10px] font-bold text-stone-600">
+                        <span className="px-2 py-1 rounded-full bg-neutral-100 text-[10px] font-bold text-neutral-600">
                           Payout
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm font-bold text-emerald-900">
+                        <span className="text-sm font-bold text-brand-primary">
                           + {formatGBP(payout.amountPence)}
                         </span>
                       </td>
@@ -371,7 +371,7 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-stone-400 hover:text-stone-900 transition-colors">
+                        <button className="text-neutral-400 hover:text-neutral-900 transition-colors">
                           <svg
                             className="size-5"
                             fill="none"
@@ -394,16 +394,16 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
             </table>
 
             {/* Pagination */}
-            <div className="px-6 py-4 bg-stone-50/50 flex items-center justify-between">
-              <p className="text-xs text-stone-500 font-medium tracking-tight">
+            <div className="px-6 py-4 bg-neutral-50/50 flex items-center justify-between">
+              <p className="text-xs text-neutral-500 font-medium tracking-tight">
                 Showing{" "}
-                <span className="font-bold text-stone-900">{payouts.length}</span>{" "}
+                <span className="font-bold text-neutral-900">{payouts.length}</span>{" "}
                 transaction{payouts.length !== 1 ? "s" : ""}
               </p>
               <div className="flex gap-1">
                 <button
                   disabled
-                  className="p-1.5 rounded-lg border border-stone-200 text-stone-400 disabled:opacity-40"
+                  className="p-1.5 rounded-lg border border-neutral-200 text-neutral-400 disabled:opacity-40"
                 >
                   <svg
                     className="size-4"
@@ -419,10 +419,10 @@ function TransactionTable(props: Readonly<{ payouts: PayoutRecord[] }>) {
                     />
                   </svg>
                 </button>
-                <button className="w-8 h-8 rounded-lg bg-[#1b4d3e] text-white text-xs font-bold">
+                <button className="w-8 h-8 rounded-lg bg-brand-primary text-white text-xs font-bold">
                   1
                 </button>
-                <button className="p-1.5 rounded-lg border border-stone-200 text-stone-400 hover:bg-white transition-colors">
+                <button className="p-1.5 rounded-lg border border-neutral-200 text-neutral-400 hover:bg-white transition-colors">
                   <svg
                     className="size-4"
                     fill="none"
@@ -461,24 +461,24 @@ const CHART_BARS = [
 
 function EarningsProjectionChart() {
   return (
-    <div className="bg-white rounded-2xl border border-stone-100 p-6 flex flex-col gap-5 shadow-sm">
+    <div className="bg-white rounded-2xl border border-neutral-100 p-6 flex flex-col gap-5 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-bold font-heading text-stone-900">
+          <h3 className="text-base font-bold font-heading text-neutral-900">
             Earnings Projection
           </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
+          <p className="text-xs text-neutral-500 mt-0.5">
             Estimated revenue for the next 3 months
           </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#1b4d3e]" />
-            <span className="text-[10px] font-bold text-stone-600">Actual</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-primary" />
+            <span className="text-[10px] font-bold text-neutral-600">Actual</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-200" />
-            <span className="text-[10px] font-bold text-stone-600">Projected</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-primary-light/30" />
+            <span className="text-[10px] font-bold text-neutral-600">Projected</span>
           </div>
         </div>
       </div>
@@ -488,18 +488,18 @@ function EarningsProjectionChart() {
             <div
               className={`w-full rounded-t-lg relative transition-all ${
                 bar.dashed
-                  ? "bg-emerald-100/30 border-t-2 border-emerald-200 border-dashed"
+                  ? "bg-success-light/30 border-t-2 border-success/20 border-dashed"
                   : bar.projected
                     ? bar.current
-                      ? "bg-emerald-200"
-                      : "bg-emerald-100/50 border-t-2 border-emerald-300 border-dashed"
-                    : "bg-[#1b4d3e]"
+                      ? "bg-brand-primary-light/30"
+                      : "bg-success-light/50 border-t-2 border-success/30 border-dashed"
+                    : "bg-brand-primary"
               }`}
               style={{ height: `${bar.heightPct}%` }}
             />
             <p
               className={`text-center text-[10px] font-bold ${
-                bar.current ? "text-stone-900" : "text-stone-400"
+                bar.current ? "text-neutral-900" : "text-neutral-400"
               }`}
             >
               {bar.label}
@@ -520,12 +520,12 @@ function PayoutDestinationCard(props: Readonly<{ payouts: PayoutRecord[] }>) {
   const lastPayout = payouts[0];
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-100 p-6 space-y-5 shadow-sm">
-      <h3 className="text-base font-bold font-heading text-stone-900">
+    <div className="bg-white rounded-2xl border border-neutral-100 p-6 space-y-5 shadow-sm">
+      <h3 className="text-base font-bold font-heading text-neutral-900">
         Payout Destination
       </h3>
       {/* Dark bank card visual */}
-      <div className="bg-stone-900 rounded-xl p-5 text-white space-y-4 shadow-lg">
+      <div className="bg-neutral-900 rounded-xl p-5 text-white space-y-4 shadow-lg">
         <div className="flex justify-between items-start">
           <svg
             className="size-6 text-white"
@@ -540,7 +540,7 @@ function PayoutDestinationCard(props: Readonly<{ payouts: PayoutRecord[] }>) {
               d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
             />
           </svg>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
             Business account
           </span>
         </div>
@@ -550,26 +550,26 @@ function PayoutDestinationCard(props: Readonly<{ payouts: PayoutRecord[] }>) {
               ? `**** **** **** ${lastPayout.bankLast4}`
               : "**** **** **** ****"}
           </p>
-          <p className="text-[10px] uppercase font-bold text-stone-500">
+          <p className="text-[10px] uppercase font-bold text-neutral-500">
             Stripe Connect
           </p>
         </div>
         <div className="flex justify-between items-center pt-2">
           <p className="text-xs font-bold">Connected via Stripe</p>
-          <button className="text-[10px] font-bold uppercase text-emerald-400 hover:text-emerald-300 transition-colors">
+          <button className="text-[10px] font-bold uppercase text-success/70 hover:text-success/50 transition-colors">
             Edit
           </button>
         </div>
       </div>
       {/* Auto payout toggle */}
       <div className="space-y-2">
-        <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
           Automatic Payouts
         </p>
-        <div className="flex items-center justify-between p-3 rounded-xl border border-stone-100">
+        <div className="flex items-center justify-between p-3 rounded-xl border border-neutral-100">
           <div className="flex items-center gap-3">
             <svg
-              className="size-5 text-emerald-600"
+              className="size-5 text-success"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -581,12 +581,12 @@ function PayoutDestinationCard(props: Readonly<{ payouts: PayoutRecord[] }>) {
                 d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
               />
             </svg>
-            <span className="text-xs font-bold text-stone-800">
+            <span className="text-xs font-bold text-neutral-800">
               Weekly (Mon)
             </span>
           </div>
           {/* Toggle pill */}
-          <div className="w-8 h-4 bg-emerald-600 rounded-full relative">
+          <div className="w-8 h-4 bg-success rounded-full relative">
             <span className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow-sm" />
           </div>
         </div>
@@ -614,9 +614,9 @@ export function PaymentsOverview(
 
       {/* Next payout ETA banner */}
       {balance.nextPayoutDate && balance.nextPayoutAmountPence !== null && (
-        <div className="rounded-lg border-l-4 border-[#1b4d3e] bg-emerald-50 px-5 py-4 flex items-center gap-3">
+        <div className="rounded-lg border-l-4 border-brand-primary bg-brand-primary-lighter px-5 py-4 flex items-center gap-3">
           <svg
-            className="size-5 shrink-0 text-[#1b4d3e]"
+            className="size-5 shrink-0 text-brand-primary"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -629,7 +629,7 @@ export function PaymentsOverview(
             />
           </svg>
           <div>
-            <p className="text-sm font-semibold text-[#1b4d3e]">
+            <p className="text-sm font-semibold text-brand-primary">
               Next payout:{" "}
               <span className="font-bold">
                 {formatGBP(balance.nextPayoutAmountPence)}
@@ -639,7 +639,7 @@ export function PaymentsOverview(
                 {formatPayoutDate(balance.nextPayoutDate)}
               </span>
             </p>
-            <p className="mt-0.5 text-xs text-[#1b4d3e]/70">
+            <p className="mt-0.5 text-xs text-brand-primary/70">
               Stripe typically takes 2 business days to process payouts.
             </p>
           </div>

@@ -95,7 +95,7 @@ export function TeamClient({ members, isSuperAdmin = false }: Props) {
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-full bg-[#1B4D3E] flex items-center justify-center shrink-0">
+                    <div className="h-7 w-7 rounded-full bg-brand-primary flex items-center justify-center shrink-0">
                       <UserCheck className="h-4 w-4 text-white" />
                     </div>
                     <div>

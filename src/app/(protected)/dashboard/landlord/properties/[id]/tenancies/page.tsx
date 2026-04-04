@@ -102,7 +102,7 @@ async function PageContent(
           </div>
           <div className="rounded-xl border border-border bg-card p-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Active</p>
-            <p className="mt-1 text-2xl font-bold font-heading text-brand-primary dark:text-emerald-400">
+            <p className="mt-1 text-2xl font-bold font-heading text-brand-primary dark:text-brand-primary">
               {activeTenancies.length}
             </p>
           </div>
@@ -140,10 +140,10 @@ async function PageContent(
       {/* Active tenancies */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <Clock className="size-4 text-brand-primary dark:text-emerald-400" />
+          <Clock className="size-4 text-brand-primary dark:text-brand-primary" />
           <h2 className="font-heading text-base font-semibold text-foreground">Active</h2>
           {activeTenancies.length > 0 && (
-            <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-xs font-medium text-brand-primary dark:bg-emerald-900/40 dark:text-emerald-300">
+            <span className="rounded-full bg-brand-primary-lighter px-2 py-0.5 text-xs font-medium text-brand-primary dark:bg-brand-primary/10 dark:text-brand-primary">
               {activeTenancies.length}
             </span>
           )}

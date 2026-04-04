@@ -173,15 +173,15 @@ function BookViewingModalInner({
   // -------------------------------------------------------------------
   if (existingViewingId) {
     return (
-      <div className="rounded-xl border border-[#1B4D3E]/20 bg-[#1B4D3E]/5 p-4 flex items-start gap-3">
-        <CheckCircle2 className="size-5 text-[#1B4D3E] shrink-0 mt-0.5" />
+      <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4 flex items-start gap-3">
+        <CheckCircle2 className="size-5 text-brand-primary shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[#1B4D3E]">
+          <p className="text-sm font-medium text-brand-primary">
             You have a viewing booked for this property
           </p>
           <a
             href={`/dashboard/viewings/${existingViewingId}`}
-            className="text-xs text-[#2563EB] hover:underline mt-1 inline-block"
+            className="text-xs text-brand-accent hover:underline mt-1 inline-block"
           >
             View your booking details
           </a>
@@ -195,9 +195,9 @@ function BookViewingModalInner({
   // -------------------------------------------------------------------
   if (isSoldStc) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
-        <Info className="size-5 text-amber-600 shrink-0 mt-0.5" />
-        <p className="text-sm text-amber-800">
+      <div className="rounded-xl border border-warning/20 bg-warning-light p-4 flex items-start gap-3">
+        <Info className="size-5 text-warning shrink-0 mt-0.5" />
+        <p className="text-sm text-warning-dark">
           This property is <strong>Sold STC</strong> — viewings are no longer available.
         </p>
       </div>
@@ -209,16 +209,16 @@ function BookViewingModalInner({
   // -------------------------------------------------------------------
   if (bookingStatus === "success") {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-5 flex flex-col items-center gap-3 text-center">
-        <CheckCircle2 className="size-8 text-green-600" />
-        <p className="font-semibold text-green-800">Viewing booked!</p>
-        <p className="text-sm text-green-700">
+      <div className="rounded-xl border border-success/20 bg-success-light p-5 flex flex-col items-center gap-3 text-center">
+        <CheckCircle2 className="size-8 text-success" />
+        <p className="font-semibold text-success-dark">Viewing booked!</p>
+        <p className="text-sm text-success">
           We&apos;ve confirmed your viewing. You&apos;ll receive an email confirmation shortly.
         </p>
         {bookedViewingId && (
           <a
             href={`/dashboard/viewings/${bookedViewingId}`}
-            className="text-xs text-[#2563EB] hover:underline"
+            className="text-xs text-brand-accent hover:underline"
           >
             View your booking details
           </a>
@@ -234,15 +234,15 @@ function BookViewingModalInner({
     <div className="rounded-xl border border-border bg-background p-5 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <CalendarDays className="size-5 text-[#1B4D3E] shrink-0" />
+        <CalendarDays className="size-5 text-brand-primary shrink-0" />
         <h3 className="font-semibold text-base text-foreground">Book a Viewing</h3>
       </div>
 
       {/* Under offer banner */}
       {isUnderOffer && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 flex items-center gap-2">
-          <Info className="size-4 text-amber-600 shrink-0" />
-          <p className="text-xs text-amber-800 font-medium">
+        <div className="rounded-lg border border-warning/20 bg-warning-light px-3 py-2 flex items-center gap-2">
+          <Info className="size-4 text-warning shrink-0" />
+          <p className="text-xs text-warning-dark font-medium">
             Under Offer — this property is currently under offer. You may still request a viewing.
           </p>
         </div>
@@ -250,24 +250,24 @@ function BookViewingModalInner({
 
       {/* Status messages */}
       {bookingStatus === "slot_taken" && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 flex items-start gap-2">
-          <AlertCircle className="size-4 text-red-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-red-700">
+        <div className="rounded-lg border border-error/20 bg-error-light px-3 py-2 flex items-start gap-2">
+          <AlertCircle className="size-4 text-error shrink-0 mt-0.5" />
+          <p className="text-xs text-error">
             That slot was just taken — please pick another.
           </p>
         </div>
       )}
 
       {bookingStatus === "session_expired" && (
-        <div className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 flex items-start gap-2">
-          <AlertCircle className="size-4 text-orange-600 shrink-0 mt-0.5" />
+        <div className="rounded-lg border border-warning/30 bg-warning-light px-3 py-2 flex items-start gap-2">
+          <AlertCircle className="size-4 text-warning shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-xs text-orange-700 mb-2">
+            <p className="text-xs text-warning mb-2">
               Your session expired — please sign in again.
             </p>
             <a
               href="/auth/login"
-              className="inline-flex items-center gap-1 text-xs font-medium text-[#2563EB] hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-medium text-brand-accent hover:underline"
             >
               <LogIn className="size-3" />
               Sign in
@@ -277,9 +277,9 @@ function BookViewingModalInner({
       )}
 
       {bookingStatus === "error" && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 flex items-start gap-2">
-          <AlertCircle className="size-4 text-red-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-red-700">
+        <div className="rounded-lg border border-error/20 bg-error-light px-3 py-2 flex items-start gap-2">
+          <AlertCircle className="size-4 text-error shrink-0 mt-0.5" />
+          <p className="text-xs text-error">
             Something went wrong. Please try again.
           </p>
         </div>
@@ -292,11 +292,11 @@ function BookViewingModalInner({
           <span className="text-sm">Loading available slots…</span>
         </div>
       ) : slotsError ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2">
-          <p className="text-xs text-red-700">{slotsError}</p>
+        <div className="rounded-lg border border-error/20 bg-error-light px-3 py-2">
+          <p className="text-xs text-error">{slotsError}</p>
           <button
             onClick={() => void fetchSlots()}
-            className="text-xs text-[#2563EB] hover:underline mt-1"
+            className="text-xs text-brand-accent hover:underline mt-1"
           >
             Retry
           </button>
@@ -323,8 +323,8 @@ function BookViewingModalInner({
                     "w-full text-left rounded-lg border px-3 py-2.5 text-sm transition-colors",
                     "flex items-center gap-2",
                     selectedSlotId === slot.id
-                      ? "border-[#1B4D3E] bg-[#1B4D3E]/5 text-[#1B4D3E] font-medium"
-                      : "border-border hover:border-[#1B4D3E]/40 hover:bg-[#1B4D3E]/5 text-foreground",
+                      ? "border-brand-primary bg-brand-primary/5 text-brand-primary font-medium"
+                      : "border-border hover:border-brand-primary/40 hover:bg-brand-primary/5 text-foreground",
                     isUnderOffer && "opacity-70",
                   )}
                   aria-pressed={selectedSlotId === slot.id}
@@ -340,7 +340,7 @@ function BookViewingModalInner({
 
       {/* Submit */}
       <Button
-        className="w-full bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white gap-2"
+        className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white gap-2"
         disabled={
           !selectedSlotId ||
           bookingStatus === "loading" ||

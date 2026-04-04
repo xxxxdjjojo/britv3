@@ -81,13 +81,13 @@ export function TenancyAgreementUpload({ tenancyId, propertyId, tenantName }: Pr
 
   if (uploaded) {
     return (
-      <div className="flex items-center gap-3 rounded-lg border border-green-200 dark:border-green-800/30 bg-green-50 dark:bg-green-900/10 p-4">
-        <FileCheck className="size-5 text-green-600 dark:text-green-400 shrink-0" />
+      <div className="flex items-center gap-3 rounded-lg border border-success/30 dark:border-success/20 bg-success-light dark:bg-success/10 p-4">
+        <FileCheck className="size-5 text-success dark:text-success shrink-0" />
         <div>
-          <p className="text-sm font-medium text-green-700 dark:text-green-400">
+          <p className="text-sm font-medium text-success dark:text-success">
             Agreement uploaded successfully
           </p>
-          <p className="text-xs text-green-600/80 dark:text-green-500/80">
+          <p className="text-xs text-success/80 dark:text-success/80">
             Saved to landlord documents
           </p>
         </div>
@@ -108,20 +108,20 @@ export function TenancyAgreementUpload({ tenancyId, propertyId, tenantName }: Pr
       {...getRootProps()}
       className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors cursor-pointer ${
         isDragActive
-          ? "border-[#1B4D3E] bg-[#1B4D3E]/5"
-          : "border-slate-300 dark:border-slate-600 hover:border-[#1B4D3E]/50 hover:bg-slate-50 dark:hover:bg-slate-800/30"
+          ? "border-brand-primary bg-brand-primary/5"
+          : "border-neutral-300 dark:border-neutral-600 hover:border-brand-primary/50 hover:bg-neutral-50 dark:hover:bg-neutral-800/30"
       } ${uploading ? "pointer-events-none opacity-60" : ""}`}
     >
       <input {...getInputProps()} />
       {uploading ? (
         <>
-          <Loader2 className="size-8 animate-spin text-[#1B4D3E] mb-3" />
+          <Loader2 className="size-8 animate-spin text-brand-primary mb-3" />
           <p className="text-sm font-medium">Uploading...</p>
         </>
       ) : (
         <>
           <Upload
-            className={`size-8 mb-3 ${isDragActive ? "text-[#1B4D3E]" : "text-muted-foreground"}`}
+            className={`size-8 mb-3 ${isDragActive ? "text-brand-primary" : "text-muted-foreground"}`}
           />
           <p className="text-sm font-medium">
             {isDragActive ? "Drop the PDF here" : "Drag & drop your PDF here"}

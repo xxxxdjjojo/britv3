@@ -22,8 +22,8 @@ export default async function ReferenceSubmissionPage(props: PageProps) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <div className="mx-auto max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-lg">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <span className="text-2xl text-red-600">!</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error-light">
+            <span className="text-2xl text-error">!</span>
           </div>
           <h1 className="mb-2 text-xl font-semibold text-on-surface">
             Invalid or Expired Link
@@ -49,8 +49,8 @@ export default async function ReferenceSubmissionPage(props: PageProps) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <div className="mx-auto max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-lg">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <span className="text-2xl text-red-600">!</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error-light">
+            <span className="text-2xl text-error">!</span>
           </div>
           <h1 className="mb-2 text-xl font-semibold text-on-surface">
             Reference Not Found
@@ -69,8 +69,8 @@ export default async function ReferenceSubmissionPage(props: PageProps) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <div className="mx-auto max-w-md rounded-xl bg-surface-container-lowest p-8 text-center shadow-lg">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <span className="text-2xl text-green-600">&#10003;</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-light">
+            <span className="text-2xl text-success">&#10003;</span>
           </div>
           <h1 className="mb-2 text-xl font-semibold text-on-surface">
             Already Submitted

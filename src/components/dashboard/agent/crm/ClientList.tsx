@@ -67,11 +67,11 @@ type AddClientForm = {
 
 // CSS-var-compatible badge classes — semantic colors from design system
 const CLIENT_TYPE_COLORS: Record<string, string> = {
-  buyer: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
-  seller: "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-  renter: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
-  landlord: "bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400",
-  investor: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+  buyer: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/10 dark:text-brand-accent",
+  seller: "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning",
+  renter: "bg-success-light text-success dark:bg-success/10 dark:text-success",
+  landlord: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
+  investor: "bg-success-light text-success dark:bg-success/10 dark:text-success",
 };
 
 export function ClientList({ clients }: Props) {

@@ -217,7 +217,7 @@ export default function TenancyDetailPage() {
             variant="outline"
             size="sm"
             onClick={() => setEditing(true)}
-            className="shrink-0 text-xs border-red-200 dark:border-red-800/30 rounded-lg"
+            className="shrink-0 text-xs border-error/30 dark:border-error/20 rounded-lg"
           >
             Renew
           </Button>
@@ -229,7 +229,7 @@ export default function TenancyDetailPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <div className="size-14 shrink-0 rounded-2xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-lg font-heading">
+            <div className="size-14 shrink-0 rounded-2xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-brand-primary flex items-center justify-center font-bold text-lg font-heading">
               {tenantInitials}
             </div>
             <div>

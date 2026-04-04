@@ -96,10 +96,10 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
   const ratingStars = rating ? Math.round(rating) : 0;
 
   return (
-    <div className="bg-white p-5 rounded-2xl flex flex-col gap-4 shadow-sm border border-[#eeeeed]">
+    <div className="bg-white p-5 rounded-2xl flex flex-col gap-4 shadow-sm border border-neutral-200">
       {/* Header: icon + verified badge */}
       <div className="flex justify-between items-start">
-        <div className="size-12 rounded-full bg-[#f4f3f2] flex items-center justify-center overflow-hidden shrink-0">
+        <div className="size-12 rounded-full bg-neutral-100 flex items-center justify-center overflow-hidden shrink-0">
           {avatarUrl ? (
             <Image
               src={avatarUrl}
@@ -109,10 +109,10 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
               className="object-cover w-full h-full"
             />
           ) : (
-            <Wrench className="size-5 text-[#1B4D3E]" />
+            <Wrench className="size-5 text-brand-primary" />
           )}
         </div>
-        <span className="flex items-center gap-1 bg-[#1B4D3E]/10 text-[#1B4D3E] px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase">
+        <span className="flex items-center gap-1 bg-brand-primary/10 text-brand-primary px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase">
           <ShieldCheck className="size-3" />
           Verified
         </span>
@@ -120,12 +120,12 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
 
       {/* Name + rating */}
       <div className="flex-1">
-        <h4 className="text-base font-heading font-bold text-[#1B4D3E] mb-1">
+        <h4 className="text-base font-heading font-bold text-brand-primary mb-1">
           {tp.business_name}
         </h4>
-        <p className="text-xs text-[#707974] mb-3">{primaryService(tp.services)}</p>
+        <p className="text-xs text-neutral-500 mb-3">{primaryService(tp.services)}</p>
         <div className="flex items-center gap-2">
-          <div className="flex text-[#D4A853]">
+          <div className="flex text-brand-secondary">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
@@ -134,7 +134,7 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
               />
             ))}
           </div>
-          <span className="text-[10px] font-bold text-[#707974] uppercase tracking-widest">
+          <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">
             {reviewCount > 0 ? `${reviewCount} Reviews` : "New"}
           </span>
         </div>
@@ -143,7 +143,7 @@ function TradespersonCard({ tp }: Readonly<{ tp: TradespersonRow }>) {
       {/* CTA */}
       <Link
         href={`/services/tradespeople/${tp.slug}`}
-        className="w-full py-3 bg-[#1B4D3E] text-white rounded-xl font-bold text-xs uppercase tracking-widest text-center hover:bg-[#003629] transition-colors"
+        className="w-full py-3 bg-brand-primary text-white rounded-xl font-bold text-xs uppercase tracking-widest text-center hover:bg-brand-primary-dark transition-colors"
       >
         Get Quote
       </Link>
@@ -165,11 +165,11 @@ export async function RecommendedTradespeople({ postcode }: Props) {
       <div>
         <h2
           id="recommended-trades-heading"
-          className="text-sm font-heading font-bold text-[#1B4D3E] uppercase tracking-wider"
+          className="text-sm font-heading font-bold text-brand-primary uppercase tracking-wider"
         >
           Local Experts
         </h2>
-        <p className="text-xs text-[#707974] mt-0.5">
+        <p className="text-xs text-neutral-500 mt-0.5">
           Verified professionals near this property
         </p>
       </div>

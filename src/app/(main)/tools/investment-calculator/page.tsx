@@ -104,7 +104,7 @@ export default function InvestmentCalculatorPage() {
           <aside className="space-y-6 lg:col-span-4">
             {/* Dark CTA card */}
             <div className="overflow-hidden rounded-xl bg-neutral-900 text-white shadow-lg dark:bg-neutral-950">
-              <div className="relative h-36 overflow-hidden bg-gradient-to-br from-emerald-800 to-neutral-900">
+              <div className="relative h-36 overflow-hidden bg-gradient-to-br from-brand-primary to-neutral-900">
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50">

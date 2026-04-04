@@ -57,17 +57,17 @@ export default async function QuoteBuilderPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f8]">
+    <div className="min-h-screen bg-neutral-50">
       {/* Page header */}
       <div className="pt-8 px-10 pb-6 max-w-7xl mx-auto">
         <div className="space-y-1 mb-8">
-          <span className="text-[11px] font-bold tracking-widest text-[#003629] uppercase">
+          <span className="text-[11px] font-bold tracking-widest text-brand-primary-dark uppercase">
             Draft Status: Active
           </span>
-          <h1 className="text-3xl font-bold font-heading text-[#003629] tracking-tight">
+          <h1 className="text-3xl font-bold font-heading text-brand-primary-dark tracking-tight">
             Create Professional Bid
           </h1>
-          <p className="text-stone-500 max-w-lg text-sm">
+          <p className="text-neutral-500 max-w-lg text-sm">
             Outline the scope of work and financials for your next premium
             project. The preview updates in real-time.
           </p>
@@ -90,9 +90,9 @@ export default async function QuoteBuilderPage({ searchParams }: Props) {
   } catch (error) {
     if (error instanceof Error && "digest" in error) throw error;
     return (
-      <div className="min-h-screen bg-[#faf9f8] pt-8 px-10">
-        <h1 className="text-3xl font-bold font-heading text-[#003629]">Create Professional Bid</h1>
-        <p className="mt-4 text-sm text-stone-500">Unable to load quote builder. Please try refreshing the page.</p>
+      <div className="min-h-screen bg-neutral-50 pt-8 px-10">
+        <h1 className="text-3xl font-bold font-heading text-brand-primary-dark">Create Professional Bid</h1>
+        <p className="mt-4 text-sm text-neutral-500">Unable to load quote builder. Please try refreshing the page.</p>
       </div>
     );
   }

@@ -57,7 +57,7 @@ function PropertyFacts(props: Readonly<{ property: PropertyData }>) {
         {property.epc_rating && (
           <div className="flex justify-between items-center">
             <span className="text-xs text-on-surface-variant">EPC Rating</span>
-            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[9px] font-bold rounded">
+            <span className="px-2 py-0.5 bg-success-light text-success text-[9px] font-bold rounded">
               {property.epc_rating}
             </span>
           </div>
@@ -161,7 +161,6 @@ function ContactCard(props: Readonly<{ name: string | null }>) {
 }
 
 export default function ActionSidebar({
-  conversationId,
   contextType,
   contextId,
   participantName,

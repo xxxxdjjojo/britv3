@@ -440,7 +440,7 @@ export function CreateListingWizard() {
                 className="gap-1.5 rounded-xl"
               >
                 <Sparkles
-                  className={cn("size-3.5 text-amber-500", aiGenerating && "animate-pulse")}
+                  className={cn("size-3.5 text-warning", aiGenerating && "animate-pulse")}
                   strokeWidth={1.25}
                 />
                 {aiGenerating ? "Generating…" : "AI Suggestion"}

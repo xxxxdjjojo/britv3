@@ -33,7 +33,7 @@ const DATE_RANGE_OPTIONS: { label: string; value: DateRangeOption }[] = [
   { label: "Last 12 months", value: "12m" },
 ];
 
-const PIE_COLORS = ["#3b82f6", "#8b5cf6", "#10b981"];
+const PIE_COLORS = ["var(--color-brand-accent)", "var(--color-brand-accent)", "var(--color-success)"];
 
 function formatMonth(iso: string): string {
   try {
@@ -145,36 +145,36 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
     {
       label: "Listings Sold",
       value: report.listings_sold_count.toLocaleString(),
-      icon: <TrendingUp className="size-5 text-blue-500" />,
-      color: "text-blue-600",
+      icon: <TrendingUp className="size-5 text-brand-accent" />,
+      color: "text-brand-accent",
     },
     {
       label: "Avg Time on Market",
       value: report.avg_time_on_market_days != null
         ? `${report.avg_time_on_market_days} days`
         : "—",
-      icon: <Clock className="size-5 text-amber-500" />,
-      color: "text-amber-600",
+      icon: <Clock className="size-5 text-warning" />,
+      color: "text-warning",
     },
     {
       label: "Total Revenue",
       value: formatGbp((report as Record<string, unknown>).total_revenue_pence as number ?? report.total_revenue),
-      icon: <PoundSterling className="size-5 text-green-500" />,
-      color: "text-green-600",
+      icon: <PoundSterling className="size-5 text-success" />,
+      color: "text-success",
     },
     {
       label: "Conversion Rate",
       value: `${(report.conversion_rate * 100).toFixed(1)}%`,
-      icon: <Percent className="size-5 text-purple-500" />,
-      color: "text-purple-600",
+      icon: <Percent className="size-5 text-brand-accent" />,
+      color: "text-brand-accent",
     },
     {
       label: "Client Satisfaction",
       value: (report.client_satisfaction ?? null) != null
         ? `${report.client_satisfaction.toFixed(1)} / 5`
         : "—",
-      icon: <Star className="size-5 text-yellow-500" />,
-      color: "text-yellow-600",
+      icon: <Star className="size-5 text-warning" />,
+      color: "text-warning",
     },
   ];
 
@@ -189,7 +189,7 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
             disabled={loading}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               selectedRange === value
-                ? "bg-blue-600 text-white"
+                ? "bg-brand-accent text-white"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             } disabled:opacity-50`}
           >
@@ -243,7 +243,7 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
                   <Line
                     type="monotone"
                     dataKey="sold"
-                    stroke="#3b82f6"
+                    stroke="var(--color-brand-accent)"
                     strokeWidth={2}
                     dot={{ r: 3 }}
                     activeDot={{ r: 5 }}
@@ -275,7 +275,7 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
                     contentStyle={{ fontSize: 12, borderRadius: 8 }}
                     formatter={(v: number) => [`£${v.toLocaleString()}`, "Revenue"]}
                   />
-                  <Bar dataKey="revenue" fill="#10b981" radius={[3, 3, 0, 0]} name="Revenue (£)" />
+                  <Bar dataKey="revenue" fill="var(--color-success)" radius={[3, 3, 0, 0]} name="Revenue (£)" />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -334,7 +334,7 @@ export function AgentPerformanceCharts({ initialReport, agentId }: Props) {
                     </div>
                     <div className="h-5 w-full rounded bg-muted overflow-hidden">
                       <div
-                        className="h-full rounded bg-blue-500 transition-all"
+                        className="h-full rounded bg-brand-accent transition-all"
                         style={{ width: `${pct}%` }}
                       />
                     </div>

@@ -122,12 +122,12 @@ export default function LeasePreview({
   return (
     <div className="space-y-6">
       {/* HTML Preview */}
-      <div className="rounded-lg border border-border bg-white p-8 text-black dark:bg-gray-50">
+      <div className="rounded-lg border border-border bg-white p-8 text-black dark:bg-neutral-50">
         <h2 className="text-center text-xl font-bold">
           Assured Shorthold Tenancy Agreement
         </h2>
 
-        <div className="mx-auto mt-4 max-w-lg rounded border border-red-300 bg-red-50 p-3 text-center text-sm text-red-700">
+        <div className="mx-auto mt-4 max-w-lg rounded border border-error/30 bg-error-light p-3 text-center text-sm text-error">
           This template is for guidance only. Seek legal advice before use.
         </div>
 
@@ -244,7 +244,7 @@ export default function LeasePreview({
               onChange={(e) => setCustomClauses(e.target.value)}
               placeholder="Enter any additional clauses here..."
               rows={4}
-              className="mt-2 w-full rounded border border-gray-300 bg-white p-2 text-sm"
+              className="mt-2 w-full rounded border border-neutral-300 bg-white p-2 text-sm"
             />
           </section>
         </div>

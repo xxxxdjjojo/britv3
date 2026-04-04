@@ -193,7 +193,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
                     isHighlight
                       ? isPositive
                         ? "bg-brand-primary-lighter text-[--color-success]"
-                        : "bg-rose-50 text-rose-600"
+                        : "bg-error-light text-error"
                       : "bg-primary/5 text-primary"
                   }`}>
                     <Icon className="size-4" />
@@ -203,7 +203,7 @@ export default async function AreaStatsPage({ params }: StatsPageProps) {
                     isHighlight
                       ? isPositive
                         ? "text-[--color-success]"
-                        : "text-rose-600"
+                        : "text-error"
                       : "text-on-surface"
                   }`}>
                     {card.value}

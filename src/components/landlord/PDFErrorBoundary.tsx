@@ -25,7 +25,7 @@ export class PDFErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <span className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+          <span className="inline-flex items-center rounded-md border border-error/30 bg-error-light px-4 py-2 text-sm text-error">
             Unable to generate PDF. Please refresh the page.
           </span>
         )

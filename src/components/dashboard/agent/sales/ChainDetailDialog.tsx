@@ -12,7 +12,7 @@ import type { ChainDetail, ChainRiskLevel } from "@/types/agent";
 const RISK_CONFIG: Record<ChainRiskLevel, { bg: string; text: string }> = {
   low: { bg: "bg-success-light", text: "text-success" },
   medium: { bg: "bg-warning-light", text: "text-warning" },
-  high: { bg: "bg-orange-100", text: "text-orange-700" },
+  high: { bg: "bg-warning-light", text: "text-warning" },
   critical: { bg: "bg-error-light", text: "text-error" },
 };
 

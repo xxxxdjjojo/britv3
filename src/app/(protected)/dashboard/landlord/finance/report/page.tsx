@@ -255,17 +255,17 @@ async function PageContent() {
                 propertySummaries.map((ps) => (
                   <TableRow key={ps.property_id}>
                     <TableCell className="font-medium">{ps.label}</TableCell>
-                    <TableCell className="text-right tabular-nums text-green-600 dark:text-green-400">
+                    <TableCell className="text-right tabular-nums text-success dark:text-success">
                       {gbpFormatter.format(ps.income)}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums text-red-600 dark:text-red-400">
+                    <TableCell className="text-right tabular-nums text-error dark:text-error">
                       {gbpFormatter.format(ps.expenses)}
                     </TableCell>
                     <TableCell
                       className={`text-right tabular-nums font-bold ${
                         ps.net >= 0
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
+                          ? "text-success dark:text-success"
+                          : "text-error dark:text-error"
                       }`}
                     >
                       {gbpFormatter.format(ps.net)}

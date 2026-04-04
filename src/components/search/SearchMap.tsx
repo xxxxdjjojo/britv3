@@ -157,7 +157,7 @@ function SearchMap({
 
     // Add property markers (brand-primary, 12px)
     for (const p of properties) {
-      const el = createMarkerElement("#1B4D3E", 12);
+      const el = createMarkerElement("var(--color-brand-primary)", 12);
       el.title = p.address;
       el.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -173,7 +173,7 @@ function SearchMap({
 
     // Add provider markers (brand-secondary, 10px)
     for (const p of providers) {
-      const el = createMarkerElement("#D4A853", 10);
+      const el = createMarkerElement("var(--color-brand-secondary)", 10);
       el.title = p.name;
       el.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -246,14 +246,14 @@ function SearchMap({
           ref={styleBtnRef}
           type="button"
           onClick={handleStyleToggle}
-          className="bg-white text-[#1a1c1c] text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm hover:bg-[#faf9f8] transition-colors"
+          className="bg-white text-neutral-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm hover:bg-neutral-50 transition-colors"
         >
           Satellite
         </button>
         <button
           type="button"
           onClick={handleFullscreenToggle}
-          className="bg-white text-[#1a1c1c] text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm hover:bg-[#faf9f8] transition-colors"
+          className="bg-white text-neutral-900 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm hover:bg-neutral-50 transition-colors"
         >
           Fullscreen
         </button>

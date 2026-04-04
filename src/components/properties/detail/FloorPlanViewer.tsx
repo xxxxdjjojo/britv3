@@ -30,8 +30,8 @@ function AnnotationBadge({ annotation }: { annotation: FloorPlanAnnotation }) {
   const { room, area_sqm, vs_average } = annotation;
 
   const config = {
-    above: { label: "↑ Above avg", className: "bg-green-100 text-green-800" },
-    below: { label: "↓ Below avg", className: "bg-amber-100 text-amber-800" },
+    above: { label: "↑ Above avg", className: "bg-success-light text-success-dark" },
+    below: { label: "↓ Below avg", className: "bg-warning-light text-warning-dark" },
     average: { label: "~ Average", className: "bg-neutral-100 text-neutral-600" },
   }[vs_average];
 

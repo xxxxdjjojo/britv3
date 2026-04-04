@@ -89,7 +89,7 @@ function FeaturedLeadCard(props: Readonly<{
   }
 
   return (
-    <article className="lg:col-span-8 group relative overflow-hidden bg-white rounded-2xl border border-red-200/60 shadow-xl shadow-red-500/5 hover:shadow-2xl transition-all p-1">
+    <article className="lg:col-span-8 group relative overflow-hidden bg-white rounded-2xl border border-error/30 shadow-xl shadow-error/5 hover:shadow-2xl transition-all p-1">
       <div className={["absolute top-0 left-0 w-2 h-full rounded-l-2xl", isUrgent ? "bg-error" : "bg-brand-primary"].join(" ")} />
       <div className="p-6 space-y-4">
         <div className="flex justify-between items-start">
@@ -132,7 +132,7 @@ function FeaturedLeadCard(props: Readonly<{
               View Details
             </button>
             <button
-              className="p-2.5 border border-neutral-200 text-neutral-400 hover:text-error hover:bg-red-50 rounded-xl transition-all"
+              className="p-2.5 border border-neutral-200 text-neutral-400 hover:text-error hover:bg-error-light rounded-xl transition-all"
               aria-label="Dismiss lead"
             >
               ✕
@@ -304,11 +304,11 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
           {/* Lead Credits Card */}
           <div className="bg-brand-primary text-white rounded-2xl p-6 relative overflow-hidden flex flex-col justify-center">
             <div className="relative z-10">
-              <p className="text-emerald-200 text-sm font-medium">Daily Lead Credits</p>
+              <p className="text-success-light text-sm font-medium">Daily Lead Credits</p>
               <h5 className="text-4xl font-bold font-heading">{creditsUsed}/{creditsTotal}</h5>
-              <div className="w-full bg-emerald-800 h-2 rounded-full mt-4 overflow-hidden">
+              <div className="w-full bg-success h-2 rounded-full mt-4 overflow-hidden">
                 <div
-                  className="h-full bg-emerald-400 rounded-full transition-all"
+                  className="h-full bg-success rounded-full transition-all"
                   style={{ width: `${(creditsUsed / creditsTotal) * 100}%` }}
                 />
               </div>
@@ -320,7 +320,7 @@ export function JobLeadsClient({ initialLeads, providerId }: JobLeadsClientProps
 
           {/* Market Rank Card */}
           <div className="bg-white border border-neutral-200 rounded-2xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-warning-light flex items-center justify-center">
               <Trophy className="size-5 text-brand-secondary" />
             </div>
             <div>

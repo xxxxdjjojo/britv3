@@ -12,10 +12,10 @@ type PropertyDonutProps = Readonly<{
 }>;
 
 const DEFAULT_SEGMENTS: Segment[] = [
-  { label: "Flats", value: 45, color: "#1B4D3E" },
-  { label: "Terraced", value: 25, color: "#2D7A5F" },
-  { label: "Semi", value: 20, color: "#D4A853" },
-  { label: "Detached", value: 10, color: "#E2E2E8" },
+  { label: "Flats", value: 45, color: "var(--color-brand-primary)" },
+  { label: "Terraced", value: 25, color: "var(--color-brand-primary-light)" },
+  { label: "Semi", value: 20, color: "var(--color-brand-secondary)" },
+  { label: "Detached", value: 10, color: "var(--color-neutral-200)" },
 ];
 
 function buildArcPath(cx: number, cy: number, r: number, startAngle: number, endAngle: number): string {
@@ -56,10 +56,10 @@ export function PropertyDonut({ segments = DEFAULT_SEGMENTS, total = 1240, class
                 fill={arc.color}
               />
             ))}
-            <text x={cx} y={cy - 4} textAnchor="middle" className="text-xs" style={{ fontSize: 14, fontWeight: 900, fill: "#1B4D3E" }}>
+            <text x={cx} y={cy - 4} textAnchor="middle" className="text-xs" style={{ fontSize: 14, fontWeight: 900, fill: "var(--color-brand-primary)" }}>
               {total.toLocaleString()}
             </text>
-            <text x={cx} y={cy + 12} textAnchor="middle" style={{ fontSize: 9, fill: "#9E9EAB" }}>
+            <text x={cx} y={cy + 12} textAnchor="middle" style={{ fontSize: 9, fill: "var(--color-neutral-400)" }}>
               units
             </text>
           </svg>

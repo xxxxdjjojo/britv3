@@ -170,19 +170,19 @@ function renderCriticalEmailHtml(event: PlatformEvent): string {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background-color:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<body style="margin:0;padding:0;background-color:#F8F8FA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
 <div style="max-width:600px;margin:0 auto;padding:20px;">
-  <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
+  <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;"><!-- BRAND_PRIMARY -->
     <h1 style="color:#ffffff;margin:0;font-size:20px;">Britestate</h1>
   </div>
   <div style="background-color:#ffffff;padding:32px;border-radius:0 0 8px 8px;">
-    <p style="font-size:16px;color:#333;margin:0 0 8px 0;font-weight:600;">${title}</p>
-    <p style="font-size:14px;color:#666;margin:0 0 24px 0;">from ${actor}</p>
-    <a href="${cta.url}" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
+    <p style="font-size:16px;color:#46464F;margin:0 0 8px 0;font-weight:600;">${title}</p><!-- NEUTRAL_700 -->
+    <p style="font-size:14px;color:#5E5E6A;margin:0 0 24px 0;">from ${actor}</p><!-- NEUTRAL_600 -->
+    <a href="${cta.url}" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;"><!-- BRAND_PRIMARY -->
       ${cta.label}
     </a>
   </div>
-  <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">
+  <p style="text-align:center;font-size:12px;color:#9E9EAB;margin-top:16px;"><!-- NEUTRAL_400 -->
     You received this email because of your notification preferences on Britestate.
   </p>
 </div>
@@ -211,24 +211,24 @@ function renderDailyDigestHtml(
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background-color:#f8f9fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<body style="margin:0;padding:0;background-color:#F8F8FA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;"><!-- NEUTRAL_50 -->
 <div style="max-width:600px;margin:0 auto;padding:20px;">
-  <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
+  <div style="background-color:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;"><!-- BRAND_PRIMARY -->
     <h1 style="color:#ffffff;margin:0;font-size:20px;">Britestate</h1>
   </div>
   <div style="background-color:#ffffff;padding:32px;border-radius:0 0 8px 8px;">
-    <p style="font-size:16px;color:#333;margin:0 0 4px 0;">Hi ${recipientName},</p>
-    <p style="font-size:14px;color:#666;margin:0 0 24px 0;">Here is your daily summary of ${events.length} update${events.length === 1 ? "" : "s"}:</p>
+    <p style="font-size:16px;color:#46464F;margin:0 0 4px 0;">Hi ${recipientName},</p><!-- NEUTRAL_700 -->
+    <p style="font-size:14px;color:#5E5E6A;margin:0 0 24px 0;">Here is your daily summary of ${events.length} update${events.length === 1 ? "" : "s"}:</p><!-- NEUTRAL_600 -->
     <table style="width:100%;border-collapse:collapse;">
       ${eventListHtml}
     </table>
     <div style="margin-top:24px;text-align:center;">
-      <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.com"}/notifications" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;">
+      <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.com"}/notifications" style="display:inline-block;background-color:#1B4D3E;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:500;"><!-- BRAND_PRIMARY -->
         View all on Britestate
       </a>
     </div>
   </div>
-  <p style="text-align:center;font-size:12px;color:#999;margin-top:16px;">
+  <p style="text-align:center;font-size:12px;color:#9E9EAB;margin-top:16px;"><!-- NEUTRAL_400 -->
     You received this digest because of your notification preferences on Britestate.
   </p>
 </div>

@@ -36,8 +36,8 @@ const STATS = [
     trend: "+4%",
     trendDir: "up" as const,
     icon: Building,
-    iconBg: "bg-blue-100 dark:bg-blue-900/40",
-    iconColor: "text-blue-600 dark:text-blue-400",
+    iconBg: "bg-brand-accent-light dark:bg-brand-accent/20",
+    iconColor: "text-brand-accent dark:text-brand-accent",
   },
   {
     label: "New Leads",
@@ -45,8 +45,8 @@ const STATS = [
     trend: "+12%",
     trendDir: "up" as const,
     icon: UserPlus,
-    iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
-    iconColor: "text-emerald-600 dark:text-emerald-400",
+    iconBg: "bg-success-light dark:bg-success/20",
+    iconColor: "text-success dark:text-success",
   },
   {
     label: "Viewings This Week",
@@ -54,8 +54,8 @@ const STATS = [
     trend: "0%",
     trendDir: "flat" as const,
     icon: Eye,
-    iconBg: "bg-amber-100 dark:bg-amber-900/40",
-    iconColor: "text-amber-600 dark:text-amber-400",
+    iconBg: "bg-warning-light dark:bg-warning/20",
+    iconColor: "text-warning dark:text-warning",
   },
   {
     label: "Offers Pending",
@@ -63,15 +63,15 @@ const STATS = [
     trend: "+2",
     trendDir: "up" as const,
     icon: FileText,
-    iconBg: "bg-purple-100 dark:bg-purple-900/40",
-    iconColor: "text-purple-600 dark:text-purple-400",
+    iconBg: "bg-brand-accent-light dark:bg-brand-accent/20",
+    iconColor: "text-brand-accent dark:text-brand-accent",
   },
 ] as const;
 
 const PIPELINE = [
-  { label: "Cold Leads", count: 24, pct: 65, color: "bg-blue-500" },
-  { label: "Warm Prospects", count: 12, pct: 40, color: "bg-amber-500" },
-  { label: "Hot Inquiries", count: 8, pct: 25, color: "bg-red-500" },
+  { label: "Cold Leads", count: 24, pct: 65, color: "bg-brand-accent" },
+  { label: "Warm Prospects", count: 12, pct: 40, color: "bg-warning" },
+  { label: "Hot Inquiries", count: 8, pct: 25, color: "bg-error" },
 ] as const;
 
 const VIEWINGS = [
@@ -124,15 +124,15 @@ function ActivityChart() {
         {/* Legend */}
         <div className="mb-4 flex gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-emerald-500" />
+            <span className="inline-block size-2.5 rounded-full bg-success" />
             Listings
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-blue-500" />
+            <span className="inline-block size-2.5 rounded-full bg-brand-accent" />
             Enquiries
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-amber-500" />
+            <span className="inline-block size-2.5 rounded-full bg-warning" />
             Viewings
           </span>
         </div>
@@ -159,7 +159,7 @@ function ActivityChart() {
           {/* Listings (green) */}
           <polyline
             fill="none"
-            className="stroke-emerald-500"
+            className="stroke-success"
             strokeWidth="2.5"
             strokeLinejoin="round"
             points="60,120 160,90 260,100 360,60 460,70 560,40 660,50"
@@ -168,7 +168,7 @@ function ActivityChart() {
           {/* Enquiries (blue) */}
           <polyline
             fill="none"
-            className="stroke-blue-500"
+            className="stroke-brand-accent"
             strokeWidth="2.5"
             strokeLinejoin="round"
             points="60,140 160,130 260,110 360,120 460,100 560,90 660,80"
@@ -177,7 +177,7 @@ function ActivityChart() {
           {/* Viewings (amber) */}
           <polyline
             fill="none"
-            className="stroke-amber-500"
+            className="stroke-warning"
             strokeWidth="2.5"
             strokeLinejoin="round"
             points="60,160 160,150 260,140 360,145 460,130 560,120 660,115"
@@ -277,7 +277,7 @@ export function AgentDashboard({ data }: Readonly<{ data: AgentData }>) {
             className="relative rounded-full border bg-card p-2 text-muted-foreground hover:text-foreground"
           >
             <Bell className="size-5" />
-            <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-red-500" />
+            <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-error" />
           </button>
           <Button render={<Link href="/dashboard/agent/listings/new" />}>
               <Plus className="mr-2 size-4" />
@@ -311,7 +311,7 @@ export function AgentDashboard({ data }: Readonly<{ data: AgentData }>) {
                   <span
                     className={cn(
                       "flex items-center gap-0.5 text-xs font-medium",
-                      stat.trendDir === "up" && "text-emerald-600 dark:text-emerald-400",
+                      stat.trendDir === "up" && "text-success dark:text-success",
                       stat.trendDir === "flat" && "text-muted-foreground",
                     )}
                   >

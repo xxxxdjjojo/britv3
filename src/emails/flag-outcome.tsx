@@ -3,6 +3,12 @@ import type { FlagOutcomeEmailProps } from "@/types/email";
 import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_200,
+} from "@/emails/_constants/colors";
 
 export function FlagOutcomeEmail({
   recipientFirstName,
@@ -19,7 +25,7 @@ export function FlagOutcomeEmail({
           style={{
             fontSize: "24px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -29,7 +35,7 @@ export function FlagOutcomeEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}
@@ -40,7 +46,7 @@ export function FlagOutcomeEmail({
 
         <div
           style={{
-            border: "1px solid #E2E2E8",
+            border: `1px solid ${NEUTRAL_200}`,
             borderRadius: "12px",
             padding: "24px",
             marginBottom: "24px",
@@ -50,7 +56,7 @@ export function FlagOutcomeEmail({
           <Text
             style={{
               fontSize: "14px",
-              color: "#0A0A0B",
+              color: NEUTRAL_950,
               margin: "0",
               lineHeight: "1.6",
             }}
@@ -64,7 +70,7 @@ export function FlagOutcomeEmail({
         <Text
           style={{
             fontSize: "14px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0",
             lineHeight: "1.6",
           }}
@@ -72,7 +78,7 @@ export function FlagOutcomeEmail({
           If you have any further concerns, please contact our support team at{" "}
           <a
             href="mailto:support@britestate.co.uk"
-            style={{ color: "#1B4D3E", textDecoration: "underline" }}
+            style={{ color: BRAND_PRIMARY, textDecoration: "underline" }}
           >
             support@britestate.co.uk
           </a>

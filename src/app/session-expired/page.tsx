@@ -30,7 +30,7 @@ export default function SessionExpiredPage() {
 
           {/* Error badge */}
           <div className="mb-4">
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-amber-700 dark:bg-amber-900/20 dark:text-amber-500">
+            <span className="inline-block rounded-full bg-warning-light px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-warning dark:bg-warning/20 dark:text-warning">
               Session Expired
             </span>
           </div>

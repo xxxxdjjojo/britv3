@@ -342,8 +342,8 @@ function MortgageComparison() {
   return (
     <div className="space-y-6">
       {/* Disclaimer */}
-      <Alert className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800">
-        <AlertDescription className="text-amber-800 dark:text-amber-300 text-sm">
+      <Alert className="rounded-xl border border-warning/20 bg-warning-light dark:bg-warning/10 dark:border-warning/30">
+        <AlertDescription className="text-warning dark:text-warning text-sm">
           <strong>Important:</strong> These rates are indicative only and not financial advice.
           Rates change daily — always get a personalised quote from a broker.
         </AlertDescription>

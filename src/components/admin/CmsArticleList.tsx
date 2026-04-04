@@ -31,8 +31,7 @@ export function CmsArticleList({
       <div className="flex justify-end mb-4">
         <Link href={newHref}>
           <Button
-            style={{ backgroundColor: "#1B4D3E" }}
-            className="text-white hover:opacity-90"
+            className="bg-brand-primary text-white hover:bg-brand-primary/90"
           >
             <Plus className="h-4 w-4 mr-1.5" />
             New Article

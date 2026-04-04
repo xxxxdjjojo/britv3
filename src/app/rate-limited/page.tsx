@@ -63,7 +63,7 @@ export default function RateLimitedPage() {
         <div className="w-full max-w-md rounded-2xl bg-card p-8 text-center shadow-sm ring-1 ring-neutral-200/60 dark:ring-neutral-700/60 md:p-12">
           {/* Gauge icon with countdown ring */}
           <div className="relative mb-8 flex items-center justify-center">
-            <div className="absolute inset-0 scale-150 rounded-full bg-amber-100/60 blur-2xl dark:bg-amber-900/10" />
+            <div className="absolute inset-0 scale-150 rounded-full bg-warning-light/60 blur-2xl dark:bg-warning/10" />
             {/* Countdown ring */}
             <svg
               className="relative -rotate-90"
@@ -96,9 +96,9 @@ export default function RateLimitedPage() {
               />
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
-              <div className="rounded-full bg-amber-100 p-2 dark:bg-amber-900/20">
+              <div className="rounded-full bg-warning-light p-2 dark:bg-warning/20">
                 <Gauge
-                  className="size-8 text-amber-600 dark:text-amber-400"
+                  className="size-8 text-warning dark:text-warning"
                   aria-hidden="true"
                 />
               </div>
@@ -118,8 +118,8 @@ export default function RateLimitedPage() {
 
           {/* Countdown */}
           {!canRetry && (
-            <div className="mx-auto mt-8 flex w-fit flex-col items-center rounded-xl bg-amber-50 px-8 py-4 dark:bg-amber-900/10">
-              <p className="font-body text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            <div className="mx-auto mt-8 flex w-fit flex-col items-center rounded-xl bg-warning-light px-8 py-4 dark:bg-warning/10">
+              <p className="font-body text-xs font-semibold uppercase tracking-wider text-warning dark:text-warning">
                 Try again in
               </p>
               <p

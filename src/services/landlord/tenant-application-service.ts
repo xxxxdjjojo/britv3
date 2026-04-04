@@ -360,15 +360,15 @@ function renderAcceptanceEmail(name: string): string {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
-<body style="font-family:-apple-system,sans-serif;margin:0;padding:0;background:#f8f9fa;">
+<body style="font-family:-apple-system,sans-serif;margin:0;padding:0;background:#F8F8FA;"><!-- NEUTRAL_50 -->
 <div style="max-width:600px;margin:0 auto;padding:20px;">
-  <div style="background:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
+  <div style="background:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;"><!-- BRAND_PRIMARY -->
     <h1 style="color:#fff;margin:0;font-size:20px;">Britestate</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 8px 8px;">
-    <p style="font-size:16px;color:#333;">Dear ${safeName},</p>
-    <p style="font-size:15px;color:#555;">Congratulations! Your rental application has been approved. The landlord will be in touch shortly with next steps.</p>
-    <p style="font-size:14px;color:#999;margin-top:32px;">The Britestate Team</p>
+    <p style="font-size:16px;color:#46464F;">Dear ${safeName},</p><!-- NEUTRAL_700 -->
+    <p style="font-size:15px;color:#5E5E6A;">Congratulations! Your rental application has been approved. The landlord will be in touch shortly with next steps.</p><!-- NEUTRAL_600 -->
+    <p style="font-size:14px;color:#9E9EAB;margin-top:32px;">The Britestate Team</p><!-- NEUTRAL_400 -->
   </div>
 </div>
 </body>
@@ -380,15 +380,15 @@ function renderRejectionEmail(name: string): string {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
-<body style="font-family:-apple-system,sans-serif;margin:0;padding:0;background:#f8f9fa;">
+<body style="font-family:-apple-system,sans-serif;margin:0;padding:0;background:#F8F8FA;"><!-- NEUTRAL_50 -->
 <div style="max-width:600px;margin:0 auto;padding:20px;">
-  <div style="background:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;">
+  <div style="background:#1B4D3E;padding:24px;border-radius:8px 8px 0 0;"><!-- BRAND_PRIMARY -->
     <h1 style="color:#fff;margin:0;font-size:20px;">Britestate</h1>
   </div>
   <div style="background:#fff;padding:32px;border-radius:0 0 8px 8px;">
-    <p style="font-size:16px;color:#333;">Dear ${safeName},</p>
-    <p style="font-size:15px;color:#555;">Thank you for your interest. Unfortunately, your rental application was not successful on this occasion. We encourage you to continue searching for your ideal property on Britestate.</p>
-    <p style="font-size:14px;color:#999;margin-top:32px;">The Britestate Team</p>
+    <p style="font-size:16px;color:#46464F;">Dear ${safeName},</p><!-- NEUTRAL_700 -->
+    <p style="font-size:15px;color:#5E5E6A;">Thank you for your interest. Unfortunately, your rental application was not successful on this occasion. We encourage you to continue searching for your ideal property on Britestate.</p><!-- NEUTRAL_600 -->
+    <p style="font-size:14px;color:#9E9EAB;margin-top:32px;">The Britestate Team</p><!-- NEUTRAL_400 -->
   </div>
 </div>
 </body>

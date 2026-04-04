@@ -47,22 +47,22 @@ export default async function BillingPage() {
         {/* Page header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-10">
           <div>
-            <nav className="flex text-xs text-stone-500 mb-2 gap-2">
+            <nav className="flex text-xs text-neutral-500 mb-2 gap-2">
               <span>Dashboard</span>
               <span>/</span>
-              <span className="text-emerald-700 font-medium">
+              <span className="text-success font-medium">
                 Billing &amp; Earnings
               </span>
             </nav>
-            <h1 className="text-3xl font-extrabold text-stone-950 font-heading tracking-tight">
+            <h1 className="text-3xl font-extrabold text-neutral-950 font-heading tracking-tight">
               Billing &amp; Earnings
             </h1>
-            <p className="text-stone-500 mt-1 text-sm">
+            <p className="text-neutral-500 mt-1 text-sm">
               Manage your professional payouts and financial documents.
             </p>
           </div>
           <div className="flex gap-3">
-            <button className="px-5 py-2.5 bg-white border border-stone-200 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-stone-50 transition-colors shadow-sm text-stone-700">
+            <button className="px-5 py-2.5 bg-white border border-neutral-200 rounded-xl font-semibold text-sm flex items-center gap-2 hover:bg-neutral-50 transition-colors shadow-sm text-neutral-700">
               <svg
                 className="size-4"
                 fill="none"
@@ -110,8 +110,8 @@ export default async function BillingPage() {
     return (
       <div className="min-h-screen bg-surface p-10">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-extrabold text-stone-950 font-heading">Billing &amp; Earnings</h1>
-          <p className="mt-4 text-sm text-stone-500">Unable to load billing data. Please try refreshing the page.</p>
+          <h1 className="text-3xl font-extrabold text-neutral-950 font-heading">Billing &amp; Earnings</h1>
+          <p className="mt-4 text-sm text-neutral-500">Unable to load billing data. Please try refreshing the page.</p>
         </div>
       </div>
     );

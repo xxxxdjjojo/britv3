@@ -48,32 +48,32 @@ async function PageContent(
       <div className="flex items-center gap-3">
         <Link
           href={`/dashboard/landlord/properties/${propertyId}/maintenance`}
-          className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-sm text-neutral-500 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-200"
         >
           &larr; Back
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
           {request.title}
         </h1>
         <MaintenanceStatusBadge status={request.status} />
       </div>
 
       {/* Details */}
-      <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+      <div className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-600">
         <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="font-medium text-gray-500 dark:text-gray-400">
+            <dt className="font-medium text-neutral-500 dark:text-neutral-500">
               Priority
             </dt>
-            <dd className="mt-1 capitalize text-gray-900 dark:text-gray-100">
+            <dd className="mt-1 capitalize text-neutral-900 dark:text-neutral-100">
               {request.priority}
             </dd>
           </div>
           <div>
-            <dt className="font-medium text-gray-500 dark:text-gray-400">
+            <dt className="font-medium text-neutral-500 dark:text-neutral-500">
               Created
             </dt>
-            <dd className="mt-1 text-gray-900 dark:text-gray-100">
+            <dd className="mt-1 text-neutral-900 dark:text-neutral-100">
               {new Date(request.created_at).toLocaleDateString("en-GB", {
                 day: "numeric",
                 month: "long",
@@ -84,10 +84,10 @@ async function PageContent(
         </dl>
 
         <div className="mt-4">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-500">
             Description
           </h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-gray-900 dark:text-gray-100">
+          <p className="mt-1 whitespace-pre-wrap text-sm text-neutral-900 dark:text-neutral-100">
             {request.description}
           </p>
         </div>
@@ -95,7 +95,7 @@ async function PageContent(
         {/* Photos */}
         {request.photo_urls.length > 0 && (
           <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <h3 className="text-sm font-medium text-neutral-500 dark:text-neutral-500">
               Photos
             </h3>
             <div className="mt-2 flex flex-wrap gap-3">
@@ -109,7 +109,7 @@ async function PageContent(
                   <img
                     src={url}
                     alt={`Maintenance photo ${index + 1}`}
-                    className="h-32 w-32 rounded-md border object-cover dark:border-gray-600"
+                    className="h-32 w-32 rounded-md border object-cover dark:border-neutral-600"
                   />
                 </a>
               ))}
@@ -119,15 +119,15 @@ async function PageContent(
 
         {/* Resolution */}
         {request.resolution_notes && (
-          <div className="mt-4 rounded-md bg-green-50 p-3 dark:bg-green-900/20">
-            <h3 className="text-sm font-medium text-green-800 dark:text-green-300">
+          <div className="mt-4 rounded-md bg-success-light p-3 dark:bg-success/10">
+            <h3 className="text-sm font-medium text-success dark:text-success">
               Resolution
             </h3>
-            <p className="mt-1 text-sm text-green-700 dark:text-green-400">
+            <p className="mt-1 text-sm text-success dark:text-success">
               {request.resolution_notes}
             </p>
             {request.resolved_at && (
-              <p className="mt-1 text-xs text-green-600 dark:text-green-500">
+              <p className="mt-1 text-xs text-success dark:text-success">
                 Resolved:{" "}
                 {new Date(request.resolved_at).toLocaleDateString("en-GB", {
                   day: "numeric",

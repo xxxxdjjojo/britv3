@@ -78,7 +78,7 @@ export function RFQCreateForm({
   if (submitState === "success") {
     return (
       <div className={cn("rounded-lg border border-border bg-card p-6 text-center", className)}>
-        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-success-light text-success">
           <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>

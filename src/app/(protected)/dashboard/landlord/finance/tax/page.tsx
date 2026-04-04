@@ -206,9 +206,9 @@ async function PageContent({ searchParams }: Props) {
       </div>
 
       {/* Disclaimer banner */}
-      <Alert className="border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/30">
-        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
-        <AlertDescription className="text-amber-800 dark:text-amber-300">
+      <Alert className="border-warning bg-warning-light dark:border-warning dark:bg-warning/10">
+        <AlertTriangle className="size-4 text-warning dark:text-warning" />
+        <AlertDescription className="text-warning dark:text-warning">
           <strong>This is a summary for reference only.</strong> Consult a
           qualified tax professional before filing your Self Assessment return.
           The estimated tax figure is indicative only and does not account for
@@ -231,7 +231,7 @@ async function PageContent({ searchParams }: Props) {
         <Card>
           <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">Total Income</p>
-            <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
+            <p className="mt-1 text-2xl font-bold text-success dark:text-success">
               {gbp(summary.income)}
             </p>
           </CardContent>
@@ -239,7 +239,7 @@ async function PageContent({ searchParams }: Props) {
         <Card>
           <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">Total Expenses</p>
-            <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
+            <p className="mt-1 text-2xl font-bold text-error dark:text-error">
               {gbp(summary.expenses)}
             </p>
           </CardContent>
@@ -250,23 +250,23 @@ async function PageContent({ searchParams }: Props) {
             <p
               className={`mt-1 text-2xl font-bold ${
                 summary.net >= 0
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
+                  ? "text-success dark:text-success"
+                  : "text-error dark:text-error"
               }`}
             >
               {gbp(summary.net)}
             </p>
           </CardContent>
         </Card>
-        <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20">
+        <Card className="border-warning/30 bg-warning-light dark:border-warning/30 dark:bg-warning/10">
           <CardContent className="p-5">
-            <p className="text-sm text-amber-700 dark:text-amber-400">
+            <p className="text-sm text-warning dark:text-warning">
               Estimated Tax (20%)
             </p>
-            <p className="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-400">
+            <p className="mt-1 text-2xl font-bold text-warning dark:text-warning">
               {gbp(estimatedTax)}
             </p>
-            <p className="mt-1 text-xs text-amber-600 dark:text-amber-500">
+            <p className="mt-1 text-xs text-warning dark:text-warning">
               Indicative only
             </p>
           </CardContent>
@@ -312,7 +312,7 @@ async function PageContent({ searchParams }: Props) {
                 [...incomeByProperty.values()].map((p, i) => (
                   <TableRow key={i}>
                     <TableCell>{p.label}</TableCell>
-                    <TableCell className="text-right tabular-nums text-green-600 dark:text-green-400">
+                    <TableCell className="text-right tabular-nums text-success dark:text-success">
                       {gbp(p.total)}
                     </TableCell>
                   </TableRow>
@@ -352,7 +352,7 @@ async function PageContent({ searchParams }: Props) {
                   .map(([cat, amount]) => (
                     <TableRow key={cat}>
                       <TableCell>{formatCategory(cat)}</TableCell>
-                      <TableCell className="text-right tabular-nums text-red-600 dark:text-red-400">
+                      <TableCell className="text-right tabular-nums text-error dark:text-error">
                         {gbp(amount)}
                       </TableCell>
                     </TableRow>

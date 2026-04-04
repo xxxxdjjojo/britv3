@@ -51,7 +51,7 @@ export default function ThirdPartyServicesPage() {
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Amber callout */}
-      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
+      <div className="mb-8 rounded-xl bg-warning-light dark:bg-warning/10 p-4 ring-1 ring-warning/30 dark:ring-warning/40 font-body text-sm text-warning dark:text-warning">
         Britestate uses carefully selected third-party services to power our platform. This page
         explains what data each service processes and why. For full details on how we protect your
         data, see our{" "}

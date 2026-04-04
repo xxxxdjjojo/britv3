@@ -82,19 +82,19 @@ type StatusStyle = { label: string; className: string };
 function getStatusStyle(status: string): StatusStyle {
   switch (status) {
     case "pending":
-      return { label: "Pending", className: "bg-amber-100 text-amber-800 border border-amber-200" };
+      return { label: "Pending", className: "bg-warning-light text-warning border border-warning/20" };
     case "confirmed":
     case "active":
       return {
         label: status === "confirmed" ? "Confirmed" : "Active",
-        className: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+        className: "bg-success-light text-success border border-success/20",
       };
     case "in_progress":
-      return { label: "In Progress", className: "bg-emerald-100 text-emerald-800 border border-emerald-200" };
+      return { label: "In Progress", className: "bg-success-light text-success border border-success/20" };
     case "completed":
-      return { label: "Completed", className: "bg-blue-50 text-blue-700 border border-blue-200" };
+      return { label: "Completed", className: "bg-brand-accent-light text-brand-accent border border-brand-accent/20" };
     case "cancelled":
-      return { label: "Cancelled", className: "bg-red-50 text-red-700 border border-red-200" };
+      return { label: "Cancelled", className: "bg-error-light text-error border border-error/20" };
     default:
       return { label: status, className: "bg-neutral-100 text-neutral-700 border border-neutral-200" };
   }
@@ -141,7 +141,7 @@ function ClientCard({ job }: Readonly<{ job: JobDetail }>) {
   return (
     <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
       <div className="flex items-center gap-4 mb-6">
-        <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-800 font-bold text-lg">
+        <div className="h-12 w-12 rounded-xl bg-warning-light flex items-center justify-center text-warning font-bold text-lg">
           {initials}
         </div>
         <div>
@@ -162,14 +162,14 @@ function ClientCard({ job }: Readonly<{ job: JobDetail }>) {
       <div className="grid grid-cols-2 gap-3">
         <Link
           href={`/dashboard/provider/messages`}
-          className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 text-emerald-900 font-bold text-sm hover:bg-neutral-50 transition-colors"
+          className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 text-brand-primary font-bold text-sm hover:bg-neutral-50 transition-colors"
         >
           <Phone className="size-4" />
           Contact
         </Link>
         <Link
           href={`/dashboard/provider/messages`}
-          className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 text-emerald-900 font-bold text-sm hover:bg-neutral-50 transition-colors"
+          className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-neutral-200 text-brand-primary font-bold text-sm hover:bg-neutral-50 transition-colors"
         >
           <MessageSquare className="size-4" />
           Message
@@ -193,13 +193,13 @@ function LocationCard({ job }: Readonly<{ job: JobDetail }>) {
   return (
     <section className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
       <div className="p-6 pb-3">
-        <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest flex items-center gap-2">
+        <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2">
           <MapPin className="size-4" />
           Job Location
         </h3>
       </div>
-      <div className="h-32 bg-emerald-50 relative flex items-center justify-center">
-        <div className="bg-emerald-900 text-white p-2 rounded-full shadow-lg ring-4 ring-white">
+      <div className="h-32 bg-brand-primary-lighter relative flex items-center justify-center">
+        <div className="bg-brand-primary text-white p-2 rounded-full shadow-lg ring-4 ring-white">
           <MapPin className="size-5" />
         </div>
       </div>
@@ -229,11 +229,11 @@ function DocumentsCard({
   return (
     <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest flex items-center gap-2">
+        <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest flex items-center gap-2">
           <FolderOpen className="size-4" />
           Documents
         </h3>
-        <button className="text-emerald-900 text-xs font-bold hover:underline flex items-center gap-1">
+        <button className="text-brand-primary text-xs font-bold hover:underline flex items-center gap-1">
           <Upload className="size-3" />
           Upload
         </button>
@@ -246,7 +246,7 @@ function DocumentsCard({
             className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="bg-emerald-50 p-2 rounded-lg text-emerald-600">
+              <div className="bg-brand-primary-lighter p-2 rounded-lg text-success">
                 <FileText className="size-4" />
               </div>
               <div>
@@ -258,15 +258,15 @@ function DocumentsCard({
                 )}
               </div>
             </div>
-            <CheckCircle2 className="size-4 text-emerald-600" />
+            <CheckCircle2 className="size-4 text-success" />
           </Link>
         ) : (
           <Link
             href={`/dashboard/provider/quotes/new?jobId=${jobId}`}
-            className="flex items-center justify-between p-3 rounded-xl border border-dashed border-neutral-200 hover:border-emerald-300 transition-colors group"
+            className="flex items-center justify-between p-3 rounded-xl border border-dashed border-neutral-200 hover:border-success/30 transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="bg-neutral-100 p-2 rounded-lg text-neutral-400 group-hover:text-emerald-600 transition-colors">
+              <div className="bg-neutral-100 p-2 rounded-lg text-neutral-400 group-hover:text-success transition-colors">
                 <FileText className="size-4" />
               </div>
               <div>
@@ -281,7 +281,7 @@ function DocumentsCard({
         {invoice.exists ? (
           <div className="flex items-center justify-between p-3 rounded-xl border border-neutral-100 bg-neutral-50 hover:bg-neutral-100 transition-colors cursor-pointer">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
+              <div className="bg-brand-accent-light p-2 rounded-lg text-brand-accent">
                 <Receipt className="size-4" />
               </div>
               <div>
@@ -289,7 +289,7 @@ function DocumentsCard({
                 <p className="text-[10px] text-neutral-400 capitalize">{invoice.status ?? "draft"}</p>
               </div>
             </div>
-            <CheckCircle2 className="size-4 text-blue-600" />
+            <CheckCircle2 className="size-4 text-brand-accent" />
           </div>
         ) : (
           <div className="flex items-center justify-between p-3 rounded-xl border border-dashed border-neutral-200 opacity-60">
@@ -348,7 +348,7 @@ function StatusPanel({
 
   return (
     <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
-      <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Job Status</h3>
+      <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest">Job Status</h3>
       <div>
         <span className={["inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold", className].join(" ")}>
           <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -366,8 +366,8 @@ function StatusPanel({
               className={[
                 "w-full rounded-xl px-4 py-2.5 text-sm font-bold transition disabled:opacity-50",
                 t.variant === "primary"
-                  ? "bg-emerald-900 text-white hover:bg-emerald-800"
-                  : "border border-red-200 bg-white text-red-600 hover:bg-red-50",
+                  ? "bg-brand-primary text-white hover:bg-brand-primary/90"
+                  : "border border-error/20 bg-white text-error hover:bg-error-light",
               ].join(" ")}
             >
               {isPending ? "Updating…" : t.label}
@@ -418,7 +418,7 @@ function ReviewPanel({
 }: Readonly<{ jobId: string; review: JobSidebarData["review"] }>) {
   return (
     <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-3">
-      <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Review</h3>
+      <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest">Review</h3>
       {review.exists && review.rating != null ? (
         <div className="space-y-2">
           <StarRating rating={review.rating} />
@@ -466,7 +466,7 @@ export function JobDetailView({
         <div>
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-neutral-400 text-xs font-semibold uppercase tracking-wider mb-2">
-            <Link href="/dashboard/provider/jobs/active" className="hover:text-emerald-900 transition-colors">
+            <Link href="/dashboard/provider/jobs/active" className="hover:text-brand-primary transition-colors">
               Jobs
             </Link>
             <ChevronRight className="size-3" />
@@ -492,7 +492,7 @@ export function JobDetailView({
             <Share2 className="size-4" />
             Share
           </button>
-          <button className="px-5 py-2 bg-emerald-900 text-white rounded-lg text-sm font-bold shadow-md hover:bg-emerald-800 transition-all flex items-center gap-2">
+          <button className="px-5 py-2 bg-brand-primary text-white rounded-lg text-sm font-bold shadow-md hover:bg-brand-primary/90 transition-all flex items-center gap-2">
             Manage Job
           </button>
         </div>
@@ -506,7 +506,7 @@ export function JobDetailView({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Project Description */}
             <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
-              <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest mb-4 flex items-center gap-2">
                 <FileText className="size-4" />
                 Project Description
               </h3>
@@ -533,7 +533,7 @@ export function JobDetailView({
 
             {/* Scope of Work Details */}
             <section className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
-              <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest mb-4 flex items-center gap-2">
                 <Tag className="size-4" />
                 Job Details
               </h3>
@@ -587,7 +587,7 @@ export function JobDetailView({
             <div className="absolute top-0 right-0 p-8 pointer-events-none select-none">
               <span className="text-8xl text-neutral-100 -rotate-12 block">⏱</span>
             </div>
-            <h3 className="text-sm font-bold text-emerald-900 uppercase tracking-widest mb-8 flex items-center gap-2 relative z-10">
+            <h3 className="text-sm font-bold text-brand-primary uppercase tracking-widest mb-8 flex items-center gap-2 relative z-10">
               Project Activity
             </h3>
             <div className="relative z-10">

@@ -40,9 +40,9 @@ export function MapDrawTool({
       modes: [
         new TerraDrawPolygonMode({
           styles: {
-            fillColor: "#1B4D3E",
+            fillColor: "#1B4D3E", // brand-primary — terra-draw requires hex string
             fillOpacity: 0.2,
-            outlineColor: "#1B4D3E",
+            outlineColor: "#1B4D3E", // brand-primary — terra-draw requires hex string
             outlineWidth: 2,
           },
         }),

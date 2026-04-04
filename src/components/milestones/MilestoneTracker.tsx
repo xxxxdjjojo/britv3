@@ -171,7 +171,7 @@ export function MilestoneTracker({
                       milestone.status === "completed" &&
                         "bg-brand-primary/10 text-brand-primary",
                       milestone.status === "in_progress" &&
-                        "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+                        "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
                       milestone.status === "not_started" &&
                         "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
                     )}

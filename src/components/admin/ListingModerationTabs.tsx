@@ -78,7 +78,7 @@ function ListingRow({
           <Button
             size="sm"
             variant="outline"
-            className="rounded-lg border border-green-200/60 dark:border-green-700/60 font-body text-xs font-medium text-green-700 hover:bg-green-50 dark:text-green-300 dark:hover:bg-green-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+            className="rounded-lg border border-success/20 dark:border-success/30 font-body text-xs font-medium text-success hover:bg-success-light dark:text-success dark:hover:bg-success/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={() => onApprove(listing.id)}
             disabled={isPending}
           >
@@ -87,7 +87,7 @@ function ListingRow({
           <Button
             size="sm"
             variant="outline"
-            className="rounded-lg border border-red-200/60 dark:border-red-700/60 font-body text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+            className="rounded-lg border border-error/20 dark:border-error/30 font-body text-xs font-medium text-error hover:bg-error-light dark:text-error dark:hover:bg-error/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={() => onReject(listing.id)}
             disabled={isPending}
           >
@@ -96,7 +96,7 @@ function ListingRow({
           <Button
             size="sm"
             variant="outline"
-            className="rounded-lg border border-amber-200/60 dark:border-amber-700/60 font-body text-xs font-medium text-amber-700 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+            className="rounded-lg border border-warning/20 dark:border-warning/30 font-body text-xs font-medium text-warning hover:bg-warning-light dark:text-warning dark:hover:bg-warning/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={() => onFlag(listing.id)}
             disabled={isPending}
           >
@@ -227,7 +227,7 @@ export function ListingModerationTabs({
           <TabsTrigger value="pending" className="font-body text-sm font-medium">
             Pending Review
             {pendingListings.length > 0 && (
-              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 font-body text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+              <span className="ml-2 rounded-full bg-warning-light px-2 py-0.5 font-body text-xs font-medium text-warning dark:bg-warning/20 dark:text-warning">
                 {pendingListings.length}
               </span>
             )}
@@ -236,7 +236,7 @@ export function ListingModerationTabs({
           <TabsTrigger value="flagged" className="font-body text-sm font-medium">
             Flagged
             {flaggedListings.length > 0 && (
-              <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 font-body text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-300">
+              <span className="ml-2 rounded-full bg-error-light px-2 py-0.5 font-body text-xs font-medium text-error dark:bg-error/20 dark:text-error">
                 {flaggedListings.length}
               </span>
             )}

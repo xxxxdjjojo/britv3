@@ -16,15 +16,15 @@ export function AllClearBanner({ monthlyCashflow }: AllClearBannerProps) {
   }).format(monthlyCashflow);
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-800 dark:bg-emerald-900/10">
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-        <CheckCircle2 className="size-6 text-emerald-600 dark:text-emerald-400" />
+    <div className="flex items-center gap-4 rounded-xl border border-success/30 bg-success-light p-5 dark:border-success/20 dark:bg-success/10">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-success-light dark:bg-success/10">
+        <CheckCircle2 className="size-6 text-success dark:text-success" />
       </div>
       <div className="flex-1">
-        <p className="font-bold text-emerald-800 dark:text-emerald-300">
+        <p className="font-bold text-success dark:text-success">
           Everything&apos;s on track
         </p>
-        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+        <p className="text-sm text-success dark:text-success">
           All rent received, compliance up to date, no open maintenance.
           {monthlyCashflow > 0 && (
             <span className="ml-1 font-medium">

@@ -55,52 +55,52 @@ function getIconConfig(eventType: EventType): IconConfig {
     case "viewing_scheduled":
       return {
         icon: Calendar,
-        bg: "bg-amber-100 dark:bg-amber-900/20",
-        color: "text-amber-600",
+        bg: "bg-warning-light dark:bg-warning/20",
+        color: "text-warning",
       };
     case "offer_received":
       return {
         icon: TrendingUp,
-        bg: "bg-green-100 dark:bg-green-900/20",
-        color: "text-green-600",
+        bg: "bg-success-light dark:bg-success/20",
+        color: "text-success",
       };
     case "quote_received":
     case "quote_sent":
       return {
         icon: TrendingUp,
-        bg: "bg-green-100 dark:bg-green-900/20",
-        color: "text-green-600",
+        bg: "bg-success-light dark:bg-success/20",
+        color: "text-success",
       };
     case "booking_confirmed":
     case "booking_updated":
       return {
         icon: Home,
-        bg: "bg-blue-100 dark:bg-blue-900/20",
-        color: "text-blue-600",
+        bg: "bg-brand-accent-light dark:bg-brand-accent/20",
+        color: "text-brand-accent",
       };
     case "milestone_updated":
       return {
         icon: ShieldAlert,
-        bg: "bg-rose-100 dark:bg-rose-900/20",
-        color: "text-rose-600",
+        bg: "bg-error-light dark:bg-error/20",
+        color: "text-error",
       };
     case "new_message":
       return {
         icon: MessageSquare,
-        bg: "bg-slate-100 dark:bg-slate-900/20",
-        color: "text-slate-600",
+        bg: "bg-neutral-100 dark:bg-neutral-800/20",
+        color: "text-neutral-600",
       };
     case "review_posted":
       return {
         icon: Star,
-        bg: "bg-amber-100 dark:bg-amber-900/20",
-        color: "text-amber-600",
+        bg: "bg-warning-light dark:bg-warning/20",
+        color: "text-warning",
       };
     default:
       return {
         icon: Bell,
-        bg: "bg-slate-100 dark:bg-slate-900/20",
-        color: "text-slate-600",
+        bg: "bg-neutral-100 dark:bg-neutral-800/20",
+        color: "text-neutral-600",
       };
   }
 }

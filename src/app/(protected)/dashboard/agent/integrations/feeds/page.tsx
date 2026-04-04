@@ -39,10 +39,10 @@ async function PageContent() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-on-surface dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-on-surface dark:text-neutral-100">
           Property Feed Integrations
         </h1>
-        <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-gray-400">
+        <p className="mt-1 text-sm text-[--color-on-surface-variant] dark:text-neutral-400">
           Sync listings from Reapit, Alto, or Jupix directly into your Britestate account.
         </p>
       </div>

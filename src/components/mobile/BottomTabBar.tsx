@@ -56,7 +56,7 @@ export function BottomTabBar() {
             {isMessages && (
               <span
                 data-badge="messages"
-                className="absolute top-1.5 right-1/4 hidden size-2 rounded-full bg-red-500"
+                className="absolute top-1.5 right-1/4 hidden size-2 rounded-full bg-error"
                 aria-label="Unread messages"
               />
             )}

@@ -3,6 +3,12 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  SUCCESS_LIGHT,
+} from "@/emails/_constants/colors";
 
 type Props = Readonly<{
   referrerName: string;
@@ -21,19 +27,19 @@ export function ReferralConvertedEmail({
     <EmailWrapper previewText={`You earned ${creditAmount} — ${refereeName} just joined!`}>
       <EmailHeader />
       <Section style={{ padding: "32px" }}>
-        <Text style={{ fontSize: "24px", fontWeight: "700", color: "#1B4D3E", margin: "0 0 16px 0" }}>
+        <Text style={{ fontSize: "24px", fontWeight: "700", color: BRAND_PRIMARY, margin: "0 0 16px 0" }}>
           You just earned {creditAmount} free!
         </Text>
-        <Text style={{ fontSize: "15px", color: "#5E5E6A", margin: "0 0 16px 0", lineHeight: "1.6" }}>
-          Hi {referrerName}, great news — <strong style={{ color: "#0A0A0B" }}>{refereeName}</strong>{" "}
+        <Text style={{ fontSize: "15px", color: NEUTRAL_600, margin: "0 0 16px 0", lineHeight: "1.6" }}>
+          Hi {referrerName}, great news — <strong style={{ color: NEUTRAL_950 }}>{refereeName}</strong>{" "}
           just activated their Britestate membership using your referral link.
         </Text>
-        <div style={{ backgroundColor: "#F0FDF4", border: "1px solid #86EFAC", borderRadius: "8px", padding: "16px 20px", marginBottom: "24px" }}>
+        <div style={{ backgroundColor: SUCCESS_LIGHT, border: "1px solid #86EFAC", borderRadius: "8px", padding: "16px 20px", marginBottom: "24px" }}>
           <Text style={{ fontSize: "14px", fontWeight: "600", color: "#15803D", margin: "0" }}>
             {creditAmount} subscription credit applied to your next invoice.
           </Text>
         </div>
-        <Text style={{ fontSize: "13px", color: "#5E5E6A", margin: "0 0 24px 0", lineHeight: "1.5" }}>
+        <Text style={{ fontSize: "13px", color: NEUTRAL_600, margin: "0 0 24px 0", lineHeight: "1.5" }}>
           Keep sharing your referral link to earn more free months and unlock higher tiers!
         </Text>
         <EmailButton href={dashboardUrl} variant="primary">

@@ -23,10 +23,10 @@ type PipelineClient = {
 };
 
 const STAGES: { key: PipelineStage; label: string; color: string }[] = [
-  { key: "new_lead", label: "New Lead", color: "bg-blue-500" },
-  { key: "initial_consultation", label: "Initial Consultation", color: "bg-amber-500" },
-  { key: "application_submitted", label: "Application Submitted", color: "bg-purple-500" },
-  { key: "underwriting", label: "Underwriting", color: "bg-orange-500" },
+  { key: "new_lead", label: "New Lead", color: "bg-brand-accent" },
+  { key: "initial_consultation", label: "Initial Consultation", color: "bg-warning" },
+  { key: "application_submitted", label: "Application Submitted", color: "bg-brand-accent" },
+  { key: "underwriting", label: "Underwriting", color: "bg-warning" },
   { key: "approved", label: "Approved", color: "bg-success" },
   { key: "completed", label: "Completed", color: "bg-neutral-400" },
 ];

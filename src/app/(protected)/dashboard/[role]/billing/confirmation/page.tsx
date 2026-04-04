@@ -102,8 +102,8 @@ export default function PaymentConfirmationPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
-            <CheckCircle2 className="text-amber-700 dark:text-amber-300" size={44} />
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-warning-light dark:bg-warning/20">
+            <CheckCircle2 className="text-warning dark:text-warning" size={44} />
           </div>
           <div>
             <h1 className="font-heading text-xl font-semibold text-foreground">
@@ -145,8 +145,8 @@ export default function PaymentConfirmationPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Success icon */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
-          <CheckCircle2 className="text-green-700 dark:text-green-300" size={44} />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success-light dark:bg-success/20">
+          <CheckCircle2 className="text-success dark:text-success" size={44} />
         </div>
 
         <div>
@@ -167,15 +167,15 @@ export default function PaymentConfirmationPage() {
           <CardContent className="py-5">
             <div className="space-y-3 text-sm text-left">
               <div className="flex items-center gap-2 font-body text-sm text-foreground">
-                <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 shrink-0" />
+                <CheckCircle2 size={16} className="text-success dark:text-success shrink-0" />
                 <span>Subscription activated</span>
               </div>
               <div className="flex items-center gap-2 font-body text-sm text-foreground">
-                <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 shrink-0" />
+                <CheckCircle2 size={16} className="text-success dark:text-success shrink-0" />
                 <span>Confirmation email sent</span>
               </div>
               <div className="flex items-center gap-2 font-body text-sm text-foreground">
-                <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 shrink-0" />
+                <CheckCircle2 size={16} className="text-success dark:text-success shrink-0" />
                 <span>All features unlocked</span>
               </div>
             </div>

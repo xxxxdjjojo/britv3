@@ -158,11 +158,11 @@ export default function BookingDetailPage({ params }: PageProps) {
             </div>
           </div>
           {booking.cancellation_reason && (
-            <div className="rounded-xl bg-red-50 dark:bg-red-900/10 p-4 ring-1 ring-red-200/60 dark:ring-red-700/60">
-              <p className="font-body text-xs font-medium text-red-800 dark:text-red-400">
+            <div className="rounded-xl bg-error-light dark:bg-error/10 p-4 ring-1 ring-error/20 dark:ring-error/30">
+              <p className="font-body text-xs font-medium text-error dark:text-error">
                 Cancellation reason:
               </p>
-              <p className="font-body text-sm text-red-700 dark:text-red-300">
+              <p className="font-body text-sm text-error dark:text-error">
                 {booking.cancellation_reason}
               </p>
             </div>

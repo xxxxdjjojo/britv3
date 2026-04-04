@@ -46,11 +46,11 @@ export default function ManageViewingsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Manage Viewings</h1>
-          <p className="text-slate-500 mt-1">Confirm, reschedule, or cancel property viewings</p>
+          <h1 className="text-2xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">Manage Viewings</h1>
+          <p className="text-neutral-500 mt-1">Confirm, reschedule, or cancel property viewings</p>
         </div>
       </div>
-      <div className="flex items-center gap-2 border-b border-slate-200">
+      <div className="flex items-center gap-2 border-b border-neutral-200">
         {(["upcoming", "past"] as ViewMode[]).map((mode) => (
           <button
             key={mode}
@@ -68,28 +68,28 @@ export default function ManageViewingsPage() {
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
+            <div key={i} className="bg-white rounded-2xl border border-neutral-200 p-5 animate-pulse">
               <div className="flex gap-4">
-                <div className="h-16 w-24 rounded-xl bg-slate-100" />
+                <div className="h-16 w-24 rounded-xl bg-neutral-100" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-slate-100 rounded w-3/4" />
-                  <div className="h-3 bg-slate-100 rounded w-1/2" />
-                  <div className="h-3 bg-slate-100 rounded w-2/3" />
+                  <div className="h-4 bg-neutral-100 rounded w-3/4" />
+                  <div className="h-3 bg-neutral-100 rounded w-1/2" />
+                  <div className="h-3 bg-neutral-100 rounded w-2/3" />
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : grouped.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-          <Calendar size={40} className="text-slate-200 mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">No {viewMode} viewings</p>
+        <div className="text-center py-16 bg-white rounded-2xl border border-neutral-200">
+          <Calendar size={40} className="text-neutral-200 mx-auto mb-3" />
+          <p className="text-neutral-400 text-sm">No {viewMode} viewings</p>
         </div>
       ) : (
         <div className="space-y-6">
           {grouped.map(({ date, items }) => (
             <div key={date}>
-              <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">
+              <h2 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-3">
                 {new Date(date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
               </h2>
               <div className="space-y-3">

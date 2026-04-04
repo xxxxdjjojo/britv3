@@ -74,7 +74,7 @@ export default async function AgentProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-[#faf9f8] dark:bg-[#0f1a17]">
+      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <AgencyHero agency={agency} stats={stats} />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -85,29 +85,29 @@ export default async function AgentProfilePage({ params }: Params) {
                 overview={
                   <div className="space-y-6">
                     <section>
-                      <h3 className="text-xl font-heading font-bold tracking-tight text-[#1a1a1a] dark:text-white mb-3">
+                      <h3 className="text-xl font-heading font-bold tracking-tight text-neutral-900 dark:text-white mb-3">
                         About {agency.agency?.name ?? agency.display_name}
                       </h3>
-                      <p className="text-[#6b7280] dark:text-[#9ca3af] leading-relaxed">
+                      <p className="text-neutral-500 dark:text-neutral-400 leading-relaxed">
                         {agency.bio ?? `${agency.agency?.name ?? agency.display_name} is a trusted estate agency on Britestate.`}
                       </p>
                     </section>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      <div className="bg-[#f4f3f2] dark:bg-[#1a2822] rounded-xl p-4 text-center">
-                        <p className="text-2xl font-bold text-[#1B4D3E]">{stats.active_listings_count}</p>
-                        <p className="text-xs text-[#6b7280]">Active Listings</p>
+                      <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl p-4 text-center">
+                        <p className="text-2xl font-bold text-brand-primary">{stats.active_listings_count}</p>
+                        <p className="text-xs text-neutral-500">Active Listings</p>
                       </div>
-                      <div className="bg-[#f4f3f2] dark:bg-[#1a2822] rounded-xl p-4 text-center">
-                        <p className="text-2xl font-bold text-[#1B4D3E]">{stats.sold_count}</p>
-                        <p className="text-xs text-[#6b7280]">Sold / Let</p>
+                      <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl p-4 text-center">
+                        <p className="text-2xl font-bold text-brand-primary">{stats.sold_count}</p>
+                        <p className="text-xs text-neutral-500">Sold / Let</p>
                       </div>
-                      <div className="bg-[#f4f3f2] dark:bg-[#1a2822] rounded-xl p-4 text-center">
-                        <p className="text-2xl font-bold text-[#1B4D3E]">{stats.total_reviews}</p>
-                        <p className="text-xs text-[#6b7280]">Reviews</p>
+                      <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl p-4 text-center">
+                        <p className="text-2xl font-bold text-brand-primary">{stats.total_reviews}</p>
+                        <p className="text-xs text-neutral-500">Reviews</p>
                       </div>
-                      <div className="bg-[#f4f3f2] dark:bg-[#1a2822] rounded-xl p-4 text-center">
-                        <p className="text-2xl font-bold text-[#1B4D3E]">{team.length}</p>
-                        <p className="text-xs text-[#6b7280]">Team Members</p>
+                      <div className="bg-neutral-100 dark:bg-neutral-900 rounded-xl p-4 text-center">
+                        <p className="text-2xl font-bold text-brand-primary">{team.length}</p>
+                        <p className="text-xs text-neutral-500">Team Members</p>
                       </div>
                     </div>
                   </div>
@@ -134,10 +134,10 @@ export default async function AgentProfilePage({ params }: Params) {
                 team={<TeamMembersTab members={team} />}
                 requestValuation={
                   <div className="max-w-lg space-y-4">
-                    <h3 className="text-xl font-heading font-bold tracking-tight text-[#1a1a1a] dark:text-white">
+                    <h3 className="text-xl font-heading font-bold tracking-tight text-neutral-900 dark:text-white">
                       Request a Free Valuation
                     </h3>
-                    <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
                       Fill in your details and {agency.agency?.name ?? agency.display_name} will
                       get back to you with a valuation within 24 hours.
                     </p>

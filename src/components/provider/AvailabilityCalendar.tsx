@@ -102,7 +102,7 @@ export function AvailabilityCalendar({
           {confirmedBookings.map((booking) => (
             <div
               key={booking.id}
-              className="flex items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20"
+              className="flex items-center gap-3 rounded-lg border border-brand-accent/20 bg-brand-accent-light p-3 dark:border-brand-accent/30 dark:bg-brand-accent/10"
             >
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-foreground">

@@ -98,14 +98,14 @@ function QuoteColumn({
     <Card
       className={cn(
         "flex flex-col",
-        isCheapest && "ring-2 ring-green-500/50",
+        isCheapest && "ring-2 ring-success/50",
       )}
     >
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-base">{quote.provider_name}</CardTitle>
           {isCheapest && (
-            <Badge variant="secondary" className="shrink-0 bg-green-100 text-green-700">
+            <Badge variant="secondary" className="shrink-0 bg-success-light text-success">
               Best value
             </Badge>
           )}

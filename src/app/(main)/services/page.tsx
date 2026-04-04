@@ -234,7 +234,7 @@ export default async function ServicesPage() {
                   "Criminal record checks",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
                     <span className="font-medium text-brand-primary">
                       {item}
                     </span>

@@ -99,11 +99,11 @@ function KpiCard({
 }: Readonly<{ label: string; value: string; subtitle?: string }>) {
   return (
     <div className="group rounded-xl bg-white p-6 shadow-[0_20px_50px_rgba(26,28,28,0.03)] transition-all duration-500 hover:bg-brand-primary-dark cursor-default">
-      <p className="font-body text-[10px] tracking-[0.1em] text-neutral-500 group-hover:text-emerald-200/70 uppercase mb-4">{label}</p>
+      <p className="font-body text-[10px] tracking-[0.1em] text-neutral-500 group-hover:text-brand-primary-lighter/70 uppercase mb-4">{label}</p>
       <p className="font-heading text-3xl font-extrabold text-brand-primary-dark group-hover:text-white leading-none">
         {value}
       </p>
-      {subtitle && <p className="font-body text-xs text-neutral-400 group-hover:text-emerald-300 mt-2">{subtitle}</p>}
+      {subtitle && <p className="font-body text-xs text-neutral-400 group-hover:text-brand-primary-light mt-2">{subtitle}</p>}
     </div>
   );
 }

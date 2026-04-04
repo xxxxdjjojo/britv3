@@ -26,19 +26,19 @@ export function AdminDashboardCharts() {
       <AreaChart data={MOCK_REVENUE} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.2} />
-            <stop offset="95%" stopColor="#1B4D3E" stopOpacity={0} />
+            <stop offset="5%" stopColor="var(--color-brand-primary)" stopOpacity={0.2} />
+            <stop offset="95%" stopColor="var(--color-brand-primary)" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-neutral-200)" />
         <XAxis
           dataKey="month"
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "var(--color-neutral-500)" }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "var(--color-neutral-500)" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v: number) => `£${(v / 1000).toFixed(0)}k`}
@@ -49,14 +49,14 @@ export function AdminDashboardCharts() {
           }
           contentStyle={{
             borderRadius: "8px",
-            border: "1px solid #e5e7eb",
+            border: "1px solid var(--color-neutral-200)",
             fontSize: "12px",
           }}
         />
         <Area
           type="monotone"
           dataKey="revenue"
-          stroke="#1B4D3E"
+          stroke="var(--color-brand-primary)"
           strokeWidth={2}
           fill="url(#revenueGradient)"
         />

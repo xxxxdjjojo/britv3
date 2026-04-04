@@ -164,8 +164,8 @@ async function PageContent({ params }: Props) {
       <Card className="rounded-2xl border-neutral-200 dark:border-neutral-700">
         <CardHeader className="pb-3">
           <div className="flex items-start gap-3">
-            <div className="size-9 rounded-xl bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
-              <Upload className="size-4 text-blue-600 dark:text-blue-400" />
+            <div className="size-9 rounded-xl bg-brand-accent-light dark:bg-brand-accent/10 flex items-center justify-center shrink-0">
+              <Upload className="size-4 text-brand-accent dark:text-brand-accent" />
             </div>
             <div>
               <CardTitle className="text-base font-heading">Upload Existing Agreement</CardTitle>
@@ -185,7 +185,7 @@ async function PageContent({ params }: Props) {
       </Card>
 
       {/* Section 2: Generate new agreement */}
-      <Card className="rounded-2xl border-[color:var(--color-brand-primary)]/20 dark:border-emerald-800/30 bg-[color:var(--color-brand-primary-lighter)]/30 dark:bg-[color:var(--color-brand-primary)]/5">
+      <Card className="rounded-2xl border-[color:var(--color-brand-primary)]/20 dark:border-brand-primary/20 bg-[color:var(--color-brand-primary-lighter)]/30 dark:bg-[color:var(--color-brand-primary)]/5">
         <CardHeader className="pb-3">
           <div className="flex items-start gap-3">
             <div className="size-9 rounded-xl bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 flex items-center justify-center shrink-0">
@@ -204,10 +204,10 @@ async function PageContent({ params }: Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Legal disclaimer */}
-          <div className="rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/20 p-3.5">
+          <div className="rounded-xl bg-warning-light dark:bg-warning/10 border border-warning/30 dark:border-warning/20 p-3.5">
             <div className="flex gap-3">
-              <Info className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-              <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+              <Info className="size-4 text-warning dark:text-warning shrink-0 mt-0.5" />
+              <p className="text-xs text-warning dark:text-warning leading-relaxed">
                 <span className="font-semibold">Legal note:</span> This document is for guidance
                 only. Seek independent legal advice before using as a legally binding tenancy
                 agreement.

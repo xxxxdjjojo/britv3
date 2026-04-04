@@ -26,9 +26,9 @@ type Lead = {
 };
 
 const STATUS_CONFIG: Record<LeadStatus, { label: string; color: string }> = {
-  new: { label: "New", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" },
-  contacted: { label: "Contacted", color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" },
-  qualified: { label: "Qualified", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" },
+  new: { label: "New", color: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent" },
+  contacted: { label: "Contacted", color: "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning" },
+  qualified: { label: "Qualified", color: "bg-success-light text-success dark:bg-success/20 dark:text-success" },
   lost: { label: "Lost", color: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400" },
 };
 

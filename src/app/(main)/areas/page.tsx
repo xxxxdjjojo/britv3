@@ -30,7 +30,7 @@ const UK_CITIES = [
     positive: true,
     description: "One of the UK's fastest-growing cities with strong rental yields and regeneration zones.",
     highlight: "Fastest Growing",
-    highlightColor: "bg-emerald-500",
+    highlightColor: "bg-success",
   },
   {
     slug: "birmingham",
@@ -95,7 +95,7 @@ const UK_CITIES = [
     positive: true,
     description: "Exceptional rental yields and regeneration-driven capital growth across the waterfront.",
     highlight: "Best Yields",
-    highlightColor: "bg-amber-500",
+    highlightColor: "bg-warning",
   },
   {
     slug: "glasgow",
@@ -139,7 +139,7 @@ export default async function AreasPage() {
   return (
     <>
       {/* ── Hero ── */}
-      <header className="bg-gradient-to-br from-primary via-[#16402f] to-[#003629] py-24 px-4 relative overflow-hidden">
+      <header className="bg-gradient-to-br from-primary via-brand-primary to-brand-primary-dark py-24 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32 pointer-events-none" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -233,7 +233,7 @@ export default async function AreasPage() {
                 {/* Content */}
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-xl font-bold font-heading text-neutral-900">{city.name}</h3>
-                  <div className="flex items-center gap-1 text-sm font-semibold text-emerald-600">
+                  <div className="flex items-center gap-1 text-sm font-semibold text-success">
                     <TrendingUp className="size-3.5" />
                     {city.change}
                   </div>

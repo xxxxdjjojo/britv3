@@ -4,6 +4,13 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_200,
+  SUCCESS,
+} from "@/emails/_constants/colors";
 
 export function OfferStatusEmail({
   firstName,
@@ -25,7 +32,7 @@ export function OfferStatusEmail({
 
       <Section
         style={{
-          backgroundColor: isAccepted ? "#16A34A" : "#5E5E6A",
+          backgroundColor: isAccepted ? SUCCESS : NEUTRAL_600,
           padding: "16px 32px",
         }}
       >
@@ -47,7 +54,7 @@ export function OfferStatusEmail({
           style={{
             fontSize: "22px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -57,22 +64,22 @@ export function OfferStatusEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}
         >
           Hi {firstName}, your offer of{" "}
-          <strong style={{ color: "#0A0A0B" }}>
+          <strong style={{ color: NEUTRAL_950 }}>
             &pound;{offerAmount.toLocaleString("en-GB")}
           </strong>{" "}
-          on <strong style={{ color: "#0A0A0B" }}>{propertyAddress}</strong> has been {status}.
+          on <strong style={{ color: NEUTRAL_950 }}>{propertyAddress}</strong> has been {status}.
         </Text>
 
         {message && (
           <div
             style={{
-              borderLeft: "4px solid #E2E2E8",
+              borderLeft: `4px solid ${NEUTRAL_200}`,
               paddingLeft: "16px",
               marginBottom: "24px",
             }}
@@ -80,7 +87,7 @@ export function OfferStatusEmail({
             <Text
               style={{
                 fontSize: "14px",
-                color: "#5E5E6A",
+                color: NEUTRAL_600,
                 margin: "0",
                 lineHeight: "1.6",
                 fontStyle: "italic",

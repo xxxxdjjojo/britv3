@@ -54,20 +54,20 @@ export function HistoricalPriceChart({ data, className }: HistoricalPriceChartPr
         <AreaChart data={data} margin={{ top: 20, right: 16, left: 10, bottom: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#1B4D3E" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#1B4D3E" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--color-brand-primary)" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="var(--color-brand-primary)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
             dataKey="year"
-            tick={{ fontSize: 11, fill: "#9E9EAB", fontWeight: 600 }}
+            tick={{ fontSize: 11, fill: "var(--color-neutral-400)", fontWeight: 600 }}
             axisLine={false}
             tickLine={false}
             interval={4}
           />
           <YAxis
             tickFormatter={formatPrice}
-            tick={{ fontSize: 11, fill: "#9E9EAB" }}
+            tick={{ fontSize: 11, fill: "var(--color-neutral-400)" }}
             axisLine={false}
             tickLine={false}
             width={52}
@@ -77,20 +77,20 @@ export function HistoricalPriceChart({ data, className }: HistoricalPriceChartPr
             <ReferenceLine
               key={year}
               x={year}
-              stroke="#1B4D3E"
+              stroke="var(--color-brand-primary)"
               strokeDasharray="4 3"
               strokeOpacity={0.4}
-              label={{ value: label, position: "top", fontSize: 9, fill: "#1B4D3E", fontWeight: 600 }}
+              label={{ value: label, position: "top", fontSize: 9, fill: "var(--color-brand-primary)", fontWeight: 600 }}
             />
           ))}
           <Area
             type="monotone"
             dataKey="price"
-            stroke="#1B4D3E"
+            stroke="var(--color-brand-primary)"
             strokeWidth={2.5}
             fill={`url(#${gradientId})`}
             dot={false}
-            activeDot={{ r: 5, fill: "#1B4D3E" }}
+            activeDot={{ r: 5, fill: "var(--color-brand-primary)" }}
           />
         </AreaChart>
       </ResponsiveContainer>

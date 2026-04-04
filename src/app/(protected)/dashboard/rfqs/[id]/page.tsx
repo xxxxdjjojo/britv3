@@ -20,10 +20,10 @@ type PageProps = Readonly<{
 
 const QUOTE_STATUS_COLORS: Record<QuoteStatus, string> = {
   draft: "bg-neutral-100 text-neutral-600",
-  sent: "bg-blue-100 text-blue-800",
-  viewed: "bg-cyan-100 text-cyan-800",
-  accepted: "bg-green-100 text-green-800",
-  declined: "bg-red-100 text-red-800",
+  sent: "bg-brand-accent-light text-brand-accent",
+  viewed: "bg-brand-accent-light text-brand-accent",
+  accepted: "bg-success-light text-success",
+  declined: "bg-error-light text-error",
   expired: "bg-neutral-100 text-neutral-600",
   withdrawn: "bg-neutral-100 text-neutral-600",
 };

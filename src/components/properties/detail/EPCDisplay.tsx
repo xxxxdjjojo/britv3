@@ -8,33 +8,33 @@ import type { EpcRating } from "@/types/property";
 const EPC_BANDS: EpcRating[] = ["A", "B", "C", "D", "E", "F", "G"];
 
 const EPC_COLORS: Record<EpcRating, string> = {
-  A: "bg-green-600",
-  B: "bg-green-500",
-  C: "bg-lime-500",
-  D: "bg-yellow-400",
-  E: "bg-orange-400",
-  F: "bg-orange-600",
-  G: "bg-red-600",
+  A: "bg-success",
+  B: "bg-success",
+  C: "bg-success/70",
+  D: "bg-warning",
+  E: "bg-warning/70",
+  F: "bg-error/70",
+  G: "bg-error",
 };
 
 const EPC_TEXT_COLORS: Record<EpcRating, string> = {
-  A: "text-green-700",
-  B: "text-green-600",
-  C: "text-lime-600",
-  D: "text-yellow-600",
-  E: "text-orange-600",
-  F: "text-orange-700",
-  G: "text-red-700",
+  A: "text-success",
+  B: "text-success",
+  C: "text-success/70",
+  D: "text-warning",
+  E: "text-warning",
+  F: "text-error/70",
+  G: "text-error",
 };
 
 const EPC_BG_LIGHT: Record<EpcRating, string> = {
-  A: "bg-green-50",
-  B: "bg-green-50",
-  C: "bg-lime-50",
-  D: "bg-yellow-50",
-  E: "bg-orange-50",
-  F: "bg-orange-50",
-  G: "bg-red-50",
+  A: "bg-success-light",
+  B: "bg-success-light",
+  C: "bg-success-light",
+  D: "bg-warning-light",
+  E: "bg-warning-light",
+  F: "bg-error-light",
+  G: "bg-error-light",
 };
 
 const EPC_DESCRIPTIONS: Record<EpcRating, string> = {

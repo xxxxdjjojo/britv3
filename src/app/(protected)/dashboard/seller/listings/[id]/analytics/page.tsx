@@ -277,23 +277,23 @@ async function PageContent({ params }: Props) {
             {/* Donut Chart SVG */}
             <div className="relative w-44 h-44 mx-auto flex items-center justify-center">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f4f3f2" strokeWidth="12" />
+                <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--color-neutral-100)" strokeWidth="12" />
                 <circle
                   cx="50" cy="50" r="40" fill="transparent"
-                  stroke="#003629"
+                  stroke="var(--color-brand-primary-dark)"
                   strokeWidth="12"
                   strokeDasharray="160 251.2"
                 />
                 <circle
                   cx="50" cy="50" r="40" fill="transparent"
-                  stroke="#7b5804"
+                  stroke="var(--color-brand-secondary-dark)"
                   strokeWidth="12"
                   strokeDasharray="70 251.2"
                   strokeDashoffset="-160"
                 />
                 <circle
                   cx="50" cy="50" r="40" fill="transparent"
-                  stroke="#eec068"
+                  stroke="var(--color-brand-secondary)"
                   strokeWidth="12"
                   strokeDasharray="21.2 251.2"
                   strokeDashoffset="-230"

@@ -164,7 +164,7 @@ export function Sidebar() {
             <>
               <span className="flex-1">Notifications</span>
               {notificationCount > 0 && (
-                <span className="inline-flex items-center justify-center rounded-full bg-red-500 px-1.5 py-0 text-[10px] font-medium text-white">
+                <span className="inline-flex items-center justify-center rounded-full bg-error px-1.5 py-0 text-[10px] font-medium text-white">
                   {notificationCount > 99 ? "99+" : notificationCount}
                 </span>
               )}

@@ -67,7 +67,7 @@ type StepStatusBadge = Readonly<{
 const STATUS_BADGE: Record<string, StepStatusBadge> = {
   approved: {
     label: "Verified",
-    className: "bg-emerald-50 text-emerald-700",
+    className: "bg-success-light text-success",
     actionLabel: "View Details",
     actionClass: "text-primary",
   },
@@ -204,7 +204,7 @@ export default async function VerificationOverviewPage() {
               <span className="text-4xl font-headline font-bold text-on-surface">
                 {Math.round(trustScore)}
               </span>
-              <span className="text-emerald-600 text-xs font-bold">pts</span>
+              <span className="text-success text-xs font-bold">pts</span>
             </div>
           </div>
           <div className="mb-8">
@@ -367,7 +367,7 @@ export default async function VerificationOverviewPage() {
                     className={[
                       "w-8 h-8 rounded-full flex items-center justify-center text-white z-10 shrink-0",
                       isDone
-                        ? "bg-emerald-600"
+                        ? "bg-success"
                         : isActive
                           ? "bg-primary ring-4 ring-white"
                           : "bg-outline-variant",
@@ -396,7 +396,7 @@ export default async function VerificationOverviewPage() {
                     <h4
                       className={[
                         "font-bold text-lg",
-                        isDone ? "text-emerald-900" : "text-on-surface",
+                        isDone ? "text-brand-primary" : "text-on-surface",
                       ].join(" ")}
                     >
                       {step.label}

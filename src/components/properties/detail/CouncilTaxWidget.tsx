@@ -24,15 +24,15 @@ function formatCurrency(pounds: number): string {
 
 // Band to colour mapping (A=lowest, H/I=highest in England)
 const BAND_BG: Record<string, string> = {
-  A: "bg-green-100 text-green-800",
-  B: "bg-green-50 text-green-700",
-  C: "bg-lime-50 text-lime-700",
-  D: "bg-yellow-50 text-yellow-700",
-  E: "bg-amber-50 text-amber-700",
-  F: "bg-orange-50 text-orange-700",
-  G: "bg-red-50 text-red-700",
-  H: "bg-red-100 text-red-800",
-  I: "bg-red-200 text-red-900",
+  A: "bg-success-light text-success-dark",
+  B: "bg-success-light text-success",
+  C: "bg-success-light text-success",
+  D: "bg-warning-light text-warning",
+  E: "bg-warning-light text-warning",
+  F: "bg-warning-light text-warning",
+  G: "bg-error-light text-error",
+  H: "bg-error-light text-error-dark",
+  I: "bg-error-light text-error-dark",
 };
 
 // ---------------------------------------------------------------------------

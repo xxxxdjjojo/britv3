@@ -165,7 +165,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
           <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[--color-on-surface-variant]">
             Avg Price vs Asking
           </p>
-          <h3 className="text-3xl font-bold font-heading text-red-500 mt-2">{stats.avgVsAsking}</h3>
+          <h3 className="text-3xl font-bold font-heading text-error mt-2">{stats.avgVsAsking}</h3>
           <p className="mt-2 text-xs text-[--color-on-surface-variant]">
             Below asking on average
           </p>

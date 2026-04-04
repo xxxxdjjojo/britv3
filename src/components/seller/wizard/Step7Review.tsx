@@ -41,7 +41,7 @@ export function Step7Review({ listing, listingId }: Props) {
   const [error, setError] = useState("");
 
   if (!listing) {
-    return <div className="text-center py-16 text-slate-400">Loading listing...</div>;
+    return <div className="text-center py-16 text-neutral-400">Loading listing...</div>;
   }
 
   const checklist = buildChecklist(listing);
@@ -83,41 +83,41 @@ export function Step7Review({ listing, listingId }: Props) {
     >
       <div className="space-y-8">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Review & Publish</h2>
-          <p className="text-slate-500 text-sm mt-1">Check everything looks good before going live</p>
+          <h2 className="text-xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">Review & Publish</h2>
+          <p className="text-neutral-500 text-sm mt-1">Check everything looks good before going live</p>
         </div>
 
         {/* Listing preview card */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
           {thumb ? (
             <div className="relative w-full h-56">
               <Image src={thumb} alt="Listing cover" fill className="object-cover" sizes="(max-width: 768px) 100vw, 700px" />
             </div>
           ) : (
-            <div className="w-full h-56 bg-slate-100 flex items-center justify-center text-slate-300 text-sm">No cover photo</div>
+            <div className="w-full h-56 bg-neutral-100 flex items-center justify-center text-neutral-300 text-sm">No cover photo</div>
           )}
           <div className="p-6">
-            <p className="text-xs text-slate-400">{listing.postcode}</p>
-            <h3 className="text-lg font-bold text-slate-900 mt-0.5">
+            <p className="text-xs text-neutral-400">{listing.postcode}</p>
+            <h3 className="text-lg font-bold text-neutral-900 mt-0.5">
               {listing.address_line_1}{listing.address_line_2 ? `, ${listing.address_line_2}` : ""}, {listing.city}
             </h3>
-            <p className="text-2xl font-black text-slate-900 mt-2">{price}</p>
+            <p className="text-2xl font-black text-neutral-900 mt-2">{price}</p>
             {listing.bedrooms !== null && listing.bedrooms !== undefined && (
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-neutral-500 mt-1">
                 {listing.bedrooms} bed · {listing.bathrooms ?? "–"} bath · {listing.property_type}
               </p>
             )}
             {listing.description && (
-              <p className="text-sm text-slate-600 mt-3 line-clamp-3">{listing.description}</p>
+              <p className="text-sm text-neutral-600 mt-3 line-clamp-3">{listing.description}</p>
             )}
           </div>
         </div>
 
         {/* Checklist */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <div className="bg-white rounded-2xl border border-neutral-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-slate-900">Publication Checklist</h3>
-            <span className="text-sm font-semibold text-slate-500">
+            <h3 className="font-semibold text-neutral-900">Publication Checklist</h3>
+            <span className="text-sm font-semibold text-neutral-500">
               {totalComplete}/{checklist.length} complete
             </span>
           </div>
@@ -132,19 +132,19 @@ export function Step7Review({ listing, listingId }: Props) {
                 }}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-2 py-1.5 -mx-2",
-                  !item.complete && "cursor-pointer hover:bg-slate-50 transition-colors",
+                  !item.complete && "cursor-pointer hover:bg-neutral-50 transition-colors",
                 )}
               >
                 {item.complete ? (
-                  <CheckCircle size={18} className="text-emerald-500 flex-shrink-0" />
+                  <CheckCircle size={18} className="text-success flex-shrink-0" />
                 ) : item.required ? (
-                  <XCircle size={18} className="text-red-400 flex-shrink-0" />
+                  <XCircle size={18} className="text-error flex-shrink-0" />
                 ) : (
-                  <AlertCircle size={18} className="text-amber-400 flex-shrink-0" />
+                  <AlertCircle size={18} className="text-warning flex-shrink-0" />
                 )}
                 <span className={cn(
                   "text-sm",
-                  item.complete ? "text-slate-700" : item.required ? "text-red-600 font-medium" : "text-slate-400",
+                  item.complete ? "text-neutral-600" : item.required ? "text-error font-medium" : "text-neutral-400",
                 )}>
                   {item.label}
                   {!item.required && !item.complete && " (optional)"}
@@ -154,8 +154,8 @@ export function Step7Review({ listing, listingId }: Props) {
           </ul>
 
           {!requiredComplete && (
-            <div className="mt-4 bg-red-50 rounded-xl p-4 border border-red-100">
-              <p className="text-xs font-semibold text-red-700">
+            <div className="mt-4 bg-error-light rounded-xl p-4 border border-error/20">
+              <p className="text-xs font-semibold text-error">
                 Complete all required fields before publishing.
               </p>
             </div>
@@ -163,14 +163,14 @@ export function Step7Review({ listing, listingId }: Props) {
         </div>
 
         {/* CPUTR Declaration */}
-        <div className="bg-amber-50 rounded-2xl border border-amber-200 p-6">
+        <div className="bg-warning-light rounded-2xl border border-warning/30 p-6">
           <label className="flex items-start gap-3 cursor-pointer">
             <Checkbox
               checked={cputrAccepted}
               onCheckedChange={(v) => setCputrAccepted(v === true)}
               className="mt-0.5"
             />
-            <span className="text-sm text-slate-700 leading-relaxed">
+            <span className="text-sm text-neutral-600 leading-relaxed">
               I confirm that all material information about this property has been disclosed in
               accordance with the Consumer Protection from Unfair Trading Regulations 2008 and
               National Trading Standards guidance. I understand that withholding material
@@ -179,7 +179,7 @@ export function Step7Review({ listing, listingId }: Props) {
           </label>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
       </div>
     </WizardShell>
   );

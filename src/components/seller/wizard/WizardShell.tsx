@@ -64,14 +64,14 @@ export function WizardShell({
       {/* Stepper */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-slate-500">
+          <span className="text-sm font-medium text-neutral-500">
             Step {step} of {totalSteps} — {STEP_LABELS[step]}
           </span>
-          <span className="text-sm font-semibold text-[#1B4D3E]">{pct}%</span>
+          <span className="text-sm font-semibold text-brand-primary">{pct}%</span>
         </div>
-        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#1B4D3E] rounded-full transition-all duration-500"
+            className="h-full bg-brand-primary rounded-full transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -81,11 +81,11 @@ export function WizardShell({
       <div>{children}</div>
 
       {/* Footer nav */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+      <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
         <button
           type="button"
           onClick={goBack}
-          className="px-6 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+          className="px-6 py-2.5 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 transition-colors"
         >
           {step === 1 ? "Cancel" : "Back"}
         </button>
@@ -94,10 +94,10 @@ export function WizardShell({
           onClick={onContinue}
           disabled={continueDisabled || isLoading}
           className={cn(
-            "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all shadow-lg shadow-[#1B4D3E]/20",
+            "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all shadow-lg shadow-brand-primary/20",
             continueDisabled || isLoading
-              ? "bg-slate-300 cursor-not-allowed shadow-none"
-              : "bg-[#1B4D3E] hover:bg-[#2D7A5F] active:scale-95",
+              ? "bg-neutral-300 cursor-not-allowed shadow-none"
+              : "bg-brand-primary hover:bg-brand-primary-light active:scale-95",
           )}
         >
           {isLoading ? "Saving..." : continueLabel}
@@ -112,7 +112,7 @@ export function WizardShell({
       {/* Floating help button */}
       <button
         type="button"
-        className="fixed bottom-8 right-8 h-14 w-14 rounded-full bg-slate-900 text-white shadow-xl flex items-center justify-center hover:bg-slate-700 transition-colors z-50"
+        className="fixed bottom-8 right-8 h-14 w-14 rounded-full bg-neutral-900 text-white shadow-xl flex items-center justify-center hover:bg-neutral-600 transition-colors z-50"
         title="Need help?"
         aria-label="Help"
       >

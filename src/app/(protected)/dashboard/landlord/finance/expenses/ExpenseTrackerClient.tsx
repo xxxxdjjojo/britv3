@@ -343,8 +343,8 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
                         <Badge
                           className={
                             isIncome
-                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                              ? "bg-success-light text-success dark:bg-success/10 dark:text-success"
+                              : "bg-error-light text-error dark:bg-error/10 dark:text-error"
                           }
                         >
                           {isIncome ? "Income" : "Expense"}
@@ -358,7 +358,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
                         {entry.description ?? "—"}
                       </TableCell>
                       <TableCell className="text-right font-medium tabular-nums">
-                        <span className={isIncome ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                        <span className={isIncome ? "text-success dark:text-success" : "text-error dark:text-error"}>
                           {isIncome ? "+" : "-"}{formatGBP(entry.amount)}
                         </span>
                       </TableCell>
@@ -412,16 +412,16 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
                   </TableCell>
                   <TableCell className="text-right font-bold tabular-nums">
                     <div className="flex flex-col items-end gap-0.5">
-                      <span className="text-xs text-green-600 dark:text-green-400">
+                      <span className="text-xs text-success dark:text-success">
                         <TrendingUp className="mr-1 inline size-3" />
                         {formatGBP(totals.income)}
                       </span>
-                      <span className="text-xs text-red-600 dark:text-red-400">
+                      <span className="text-xs text-error dark:text-error">
                         <TrendingDown className="mr-1 inline size-3" />
                         {formatGBP(totals.expenses)}
                       </span>
                       <span
-                        className={`font-bold ${totals.net >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
+                        className={`font-bold ${totals.net >= 0 ? "text-success dark:text-success" : "text-error dark:text-error"}`}
                       >
                         <Minus className="mr-1 inline size-3" />
                         Net: {formatGBP(totals.net)}
@@ -614,7 +614,7 @@ function InlineEntryForm({ propertyId, entry, onSaved }: InlineEntryFormProps) {
           onClick={() => { setType("income"); setCategory(""); }}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             type === "income"
-              ? "bg-surface-container-lowest text-green-700 shadow-sm dark:bg-gray-800 dark:text-green-400"
+              ? "bg-surface-container-lowest text-success shadow-sm dark:bg-neutral-800 dark:text-success"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -625,7 +625,7 @@ function InlineEntryForm({ propertyId, entry, onSaved }: InlineEntryFormProps) {
           onClick={() => { setType("expense"); setCategory(""); }}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
             type === "expense"
-              ? "bg-surface-container-lowest text-red-700 shadow-sm dark:bg-gray-800 dark:text-red-400"
+              ? "bg-surface-container-lowest text-error shadow-sm dark:bg-neutral-800 dark:text-error"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >

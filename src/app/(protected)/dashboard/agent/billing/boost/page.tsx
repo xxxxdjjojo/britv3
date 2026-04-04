@@ -86,8 +86,8 @@ async function PageContent({ searchParams }: Props) {
       </div>
 
       {isSuccess ? (
-        <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/20 p-6 text-center space-y-3">
-          <CheckCircle className="size-10 text-green-500 mx-auto" />
+        <div className="rounded-lg border border-success/30 bg-success-light dark:bg-success/10 p-6 text-center space-y-3">
+          <CheckCircle className="size-10 text-success mx-auto" />
           <h2 className="font-semibold text-lg">Boost Purchased!</h2>
           <p className="text-muted-foreground text-sm">
             Your listing will appear as Featured in search results shortly.

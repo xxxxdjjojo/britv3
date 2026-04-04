@@ -104,8 +104,8 @@ function PaymentFailedContent() {
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Failed icon */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20">
-          <AlertCircle className="text-red-700 dark:text-red-300" size={44} />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-error-light dark:bg-error/20">
+          <AlertCircle className="text-error dark:text-error" size={44} />
         </div>
 
         <div>
@@ -117,7 +117,7 @@ function PaymentFailedContent() {
           </p>
         </div>
 
-        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-red-200/60 dark:ring-red-700/60">
+        <Card className="rounded-xl bg-card shadow-sm ring-1 ring-error/20 dark:ring-error/30">
           <CardContent className="py-5">
             <p className="mb-3 font-body text-sm font-medium text-foreground">
               Recommended next step

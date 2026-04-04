@@ -40,14 +40,14 @@ export default function InstantValuationPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Instant Valuation</h1>
-        <p className="text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">Instant Valuation</h1>
+        <p className="text-neutral-500 mt-1">
           Get an instant estimate based on real Land Registry sold prices in your area
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-        <label className="text-sm font-semibold text-slate-700 block mb-3">Property Postcode</label>
+      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
+        <label className="text-sm font-semibold text-neutral-600 block mb-3">Property Postcode</label>
         <div className="flex gap-3">
           <input
             type="text"
@@ -71,7 +71,7 @@ export default function InstantValuationPage() {
             {loading ? "Loading..." : "Get Valuation"}
           </button>
         </div>
-        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+        {error && <p className="text-error text-sm mt-3">{error}</p>}
       </div>
 
       {result && (
@@ -86,7 +86,7 @@ export default function InstantValuationPage() {
         />
       )}
 
-      <p className="text-xs text-slate-400 text-center">
+      <p className="text-xs text-neutral-400 text-center">
         Estimates are based on Land Registry Price Paid Data and are for informational purposes only. They do not constitute a professional valuation.
       </p>
     </div>

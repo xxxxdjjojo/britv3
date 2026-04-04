@@ -162,7 +162,7 @@ export function ReviewForm({
     return (
       <Card>
         <CardContent className="space-y-4 p-6 text-center">
-          <CheckCircle className="mx-auto h-12 w-12 text-[#1B4D3E]" />
+          <CheckCircle className="mx-auto h-12 w-12 text-brand-primary" />
           <h3 className="text-lg font-semibold">Review Submitted!</h3>
           <p className="text-sm text-muted-foreground">
             Your review is being verified and will appear shortly.
@@ -250,7 +250,7 @@ export function ReviewForm({
               reviewText.length > 2000
                 ? "text-destructive"
                 : reviewText.length > 1800
-                  ? "text-amber-600"
+                  ? "text-warning"
                   : "text-muted-foreground",
             )}
           >

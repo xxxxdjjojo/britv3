@@ -121,14 +121,14 @@ export default async function AreaPage({ params }: AreaPageProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* ── Breadcrumb ── */}
-        <nav className="text-sm text-[#404945] mb-8 flex items-center gap-2" aria-label="Breadcrumb">
+        <nav className="text-sm text-neutral-600 mb-8 flex items-center gap-2" aria-label="Breadcrumb">
           <Link href="/" className="hover:text-brand-primary transition-colors">Home</Link>
-          <span className="text-[#e3e2e1]">/</span>
+          <span className="text-neutral-200">/</span>
           <Link href="/areas" className="hover:text-brand-primary transition-colors">Area Guides</Link>
-          <span className="text-[#e3e2e1]">/</span>
+          <span className="text-neutral-200">/</span>
           <Link href={`/areas/${area.citySlug}`} className="hover:text-brand-primary transition-colors">{area.cityName}</Link>
-          <span className="text-[#e3e2e1]">/</span>
-          <span className="text-[#1a1c1c] font-medium">{area.name}</span>
+          <span className="text-neutral-200">/</span>
+          <span className="text-neutral-900 font-medium">{area.name}</span>
         </nav>
 
         {/* ── Split Hero ── */}
@@ -138,10 +138,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
             <span className="inline-block bg-brand-primary/10 text-brand-primary text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">
               {area.borough}
             </span>
-            <h1 className="font-heading font-bold text-[#1a1c1c] mb-4 max-lg:text-[36px]" style={{ fontSize: "clamp(36px,4vw,56px)", lineHeight: 1.1 }}>
+            <h1 className="font-heading font-bold text-neutral-900 mb-4 max-lg:text-[36px]" style={{ fontSize: "clamp(36px,4vw,56px)", lineHeight: 1.1 }}>
               Life in {area.postcode} —<br />{area.name}
             </h1>
-            <p className="text-lg text-[#404945] leading-relaxed mb-8 max-w-lg">
+            <p className="text-lg text-neutral-600 leading-relaxed mb-8 max-w-lg">
               {area.description}
             </p>
             {/* 3 mini stat cards */}
@@ -151,9 +151,9 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 { value: area.walkability, label: "Walkability" },
                 { value: area.noiseLevel, label: "Noise Level" },
               ].map((stat) => (
-                <div key={stat.label} className="bg-[#faf9f8] rounded-xl p-4 min-w-[140px]">
+                <div key={stat.label} className="bg-neutral-50 rounded-xl p-4 min-w-[140px]">
                   <p className="text-brand-primary font-bold text-2xl">{stat.value}</p>
-                  <p className="text-[#404945] text-xs font-medium uppercase tracking-tight mt-0.5">{stat.label}</p>
+                  <p className="text-neutral-600 text-xs font-medium uppercase tracking-tight mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -168,7 +168,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
               className="w-full h-full"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-surface-container-lowest/90 backdrop-blur-md p-3 flex justify-between items-center">
-              <div className="flex items-center gap-2 text-sm font-medium text-[#1a1c1c]">
+              <div className="flex items-center gap-2 text-sm font-medium text-neutral-900">
                 <MapPin className="size-4 text-brand-primary" />
                 {area.postcode} Boundary Overview
               </div>
@@ -205,10 +205,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
                     const colorMap: Record<string, string> = { park: "text-[--color-brand-primary-light]", cafe: "text-[--color-brand-secondary-dark]", pub: "text-[--color-brand-secondary-dark]", attraction: "text-[--color-info]" };
                     const color = colorMap[category] ?? "text-brand-primary";
                     return (
-                      <div key={label} className="bg-[#faf9f8] rounded-xl p-4 hover:bg-[#f4f3f2] transition-colors">
+                      <div key={label} className="bg-neutral-50 rounded-xl p-4 hover:bg-neutral-100 transition-colors">
                         <Icon className={`size-6 ${color} mb-3`} />
-                        <p className="font-semibold text-[#1a1c1c]">{label}</p>
-                        <p className="text-sm text-[#404945]">{desc}</p>
+                        <p className="font-semibold text-neutral-900">{label}</p>
+                        <p className="text-sm text-neutral-600">{desc}</p>
                       </div>
                     );
                   })}
@@ -217,7 +217,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
               {/* Demographic Snapshot */}
               <section className="bg-brand-primary/5 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold font-heading mb-6 text-[#1a1c1c]">Demographic Snapshot</h2>
+                <h2 className="text-2xl font-bold font-heading mb-6 text-neutral-900">Demographic Snapshot</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {[
                     { label: "Top Group", value: area.demographics.topGroup },
@@ -226,8 +226,8 @@ export default async function AreaPage({ params }: AreaPageProps) {
                     { label: "Vibe", value: area.demographics.vibe },
                   ].map((item) => (
                     <div key={item.label}>
-                      <p className="text-[#404945] text-xs font-bold uppercase tracking-widest mb-1">{item.label}</p>
-                      <p className="text-[#1a1c1c] font-bold text-lg">{item.value}</p>
+                      <p className="text-neutral-600 text-xs font-bold uppercase tracking-widest mb-1">{item.label}</p>
+                      <p className="text-neutral-900 font-bold text-lg">{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -243,16 +243,16 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 </div>
 
                 {/* Expert Sidebar */}
-                <div className="sticky top-8 bg-[#faf9f8] rounded-2xl p-6 h-fit">
+                <div className="sticky top-8 bg-neutral-50 rounded-2xl p-6 h-fit">
                   <div className="relative mb-4">
                     <div className="size-16 rounded-full bg-brand-primary/10 flex items-center justify-center">
                       <span className="text-brand-primary font-bold text-xl">{area.agent.initials}</span>
                     </div>
                     <span className="absolute bottom-0 right-0 bg-[--color-success] size-4 rounded-full border-2 border-surface-container-lowest" />
                   </div>
-                  <p className="text-lg font-bold text-[#1a1c1c]">{area.agent.name}</p>
+                  <p className="text-lg font-bold text-neutral-900">{area.agent.name}</p>
                   <p className="text-sm text-brand-primary font-semibold mb-3">{area.agent.role}</p>
-                  <p className="text-sm text-[#404945] italic mb-6">&ldquo;{area.agent.quote}&rdquo;</p>
+                  <p className="text-sm text-neutral-600 italic mb-6">&ldquo;{area.agent.quote}&rdquo;</p>
                   <button className="w-full bg-brand-primary text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 mb-3 hover:bg-brand-primary/90 transition-colors">
                     <Phone className="size-4" /> Speak to {area.agent.name.split(" ")[0]}
                   </button>
@@ -271,15 +271,15 @@ export default async function AreaPage({ params }: AreaPageProps) {
                       key={listing.address}
                       className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                     >
-                      <div className="relative h-40 bg-[#f4f3f2]">
+                      <div className="relative h-40 bg-neutral-100">
                         <span className="absolute top-2 left-2 bg-surface-container-lowest/95 text-brand-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                           {listing.status}
                         </span>
                       </div>
                       <div className="p-4">
                         <p className="text-brand-primary font-bold text-lg">{listing.price}</p>
-                        <p className="font-semibold text-sm text-[#1a1c1c] truncate">{listing.address}</p>
-                        <div className="flex items-center gap-3 text-[#404945] text-xs mt-2">
+                        <p className="font-semibold text-sm text-neutral-900 truncate">{listing.address}</p>
+                        <div className="flex items-center gap-3 text-neutral-600 text-xs mt-2">
                           <span className="flex items-center gap-1"><Bed className="size-3" /> {listing.beds}</span>
                           <span className="flex items-center gap-1"><Bath className="size-3" /> {listing.baths}</span>
                           <span className="flex items-center gap-1"><Maximize2 className="size-3" /> {listing.sqft}</span>
@@ -352,8 +352,8 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   {/* Price Trend Card */}
                   <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-                      <h3 className="font-bold text-[#1a1c1c]">Average Property Price Trends</h3>
-                      <select className="text-sm bg-[#faf9f8] rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-brand-primary/20 text-[#1a1c1c]">
+                      <h3 className="font-bold text-neutral-900">Average Property Price Trends</h3>
+                      <select className="text-sm bg-neutral-50 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-brand-primary/20 text-neutral-900">
                         <option>Last 5 Years</option>
                         <option>Last 12 Months</option>
                       </select>
@@ -361,7 +361,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                     <AreaPriceTrendClient />
                     <div className="mt-4 bg-brand-primary/5 p-4 rounded-xl flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-[#404945] font-medium">Current avg price</p>
+                        <p className="text-xs text-neutral-600 font-medium">Current avg price</p>
                         <p className="text-3xl font-bold text-brand-primary font-heading">{area.avgPriceFormatted}</p>
                       </div>
                       <p className="text-[--color-success] flex items-center gap-1 font-semibold">
@@ -373,7 +373,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
                   {/* Listings vs Sold Volume */}
                   <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
-                    <h3 className="font-bold text-[#1a1c1c] mb-4">New Listings vs Sold Volume</h3>
+                    <h3 className="font-bold text-neutral-900 mb-4">New Listings vs Sold Volume</h3>
                     <ListingVolumeClient />
                     <DataAttribution source="Britestate Market Intelligence" />
                   </div>
@@ -383,13 +383,13 @@ export default async function AreaPage({ params }: AreaPageProps) {
                 <div className="space-y-6">
                   {/* Property Types Donut */}
                   <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
-                    <h3 className="font-bold text-[#1a1c1c] mb-4">Property Types</h3>
+                    <h3 className="font-bold text-neutral-900 mb-4">Property Types</h3>
                     <PropertyDonutClient />
                   </div>
 
                   {/* Demographics */}
                   <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
-                    <h3 className="font-bold text-[#1a1c1c] mb-4">Demographics</h3>
+                    <h3 className="font-bold text-neutral-900 mb-4">Demographics</h3>
                     <div className="space-y-3">
                       {[
                         { label: "Owner Occupied", pct: area.demographics.ownerOccupied },
@@ -397,7 +397,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                         { label: "Social Rented", pct: area.demographics.socialRented },
                       ].map((item) => (
                         <div key={item.label}>
-                          <div className="flex justify-between text-xs text-[#404945] mb-1">
+                          <div className="flex justify-between text-xs text-neutral-600 mb-1">
                             <span>{item.label}</span>
                             <span className="font-bold">{item.pct}%</span>
                           </div>
@@ -437,20 +437,20 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   <div className="bg-surface-container-lowest rounded-xl shadow-sm p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <ShieldCheck className="size-5 text-brand-primary" />
-                      <h3 className="font-bold text-[#1a1c1c]">Crime Index</h3>
+                      <h3 className="font-bold text-neutral-900">Crime Index</h3>
                     </div>
                     <div className="space-y-3">
                       {[
-                        { label: area.name, level: area.crimeIndex.local <= 60 ? "Low" : area.crimeIndex.local <= 90 ? "Average" : "High", color: area.crimeIndex.local <= 60 ? "bg-[--color-success]" : area.crimeIndex.local <= 90 ? "bg-amber-400" : "bg-red-500", pct: Math.min(area.crimeIndex.local, 100) },
-                        { label: area.borough, level: area.crimeIndex.borough <= 60 ? "Low" : area.crimeIndex.borough <= 90 ? "Average" : "High", color: area.crimeIndex.borough <= 60 ? "bg-[--color-success]" : area.crimeIndex.borough <= 90 ? "bg-amber-400" : "bg-red-500", pct: Math.min(area.crimeIndex.borough, 100) },
-                        { label: area.cityName, level: area.crimeIndex.city <= 60 ? "Low" : area.crimeIndex.city <= 90 ? "Average" : "High", color: "bg-[#e3e2e1]", pct: Math.min(area.crimeIndex.city, 100) },
+                        { label: area.name, level: area.crimeIndex.local <= 60 ? "Low" : area.crimeIndex.local <= 90 ? "Average" : "High", color: area.crimeIndex.local <= 60 ? "bg-[--color-success]" : area.crimeIndex.local <= 90 ? "bg-warning" : "bg-error", pct: Math.min(area.crimeIndex.local, 100) },
+                        { label: area.borough, level: area.crimeIndex.borough <= 60 ? "Low" : area.crimeIndex.borough <= 90 ? "Average" : "High", color: area.crimeIndex.borough <= 60 ? "bg-[--color-success]" : area.crimeIndex.borough <= 90 ? "bg-warning" : "bg-error", pct: Math.min(area.crimeIndex.borough, 100) },
+                        { label: area.cityName, level: area.crimeIndex.city <= 60 ? "Low" : area.crimeIndex.city <= 90 ? "Average" : "High", color: "bg-neutral-200", pct: Math.min(area.crimeIndex.city, 100) },
                       ].map((row) => (
                         <div key={row.label}>
-                          <div className="flex justify-between text-xs text-[#404945] mb-1">
+                          <div className="flex justify-between text-xs text-neutral-600 mb-1">
                             <span>{row.label}</span>
                             <span className="font-medium">{row.level}</span>
                           </div>
-                          <div className="bg-[#f4f3f2] rounded-full h-1.5">
+                          <div className="bg-neutral-100 rounded-full h-1.5">
                             <div className={`${row.color} h-1.5 rounded-full`} style={{ width: `${row.pct}%` }} />
                           </div>
                         </div>
@@ -474,11 +474,11 @@ export default async function AreaPage({ params }: AreaPageProps) {
               <h2 className="text-2xl font-bold font-heading">Transport &amp; Connectivity</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 {area.transportLinks.map((item) => (
-                  <div key={item.name} className="bg-[#faf9f8] rounded-xl p-5 flex items-center gap-4">
+                  <div key={item.name} className="bg-neutral-50 rounded-xl p-5 flex items-center gap-4">
                     <span className="text-2xl">{item.emoji}</span>
                     <div>
-                      <p className="font-semibold text-[#1a1c1c]">{item.name}</p>
-                      <p className="text-sm text-[#404945]">{item.detail}</p>
+                      <p className="font-semibold text-neutral-900">{item.name}</p>
+                      <p className="text-sm text-neutral-600">{item.detail}</p>
                     </div>
                   </div>
                 ))}
@@ -509,7 +509,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
                       <TableRow key={school.name} className="hover:bg-brand-primary/5 transition-colors">
                         <TableCell className="font-medium">{school.name}</TableCell>
                         <TableCell><OfstedBadge rating={school.ofsted} /></TableCell>
-                        <TableCell className="text-[#404945]">{school.distance}</TableCell>
+                        <TableCell className="text-neutral-600">{school.distance}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -529,15 +529,15 @@ export default async function AreaPage({ params }: AreaPageProps) {
                   const colorMap: Record<string, string> = { park: "text-[--color-brand-primary-light]", cafe: "text-[--color-brand-secondary-dark]", pub: "text-[--color-brand-secondary-dark]", attraction: "text-[--color-info]" };
                   const color = colorMap[category] ?? "text-brand-primary";
                   return (
-                    <div key={label} className="bg-[#faf9f8] rounded-xl p-6">
+                    <div key={label} className="bg-neutral-50 rounded-xl p-6">
                       <Icon className={`size-8 ${color} mb-4`} />
-                      <p className="font-semibold text-[#1a1c1c] text-lg mb-2">{label}</p>
-                      <p className="text-sm text-[#404945]">{desc}</p>
+                      <p className="font-semibold text-neutral-900 text-lg mb-2">{label}</p>
+                      <p className="text-sm text-neutral-600">{desc}</p>
                     </div>
                   );
                 })}
               </div>
-              <p className="text-[#404945] leading-relaxed max-w-3xl">
+              <p className="text-neutral-600 leading-relaxed max-w-3xl">
                 {area.name} is known for its community spirit and character. {area.description}
               </p>
             </div>

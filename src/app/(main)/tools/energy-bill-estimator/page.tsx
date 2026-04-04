@@ -602,7 +602,7 @@ export default function EnergyBillEstimatorPage() {
                     </div>
                     <div
                       className={`flex items-center gap-1.5 mt-2 text-xs font-semibold ${
-                        estimate.diff <= 0 ? "text-brand-primary" : "text-red-500"
+                        estimate.diff <= 0 ? "text-brand-primary" : "text-error"
                       }`}
                     >
                       <TrendingDown className="size-3.5" />
@@ -728,25 +728,25 @@ export default function EnergyBillEstimatorPage() {
                   {[
                     {
                       icon: Monitor,
-                      color: "bg-green-100 dark:bg-green-900/30 text-green-600",
+                      color: "bg-success-light dark:bg-success/20 text-success",
                       title: "Install Smart Meter",
                       desc: "Track real-time usage to spot costly habits instantly.",
                     },
                     {
                       icon: Droplets,
-                      color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600",
+                      color: "bg-brand-accent-light dark:bg-brand-accent/20 text-brand-accent",
                       title: "Bleed Your Radiators",
                       desc: "Remove trapped air to keep your heating efficient.",
                     },
                     {
                       icon: Lightbulb,
-                      color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600",
+                      color: "bg-warning-light dark:bg-warning/20 text-warning",
                       title: "Switch to LED Bulbs",
                       desc: "Save up to £55/year with energy-efficient lighting.",
                     },
                     {
                       icon: DoorOpen,
-                      color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600",
+                      color: "bg-brand-accent-light dark:bg-brand-accent/20 text-brand-accent",
                       title: "Draft Proofing",
                       desc: "Simple seals around doors keep warmth inside.",
                     },

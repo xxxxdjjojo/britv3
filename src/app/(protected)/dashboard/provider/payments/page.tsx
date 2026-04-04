@@ -14,22 +14,22 @@ export default async function PaymentsPage() {
   // ── Feature flag ─────────────────────────────────────────────────────────
   if (process.env.FEATURE_STRIPE_CONNECT_ENABLED !== "true") {
     return (
-      <div className="min-h-screen bg-[#faf9f8] p-10">
+      <div className="min-h-screen bg-surface-container-lowest p-10">
         <div className="max-w-7xl mx-auto">
           {/* Page header */}
           <div className="mb-10">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] mb-2 block">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-brand-secondary-dark mb-2 block">
               Provider Dashboard
             </span>
-            <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
+            <h1 className="text-4xl font-extrabold text-neutral-900 font-heading tracking-tight">
               Financial Health
             </h1>
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-stone-200 bg-white py-24 text-center shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-white py-24 text-center shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mb-4">
               <svg
-                className="size-8 text-stone-400"
+                className="size-8 text-neutral-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -42,10 +42,10 @@ export default async function PaymentsPage() {
                 />
               </svg>
             </div>
-            <h2 className="font-heading text-lg font-bold text-stone-800 mb-2">
+            <h2 className="font-heading text-lg font-bold text-neutral-800 mb-2">
               Payments coming soon
             </h2>
-            <p className="max-w-sm text-sm text-stone-500">
+            <p className="max-w-sm text-sm text-neutral-500">
               Payment processing via Stripe Connect is being configured. Check
               back shortly.
             </p>
@@ -87,13 +87,13 @@ export default async function PaymentsPage() {
     // ── Not connected — show onboarding banner ───────────────────────────────
     if (!isOnboarded) {
       return (
-        <div className="min-h-screen bg-[#faf9f8] p-10">
+        <div className="min-h-screen bg-surface-container-lowest p-10">
           <div className="max-w-7xl mx-auto space-y-8">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] mb-2 block">
+              <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-brand-secondary-dark mb-2 block">
                 Provider Dashboard
               </span>
-              <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
+              <h1 className="text-4xl font-extrabold text-neutral-900 font-heading tracking-tight">
                 Financial Health
               </h1>
             </div>
@@ -110,14 +110,14 @@ export default async function PaymentsPage() {
     ]);
 
     return (
-      <div className="min-h-screen bg-[#faf9f8] p-10">
+      <div className="min-h-screen bg-surface-container-lowest p-10">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Page header */}
           <div>
-            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] mb-2 block">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-brand-secondary-dark mb-2 block">
               Provider Dashboard
             </span>
-            <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
+            <h1 className="text-4xl font-extrabold text-neutral-900 font-heading tracking-tight">
               Financial Health
             </h1>
           </div>
@@ -129,10 +129,10 @@ export default async function PaymentsPage() {
   } catch (error) {
     if (error instanceof Error && "digest" in error) throw error; // Re-throw Next.js redirects
     return (
-      <div className="min-h-screen bg-[#faf9f8] p-10">
+      <div className="min-h-screen bg-surface-container-lowest p-10">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">Financial Health</h1>
-          <p className="mt-4 text-sm text-stone-500">Unable to load payment data. Please try refreshing the page.</p>
+          <h1 className="text-4xl font-extrabold text-neutral-900 font-heading tracking-tight">Financial Health</h1>
+          <p className="mt-4 text-sm text-neutral-500">Unable to load payment data. Please try refreshing the page.</p>
         </div>
       </div>
     );

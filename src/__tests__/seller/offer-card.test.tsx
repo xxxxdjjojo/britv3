@@ -3,9 +3,9 @@
 import { describe, it } from "vitest";
 
 describe("OfferCard colour coding", () => {
-  it.todo("offer above asking price renders with text-green-600 class");
-  it.todo("offer below asking price by more than 1% renders with text-red-600 class");
-  it.todo("offer at asking price (within 1%) renders with text-slate-500 class");
+  it.todo("offer above asking price renders with text-success class");
+  it.todo("offer below asking price by more than 1% renders with text-error class");
+  it.todo("offer at asking price (within 1%) renders with text-neutral-500 class");
   it.todo("offer card shows TrendingUp icon when above asking");
   it.todo("offer card shows TrendingDown icon when below asking");
 });

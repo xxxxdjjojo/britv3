@@ -105,7 +105,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
   }
 
   const inputClass =
-    "w-full px-3 py-2 rounded-lg bg-[#f4f3f2] dark:bg-[#1a2822] text-[#1a1a1a] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]";
+    "w-full px-3 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary";
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -113,7 +113,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full px-4 py-3 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] transition-colors"
+        className="w-full px-4 py-3 min-h-[44px] rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary/90 active:bg-brand-primary-dark transition-colors"
       >
         Request a Free Valuation
       </button>
@@ -129,9 +129,9 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
         {success ? (
           /* Confirmation state */
           <div className="flex flex-col items-center justify-center gap-6 px-6 py-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-success-light dark:bg-success/20 flex items-center justify-center">
               <svg
-                className="w-8 h-8 text-green-600 dark:text-green-400"
+                className="w-8 h-8 text-success dark:text-success"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
@@ -145,17 +145,17 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-[#1a1a1a] dark:text-white mb-2">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
                 Request Submitted!
               </h3>
-              <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm">
+              <p className="text-neutral-500 dark:text-neutral-400 text-sm">
                 Thank you! We&apos;ll be in touch within 24 hours.
               </p>
             </div>
             <button
               type="button"
               onClick={handleClose}
-              className="px-6 py-2 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] transition-colors"
+              className="px-6 py-2 min-h-[44px] rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary/90 active:bg-brand-primary-dark transition-colors"
             >
               Close
             </button>
@@ -165,8 +165,8 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
           <form onSubmit={handleSubmit} className="px-6 pb-6 space-y-4">
             {/* Property address */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
-                Property Address <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
+                Property Address <span className="text-error">*</span>
               </label>
               <input
                 name="address"
@@ -181,7 +181,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Postcode */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
                 Postcode
               </label>
               <input
@@ -196,7 +196,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Property type */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
                 Property Type
               </label>
               <select
@@ -216,7 +216,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Bedrooms */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
                 Bedrooms
               </label>
               <select
@@ -236,7 +236,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Tenure */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
                 Tenure
               </label>
               <select
@@ -254,7 +254,7 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Preferred contact time */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
                 Preferred Contact Time
               </label>
               <select
@@ -271,12 +271,12 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
               </select>
             </div>
 
-            <hr className="border-[#e8e6e3] dark:border-[#243330]" />
+            <hr className="border-neutral-200 dark:border-neutral-800" />
 
             {/* Name */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
-                Your Name <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
+                Your Name <span className="text-error">*</span>
               </label>
               <input
                 name="name"
@@ -291,8 +291,8 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Phone */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
-                Phone <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
+                Phone <span className="text-error">*</span>
               </label>
               <input
                 name="phone"
@@ -307,8 +307,8 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
-                Email <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-neutral-900 dark:text-neutral-200 mb-1">
+                Email <span className="text-error">*</span>
               </label>
               <input
                 name="email"
@@ -323,14 +323,14 @@ export function ValuationSheet({ agencyId, agencyName }: Props) {
 
             {/* Inline error */}
             {error && (
-              <p className="text-red-600 dark:text-red-400 text-xs">{error}</p>
+              <p className="text-error dark:text-error text-xs">{error}</p>
             )}
 
             {/* Submit */}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full px-4 py-3 min-h-[44px] rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#163d31] active:bg-[#0f2b22] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-3 min-h-[44px] rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary/90 active:bg-brand-primary-dark disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? "Submitting…" : "Request Valuation"}
             </button>

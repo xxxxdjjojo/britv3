@@ -25,9 +25,9 @@ type Document = {
 };
 
 const STATUS_CONFIG: Record<VerificationStatus, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> = {
-  verified: { label: "Verified", color: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle2 },
-  pending: { label: "Pending Review", color: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300", icon: Clock },
-  expired: { label: "Expired", color: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300", icon: AlertTriangle },
+  verified: { label: "Verified", color: "bg-success-light text-success dark:bg-success/20 dark:text-success", icon: CheckCircle2 },
+  pending: { label: "Pending Review", color: "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning", icon: Clock },
+  expired: { label: "Expired", color: "bg-error-light text-error dark:bg-error/20 dark:text-error", icon: AlertTriangle },
   not_submitted: { label: "Not Submitted", color: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400", icon: FileText },
 };
 

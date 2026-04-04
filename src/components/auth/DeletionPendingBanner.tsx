@@ -60,12 +60,12 @@ export function DeletionPendingBanner() {
   if (!deletionDate || cancelled) {
     if (cancelled) {
       return (
-        <Alert className="mb-4 border-green-200 bg-green-50">
-          <CheckCircle className="size-4 text-green-600" />
-          <AlertTitle className="text-green-800">
+        <Alert className="mb-4 border-success/20 bg-success-light">
+          <CheckCircle className="size-4 text-success" />
+          <AlertTitle className="text-success">
             Deletion cancelled
           </AlertTitle>
-          <AlertDescription className="text-green-700">
+          <AlertDescription className="text-success">
             Your account is no longer scheduled for deletion.
           </AlertDescription>
         </Alert>
@@ -81,7 +81,7 @@ export function DeletionPendingBanner() {
   });
 
   return (
-    <Alert variant="destructive" className="mb-4 border-red-200 bg-red-50">
+    <Alert variant="destructive" className="mb-4 border-error/20 bg-error-light">
       <AlertTriangle className="size-4" />
       <AlertTitle>Account deletion scheduled</AlertTitle>
       <AlertDescription>
@@ -90,7 +90,7 @@ export function DeletionPendingBanner() {
         keep your account, cancel the deletion now.
       </AlertDescription>
       {error && (
-        <p className="mt-1 text-xs text-red-600">{error}</p>
+        <p className="mt-1 text-xs text-error">{error}</p>
       )}
       <div className="mt-2">
         <Button
@@ -98,7 +98,7 @@ export function DeletionPendingBanner() {
           size="sm"
           onClick={handleCancel}
           disabled={cancelling}
-          className="border-red-300 text-red-700 hover:bg-red-100"
+          className="border-error/30 text-error hover:bg-error-light"
         >
           {cancelling ? "Cancelling..." : "Cancel Deletion"}
         </Button>

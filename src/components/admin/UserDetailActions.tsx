@@ -73,7 +73,7 @@ export function UserDetailActions({ userId, isSuspended, isBanned }: Props) {
         {isBanned || isSuspended ? (
           <Button
             variant="outline"
-            className="w-full justify-start border-green-200/60 font-body text-sm font-medium text-green-700 hover:bg-green-50 dark:border-green-700/60 dark:text-green-300 dark:hover:bg-green-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+            className="w-full justify-start border-success/20 font-body text-sm font-medium text-success hover:bg-success-light dark:border-success/30 dark:text-success dark:hover:bg-success/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
             onClick={handleActivate}
             disabled={isPending}
           >
@@ -83,7 +83,7 @@ export function UserDetailActions({ userId, isSuspended, isBanned }: Props) {
           <>
             <Button
               variant="outline"
-              className="w-full justify-start border-amber-200/60 font-body text-sm font-medium text-amber-700 hover:bg-amber-50 dark:border-amber-700/60 dark:text-amber-300 dark:hover:bg-amber-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+              className="w-full justify-start border-warning/20 font-body text-sm font-medium text-warning hover:bg-warning-light dark:border-warning/30 dark:text-warning dark:hover:bg-warning/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               onClick={() => setActiveModal("suspend")}
               disabled={isPending}
             >
@@ -91,7 +91,7 @@ export function UserDetailActions({ userId, isSuspended, isBanned }: Props) {
             </Button>
             <Button
               variant="outline"
-              className="w-full justify-start border-red-200/60 font-body text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-700/60 dark:text-red-300 dark:hover:bg-red-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+              className="w-full justify-start border-error/20 font-body text-sm font-medium text-error hover:bg-error-light dark:border-error/30 dark:text-error dark:hover:bg-error/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
               onClick={() => setActiveModal("ban")}
               disabled={isPending}
             >

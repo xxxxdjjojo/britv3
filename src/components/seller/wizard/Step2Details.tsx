@@ -72,37 +72,37 @@ export function Step2Details({ listing, listingId }: Props) {
     >
       <div className="space-y-8">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Property Details</h2>
-          <p className="text-slate-500 text-sm mt-1">Tell buyers about the key details of your property</p>
+          <h2 className="text-xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">Property Details</h2>
+          <p className="text-neutral-500 text-sm mt-1">Tell buyers about the key details of your property</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-semibold text-slate-700">Bedrooms</label>
+            <label className="text-sm font-semibold text-neutral-600">Bedrooms</label>
             <input
               type="number"
               min={0}
               max={20}
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
-              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+              className="mt-2 w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
             />
           </div>
           <div>
-            <label className="text-sm font-semibold text-slate-700">Bathrooms</label>
+            <label className="text-sm font-semibold text-neutral-600">Bathrooms</label>
             <input
               type="number"
               min={0}
               max={10}
               value={bathrooms}
               onChange={(e) => setBathrooms(e.target.value)}
-              className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+              className="mt-2 w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-700 mb-3 block">Features</label>
+          <label className="text-sm font-semibold text-neutral-600 mb-3 block">Features</label>
           <div className="flex flex-wrap gap-2">
             {FEATURES.map((f) => (
               <button
@@ -112,8 +112,8 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-150",
                   selectedFeatures.includes(f)
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300",
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
                 )}
               >
                 {f}
@@ -123,8 +123,8 @@ export function Step2Details({ listing, listingId }: Props) {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-700 mb-3 block">
-            EPC Band <span className="text-slate-400 font-normal">(optional)</span>
+          <label className="text-sm font-semibold text-neutral-600 mb-3 block">
+            EPC Band <span className="text-neutral-400 font-normal">(optional)</span>
           </label>
           <div className="flex gap-2">
             {EPC_BANDS.map((b) => (
@@ -135,8 +135,8 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "w-9 h-9 rounded-lg border-2 text-sm font-bold transition-all",
                   epcBand === b
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300",
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
                 )}
               >
                 {b}
@@ -146,8 +146,8 @@ export function Step2Details({ listing, listingId }: Props) {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-700 mb-3 block">
-            Council Tax Band <span className="text-slate-400 font-normal">(optional)</span>
+          <label className="text-sm font-semibold text-neutral-600 mb-3 block">
+            Council Tax Band <span className="text-neutral-400 font-normal">(optional)</span>
           </label>
           <div className="flex gap-2">
             {COUNCIL_TAX_BANDS.map((b) => (
@@ -158,8 +158,8 @@ export function Step2Details({ listing, listingId }: Props) {
                 className={cn(
                   "w-9 h-9 rounded-lg border-2 text-sm font-bold transition-all",
                   councilTaxBand === b
-                    ? "border-[#1B4D3E] bg-[#1B4D3E] text-white"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300",
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
                 )}
               >
                 {b}
@@ -168,7 +168,7 @@ export function Step2Details({ listing, listingId }: Props) {
           </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
       </div>
     </WizardShell>
   );

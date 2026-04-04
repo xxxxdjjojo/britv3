@@ -144,8 +144,8 @@ function NavLink({
       className={cn(
         "flex items-center gap-2.5 rounded-md px-3 py-1.5 font-body text-sm transition-all duration-200 ml-1",
         isActive
-          ? "bg-emerald-800/50 text-emerald-300 border-l-2 border-amber-400 font-semibold"
-          : "text-emerald-100/70 hover:bg-emerald-800/30 hover:text-emerald-50",
+          ? "bg-brand-primary/50 text-success border-l-2 border-brand-secondary font-semibold"
+          : "text-brand-primary-lighter/70 hover:bg-brand-primary/30 hover:text-brand-primary-lighter",
       )}
     >
       <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -181,7 +181,7 @@ function CollapsibleGroup({
             setManuallyOpened((prev) => !prev);
           }
         }}
-        className="flex w-full items-center justify-between px-3 py-2 font-body text-[10px] font-semibold uppercase tracking-widest text-emerald-400/60 hover:text-emerald-200/80 transition-colors"
+        className="flex w-full items-center justify-between px-3 py-2 font-body text-[10px] font-semibold uppercase tracking-widest text-brand-primary-light/60 hover:text-brand-primary-lighter/80 transition-colors"
       >
         <div className="flex items-center gap-2">
           <GroupIcon className="h-3.5 w-3.5" />
@@ -217,11 +217,11 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
 
   return (
     <>
-      <div className="flex h-16 shrink-0 flex-col items-start justify-center px-6 bg-emerald-950">
-        <span className="font-heading text-base font-bold tracking-tighter text-emerald-50 leading-none">
+      <div className="flex h-16 shrink-0 flex-col items-start justify-center px-6 bg-brand-primary-dark">
+        <span className="font-heading text-base font-bold tracking-tighter text-brand-primary-lighter leading-none">
           Britestate
         </span>
-        <span className="font-body text-[10px] font-medium tracking-[0.15em] text-emerald-400/60 uppercase mt-0.5">
+        <span className="font-body text-[10px] font-medium tracking-[0.15em] text-brand-primary-light/60 uppercase mt-0.5">
           Admin Console
         </span>
       </div>
@@ -236,10 +236,10 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
         ))}
       </nav>
 
-      <div className="border-t border-emerald-900/40 p-3">
+      <div className="border-t border-brand-primary/40 p-3">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-md px-3 py-2 font-body text-sm text-emerald-100/70 hover:bg-emerald-800/30 hover:text-emerald-50 transition-colors"
+          className="flex items-center gap-2.5 rounded-md px-3 py-2 font-body text-sm text-brand-primary-lighter/70 hover:bg-brand-primary/30 hover:text-brand-primary-lighter transition-colors"
         >
           <LogOut className="h-3.5 w-3.5 shrink-0" />
           Back to Platform
@@ -251,7 +251,7 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
 
 export function AdminSidebar({ adminRole }: Readonly<{ adminRole: AdminRole }>) {
   return (
-    <ResponsiveSidebar className="border-0 bg-emerald-950">
+    <ResponsiveSidebar className="border-0 bg-brand-primary-dark">
       <SidebarContent adminRole={adminRole} />
     </ResponsiveSidebar>
   );

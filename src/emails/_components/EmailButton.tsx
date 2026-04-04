@@ -1,4 +1,5 @@
 import { Section } from "@react-email/components";
+import { BRAND_PRIMARY } from "@/emails/_constants/colors";
 
 type Props = Readonly<{
   href: string;
@@ -9,7 +10,7 @@ type Props = Readonly<{
 export function EmailButton({ href, children, variant = "primary" }: Props) {
   const primaryStyle: React.CSSProperties = {
     display: "inline-block",
-    backgroundColor: "#1B4D3E",
+    backgroundColor: BRAND_PRIMARY,
     color: "#FFFFFF",
     padding: "12px 24px",
     borderRadius: "8px",
@@ -21,8 +22,8 @@ export function EmailButton({ href, children, variant = "primary" }: Props) {
   const secondaryStyle: React.CSSProperties = {
     display: "inline-block",
     backgroundColor: "transparent",
-    color: "#1B4D3E",
-    border: "2px solid #1B4D3E",
+    color: BRAND_PRIMARY,
+    border: `2px solid ${BRAND_PRIMARY}`,
     padding: "12px 24px",
     borderRadius: "8px",
     textDecoration: "none",

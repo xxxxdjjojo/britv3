@@ -32,11 +32,11 @@ async function PageContent(
       <div className="flex items-center gap-3">
         <Link
           href={`/dashboard/landlord/properties/${propertyId}/maintenance`}
-          className="text-sm text-[--color-on-surface-variant] hover:text-on-surface dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-sm text-[--color-on-surface-variant] hover:text-on-surface dark:text-neutral-400 dark:hover:text-neutral-200"
         >
           &larr; Back
         </Link>
-        <h1 className="text-2xl font-bold text-on-surface dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-on-surface dark:text-neutral-100">
           New Maintenance Request
         </h1>
       </div>

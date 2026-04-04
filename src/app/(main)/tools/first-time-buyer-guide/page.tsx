@@ -73,7 +73,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "Bonus is paid on completion, not exchange",
       "Property must be \u00a3250,000 or less (or \u00a3450,000 in London)",
     ],
-    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    color: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
   },
   {
     icon: Landmark,
@@ -88,7 +88,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "25% penalty for withdrawals not used for first home or retirement",
     ],
     color:
-      "bg-brand-primary-lighter text-[--color-brand-primary-light] dark:bg-emerald-900/30 dark:text-emerald-400",
+      "bg-brand-primary-lighter text-brand-primary-light dark:bg-brand-primary/20 dark:text-brand-primary-light",
   },
   {
     icon: Users,
@@ -103,7 +103,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "Available on new-build and some resale properties",
     ],
     color:
-      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+      "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
   },
   {
     icon: Key,
@@ -118,7 +118,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
       "Flats: 50% discount after 3 years, +2% per year up to 70%",
     ],
     color:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+      "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
   },
 ];
 
@@ -377,7 +377,7 @@ export default function FirstTimeBuyerGuidePage() {
                 </div>
                 <h3 className="text-lg font-bold">Ready to Buy?</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Speak to an FCA-regulated mortgage broker who specialises in
                 first-time buyers. Get expert advice on the best deals and
                 schemes for you.
@@ -388,7 +388,7 @@ export default function FirstTimeBuyerGuidePage() {
               >
                 Find a Broker
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter/60">
                 Free, no-obligation advice
               </p>
             </div>

@@ -57,7 +57,7 @@ function DeltaBadge({ value, label }: { value: number; label: string }) {
   const isPositive = value >= 0;
   return (
     <div className="flex flex-col items-center">
-      <span className={`text-sm font-semibold ${isPositive ? "text-green-600" : "text-red-600"}`}>
+      <span className={`text-sm font-semibold ${isPositive ? "text-success" : "text-error"}`}>
         {isPositive ? "+" : ""}{value > 1000 ? formatGbp(value) : value.toFixed(1)}
         {Math.abs(value) <= 100 && "%"}
       </span>
@@ -188,32 +188,32 @@ export function BranchPerformanceCharts({
     {
       label: "Listings Sold",
       value: report.listings_sold_count.toLocaleString(),
-      icon: <TrendingUp className="size-5 text-blue-500" />,
-      color: "text-blue-600",
+      icon: <TrendingUp className="size-5 text-brand-accent" />,
+      color: "text-brand-accent",
     },
     {
       label: "Avg Time on Market",
       value: report.avg_time_on_market_days != null ? `${report.avg_time_on_market_days} days` : "—",
-      icon: <Clock className="size-5 text-amber-500" />,
-      color: "text-amber-600",
+      icon: <Clock className="size-5 text-warning" />,
+      color: "text-warning",
     },
     {
       label: "Total Revenue",
       value: formatGbp((report as Record<string, unknown>).total_revenue_pence as number ?? report.total_revenue),
-      icon: <PoundSterling className="size-5 text-green-500" />,
-      color: "text-green-600",
+      icon: <PoundSterling className="size-5 text-success" />,
+      color: "text-success",
     },
     {
       label: "Conversion Rate",
       value: `${(report.conversion_rate * 100).toFixed(1)}%`,
-      icon: <Percent className="size-5 text-purple-500" />,
-      color: "text-purple-600",
+      icon: <Percent className="size-5 text-brand-accent" />,
+      color: "text-brand-accent",
     },
     {
       label: "Client Satisfaction",
       value: (report.client_satisfaction ?? null) != null ? `${report.client_satisfaction.toFixed(1)} / 5` : "—",
-      icon: <Star className="size-5 text-yellow-500" />,
-      color: "text-yellow-600",
+      icon: <Star className="size-5 text-warning" />,
+      color: "text-warning",
     },
   ];
 
@@ -339,9 +339,9 @@ export function BranchPerformanceCharts({
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} width={30} />
                 <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="leads" fill="#3b82f6" radius={[3, 3, 0, 0]} name="Leads" />
-                <Bar dataKey="viewings" fill="#8b5cf6" radius={[3, 3, 0, 0]} name="Viewings" />
-                <Bar dataKey="deals" fill="#10b981" radius={[3, 3, 0, 0]} name="Deals" />
+                <Bar dataKey="leads" fill="var(--color-brand-accent)" radius={[3, 3, 0, 0]} name="Leads" />
+                <Bar dataKey="viewings" fill="var(--color-brand-accent)" radius={[3, 3, 0, 0]} name="Viewings" />
+                <Bar dataKey="deals" fill="var(--color-success)" radius={[3, 3, 0, 0]} name="Deals" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

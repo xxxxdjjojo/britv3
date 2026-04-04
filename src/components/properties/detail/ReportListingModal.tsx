@@ -103,7 +103,7 @@ export function ReportListingModal({ propertyId, isOpen, onClose }: Props) {
 
         {submitState === "success" ? (
           <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <CheckCircleIcon className="size-10 text-green-600" aria-hidden="true" />
+            <CheckCircleIcon className="size-10 text-success" aria-hidden="true" />
             <p className="text-sm font-medium text-foreground">
               Thank you for your report. We&apos;ll review it within 24 hours.
             </p>

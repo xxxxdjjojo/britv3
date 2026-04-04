@@ -273,7 +273,7 @@ export default function CheckInPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {status === "complete" && (
-            <Badge className="bg-emerald-600 text-white border-0 gap-1.5">
+            <Badge className="bg-success text-white border-0 gap-1.5">
               <CheckCircle2 className="size-3.5" />
               Complete
             </Badge>
@@ -295,7 +295,7 @@ export default function CheckInPage() {
         </div>
       )}
       {successMsg && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
+        <div className="flex items-center gap-3 rounded-xl border border-success/30 bg-success-light px-4 py-3 text-sm text-success dark:border-success/20 dark:bg-success/10 dark:text-success">
           <CheckCircle2 className="size-4 shrink-0" />
           {successMsg}
         </div>

@@ -66,7 +66,7 @@ export function PropertyDetailTabs({
             onClick={() => handleTabClick(sectionId)}
             className={`flex-shrink-0 py-2.5 px-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
               activeTab === id
-                ? "border-[#1B4D3E] text-[#1B4D3E]"
+                ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
             aria-current={activeTab === id ? "page" : undefined}

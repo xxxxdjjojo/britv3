@@ -20,8 +20,8 @@ export default function UnsubscribeClient({ token, status }: Props) {
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="max-w-md text-center space-y-4">
           <div className="flex justify-center">
-            <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
-              <MailX className="h-8 w-8 text-amber-600" />
+            <div className="h-16 w-16 rounded-full bg-warning-light flex items-center justify-center">
+              <MailX className="h-8 w-8 text-warning" />
             </div>
           </div>
           <h1 className="text-2xl font-semibold">Link Expired</h1>
@@ -56,8 +56,8 @@ export default function UnsubscribeClient({ token, status }: Props) {
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="max-w-md text-center space-y-4">
           <div className="flex justify-center">
-            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+            <div className="h-16 w-16 rounded-full bg-success-light flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
           </div>
           <h1 className="text-2xl font-semibold">Unsubscribed</h1>
@@ -100,8 +100,8 @@ export default function UnsubscribeClient({ token, status }: Props) {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-md text-center space-y-4">
         <div className="flex justify-center">
-          <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center">
-            <MailX className="h-8 w-8 text-slate-600" />
+          <div className="h-16 w-16 rounded-full bg-neutral-100 flex items-center justify-center">
+            <MailX className="h-8 w-8 text-neutral-600" />
           </div>
         </div>
         <h1 className="text-2xl font-semibold">Unsubscribe from emails?</h1>

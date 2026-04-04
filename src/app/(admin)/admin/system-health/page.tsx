@@ -19,9 +19,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 function StatusIcon({ status }: { status: ServiceStatus["status"] }) {
-  if (status === "up") return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
-  if (status === "degraded") return <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
-  return <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />;
+  if (status === "up") return <CheckCircle className="h-5 w-5 text-success dark:text-success" />;
+  if (status === "degraded") return <AlertCircle className="h-5 w-5 text-warning dark:text-warning" />;
+  return <XCircle className="h-5 w-5 text-error dark:text-error" />;
 }
 
 const SERVICE_ICONS = {
@@ -35,10 +35,10 @@ function ServiceCard({ service }: { service: ServiceStatus }) {
   const Icon = SERVICE_ICONS[service.name as keyof typeof SERVICE_ICONS] ?? Database;
   const statusPill =
     service.status === "up"
-      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+      ? "bg-success-light text-success dark:bg-success/20 dark:text-success"
       : service.status === "degraded"
-        ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
-        : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300";
+        ? "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning"
+        : "bg-error-light text-error dark:bg-error/20 dark:text-error";
 
   return (
     <div className="flex items-center justify-between rounded-xl bg-white p-5 shadow-[0_20px_50px_rgba(26,28,28,0.03)]">
@@ -102,10 +102,10 @@ async function PageContent() {
 
       <div className="mb-6 rounded-xl bg-brand-primary-dark p-6 text-white">
         <div className="flex items-center gap-3 mb-1">
-          <span className={`flex h-2.5 w-2.5 rounded-full ${allUp ? "bg-emerald-400" : anyDown ? "bg-red-400" : "bg-amber-400"} animate-pulse`} />
+          <span className={`flex h-2.5 w-2.5 rounded-full ${allUp ? "bg-success" : anyDown ? "bg-error" : "bg-warning"} animate-pulse`} />
           <p className="font-heading text-base font-bold">{overallStatus}</p>
         </div>
-        <p className="font-body text-xs text-emerald-200/60">
+        <p className="font-body text-xs text-brand-primary-lighter/60">
           Checked at {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
         </p>
       </div>

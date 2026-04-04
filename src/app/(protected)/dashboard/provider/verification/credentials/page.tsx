@@ -32,7 +32,7 @@ type ProviderDocRow = {
 
 const STATUS_CONFIG = {
   pending: { label: "Under Review", className: "bg-secondary-container/20 text-on-secondary-container border border-secondary-container/30" },
-  approved: { label: "Verified", className: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
+  approved: { label: "Verified", className: "bg-success-light text-success border border-success/20" },
   rejected: { label: "Rejected", className: "bg-error-container/20 text-on-error-container border border-error-container/30" },
   more_info_required: { label: "More Info Needed", className: "bg-secondary-container/20 text-on-secondary-container border border-secondary-container/30" },
 } as const;

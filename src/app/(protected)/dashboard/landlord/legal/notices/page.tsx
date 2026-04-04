@@ -114,7 +114,7 @@ const S8_GROUNDS = [
 function StatusBadge({ status }: Readonly<{ status: string }>) {
   const colours: Record<string, string> = {
     draft: "bg-[--color-surface-container-low] text-on-surface",
-    generated: "bg-blue-100 text-blue-700",
+    generated: "bg-brand-accent-light text-brand-accent",
     served: "bg-brand-primary-lighter text-brand-primary",
   };
   return (
@@ -357,7 +357,7 @@ function NoticesPageInner() {
               Section 21 — No-fault Notice
             </h2>
             {!preflightPassed && (
-              <p className="mb-4 rounded-md border border-amber-200 bg-brand-secondary-light px-3 py-2 text-xs text-[--color-brand-secondary-dark]">
+              <p className="mb-4 rounded-md border border-warning/30 bg-brand-secondary-light px-3 py-2 text-xs text-[--color-brand-secondary-dark]">
                 Complete the checklist above to unlock this form.
               </p>
             )}
@@ -379,7 +379,7 @@ function NoticesPageInner() {
                     ))}
                   </select>
                   {errorsS21.tenancy_id && (
-                    <p className="mt-1 text-xs text-red-600">
+                    <p className="mt-1 text-xs text-error">
                       {errorsS21.tenancy_id.message}
                     </p>
                   )}
@@ -396,7 +396,7 @@ function NoticesPageInner() {
                     className="mt-1 block w-full rounded-md border border-[--color-outline-variant] px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   {errorsS21.possession_date && (
-                    <p className="mt-1 text-xs text-red-600">
+                    <p className="mt-1 text-xs text-error">
                       {errorsS21.possession_date.message}
                     </p>
                   )}
@@ -414,7 +414,7 @@ function NoticesPageInner() {
                     className="mt-1 block w-full rounded-md border border-[--color-outline-variant] px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   {errorsS21.deposit_scheme_reference && (
-                    <p className="mt-1 text-xs text-red-600">
+                    <p className="mt-1 text-xs text-error">
                       {errorsS21.deposit_scheme_reference.message}
                     </p>
                   )}
@@ -433,7 +433,7 @@ function NoticesPageInner() {
                     </span>
                   </label>
                   {errorsS21.epc_provided && (
-                    <p className="text-xs text-red-600">
+                    <p className="text-xs text-error">
                       {errorsS21.epc_provided.message}
                     </p>
                   )}
@@ -450,7 +450,7 @@ function NoticesPageInner() {
                     </span>
                   </label>
                   {errorsS21.gas_safety_provided && (
-                    <p className="text-xs text-red-600">
+                    <p className="text-xs text-error">
                       {errorsS21.gas_safety_provided.message}
                     </p>
                   )}
@@ -463,12 +463,12 @@ function NoticesPageInner() {
                   <div
                     className={`rounded-md p-4 ${
                       s21Validation.valid
-                        ? "bg-green-50 border border-green-200"
-                        : "bg-amber-50 border border-amber-200"
+                        ? "bg-success-light border border-success/30"
+                        : "bg-warning-light border border-warning/30"
                     }`}
                   >
                     {s21Validation.valid ? (
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-success">
                         <span className="text-lg">✓</span>
                         <span className="text-sm font-medium">
                           All prerequisites met — you may generate the notice.
@@ -476,11 +476,11 @@ function NoticesPageInner() {
                       </div>
                     ) : (
                       <div>
-                        <p className="mb-2 text-sm font-medium text-amber-800">
+                        <p className="mb-2 text-sm font-medium text-warning">
                           Prerequisites not met — resolve the following before
                           generating:
                         </p>
-                        <ul className="list-disc pl-4 text-sm text-amber-700">
+                        <ul className="list-disc pl-4 text-sm text-warning">
                           {s21Validation.errors.map((err) => (
                             <li key={err}>{err}</li>
                           ))}
@@ -557,7 +557,7 @@ function NoticesPageInner() {
                 ))}
               </select>
               {errorsS8.tenancy_id && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-error">
                   {errorsS8.tenancy_id.message}
                 </p>
               )}
@@ -581,7 +581,7 @@ function NoticesPageInner() {
                 ))}
               </div>
               {errorsS8.grounds && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-error">
                   {errorsS8.grounds.message}
                 </p>
               )}
@@ -601,7 +601,7 @@ function NoticesPageInner() {
                   className="mt-1 block w-full rounded-md border border-[--color-outline-variant] px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {errorsS8.arrears_amount && (
-                  <p className="mt-1 text-xs text-red-600">
+                  <p className="mt-1 text-xs text-error">
                     {errorsS8.arrears_amount.message}
                   </p>
                 )}
@@ -611,7 +611,7 @@ function NoticesPageInner() {
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800 disabled:opacity-50"
+              className="rounded-md bg-warning px-4 py-2 text-sm font-medium text-white hover:bg-warning/90 disabled:opacity-50"
             >
               {submitting ? "Creating..." : "Create Section 8 Notice"}
             </button>
@@ -619,8 +619,8 @@ function NoticesPageInner() {
 
           {/* PDF download after S8 notice created */}
           {createdNotice?.notice_type === "section_8" && (
-            <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4">
-              <p className="mb-3 text-sm font-medium text-amber-800">
+            <div className="mt-6 rounded-md border border-warning/30 bg-warning-light p-4">
+              <p className="mb-3 text-sm font-medium text-warning">
                 Section 8 notice created.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -639,7 +639,7 @@ function NoticesPageInner() {
                 </PDFErrorBoundary>
                 <button
                   onClick={() => void markServed(createdNotice.id)}
-                  className="rounded-md border border-amber-700 px-4 py-2 text-sm font-medium text-amber-700"
+                  className="rounded-md border border-warning px-4 py-2 text-sm font-medium text-warning"
                 >
                   Mark as Served
                 </button>

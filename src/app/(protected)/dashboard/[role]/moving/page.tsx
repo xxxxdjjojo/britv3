@@ -147,7 +147,7 @@ function ChecklistRow({
       className="flex w-full items-start gap-3 rounded-md px-2 py-2 text-left transition-colors hover:bg-muted/50 disabled:opacity-60"
     >
       {item.is_completed ? (
-        <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-500" />
+        <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success" />
       ) : (
         <Circle className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
       )}
@@ -207,7 +207,7 @@ function PhaseGroup({
         <span
           className={[
             "text-xs font-medium tabular-nums",
-            allDone ? "text-green-600 dark:text-green-400" : "text-muted-foreground",
+            allDone ? "text-success dark:text-success" : "text-muted-foreground",
           ].join(" ")}
         >
           {completedCount}/{items.length} complete
@@ -383,7 +383,7 @@ export default function MovingChecklistPage() {
             <span className="text-sm font-medium">
               {completedCount} of {totalCount} items complete
             </span>
-            <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+            <span className="text-sm font-semibold text-success dark:text-success">
               {progressPct}%
             </span>
           </div>

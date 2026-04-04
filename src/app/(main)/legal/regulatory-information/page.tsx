@@ -48,7 +48,7 @@ export default function RegulatoryInformationPage() {
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
       {/* Purple callout */}
-      <div className="mb-8 rounded-xl bg-purple-50 dark:bg-purple-900/20 p-4 ring-1 ring-purple-200/60 dark:ring-purple-700/60 font-body text-sm text-purple-800 dark:text-purple-300">
+      <div className="mb-8 rounded-xl bg-brand-accent-light dark:bg-brand-accent/20 p-4 ring-1 ring-brand-accent/30 dark:ring-brand-accent/30 font-body text-sm text-brand-accent dark:text-brand-accent">
         Britestate is a technology platform, not a regulated financial services firm. We act as an
         introducer only and do not provide financial, legal, or surveying advice. This page explains
         our regulatory position and your consumer rights.

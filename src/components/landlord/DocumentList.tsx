@@ -28,9 +28,9 @@ const STATUS_CONFIG: Record<
   ExpiryStatus,
   { color: string; label: string }
 > = {
-  valid: { color: "bg-green-500", label: "Valid" },
-  expiring: { color: "bg-amber-500", label: "Expiring Soon" },
-  expired: { color: "bg-red-500", label: "Expired" },
+  valid: { color: "bg-success", label: "Valid" },
+  expiring: { color: "bg-warning", label: "Expiring Soon" },
+  expired: { color: "bg-error", label: "Expired" },
   none: { color: "", label: "" },
 };
 

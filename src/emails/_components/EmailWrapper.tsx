@@ -1,4 +1,5 @@
 import { Html, Head, Body, Container } from "@react-email/components";
+import { NEUTRAL_50 } from "@/emails/_constants/colors";
 
 type Props = Readonly<{ children: React.ReactNode; previewText?: string }>;
 
@@ -8,7 +9,7 @@ export function EmailWrapper({ children, previewText }: Props) {
       <Head />
       <Body
         style={{
-          backgroundColor: "#F8F8FA",
+          backgroundColor: NEUTRAL_50,
           fontFamily: "Inter, ui-sans-serif, system-ui",
           margin: "0",
           padding: "40px 0",

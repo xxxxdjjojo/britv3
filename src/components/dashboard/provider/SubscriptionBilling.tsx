@@ -141,14 +141,14 @@ function FinancialBento() {
       {/* Large featured card — Available to Withdraw */}
       <div className="md:col-span-2 lg:col-span-2 bg-white p-8 rounded-2xl border border-border shadow-sm relative overflow-hidden flex flex-col justify-between">
         <div className="relative z-10">
-          <span className="text-emerald-900 text-xs font-bold uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-lg">
+          <span className="text-brand-primary text-xs font-bold uppercase tracking-widest bg-brand-primary-lighter px-2.5 py-1 rounded-lg">
             Available to Withdraw
           </span>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-5xl font-extrabold text-foreground tracking-tighter">
               £12,450.80
             </span>
-            <span className="text-emerald-600 font-bold flex items-center text-sm">
+            <span className="text-success font-bold flex items-center text-sm">
               <svg
                 className="size-4"
                 fill="none"
@@ -190,13 +190,13 @@ function FinancialBento() {
           </button>
         </div>
         {/* Decorative background element */}
-        <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-50 pointer-events-none" />
+        <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-brand-primary-lighter rounded-full blur-3xl opacity-50 pointer-events-none" />
       </div>
 
       {/* Pending Payments */}
       <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
         <div>
-          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 mb-4">
+          <div className="w-10 h-10 rounded-full bg-warning-light flex items-center justify-center text-warning mb-4">
             <svg
               className="size-5"
               fill="none"
@@ -220,7 +220,7 @@ function FinancialBento() {
       {/* Tax Estimate */}
       <div className="bg-white p-6 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
         <div>
-          <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 mb-4">
+          <div className="w-10 h-10 rounded-full bg-error-light flex items-center justify-center text-error mb-4">
             <svg
               className="size-5"
               fill="none"
@@ -287,8 +287,8 @@ function RevenueAndPayoutSection() {
                   bar.dark
                     ? "bg-brand-primary-dark group-hover:bg-brand-primary"
                     : bar.bold
-                      ? "bg-emerald-200 group-hover:bg-emerald-300"
-                      : "bg-emerald-100 group-hover:bg-emerald-200"
+                      ? "bg-brand-primary-light/30 group-hover:bg-brand-primary-light/40"
+                      : "bg-success-light group-hover:bg-brand-primary-light/30"
                 }`}
                 style={{ height: `${bar.heightPct}%` }}
               />
@@ -309,11 +309,11 @@ function RevenueAndPayoutSection() {
         <h3 className="font-bold text-lg mb-5 font-heading">Payout Method</h3>
         <div className="bg-white/10 border border-white/20 rounded-xl p-4 mb-5">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xs text-emerald-200 uppercase tracking-widest font-bold">
+            <span className="text-xs text-brand-primary-lighter uppercase tracking-widest font-bold">
               Linked Bank Account
             </span>
             <svg
-              className="size-5 text-emerald-300"
+              className="size-5 text-brand-primary-light"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -332,21 +332,21 @@ function RevenueAndPayoutSection() {
             </div>
             <div>
               <p className="font-bold text-sm">•••• •••• 4492</p>
-              <p className="text-xs text-emerald-200">Business Direct Account</p>
+              <p className="text-xs text-brand-primary-lighter">Business Direct Account</p>
             </div>
           </div>
         </div>
         <div className="space-y-3 mb-5">
           <div className="flex justify-between text-sm">
-            <span className="text-emerald-200">Processing Fee</span>
+            <span className="text-brand-primary-lighter">Processing Fee</span>
             <span className="font-medium">£0.00 (Standard)</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-emerald-200">Arrival Time</span>
+            <span className="text-brand-primary-lighter">Arrival Time</span>
             <span className="font-medium">1-3 Business Days</span>
           </div>
         </div>
-        <button className="mt-auto w-full py-3.5 bg-white text-brand-primary-dark rounded-xl font-extrabold hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 text-sm">
+        <button className="mt-auto w-full py-3.5 bg-white text-brand-primary-dark rounded-xl font-extrabold hover:bg-brand-primary-lighter transition-all flex items-center justify-center gap-2 text-sm">
           Change Account
           <svg
             className="size-4"
@@ -386,11 +386,11 @@ function CurrentPlanBanner(
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold bg-emerald-50 text-emerald-900">
+              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold bg-brand-primary-lighter text-brand-primary">
                 {plan.name} Plan
               </span>
               {currentPlanId !== "free" && (
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                <span className="rounded-full bg-success-light px-2 py-0.5 text-xs font-medium text-success">
                   Active
                 </span>
               )}
@@ -405,7 +405,7 @@ function CurrentPlanBanner(
         </div>
 
         {currentPlanId !== "free" && (
-          <button className="rounded-xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
+          <button className="rounded-xl border border-error/20 px-4 py-2 text-sm font-medium text-error transition-colors hover:bg-error-light">
             Cancel Plan
           </button>
         )}
@@ -451,7 +451,7 @@ function PlanComparisonTable(
                   <th
                     key={plan.id}
                     className={`px-4 py-4 text-center ${
-                      isCurrent ? "bg-emerald-50" : plan.highlight ? "bg-muted/50" : ""
+                      isCurrent ? "bg-brand-primary-lighter" : plan.highlight ? "bg-muted/50" : ""
                     }`}
                   >
                     <div className="flex flex-col items-center gap-1">
@@ -470,7 +470,7 @@ function PlanComparisonTable(
                           : "Free"}
                       </span>
                       {plan.highlight && !isCurrent && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        <span className="rounded-full bg-warning-light px-2 py-0.5 text-xs font-medium text-warning">
                           Popular
                         </span>
                       )}
@@ -499,7 +499,7 @@ function PlanComparisonTable(
                       key={plan.id}
                       className={`px-4 py-3 text-center text-sm ${
                         isCurrent
-                          ? "bg-emerald-50 font-medium text-brand-primary-dark"
+                          ? "bg-brand-primary-lighter font-medium text-brand-primary-dark"
                           : "text-muted-foreground"
                       }`}
                     >
@@ -532,7 +532,7 @@ function PlanComparisonTable(
                 return (
                   <td
                     key={plan.id}
-                    className={`px-4 py-4 text-center ${isCurrent ? "bg-emerald-50" : ""}`}
+                    className={`px-4 py-4 text-center ${isCurrent ? "bg-brand-primary-lighter" : ""}`}
                   >
                     {isCurrent ? (
                       <span className="inline-flex items-center gap-1 text-sm font-medium text-brand-primary-dark">
@@ -574,7 +574,7 @@ function PlanComparisonTable(
           return (
             <div
               key={plan.id}
-              className={`p-5 ${isCurrent ? "border-l-4 border-brand-primary-dark bg-emerald-50" : ""}`}
+              className={`p-5 ${isCurrent ? "border-l-4 border-brand-primary-dark bg-brand-primary-lighter" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -696,11 +696,11 @@ type BillingStatus = "paid" | "pending" | "failed";
 function billingStatusConfig(status: BillingStatus): { pill: string; dot: string } {
   switch (status) {
     case "paid":
-      return { pill: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" };
+      return { pill: "bg-brand-primary-lighter text-success", dot: "bg-brand-primary-lighter0" };
     case "pending":
-      return { pill: "bg-amber-50 text-amber-700", dot: "bg-amber-500" };
+      return { pill: "bg-warning-light text-warning", dot: "bg-warning-light0" };
     case "failed":
-      return { pill: "bg-red-50 text-red-700", dot: "bg-red-500" };
+      return { pill: "bg-error-light text-error", dot: "bg-error-light0" };
   }
 }
 

@@ -51,11 +51,11 @@ function getNum(listing: Record<string, unknown>, key: string): number {
 function statusColor(status: string): string {
   switch (status) {
     case "active":
-      return "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400";
+      return "bg-success-light text-success dark:bg-success/10 dark:text-success";
     case "under_offer":
-      return "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400";
+      return "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning";
     case "for_sale":
-      return "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400";
+      return "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/10 dark:text-brand-accent";
     default:
       return "bg-muted text-muted-foreground";
   }

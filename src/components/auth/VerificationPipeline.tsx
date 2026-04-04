@@ -26,8 +26,8 @@ type ProgressData = {
 
 const levelColors: Record<VerificationLevel, string> = {
   basic: "bg-neutral-500 text-white",
-  standard: "bg-blue-500 text-white",
-  enhanced: "bg-purple-500 text-white",
+  standard: "bg-brand-accent text-white",
+  enhanced: "bg-brand-accent text-white",
   professional: "bg-brand-primary text-white",
 };
 

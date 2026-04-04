@@ -19,7 +19,7 @@ type ServicesTabProps = Readonly<{
 function PricingBadge({ pricing }: Readonly<{ pricing: ProviderPricing }>) {
   if (pricing.type === "hourly") {
     return (
-      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-success-light text-success dark:bg-success/10 dark:text-success/80">
         £{pricing.amount}/{pricing.unit}
       </span>
     );

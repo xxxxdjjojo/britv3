@@ -34,7 +34,7 @@ function ReadOnlyReview({ review }: Readonly<{ review: ReviewRow }>) {
               key={n}
               className={`size-4 ${
                 n <= review.overall_rating
-                  ? "fill-amber-400 text-amber-400"
+                  ? "fill-warning text-warning"
                   : "fill-neutral-200 text-neutral-200"
               }`}
             />
@@ -112,7 +112,7 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
 
       {/* Guidelines */}
       <div className="flex items-start gap-3 rounded-xl bg-warning-light px-4 py-3 text-sm text-warning">
-        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-500" />
+        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
         <p>
           <strong>Your response is public and cannot be edited.</strong> Keep it
           professional and address the client&apos;s feedback constructively.

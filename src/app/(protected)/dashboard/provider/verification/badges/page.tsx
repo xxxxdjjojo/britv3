@@ -212,7 +212,7 @@ export default async function BadgesPage() {
                       key={badge.id}
                       className="group relative bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-[0_20px_50px_rgba(26,28,28,0.05)] transition-all duration-300 cursor-help"
                     >
-                      <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-16 h-16 bg-success-light rounded-full flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="28"
@@ -358,7 +358,7 @@ export default async function BadgesPage() {
                   {activeBadges.slice(0, 3).map((badge) => (
                     <div
                       key={badge.id}
-                      className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-primary"
+                      className="w-8 h-8 rounded-full bg-success-light flex items-center justify-center text-primary"
                       title={badge.badge_label}
                     >
                       <svg
@@ -466,8 +466,8 @@ export default async function BadgesPage() {
                           Expired
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full text-xs font-semibold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span className="inline-flex items-center gap-1.5 text-success bg-success-light px-2.5 py-1 rounded-full text-xs font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-success-light0" />
                           Active
                         </span>
                       )}

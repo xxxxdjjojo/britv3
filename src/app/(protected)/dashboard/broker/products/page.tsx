@@ -53,8 +53,8 @@ const RATE_TYPE_LABELS: Record<RateType, string> = {
 
 const RATE_TYPE_CLASSES: Record<RateType, string> = {
   fixed: "bg-brand-primary-lighter text-brand-primary",
-  variable: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  tracker: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  variable: "bg-warning-light text-warning dark:bg-warning/20 dark:text-warning",
+  tracker: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent",
 };
 
 const formatCurrency = (value: number) =>

@@ -87,7 +87,7 @@ function SimilarPropertyCard({
   return (
     <Link
       href={href}
-      className="group flex gap-3 rounded-lg border bg-card p-3 hover:border-[color:var(--brand-primary,#1B4D3E)] transition-colors"
+      className="group flex gap-3 rounded-lg border bg-card p-3 hover:border-brand-primary transition-colors"
     >
       {/* Thumbnail */}
       <div className="relative size-16 rounded-md overflow-hidden shrink-0 bg-muted">
@@ -112,7 +112,7 @@ function SimilarPropertyCard({
         <p className="text-xs font-semibold text-foreground truncate">{row.title}</p>
         <p className="text-xs text-muted-foreground truncate">{row.address_line1}, {row.city}</p>
         <p className="text-xs">
-          <span className="font-semibold" style={{ color: "var(--brand-primary, #1B4D3E)" }}>
+          <span className="font-semibold text-brand-primary">
             {formatPrice(row.price, listingType)}
           </span>
           {row.bedrooms > 0 && (

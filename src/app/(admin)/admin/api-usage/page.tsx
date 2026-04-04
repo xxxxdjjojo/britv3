@@ -118,7 +118,7 @@ async function PageContent() {
             </div>
             <div className="p-4 rounded-lg border border-neutral-200 bg-white">
               <p className="text-xs text-neutral-500 mb-1">Rate-limited IPs</p>
-              <p className="text-2xl font-semibold text-red-600">
+              <p className="text-2xl font-semibold text-error">
                 {stats.rateLimitedIps.length}
               </p>
             </div>

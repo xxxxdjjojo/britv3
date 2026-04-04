@@ -4,6 +4,14 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_400,
+  NEUTRAL_200,
+  NEUTRAL_50,
+} from "@/emails/_constants/colors";
 
 const steps = [
   {
@@ -34,7 +42,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
           style={{
             fontSize: "28px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 12px 0",
             lineHeight: "1.3",
           }}
@@ -44,7 +52,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
         <Text
           style={{
             fontSize: "16px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 32px 0",
             lineHeight: "1.6",
           }}
@@ -56,7 +64,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
           style={{
             fontSize: "14px",
             fontWeight: "600",
-            color: "#0A0A0B",
+            color: NEUTRAL_950,
             margin: "0 0 16px 0",
             textTransform: "uppercase",
             letterSpacing: "0.5px",
@@ -73,9 +81,9 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
               alignItems: "flex-start",
               marginBottom: "16px",
               padding: "16px",
-              backgroundColor: "#F8F8FA",
+              backgroundColor: NEUTRAL_50,
               borderRadius: "8px",
-              border: "1px solid #E2E2E8",
+              border: `1px solid ${NEUTRAL_200}`,
             }}
           >
             <div
@@ -83,7 +91,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
                 width: "32px",
                 height: "32px",
                 borderRadius: "50%",
-                backgroundColor: "#1B4D3E",
+                backgroundColor: BRAND_PRIMARY,
                 color: "#FFFFFF",
                 fontSize: "14px",
                 fontWeight: "700",
@@ -103,7 +111,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
                 style={{
                   fontSize: "14px",
                   fontWeight: "600",
-                  color: "#0A0A0B",
+                  color: NEUTRAL_950,
                   margin: "0 0 4px 0",
                   lineHeight: "1.4",
                 }}
@@ -113,7 +121,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
               <Text
                 style={{
                   fontSize: "13px",
-                  color: "#5E5E6A",
+                  color: NEUTRAL_600,
                   margin: "0",
                   lineHeight: "1.5",
                 }}
@@ -133,7 +141,7 @@ export function WelcomeEmail({ firstName, loginUrl }: Readonly<WelcomeEmailProps
         <Text
           style={{
             fontSize: "13px",
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             margin: "16px 0 0 0",
             textAlign: "center",
           }}

@@ -11,7 +11,7 @@ export function AIDraftBadge({ className }: AIDraftBadgeProps) {
     <Badge
       variant="outline"
       className={cn(
-        "border-amber-300 text-amber-700 dark:border-amber-600 dark:text-amber-400",
+        "border-warning/30 text-warning dark:border-warning dark:text-warning",
         className,
       )}
     >

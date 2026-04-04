@@ -26,7 +26,7 @@ export async function RenovationROIPanel({ property, supabase }: Props) {
     <section aria-labelledby="roi-heading" className="space-y-4">
       <h2
         id="roi-heading"
-        className="font-semibold text-xl text-[#1B4D3E]"
+        className="font-semibold text-xl text-brand-primary"
         style={{ fontFamily: "var(--font-plus-jakarta-sans, 'Plus Jakarta Sans', sans-serif)" }}
       >
         Renovation ROI Estimates
@@ -34,18 +34,18 @@ export async function RenovationROIPanel({ property, supabase }: Props) {
 
       {estimate === null ? (
         /* Graceful unavailable state — not an error */
-        <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-6 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-6 text-center">
+          <p className="text-sm text-neutral-500">
             ROI data temporarily unavailable for this property.
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-neutral-400">
             Estimates are generated using Land Registry data. Please check back later.
           </p>
         </div>
       ) : (
         <>
           {estimate.source === "fallback" && estimate.fallback_reason && (
-            <p className="text-xs text-gray-400 italic">
+            <p className="text-xs text-neutral-400 italic">
               Showing benchmark estimates (AI analysis unavailable).
             </p>
           )}

@@ -37,21 +37,21 @@ const WEAKEST_AREA_CONFIG = {
 } as const;
 
 function getScoreColor(score: number): string {
-  if (score > 75) return "text-emerald-500";
-  if (score >= 50) return "text-amber-500";
-  return "text-red-500";
+  if (score > 75) return "text-success";
+  if (score >= 50) return "text-warning";
+  return "text-error";
 }
 
 function getStrokeColor(score: number): string {
-  if (score > 75) return "stroke-emerald-500";
-  if (score >= 50) return "stroke-amber-500";
-  return "stroke-red-500";
+  if (score > 75) return "stroke-success";
+  if (score >= 50) return "stroke-warning";
+  return "stroke-error";
 }
 
 function getTrackColor(score: number): string {
-  if (score > 75) return "stroke-emerald-100 dark:stroke-emerald-900/30";
-  if (score >= 50) return "stroke-amber-100 dark:stroke-amber-900/30";
-  return "stroke-red-100 dark:stroke-red-900/30";
+  if (score > 75) return "stroke-success-light dark:stroke-success/10";
+  if (score >= 50) return "stroke-warning-light dark:stroke-warning/10";
+  return "stroke-error-light dark:stroke-error/10";
 }
 
 function ScoreRing({ score }: Readonly<{ score: number }>) {
@@ -93,7 +93,7 @@ function ScoreRing({ score }: Readonly<{ score: number }>) {
         >
           {score}
         </span>
-        <span className="text-xs font-medium text-slate-400">/ 100</span>
+        <span className="text-xs font-medium text-neutral-500">/ 100</span>
       </div>
     </div>
   );
@@ -111,25 +111,25 @@ function SubScoreRow({ icon: Icon, label, score, max }: SubScoreRowProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <Icon className="size-4 shrink-0 text-slate-400" />
+      <Icon className="size-4 shrink-0 text-neutral-500" />
       <div className="flex-1">
         <div className="mb-1 flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+          <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
             {label}
           </span>
-          <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
+          <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100">
             {score}/{max}
           </span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-900">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500",
               pct > 75
-                ? "bg-emerald-500"
+                ? "bg-success"
                 : pct >= 50
-                  ? "bg-amber-500"
-                  : "bg-red-500",
+                  ? "bg-warning"
+                  : "bg-error",
             )}
             style={{ width: `${pct}%` }}
           />
@@ -143,19 +143,19 @@ export function HealthScoreCard({ score }: HealthScoreCardProps) {
   const weakest = WEAKEST_AREA_CONFIG[score.weakest_area];
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-900 dark:bg-neutral-900">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+        <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
           Property Health Score
         </h3>
         <span
           className={cn(
             "rounded-lg px-2 py-0.5 text-xs font-bold",
             score.total_score > 75
-              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+              ? "bg-success-light text-success dark:bg-success/10 dark:text-success"
               : score.total_score >= 50
-                ? "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
-                : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400",
+                ? "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning"
+                : "bg-error-light text-error dark:bg-error/10 dark:text-error",
           )}
         >
           {score.total_score > 75
@@ -203,15 +203,15 @@ export function HealthScoreCard({ score }: HealthScoreCardProps) {
       {score.total_score < 100 && (
         <Link
           href={weakest.href}
-          className="mt-4 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 transition-colors hover:border-[#1B4D3E]/20 hover:bg-[#1B4D3E]/5 dark:border-slate-800 dark:bg-slate-800/50 dark:hover:border-[#1B4D3E]/40"
+          className="mt-4 flex items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 transition-colors hover:border-brand-primary/20 hover:bg-brand-primary/5 dark:border-neutral-900 dark:bg-neutral-900/50 dark:hover:border-brand-primary/40"
         >
           <div>
-            <p className="text-xs font-bold text-slate-600 dark:text-slate-300">
+            <p className="text-xs font-bold text-neutral-600 dark:text-neutral-300">
               Improve: {weakest.label}
             </p>
-            <p className="text-xs text-slate-400">{weakest.tip}</p>
+            <p className="text-xs text-neutral-500">{weakest.tip}</p>
           </div>
-          <ArrowRight className="size-4 shrink-0 text-[#1B4D3E]" />
+          <ArrowRight className="size-4 shrink-0 text-brand-primary" />
         </Link>
       )}
     </div>

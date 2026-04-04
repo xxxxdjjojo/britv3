@@ -82,7 +82,7 @@ export function ApplicationPipelineCard({
     <div className="mb-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-3.5 shadow-sm hover:shadow-md hover:border-brand-primary/30 transition-all duration-150">
       {/* Header: avatar + name */}
       <div className="flex items-start gap-2.5">
-        <div className="size-8 shrink-0 rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+        <div className="size-8 shrink-0 rounded-full bg-[color:var(--color-brand-primary-lighter)] dark:bg-[color:var(--color-brand-primary)]/20 text-[color:var(--color-brand-primary)] dark:text-brand-primary flex items-center justify-center font-bold text-xs">
           {initials}
         </div>
         <div className="min-w-0 flex-1">
@@ -139,7 +139,7 @@ export function ApplicationPipelineCard({
           asChild
           variant="outline"
           size="sm"
-          className="h-7 text-xs border-[color:var(--color-brand-primary)]/30 text-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-lighter)] hover:text-[color:var(--color-brand-primary)] dark:border-emerald-800/50 dark:text-emerald-400"
+          className="h-7 text-xs border-[color:var(--color-brand-primary)]/30 text-[color:var(--color-brand-primary)] hover:bg-[color:var(--color-brand-primary-lighter)] hover:text-[color:var(--color-brand-primary)] dark:border-brand-primary/30 dark:text-brand-primary"
         >
           <Link href={`/dashboard/landlord/tenants/${application.id}`}>
             Review
@@ -149,7 +149,7 @@ export function ApplicationPipelineCard({
         {onMoveToNextStage && (
           <button
             onClick={onMoveToNextStage}
-            className="text-xs text-[color:var(--color-brand-primary)] dark:text-emerald-400 font-medium hover:underline"
+            className="text-xs text-[color:var(--color-brand-primary)] dark:text-brand-primary font-medium hover:underline"
           >
             Move stage
           </button>

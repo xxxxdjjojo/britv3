@@ -369,7 +369,7 @@ export function InvestmentCalculator({ initialPrice }: InvestmentCalculatorProps
               </li>
               <li className="flex justify-between border-t border-neutral-100 pt-3 text-base dark:border-neutral-800">
                 <span className="font-bold text-neutral-900 dark:text-white">Net ROI Projection</span>
-                <span className={`font-black ${results.netRoiProjection >= 0 ? "text-brand-primary" : "text-red-500"}`}>
+                <span className={`font-black ${results.netRoiProjection >= 0 ? "text-brand-primary" : "text-error"}`}>
                   {formatCurrency(results.netRoiProjection)}
                 </span>
               </li>

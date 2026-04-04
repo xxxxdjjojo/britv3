@@ -100,12 +100,12 @@ export function Step4Description({ listing, listingId }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">AI Description</h2>
-            <p className="text-slate-500 text-sm mt-1">Let AI write your listing description, or write your own</p>
+            <h2 className="text-xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">AI Description</h2>
+            <p className="text-neutral-500 text-sm mt-1">Let AI write your listing description, or write your own</p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-700">Tone</label>
+            <label className="text-sm font-semibold text-neutral-600">Tone</label>
             <div className="flex gap-3">
               {TONES.map(({ key, label, desc }) => (
                 <button
@@ -115,8 +115,8 @@ export function Step4Description({ listing, listingId }: Props) {
                   className={cn(
                     "flex-1 py-3 px-3 rounded-xl border-2 text-left transition-all duration-150",
                     tone === key
-                      ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
-                      : "border-slate-200 text-slate-600 hover:border-slate-300",
+                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                      : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
                   )}
                 >
                   <p className="text-sm font-bold">{label}</p>
@@ -127,10 +127,10 @@ export function Step4Description({ listing, listingId }: Props) {
           </div>
 
           <div className="flex items-center justify-between">
-            <label className="text-sm font-semibold text-slate-700">Description</label>
+            <label className="text-sm font-semibold text-neutral-600">Description</label>
             <div className="flex items-center gap-3">
               {attemptsRemaining > 0 && (
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-neutral-400">
                   {attemptsRemaining} generation{attemptsRemaining !== 1 ? "s" : ""} left
                 </span>
               )}
@@ -141,8 +141,8 @@ export function Step4Description({ listing, listingId }: Props) {
                 className={cn(
                   "flex items-center gap-1.5 text-sm font-bold transition-colors",
                   attemptsUsed >= 3
-                    ? "text-slate-300 cursor-not-allowed"
-                    : "text-[#1B4D3E] hover:text-[#2D7A5F]",
+                    ? "text-neutral-300 cursor-not-allowed"
+                    : "text-brand-primary hover:text-brand-primary-light",
                 )}
               >
                 <Sparkles size={16} />
@@ -157,24 +157,24 @@ export function Step4Description({ listing, listingId }: Props) {
               onChange={(e) => setDescription(e.target.value.slice(0, MAX_CHARS))}
               rows={10}
               placeholder="Write your property description here, or use AI to generate one above..."
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+              className="w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               style={{ minHeight: 300 }}
             />
             <div className="absolute bottom-3 right-3 flex items-center gap-2">
               {description.length > 50 && (
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-success-light text-success">
                   Good length
                 </span>
               )}
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-neutral-400">
                 {description.length}/{MAX_CHARS}
               </span>
             </div>
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-semibold text-slate-700">Key Selling Points</label>
-            <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-2">
+            <label className="text-sm font-semibold text-neutral-600">Key Selling Points</label>
+            <div className="bg-white rounded-xl border border-neutral-200 p-4 space-y-2">
               {keyPoints.map((point, i) => (
                 <div key={point.id} className="flex gap-2">
                   <input
@@ -182,13 +182,13 @@ export function Step4Description({ listing, listingId }: Props) {
                     value={point.value}
                     onChange={(e) => updateKeyPoint(point.id, e.target.value)}
                     placeholder={`e.g. ${["South-facing garden", "Walking distance to tube", "Recently refurbished kitchen"][i % 3]}`}
-                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                    className="flex-1 px-3 py-2 rounded-lg border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                   />
                   {keyPoints.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeKeyPoint(point.id)}
-                      className="p-2 text-slate-400 hover:text-red-500"
+                      className="p-2 text-neutral-400 hover:text-error"
                     >
                       ×
                     </button>
@@ -198,20 +198,20 @@ export function Step4Description({ listing, listingId }: Props) {
               <button
                 type="button"
                 onClick={addKeyPoint}
-                className="text-sm text-[#1B4D3E] font-semibold hover:underline"
+                className="text-sm text-brand-primary font-semibold hover:underline"
               >
                 + Add another point
               </button>
             </div>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-error text-sm">{error}</p>}
         </div>
 
         {/* Preview sidebar */}
         <div className="hidden lg:block">
-          <div className="sticky top-8 bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-            <p className="text-sm font-bold text-slate-700">Live Preview</p>
+          <div className="sticky top-8 bg-white rounded-2xl border border-neutral-200 p-5 space-y-4">
+            <p className="text-sm font-bold text-neutral-600">Live Preview</p>
             {listing?.photos?.[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -220,28 +220,28 @@ export function Step4Description({ listing, listingId }: Props) {
                 className="w-full rounded-xl aspect-video object-cover"
               />
             ) : (
-              <div className="w-full rounded-xl aspect-video bg-slate-100 flex items-center justify-center text-slate-300 text-xs">
+              <div className="w-full rounded-xl aspect-video bg-neutral-100 flex items-center justify-center text-neutral-300 text-xs">
                 No photo yet
               </div>
             )}
             <div>
-              <p className="text-xs text-slate-400">{listing?.postcode}</p>
-              <p className="text-sm font-bold text-slate-900 mt-0.5">
+              <p className="text-xs text-neutral-400">{listing?.postcode}</p>
+              <p className="text-sm font-bold text-neutral-900 mt-0.5">
                 {listing?.address_line_1 ?? "Your property address"}
               </p>
               {description ? (
-                <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-6">{description}</p>
+                <p className="text-xs text-neutral-600 mt-2 leading-relaxed line-clamp-6">{description}</p>
               ) : (
                 <div className="mt-2 space-y-1.5">
                   {[100, 80, 90, 60].map((w, i) => (
-                    <div key={i} className="h-2.5 bg-slate-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
+                    <div key={i} className="h-2.5 bg-neutral-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
                   ))}
                 </div>
               )}
             </div>
-            <div className="border-t border-slate-100 pt-4">
-              <p className="text-xs font-semibold text-slate-500">Expert Tip</p>
-              <p className="text-xs text-slate-400 mt-1">
+            <div className="border-t border-neutral-100 pt-4">
+              <p className="text-xs font-semibold text-neutral-500">Expert Tip</p>
+              <p className="text-xs text-neutral-400 mt-1">
                 Listings with 10+ photos receive 40% more enquiries. Add your best photo as the cover image.
               </p>
             </div>

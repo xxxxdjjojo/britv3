@@ -36,27 +36,27 @@ function getDaysRemaining(createdAt: string): number {
 }
 
 function SlaBadge({ createdAt, status }: { createdAt: string; status: string }) {
-  if (status === "fulfilled") return <span className="text-xs text-green-600 font-medium">Complete</span>;
+  if (status === "fulfilled") return <span className="text-xs text-success font-medium">Complete</span>;
 
   const days = getDaysRemaining(createdAt);
 
   if (days < 0) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 text-red-700 px-2.5 py-0.5 text-xs font-semibold">
+      <span className="inline-flex items-center gap-1 rounded-full bg-error-light text-error px-2.5 py-0.5 text-xs font-semibold">
         OVERDUE ({Math.abs(days)}d)
       </span>
     );
   }
   if (days <= 3) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 text-red-700 px-2.5 py-0.5 text-xs font-medium">
+      <span className="inline-flex items-center gap-1 rounded-full bg-error-light text-error px-2.5 py-0.5 text-xs font-medium">
         {days}d remaining
       </span>
     );
   }
   if (days <= 7) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-700 px-2.5 py-0.5 text-xs font-medium">
+      <span className="inline-flex items-center gap-1 rounded-full bg-warning-light text-warning px-2.5 py-0.5 text-xs font-medium">
         {days}d remaining
       </span>
     );

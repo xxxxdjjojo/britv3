@@ -45,7 +45,7 @@ export function StripeElementsProvider({ children, clientSecret, appearance }: P
 
   if (!stripePromise) {
     return (
-      <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-200">
+      <div className="rounded-lg border border-warning/20 bg-warning-light p-4 text-sm text-warning dark:border-warning/30 dark:bg-warning/10 dark:text-warning">
         Payment service is not configured. Please contact support.
       </div>
     );

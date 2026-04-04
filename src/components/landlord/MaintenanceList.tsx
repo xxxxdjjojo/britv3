@@ -2,10 +2,10 @@ import type { MaintenanceRequest } from "@/types/landlord";
 import { MaintenanceStatusBadge } from "./MaintenanceStatusBadge";
 
 const PRIORITY_STYLES: Record<string, string> = {
-  low: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  medium: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  high: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
-  emergency: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+  low: "bg-neutral-100 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-300",
+  medium: "bg-brand-accent-light text-brand-accent dark:bg-brand-accent/10 dark:text-brand-accent",
+  high: "bg-warning-light text-warning dark:bg-warning/10 dark:text-warning",
+  emergency: "bg-error-light text-error dark:bg-error/10 dark:text-error",
 };
 
 function PriorityBadge(props: Readonly<{ priority: string }>) {
@@ -24,8 +24,8 @@ export function MaintenanceList(
 ) {
   if (props.requests.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center dark:border-gray-700">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="rounded-lg border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-600">
+        <p className="text-sm text-neutral-500 dark:text-neutral-500">
           No maintenance requests
         </p>
       </div>
@@ -33,18 +33,18 @@ export function MaintenanceList(
   }
 
   return (
-    <div className="divide-y divide-gray-200 rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
+    <div className="divide-y divide-neutral-200 rounded-lg border border-neutral-200 dark:divide-neutral-600 dark:border-neutral-600">
       {props.requests.map((req) => (
         <a
           key={req.id}
           href={`maintenance/${req.id}`}
-          className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+          className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900"
         >
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p className="truncate text-sm font-medium text-neutral-900 dark:text-neutral-100">
               {req.title}
             </p>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
               {new Date(req.created_at).toLocaleDateString("en-GB", {
                 day: "numeric",
                 month: "short",

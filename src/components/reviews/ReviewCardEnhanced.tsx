@@ -106,12 +106,12 @@ export function ReviewCardEnhanced({
               </Badge>
             )}
             {review.is_incentivised && (
-              <Badge variant="outline" className="text-xs border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+              <Badge variant="outline" className="text-xs border-warning-light bg-warning-light text-warning dark:bg-warning/20 dark:text-warning">
                 Incentivised
               </Badge>
             )}
             {review.verification_status === "verified" && (
-              <Badge variant="outline" className="border-green-200 bg-green-50 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-400">
+              <Badge variant="outline" className="border-success-light bg-success-light text-xs text-success dark:bg-success/20 dark:text-success">
                 <ShieldCheck className="mr-1 size-3" />
                 Verified
               </Badge>
@@ -171,7 +171,7 @@ export function ReviewCardEnhanced({
             <Button
               variant="ghost"
               size="sm"
-              className={cn("h-7 px-2", userVote === true && "bg-green-50 text-green-700 dark:bg-green-900/20")}
+              className={cn("h-7 px-2", userVote === true && "bg-success-light text-success dark:bg-success/20")}
               onClick={() => handleVote(true)}
               disabled={votePending || isOwnReview}
               aria-label={`Helpful (${helpfulCount})`}
@@ -184,7 +184,7 @@ export function ReviewCardEnhanced({
             <Button
               variant="ghost"
               size="sm"
-              className={cn("h-7 px-2", userVote === false && "bg-red-50 text-red-700 dark:bg-red-900/20")}
+              className={cn("h-7 px-2", userVote === false && "bg-error-light text-error dark:bg-error/20")}
               onClick={() => handleVote(false)}
               disabled={votePending || isOwnReview}
               aria-label={`Not helpful (${notHelpfulCount})`}

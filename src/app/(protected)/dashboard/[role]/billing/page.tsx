@@ -29,11 +29,11 @@ type SubscriptionRow = {
 function statusConfig(status: string) {
   switch (status) {
     case "active":
-      return { label: "Active", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 ring-1 ring-green-200/60 dark:bg-green-950/40 dark:ring-green-800/60" };
+      return { label: "Active", icon: CheckCircle2, color: "text-success", bg: "bg-success-light ring-1 ring-success/20 dark:bg-success/10 dark:ring-success/30" };
     case "trialing":
-      return { label: "Trial", icon: Clock, color: "text-blue-600", bg: "bg-blue-50 ring-1 ring-blue-200/60 dark:bg-blue-950/40 dark:ring-blue-800/60" };
+      return { label: "Trial", icon: Clock, color: "text-brand-accent", bg: "bg-brand-accent-light ring-1 ring-brand-accent/20 dark:bg-brand-accent/10 dark:ring-brand-accent/30" };
     case "past_due":
-      return { label: "Past due", icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-50 ring-1 ring-orange-200/60 dark:bg-orange-950/40 dark:ring-orange-800/60" };
+      return { label: "Past due", icon: AlertCircle, color: "text-warning", bg: "bg-warning-light ring-1 ring-warning/20 dark:bg-warning/10 dark:ring-warning/30" };
     default:
       return { label: "No plan", icon: AlertCircle, color: "text-neutral-500", bg: "bg-muted/40 ring-1 ring-neutral-200/60 dark:ring-neutral-700/60" };
   }
@@ -165,8 +165,8 @@ export default async function BillingPage({
             <Link key={action.href} href={action.href}>
               <div className="h-full cursor-pointer rounded-xl bg-card p-4 shadow-sm ring-1 ring-neutral-200/60 transition-all hover:shadow-md dark:ring-neutral-700/60">
                 <div className="flex items-start gap-4">
-                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 p-2 dark:bg-emerald-900/20">
-                    <Icon className="text-brand-primary dark:text-emerald-400" size={18} />
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-lighter p-2 dark:bg-brand-primary/10">
+                    <Icon className="text-brand-primary dark:text-brand-primary-light" size={18} />
                   </div>
                   <div className="min-w-0">
                     <p className="font-heading text-sm font-semibold text-foreground">{action.label}</p>

@@ -105,15 +105,15 @@ export function Step1AddressType({ listing }: Props) {
     >
       <div className="space-y-8">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">
+          <h2 className="text-xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">
             Property Address
           </h2>
-          <p className="text-slate-500 text-sm mt-1">Start by entering your property&apos;s postcode</p>
+          <p className="text-neutral-500 text-sm mt-1">Start by entering your property&apos;s postcode</p>
         </div>
 
         {/* Postcode lookup */}
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-slate-700">Postcode</label>
+          <label className="text-sm font-semibold text-neutral-600">Postcode</label>
           <div className="flex gap-3">
             <input
               type="text"
@@ -121,39 +121,39 @@ export function Step1AddressType({ listing }: Props) {
               onChange={(e) => setPostcode(e.target.value.toUpperCase())}
               onKeyDown={(e) => { if (e.key === "Enter") void lookupPostcode(); }}
               placeholder="e.g. SW1A 1AA"
-              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+              className="flex-1 px-4 py-3 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
             />
             <button
               type="button"
               onClick={() => void lookupPostcode()}
               disabled={lookingUp}
-              className="px-5 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors disabled:opacity-50"
+              className="px-5 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors disabled:opacity-50"
             >
               {lookingUp ? "Looking up..." : "Find Address"}
             </button>
           </div>
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && <p className="text-error text-xs">{error}</p>}
 
           {(postcodeData || listing?.address_line_1) && (
-            <div className="mt-3 space-y-3 bg-slate-50 rounded-xl p-4">
+            <div className="mt-3 space-y-3 bg-neutral-50 rounded-xl p-4">
               <div>
-                <label className="text-xs font-semibold text-slate-600">Address Line 1</label>
+                <label className="text-xs font-semibold text-neutral-600">Address Line 1</label>
                 <input
                   type="text"
                   value={selectedAddress}
                   onChange={(e) => setSelectedAddress(e.target.value)}
                   placeholder="e.g. 14 Elm Road"
-                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-600">City / Town</label>
+                <label className="text-xs font-semibold text-neutral-600">City / Town</label>
                 <input
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="e.g. London"
-                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
             </div>
@@ -162,7 +162,7 @@ export function Step1AddressType({ listing }: Props) {
 
         {/* Property type grid */}
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-slate-700">Property Type</label>
+          <label className="text-sm font-semibold text-neutral-600">Property Type</label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {PROPERTY_TYPES.map(({ key, label, icon }) => (
               <button
@@ -172,8 +172,8 @@ export function Step1AddressType({ listing }: Props) {
                 className={cn(
                   "flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-sm font-semibold transition-all duration-150",
                   propertyType === key
-                    ? "border-[#1B4D3E] bg-[#1B4D3E]/5 text-[#1B4D3E]"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                    : "border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50",
                 )}
               >
                 <span className="text-2xl">{icon}</span>
@@ -185,12 +185,12 @@ export function Step1AddressType({ listing }: Props) {
 
         {/* Tenure */}
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+          <label className="text-sm font-semibold text-neutral-600 flex items-center gap-1.5">
             Tenure
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="inline-flex cursor-help">
-                  <Info size={14} className="text-slate-400" />
+                  <Info size={14} className="text-neutral-400" />
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs">
                   <p className="text-xs"><strong>Freehold:</strong> You own the property and land outright, indefinitely.</p>
@@ -208,8 +208,8 @@ export function Step1AddressType({ listing }: Props) {
                 className={cn(
                   "flex-1 py-3 rounded-xl border-2 text-sm font-semibold capitalize transition-all duration-150",
                   tenure === t
-                    ? "border-[#1B4D3E] bg-[#1B4D3E]/5 text-[#1B4D3E]"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300",
+                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                    : "border-neutral-200 text-neutral-600 hover:border-neutral-300",
                 )}
               >
                 {t}
@@ -219,8 +219,8 @@ export function Step1AddressType({ listing }: Props) {
 
           {tenure === "leasehold" && (
             <>
-              <div className="bg-slate-100 rounded-xl p-4">
-                <label className="text-xs font-semibold text-slate-600">Years Remaining on Lease</label>
+              <div className="bg-neutral-100 rounded-xl p-4">
+                <label className="text-xs font-semibold text-neutral-600">Years Remaining on Lease</label>
                 <input
                   type="number"
                   min={1}
@@ -228,13 +228,13 @@ export function Step1AddressType({ listing }: Props) {
                   value={leaseholdYears}
                   onChange={(e) => setLeaseholdYears(e.target.value)}
                   placeholder="e.g. 125"
-                  className="mt-2 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                  className="mt-2 w-full px-3 py-2.5 rounded-lg border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
               {leaseholdYears && parseInt(leaseholdYears) > 0 && parseInt(leaseholdYears) < 80 && (
-                <div className="mt-3 bg-amber-50 rounded-xl p-4 border border-amber-200">
-                  <p className="text-sm font-semibold text-amber-800">Short Lease Warning</p>
-                  <p className="text-xs text-amber-700 mt-1">
+                <div className="mt-3 bg-warning-light rounded-xl p-4 border border-warning/30">
+                  <p className="text-sm font-semibold text-warning">Short Lease Warning</p>
+                  <p className="text-xs text-warning mt-1">
                     Leases under 80 years can be difficult to mortgage and significantly affect
                     property value. The cost of lease extension increases substantially below 80
                     years due to &quot;marriage value&quot; provisions. Consider extending the lease

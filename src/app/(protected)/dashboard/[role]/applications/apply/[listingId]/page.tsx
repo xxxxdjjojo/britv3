@@ -138,7 +138,7 @@ export default function ApplyPage() {
         <CardContent>
           {/* Draft recovered banner */}
           {wasRecovered && (
-            <div className="mb-6 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+            <div className="mb-6 flex items-start gap-3 rounded-lg border border-brand-accent/20 bg-brand-accent-light p-4 text-sm text-brand-accent dark:border-brand-accent/30 dark:bg-brand-accent/10 dark:text-brand-accent">
               <Info className="size-4 mt-0.5 shrink-0" />
               <p>Draft recovered from your last session</p>
             </div>

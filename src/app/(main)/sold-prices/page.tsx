@@ -31,7 +31,7 @@ export default function SoldPricesIndexPage() {
   return (
     <>
       {/* Hero */}
-      <header className="bg-gradient-to-br from-primary via-primary to-[#003629] py-20 px-4 relative overflow-hidden">
+      <header className="bg-gradient-to-br from-primary via-primary to-brand-primary-dark py-20 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -mr-40 -mt-40 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full -ml-28 -mb-28 pointer-events-none" />
         <div className="max-w-4xl mx-auto text-center relative z-10">

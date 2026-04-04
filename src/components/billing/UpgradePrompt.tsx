@@ -39,10 +39,10 @@ export function UpgradePrompt({ feature, planDisplayName, role, message }: Props
   const billingUrl = `/dashboard/${role}/billing/checkout/subscription`;
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-6 py-10 text-center">
-      <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-amber-100">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-warning/20 bg-warning-light px-6 py-10 text-center">
+      <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-warning-light">
         <svg
-          className="size-6 text-amber-600"
+          className="size-6 text-warning"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}

@@ -159,7 +159,7 @@ export default async function MarketTrendsPage() {
                   kpi.trend === "up"
                     ? "text-[--color-success]"
                     : kpi.trend === "down"
-                      ? "text-red-600"
+                      ? "text-error"
                       : "text-[--color-on-surface-variant]"
                 }`}
               >
@@ -237,7 +237,7 @@ export default async function MarketTrendsPage() {
             {/* Hot Zones */}
             <div>
               <div className="mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-1 text-xs font-bold uppercase text-red-500">
+                <span className="flex items-center gap-1 text-xs font-bold uppercase text-error">
                   <Flame className="h-4 w-4" /> Hot Zones
                 </span>
                 <span className="text-xs font-medium text-[--color-on-surface-variant]">Fastest Growth</span>
@@ -260,7 +260,7 @@ export default async function MarketTrendsPage() {
             {/* Cold Zones */}
             <div className="border-t border-primary/5 pt-4">
               <div className="mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-1 text-xs font-bold uppercase text-blue-500">
+                <span className="flex items-center gap-1 text-xs font-bold uppercase text-brand-accent">
                   <Snowflake className="h-4 w-4" /> Cold Zones
                 </span>
                 <span className="text-xs font-medium text-[--color-on-surface-variant]">Stagnant</span>
@@ -272,7 +272,7 @@ export default async function MarketTrendsPage() {
                     className="flex items-center justify-between rounded-xl bg-primary/5 p-3"
                   >
                     <span className="text-sm font-semibold text-on-surface">{market.city}</span>
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-bold text-red-600">
+                    <span className="inline-flex items-center rounded-full bg-error-light px-2.5 py-0.5 text-sm font-bold text-error">
                       {market.change}
                     </span>
                   </div>
@@ -379,7 +379,7 @@ export default async function MarketTrendsPage() {
                 {regions.map((row) => (
                   <tr key={row.region} className="border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors">
                     <td className="py-2.5 font-medium text-on-surface">{row.region}</td>
-                    <td className="py-2.5 text-right font-semibold text-red-600">
+                    <td className="py-2.5 text-right font-semibold text-error">
                       {row.askingVsSoldGapFormatted}
                     </td>
                   </tr>
@@ -418,8 +418,8 @@ export default async function MarketTrendsPage() {
               <line className="text-primary/10" stroke="currentColor" strokeWidth="1" x1="0" x2="400" y1="0" y2="0" />
               <line className="text-primary/10" stroke="currentColor" strokeWidth="1" x1="0" x2="400" y1="50" y2="50" />
               <line className="text-primary/10" stroke="currentColor" strokeWidth="1" x1="0" x2="400" y1="100" y2="100" />
-              <path d="M0,40 C50,30 100,50 150,45 S250,20 300,35 S400,25 400,25" fill="none" stroke="#1B4D3E" strokeWidth="2" />
-              <path d="M0,50 C50,45 100,60 150,55 S250,35 300,45 S400,38 400,38" fill="none" stroke="#10b981" strokeWidth="2" />
+              <path d="M0,40 C50,30 100,50 150,45 S250,20 300,35 S400,25 400,25" fill="none" stroke="var(--color-brand-primary)" strokeWidth="2" />
+              <path d="M0,50 C50,45 100,60 150,55 S250,35 300,45 S400,38 400,38" fill="none" stroke="var(--color-success)" strokeWidth="2" />
             </svg>
             <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
               <span>Oct</span>
@@ -451,12 +451,12 @@ export default async function MarketTrendsPage() {
             >
               <defs>
                 <linearGradient id="areaGrad" x1="0%" x2="0%" y1="0%" y2="100%">
-                  <stop offset="0%" stopColor="#1B4D3E" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#1B4D3E" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--color-brand-primary)" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="var(--color-brand-primary)" stopOpacity="0" />
                 </linearGradient>
               </defs>
               <path d="M0,80 Q50,60 100,75 T200,50 T300,70 T400,40 L400,100 L0,100 Z" fill="url(#areaGrad)" />
-              <path d="M0,80 Q50,60 100,75 T200,50 T300,70 T400,40" fill="none" stroke="#1B4D3E" strokeWidth="3" />
+              <path d="M0,80 Q50,60 100,75 T200,50 T300,70 T400,40" fill="none" stroke="var(--color-brand-primary)" strokeWidth="3" />
             </svg>
             <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-[--color-on-surface-variant]">
               <span>Oct</span>

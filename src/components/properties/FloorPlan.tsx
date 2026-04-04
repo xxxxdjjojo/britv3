@@ -26,7 +26,7 @@ export function FloorPlan({ floors, className }: FloorPlanProps) {
     <>
       <div className={cn("bg-white rounded-2xl overflow-hidden shadow-sm", className)}>
         {/* Floor tabs */}
-        <div className="flex border-b border-[#e3e2e1]">
+        <div className="flex border-b border-neutral-200">
           {floors.map((floor, i) => (
             <button
               key={i}
@@ -34,8 +34,8 @@ export function FloorPlan({ floors, className }: FloorPlanProps) {
               className={cn(
                 "px-6 py-4 text-sm font-semibold transition-colors",
                 i === activeFloor
-                  ? "border-b-2 border-[#1B4D3E] text-[#1B4D3E]"
-                  : "text-[#404945] hover:bg-[#f4f3f2] transition-colors",
+                  ? "border-b-2 border-brand-primary text-brand-primary"
+                  : "text-neutral-600 hover:bg-neutral-100 transition-colors",
               )}
             >
               {floor.label}
@@ -58,17 +58,17 @@ export function FloorPlan({ floors, className }: FloorPlanProps) {
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3 py-16">
-              <div className="size-12 rounded-full bg-[#f4f3f2] flex items-center justify-center">
-                <Expand className="size-5 text-[#c0c9c3]" />
+              <div className="size-12 rounded-full bg-neutral-100 flex items-center justify-center">
+                <Expand className="size-5 text-neutral-300" />
               </div>
-              <span className="text-sm text-[#707974]">Floor plan not available</span>
+              <span className="text-sm text-neutral-500">Floor plan not available</span>
             </div>
           )}
 
           {/* Controls */}
           <div className="absolute bottom-4 right-4 flex gap-2">
             <button
-              className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-semibold text-[#1B4D3E] shadow hover:bg-white transition-colors"
+              className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-semibold text-brand-primary shadow hover:bg-white transition-colors"
               onClick={() => setLightboxOpen(true)}
             >
               <Expand className="size-3.5" />
@@ -78,13 +78,13 @@ export function FloorPlan({ floors, className }: FloorPlanProps) {
         </div>
 
         {/* Legend */}
-        <div className="px-8 pb-6 pt-4 flex flex-wrap gap-6 text-[#707974]">
+        <div className="px-8 pb-6 pt-4 flex flex-wrap gap-6 text-neutral-500">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#1B4D3E]" />
+            <div className="w-3 h-3 rounded-full bg-brand-primary" />
             <span className="text-[10px] font-medium uppercase tracking-wider">Interactive Viewpoint</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 border border-[#c0c9c3] rounded-sm" />
+            <div className="w-3 h-3 border border-neutral-300 rounded-sm" />
             <span className="text-[10px] font-medium uppercase tracking-wider">Structure</span>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function FloorPlan({ floors, className }: FloorPlanProps) {
                     className={cn(
                       "px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                       i === activeFloor
-                        ? "bg-white text-[#1a1c1c] shadow-sm"
+                        ? "bg-white text-neutral-900 shadow-sm"
                         : "text-white/70 hover:text-white",
                     )}
                   >

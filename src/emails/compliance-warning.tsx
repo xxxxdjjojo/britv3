@@ -4,6 +4,14 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  WARNING,
+  WARNING_LIGHT,
+  ERROR,
+} from "@/emails/_constants/colors";
 
 export function ComplianceWarningEmail({
   firstName,
@@ -26,8 +34,8 @@ export function ComplianceWarningEmail({
 
       <Section
         style={{
-          backgroundColor: "#FEF3C7",
-          borderLeft: "4px solid #CA8A04",
+          backgroundColor: WARNING_LIGHT,
+          borderLeft: `4px solid ${WARNING}`,
           padding: "16px 32px",
         }}
       >
@@ -49,7 +57,7 @@ export function ComplianceWarningEmail({
           style={{
             fontSize: "22px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -59,14 +67,14 @@ export function ComplianceWarningEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 16px 0",
             lineHeight: "1.6",
           }}
         >
-          Hi {firstName}, your <strong style={{ color: "#0A0A0B" }}>{documentName}</strong> is due
-          to expire on <strong style={{ color: "#0A0A0B" }}>{formattedDate}</strong> — that&apos;s{" "}
-          <strong style={{ color: "#0A0A0B" }}>{daysUntilExpiry} days</strong> from now.
+          Hi {firstName}, your <strong style={{ color: NEUTRAL_950 }}>{documentName}</strong> is due
+          to expire on <strong style={{ color: NEUTRAL_950 }}>{formattedDate}</strong> — that&apos;s{" "}
+          <strong style={{ color: NEUTRAL_950 }}>{daysUntilExpiry} days</strong> from now.
         </Text>
 
         {isUrgent && (
@@ -74,7 +82,7 @@ export function ComplianceWarningEmail({
             style={{
               fontSize: "14px",
               fontWeight: "600",
-              color: "#DC2626",
+              color: ERROR,
               margin: "0 0 16px 0",
               lineHeight: "1.6",
             }}
@@ -88,7 +96,7 @@ export function ComplianceWarningEmail({
         <Text
           style={{
             fontSize: "14px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}

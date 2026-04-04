@@ -12,7 +12,7 @@ export default function DashboardError({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 p-8 py-20 text-center">
-      <AlertTriangle className="size-12 text-red-500" />
+      <AlertTriangle className="size-12 text-error" />
       <h2 className="text-lg font-bold">Failed to load dashboard</h2>
       <p className="max-w-md text-sm text-muted-foreground">
         We couldn&apos;t load your dashboard data. This is usually temporary.

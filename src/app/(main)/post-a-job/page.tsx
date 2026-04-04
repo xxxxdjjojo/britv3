@@ -58,7 +58,7 @@ export default async function PostAJobPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] px-6 py-16 text-white">
+      <section className="bg-gradient-to-br from-brand-primary to-brand-accent px-6 py-16 text-white">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="mb-4 text-4xl font-extrabold tracking-tight">
             Post a Job — Get Free Quotes

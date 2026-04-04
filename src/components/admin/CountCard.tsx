@@ -17,7 +17,7 @@ export function CountCard({ title, count, href, icon }: CountCardProps) {
       href={href}
       className="group block rounded-xl bg-white p-6 shadow-[0_20px_50px_rgba(26,28,28,0.03)] transition-all duration-500 hover:bg-brand-primary-dark cursor-pointer"
     >
-      <p className="font-body text-[10px] tracking-[0.1em] text-neutral-500 group-hover:text-emerald-200/70 uppercase mb-4">
+      <p className="font-body text-[10px] tracking-[0.1em] text-neutral-500 group-hover:text-brand-primary-lighter/70 uppercase mb-4">
         {title}
       </p>
       <div className="flex flex-col">
@@ -27,7 +27,7 @@ export function CountCard({ title, count, href, icon }: CountCardProps) {
               {count.toLocaleString()}
             </p>
             <div className="rounded-lg bg-brand-primary-lighter p-2 group-hover:bg-white/10">
-              <Icon className="size-4 text-brand-primary group-hover:text-emerald-300" />
+              <Icon className="size-4 text-brand-primary group-hover:text-brand-primary-light" />
             </div>
           </div>
         ) : (

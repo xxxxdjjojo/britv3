@@ -88,18 +88,18 @@ export const verificationReEngagement = inngest.createFunction(
           subject: `${name}, you're ${provider.trust_score}% verified — complete your profile to start receiving leads`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
-              <h2 style="color: #1B4D3E;">You're almost there, ${name}!</h2>
-              <p style="color: #5E5E6A; line-height: 1.6;">
+              <h2 style="color: #1B4D3E;">You're almost there, ${name}!</h2><!-- BRAND_PRIMARY -->
+              <p style="color: #5E5E6A; line-height: 1.6;"><!-- NEUTRAL_600 -->
                 Your verification is <strong>${provider.trust_score}% complete</strong>.
                 Finish the remaining steps to earn your Professional Verified badge and start appearing in marketplace search results.
               </p>
               <div style="margin: 24px 0;">
                 <a href="${BASE_URL}/dashboard/provider/verification"
-                   style="display: inline-block; background: #1B4D3E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                   style="display: inline-block; background: #1B4D3E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;"><!-- BRAND_PRIMARY -->
                   Continue Verification
                 </a>
               </div>
-              <p style="color: #9E9EAB; font-size: 12px;">
+              <p style="color: #9E9EAB; font-size: 12px;"><!-- NEUTRAL_400 -->
                 You're receiving this because you started verification on Britestate.
               </p>
             </div>

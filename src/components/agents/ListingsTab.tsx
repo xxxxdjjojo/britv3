@@ -25,18 +25,18 @@ function statusBadge(status: string): { label: string; className: string } {
     case "for_rent":
       return {
         label: "For Rent",
-        className: "bg-emerald-500 text-white",
+        className: "bg-success text-white",
       };
     case "under_offer":
       return {
         label: "Under Offer",
-        className: "bg-amber-500 text-white",
+        className: "bg-warning text-white",
       };
     case "for_sale":
     default:
       return {
         label: "For Sale",
-        className: "bg-[#1B4D3E] text-white",
+        className: "bg-brand-primary text-white",
       };
   }
 }
@@ -48,9 +48,9 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
     .join(", ");
 
   return (
-    <article className="group bg-[#faf9f8] dark:bg-[#0f1a17] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <article className="group bg-neutral-50 dark:bg-neutral-950 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
-      <div className="relative h-48 overflow-hidden bg-[#f4f3f2] dark:bg-[#1a2822]">
+      <div className="relative h-48 overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         {listing.cover_image_url ? (
           <Image
             src={listing.cover_image_url}
@@ -59,7 +59,7 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-[#9ca3af] text-xs">
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-400 text-xs">
             No image
           </div>
         )}
@@ -73,7 +73,7 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
         <button
           type="button"
           aria-label="Save listing"
-          className="absolute top-3 right-3 p-1.5 bg-white/90 rounded-full text-[#6b7280] hover:text-rose-500 transition-colors"
+          className="absolute top-3 right-3 p-1.5 bg-white/90 rounded-full text-neutral-500 hover:text-error transition-colors"
         >
           <Heart className="w-4 h-4" />
         </button>
@@ -81,18 +81,18 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="text-xl font-bold text-[#1a1a1a] dark:text-white">
+        <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
           {formatPrice(listing.price)}
         </h3>
-        <p className="text-xs uppercase tracking-wide text-[#6b7280] mt-0.5">
+        <p className="text-xs uppercase tracking-wide text-neutral-500 mt-0.5">
           {listing.property_type ?? listing.status}
         </p>
-        <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] mt-1 line-clamp-1">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 line-clamp-1">
           {address || listing.title}
         </p>
 
         {/* Stats row */}
-        <div className="flex items-center gap-4 mt-4 pt-4 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+        <div className="flex items-center gap-4 mt-4 pt-4 text-sm text-neutral-500 dark:text-neutral-400">
           {listing.bedrooms != null && (
             <span className="flex items-center gap-1">
               <Bed className="w-4 h-4" />
@@ -114,7 +114,7 @@ function PropertyCard({ listing }: Readonly<{ listing: AgentListingItem }>) {
 export default function ListingsTab({ listings, total }: ListingsTabProps) {
   if (listings.length === 0) {
     return (
-      <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm py-8 text-center">
+      <p className="text-neutral-500 dark:text-neutral-400 text-sm py-8 text-center">
         No active listings
       </p>
     );
@@ -123,7 +123,7 @@ export default function ListingsTab({ listings, total }: ListingsTabProps) {
   return (
     <div>
       {total > listings.length && (
-        <p className="text-sm text-[#6b7280] mb-4">
+        <p className="text-sm text-neutral-500 mb-4">
           Showing {listings.length} of {total} active listings
         </p>
       )}

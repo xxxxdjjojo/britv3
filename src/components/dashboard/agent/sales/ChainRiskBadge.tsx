@@ -15,8 +15,8 @@ const RISK_CONFIG: Record<
     label: "Medium risk",
   },
   high: {
-    bg: "bg-orange-100",
-    text: "text-orange-700",
+    bg: "bg-warning-light",
+    text: "text-warning",
     label: "High risk",
   },
   critical: {
@@ -29,7 +29,7 @@ const RISK_CONFIG: Record<
 const RISK_DOT: Record<ChainRiskLevel, string> = {
   low: "bg-success",
   medium: "bg-warning",
-  high: "bg-orange-500",
+  high: "bg-warning",
   critical: "bg-error",
 };
 

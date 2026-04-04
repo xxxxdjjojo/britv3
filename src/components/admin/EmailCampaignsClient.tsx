@@ -150,8 +150,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
       <div className="flex justify-end">
         <Button
           onClick={() => setShowCreate((v) => !v)}
-          style={{ backgroundColor: "#1B4D3E" }}
-          className="text-white hover:opacity-90"
+          className="bg-brand-primary text-white hover:bg-brand-primary/90"
         >
           {showCreate ? (
             <>
@@ -256,7 +255,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
                   onClick={() => toggleRole(role)}
                   className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors capitalize ${
                     form.target_roles.includes(role)
-                      ? "bg-[#1B4D3E] text-white border-[#1B4D3E]"
+                      ? "bg-brand-primary text-white border-brand-primary"
                       : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400"
                   }`}
                 >
@@ -292,8 +291,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
             <Button
               type="submit"
               disabled={creating}
-              style={{ backgroundColor: "#1B4D3E" }}
-              className="text-white hover:opacity-90"
+              className="bg-brand-primary text-white hover:bg-brand-primary/90"
             >
               {creating ? "Creating..." : "Create Campaign"}
             </Button>
@@ -366,8 +364,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
                         size="sm"
                         onClick={() => promptSend(campaign.id)}
                         disabled={isPending}
-                        style={{ borderColor: "#1B4D3E", color: "#1B4D3E" }}
-                        className="hover:opacity-80"
+                        className="border-brand-primary text-brand-primary hover:opacity-80"
                       >
                         <Send className="h-3.5 w-3.5 mr-1" />
                         Send

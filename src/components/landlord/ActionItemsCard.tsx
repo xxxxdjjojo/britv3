@@ -14,9 +14,9 @@ const URGENCY_ICON = {
 } as const;
 
 const URGENCY_STYLES = {
-  critical: "text-red-500",
-  warning: "text-amber-500",
-  info: "text-slate-400",
+  critical: "text-error",
+  warning: "text-warning",
+  info: "text-neutral-400",
 } as const;
 
 export function ActionItemsCard({ items }: ActionItemsCardProps) {

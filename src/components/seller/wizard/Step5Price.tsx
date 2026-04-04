@@ -70,32 +70,32 @@ export function Step5Price({ listing, listingId }: Props) {
     <WizardShell step={5} listingId={listingId} onContinue={handleContinue} continueDisabled={!isValid} isLoading={saving}>
       <div className="space-y-8">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 font-['Plus_Jakarta_Sans']">Price & Listing Type</h2>
-          <p className="text-slate-500 text-sm mt-1">Set your asking price and how you want to sell</p>
+          <h2 className="text-xl font-bold text-neutral-900 font-['Plus_Jakarta_Sans']">Price & Listing Type</h2>
+          <p className="text-neutral-500 text-sm mt-1">Set your asking price and how you want to sell</p>
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-700">Asking Price</label>
+          <label className="text-sm font-semibold text-neutral-600">Asking Price</label>
           <div className="mt-2 relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-lg">£</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 font-semibold text-lg">£</span>
             <input
               type="text"
               inputMode="numeric"
               value={formatWithCommas(priceStr)}
               onChange={(e) => setPriceStr(e.target.value.replace(/[^0-9,]/g, "").replace(/,/g, ""))}
               placeholder="350,000"
-              className="w-full pl-9 pr-4 py-4 rounded-xl border border-slate-200 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+              className="w-full pl-9 pr-4 py-4 rounded-xl border border-neutral-200 text-lg font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
             />
           </div>
           {priceNum > 0 && (
-            <p className="text-sm text-slate-500 mt-2">
+            <p className="text-sm text-neutral-500 mt-2">
               £{priceNum.toLocaleString("en-GB")}
             </p>
           )}
         </div>
 
         <div className="space-y-3">
-          <label className="text-sm font-semibold text-slate-700">Listing Type</label>
+          <label className="text-sm font-semibold text-neutral-600">Listing Type</label>
           <div className="space-y-2">
             {LISTING_TYPES.map(({ key, label, desc }) => (
               <button
@@ -105,19 +105,19 @@ export function Step5Price({ listing, listingId }: Props) {
                 className={cn(
                   "w-full flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all duration-150",
                   listingType === key
-                    ? "border-[#1B4D3E] bg-[#1B4D3E]/5"
-                    : "border-slate-200 hover:border-slate-300",
+                    ? "border-brand-primary bg-brand-primary/5"
+                    : "border-neutral-200 hover:border-neutral-300",
                 )}
               >
                 <div className={cn(
                   "mt-0.5 h-4 w-4 rounded-full border-2 flex-shrink-0",
-                  listingType === key ? "border-[#1B4D3E] bg-[#1B4D3E]" : "border-slate-300",
+                  listingType === key ? "border-brand-primary bg-brand-primary" : "border-neutral-300",
                 )} />
                 <div>
-                  <p className={cn("text-sm font-bold", listingType === key ? "text-[#1B4D3E]" : "text-slate-900")}>
+                  <p className={cn("text-sm font-bold", listingType === key ? "text-brand-primary" : "text-neutral-900")}>
                     {label}
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">{desc}</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">{desc}</p>
                 </div>
               </button>
             ))}
@@ -125,13 +125,13 @@ export function Step5Price({ listing, listingId }: Props) {
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-slate-700">
-            Price Qualifier <span className="text-slate-400 font-normal">(optional)</span>
+          <label className="text-sm font-semibold text-neutral-600">
+            Price Qualifier <span className="text-neutral-400 font-normal">(optional)</span>
           </label>
           <select
             value={qualifier ?? ""}
             onChange={(e) => setQualifier((e.target.value || null) as PriceQualifier)}
-            className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 bg-white"
+            className="mt-2 w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm text-neutral-600 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 bg-white"
           >
             <option value="">None</option>
             {PRICE_QUALIFIERS.map(({ key, label }) => (
@@ -140,7 +140,7 @@ export function Step5Price({ listing, listingId }: Props) {
           </select>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
       </div>
     </WizardShell>
   );

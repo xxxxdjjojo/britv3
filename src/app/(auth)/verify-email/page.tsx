@@ -67,7 +67,7 @@ export default function VerifyEmailPage() {
             <Mail className="size-8 text-white" aria-hidden="true" />
             {/* Gold notification dot */}
             <span
-              className="absolute -right-1.5 -top-1.5 size-4 rounded-full border-2 border-white bg-amber-400"
+              className="absolute -right-1.5 -top-1.5 size-4 rounded-full border-2 border-white bg-brand-secondary"
               aria-hidden="true"
             />
           </div>

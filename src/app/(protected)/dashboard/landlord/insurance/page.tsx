@@ -133,9 +133,9 @@ export default function InsurancePage() {
       </div>
 
       {/* Non-commission banner */}
-      <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/40 dark:bg-blue-900/10">
-        <Info className="mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400" />
-        <p className="text-sm text-blue-800 dark:text-blue-300">
+      <div className="flex items-start gap-3 rounded-xl border border-brand-accent/30 bg-brand-accent-light p-4 dark:border-brand-accent/20 dark:bg-brand-accent/10">
+        <Info className="mt-0.5 size-4 shrink-0 text-brand-accent dark:text-brand-accent" />
+        <p className="text-sm text-brand-accent dark:text-brand-accent">
           <strong>Independent guidance:</strong> Britestate does not earn commission from insurance
           referrals. The providers listed below are displayed for informational purposes only. Prices
           shown are indicative — always get your own quote directly with the insurer.
@@ -154,9 +154,9 @@ export default function InsurancePage() {
               className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
             >
               <div className="flex items-start gap-3 p-5">
-                <span className={`mt-0.5 rounded-lg p-1.5 ${cover.required ? "bg-red-100 dark:bg-red-900/30" : "bg-muted"}`}>
+                <span className={`mt-0.5 rounded-lg p-1.5 ${cover.required ? "bg-error-light dark:bg-error/10" : "bg-muted"}`}>
                   {cover.required
-                    ? <ShieldAlert className="size-4 text-red-600 dark:text-red-400" />
+                    ? <ShieldAlert className="size-4 text-error dark:text-error" />
                     : <Shield className="size-4 text-muted-foreground" />
                   }
                 </span>
@@ -166,7 +166,7 @@ export default function InsurancePage() {
                       {cover.title}
                     </h3>
                     {cover.required ? (
-                      <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      <span className="rounded-full bg-error-light px-2.5 py-0.5 text-xs font-semibold text-error dark:bg-error/10 dark:text-error">
                         Usually Required
                       </span>
                     ) : (
@@ -176,7 +176,7 @@ export default function InsurancePage() {
                     )}
                   </div>
                   <p className="mt-1.5 text-sm text-muted-foreground">{cover.description}</p>
-                  <p className="mt-2 text-xs italic text-amber-700 dark:text-amber-400">{cover.note}</p>
+                  <p className="mt-2 text-xs italic text-warning dark:text-warning">{cover.note}</p>
                 </div>
               </div>
             </div>

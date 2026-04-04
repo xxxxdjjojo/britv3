@@ -25,7 +25,7 @@ export function BillingToggle({ annual, onToggle, savingsLabel }: Props) {
         aria-label="Toggle annual billing"
         onClick={() => onToggle(!annual)}
         className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-          annual ? "bg-[#1B4D3E]" : "bg-neutral-300"
+          annual ? "bg-brand-primary" : "bg-neutral-300"
         }`}
       >
         <span
@@ -39,7 +39,7 @@ export function BillingToggle({ annual, onToggle, savingsLabel }: Props) {
         className={`text-sm font-medium ${annual ? "text-neutral-900" : "text-neutral-500"}`}
       >
         Annual
-        <span className="ml-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+        <span className="ml-1 rounded-full bg-success-light px-2 py-0.5 text-xs font-semibold text-success">
           {savingsLabel}
         </span>
       </span>

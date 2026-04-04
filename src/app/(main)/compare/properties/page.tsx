@@ -131,26 +131,26 @@ function ComparePropertiesContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf9f8] flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f8]">
+    <div className="min-h-screen bg-neutral-50">
       {/* Page header */}
-      <div className="bg-white border-b border-[#e3e2e1]">
+      <div className="bg-white border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div>
               <p className="text-sm font-semibold text-brand-secondary uppercase tracking-widest mb-2">
                 Compare
               </p>
-              <h1 className="font-heading font-bold text-[#1a1c1c] text-3xl sm:text-4xl mb-3">
+              <h1 className="font-heading font-bold text-neutral-900 text-3xl sm:text-4xl mb-3">
                 Compare Properties
               </h1>
-              <p className="text-[#404945] max-w-2xl text-base leading-relaxed">
+              <p className="text-neutral-600 max-w-2xl text-base leading-relaxed">
                 Compare your shortlisted properties side-by-side to find the
                 perfect home.
               </p>
@@ -174,10 +174,10 @@ function ComparePropertiesContent() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-primary/10 mb-6">
               <GitCompareArrows className="w-10 h-10 text-brand-primary" />
             </div>
-            <h2 className="font-heading font-bold text-[#1a1c1c] text-2xl mb-3">
+            <h2 className="font-heading font-bold text-neutral-900 text-2xl mb-3">
               No properties to compare yet
             </h2>
-            <p className="text-[#404945] mb-8 max-w-md mx-auto leading-relaxed">
+            <p className="text-neutral-600 mb-8 max-w-md mx-auto leading-relaxed">
               Browse property listings and click &ldquo;Compare&rdquo; to add up
               to {MAX_COMPARE} properties side-by-side.
             </p>
@@ -194,10 +194,10 @@ function ComparePropertiesContent() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-brand-primary/10 mb-6">
               <Home className="w-10 h-10 text-brand-primary" />
             </div>
-            <h2 className="font-heading font-bold text-[#1a1c1c] text-2xl mb-3">
+            <h2 className="font-heading font-bold text-neutral-900 text-2xl mb-3">
               Properties not found
             </h2>
-            <p className="text-[#404945] mb-8 max-w-md mx-auto leading-relaxed">
+            <p className="text-neutral-600 mb-8 max-w-md mx-auto leading-relaxed">
               The properties you selected could not be found. They may have been
               removed or are no longer available.
             </p>
@@ -226,7 +226,7 @@ function ComparePropertiesContent() {
                         style={{ minWidth: 200 }}
                       >
                         <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-                          <div className="h-40 bg-[#f4f3f2] flex items-center justify-center overflow-hidden">
+                          <div className="h-40 bg-neutral-100 flex items-center justify-center overflow-hidden">
                             {imgSrc ? (
                               <Image
                                 src={imgSrc}
@@ -240,10 +240,10 @@ function ComparePropertiesContent() {
                             )}
                           </div>
                           <div className="p-4">
-                            <h3 className="font-heading font-semibold text-[#1a1c1c] text-sm leading-snug line-clamp-2">
+                            <h3 className="font-heading font-semibold text-neutral-900 text-sm leading-snug line-clamp-2">
                               {p.title}
                             </h3>
-                            <p className="text-xs text-[#404945] mt-1">
+                            <p className="text-xs text-neutral-600 mt-1">
                               {[p.address_line_1, p.city, p.postcode]
                                 .filter(Boolean)
                                 .join(", ")}
@@ -262,11 +262,11 @@ function ComparePropertiesContent() {
                   <tr
                     key={field.key}
                     className={
-                      idx % 2 === 0 ? "bg-white" : "bg-[#faf9f8]"
+                      idx % 2 === 0 ? "bg-white" : "bg-neutral-50"
                     }
                   >
                     <td className="py-4 pr-4 pl-2">
-                      <div className="flex items-center gap-2 text-[#404945]">
+                      <div className="flex items-center gap-2 text-neutral-600">
                         <span className="text-brand-primary/60">
                           {field.icon}
                         </span>
@@ -278,7 +278,7 @@ function ComparePropertiesContent() {
                     {properties.map((p) => (
                       <td
                         key={p.id}
-                        className="py-4 px-3 text-sm font-semibold text-[#1a1c1c]"
+                        className="py-4 px-3 text-sm font-semibold text-neutral-900"
                       >
                         {field.format
                           ? field.format(p[field.key])
@@ -318,7 +318,7 @@ export default function ComparePropertiesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#faf9f8] flex items-center justify-center">
+        <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
           <div className="animate-spin w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full" />
         </div>
       }

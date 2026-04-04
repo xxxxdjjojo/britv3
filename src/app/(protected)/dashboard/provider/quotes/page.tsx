@@ -19,13 +19,13 @@ type StatusFilter = QuoteStatus | "all";
 
 const STATUS_BADGE: Record<QuoteStatus, string> = {
   draft:
-    "bg-stone-100 text-stone-500",
-  sent: "bg-blue-50 text-blue-700",
-  viewed: "bg-blue-50 text-blue-700",
-  accepted: "bg-emerald-50 text-emerald-700",
-  declined: "bg-red-50 text-red-700",
-  expired: "bg-stone-100 text-stone-500",
-  withdrawn: "bg-stone-100 text-stone-500",
+    "bg-neutral-100 text-neutral-500",
+  sent: "bg-brand-accent-light text-brand-accent",
+  viewed: "bg-brand-accent-light text-brand-accent",
+  accepted: "bg-success-light text-success",
+  declined: "bg-error-light text-error",
+  expired: "bg-neutral-100 text-neutral-500",
+  withdrawn: "bg-neutral-100 text-neutral-500",
 };
 
 const STATUS_FILTERS: StatusFilter[] = [
@@ -96,22 +96,22 @@ export default function ProviderQuotesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] p-0">
+    <div className="min-h-screen bg-neutral-50 p-0">
       <div className="pt-8 px-10 pb-20 max-w-7xl mx-auto">
 
         {/* ── Header ── */}
         <div className="flex justify-between items-end mb-10">
           <div>
-            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#7b5804] font-sans mb-2 block">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-brand-secondary-dark font-sans mb-2 block">
               Provider Overview
             </span>
-            <h1 className="text-4xl font-extrabold text-stone-900 font-heading tracking-tight">
+            <h1 className="text-4xl font-extrabold text-neutral-900 font-heading tracking-tight">
               Quote Management
             </h1>
           </div>
           <Link
             href="/dashboard/provider/quotes/builder"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#003629] to-[#1b4d3e] text-white px-7 py-3.5 rounded-md font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-300"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white px-7 py-3.5 rounded-md font-semibold text-sm hover:opacity-90 active:scale-95 transition-all duration-300"
             aria-label="Create new quote"
           >
             <Plus className="size-4" />
@@ -120,13 +120,13 @@ export default function ProviderQuotesPage() {
         </div>
 
         {/* ── Stats & Filter bar ── */}
-        <section className="bg-[#f4f3f2] rounded-xl p-7 mb-10 flex flex-wrap gap-6 items-center">
+        <section className="bg-neutral-100 rounded-xl p-7 mb-10 flex flex-wrap gap-6 items-center">
           {/* Status filter tabs */}
           <div className="flex gap-3 items-center">
-            <span className="text-xs font-sans uppercase tracking-widest text-stone-400">
+            <span className="text-xs font-sans uppercase tracking-widest text-neutral-400">
               Filter Status:
             </span>
-            <div className="flex bg-stone-200/50 p-1 rounded-lg gap-0.5">
+            <div className="flex bg-neutral-200/50 p-1 rounded-lg gap-0.5">
               {STATUS_FILTERS.map((status) => (
                 <button
                   key={status}
@@ -134,8 +134,8 @@ export default function ProviderQuotesPage() {
                   aria-pressed={filter === status}
                   className={`px-4 py-2 text-xs font-bold rounded-md transition-colors capitalize ${
                     filter === status
-                      ? "bg-white text-emerald-900 shadow-sm"
-                      : "text-stone-500 hover:text-stone-800"
+                      ? "bg-white text-brand-primary shadow-sm"
+                      : "text-neutral-500 hover:text-neutral-800"
                   }`}
                 >
                   {status === "all" ? "All" : status}
@@ -144,32 +144,32 @@ export default function ProviderQuotesPage() {
             </div>
           </div>
 
-          <div className="h-7 w-px bg-stone-300 mx-2 hidden lg:block" />
+          <div className="h-7 w-px bg-neutral-300 mx-2 hidden lg:block" />
 
           {/* KPIs */}
           <div className="flex gap-8">
             <div>
-              <p className="text-[10px] text-stone-400 font-sans uppercase tracking-widest mb-1">
+              <p className="text-[10px] text-neutral-400 font-sans uppercase tracking-widest mb-1">
                 Total Outstanding
               </p>
-              <p className="text-xl font-bold font-heading text-emerald-900">
+              <p className="text-xl font-bold font-heading text-brand-primary">
                 {fmtGBP(outstanding)}
               </p>
             </div>
             <div>
-              <p className="text-[10px] text-stone-400 font-sans uppercase tracking-widest mb-1">
+              <p className="text-[10px] text-neutral-400 font-sans uppercase tracking-widest mb-1">
                 Conversion Rate
               </p>
-              <p className="text-xl font-bold font-heading text-[#7b5804]">
+              <p className="text-xl font-bold font-heading text-brand-secondary-dark">
                 {conversionRate}%
               </p>
             </div>
           </div>
 
           {/* Search */}
-          <div className="ml-auto flex items-center gap-3 bg-white border border-stone-200/50 px-4 py-2 rounded-lg">
+          <div className="ml-auto flex items-center gap-3 bg-white border border-neutral-200/50 px-4 py-2 rounded-lg">
             <svg
-              className="size-4 text-stone-400"
+              className="size-4 text-neutral-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -186,16 +186,16 @@ export default function ProviderQuotesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search reference or property..."
-              className="bg-transparent border-none text-sm focus:ring-0 w-56 text-stone-900 placeholder:text-stone-400 outline-none"
+              className="bg-transparent border-none text-sm focus:ring-0 w-56 text-neutral-900 placeholder:text-neutral-400 outline-none"
             />
           </div>
         </section>
 
         {/* ── Quote Table ── */}
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100/50">
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-neutral-100/50">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-stone-50 text-[10px] uppercase tracking-[0.15em] text-stone-500 font-bold border-b border-stone-100">
+              <tr className="bg-neutral-50 text-[10px] uppercase tracking-[0.15em] text-neutral-500 font-bold border-b border-neutral-100">
                 <th className="px-8 py-5">Reference</th>
                 <th className="px-8 py-5">Property / Client</th>
                 <th className="px-8 py-5">Total Amount</th>
@@ -204,35 +204,35 @@ export default function ProviderQuotesPage() {
                 <th className="px-8 py-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-50">
+            <tbody className="divide-y divide-neutral-50">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-8 py-12 text-center">
                     <div
-                      className="mx-auto size-7 animate-spin rounded-full border-2 border-[#003629] border-t-transparent"
+                      className="mx-auto size-7 animate-spin rounded-full border-2 border-brand-primary-dark border-t-transparent"
                       aria-label="Loading quotes"
                     />
-                    <p className="mt-3 text-sm text-stone-500">Loading quotes…</p>
+                    <p className="mt-3 text-sm text-neutral-500">Loading quotes…</p>
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-8 py-16 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <div className="flex size-14 items-center justify-center rounded-full bg-stone-100">
-                        <FileText className="size-7 text-stone-400" />
+                      <div className="flex size-14 items-center justify-center rounded-full bg-neutral-100">
+                        <FileText className="size-7 text-neutral-400" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-stone-800">
+                        <p className="text-sm font-semibold text-neutral-800">
                           No quotes yet
                         </p>
-                        <p className="mt-1 text-xs text-stone-500">
+                        <p className="mt-1 text-xs text-neutral-500">
                           Create your first quote to get started.
                         </p>
                       </div>
                       <Link
                         href="/dashboard/provider/quotes/builder"
-                        className="inline-flex items-center gap-2 bg-[#003629] text-white px-5 py-2.5 rounded-md text-sm font-semibold hover:opacity-90 transition-opacity"
+                        className="inline-flex items-center gap-2 bg-brand-primary-dark text-white px-5 py-2.5 rounded-md text-sm font-semibold hover:opacity-90 transition-opacity"
                       >
                         <Plus className="size-4" />
                         Create Quote
@@ -244,25 +244,25 @@ export default function ProviderQuotesPage() {
                 filtered.map((quote) => (
                   <tr
                     key={quote.id}
-                    className="hover:bg-stone-50/50 transition-colors group"
+                    className="hover:bg-neutral-50/50 transition-colors group"
                   >
-                    <td className="px-8 py-5 font-medium font-heading text-stone-900 text-sm">
+                    <td className="px-8 py-5 font-medium font-heading text-neutral-900 text-sm">
                       {quote.quote_number}
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex flex-col">
                         <Link
                           href={`/dashboard/rfqs/${quote.rfq_id}`}
-                          className="text-sm font-semibold text-stone-900 hover:text-emerald-800 transition-colors"
+                          className="text-sm font-semibold text-neutral-900 hover:text-brand-primary transition-colors"
                         >
                           {quote.rfq_title}
                         </Link>
                       </div>
                     </td>
-                    <td className="px-8 py-5 font-bold text-stone-900 text-sm">
+                    <td className="px-8 py-5 font-bold text-neutral-900 text-sm">
                       {fmtGBP(quote.total_amount)}
                     </td>
-                    <td className="px-8 py-5 text-sm text-stone-600">
+                    <td className="px-8 py-5 text-sm text-neutral-600">
                       {new Date(quote.created_at).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
@@ -281,7 +281,7 @@ export default function ProviderQuotesPage() {
                         {quote.status === "accepted" && (
                           <Link
                             href={`/dashboard/provider/quotes/${quote.id}/invoice`}
-                            className="px-3 py-1.5 bg-[#003629] text-white text-[10px] font-bold rounded uppercase tracking-wider hover:opacity-90 transition-opacity"
+                            className="px-3 py-1.5 bg-brand-primary-dark text-white text-[10px] font-bold rounded uppercase tracking-wider hover:opacity-90 transition-opacity"
                             aria-label={`Generate invoice for quote ${quote.quote_number}`}
                           >
                             Invoice Now
@@ -290,7 +290,7 @@ export default function ProviderQuotesPage() {
                         {(quote.status === "sent" || quote.status === "viewed") && (
                           <Link
                             href={`/dashboard/provider/quotes/builder?edit=${quote.id}`}
-                            className="p-1.5 hover:bg-white rounded-md text-stone-400 hover:text-emerald-900 shadow-sm border border-transparent hover:border-stone-200 transition-colors"
+                            className="p-1.5 hover:bg-white rounded-md text-neutral-400 hover:text-brand-primary shadow-sm border border-transparent hover:border-neutral-200 transition-colors"
                             title="Edit Quote"
                           >
                             <svg
@@ -311,7 +311,7 @@ export default function ProviderQuotesPage() {
                         {quote.status === "draft" && (
                           <Link
                             href={`/dashboard/provider/quotes/builder?edit=${quote.id}`}
-                            className="p-1.5 hover:bg-white rounded-md text-stone-400 hover:text-emerald-900 shadow-sm border border-transparent hover:border-stone-200 transition-colors"
+                            className="p-1.5 hover:bg-white rounded-md text-neutral-400 hover:text-brand-primary shadow-sm border border-transparent hover:border-neutral-200 transition-colors"
                             title="Edit Draft"
                           >
                             <svg
@@ -339,10 +339,10 @@ export default function ProviderQuotesPage() {
 
           {/* Table footer */}
           {!loading && filtered.length > 0 && (
-            <div className="px-8 py-5 bg-stone-50/50 flex items-center justify-between border-t border-stone-100">
-              <p className="text-xs text-stone-500">
+            <div className="px-8 py-5 bg-neutral-50/50 flex items-center justify-between border-t border-neutral-100">
+              <p className="text-xs text-neutral-500">
                 Showing{" "}
-                <span className="font-bold text-stone-900">{filtered.length}</span>{" "}
+                <span className="font-bold text-neutral-900">{filtered.length}</span>{" "}
                 quote{filtered.length !== 1 ? "s" : ""}
               </p>
             </div>
@@ -352,19 +352,19 @@ export default function ProviderQuotesPage() {
         {/* ── Quote Insights ── */}
         <div className="mt-16 flex flex-col md:flex-row gap-10 items-start">
           <div className="md:w-2/3">
-            <h3 className="text-2xl font-bold font-heading text-emerald-900 mb-4">
+            <h3 className="text-2xl font-bold font-heading text-brand-primary mb-4">
               Quote Insights
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="bg-[#eeeeed] rounded-xl p-6 border-l-4 border-[#7b5804]">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-[#7b5804] mb-2">
+              <div className="bg-neutral-100 rounded-xl p-6 border-l-4 border-brand-secondary-dark">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-brand-secondary-dark mb-2">
                   High Value Opportunity
                 </h4>
-                <p className="text-sm text-stone-600 leading-relaxed mb-3">
+                <p className="text-sm text-neutral-600 leading-relaxed mb-3">
                   Quotes sent within 24 hours of a site visit have significantly
                   higher acceptance rates. Keep your response time short.
                 </p>
-                <span className="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                <span className="text-xs font-bold text-brand-primary flex items-center gap-1">
                   View Template Advice
                   <svg
                     className="size-3"
@@ -381,15 +381,15 @@ export default function ProviderQuotesPage() {
                   </svg>
                 </span>
               </div>
-              <div className="bg-[#eeeeed] rounded-xl p-6 border-l-4 border-[#003629]">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-[#003629] mb-2">
+              <div className="bg-neutral-100 rounded-xl p-6 border-l-4 border-brand-primary-dark">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-brand-primary-dark mb-2">
                   Portfolio Synergy
                 </h4>
-                <p className="text-sm text-stone-600 leading-relaxed mb-3">
+                <p className="text-sm text-neutral-600 leading-relaxed mb-3">
                   You have active quotes in the same area. Consider a logistics
                   discount to secure all contracts at once.
                 </p>
-                <span className="text-xs font-bold text-emerald-900 flex items-center gap-1">
+                <span className="text-xs font-bold text-brand-primary flex items-center gap-1">
                   Bundle Options
                   <svg
                     className="size-3"
@@ -410,16 +410,16 @@ export default function ProviderQuotesPage() {
           </div>
 
           {/* Premium CTA card */}
-          <div className="md:w-1/3 bg-[#1b4d3e] p-8 rounded-2xl relative overflow-hidden">
+          <div className="md:w-1/3 bg-brand-primary p-8 rounded-2xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_top_right,_white,_transparent)]" />
             <h3 className="text-xl font-bold text-white mb-3 relative z-10">
               Premium Assistance
             </h3>
-            <p className="text-emerald-100 text-sm leading-relaxed mb-5 relative z-10">
+            <p className="text-brand-primary-lighter text-sm leading-relaxed mb-5 relative z-10">
               Need a legal review for a complex quote? Our Estate Advocates are
               available for consultation.
             </p>
-            <button className="w-full py-3 bg-[#eec068] text-[#271900] font-bold rounded-md hover:-translate-y-0.5 transition-transform relative z-10 text-sm">
+            <button className="w-full py-3 bg-brand-secondary text-brand-secondary-dark font-bold rounded-md hover:-translate-y-0.5 transition-transform relative z-10 text-sm">
               Book Consultation
             </button>
           </div>

@@ -70,13 +70,13 @@ export function TradesPersonAssignModal({
     <div className="space-y-4">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-500" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search providers by name…"
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E] dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pl-10 pr-4 text-sm text-neutral-900 placeholder-neutral-500 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-neutral-600 dark:bg-neutral-900 dark:text-white"
         />
       </div>
 
@@ -90,8 +90,8 @@ export function TradesPersonAssignModal({
               onClick={() => setCategoryFilter(cat)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
                 categoryFilter === cat
-                  ? "bg-[#1B4D3E] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                  ? "bg-brand-primary text-white"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-500 dark:hover:bg-neutral-600"
               }`}
             >
               {cat === "all" ? "All Categories" : formatCategory(cat)}
@@ -102,10 +102,10 @@ export function TradesPersonAssignModal({
 
       {/* Provider list */}
       {filtered.length === 0 ? (
-        <div className="rounded-xl border-2 border-dashed border-slate-200 py-8 text-center dark:border-slate-800">
-          <p className="text-sm text-slate-500">No providers found.</p>
+        <div className="rounded-xl border-2 border-dashed border-neutral-200 py-8 text-center dark:border-neutral-900">
+          <p className="text-sm text-neutral-500">No providers found.</p>
           {providers.length === 0 && (
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-neutral-500">
               Marketplace providers will appear here once registered.
             </p>
           )}
@@ -119,27 +119,27 @@ export function TradesPersonAssignModal({
                 key={provider.id}
                 className={`flex items-center justify-between rounded-xl border p-4 transition-colors ${
                   isAssigned
-                    ? "border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-900/20"
-                    : "border-slate-200 bg-white hover:border-[#1B4D3E]/30 dark:border-slate-800 dark:bg-slate-900"
+                    ? "border-success/30 bg-success-light dark:border-success/30 dark:bg-success/10"
+                    : "border-neutral-200 bg-white hover:border-brand-primary/30 dark:border-neutral-900 dark:bg-neutral-900"
                 }`}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-slate-900 dark:text-white">
+                    <p className="font-semibold text-neutral-900 dark:text-white">
                       {provider.business_name}
                     </p>
                     {isAssigned && (
-                      <CheckCircle2 className="size-4 shrink-0 text-green-600" />
+                      <CheckCircle2 className="size-4 shrink-0 text-success" />
                     )}
                   </div>
-                  <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                  <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-neutral-500">
                     {provider.category && (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 dark:bg-slate-800">
+                      <span className="rounded-full bg-neutral-100 px-2 py-0.5 dark:bg-neutral-900">
                         {formatCategory(provider.category)}
                       </span>
                     )}
                     {provider.average_rating != null && (
-                      <span className="flex items-center gap-0.5 text-amber-600">
+                      <span className="flex items-center gap-0.5 text-warning">
                         <Star className="size-3 fill-current" />
                         {provider.average_rating.toFixed(1)}
                       </span>
@@ -159,8 +159,8 @@ export function TradesPersonAssignModal({
                   onClick={() => onAssign(provider.id)}
                   className={`ml-4 shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
                     isAssigned
-                      ? "border border-green-600 text-green-700 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-900/30"
-                      : "bg-[#1B4D3E] text-white hover:bg-[#1B4D3E]/90"
+                      ? "border border-success text-success hover:bg-success-light dark:text-success dark:hover:bg-success/10"
+                      : "bg-brand-primary text-white hover:bg-brand-primary/90"
                   }`}
                 >
                   {isAssigned ? "Reassign" : "Assign"}

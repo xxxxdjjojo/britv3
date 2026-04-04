@@ -22,23 +22,23 @@ const STATUS_STYLES: Record<
   { bg: string; text: string; label: string }
 > = {
   pending: {
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    text: "text-amber-800 dark:text-amber-300",
+    bg: "bg-warning-light dark:bg-warning/10",
+    text: "text-warning dark:text-warning",
     label: "Pending",
   },
   registered: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    text: "text-green-800 dark:text-green-300",
+    bg: "bg-success-light dark:bg-success/10",
+    text: "text-success dark:text-success",
     label: "Registered",
   },
   returned: {
-    bg: "bg-gray-100 dark:bg-gray-800",
-    text: "text-gray-600 dark:text-gray-400",
+    bg: "bg-neutral-100 dark:bg-neutral-900",
+    text: "text-neutral-600 dark:text-neutral-500",
     label: "Returned",
   },
   disputed: {
-    bg: "bg-red-100 dark:bg-red-900/30",
-    text: "text-red-800 dark:text-red-300",
+    bg: "bg-error-light dark:bg-error/10",
+    text: "text-error dark:text-error",
     label: "Disputed",
   },
 };
@@ -115,7 +115,7 @@ export function DepositCard({ deposit, onEdit, onMarkRegistered }: DepositCardPr
           {deposit.registration_date ? (
             <span>{formatUKDate(deposit.registration_date)}</span>
           ) : (
-            <span className="text-amber-600 dark:text-amber-400">
+            <span className="text-warning dark:text-warning">
               Not registered
             </span>
           )}
@@ -127,7 +127,7 @@ export function DepositCard({ deposit, onEdit, onMarkRegistered }: DepositCardPr
           {deposit.prescribed_info_sent_date ? (
             <span>{formatUKDate(deposit.prescribed_info_sent_date)}</span>
           ) : (
-            <span className="text-amber-600 dark:text-amber-400">Not sent</span>
+            <span className="text-warning dark:text-warning">Not sent</span>
           )}
         </div>
 

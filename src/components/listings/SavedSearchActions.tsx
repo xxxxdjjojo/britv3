@@ -44,7 +44,7 @@ export function SavedSearchActions(
       <Button
         variant="outline"
         size="sm"
-        className="gap-1 text-red-600 hover:bg-red-50 hover:text-red-700"
+        className="gap-1 text-error hover:bg-error-light hover:text-error"
         onClick={() => deleteSearch.mutate({ searchId: props.search.id })}
         disabled={deleteSearch.isPending}
       >

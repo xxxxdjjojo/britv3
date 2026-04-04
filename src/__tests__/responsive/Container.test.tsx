@@ -30,9 +30,9 @@ describe("Container", () => {
   });
 
   it("accepts custom className", () => {
-    const { container } = render(<Container className="bg-red-500">Test</Container>);
+    const { container } = render(<Container className="bg-error">Test</Container>);
     const el = container.firstChild as HTMLElement;
-    expect(el.className).toContain("bg-red-500");
+    expect(el.className).toContain("bg-error");
   });
 
   it("renders as specified element", () => {

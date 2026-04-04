@@ -3,6 +3,13 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_400,
+  SUCCESS_LIGHT,
+} from "@/emails/_constants/colors";
 
 type ReferenceRequestEmailProps = {
   providerName: string;
@@ -27,7 +34,7 @@ export function ReferenceRequestEmail({
           style={{
             fontSize: "24px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -37,19 +44,19 @@ export function ReferenceRequestEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 16px 0",
             lineHeight: "1.6",
           }}
         >
-          <strong style={{ color: "#0A0A0B" }}>{providerName}</strong> has
+          <strong style={{ color: NEUTRAL_950 }}>{providerName}</strong> has
           requested a {referenceType} reference from you on Britestate &mdash;
           the UK&apos;s most trusted property portal.
         </Text>
 
         <div
           style={{
-            backgroundColor: "#F0FDF4",
+            backgroundColor: SUCCESS_LIGHT,
             border: "1px solid #86EFAC",
             borderRadius: "8px",
             padding: "16px 20px",
@@ -73,7 +80,7 @@ export function ReferenceRequestEmail({
         <Text
           style={{
             fontSize: "13px",
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             margin: "0 0 24px 0",
             lineHeight: "1.5",
           }}

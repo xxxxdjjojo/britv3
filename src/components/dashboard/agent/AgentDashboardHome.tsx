@@ -46,17 +46,17 @@ type Props = Readonly<{
 function activityIcon(type: string) {
   switch (type) {
     case "lead_created":
-      return { Icon: UserPlus, colour: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20" };
+      return { Icon: UserPlus, colour: "text-brand-accent", bg: "bg-brand-accent-light dark:bg-brand-accent/10" };
     case "stage_changed":
-      return { Icon: TrendingUp, colour: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" };
+      return { Icon: TrendingUp, colour: "text-success", bg: "bg-success-light dark:bg-success/10" };
     case "viewing_booked":
-      return { Icon: Calendar, colour: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/20" };
+      return { Icon: Calendar, colour: "text-warning", bg: "bg-warning-light dark:bg-warning/10" };
     case "offer_made":
-      return { Icon: FileText, colour: "text-purple-600", bg: "bg-purple-50 dark:bg-purple-900/20" };
+      return { Icon: FileText, colour: "text-brand-accent", bg: "bg-brand-accent-light dark:bg-brand-accent/20" };
     case "message_sent":
-      return { Icon: MessageSquare, colour: "text-sky-600", bg: "bg-sky-50 dark:bg-sky-900/20" };
+      return { Icon: MessageSquare, colour: "text-info", bg: "bg-info-light dark:bg-info/10" };
     case "lead_closed":
-      return { Icon: CheckCircle, colour: "text-green-600", bg: "bg-green-50 dark:bg-green-900/20" };
+      return { Icon: CheckCircle, colour: "text-success", bg: "bg-success-light dark:bg-success/10" };
     default:
       return { Icon: Star, colour: "text-muted-foreground", bg: "bg-muted" };
   }
@@ -106,8 +106,8 @@ function KpiCard({ label, value, icon: Icon, iconBg, iconColor, trend, href }: K
           <div
             className={cn(
               "mt-2 flex items-center gap-1 text-xs font-medium",
-              trend === "up" && "text-emerald-600 dark:text-emerald-400",
-              trend === "down" && "text-red-500 dark:text-red-400",
+              trend === "up" && "text-success dark:text-success",
+              trend === "down" && "text-error dark:text-error",
               trend === "flat" && "text-muted-foreground",
             )}
           >
@@ -168,7 +168,7 @@ function TodaysDiarySection({ slots }: Readonly<{ slots: DiaryViewingSlot[] }>) 
   return (
     <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-border/60">
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-info-light dark:bg-blue-900/20">
+        <div className="flex size-9 items-center justify-center rounded-lg bg-info-light dark:bg-info/10">
           <Calendar className="size-4 text-info" strokeWidth={1.25} />
         </div>
         <div>
@@ -418,8 +418,8 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
           label="Active Listings"
           value={kpis.active_listings_count}
           icon={Building2}
-          iconBg="bg-blue-50 dark:bg-blue-900/20"
-          iconColor="text-blue-600"
+          iconBg="bg-brand-accent-light dark:bg-brand-accent/10"
+          iconColor="text-brand-accent"
           trend={kpis.active_listings_count > 0 ? "up" : "flat"}
           href="/dashboard/agent/listings"
         />
@@ -427,8 +427,8 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
           label="New Leads"
           value={kpis.new_leads_count}
           icon={UserPlus}
-          iconBg="bg-emerald-50 dark:bg-emerald-900/20"
-          iconColor="text-emerald-600"
+          iconBg="bg-success-light dark:bg-success/10"
+          iconColor="text-success"
           trend={kpis.new_leads_count > 0 ? "up" : "flat"}
           href="/dashboard/agent/leads"
         />
@@ -436,8 +436,8 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
           label="Viewings This Week"
           value={kpis.viewings_this_week_count}
           icon={Eye}
-          iconBg="bg-amber-50 dark:bg-amber-900/20"
-          iconColor="text-amber-600"
+          iconBg="bg-warning-light dark:bg-warning/10"
+          iconColor="text-warning"
           trend="flat"
           href="/dashboard/agent/viewings"
         />
@@ -445,8 +445,8 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
           label="Pending Offers"
           value={kpis.pending_offers_count}
           icon={FileText}
-          iconBg="bg-purple-50 dark:bg-purple-900/20"
-          iconColor="text-purple-600"
+          iconBg="bg-brand-accent-light dark:bg-brand-accent/10"
+          iconColor="text-brand-accent"
           trend={kpis.pending_offers_count > 0 ? "up" : "flat"}
           href="/dashboard/agent/offers"
         />
@@ -477,26 +477,26 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
                 {
                   label: "Active",
                   value: kpis.active_listings_count,
-                  color: "text-blue-600",
-                  bg: "bg-blue-50 dark:bg-blue-900/20",
+                  color: "text-brand-accent",
+                  bg: "bg-brand-accent-light dark:bg-brand-accent/10",
                 },
                 {
                   label: "Leads",
                   value: kpis.new_leads_count,
-                  color: "text-emerald-600",
-                  bg: "bg-emerald-50 dark:bg-emerald-900/20",
+                  color: "text-success",
+                  bg: "bg-success-light dark:bg-success/10",
                 },
                 {
                   label: "Viewings",
                   value: kpis.viewings_this_week_count,
-                  color: "text-amber-600",
-                  bg: "bg-amber-50 dark:bg-amber-900/20",
+                  color: "text-warning",
+                  bg: "bg-warning-light dark:bg-warning/10",
                 },
                 {
                   label: "Offers",
                   value: kpis.pending_offers_count,
-                  color: "text-purple-600",
-                  bg: "bg-purple-50 dark:bg-purple-900/20",
+                  color: "text-brand-accent",
+                  bg: "bg-brand-accent-light dark:bg-brand-accent/10",
                 },
                 {
                   label: "Score",

@@ -77,25 +77,25 @@ export function Section21PreflightChecklist(
     <div
       className={`rounded-lg border p-5 transition-colors ${
         allChecked
-          ? "border-green-300 bg-green-50"
-          : "border-amber-200 bg-amber-50"
+          ? "border-success/30 bg-success-light"
+          : "border-warning/30 bg-warning-light"
       }`}
     >
       <div className="mb-4 flex items-start gap-3">
         <div
           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
             allChecked
-              ? "bg-green-700 text-white"
-              : "bg-amber-500 text-white"
+              ? "bg-success text-white"
+              : "bg-warning text-white"
           }`}
         >
           {allChecked ? "✓" : "!"}
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">
+          <h3 className="text-sm font-semibold text-neutral-900">
             Section 21 Pre-requisite Checklist
           </h3>
-          <p className="mt-0.5 text-xs text-gray-600">
+          <p className="mt-0.5 text-xs text-neutral-600">
             {allChecked
               ? "All prerequisites confirmed — the notice form is now unlocked."
               : "Confirm all 4 items below before the notice form becomes available. Issuing a Section 21 without meeting these prerequisites renders the notice invalid."}
@@ -111,8 +111,8 @@ export function Section21PreflightChecklist(
               key={item.id}
               className={`rounded-md border p-3 transition-colors ${
                 isChecked
-                  ? "border-green-200 bg-white"
-                  : "border-gray-200 bg-white"
+                  ? "border-success/30 bg-white"
+                  : "border-neutral-200 bg-white"
               }`}
             >
               <label className="flex cursor-pointer items-start gap-3">
@@ -121,10 +121,10 @@ export function Section21PreflightChecklist(
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggle(item.id)}
-                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-green-700 focus:ring-green-600"
+                    className="h-4 w-4 cursor-pointer rounded border-neutral-300 text-success focus:ring-success"
                   />
                   {isChecked && (
-                    <span className="pointer-events-none absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-green-700 text-[8px] font-bold text-white">
+                    <span className="pointer-events-none absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-success text-[8px] font-bold text-white">
                       ✓
                     </span>
                   )}
@@ -133,23 +133,23 @@ export function Section21PreflightChecklist(
                   <div className="flex items-center gap-2">
                     <span
                       className={`text-xs font-semibold uppercase tracking-wide ${
-                        isChecked ? "text-green-700" : "text-gray-400"
+                        isChecked ? "text-success" : "text-neutral-500"
                       }`}
                     >
                       {index + 1}
                     </span>
                     <span
                       className={`text-sm font-medium ${
-                        isChecked ? "text-green-900" : "text-gray-900"
+                        isChecked ? "text-success" : "text-neutral-900"
                       }`}
                     >
                       {item.label}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">{item.detail}</p>
+                  <p className="mt-1 text-xs text-neutral-500">{item.detail}</p>
                   <Link
                     href={item.linkHref}
-                    className="mt-1 inline-block text-xs font-medium text-green-700 underline-offset-2 hover:underline"
+                    className="mt-1 inline-block text-xs font-medium text-success underline-offset-2 hover:underline"
                   >
                     {item.linkLabel} &rarr;
                   </Link>
@@ -161,9 +161,9 @@ export function Section21PreflightChecklist(
       </ol>
 
       {allChecked && (
-        <div className="mt-4 flex items-center gap-2 rounded-md border border-green-200 bg-white px-3 py-2">
+        <div className="mt-4 flex items-center gap-2 rounded-md border border-success/30 bg-white px-3 py-2">
           <span className="text-base">✅</span>
-          <span className="text-sm font-medium text-green-800">
+          <span className="text-sm font-medium text-success">
             All prerequisites confirmed. Scroll down to complete the notice.
           </span>
         </div>

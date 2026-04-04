@@ -240,6 +240,8 @@
   --color-on-inverse-surface: #2f3130;
   --color-tertiary-container: #0050d4;
   --color-on-tertiary-container: #d8e2ff;
+  /* Brand accent light (dark mode) */
+  --color-brand-accent-light: rgba(37, 99, 235, 0.15);
 }
 
 /* === Mobile / Touch Utilities === */
@@ -265,6 +267,11 @@
   touch-action: manipulation;
 }
 
+/* === Text balance utility (headings) === */
+.text-balance {
+  text-wrap: balance;
+}
+
 /* === Scrollbar hide utility === */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -276,7 +283,7 @@
 
 /* === Focus ring utility === */
 .focus-ring {
-  outline: 2px solid #2563EB;
+  outline: 2px solid var(--color-brand-accent);
   outline-offset: 2px;
 }
 

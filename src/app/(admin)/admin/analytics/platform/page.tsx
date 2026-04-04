@@ -151,31 +151,31 @@ async function PlatformMetricsContent() {
           label="Admin Actions Today"
           value={analytics.dau}
           icon={TrendingUp}
-          color="#1B4D3E"
+          color="var(--color-brand-primary)"
         />
         <KpiCard
           label="Active Users (30d)"
           value={analytics.mau}
           icon={TrendingUp}
-          color="#D4A853"
+          color="var(--color-brand-secondary)"
         />
         <KpiCard
           label="Total Users"
           value={analytics.totalUsers}
           icon={Users}
-          color="#2563EB"
+          color="var(--color-brand-accent)"
         />
         <KpiCard
           label="Total Properties"
           value={analytics.totalProperties}
           icon={Building2}
-          color="#1B4D3E"
+          color="var(--color-brand-primary)"
         />
         <KpiCard
           label="Total Messages"
           value={analytics.totalMessages}
           icon={MessageSquare}
-          color="#D4A853"
+          color="var(--color-brand-secondary)"
         />
       </div>
 

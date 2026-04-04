@@ -23,16 +23,16 @@ export function SearchVolumeChart({ data }: Props) {
         data={data}
         margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-neutral-200)" />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 11, fill: "#6b7280" }}
+          tick={{ fontSize: 11, fill: "var(--color-neutral-500)" }}
           axisLine={false}
           tickLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
-          tick={{ fontSize: 12, fill: "#6b7280" }}
+          tick={{ fontSize: 12, fill: "var(--color-neutral-500)" }}
           axisLine={false}
           tickLine={false}
         />
@@ -40,14 +40,14 @@ export function SearchVolumeChart({ data }: Props) {
           formatter={(value: number) => [value.toLocaleString("en-GB"), "Searches"]}
           contentStyle={{
             borderRadius: "8px",
-            border: "1px solid #e5e7eb",
+            border: "1px solid var(--color-neutral-200)",
             fontSize: "12px",
           }}
         />
         <Line
           type="monotone"
           dataKey="count"
-          stroke="#2563EB"
+          stroke="var(--color-brand-accent)"
           strokeWidth={2}
           dot={false}
         />

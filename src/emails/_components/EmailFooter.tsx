@@ -1,4 +1,5 @@
 import { Hr, Section, Text, Link } from "@react-email/components";
+import { NEUTRAL_200, NEUTRAL_400, NEUTRAL_50, NEUTRAL_600 } from "@/emails/_constants/colors";
 
 type Props = Readonly<{ unsubscribeUrl: string; userId?: string }>;
 
@@ -7,19 +8,19 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
     <>
       <Hr
         style={{
-          borderColor: "#E2E2E8",
+          borderColor: NEUTRAL_200,
           margin: "0",
         }}
       />
       <Section
         style={{
           padding: "24px 32px",
-          backgroundColor: "#F8F8FA",
+          backgroundColor: NEUTRAL_50,
         }}
       >
         <Text
           style={{
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             fontSize: "12px",
             margin: "0 0 12px 0",
             lineHeight: "1.5",
@@ -29,7 +30,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
         </Text>
         <Text
           style={{
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             fontSize: "12px",
             margin: "0 0 12px 0",
             lineHeight: "1.5",
@@ -38,7 +39,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
           <Link
             href="https://britestate.co.uk/privacy"
             style={{
-              color: "#5E5E6A",
+              color: NEUTRAL_600,
               fontSize: "12px",
               textDecoration: "none",
             }}
@@ -49,7 +50,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
           <Link
             href="https://britestate.co.uk/terms"
             style={{
-              color: "#5E5E6A",
+              color: NEUTRAL_600,
               fontSize: "12px",
               textDecoration: "none",
             }}
@@ -60,7 +61,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
           <Link
             href={unsubscribeUrl}
             style={{
-              color: "#5E5E6A",
+              color: NEUTRAL_600,
               fontSize: "12px",
               textDecoration: "none",
             }}
@@ -70,7 +71,7 @@ export function EmailFooter({ unsubscribeUrl }: Props) {
         </Text>
         <Text
           style={{
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             fontSize: "11px",
             margin: "0",
             lineHeight: "1.5",

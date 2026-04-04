@@ -65,7 +65,7 @@ export function ListingAnalyticsCharts({ listingId, initialSummary }: Props) {
                 "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150",
                 days === d
                   ? "bg-white text-[--color-brand-primary-dark] shadow-sm"
-                  : "text-zinc-400 hover:text-[--color-brand-primary-dark]"
+                  : "text-neutral-400 hover:text-[--color-brand-primary-dark]"
               )}
             >
               {label}
@@ -86,23 +86,23 @@ export function ListingAnalyticsCharts({ listingId, initialSummary }: Props) {
           >
             <defs>
               <linearGradient id="analyticsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#003629" stopOpacity={0.1} />
-                <stop offset="95%" stopColor="#003629" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--color-brand-primary-dark)" stopOpacity={0.1} />
+                <stop offset="95%" stopColor="var(--color-brand-primary-dark)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#f4f3f2"
+              stroke="var(--color-neutral-100)"
               vertical={false}
             />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 10, fill: "#9E9EAB", fontFamily: "Inter, sans-serif" }}
+              tick={{ fontSize: 10, fill: "var(--color-neutral-400)", fontFamily: "Inter, sans-serif" }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: "#9E9EAB", fontFamily: "Inter, sans-serif" }}
+              tick={{ fontSize: 10, fill: "var(--color-neutral-400)", fontFamily: "Inter, sans-serif" }}
               tickLine={false}
               axisLine={false}
               allowDecimals={false}
@@ -116,22 +116,22 @@ export function ListingAnalyticsCharts({ listingId, initialSummary }: Props) {
                 fontFamily: "Inter, sans-serif",
                 fontSize: "12px",
               }}
-              labelStyle={{ color: "#1a1c1c", fontWeight: 600 }}
-              itemStyle={{ color: "#003629" }}
+              labelStyle={{ color: "var(--color-neutral-900)", fontWeight: 600 }}
+              itemStyle={{ color: "var(--color-brand-primary-dark)" }}
             />
             <Area
               type="monotone"
               dataKey="views"
-              stroke="#003629"
+              stroke="var(--color-brand-primary-dark)"
               strokeWidth={2.5}
               fill="url(#analyticsGradient)"
               dot={false}
-              activeDot={{ r: 5, fill: "#003629", strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: "var(--color-brand-primary-dark)", strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <div className="h-64 flex items-center justify-center text-zinc-400 text-sm">
+        <div className="h-64 flex items-center justify-center text-neutral-400 text-sm">
           No views data for this period
         </div>
       )}

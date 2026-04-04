@@ -189,7 +189,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
               render={<Link href="/" />}
             >
-              <MapPinIcon className="size-5! text-emerald-600" />
+              <MapPinIcon className="size-5! text-brand-primary" />
               <span className="text-base font-semibold">Britestate</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

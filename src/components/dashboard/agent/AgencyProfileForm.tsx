@@ -168,7 +168,7 @@ export function AgencyProfileForm({ profile }: Props) {
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Label htmlFor="agency_name">
-              Agency name <span className="text-red-500">*</span>
+              Agency name <span className="text-error">*</span>
             </Label>
             <Input
               id="agency_name"
@@ -177,7 +177,7 @@ export function AgencyProfileForm({ profile }: Props) {
               className="mt-1"
             />
             {errors.agency_name && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-error">
                 {errors.agency_name.message}
               </p>
             )}
@@ -193,7 +193,7 @@ export function AgencyProfileForm({ profile }: Props) {
               className="mt-1"
             />
             {errors.contact_email && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-error">
                 {errors.contact_email.message}
               </p>
             )}
@@ -265,7 +265,7 @@ export function AgencyProfileForm({ profile }: Props) {
               className="mt-1"
             />
             {errors.postcode && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-error">
                 {errors.postcode.message}
               </p>
             )}

@@ -24,15 +24,16 @@ export const arrearsLetterSchema = z.object({
 export type ArrearsLetterData = z.infer<typeof arrearsLetterSchema>;
 
 const styles = StyleSheet.create({
-  page: { padding: 48, fontFamily: "Helvetica", fontSize: 11, lineHeight: 1.5, color: "#111827" },
+  /* @react-pdf/renderer requires inline hex — these map to design system tokens */
+  page: { padding: 48, fontFamily: "Helvetica", fontSize: 11, lineHeight: 1.5, color: "#111827" /* neutral-900 */ },
   title: { fontSize: 14, fontFamily: "Helvetica-Bold", textAlign: "center", marginBottom: 24 },
   row: { flexDirection: "row", marginBottom: 6 },
   label: { fontFamily: "Helvetica-Bold", width: 160 },
   value: { flex: 1 },
   paragraph: { marginBottom: 12 },
   bold: { fontFamily: "Helvetica-Bold" },
-  divider: { borderBottomWidth: 1, borderBottomColor: "#D1D5DB", marginVertical: 16 },
-  footer: { marginTop: 32, fontSize: 9, color: "#6B7280" },
+  divider: { borderBottomWidth: 1, borderBottomColor: "#D1D5DB" /* neutral-300 */, marginVertical: 16 },
+  footer: { marginTop: 32, fontSize: 9, color: "#6B7280" /* neutral-500 */ },
 });
 
 function ArrearsLetterDocument({ data }: Readonly<{ data: ArrearsLetterData }>) {
@@ -97,7 +98,7 @@ export function ArrearsLetterPDF({ data }: ArrearsLetterPDFProps) {
 
   if (!validation.success) {
     return (
-      <p className="text-sm text-red-500">
+      <p className="text-sm text-error">
         Cannot generate letter: {validation.error.issues[0].message}
       </p>
     );
@@ -107,7 +108,7 @@ export function ArrearsLetterPDF({ data }: ArrearsLetterPDFProps) {
     <PDFDownloadLink
       document={<ArrearsLetterDocument data={validation.data} />}
       fileName={`arrears-letter-${data.tenantName.replace(/\s+/g, "-").toLowerCase()}.pdf`}
-      className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+      className="inline-flex items-center gap-2 rounded-lg bg-error px-4 py-2 text-sm font-medium text-white hover:bg-error/90"
     >
       {({ loading }) => (loading ? "Generating..." : "Download Arrears Letter")}
     </PDFDownloadLink>

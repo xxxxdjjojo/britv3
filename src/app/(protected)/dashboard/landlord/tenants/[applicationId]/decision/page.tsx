@@ -85,20 +85,20 @@ export default function DecisionPage({ params }: Props) {
       <Tabs value={tab} onValueChange={(v) => setTab(v as "accept" | "reject")}>
         <TabsList className="grid grid-cols-2 w-full rounded-xl h-11">
           <TabsTrigger value="accept" className="rounded-lg flex items-center gap-2 font-medium">
-            <CheckCircle className="size-4 text-emerald-600" />
+            <CheckCircle className="size-4 text-success" />
             Accept
           </TabsTrigger>
           <TabsTrigger value="reject" className="rounded-lg flex items-center gap-2 font-medium">
-            <XCircle className="size-4 text-red-500" />
+            <XCircle className="size-4 text-error" />
             Reject
           </TabsTrigger>
         </TabsList>
 
         {/* Accept tab */}
         <TabsContent value="accept" className="mt-4">
-          <Card className="rounded-2xl border-emerald-200 dark:border-emerald-800/30">
+          <Card className="rounded-2xl border-success/30 dark:border-success/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-heading text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+              <CardTitle className="text-base font-heading text-success dark:text-success flex items-center gap-2">
                 <CheckCircle className="size-4" />
                 Accept Application
               </CardTitle>
@@ -108,12 +108,12 @@ export default function DecisionPage({ params }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Info block */}
-              <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/30 p-4">
+              <div className="rounded-xl bg-success-light dark:bg-success/10 border border-success/30 dark:border-success/20 p-4">
                 <div className="flex gap-3">
-                  <Info className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <div className="text-sm text-emerald-800 dark:text-emerald-300 space-y-1">
+                  <Info className="size-4 text-success dark:text-success shrink-0 mt-0.5" />
+                  <div className="text-sm text-success dark:text-success space-y-1">
                     <p className="font-medium">What happens next?</p>
-                    <ul className="space-y-1 text-emerald-700 dark:text-emerald-400">
+                    <ul className="space-y-1 text-success dark:text-success">
                       <li>• The applicant receives an approval email</li>
                       <li>• Follow up with deposit and tenancy agreement details</li>
                       <li>• You can generate a tenancy agreement from the dashboard</li>
@@ -125,7 +125,7 @@ export default function DecisionPage({ params }: Props) {
               <Button
                 onClick={handleAccept}
                 disabled={loading}
-                className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                className="w-full h-11 bg-success hover:bg-success/90 text-white font-medium"
               >
                 {loading ? (
                   <>
@@ -145,9 +145,9 @@ export default function DecisionPage({ params }: Props) {
 
         {/* Reject tab */}
         <TabsContent value="reject" className="mt-4">
-          <Card className="rounded-2xl border-red-200 dark:border-red-800/30">
+          <Card className="rounded-2xl border-error/30 dark:border-error/20">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-heading text-red-700 dark:text-red-400 flex items-center gap-2">
+              <CardTitle className="text-base font-heading text-error dark:text-error flex items-center gap-2">
                 <XCircle className="size-4" />
                 Reject Application
               </CardTitle>
@@ -180,10 +180,10 @@ export default function DecisionPage({ params }: Props) {
               </div>
 
               {/* Warning block */}
-              <div className="rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/20 p-4">
+              <div className="rounded-xl bg-error-light dark:bg-error/10 border border-error/30 dark:border-error/20 p-4">
                 <div className="flex gap-3">
-                  <Info className="size-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-700 dark:text-red-300">
+                  <Info className="size-4 text-error dark:text-error shrink-0 mt-0.5" />
+                  <p className="text-sm text-error dark:text-error">
                     This will send a rejection email to the applicant. This action cannot be undone.
                   </p>
                 </div>

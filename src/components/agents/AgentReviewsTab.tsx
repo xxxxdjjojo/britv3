@@ -30,7 +30,7 @@ function StarRow({ rating }: Readonly<{ rating: number }>) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`w-4 h-4 ${star <= rating ? "fill-[#D4A853] text-[#D4A853]" : "fill-[#e8e6e3] text-[#e8e6e3] dark:fill-[#243330] dark:text-[#243330]"}`}
+          className={`w-4 h-4 ${star <= rating ? "fill-brand-secondary text-brand-secondary" : "fill-neutral-200 text-neutral-200 dark:fill-neutral-800 dark:text-neutral-800"}`}
         />
       ))}
     </div>
@@ -62,8 +62,8 @@ function ReviewerAvatar({
     : "?";
 
   return (
-    <div className="w-10 h-10 rounded-full bg-[#f4f3f2] dark:bg-[#1a2822] flex items-center justify-center flex-shrink-0">
-      <span className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
+    <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center flex-shrink-0">
+      <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-200">
         {initials}
       </span>
     </div>
@@ -76,17 +76,17 @@ function PropertyContextPill({
 }: Readonly<{ address: string; listingType?: "sale" | "let" | null }>) {
   return (
     <div className="flex items-center gap-2 mb-2">
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f4f3f2] dark:bg-[#1a2822] rounded text-xs text-[#6b7280] dark:text-[#9ca3af]">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-neutral-100 dark:bg-neutral-900 rounded text-xs text-neutral-500 dark:text-neutral-400">
         <Home className="w-3 h-3" />
         {address}
       </span>
       {listingType === "sale" && (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-light text-success dark:bg-success/20 dark:text-success">
           Sale
         </span>
       )}
       {listingType === "let" && (
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#1B4D3E]/10 text-[#1B4D3E] dark:bg-[#1B4D3E]/20 dark:text-emerald-400">
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-success">
           Let
         </span>
       )}
@@ -103,18 +103,18 @@ export function AgentReviewsTab({
     <div className="space-y-6">
       {/* Section header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-heading font-bold tracking-tight text-[#1a1a1a] dark:text-white">
+        <h2 className="text-2xl font-heading font-bold tracking-tight text-neutral-900 dark:text-white">
           Reviews ({total})
         </h2>
-        <span className="text-sm text-[#6b7280] dark:text-[#9ca3af] font-medium">
+        <span className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
           Sort: Most Recent
         </span>
       </div>
 
       {/* Review cards */}
       {reviews.length === 0 ? (
-        <div className="p-8 rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822] text-center">
-          <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm">
+        <div className="p-8 rounded-xl bg-neutral-100 dark:bg-neutral-900 text-center">
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm">
             No reviews yet for {agencyName}
           </p>
         </div>
@@ -123,7 +123,7 @@ export function AgentReviewsTab({
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="p-6 rounded-xl bg-[#f4f3f2] dark:bg-[#1a2822]"
+              className="p-6 rounded-xl bg-neutral-100 dark:bg-neutral-900"
             >
               {/* Header */}
               <div className="flex items-start justify-between gap-4 mb-3">
@@ -133,10 +133,10 @@ export function AgentReviewsTab({
                     avatarUrl={review.profiles.avatar_url}
                   />
                   <div>
-                    <p className="font-semibold text-[#1a1a1a] dark:text-white text-sm">
+                    <p className="font-semibold text-neutral-900 dark:text-white text-sm">
                       {review.profiles.full_name ?? "Anonymous"}
                     </p>
-                    <p className="text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       Verified Customer &bull;{" "}
                       {formatRelativeDate(review.created_at)}
                     </p>
@@ -155,25 +155,25 @@ export function AgentReviewsTab({
 
               {/* Title */}
               {review.title && (
-                <p className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] text-sm mb-1">
+                <p className="font-semibold text-neutral-900 dark:text-neutral-200 text-sm mb-1">
                   {review.title}
                 </p>
               )}
 
               {/* Body */}
               {review.body && (
-                <p className="text-[#6b7280] dark:text-[#9ca3af] text-sm leading-relaxed">
+                <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed">
                   {review.body}
                 </p>
               )}
 
               {/* Agency response */}
               {review.provider_response && (
-                <div className="ml-8 mt-4 p-4 bg-[#1B4D3E]/5 dark:bg-[#1B4D3E]/10 rounded-lg border-l-4 border-[#1B4D3E]">
-                  <p className="text-xs font-bold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
+                <div className="ml-8 mt-4 p-4 bg-brand-primary/5 dark:bg-brand-primary/10 rounded-lg border-l-4 border-brand-primary">
+                  <p className="text-xs font-bold text-neutral-900 dark:text-neutral-200 mb-1">
                     Response from {agencyName}:
                   </p>
-                  <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] italic leading-relaxed">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400 italic leading-relaxed">
                     {review.provider_response}
                   </p>
                 </div>

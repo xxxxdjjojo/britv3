@@ -73,7 +73,7 @@ async function PageContent() {
       <div className="flex gap-4 border-b pb-4">
         <a
           href="/dashboard/agent/analytics"
-          className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1"
+          className="text-sm font-medium text-brand-accent border-b-2 border-brand-accent pb-1"
         >
           My Performance
         </a>

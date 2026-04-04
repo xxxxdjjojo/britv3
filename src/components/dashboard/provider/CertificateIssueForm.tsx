@@ -149,7 +149,7 @@ export function CertificateIssueForm({
       {/* Certificate Type */}
       <div className="space-y-2">
         <Label htmlFor="certificateType">
-          Certificate Type <span className="text-red-500">*</span>
+          Certificate Type <span className="text-error">*</span>
         </Label>
         <select
           id="certificateType"
@@ -164,7 +164,7 @@ export function CertificateIssueForm({
           ))}
         </select>
         {errors.certificateType && (
-          <p className="text-xs text-red-500">{errors.certificateType.message}</p>
+          <p className="text-xs text-error">{errors.certificateType.message}</p>
         )}
       </div>
 
@@ -178,7 +178,7 @@ export function CertificateIssueForm({
           aria-invalid={!!errors.certificateNumber}
         />
         {errors.certificateNumber && (
-          <p className="text-xs text-red-500">{errors.certificateNumber.message}</p>
+          <p className="text-xs text-error">{errors.certificateNumber.message}</p>
         )}
       </div>
 
@@ -186,7 +186,7 @@ export function CertificateIssueForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="issuedAt">
-            Issue Date <span className="text-red-500">*</span>
+            Issue Date <span className="text-error">*</span>
           </Label>
           <Input
             id="issuedAt"
@@ -195,7 +195,7 @@ export function CertificateIssueForm({
             aria-invalid={!!errors.issuedAt}
           />
           {errors.issuedAt && (
-            <p className="text-xs text-red-500">{errors.issuedAt.message}</p>
+            <p className="text-xs text-error">{errors.issuedAt.message}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -219,7 +219,7 @@ export function CertificateIssueForm({
           aria-invalid={!!errors.notes}
         />
         {errors.notes && (
-          <p className="text-xs text-red-500">{errors.notes.message}</p>
+          <p className="text-xs text-error">{errors.notes.message}</p>
         )}
       </div>
 

@@ -118,7 +118,7 @@ type QuoteBuilderFormProps = Readonly<{
 
 function StepBadge({ step }: Readonly<{ step: string }>) {
   return (
-    <span className="w-8 h-8 rounded-full bg-[#9ed1bd] flex items-center justify-center text-[#003629] font-bold text-xs shrink-0">
+    <span className="w-8 h-8 rounded-full bg-brand-primary-lighter flex items-center justify-center text-brand-primary-dark font-bold text-xs shrink-0">
       {step}
     </span>
   );
@@ -419,10 +419,10 @@ export function QuoteBuilderForm({
 
   // Stitch label style
   const labelCls =
-    "text-[11px] font-bold tracking-widest text-stone-400 uppercase block mb-1.5";
+    "text-[11px] font-bold tracking-widest text-neutral-400 uppercase block mb-1.5";
   // Stitch input style (borderless, tonal background)
   const inputCls =
-    "w-full bg-[#f4f3f2] border-0 rounded-lg py-3 px-4 text-sm text-stone-900 focus:ring-1 focus:ring-[#003629] focus:bg-white transition-all placeholder:text-stone-400";
+    "w-full bg-neutral-100 border-0 rounded-lg py-3 px-4 text-sm text-neutral-900 focus:ring-1 focus:ring-brand-primary-dark focus:bg-white transition-all placeholder:text-neutral-400";
 
   return (
     <div className="flex flex-col lg:flex-row gap-10">
@@ -432,15 +432,15 @@ export function QuoteBuilderForm({
       <div className="flex-1 space-y-10">
         {/* Restore banner */}
         {showRestoreBanner && (
-          <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm">
-            <span className="text-amber-800">
+          <div className="flex items-center justify-between rounded-lg border border-warning/20 bg-warning-light px-4 py-3 text-sm">
+            <span className="text-warning">
               You have an unsaved draft. Restore it?
             </span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleRestore}
-                className="rounded-md border border-amber-300 px-3 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition-colors"
+                className="rounded-md border border-warning/30 px-3 py-1 text-xs font-semibold text-warning hover:bg-warning-light transition-colors"
               >
                 Restore
               </button>
@@ -448,7 +448,7 @@ export function QuoteBuilderForm({
                 type="button"
                 onClick={handleDismissRestore}
                 aria-label="Dismiss"
-                className="text-amber-600 hover:text-amber-800"
+                className="text-warning hover:text-warning"
               >
                 <X className="size-4" />
               </button>
@@ -460,7 +460,7 @@ export function QuoteBuilderForm({
         <section className="space-y-5">
           <div className="flex items-center gap-3">
             <StepBadge step="01" />
-            <h2 className="text-lg font-semibold font-heading text-stone-900">
+            <h2 className="text-lg font-semibold font-heading text-neutral-900">
               Client &amp; Property
             </h2>
           </div>
@@ -474,7 +474,7 @@ export function QuoteBuilderForm({
                   id="clientName"
                   value={prefillClientName}
                   readOnly
-                  className={`${inputCls} bg-stone-200/60 cursor-not-allowed`}
+                  className={`${inputCls} bg-neutral-200/60 cursor-not-allowed`}
                 />
               ) : (
                 <input
@@ -494,7 +494,7 @@ export function QuoteBuilderForm({
                   id="propertyAddress"
                   value={prefillCategory}
                   readOnly
-                  className={`${inputCls} bg-stone-200/60 cursor-not-allowed capitalize`}
+                  className={`${inputCls} bg-neutral-200/60 cursor-not-allowed capitalize`}
                 />
               ) : (
                 <input
@@ -512,7 +512,7 @@ export function QuoteBuilderForm({
         <section className="space-y-5">
           <div className="flex items-center gap-3">
             <StepBadge step="02" />
-            <h2 className="text-lg font-semibold font-heading text-stone-900">
+            <h2 className="text-lg font-semibold font-heading text-neutral-900">
               Scope of Work
             </h2>
           </div>
@@ -525,7 +525,7 @@ export function QuoteBuilderForm({
                 id="jobTitle"
                 value={prefillJobTitle}
                 readOnly
-                className={`${inputCls} bg-stone-200/60 cursor-not-allowed`}
+                className={`${inputCls} bg-neutral-200/60 cursor-not-allowed`}
               />
             ) : (
               <input
@@ -544,7 +544,7 @@ export function QuoteBuilderForm({
               id="notes"
               placeholder="Describe the project milestones and specific tasks..."
               rows={4}
-              className="w-full bg-[#f4f3f2] border-0 rounded-lg py-3 px-4 text-sm text-stone-900 focus:ring-1 focus:ring-[#003629] focus:bg-white transition-all placeholder:text-stone-400 resize-none"
+              className="w-full bg-neutral-100 border-0 rounded-lg py-3 px-4 text-sm text-neutral-900 focus:ring-1 focus:ring-brand-primary-dark focus:bg-white transition-all placeholder:text-neutral-400 resize-none"
               {...register("notes")}
             />
           </div>
@@ -555,7 +555,7 @@ export function QuoteBuilderForm({
               type="button"
               onClick={handleSuggestItems}
               disabled={suggestLoading}
-              className="inline-flex items-center gap-2 border border-[#003629]/30 text-[#003629] px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-[#003629]/5 transition-colors disabled:opacity-60"
+              className="inline-flex items-center gap-2 border border-brand-primary-dark/30 text-brand-primary-dark px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-brand-primary-lighter transition-colors disabled:opacity-60"
             >
               <Sparkles className="size-4" />
               {suggestLoading ? "Generating…" : "Suggest Line Items"}
@@ -568,7 +568,7 @@ export function QuoteBuilderForm({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <StepBadge step="03" />
-              <h2 className="text-lg font-semibold font-heading text-stone-900">
+              <h2 className="text-lg font-semibold font-heading text-neutral-900">
                 Line Items
               </h2>
             </div>
@@ -576,7 +576,7 @@ export function QuoteBuilderForm({
               <button
                 type="button"
                 onClick={handleSaveTemplateClick}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-800 uppercase tracking-wider transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-neutral-800 uppercase tracking-wider transition-colors"
                 title="Save current items as a template"
               >
                 <Save className="size-3.5" />
@@ -586,7 +586,7 @@ export function QuoteBuilderForm({
                 <button
                   type="button"
                   onClick={() => setShowLoadTemplate((v) => !v)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-800 uppercase tracking-wider transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-neutral-800 uppercase tracking-wider transition-colors"
                   title="Load a saved template"
                 >
                   <FolderOpen className="size-3.5" />
@@ -598,7 +598,7 @@ export function QuoteBuilderForm({
                 onClick={() =>
                   append({ description: "", qty: 1, unitPrice: 0, vatRate: 20 })
                 }
-                className="inline-flex items-center gap-1.5 text-[#003629] text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
+                className="inline-flex items-center gap-1.5 text-brand-primary-dark text-xs font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
               >
                 <Plus className="size-4" />
                 Add Item
@@ -608,7 +608,7 @@ export function QuoteBuilderForm({
 
           {/* Save template inline dialog */}
           {showSaveTemplate && (
-            <div className="flex items-center gap-2 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
               <Input
                 autoFocus
                 placeholder="Template name…"
@@ -618,19 +618,19 @@ export function QuoteBuilderForm({
                   if (e.key === "Enter") handleConfirmSaveTemplate();
                   if (e.key === "Escape") setShowSaveTemplate(false);
                 }}
-                className="h-8 text-sm border-stone-200"
+                className="h-8 text-sm border-neutral-200"
               />
               <button
                 type="button"
                 onClick={handleConfirmSaveTemplate}
-                className="px-3 py-1.5 bg-[#003629] text-white text-xs font-bold rounded"
+                className="px-3 py-1.5 bg-brand-primary-dark text-white text-xs font-bold rounded"
               >
                 Save
               </button>
               <button
                 type="button"
                 onClick={() => setShowSaveTemplate(false)}
-                className="text-stone-400 hover:text-stone-700"
+                className="text-neutral-400 hover:text-neutral-700"
                 aria-label="Cancel"
               >
                 <X className="size-4" />
@@ -640,23 +640,23 @@ export function QuoteBuilderForm({
 
           {/* Load template list */}
           {showLoadTemplate && templates.length > 0 && (
-            <div className="rounded-lg border border-stone-200 bg-white shadow-sm">
-              <p className="border-b border-stone-100 px-3 py-2 text-xs font-semibold text-stone-500">
+            <div className="rounded-lg border border-neutral-200 bg-white shadow-sm">
+              <p className="border-b border-neutral-100 px-3 py-2 text-xs font-semibold text-neutral-500">
                 Saved Templates
               </p>
               <ul className="max-h-48 overflow-y-auto">
                 {templates.map((tpl, idx) => (
                   <li
                     key={idx}
-                    className="flex items-center justify-between px-3 py-2 hover:bg-stone-50"
+                    className="flex items-center justify-between px-3 py-2 hover:bg-neutral-50"
                   >
                     <button
                       type="button"
                       onClick={() => handleLoadTemplate(tpl)}
-                      className="flex-1 text-left text-sm font-medium hover:text-[#003629]"
+                      className="flex-1 text-left text-sm font-medium hover:text-brand-primary-dark"
                     >
                       {tpl.name}
-                      <span className="ml-2 text-xs font-normal text-stone-400">
+                      <span className="ml-2 text-xs font-normal text-neutral-400">
                         ({tpl.items.filter((i) => !i.isSectionHeader).length} items)
                       </span>
                     </button>
@@ -664,7 +664,7 @@ export function QuoteBuilderForm({
                       type="button"
                       onClick={() => handleDeleteTemplate(idx)}
                       aria-label="Delete template"
-                      className="ml-2 text-stone-400 hover:text-red-600 transition-colors"
+                      className="ml-2 text-neutral-400 hover:text-error transition-colors"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
@@ -682,19 +682,19 @@ export function QuoteBuilderForm({
               return (
                 <div
                   key={field.id}
-                  className="flex items-center gap-2 border-b border-stone-200 pb-1 pt-2"
+                  className="flex items-center gap-2 border-b border-neutral-200 pb-1 pt-2"
                 >
-                  <AlignLeft className="size-4 shrink-0 text-stone-400" />
+                  <AlignLeft className="size-4 shrink-0 text-neutral-400" />
                   <input
                     placeholder="Section title…"
                     {...register(`lineItems.${index}.sectionTitle`)}
-                    className="h-8 flex-1 border-0 bg-transparent p-0 text-sm font-semibold focus:ring-0 outline-none text-stone-800"
+                    className="h-8 flex-1 border-0 bg-transparent p-0 text-sm font-semibold focus:ring-0 outline-none text-neutral-800"
                   />
                   <button
                     type="button"
                     onClick={() => remove(index)}
                     aria-label="Remove section"
-                    className="flex size-8 items-center justify-center rounded-md text-stone-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="flex size-8 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-error-light hover:text-error"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -710,14 +710,14 @@ export function QuoteBuilderForm({
             return (
               <div
                 key={field.id}
-                className="p-5 bg-[#f4f3f2] rounded-xl space-y-3"
+                className="p-5 bg-neutral-100 rounded-xl space-y-3"
               >
                 <div className="grid grid-cols-12 gap-3">
                   <div className="col-span-6 space-y-1">
                     <label className={labelCls}>Item Description</label>
                     <input
                       placeholder="Description"
-                      className="w-full bg-white border-0 rounded-lg py-2 px-3 text-sm text-stone-900 focus:ring-1 focus:ring-[#003629] transition-all outline-none"
+                      className="w-full bg-white border-0 rounded-lg py-2 px-3 text-sm text-neutral-900 focus:ring-1 focus:ring-brand-primary-dark transition-all outline-none"
                       {...register(`lineItems.${index}.description`)}
                     />
                   </div>
@@ -728,7 +728,7 @@ export function QuoteBuilderForm({
                       min={1}
                       step={1}
                       placeholder="1"
-                      className="w-full bg-white border-0 rounded-lg py-2 px-3 text-sm text-right text-stone-900 focus:ring-1 focus:ring-[#003629] transition-all outline-none"
+                      className="w-full bg-white border-0 rounded-lg py-2 px-3 text-sm text-right text-neutral-900 focus:ring-1 focus:ring-brand-primary-dark transition-all outline-none"
                       {...register(`lineItems.${index}.qty`, {
                         valueAsNumber: true,
                       })}
@@ -737,7 +737,7 @@ export function QuoteBuilderForm({
                   <div className="col-span-4 space-y-1">
                     <label className={labelCls}>Rate (£)</label>
                     <div className="relative">
-                      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-400 text-sm">
+                      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-400 text-sm">
                         £
                       </span>
                       <input
@@ -745,7 +745,7 @@ export function QuoteBuilderForm({
                         min={0}
                         step={0.01}
                         placeholder="0.00"
-                        className="w-full bg-white border-0 rounded-lg py-2 pl-7 pr-3 text-sm text-right text-stone-900 focus:ring-1 focus:ring-[#003629] transition-all outline-none"
+                        className="w-full bg-white border-0 rounded-lg py-2 pl-7 pr-3 text-sm text-right text-neutral-900 focus:ring-1 focus:ring-brand-primary-dark transition-all outline-none"
                         {...register(`lineItems.${index}.unitPrice`, {
                           valueAsNumber: true,
                         })}
@@ -766,9 +766,9 @@ export function QuoteBuilderForm({
                             e.target.checked ? 20 : 0,
                           )
                         }
-                        className="rounded border-stone-200 text-[#003629] focus:ring-[#003629] w-4 h-4"
+                        className="rounded border-neutral-200 text-brand-primary-dark focus:ring-brand-primary-dark w-4 h-4"
                       />
-                      <span className="text-xs text-stone-500 font-medium">
+                      <span className="text-xs text-neutral-500 font-medium">
                         Include VAT (20%)
                       </span>
                     </label>
@@ -781,7 +781,7 @@ export function QuoteBuilderForm({
                         )
                       }
                     >
-                      <SelectTrigger className="h-7 w-20 text-xs border-stone-200">
+                      <SelectTrigger className="h-7 w-20 text-xs border-neutral-200">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -790,7 +790,7 @@ export function QuoteBuilderForm({
                         <SelectItem value="20">20%</SelectItem>
                       </SelectContent>
                     </Select>
-                    <span className="text-xs font-medium text-stone-700">
+                    <span className="text-xs font-medium text-neutral-700">
                       = {fmtGbp(linePence)}
                     </span>
                   </div>
@@ -799,7 +799,7 @@ export function QuoteBuilderForm({
                     onClick={() => fields.length > 1 && remove(index)}
                     disabled={fields.length <= 1}
                     aria-label="Remove line item"
-                    className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="text-error/70 hover:text-error transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -812,7 +812,7 @@ export function QuoteBuilderForm({
           <button
             type="button"
             onClick={handleAddSectionHeader}
-            className="inline-flex items-center gap-2 text-stone-400 hover:text-stone-700 text-xs font-bold uppercase tracking-wider transition-colors"
+            className="inline-flex items-center gap-2 text-neutral-400 hover:text-neutral-700 text-xs font-bold uppercase tracking-wider transition-colors"
           >
             <AlignLeft className="size-4" />
             Add Section
@@ -820,41 +820,41 @@ export function QuoteBuilderForm({
 
           {/* Totals summary */}
           <div className="flex flex-col items-end gap-1.5 pt-3 px-5">
-            <div className="flex justify-between w-full max-w-xs text-stone-500 text-sm">
+            <div className="flex justify-between w-full max-w-xs text-neutral-500 text-sm">
               <span>Subtotal</span>
               <span>{fmtGbp(subtotalPence)}</span>
             </div>
-            <div className="flex justify-between w-full max-w-xs text-stone-500 text-sm">
+            <div className="flex justify-between w-full max-w-xs text-neutral-500 text-sm">
               <span>VAT Total</span>
               <span>{fmtGbp(vatPence)}</span>
             </div>
-            <div className="flex justify-between w-full max-w-xs text-[#003629] font-bold text-lg pt-2 border-t border-stone-200">
+            <div className="flex justify-between w-full max-w-xs text-brand-primary-dark font-bold text-lg pt-2 border-t border-neutral-200">
               <span>Total Quote</span>
               <span>{fmtGbp(totalPence)}</span>
             </div>
           </div>
 
           {/* Staged Payments Toggle */}
-          <div className="border-t border-stone-200 pt-4">
+          <div className="border-t border-neutral-200 pt-4">
             <label className="flex cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
                 {...register("stagedPaymentsEnabled")}
-                className="size-4 rounded border-stone-200 accent-[#003629]"
+                className="size-4 rounded border-neutral-200 accent-brand-primary-dark"
               />
-              <span className="text-sm font-medium text-stone-900">
+              <span className="text-sm font-medium text-neutral-900">
                 Enable staged payments
               </span>
             </label>
-            <p className="mt-1 text-xs text-stone-500 ml-7">
+            <p className="mt-1 text-xs text-neutral-500 ml-7">
               Split the total into payment milestones that the client pays over
               time.
             </p>
           </div>
 
           {stagedPaymentsEnabled && (
-            <div className="space-y-3 rounded-lg border border-stone-200 bg-stone-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
+            <div className="space-y-3 rounded-lg border border-neutral-200 bg-neutral-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
                 Payment Milestones
               </p>
 
@@ -863,10 +863,10 @@ export function QuoteBuilderForm({
                   <Input
                     placeholder="Milestone label (e.g. Deposit)"
                     {...register(`milestones.${mIdx}.label`)}
-                    className="flex-1 border-stone-200"
+                    className="flex-1 border-neutral-200"
                   />
                   <div className="relative w-32">
-                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone-400 text-sm">
+                    <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-400 text-sm">
                       £
                     </span>
                     <Input
@@ -874,7 +874,7 @@ export function QuoteBuilderForm({
                       min={0}
                       step={0.01}
                       placeholder="0.00"
-                      className="pl-7 text-right border-stone-200"
+                      className="pl-7 text-right border-neutral-200"
                       {...register(`milestones.${mIdx}.amountPence`, {
                         valueAsNumber: true,
                       })}
@@ -884,7 +884,7 @@ export function QuoteBuilderForm({
                     type="button"
                     onClick={() => removeMilestone(mIdx)}
                     aria-label="Remove milestone"
-                    className="flex size-8 items-center justify-center rounded-md text-stone-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="flex size-8 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-error-light hover:text-error"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -894,7 +894,7 @@ export function QuoteBuilderForm({
               <button
                 type="button"
                 onClick={() => appendMilestone({ label: "", amountPence: 0 })}
-                className="inline-flex items-center gap-2 border border-stone-200 text-stone-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-stone-100 transition-colors"
+                className="inline-flex items-center gap-2 border border-neutral-200 text-neutral-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-neutral-100 transition-colors"
               >
                 <Plus className="size-4" />
                 Add Milestone
@@ -904,8 +904,8 @@ export function QuoteBuilderForm({
                 <div
                   className={`mt-2 rounded-md px-3 py-2 text-sm ${
                     milestonesValid
-                      ? "bg-emerald-50 text-emerald-800"
-                      : "bg-amber-50 text-amber-800"
+                      ? "bg-success-light text-success"
+                      : "bg-warning-light text-warning"
                   }`}
                 >
                   {milestonesValid ? (
@@ -927,7 +927,7 @@ export function QuoteBuilderForm({
         <section className="space-y-5">
           <div className="flex items-center gap-3">
             <StepBadge step="04" />
-            <h2 className="text-lg font-semibold font-heading text-stone-900">
+            <h2 className="text-lg font-semibold font-heading text-neutral-900">
               Timeline &amp; Terms
             </h2>
           </div>
@@ -960,12 +960,12 @@ export function QuoteBuilderForm({
         </section>
 
         {/* ── Action Footer ── */}
-        <div className="flex items-center justify-end gap-4 pt-6 border-t border-stone-200">
+        <div className="flex items-center justify-end gap-4 pt-6 border-t border-neutral-200">
           <button
             type="button"
             disabled={submitting || formState.isSubmitting}
             onClick={handleSubmit((values) => submitQuote(values, "draft"))}
-            className="px-7 py-3 text-stone-500 font-heading font-semibold text-sm hover:text-[#003629] transition-colors disabled:opacity-50"
+            className="px-7 py-3 text-neutral-500 font-heading font-semibold text-sm hover:text-brand-primary-dark transition-colors disabled:opacity-50"
           >
             Save as Draft
           </button>
@@ -973,7 +973,7 @@ export function QuoteBuilderForm({
             type="button"
             disabled={submitting || formState.isSubmitting}
             onClick={handleSubmit((values) => submitQuote(values, "send"))}
-            className="px-9 py-3.5 bg-gradient-to-r from-[#003629] to-[#1b4d3e] text-white rounded-lg font-heading font-bold text-sm shadow-lg shadow-[#003629]/10 active:scale-95 transition-all disabled:opacity-50"
+            className="px-9 py-3.5 bg-gradient-to-r from-brand-primary-dark to-brand-primary text-white rounded-lg font-heading font-bold text-sm shadow-lg shadow-brand-primary-dark/10 active:scale-95 transition-all disabled:opacity-50"
           >
             Generate &amp; Send Quote
           </button>
@@ -984,7 +984,7 @@ export function QuoteBuilderForm({
       {/* Right pane — Live PDF Preview                                       */}
       {/* ------------------------------------------------------------------ */}
       <aside className="lg:w-[420px] lg:sticky lg:top-24 lg:self-start">
-        <div className="bg-stone-200/30 p-2 rounded-2xl border border-white/40 shadow-lg">
+        <div className="bg-neutral-200/30 p-2 rounded-2xl border border-white/40 shadow-lg">
           <div className="bg-white rounded-xl overflow-hidden shadow-inner">
             <QuotePreview
               providerName={providerName}
@@ -997,11 +997,11 @@ export function QuoteBuilderForm({
           </div>
           {/* Preview controls */}
           <div className="flex justify-between items-center px-4 py-2.5">
-            <p className="text-[10px] text-stone-500 font-medium">
+            <p className="text-[10px] text-neutral-500 font-medium">
               PDF Preview • Real-time Sync
             </p>
             <div className="flex gap-1">
-              <button className="p-1.5 hover:bg-white rounded transition-colors text-stone-400">
+              <button className="p-1.5 hover:bg-white rounded transition-colors text-neutral-400">
                 <svg
                   className="size-4"
                   fill="none"
@@ -1016,7 +1016,7 @@ export function QuoteBuilderForm({
                   />
                 </svg>
               </button>
-              <button className="p-1.5 hover:bg-white rounded transition-colors text-stone-400">
+              <button className="p-1.5 hover:bg-white rounded transition-colors text-neutral-400">
                 <svg
                   className="size-4"
                   fill="none"
@@ -1031,7 +1031,7 @@ export function QuoteBuilderForm({
                   />
                 </svg>
               </button>
-              <button className="p-1.5 hover:bg-white rounded transition-colors text-stone-400">
+              <button className="p-1.5 hover:bg-white rounded transition-colors text-neutral-400">
                 <svg
                   className="size-4"
                   fill="none"

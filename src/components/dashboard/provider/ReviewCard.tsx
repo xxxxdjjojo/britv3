@@ -22,7 +22,7 @@ function StarRating({ rating }: Readonly<{ rating: number }>) {
           key={n}
           className={`size-4 ${
             n <= rating
-              ? "fill-amber-400 text-amber-400"
+              ? "fill-warning text-warning"
               : "fill-neutral-200 text-neutral-200"
           }`}
         />

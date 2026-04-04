@@ -40,9 +40,9 @@ export class LandlordErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/10">
-          <AlertTriangle className="size-8 text-red-500" />
-          <p className="text-sm font-medium text-red-700 dark:text-red-400">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-error/30 bg-error-light p-6 text-center dark:border-error/20 dark:bg-error/10">
+          <AlertTriangle className="size-8 text-error" />
+          <p className="text-sm font-medium text-error dark:text-error">
             Failed to load {this.props.sectionName}
           </p>
           <Button

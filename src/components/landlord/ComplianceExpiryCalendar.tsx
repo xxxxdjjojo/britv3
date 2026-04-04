@@ -76,15 +76,15 @@ export function ComplianceExpiryCalendar({ documents }: Props) {
         </CardTitle>
         <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-red-500" />
+            <span className="inline-block size-2.5 rounded-full bg-error" />
             Expired
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-amber-400" />
+            <span className="inline-block size-2.5 rounded-full bg-warning" />
             Expiring within 30 days
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="inline-block size-2.5 rounded-full bg-green-500" />
+            <span className="inline-block size-2.5 rounded-full bg-success" />
             Valid (30–90 days)
           </span>
         </div>
@@ -101,21 +101,22 @@ export function ComplianceExpiryCalendar({ documents }: Props) {
               expiring: expiringSoonDates,
               upcoming: upcomingDates,
             }}
+            /* react-day-picker modifiersStyles require inline hex — these map to design system tokens */
             modifiersStyles={{
               expired: {
-                backgroundColor: "#ef4444",
+                backgroundColor: "#ef4444" /* error */,
                 color: "#fff",
                 borderRadius: "50%",
                 fontWeight: "600",
               },
               expiring: {
-                backgroundColor: "#f59e0b",
+                backgroundColor: "#f59e0b" /* warning */,
                 color: "#fff",
                 borderRadius: "50%",
                 fontWeight: "600",
               },
               upcoming: {
-                backgroundColor: "#22c55e",
+                backgroundColor: "#22c55e" /* success */,
                 color: "#fff",
                 borderRadius: "50%",
                 fontWeight: "600",
@@ -170,11 +171,11 @@ export function ComplianceExpiryCalendar({ documents }: Props) {
                     className="flex items-start gap-2.5 rounded-md border bg-background p-3"
                   >
                     {isExpired ? (
-                      <XCircle className="mt-0.5 size-4 shrink-0 text-red-500" />
+                      <XCircle className="mt-0.5 size-4 shrink-0 text-error" />
                     ) : isExpiring ? (
-                      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-500" />
+                      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
                     ) : (
-                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-green-500" />
+                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
                     )}
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">
@@ -187,10 +188,10 @@ export function ComplianceExpiryCalendar({ documents }: Props) {
                         <Badge
                           className={`border-0 text-xs ${
                             isExpired
-                              ? "bg-red-100 text-red-700"
+                              ? "bg-error-light text-error"
                               : isExpiring
-                                ? "bg-amber-100 text-amber-700"
-                                : "bg-green-100 text-green-700"
+                                ? "bg-warning-light text-warning"
+                                : "bg-success-light text-success"
                           }`}
                         >
                           {isExpired

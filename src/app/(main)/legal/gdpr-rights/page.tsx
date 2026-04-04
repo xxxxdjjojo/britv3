@@ -39,7 +39,7 @@ export default function GdprRightsPage() {
       <h1 className="mb-2 font-heading text-2xl font-bold text-foreground">GDPR Data Subject Rights</h1>
       <p className="mb-4 font-body text-sm text-neutral-500">Last updated: {LAST_UPDATED}</p>
 
-      <div className="mb-8 rounded-xl bg-amber-50 dark:bg-amber-900/20 p-4 ring-1 ring-amber-200/60 dark:ring-amber-700/60 font-body text-sm text-amber-800 dark:text-amber-300">
+      <div className="mb-8 rounded-xl bg-warning-light dark:bg-warning/10 p-4 ring-1 ring-warning/30 dark:ring-warning/40 font-body text-sm text-warning dark:text-warning">
         Under the UK General Data Protection Regulation, you have rights in relation to your personal data held by
         Britestate Ltd. This page explains each right and how to exercise it. See also our{" "}
         <Link href="/legal/privacy" className="underline">Privacy Policy</Link>.

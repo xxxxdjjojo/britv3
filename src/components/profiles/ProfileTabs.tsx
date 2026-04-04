@@ -52,7 +52,7 @@ export function ProfileTabs({ tabs }: ProfileTabsProps) {
     <div>
       {/* Sticky tab strip — background-shift surface, no border */}
       <div
-        className="sticky top-16 z-40 bg-surface/95 dark:bg-[#0f1a17]/95 backdrop-blur-md mb-8 overflow-x-auto"
+        className="sticky top-16 z-40 bg-surface/95 dark:bg-brand-primary-dark/95 backdrop-blur-md mb-8 overflow-x-auto"
         role="tablist"
         aria-label="Profile sections"
       >
@@ -69,15 +69,15 @@ export function ProfileTabs({ tabs }: ProfileTabsProps) {
               onClick={() => handleTabChange(tab.id)}
               className={`relative py-4 px-4 font-semibold text-sm transition-all min-h-[44px] ${
                 activeTab === tab.id
-                  ? "text-brand-primary dark:text-[#4ade80]"
-                  : "text-[--color-on-surface-variant] hover:text-on-surface dark:hover:text-[#d1d5db]"
+                  ? "text-brand-primary dark:text-brand-primary-light"
+                  : "text-[--color-on-surface-variant] hover:text-on-surface dark:hover:text-neutral-300"
               }`}
             >
               {tab.label}
               {/* Brand-primary bottom indicator */}
               {activeTab === tab.id && (
                 <span
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary dark:bg-[#4ade80] rounded-t-full"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary dark:bg-brand-primary-light rounded-t-full"
                   aria-hidden="true"
                 />
               )}
@@ -85,7 +85,7 @@ export function ProfileTabs({ tabs }: ProfileTabsProps) {
           ))}
         </div>
         {/* Full-width separator line */}
-        <div className="h-px bg-[--color-outline-variant] dark:bg-[#1a2822]" aria-hidden="true" />
+        <div className="h-px bg-[--color-outline-variant] dark:bg-brand-primary-dark" aria-hidden="true" />
       </div>
 
       {/* Tab panels */}

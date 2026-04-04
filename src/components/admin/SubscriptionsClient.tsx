@@ -90,7 +90,7 @@ export function SubscriptionsClient({ subscriptions }: Props) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-red-600 hover:text-red-700 hover:border-red-300"
+                      className="text-error hover:text-error/80 hover:border-error/30"
                       onClick={() => setConfirmId(sub.id)}
                       disabled={isPending}
                     >

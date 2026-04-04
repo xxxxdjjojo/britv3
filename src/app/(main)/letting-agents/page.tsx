@@ -129,7 +129,7 @@ export default async function LettingAgentsPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-surface pb-28">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] py-20 px-6">
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-primary to-brand-primary-dark py-20 px-6">
         <div className="pointer-events-none absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-white/5 blur-3xl" />
         <div className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-brand-secondary/10 blur-3xl" />
 
@@ -437,7 +437,7 @@ export default async function LettingAgentsPage({ searchParams }: Props) {
 
       {/* Bottom CTA */}
       <section className="mx-auto max-w-6xl px-6">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primary to-[#003629] p-10 text-center text-white">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-primary via-brand-primary to-brand-primary-dark p-10 text-center text-white">
           <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand-secondary/10 blur-3xl" />
           <div className="relative">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">

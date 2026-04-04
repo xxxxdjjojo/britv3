@@ -139,7 +139,7 @@ export default function HelpContactPage() {
                 className="rounded-lg border border-neutral-200/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-brand-primary/30 dark:border-neutral-700/60"
               />
               {errors.name && (
-                <p className="font-body text-xs text-red-600">{errors.name}</p>
+                <p className="font-body text-xs text-error">{errors.name}</p>
               )}
             </div>
 
@@ -157,7 +157,7 @@ export default function HelpContactPage() {
                 className="rounded-lg border border-neutral-200/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-brand-primary/30 dark:border-neutral-700/60"
               />
               {errors.email && (
-                <p className="font-body text-xs text-red-600">{errors.email}</p>
+                <p className="font-body text-xs text-error">{errors.email}</p>
               )}
             </div>
 
@@ -174,7 +174,7 @@ export default function HelpContactPage() {
                 className="rounded-lg border border-neutral-200/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-brand-primary/30 dark:border-neutral-700/60"
               />
               {errors.subject && (
-                <p className="font-body text-xs text-red-600">{errors.subject}</p>
+                <p className="font-body text-xs text-error">{errors.subject}</p>
               )}
             </div>
 
@@ -191,12 +191,12 @@ export default function HelpContactPage() {
                 className="rounded-lg border border-neutral-200/60 bg-card px-3 py-2 font-body text-sm text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-brand-primary/30 dark:border-neutral-700/60"
               />
               {errors.message && (
-                <p className="font-body text-xs text-red-600">{errors.message}</p>
+                <p className="font-body text-xs text-error">{errors.message}</p>
               )}
             </div>
 
             {status === "error" && (
-              <p className="font-body text-sm text-red-600">
+              <p className="font-body text-sm text-error">
                 Something went wrong. Please try again.
               </p>
             )}

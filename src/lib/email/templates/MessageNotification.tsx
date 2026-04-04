@@ -14,6 +14,13 @@ import {
   Button,
   Section,
 } from "@react-email/components";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_50,
+  NEUTRAL_400,
+  NEUTRAL_600,
+  NEUTRAL_700,
+} from "@/emails/_constants/colors";
 
 type MessageNotificationProps = Readonly<{
   recipientName: string;
@@ -66,7 +73,7 @@ export default function MessageNotification({
 // ---------------------------------------------------------------------------
 
 const body = {
-  backgroundColor: "#f8f9fa",
+  backgroundColor: NEUTRAL_50,
   fontFamily:
     "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   margin: "0",
@@ -80,7 +87,7 @@ const container = {
 };
 
 const header = {
-  backgroundColor: "#1B4D3E",
+  backgroundColor: BRAND_PRIMARY,
   padding: "24px",
   borderRadius: "8px 8px 0 0",
 };
@@ -99,34 +106,34 @@ const content = {
 
 const greeting = {
   fontSize: "16px",
-  color: "#333333",
+  color: NEUTRAL_700,
   margin: "0 0 16px 0",
 };
 
 const mainText = {
   fontSize: "14px",
-  color: "#555555",
+  color: NEUTRAL_600,
   margin: "0 0 16px 0",
 };
 
 const messageBox = {
-  backgroundColor: "#f0f4f3",
+  backgroundColor: NEUTRAL_50,
   padding: "16px",
   borderRadius: "6px",
-  borderLeft: "4px solid #1B4D3E",
+  borderLeft: `4px solid ${BRAND_PRIMARY}`,
   marginBottom: "24px",
 };
 
 const messageText = {
   fontSize: "14px",
-  color: "#333333",
+  color: NEUTRAL_700,
   margin: "0",
   fontStyle: "italic" as const,
 };
 
 const ctaButton = {
   display: "inline-block",
-  backgroundColor: "#1B4D3E",
+  backgroundColor: BRAND_PRIMARY,
   color: "#ffffff",
   padding: "12px 24px",
   borderRadius: "6px",
@@ -137,6 +144,6 @@ const ctaButton = {
 const footer = {
   textAlign: "center" as const,
   fontSize: "12px",
-  color: "#999999",
+  color: NEUTRAL_400,
   marginTop: "16px",
 };

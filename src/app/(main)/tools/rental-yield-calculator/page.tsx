@@ -218,7 +218,7 @@ export default function RentalYieldCalculatorPage() {
         </div>
       </header>
 
-      <main className="bg-[#F7F6F2] dark:bg-neutral-950">
+      <main className="bg-brand-secondary-light dark:bg-neutral-950">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
@@ -447,24 +447,24 @@ export default function RentalYieldCalculatorPage() {
                   {voidWeeks > 0 && (
                     <li className="flex justify-between text-sm">
                       <span className="text-neutral-500">Void Period Loss ({voidWeeks} weeks)</span>
-                      <span className="font-semibold text-red-500">− {formatCurrency(results.voidLoss)}</span>
+                      <span className="font-semibold text-error">− {formatCurrency(results.voidLoss)}</span>
                     </li>
                   )}
                   <li className="flex justify-between text-sm">
                     <span className="text-neutral-500">Management Fees ({managementFeePercent}%)</span>
-                    <span className="font-semibold text-red-500">− {formatCurrency(results.managementFees)}</span>
+                    <span className="font-semibold text-error">− {formatCurrency(results.managementFees)}</span>
                   </li>
                   <li className="flex justify-between text-sm">
                     <span className="text-neutral-500">Maintenance &amp; Service</span>
-                    <span className="font-semibold text-red-500">− {formatCurrency(maintenance)}</span>
+                    <span className="font-semibold text-error">− {formatCurrency(maintenance)}</span>
                   </li>
                   <li className="flex justify-between border-b border-neutral-100 pb-3 text-sm dark:border-neutral-800">
                     <span className="text-neutral-500">Insurance &amp; Misc</span>
-                    <span className="font-semibold text-red-500">− {formatCurrency(insurance)}</span>
+                    <span className="font-semibold text-error">− {formatCurrency(insurance)}</span>
                   </li>
                   <li className="flex justify-between pt-1 text-base">
                     <span className="font-bold text-neutral-900 dark:text-white">Net Annual Profit</span>
-                    <span className={`font-bold ${results.annualProfit >= 0 ? "text-brand-primary" : "text-red-500"}`}>
+                    <span className={`font-bold ${results.annualProfit >= 0 ? "text-brand-primary" : "text-error"}`}>
                       {formatCurrency(results.annualProfit)}
                     </span>
                   </li>
@@ -495,7 +495,7 @@ export default function RentalYieldCalculatorPage() {
                   </li>
                   <li className="flex justify-between border-t border-neutral-100 pt-3 text-base dark:border-neutral-800">
                     <span className="font-bold text-neutral-900 dark:text-white">Cash-on-Cash Return</span>
-                    <span className={`font-bold ${results.cashOnCash >= 0 ? "text-brand-primary" : "text-red-500"}`}>
+                    <span className={`font-bold ${results.cashOnCash >= 0 ? "text-brand-primary" : "text-error"}`}>
                       {formatPercent(results.cashOnCash)}%
                     </span>
                   </li>
@@ -708,7 +708,7 @@ export default function RentalYieldCalculatorPage() {
                 <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
                   Cash-on-Cash Return
                 </p>
-                <p className={`text-3xl font-black ${results.cashOnCash >= 0 ? "text-brand-primary" : "text-red-500"}`}>
+                <p className={`text-3xl font-black ${results.cashOnCash >= 0 ? "text-brand-primary" : "text-error"}`}>
                   {formatPercent(results.cashOnCash)}%
                 </p>
                 <p className="mt-1 flex items-center gap-1 text-[11px] text-neutral-400">

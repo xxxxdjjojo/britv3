@@ -49,8 +49,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
 // ---------------------------------------------------------------------------
 
 const TREND_CONFIG = {
-  up: { icon: ArrowUp, color: "text-green-600 dark:text-green-400" },
-  down: { icon: ArrowDown, color: "text-red-600 dark:text-red-400" },
+  up: { icon: ArrowUp, color: "text-success dark:text-success" },
+  down: { icon: ArrowDown, color: "text-error dark:text-error" },
   neutral: { icon: Minus, color: "text-muted-foreground" },
 } as const;
 

@@ -9,7 +9,7 @@ type ReviewsBreakdownProps = Readonly<{
 function StarIcon({ filled }: Readonly<{ filled: boolean }>) {
   return (
     <Star
-      className={`size-5 ${filled ? "fill-amber-400 text-amber-400" : "fill-neutral-200 text-neutral-200"}`}
+      className={`size-5 ${filled ? "fill-warning text-warning" : "fill-neutral-200 text-neutral-200"}`}
     />
   );
 }
@@ -49,7 +49,7 @@ export function ReviewsBreakdown({
                 <span className="w-4 text-right text-xs font-medium text-neutral-700">
                   {star}
                 </span>
-                <Star className="size-3.5 shrink-0 fill-amber-400 text-amber-400" />
+                <Star className="size-3.5 shrink-0 fill-warning text-warning" />
                 {/* Track */}
                 <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-neutral-100">
                   {/* Filled bar */}

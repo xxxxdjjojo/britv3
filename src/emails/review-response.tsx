@@ -4,6 +4,13 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  NEUTRAL_950,
+  NEUTRAL_600,
+  NEUTRAL_200,
+  NEUTRAL_50,
+} from "@/emails/_constants/colors";
 
 export function ReviewResponseEmail({
   recipientFirstName,
@@ -19,7 +26,7 @@ export function ReviewResponseEmail({
           style={{
             fontSize: "24px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -29,29 +36,29 @@ export function ReviewResponseEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}
         >
           Hi {recipientFirstName},{" "}
-          <strong style={{ color: "#0A0A0B" }}>{providerName}</strong> has
+          <strong style={{ color: NEUTRAL_950 }}>{providerName}</strong> has
           responded to your review.
         </Text>
 
         <div
           style={{
-            border: "1px solid #E2E2E8",
+            border: `1px solid ${NEUTRAL_200}`,
             borderRadius: "12px",
             padding: "24px",
             marginBottom: "24px",
-            backgroundColor: "#F8F8FA",
+            backgroundColor: NEUTRAL_50,
           }}
         >
           <Text
             style={{
               fontSize: "14px",
-              color: "#0A0A0B",
+              color: NEUTRAL_950,
               margin: "0",
               lineHeight: "1.6",
               fontStyle: "italic",

@@ -42,10 +42,10 @@ const gbpExact = (value: number) =>
 // ---------------------------------------------------------------------------
 
 const LTV_TIERS = [
-  { label: "< 60% LTV", description: "Best rates available", color: "text-green-600", max: 60 },
-  { label: "60–75% LTV", description: "Good rates", color: "text-[--color-brand-primary-light]", max: 75 },
-  { label: "75–85% LTV", description: "Standard rates", color: "text-amber-600", max: 85 },
-  { label: "85–90%+ LTV", description: "Limited options, higher rates", color: "text-red-600", max: Infinity },
+  { label: "< 60% LTV", description: "Best rates available", color: "text-success", max: 60 },
+  { label: "60–75% LTV", description: "Good rates", color: "text-brand-primary-light", max: 75 },
+  { label: "75–85% LTV", description: "Standard rates", color: "text-warning", max: 85 },
+  { label: "85–90%+ LTV", description: "Limited options, higher rates", color: "text-error", max: Infinity },
 ];
 
 function getUrlParam(key: string, defaultValue: number): number {
@@ -374,9 +374,9 @@ export default function RemortgageCalculatorPage() {
             <Card
               className={
                 monthlySaving > 0
-                  ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950"
+                  ? "border-success/30 bg-success-light dark:border-success dark:bg-success/10"
                   : monthlySaving < 0
-                    ? "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950"
+                    ? "border-error/30 bg-error-light dark:border-error dark:bg-error/10"
                     : undefined
               }
             >
@@ -389,9 +389,9 @@ export default function RemortgageCalculatorPage() {
                     <p
                       className={`text-2xl font-bold tabular-nums ${
                         monthlySaving > 0
-                          ? "text-green-700 dark:text-green-400"
+                          ? "text-success dark:text-success"
                           : monthlySaving < 0
-                            ? "text-red-700 dark:text-red-400"
+                            ? "text-error dark:text-error"
                             : ""
                       }`}
                     >
@@ -406,9 +406,9 @@ export default function RemortgageCalculatorPage() {
                     <p
                       className={`text-2xl font-bold tabular-nums ${
                         totalInterestSaved > 0
-                          ? "text-green-700 dark:text-green-400"
+                          ? "text-success dark:text-success"
                           : totalInterestSaved < 0
-                            ? "text-red-700 dark:text-red-400"
+                            ? "text-error dark:text-error"
                             : ""
                       }`}
                     >
@@ -524,7 +524,7 @@ export default function RemortgageCalculatorPage() {
                 </div>
                 <h3 className="text-lg font-bold">Ready to Switch?</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Get a free, no-obligation remortgage quote from an FCA-regulated
                 broker on our marketplace.
               </p>
@@ -534,7 +534,7 @@ export default function RemortgageCalculatorPage() {
               >
                 Find a Broker
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter/60">
                 Free, no-obligation quote
               </p>
             </div>

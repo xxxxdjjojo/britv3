@@ -170,7 +170,7 @@ export default function BrokerProfilePage() {
               </Label>
               <div className="flex items-center gap-2 h-9 px-3 rounded-lg border border-neutral-200/60 dark:border-neutral-700/60 bg-card">
                 <span className="font-body text-sm text-foreground">{fcaNumber}</span>
-                <Badge variant="outline" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 border-0 text-[10px]">
+                <Badge variant="outline" className="bg-success-light text-success dark:bg-success/20 dark:text-success border-0 text-[10px]">
                   Verified
                 </Badge>
               </div>

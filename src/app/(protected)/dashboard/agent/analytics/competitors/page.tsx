@@ -88,7 +88,7 @@ async function PageContent() {
         </a>
         <a
           href="/dashboard/agent/analytics/competitors"
-          className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1"
+          className="text-sm font-medium text-brand-accent border-b-2 border-brand-accent pb-1"
         >
           Competitor Analysis
         </a>
@@ -98,7 +98,7 @@ async function PageContent() {
         <div className="rounded-lg border border-dashed p-8 text-center">
           <p className="text-muted-foreground text-sm">
             No coverage areas set.{" "}
-            <a href="/dashboard/agent/profile" className="text-blue-600 hover:underline">
+            <a href="/dashboard/agent/profile" className="text-brand-accent hover:underline">
               Update your agency profile
             </a>{" "}
             to add coverage areas for competitor analysis.

@@ -4,6 +4,12 @@ import { EmailWrapper } from "@/emails/_components/EmailWrapper";
 import { EmailHeader } from "@/emails/_components/EmailHeader";
 import { EmailFooter } from "@/emails/_components/EmailFooter";
 import { EmailButton } from "@/emails/_components/EmailButton";
+import {
+  BRAND_PRIMARY,
+  BRAND_ACCENT,
+  NEUTRAL_600,
+  NEUTRAL_400,
+} from "@/emails/_constants/colors";
 
 export function PasswordResetEmail({
   firstName,
@@ -20,7 +26,7 @@ export function PasswordResetEmail({
           style={{
             fontSize: "24px",
             fontWeight: "700",
-            color: "#1B4D3E",
+            color: BRAND_PRIMARY,
             margin: "0 0 16px 0",
             lineHeight: "1.3",
           }}
@@ -30,7 +36,7 @@ export function PasswordResetEmail({
         <Text
           style={{
             fontSize: "15px",
-            color: "#5E5E6A",
+            color: NEUTRAL_600,
             margin: "0 0 24px 0",
             lineHeight: "1.6",
           }}
@@ -46,7 +52,7 @@ export function PasswordResetEmail({
         <Text
           style={{
             fontSize: "13px",
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             margin: "24px 0 0 0",
             lineHeight: "1.6",
           }}
@@ -58,7 +64,7 @@ export function PasswordResetEmail({
         <Text
           style={{
             fontSize: "13px",
-            color: "#9E9EAB",
+            color: NEUTRAL_400,
             margin: "16px 0 0 0",
             lineHeight: "1.6",
           }}
@@ -69,7 +75,7 @@ export function PasswordResetEmail({
           href={resetUrl}
           style={{
             fontSize: "12px",
-            color: "#2563EB",
+            color: BRAND_ACCENT,
             wordBreak: "break-all",
             lineHeight: "1.6",
           }}

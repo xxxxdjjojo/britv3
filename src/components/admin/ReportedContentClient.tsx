@@ -148,7 +148,7 @@ export function ReportedContentClient({ reports }: Props) {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="rounded-lg border border-red-200/60 dark:border-red-700/60 font-body text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+                      className="rounded-lg border border-error/20 dark:border-error/30 font-body text-xs font-medium text-error hover:bg-error-light dark:text-error dark:hover:bg-error/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                       onClick={() => setModal({ type: "remove", reportId: report.id })}
                       disabled={isPending}
                     >
@@ -157,7 +157,7 @@ export function ReportedContentClient({ reports }: Props) {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="rounded-lg border border-amber-200/60 dark:border-amber-700/60 font-body text-xs font-medium text-amber-700 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-900/20 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
+                      className="rounded-lg border border-warning/20 dark:border-warning/30 font-body text-xs font-medium text-warning hover:bg-warning-light dark:text-warning dark:hover:bg-warning/10 focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:ring-offset-2"
                       onClick={() => setModal({ type: "warn", reportId: report.id })}
                       disabled={isPending}
                     >

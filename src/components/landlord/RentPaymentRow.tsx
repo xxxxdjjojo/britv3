@@ -20,18 +20,18 @@ const STATUS_STYLES: Record<
   { bg: string; text: string; label: string }
 > = {
   paid: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    text: "text-green-800 dark:text-green-300",
+    bg: "bg-success-light dark:bg-success/10",
+    text: "text-success dark:text-success",
     label: "Paid",
   },
   partial: {
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    text: "text-amber-800 dark:text-amber-300",
+    bg: "bg-warning-light dark:bg-warning/10",
+    text: "text-warning dark:text-warning",
     label: "Partial",
   },
   overdue: {
-    bg: "bg-red-100 dark:bg-red-900/30",
-    text: "text-red-800 dark:text-red-300",
+    bg: "bg-error-light dark:bg-error/10",
+    text: "text-error dark:text-error",
     label: "Overdue",
   },
 };

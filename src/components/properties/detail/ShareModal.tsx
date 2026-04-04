@@ -138,8 +138,8 @@ export function ShareModal({ propertyUrl, propertyTitle, isOpen, onClose }: Prop
           >
             {copied ? (
               <>
-                <CheckIcon className="size-3.5 text-green-600" />
-                <span className="text-green-600">Copied!</span>
+                <CheckIcon className="size-3.5 text-success" />
+                <span className="text-success">Copied!</span>
               </>
             ) : (
               <>

@@ -79,7 +79,7 @@ function ProviderCard({ provider }: Readonly<{ provider: ProviderResult }>) {
 
         {/* Rating */}
         <div className="flex items-center gap-1.5 text-sm">
-          <Star className="size-4 fill-amber-400 text-amber-400" />
+          <Star className="size-4 fill-brand-secondary text-brand-secondary" />
           {hasReviews ? (
             <span className="text-neutral-700">
               <span className="font-semibold">
@@ -223,8 +223,8 @@ export default function ServiceDirectoryPage() {
           ))}
         </div>
       ) : isError ? (
-        <div className="rounded-lg border border-red-100 bg-red-50 p-6 text-center">
-          <p className="text-sm font-medium text-red-700">
+        <div className="rounded-lg border border-error/20 bg-error-light p-6 text-center">
+          <p className="text-sm font-medium text-error">
             {error?.message ?? "Something went wrong. Please try again."}
           </p>
         </div>

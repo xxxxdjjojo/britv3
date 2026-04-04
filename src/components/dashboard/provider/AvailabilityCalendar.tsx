@@ -246,7 +246,7 @@ export function AvailabilityCalendar({
         </div>
         <button
           onClick={goToToday}
-          className="px-4 py-2 text-sm font-bold text-emerald-900 hover:bg-emerald-50 rounded-lg transition-colors"
+          className="px-4 py-2 text-sm font-bold text-brand-primary hover:bg-brand-primary-lighter rounded-lg transition-colors"
         >
           Today
         </button>
@@ -266,7 +266,7 @@ export function AvailabilityCalendar({
             key={d}
             className={[
               "py-4 text-center text-xs font-bold uppercase tracking-widest",
-              i >= 5 ? "text-emerald-600" : "text-neutral-400",
+              i >= 5 ? "text-success" : "text-neutral-400",
             ].join(" ")}
           >
             {d}
@@ -295,7 +295,7 @@ export function AvailabilityCalendar({
           const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
           let cellClass =
-            "p-3 border-r border-b border-neutral-100 relative group transition-colors cursor-pointer hover:bg-emerald-50/20";
+            "p-3 border-r border-b border-neutral-100 relative group transition-colors cursor-pointer hover:bg-brand-primary-lighter/20";
 
           if (isBooked) {
             cellClass = "p-3 border-r border-b border-neutral-100 relative";
@@ -307,11 +307,11 @@ export function AvailabilityCalendar({
               "p-3 border-r border-b border-neutral-100 relative opacity-40 cursor-default";
           } else if (isWeekend) {
             cellClass =
-              "p-3 border-r border-b border-neutral-100 relative bg-emerald-50/30 cursor-pointer hover:bg-emerald-50/50 transition-colors";
+              "p-3 border-r border-b border-neutral-100 relative bg-brand-primary-lighter/30 cursor-pointer hover:bg-brand-primary-lighter/50 transition-colors";
           }
 
           if (isToday && !isBooked) {
-            cellClass += " bg-emerald-50/40";
+            cellClass += " bg-brand-primary-lighter/40";
           }
 
           return (
@@ -333,14 +333,14 @@ export function AvailabilityCalendar({
             >
               {/* Date number */}
               {isToday ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-emerald-900 text-white rounded-full text-xs font-bold">
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-brand-primary text-white rounded-full text-xs font-bold">
                   {date.getDate()}
                 </span>
               ) : (
                 <span
                   className={[
                     "text-sm font-semibold",
-                    isWeekend ? "text-emerald-900" : "text-neutral-900",
+                    isWeekend ? "text-brand-primary" : "text-neutral-900",
                     isPast ? "text-neutral-400" : "",
                   ].join(" ")}
                 >
@@ -349,7 +349,7 @@ export function AvailabilityCalendar({
               )}
 
               {isToday && (
-                <p className="mt-1 text-[10px] text-emerald-900 font-bold">Today</p>
+                <p className="mt-1 text-[10px] text-brand-primary font-bold">Today</p>
               )}
 
               {/* Events */}

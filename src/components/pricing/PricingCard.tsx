@@ -46,12 +46,12 @@ export function PricingCard({
     <div
       className={`flex flex-col rounded-xl border p-6 ${
         highlighted
-          ? "border-[#1B4D3E] ring-2 ring-[#1B4D3E]/20"
+          ? "border-brand-primary ring-2 ring-brand-primary/20"
           : "border-neutral-200"
       }`}
     >
       {badge && (
-        <span className="mb-4 inline-flex w-fit rounded-full bg-[#1B4D3E] px-3 py-1 text-xs font-semibold text-white">
+        <span className="mb-4 inline-flex w-fit rounded-full bg-brand-primary px-3 py-1 text-xs font-semibold text-white">
           {badge}
         </span>
       )}
@@ -78,7 +78,7 @@ export function PricingCard({
               </p>
             )}
             {annual && annualPricePence < monthlyPricePence * 12 && (
-              <p className="mt-0.5 text-xs font-medium text-green-700">
+              <p className="mt-0.5 text-xs font-medium text-success">
                 Save {formatGBP(monthlyPricePence * 12 - annualPricePence)}
               </p>
             )}
@@ -90,7 +90,7 @@ export function PricingCard({
         {features.map((feature) => (
           <li key={feature} className="flex items-start gap-2">
             <svg
-              className="mt-0.5 size-4 shrink-0 text-[#1B4D3E]"
+              className="mt-0.5 size-4 shrink-0 text-brand-primary"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2.5}
@@ -111,7 +111,7 @@ export function PricingCard({
         asChild
         variant={highlighted ? "default" : "outline"}
         className={`mt-8 w-full ${
-          highlighted ? "bg-[#1B4D3E] hover:bg-[#2D7A5F]" : ""
+          highlighted ? "bg-brand-primary hover:bg-brand-primary-light" : ""
         }`}
       >
         <Link href={ctaHref}>{cta}</Link>
