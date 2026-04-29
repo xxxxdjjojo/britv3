@@ -1,0 +1,90 @@
+version: "1.17.0.0"
+project: "brit-estate"
+name: "Brit-Estate Real Estate Platform"
+description: "AI-powered UK property ecosystem with integrated trades, landlord tools, and service marketplace"
+
+# Environment
+environment:
+  production: false
+  debug: true
+  logLevel: "info"
+  timezone: "UTC"
+
+# Claude Code integration
+claude:
+  model: "claude-4-opus"
+  temperature: 0.7
+  maxTokens: 100000
+  contextWindow: 200000
+
+# GStack features
+features:
+  planning: true        # Office hours, feature planning
+  design: true          # Design review, design shotgun
+  development: true     # Code review, testing
+  qa: true             # QA automation, browser testing
+  security: true       # Security scanning, OWASP/STRIDE
+  deployment: true     # Release automation, zero-downtime
+  monitoring: true     # Health checks, performance monitoring
+  llmeval: true        # LLM evaluation, benchmarking
+
+# Repository settings
+repository:
+  owner: "xxxxdjjojo"
+  name: "britv3"
+  branch: "main"
+  url: "https://github.com/xxxxdjjojo/britv3"
+  workdir: "./britv3.0"
+
+# Output directories
+output:
+  artifacts: "./artifacts"
+  logs: "./logs"
+  metrics: "./metrics"
+  screenshots: "./artifacts/screenshots"
+  videos: "./artifacts/videos"
+
+# Integration points
+integrations:
+  supabase: true        # Property data, auth
+  stripe: true          # Payments, provider commissions
+  github: true          # Source control, CI/CD
+  slack: true           # Notifications, team updates
+  sentry: true          # Error tracking
+  posthog: true         # Analytics, user behavior
+  resend: true          # Email delivery
+
+# Real estate specific settings
+realestate:
+  regions:
+    - name: "UK"
+      enabled: true
+      focus: "London, Manchester, Birmingham, Edinburgh"
+  
+  sources:
+    - name: "rightmove"
+      enabled: false
+      testMode: true
+    - name: "zoopla"
+      enabled: false
+      testMode: true
+    - name: "openrent"
+      enabled: true
+      testMode: true
+
+# Performance targets
+performance:
+  searchResponseTime: "500ms"      # p95
+  listingPageLoad: "1s"            # p95
+  dashboardLoad: "2s"              # p95
+  apiLatency: "200ms"              # p95
+  uptime: "99.9%"
+  errorBudget: "0.1%"
+
+# Security targets
+security:
+  rls: true                         # Row-level security on all tables
+  gdpr: true                        # GDPR compliance
+  encryption: "AES-256"
+  tlsVersion: "1.3+"
+  scanCadence: "daily"

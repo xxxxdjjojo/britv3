@@ -47,7 +47,11 @@ e2e/.auth/
 
 # git worktrees
 .worktrees/
-.gstack/
+
+# .gstack/ is tracked except for secrets
+.gstack/secrets/
+.gstack/.env.local
+.gstack/cache/
 
 # supabase local dev temp files (may contain credentials)
 supabase/.temp/

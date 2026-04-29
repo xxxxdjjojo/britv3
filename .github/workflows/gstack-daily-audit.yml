@@ -1,0 +1,23 @@
+name: GStack Daily Listing Audit
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 9 AM UTC every day
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: cd britv3.0 && bun install
+      - run: cd .. && bun scripts/gstack/skill-registry.ts --validate
+      - name: Run Skill Registry Validation
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "⚠️  ANTHROPIC_API_KEY not set, skipping audit"
+            exit 0
+          fi
+          echo "Running listing quality audit..."

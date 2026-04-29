@@ -10,7 +10,14 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "analyze": "ANALYZE=true pnpm build"
+    "analyze": "ANALYZE=true pnpm build",
+    "gstack:install": "bun ../scripts/gstack/install.ts",
+    "gstack:registry-init": "bun ../scripts/gstack/skill-registry.ts",
+    "gstack:registry-validate": "bun ../scripts/gstack/skill-registry.ts --validate",
+    "gstack:audit-listings": "echo \"Run in Claude Code: /audit-listings\"",
+    "gstack:test-mls-sync": "echo \"Run in Claude Code: /test-mls-sync\"",
+    "gstack:qa-marketplace": "echo \"Run in Claude Code: /qa-marketplace\"",
+    "gstack:test": "bun test ../test/gstack/"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
