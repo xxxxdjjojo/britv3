@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
+import { test, expect, type Page } from "@playwright/test";
 
 /**
  * Homepage Link Audit
@@ -10,6 +11,186 @@ import { test, expect } from "@playwright/test";
  * violations when the same href appears in multiple places (e.g. /search in
  * header nav AND hero section).
  */
+
+const LINK_INTEGRITY_SCREENSHOT_DIR =
+  "test-results/link-integrity-homepage";
+
+function screenshotName(label: string): string {
+  return label
+    .toLowerCase()
+    .replace(/https?:\/\//g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+async function captureLinkAuditScreenshot(
+  page: Page,
+  label: string,
+): Promise<void> {
+  await mkdir(LINK_INTEGRITY_SCREENSHOT_DIR, { recursive: true });
+  await page.screenshot({
+    path: `${LINK_INTEGRITY_SCREENSHOT_DIR}/${screenshotName(label)}.png`,
+    fullPage: true,
+  });
+}
+
+async function expectPublicDestinationToRender(
+  page: Page,
+  label: string,
+): Promise<void> {
+  await captureLinkAuditScreenshot(page, label);
+  await expect(page.locator("body")).not.toContainText(
+    /Page not found|This page could not be found|Application error/i,
+  );
+  expect(new URL(page.url()).pathname, `${label} must not fall through to login`).not.toBe("/login");
+  await expect(
+    page.getByRole("heading").first(),
+    `${label} should render a visible page heading`,
+  ).toBeVisible();
+}
+
+type HomepageBlogCard = {
+  href: string;
+  title: string;
+};
+
+type HomepagePropertyCard = {
+  href: string;
+  price: string;
+  title: string;
+  location: string;
+};
+
+// ---------------------------------------------------------------------------
+// Strict public link integrity coverage
+// ---------------------------------------------------------------------------
+
+test.describe("Homepage internal links render expected content", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("homepage blog card links render the matching article", async ({
+    page,
+  }) => {
+    const cards = await page
+      .locator('main article:has(a[href^="/blog/"])')
+      .evaluateAll((articles): HomepageBlogCard[] =>
+        articles
+          .map((article) => {
+            const link = article.querySelector<HTMLAnchorElement>(
+              'a[href^="/blog/"]',
+            );
+            const title = article.querySelector("h3")?.textContent?.trim();
+            return link?.getAttribute("href") && title
+              ? { href: link.getAttribute("href")!, title }
+              : null;
+          })
+          .filter((card): card is HomepageBlogCard => card !== null),
+      );
+
+    expect(cards.length).toBeGreaterThan(0);
+
+    for (const card of cards) {
+      const response = await page.goto(card.href);
+      expect(response?.status(), `${card.href} returned an error status`).toBeLessThan(400);
+      await page.waitForLoadState("networkidle");
+      await expectPublicDestinationToRender(page, `blog-${card.href}`);
+      await expect(
+        page.getByRole("heading", { name: card.title }).first(),
+        `${card.href} should render homepage card title "${card.title}"`,
+      ).toBeVisible();
+    }
+  });
+
+  test("featured property links render property detail content", async ({
+    page,
+  }) => {
+    const cards = await page
+      .locator('main a[href^="/properties/"]')
+      .evaluateAll((links): HomepagePropertyCard[] =>
+        links
+          .map((link) => {
+            const href = link.getAttribute("href");
+            const price = link.querySelector("h3")?.textContent?.trim();
+            const details = Array.from(link.querySelectorAll("p")).map((p) =>
+              p.textContent?.trim() ?? "",
+            );
+            const [title, location] = details;
+            return href && price && title && location
+              ? { href, price, title, location }
+              : null;
+          })
+          .filter((card): card is HomepagePropertyCard => card !== null),
+      );
+
+    expect(cards.length).toBeGreaterThan(0);
+
+    for (const card of cards) {
+      const response = await page.goto(card.href);
+      expect(response?.status(), `${card.href} returned an error status`).toBeLessThan(400);
+      await page.waitForLoadState("networkidle");
+      await expectPublicDestinationToRender(page, `property-${card.href}`);
+      await expect(page.getByText(card.price).first()).toBeVisible();
+      await expect(
+        page.getByText(new RegExp(`${card.title}|${card.location}`, "i")).first(),
+        `${card.href} should render either "${card.title}" or "${card.location}"`,
+      ).toBeVisible();
+    }
+  });
+
+  test("desktop mega-menu public links render real pages", async ({ page }) => {
+    test.skip(
+      test.info().project.name === "mobile",
+      "The desktop mega-menu is intentionally hidden on mobile.",
+    );
+
+    const nav = page.locator('nav[aria-label="Main navigation"]');
+    await expect(nav).toBeVisible();
+
+    const triggerCount = await nav.locator("button").count();
+    const publicLinks = new Map<string, string>();
+
+    for (let index = 0; index < triggerCount; index++) {
+      const trigger = nav.locator("button").nth(index);
+      const triggerLabel = (await trigger.textContent())?.trim() ?? `menu-${index}`;
+      await trigger.click();
+      const panel = page.locator('[data-testid="mega-menu-panel"]');
+      await expect(panel).toBeVisible();
+
+      const links = await panel
+        .locator('a[href^="/"]')
+        .evaluateAll((anchors) =>
+          anchors.map((anchor) => ({
+            href: anchor.getAttribute("href") ?? "",
+            label: anchor.textContent?.trim() ?? "",
+          })),
+        );
+
+      for (const link of links) {
+        if (
+          link.href === "" ||
+          link.href.startsWith("/dashboard") ||
+          link.href.startsWith("/api")
+        ) {
+          continue;
+        }
+        publicLinks.set(link.href, `${triggerLabel} > ${link.label}`);
+      }
+    }
+
+    expect(publicLinks.size).toBeGreaterThan(0);
+
+    for (const [href, label] of publicLinks) {
+      const response = await page.goto(href);
+      expect(response?.status(), `${label} (${href}) returned an error status`).toBeLessThan(400);
+      await page.waitForLoadState("networkidle");
+      await expectPublicDestinationToRender(page, `mega-${label}-${href}`);
+    }
+  });
+});
 
 // ---------------------------------------------------------------------------
 // 1. Header Navigation
