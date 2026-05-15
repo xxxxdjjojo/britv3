@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -227,12 +228,12 @@ export function FeaturedListingBoost({ activeListings, boostedListings }: Props)
             {activeListings.length === 0 ? (
               <div className="py-6 text-center">
                 <p className="text-muted-foreground text-sm">No active listings available to boost.</p>
-                <a
+                <Link
                   href="/dashboard/agent/listings/create"
                   className="text-sm text-blue-600 hover:underline mt-2 inline-block"
                 >
                   Create a listing
-                </a>
+                </Link>
               </div>
             ) : (
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">

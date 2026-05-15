@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { ServiceCategory, UrgencyLevel } from "@/types/marketplace";
 import { CATEGORY_LABELS } from "@/lib/marketplace/category-labels";
 import { createClient } from "@/lib/supabase/server";
@@ -216,12 +217,12 @@ export default async function JobBoardPage({
             {/* Clear filters link */}
             {(categoryParam || urgencyParam) && (
               <div className="flex flex-col justify-end mt-auto pt-5">
-                <a
+                <Link
                   href="/jobs"
                   className="px-5 py-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm transition-colors"
                 >
                   Clear
-                </a>
+                </Link>
               </div>
             )}
           </form>
@@ -263,12 +264,12 @@ export default async function JobBoardPage({
               service area or check back later.
             </p>
             {(categoryParam || urgencyParam) && (
-              <a
+              <Link
                 href="/jobs"
                 className="mt-6 px-6 py-2.5 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors text-sm"
               >
                 View all jobs
-              </a>
+              </Link>
             )}
           </div>
         ) : (
@@ -282,7 +283,7 @@ export default async function JobBoardPage({
               });
 
               return (
-                <a
+                <Link
                   key={job.id}
                   href={`/post-a-job/quote/${job.id}`}
                   className="group flex flex-col gap-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-[#2563EB] hover:shadow-md transition-all"
@@ -341,7 +342,7 @@ export default async function JobBoardPage({
                           : `${job.quote_count} quotes received`}
                     </span>
                   </div>
-                </a>
+                </Link>
               );
             })}
           </div>
@@ -354,12 +355,12 @@ export default async function JobBoardPage({
             aria-label="Pagination"
           >
             {hasPrev ? (
-              <a
+              <Link
                 href={buildUrl(pageParam - 1)}
                 className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
               >
                 ← Previous
-              </a>
+              </Link>
             ) : (
               <div />
             )}
@@ -369,12 +370,12 @@ export default async function JobBoardPage({
             </span>
 
             {hasNext ? (
-              <a
+              <Link
                 href={buildUrl(pageParam + 1)}
                 className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-[#2563EB] hover:text-[#2563EB] transition-colors"
               >
                 Next →
-              </a>
+              </Link>
             ) : (
               <div />
             )}
@@ -392,12 +393,12 @@ export default async function JobBoardPage({
             Create a free provider account to quote on jobs in your area and
             grow your business with Britestate.
           </p>
-          <a
+          <Link
             href="/auth/signup?role=service_provider"
             className="inline-block px-8 py-3 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
           >
             Join as a Tradesperson
-          </a>
+          </Link>
         </div>
       </section>
     </div>

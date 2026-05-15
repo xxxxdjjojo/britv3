@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { GitCompareArrows } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useCompare } from "@/components/compare/useCompare";
@@ -61,12 +62,12 @@ export default function ComparePage() {
               Browse provider profiles and click &quot;Compare&quot; to add up
               to 3 providers.
             </p>
-            <a
+            <Link
               href="/services"
               className="bg-[#2563EB] text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               Find Providers
-            </a>
+            </Link>
           </div>
         ) : (
           <CompareTable providers={providers} />

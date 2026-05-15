@@ -17,6 +17,7 @@
  */
 
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   fetchProviderBySlug,
@@ -181,17 +182,17 @@ async function CategoryLocationPage({
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <nav className="flex text-xs text-slate-500 mb-4 gap-2 items-center">
-            <a href="/" className="hover:text-[#2563EB]">
+            <Link href="/" className="hover:text-[#2563EB]">
               Home
-            </a>
+            </Link>
             <span>/</span>
-            <a href="/marketplace" className="hover:text-[#2563EB]">
+            <Link href="/marketplace" className="hover:text-[#2563EB]">
               Services
-            </a>
+            </Link>
             <span>/</span>
-            <a href={`/services/${category}`} className="hover:text-[#2563EB]">
+            <Link href={`/services/${category}`} className="hover:text-[#2563EB]">
               {categoryDisplay}
-            </a>
+            </Link>
             <span>/</span>
             <span className="text-[#2563EB] font-medium">{locationDisplay}</span>
           </nav>
@@ -226,12 +227,12 @@ async function CategoryLocationPage({
                   {locationDisplay}.
                 </p>
                 <p className="mt-2 text-sm">
-                  <a
+                  <Link
                     href="/marketplace"
                     className="text-[#2563EB] hover:underline"
                   >
                     Browse all services
-                  </a>
+                  </Link>
                 </p>
               </div>
             ) : (
@@ -260,13 +261,13 @@ async function CategoryLocationPage({
                 .filter(([k]) => k !== String(categoryDb))
                 .slice(0, 6)
                 .map(([, slug]) => (
-                  <a
+                  <Link
                     key={slug}
                     href={`/services/${slug}/${location}`}
                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-[#2563EB] hover:text-[#2563EB] text-sm font-medium transition-colors"
                   >
                     {formatCategoryDisplay(slug)} in {locationDisplay}
-                  </a>
+                  </Link>
                 ))}
             </div>
           </section>
