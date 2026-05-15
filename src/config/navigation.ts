@@ -178,9 +178,9 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Find Tradespeople",
         links: [
           { label: "Browse All Trades", href: "/marketplace" },
-          { label: "Plumbers", href: "/services/tradespeople/plumber" },
-          { label: "Electricians", href: "/services/tradespeople/electrician" },
-          { label: "Builders", href: "/services/tradespeople/builder" },
+          { label: "Plumbers", href: "/services/tradespeople?category=plumber" },
+          { label: "Electricians", href: "/services/tradespeople?category=electrician" },
+          { label: "Builders", href: "/services/tradespeople?category=builder" },
         ],
       },
       {
@@ -245,7 +245,7 @@ export const NAV_ITEMS: NavItem[] = [
           { label: "Blog & Guides", href: "/blog" },
           { label: "How It Works", href: "/how-it-works" },
           { label: "Help Centre", href: "/help" },
-          { label: "Area Guides", href: "/areas-advice" },
+          { label: "Area Guides", href: "/areas" },
         ],
       },
       {
@@ -264,8 +264,8 @@ export const NAV_ITEMS: NavItem[] = [
       {
         heading: "Sellers",
         links: [
-          { label: "Sell Your Home", href: "/valuation-sell" },
-          { label: "Find an Estate Agent", href: "/agents-sell" },
+          { label: "Sell Your Home", href: "/valuation" },
+          { label: "Find an Estate Agent", href: "/agents" },
         ],
       },
       {
@@ -339,6 +339,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Press", href: "/press" },
       { label: "Contact", href: "/contact" },
       { label: "Blog", href: "/blog" },
+      { label: "Help Centre", href: "/help" },
     ],
   },
   {
@@ -359,7 +360,10 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Manchester", href: "/areas/manchester" },
       { label: "Birmingham", href: "/areas/birmingham" },
       { label: "Bristol", href: "/areas/bristol" },
+      { label: "Leeds", href: "/areas/leeds" },
       { label: "Edinburgh", href: "/areas/edinburgh" },
+      { label: "Oxford", href: "/areas/oxford" },
+      { label: "Cambridge", href: "/areas/cambridge" },
     ],
   },
 ];
@@ -542,12 +546,12 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: "/dashboard/agent/team", label: "Team", icon: Briefcase },
   ],
   service_provider: [
-    { href: "/dashboard/service_provider", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/service_provider/jobs", label: "Jobs", icon: ClipboardList },
-    { href: "/dashboard/service_provider/quotes", label: "Quotes", icon: MessagesSquare },
-    { href: "/dashboard/service_provider/reviews", label: "Reviews", icon: Star },
-    { href: "/dashboard/service_provider/verification", label: "Verification", icon: BadgeCheck },
-    { href: "/dashboard/service_provider/earnings", label: "Earnings", icon: PoundSterling },
+    { href: "/dashboard/provider", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/provider/jobs/leads", label: "Jobs", icon: ClipboardList },
+    { href: "/dashboard/provider/quotes/builder", label: "Quotes", icon: MessagesSquare },
+    { href: "/dashboard/provider/reviews", label: "Reviews", icon: Star },
+    { href: "/dashboard/provider/verification", label: "Verification", icon: BadgeCheck },
+    { href: "/dashboard/provider/payments", label: "Earnings", icon: PoundSterling },
   ],
   mortgage_broker: [
     { href: "/dashboard/mortgage_broker", label: "Overview", icon: LayoutDashboard },
@@ -600,9 +604,9 @@ export const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Profile", href: "/profile", icon: User },
   ],
   service_provider: [
-    { label: "Jobs", href: "/dashboard/service_provider/jobs", icon: Briefcase },
-    { label: "Quotes", href: "/dashboard/service_provider/quotes", icon: ClipboardList },
-    { label: "Calendar", href: "/dashboard/service_provider/calendar", icon: Calendar },
+    { label: "Jobs", href: "/dashboard/provider/jobs/leads", icon: Briefcase },
+    { label: "Quotes", href: "/dashboard/provider/quotes/builder", icon: ClipboardList },
+    { label: "Calendar", href: "/dashboard/provider/availability", icon: Calendar },
     { label: "Messages", href: "/messages", icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
@@ -652,9 +656,9 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Surveyors", href: "/surveyors", section: "Services", keywords: ["surveyor", "survey", "inspection"] },
   { label: "Architects", href: "/architects", section: "Services", keywords: ["architect", "design", "planning"] },
   { label: "Browse All Trades", href: "/marketplace", section: "Services", keywords: ["trades", "marketplace", "tradespeople"] },
-  { label: "Plumbers", href: "/services/tradespeople/plumber", section: "Services", keywords: ["plumber", "plumbing", "leak"] },
-  { label: "Electricians", href: "/services/tradespeople/electrician", section: "Services", keywords: ["electrician", "electrical", "wiring"] },
-  { label: "Builders", href: "/services/tradespeople/builder", section: "Services", keywords: ["builder", "construction", "extension"] },
+  { label: "Plumbers", href: "/services/tradespeople?category=plumber", section: "Services", keywords: ["plumber", "plumbing", "leak"] },
+  { label: "Electricians", href: "/services/tradespeople?category=electrician", section: "Services", keywords: ["electrician", "electrical", "wiring"] },
+  { label: "Builders", href: "/services/tradespeople?category=builder", section: "Services", keywords: ["builder", "construction", "extension"] },
   { label: "Post a Job", href: "/post-a-job", section: "Services", keywords: ["post", "job", "work", "request"] },
   { label: "Read Reviews", href: "/reviews", section: "Services", keywords: ["reviews", "ratings", "trust"] },
 
@@ -716,12 +720,12 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Team", href: "/dashboard/agent/team", section: "Dashboard", keywords: ["team", "staff", "members"], roles: ["agent"] },
 
   // Dashboard — Service Provider
-  { label: "Provider Overview", href: "/dashboard/service_provider", section: "Dashboard", keywords: ["dashboard", "overview", "provider"], roles: ["service_provider"] },
-  { label: "Jobs", href: "/dashboard/service_provider/jobs", section: "Dashboard", keywords: ["jobs", "work", "tasks"], roles: ["service_provider"] },
-  { label: "Quotes", href: "/dashboard/service_provider/quotes", section: "Dashboard", keywords: ["quotes", "estimates", "pricing"], roles: ["service_provider"] },
-  { label: "Reviews (Provider)", href: "/dashboard/service_provider/reviews", section: "Dashboard", keywords: ["reviews", "ratings", "feedback"], roles: ["service_provider"] },
-  { label: "Verification (Provider)", href: "/dashboard/service_provider/verification", section: "Dashboard", keywords: ["verification", "identity", "documents"], roles: ["service_provider"] },
-  { label: "Earnings", href: "/dashboard/service_provider/earnings", section: "Dashboard", keywords: ["earnings", "income", "payments"], roles: ["service_provider"] },
+  { label: "Provider Overview", href: "/dashboard/provider", section: "Dashboard", keywords: ["dashboard", "overview", "provider"], roles: ["service_provider"] },
+  { label: "Jobs", href: "/dashboard/provider/jobs/leads", section: "Dashboard", keywords: ["jobs", "work", "tasks"], roles: ["service_provider"] },
+  { label: "Quotes", href: "/dashboard/provider/quotes/builder", section: "Dashboard", keywords: ["quotes", "estimates", "pricing"], roles: ["service_provider"] },
+  { label: "Reviews (Provider)", href: "/dashboard/provider/reviews", section: "Dashboard", keywords: ["reviews", "ratings", "feedback"], roles: ["service_provider"] },
+  { label: "Verification (Provider)", href: "/dashboard/provider/verification", section: "Dashboard", keywords: ["verification", "identity", "documents"], roles: ["service_provider"] },
+  { label: "Earnings", href: "/dashboard/provider/payments", section: "Dashboard", keywords: ["earnings", "income", "payments"], roles: ["service_provider"] },
 
   // Dashboard — Mortgage Broker
   { label: "Broker Overview", href: "/dashboard/mortgage_broker", section: "Dashboard", keywords: ["dashboard", "overview", "broker"], roles: ["mortgage_broker"] },

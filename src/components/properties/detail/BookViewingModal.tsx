@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { CalendarDays, Clock, CheckCircle2, AlertCircle, Info, Loader2, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -265,13 +266,13 @@ function BookViewingModalInner({
             <p className="text-xs text-orange-700 mb-2">
               Your session expired — please sign in again.
             </p>
-            <a
-              href="/auth/login"
+            <Link
+              href="/login"
               className="inline-flex items-center gap-1 text-xs font-medium text-[#2563EB] hover:underline"
             >
               <LogIn className="size-3" />
               Sign in
-            </a>
+            </Link>
           </div>
         </div>
       )}

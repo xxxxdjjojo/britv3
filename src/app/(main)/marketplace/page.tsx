@@ -229,16 +229,16 @@ export default async function MarketplaceLandingPage() {
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Need a tradesperson?</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Post your job for free and get quotes from up to 5 verified professionals.</p>
-            <a href="/post-a-job" className="inline-block px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors">
+            <Link href="/post-a-job" className="inline-block px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors">
               Post a Job — It&apos;s Free
-            </a>
+            </Link>
           </div>
           <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Are you a tradesperson?</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Browse jobs posted by homeowners in your area and send quotes directly.</p>
-            <a href="/dashboard/service_provider/jobs" className="inline-block px-6 py-3 bg-[#1B4D3E] text-white font-semibold rounded-lg hover:bg-[#163D30] transition-colors">
+            <Link href="/dashboard/provider/jobs/leads" className="inline-block px-6 py-3 bg-[#1B4D3E] text-white font-semibold rounded-lg hover:bg-[#163D30] transition-colors">
               Browse Available Jobs
-            </a>
+            </Link>
           </div>
         </div>
       </section>

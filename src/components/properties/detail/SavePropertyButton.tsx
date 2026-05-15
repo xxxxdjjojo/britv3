@@ -187,7 +187,7 @@ export function SavePropertyButton({
   const handleSignInRedirect = useCallback(() => {
     sessionStorage.setItem(SESSION_KEY, propertyId);
     const redirect = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `/auth/login?redirect=${redirect}`;
+    window.location.href = `/login?redirect=${redirect}`;
   }, [propertyId]);
 
   // -------------------------------------------------------------------------

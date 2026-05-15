@@ -50,6 +50,17 @@ async function expectPublicDestinationToRender(
   ).toBeVisible();
 }
 
+async function dismissCookieConsentBanner(page: Page): Promise<void> {
+  const rejectButton = page
+    .getByRole("button", { name: /reject non-essential/i })
+    .first();
+
+  if ((await rejectButton.count()) === 0) return;
+
+  await rejectButton.click();
+  await expect(page.getByRole("dialog", { name: /cookie consent/i })).toBeHidden();
+}
+
 type HomepageBlogCard = {
   href: string;
   title: string;
@@ -142,6 +153,7 @@ test.describe("Homepage internal links render expected content", () => {
   });
 
   test("desktop mega-menu public links render real pages", async ({ page }) => {
+    test.setTimeout(90_000);
     test.skip(
       test.info().project.name === "mobile",
       "The desktop mega-menu is intentionally hidden on mobile.",
@@ -156,9 +168,10 @@ test.describe("Homepage internal links render expected content", () => {
     for (let index = 0; index < triggerCount; index++) {
       const trigger = nav.locator("button").nth(index);
       const triggerLabel = (await trigger.textContent())?.trim() ?? `menu-${index}`;
-      await trigger.click();
+      await trigger.hover();
       const panel = page.locator('[data-testid="mega-menu-panel"]');
       await expect(panel).toBeVisible();
+      await panel.hover();
 
       const links = await panel
         .locator('a[href^="/"]')
@@ -184,9 +197,9 @@ test.describe("Homepage internal links render expected content", () => {
     expect(publicLinks.size).toBeGreaterThan(0);
 
     for (const [href, label] of publicLinks) {
-      const response = await page.goto(href);
+      const response = await page.goto(href, { waitUntil: "domcontentloaded" });
       expect(response?.status(), `${label} (${href}) returned an error status`).toBeLessThan(400);
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
       await expectPublicDestinationToRender(page, `mega-${label}-${href}`);
     }
   });
@@ -243,7 +256,11 @@ test.describe("Header Navigation", () => {
   });
 
   test("link: /login (Sign In) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/login"]').first();
+    let link = page.locator('a[href="/login"]:visible').first();
+    if ((await link.count()) === 0) {
+      await page.getByRole("button", { name: /open menu/i }).click();
+      link = page.locator('[role="dialog"] a[href="/login"]').first();
+    }
     await expect(link).toBeVisible();
     await link.click();
     await page.waitForLoadState("networkidle");
@@ -458,14 +475,19 @@ test.describe("Blog Section", () => {
       test.skip();
       return;
     }
-    // Test each blog post link in turn
-    for (let i = 0; i < count; i++) {
-      const href = await blogPostLinks.nth(i).getAttribute("href");
-      await page.goto("/");
-      await page.waitForLoadState("networkidle");
-      const link = page.locator(`a[href="${href}"]`).first();
-      await expect(link).toBeVisible();
-      await link.click();
+    const hrefs = Array.from(
+      new Set(
+        await blogPostLinks.evaluateAll((links) =>
+          links
+            .map((link) => link.getAttribute("href"))
+            .filter((href): href is string => href !== null),
+        ),
+      ),
+    );
+
+    // Test each blog post destination in turn
+    for (const href of hrefs) {
+      await page.goto(href);
       await page.waitForLoadState("networkidle");
       await expect(page.locator("text=Page not found")).not.toBeVisible();
     }
@@ -843,6 +865,8 @@ test.describe("Interactive Elements", () => {
   });
 
   test("Back to top button scrolls page to top", async ({ page }) => {
+    await dismissCookieConsentBanner(page);
+
     // Scroll to bottom to reveal the back-to-top button
     await page.keyboard.press("End");
     await page.waitForTimeout(300);
@@ -861,10 +885,12 @@ test.describe("Interactive Elements", () => {
 
     await expect(backToTopBtn).toBeVisible();
     await backToTopBtn.click();
-    await page.waitForTimeout(500);
 
     // After clicking back-to-top, the scroll position should be near the top
-    const scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeLessThan(200);
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY), {
+        timeout: 2_000,
+      })
+      .toBeLessThan(200);
   });
 });

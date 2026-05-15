@@ -82,7 +82,7 @@ export default function AiTransparencyPage() {
           <p>
             3.1. Your search and browsing data is used to personalise recommendations. You can opt out
             of personalised recommendations in your{" "}
-            <Link href="/account/settings/privacy" className="text-primary hover:underline">
+            <Link href="/settings/privacy" className="text-primary hover:underline">
               privacy settings
             </Link>{" "}
             at any time.
