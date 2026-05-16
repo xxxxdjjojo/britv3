@@ -12,12 +12,13 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { NAV_ITEMS, navLinkClasses } from "@/config/navigation";
+import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const QUICK_LINKS = [
   { href: "/dashboard/saved", label: "Saved", icon: Heart },
-  { href: "/notifications", label: "Notifications", icon: Bell },
-  { href: "/messages", label: "Messages", icon: MessageSquare },
+  { href: ROUTES.notifications, label: "Notifications", icon: Bell },
+  { href: ROUTES.inbox, label: "Messages", icon: MessageSquare },
 ] as const;
 
 export function MobileNav({

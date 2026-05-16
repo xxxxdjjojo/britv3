@@ -5,6 +5,7 @@
 const ROLE_ROUTE_OVERRIDES: Record<string, string> = {
   service_provider: "provider",
   estate_agent: "agent",
+  mortgage_broker: "broker",
 };
 
 export function roleToRoute(role: string): string {

@@ -39,6 +39,7 @@ import {
   Grid3X3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ROUTES, dashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
 
 // ---------------------------------------------------------------------------
@@ -554,12 +555,12 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: "/dashboard/provider/payments", label: "Earnings", icon: PoundSterling },
   ],
   mortgage_broker: [
-    { href: "/dashboard/mortgage_broker", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/mortgage_broker/cases", label: "Cases", icon: FileText },
-    { href: "/dashboard/mortgage_broker/clients", label: "Clients", icon: Users },
-    { href: "/dashboard/mortgage_broker/applications", label: "Applications", icon: ClipboardList },
-    { href: "/dashboard/mortgage_broker/revenue", label: "Revenue", icon: TrendingUp },
-    { href: "/dashboard/mortgage_broker/verification", label: "Verification", icon: BadgeCheck },
+    { href: dashboardPathForRole("mortgage_broker"), label: "Overview", icon: LayoutDashboard },
+    { href: dashboardPathForRole("mortgage_broker", "cases"), label: "Cases", icon: FileText },
+    { href: dashboardPathForRole("mortgage_broker", "clients"), label: "Clients", icon: Users },
+    { href: dashboardPathForRole("mortgage_broker", "applications"), label: "Applications", icon: ClipboardList },
+    { href: dashboardPathForRole("mortgage_broker", "revenue"), label: "Revenue", icon: TrendingUp },
+    { href: dashboardPathForRole("mortgage_broker", "verification"), label: "Verification", icon: BadgeCheck },
   ],
 };
 
@@ -572,49 +573,49 @@ export const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Search", href: "/search", icon: Search },
     { label: "Saved", href: "/dashboard/homebuyer/saved", icon: Heart },
     { label: "Viewings", href: "/dashboard/homebuyer/viewings", icon: Calendar },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
   renter: [
     { label: "Search", href: "/search", icon: Search },
     { label: "Saved", href: "/dashboard/renter/saved", icon: Heart },
     { label: "Applications", href: "/dashboard/renter/applications", icon: FileText },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
   seller: [
     { label: "Listings", href: "/dashboard/seller/listings", icon: Home },
     { label: "Viewings", href: "/dashboard/seller/viewings", icon: Calendar },
     { label: "Offers", href: "/dashboard/seller/offers", icon: FileText },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
   landlord: [
     { label: "Portfolio", href: "/dashboard/landlord/properties", icon: Building2 },
     { label: "Tenants", href: "/dashboard/landlord/tenants", icon: Users },
     { label: "Maintenance", href: "/dashboard/landlord/maintenance", icon: WrenchIcon },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
   agent: [
     { label: "Listings", href: "/dashboard/agent/listings", icon: Home },
     { label: "Leads", href: "/dashboard/agent/leads", icon: Users },
     { label: "Viewings", href: "/dashboard/agent/viewings", icon: Calendar },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
   service_provider: [
     { label: "Jobs", href: "/dashboard/provider/jobs/leads", icon: Briefcase },
     { label: "Quotes", href: "/dashboard/provider/quotes/builder", icon: ClipboardList },
     { label: "Calendar", href: "/dashboard/provider/availability", icon: Calendar },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
   mortgage_broker: [
-    { label: "Cases", href: "/dashboard/mortgage_broker/cases", icon: Briefcase },
-    { label: "Clients", href: "/dashboard/mortgage_broker/clients", icon: Users },
-    { label: "Applications", href: "/dashboard/mortgage_broker/applications", icon: ClipboardList },
-    { label: "Messages", href: "/messages", icon: MessageSquare },
+    { label: "Cases", href: dashboardPathForRole("mortgage_broker", "cases"), icon: Briefcase },
+    { label: "Clients", href: dashboardPathForRole("mortgage_broker", "clients"), icon: Users },
+    { label: "Applications", href: dashboardPathForRole("mortgage_broker", "applications"), icon: ClipboardList },
+    { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
 };
@@ -728,12 +729,12 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Earnings", href: "/dashboard/provider/payments", section: "Dashboard", keywords: ["earnings", "income", "payments"], roles: ["service_provider"] },
 
   // Dashboard — Mortgage Broker
-  { label: "Broker Overview", href: "/dashboard/mortgage_broker", section: "Dashboard", keywords: ["dashboard", "overview", "broker"], roles: ["mortgage_broker"] },
-  { label: "Cases", href: "/dashboard/mortgage_broker/cases", section: "Dashboard", keywords: ["cases", "files", "applications"], roles: ["mortgage_broker"] },
-  { label: "Clients", href: "/dashboard/mortgage_broker/clients", section: "Dashboard", keywords: ["clients", "customers", "contacts"], roles: ["mortgage_broker"] },
-  { label: "Applications (Broker)", href: "/dashboard/mortgage_broker/applications", section: "Dashboard", keywords: ["applications", "submissions"], roles: ["mortgage_broker"] },
-  { label: "Revenue (Broker)", href: "/dashboard/mortgage_broker/revenue", section: "Dashboard", keywords: ["revenue", "income", "commission"], roles: ["mortgage_broker"] },
-  { label: "Verification (Broker)", href: "/dashboard/mortgage_broker/verification", section: "Dashboard", keywords: ["verification", "fca", "compliance"], roles: ["mortgage_broker"] },
+  { label: "Broker Overview", href: dashboardPathForRole("mortgage_broker"), section: "Dashboard", keywords: ["dashboard", "overview", "broker"], roles: ["mortgage_broker"] },
+  { label: "Cases", href: dashboardPathForRole("mortgage_broker", "cases"), section: "Dashboard", keywords: ["cases", "files", "applications"], roles: ["mortgage_broker"] },
+  { label: "Clients", href: dashboardPathForRole("mortgage_broker", "clients"), section: "Dashboard", keywords: ["clients", "customers", "contacts"], roles: ["mortgage_broker"] },
+  { label: "Applications (Broker)", href: dashboardPathForRole("mortgage_broker", "applications"), section: "Dashboard", keywords: ["applications", "submissions"], roles: ["mortgage_broker"] },
+  { label: "Revenue (Broker)", href: dashboardPathForRole("mortgage_broker", "revenue"), section: "Dashboard", keywords: ["revenue", "income", "commission"], roles: ["mortgage_broker"] },
+  { label: "Verification (Broker)", href: dashboardPathForRole("mortgage_broker", "verification"), section: "Dashboard", keywords: ["verification", "fca", "compliance"], roles: ["mortgage_broker"] },
 ];
 
 // ---------------------------------------------------------------------------

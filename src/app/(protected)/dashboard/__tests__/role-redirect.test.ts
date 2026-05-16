@@ -8,6 +8,9 @@ describe("roleToRoute", () => {
   it("maps estate_agent to agent", () => {
     expect(roleToRoute("estate_agent")).toBe("agent");
   });
+  it("maps mortgage_broker to broker", () => {
+    expect(roleToRoute("mortgage_broker")).toBe("broker");
+  });
   it("passes through homebuyer unchanged", () => {
     expect(roleToRoute("homebuyer")).toBe("homebuyer");
   });

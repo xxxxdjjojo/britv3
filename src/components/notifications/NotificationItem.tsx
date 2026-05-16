@@ -17,6 +17,7 @@ import {
   Wrench,
 } from "lucide-react";
 import posthog from "posthog-js";
+import { ROUTES } from "@/lib/routes";
 import type { PlatformEvent, EventType } from "@/types/notifications";
 
 type NotificationItemProps = Readonly<{
@@ -81,7 +82,7 @@ function getActionDescription(event: PlatformEvent): string {
 function getNotificationUrl(event: PlatformEvent): string {
   switch (event.entity_type) {
     case "conversation":
-      return `/messages/${event.entity_id}`;
+      return `${ROUTES.inbox}/${event.entity_id}`;
     case "booking":
       return `/bookings/${event.entity_id}`;
     case "listing":
@@ -93,7 +94,7 @@ function getNotificationUrl(event: PlatformEvent): string {
     case "maintenance_request":
       return `/dashboard/landlord/maintenance`;
     default:
-      return "/notifications";
+      return ROUTES.notifications;
   }
 }
 
