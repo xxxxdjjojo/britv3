@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server";
 import { PUBLIC_ROUTES, AUTH_ROUTES, ROUTE_TO_ROLE, ROLE_TO_ROUTE } from "@/lib/constants";
 import { isFeatureEnabled } from "@/lib/features";
 import { ADMIN_ROUTE_PERMISSIONS, hasPermission, type AdminRole } from "@/lib/admin-permissions";
+import { captureException } from "@/lib/observability/capture-exception";
+import { CORRELATION_ID_HEADER, getCorrelationId } from "@/lib/observability/correlation-id";
 
 /** Profile columns fetched by the consolidated middleware query. */
 type MiddlewareProfileData = {
@@ -56,6 +58,15 @@ function setSecurityHeaders(response: NextResponse, nonce: string): void {
   );
 }
 
+function setResponseHeaders(
+  response: NextResponse,
+  nonce: string,
+  correlationId: string,
+): void {
+  setSecurityHeaders(response, nonce);
+  response.headers.set(CORRELATION_ID_HEADER, correlationId);
+}
+
 /**
  * Check if a pathname matches any route in the list.
  * Supports exact match and prefix match (e.g., /dashboard matches /dashboard/homebuyer).
@@ -83,12 +94,15 @@ function redirectWithHeaders(
     }
   }
   const response = NextResponse.redirect(url);
-  setSecurityHeaders(response, nonce);
+  setResponseHeaders(response, nonce, getCorrelationId(request.headers));
   return response;
 }
 
 export async function middleware(request: NextRequest) {
   const nonce = generateNonce();
+  const correlationId = getCorrelationId(request.headers);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(CORRELATION_ID_HEADER, correlationId);
   const { pathname } = request.nextUrl;
 
   // ── Maintenance mode ────────────────────────────────────────────────────
@@ -106,7 +120,7 @@ export async function middleware(request: NextRequest) {
   // Create a response to modify headers
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: requestHeaders,
     },
   });
 
@@ -130,7 +144,7 @@ export async function middleware(request: NextRequest) {
 
   // Skip auth checks if Supabase is not configured
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    setSecurityHeaders(response, nonce);
+    setResponseHeaders(response, nonce, correlationId);
     return response;
   }
 
@@ -149,7 +163,7 @@ export async function middleware(request: NextRequest) {
           );
           response = NextResponse.next({
             request: {
-              headers: request.headers,
+              headers: requestHeaders,
             },
           });
           cookiesToSet.forEach(({ name, value, options }) =>
@@ -167,6 +181,13 @@ export async function middleware(request: NextRequest) {
     const { data: { user: authUser } } = await supabase.auth.getUser();
     user = authUser;
   } catch (error) {
+    captureException(error, {
+      module: "kernel",
+      feature: "middleware",
+      operation: "auth.getUser",
+      route: pathname,
+      correlationId,
+    });
     console.error("[middleware] Auth check failed:", error);
     return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
   }
@@ -222,7 +243,7 @@ export async function middleware(request: NextRequest) {
   if (!isAuthenticated && !isPublicRoute && !isAuthRoute) {
     // API routes: pass through — route handlers enforce their own auth
     if (pathname.startsWith("/api/")) {
-      setSecurityHeaders(response, nonce);
+      setResponseHeaders(response, nonce, correlationId);
       return response;
     }
     // Page routes: redirect to login
@@ -250,14 +271,33 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthenticated && !hasClaims && (isAdminRoute || isDashboardRoute)) {
     try {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("active_role, is_admin, admin_role, provider_verification_status, verification_level")
         .eq("id", user!.id)
         .single();
 
+      if (error) {
+        captureException(error, {
+          module: "kernel",
+          feature: "middleware",
+          operation: "profiles.select",
+          route: pathname,
+          correlationId,
+        });
+        console.error("[middleware] Profile query failed:", error);
+        return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
+      }
+
       profileData = profile as MiddlewareProfileData | null;
     } catch (error) {
+      captureException(error, {
+        module: "kernel",
+        feature: "middleware",
+        operation: "profiles.select",
+        route: pathname,
+        correlationId,
+      });
       console.error("[middleware] Profile query failed:", error);
       return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
     }
@@ -430,10 +470,25 @@ export async function middleware(request: NextRequest) {
                 request,
               );
             }
+          } else {
+            captureException(subError, {
+              module: "kernel",
+              feature: "middleware",
+              operation: "subscriptions.select",
+              route: pathname,
+              correlationId,
+            });
           }
         } catch (error) {
           // Subscription check failed (e.g. table missing) — fail open to
           // avoid blocking dashboard access during development
+          captureException(error, {
+            module: "kernel",
+            feature: "middleware",
+            operation: "subscriptions.select",
+            route: pathname,
+            correlationId,
+          });
           console.warn("[middleware] Subscription check failed (passing through):", error);
         }
       }
@@ -441,7 +496,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Set security headers on passthrough response
-  setSecurityHeaders(response, nonce);
+  setResponseHeaders(response, nonce, correlationId);
   return response;
 }
 

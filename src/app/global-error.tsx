@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Wrench, RefreshCw, Home } from "lucide-react";
+import { captureException } from "@/lib/observability/capture-exception";
 
 /**
  * global-error.tsx — catches errors in the root layout itself.
@@ -15,6 +16,12 @@ export default function GlobalError({
   reset: () => void;
 }>) {
   useEffect(() => {
+    captureException(error, {
+      module: "app",
+      feature: "error-boundary",
+      operation: "global-error",
+      extra: { digest: error.digest },
+    });
     console.error("[GlobalErrorBoundary]", error);
   }, [error]);
 
