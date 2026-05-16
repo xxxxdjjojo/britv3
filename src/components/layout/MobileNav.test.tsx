@@ -97,7 +97,7 @@ describe("MobileNav", () => {
 
     expect(savedLink).toHaveAttribute("href", "/dashboard/saved");
     expect(notificationsLink).toHaveAttribute("href", "/notifications");
-    expect(messagesLink).toHaveAttribute("href", "/messages");
+    expect(messagesLink).toHaveAttribute("href", "/inbox");
   });
 
   it("auth buttons present (Sign In and Get Started)", () => {
