@@ -10,8 +10,8 @@
  * - Uses raw body (not parsed JSON) for signature verification.
  *
  * Idempotency:
- * - INSERT with ON CONFLICT on billing_events.stripe_event_id.
- * - Duplicate events return 200 immediately (no-op).
+ * - claim_billing_event atomically claims or re-opens billing_events rows.
+ * - Already-processed duplicate events return 200 immediately (no-op).
  *
  * Reliability:
  * - Returns 500 on DB write failure so Stripe retries delivery.
@@ -26,6 +26,7 @@ import { getStripe } from "@/lib/stripe";
 import { resolveInternalPlanId } from "@/lib/billing-config";
 import { advanceReferralStatus } from "@/services/referrals/unified-referral-service";
 import { TIER_CONFIGS } from "@/lib/referral-tiers";
+import { captureException, getErrorMessage } from "@/lib/observability/capture-exception";
 import type { ReferralTier } from "@/types/referrals";
 
 export const dynamic = "force-dynamic";
@@ -71,6 +72,57 @@ async function lookupUserByCustomerId(
   return { userId, email, firstName };
 }
 
+type BillingEventClaim = Readonly<{
+  status: string;
+  should_process: boolean;
+}>;
+
+async function claimBillingEvent(
+  supabase: ReturnType<typeof getServiceSupabase>,
+  event: Stripe.Event,
+): Promise<BillingEventClaim> {
+  const { data, error } = await supabase
+    .rpc("claim_billing_event", {
+      p_stripe_event_id: event.id,
+      p_event_type: event.type,
+      p_payload: event.data.object as unknown as Record<string, unknown>,
+    })
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error(`Failed to claim billing event: ${error?.message ?? "no row returned"}`);
+  }
+
+  return data as BillingEventClaim;
+}
+
+async function markBillingEventProcessed(
+  supabase: ReturnType<typeof getServiceSupabase>,
+  event: Stripe.Event,
+  userId: string | null,
+): Promise<void> {
+  const { error } = await supabase.rpc("mark_billing_event_processed", {
+    p_stripe_event_id: event.id,
+    p_user_id: userId,
+    p_payload: event.data.object as unknown as Record<string, unknown>,
+  });
+
+  if (error) {
+    throw new Error(`Failed to mark billing event processed: ${error.message}`);
+  }
+}
+
+async function markBillingEventFailed(
+  supabase: ReturnType<typeof getServiceSupabase>,
+  event: Stripe.Event,
+  error: unknown,
+): Promise<void> {
+  await supabase.rpc("mark_billing_event_failed", {
+    p_stripe_event_id: event.id,
+    p_error: getErrorMessage(error),
+  });
+}
+
 export async function POST(request: Request) {
   const stripe = getStripe();
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -99,26 +151,21 @@ export async function POST(request: Request) {
 
   const supabase = getServiceSupabase();
 
-  // ─── Idempotency check (atomic INSERT with ON CONFLICT) ─────────────────
-  const { data: idempotencyRow, error: idempotencyError } = await supabase
-    .from("billing_events")
-    .upsert(
-      {
-        stripe_event_id: event.id,
-        event_type: event.type,
-        user_id: null,
-        payload: {} as unknown as Record<string, unknown>,
-      },
-      { onConflict: "stripe_event_id", ignoreDuplicates: true },
-    )
-    .select("id, user_id")
-    .maybeSingle();
-
-  if (idempotencyError) {
-    console.error("[webhook] Idempotency upsert error:", idempotencyError);
+  let claim: BillingEventClaim;
+  try {
+    claim = await claimBillingEvent(supabase, event);
+  } catch (claimError) {
+    captureException(claimError, {
+      module: "billing",
+      feature: "stripe-webhook",
+      operation: "claim_billing_event",
+      extra: { eventId: event.id, eventType: event.type },
+    });
+    console.error("[webhook] Idempotency claim error:", claimError);
+    return NextResponse.json({ error: "Database write failed" }, { status: 500 });
   }
 
-  if (idempotencyRow && idempotencyRow.user_id !== null) {
+  if (!claim.should_process) {
     console.log(`[webhook] Duplicate event ${event.id} (${event.type}) — skipping`);
     return NextResponse.json({ received: true, duplicate: true });
   }
@@ -223,29 +270,29 @@ export async function POST(request: Request) {
                 if (!planPrice) {
                   console.warn("[webhook] Could not determine plan price for referral reward, skipping credit");
                   // Still create reward rows but with status 'failed'
-                  await supabase.from("referral_rewards").insert([
+                  await supabase.from("referral_rewards").upsert([
                     { referral_id: ref.id, recipient_id: ref.referrer_id, reward_type: "subscription_credit", amount_pence: 0, status: "failed" },
                     { referral_id: ref.id, recipient_id: userId, reward_type: "subscription_credit", amount_pence: 0, status: "failed" },
-                  ]);
+                  ], { onConflict: "referral_id,recipient_id,reward_type" });
                 } else {
                   // Create reward records for both parties
                   // Reward referrer: 1 month subscription credit
-                  await supabase.from("referral_rewards").insert({
+                  await supabase.from("referral_rewards").upsert({
                     referral_id: ref.id,
                     recipient_id: ref.referrer_id,
                     reward_type: "subscription_credit",
                     amount_pence: planPrice,
                     status: "earned",
-                  });
+                  }, { onConflict: "referral_id,recipient_id,reward_type" });
 
                   // Reward referee: 1 month credit (applied to month 2)
-                  await supabase.from("referral_rewards").insert({
+                  await supabase.from("referral_rewards").upsert({
                     referral_id: ref.id,
                     recipient_id: userId,
                     reward_type: "subscription_credit",
                     amount_pence: planPrice,
                     status: "earned",
-                  });
+                  }, { onConflict: "referral_id,recipient_id,reward_type" });
 
                   // ENG REVIEW 7C: Apply credits via Stripe customer balance
                   try {
@@ -263,6 +310,8 @@ export async function POST(request: Request) {
                         amount: -planPrice, // negative = credit
                         currency: "gbp",
                         description: `Referral reward: 1 month free (referral ${ref.id})`,
+                      }, {
+                        idempotencyKey: `referral-credit-${ref.id}-${ref.referrer_id}`,
                       });
 
                       // Update reward status to applied
@@ -279,6 +328,8 @@ export async function POST(request: Request) {
                         amount: -planPrice,
                         currency: "gbp",
                         description: `Referral welcome credit: 1 month free (referral ${ref.id})`,
+                      }, {
+                        idempotencyKey: `referral-credit-${ref.id}-${userId}`,
                       });
 
                       await supabase.from("referral_rewards")
@@ -628,22 +679,18 @@ export async function POST(request: Request) {
         console.log(`[webhook] Unhandled event type: ${event.type}`);
     }
 
-    // ─── Update billing_events audit log ────────────────────────────────────
-    const { error: logError } = await supabase
-      .from("billing_events")
-      .update({
-        user_id: userId,
-        payload: event.data.object as unknown as Record<string, unknown>,
-      })
-      .eq("stripe_event_id", event.id);
-
-    if (logError) {
-      console.error("[webhook] Failed to update billing_event log:", logError);
-    }
+    await markBillingEventProcessed(supabase, event, userId);
 
     return NextResponse.json({ received: true });
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    captureException(err, {
+      module: "billing",
+      feature: "stripe-webhook",
+      operation: "handle-event",
+      extra: { eventId: event.id, eventType: event.type },
+    });
+    await markBillingEventFailed(supabase, event, err);
     console.error("[api/webhooks/stripe] error:", event.id, err);
 
     // Emit to Inngest DLQ for retry
