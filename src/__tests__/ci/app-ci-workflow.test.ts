@@ -1,0 +1,32 @@
+import { describe, expect, it } from "vitest";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+const WORKFLOWS_DIR = join(process.cwd(), ".github", "workflows");
+
+function readWorkflowSources(): string[] {
+  if (!existsSync(WORKFLOWS_DIR)) return [];
+
+  return readdirSync(WORKFLOWS_DIR)
+    .filter((file) => file.endsWith(".yml") || file.endsWith(".yaml"))
+    .map((file) => readFileSync(join(WORKFLOWS_DIR, file), "utf8"));
+}
+
+describe("app CI workflow contract", () => {
+  it("runs app lint, unit tests, build, and Chromium link E2E on pull requests", () => {
+    const workflows = readWorkflowSources();
+    const appCiWorkflow = workflows.find((source) =>
+      source.includes("pnpm install --frozen-lockfile") &&
+      source.includes("pnpm lint") &&
+      source.includes("pnpm test -- --run") &&
+      source.includes("pnpm build"),
+    );
+
+    expect(appCiWorkflow, "missing app CI workflow").toBeDefined();
+    expect(appCiWorkflow).toContain("npx playwright install --with-deps chromium");
+    expect(appCiWorkflow).toContain("e2e/homepage-link-audit.spec.ts");
+    expect(appCiWorkflow).toContain("e2e/navigation.spec.ts");
+    expect(appCiWorkflow).toContain("e2e/dashboard-navigation.spec.ts");
+    expect(appCiWorkflow).toContain("--project=chromium");
+  });
+});
