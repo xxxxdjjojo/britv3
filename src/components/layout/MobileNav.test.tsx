@@ -95,7 +95,7 @@ describe("MobileNav", () => {
     const notificationsLink = screen.getByRole("link", { name: /notification/i });
     const messagesLink = screen.getByRole("link", { name: /message/i });
 
-    expect(savedLink).toHaveAttribute("href", "/dashboard/saved");
+    expect(savedLink).toHaveAttribute("href", "/dashboard");
     expect(notificationsLink).toHaveAttribute("href", "/notifications");
     expect(messagesLink).toHaveAttribute("href", "/inbox");
   });

@@ -11,6 +11,10 @@ export function useRole() {
 
   const fetchRoles = useCallback(async () => {
     const supabase = createClient();
+    if (!supabase.auth?.getUser) {
+      setLoading(false);
+      return;
+    }
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -46,6 +50,8 @@ export function useRole() {
 
   const switchRole = useCallback(async (role: UserRole) => {
     const supabase = createClient();
+    if (!supabase.auth?.getUser) return;
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
