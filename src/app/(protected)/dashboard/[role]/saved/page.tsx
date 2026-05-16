@@ -76,7 +76,7 @@ export default async function SavedPropertiesPage() {
               <Card key={saved.id} className="overflow-hidden">
                 {/* Image */}
                 <div className="relative aspect-[4/3] bg-neutral-100">
-                  <Link href={`/property/${listing.slug ?? listing.id}`}>
+                  <Link href={`/properties/${listing.slug ?? listing.id}`}>
                     <div className="size-full">
                       <div className="flex size-full items-center justify-center text-neutral-300">
                         <Heart className="size-12" />
@@ -87,7 +87,7 @@ export default async function SavedPropertiesPage() {
                 </div>
 
                 <CardContent className="p-4">
-                  <Link href={`/property/${listing.slug ?? listing.id}`}>
+                  <Link href={`/properties/${listing.slug ?? listing.id}`}>
                     <h3 className="truncate font-medium text-neutral-900 hover:text-brand-accent">
                       {property.title}
                     </h3>

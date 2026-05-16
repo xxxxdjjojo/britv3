@@ -12,14 +12,9 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { NAV_ITEMS, navLinkClasses } from "@/config/navigation";
-import { ROUTES } from "@/lib/routes";
+import { dashboardPathForRole, ROUTES } from "@/lib/routes";
+import { useRole } from "@/hooks/useRole";
 import { cn } from "@/lib/utils";
-
-const QUICK_LINKS = [
-  { href: "/dashboard/saved", label: "Saved", icon: Heart },
-  { href: ROUTES.notifications, label: "Notifications", icon: Bell },
-  { href: ROUTES.inbox, label: "Messages", icon: MessageSquare },
-] as const;
 
 export function MobileNav({
   open,
@@ -29,7 +24,14 @@ export function MobileNav({
   onOpenChange: (open: boolean) => void;
 }>) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { activeRole } = useRole();
   const close = () => onOpenChange(false);
+  const savedHref = activeRole ? dashboardPathForRole(activeRole, "saved") : ROUTES.dashboard.root;
+  const quickLinks = [
+    { href: savedHref, label: "Saved", icon: Heart },
+    { href: ROUTES.notifications, label: "Notifications", icon: Bell },
+    { href: ROUTES.inbox, label: "Messages", icon: MessageSquare },
+  ] as const;
 
   const toggleAccordion = (index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
@@ -46,7 +48,7 @@ export function MobileNav({
 
         {/* Quick-access icon row */}
         <div className="flex items-center gap-4 border-b px-4 pb-3">
-          {QUICK_LINKS.map(({ href, label, icon: Icon }) => (
+          {quickLinks.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}

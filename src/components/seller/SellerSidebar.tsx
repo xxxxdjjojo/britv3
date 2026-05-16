@@ -21,7 +21,7 @@ const NAV_ITEMS = [
   { label: "Enquiries", href: "/dashboard/seller/enquiries", icon: MessageSquare },
   { label: "Viewings", href: "/dashboard/seller/viewings", icon: Eye },
   { label: "Market Analytics", href: "/dashboard/seller/analytics", icon: BarChart2 },
-  { label: "Settings", href: "/dashboard/seller/settings", icon: Settings },
+  { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 type Props = Readonly<{

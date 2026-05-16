@@ -410,7 +410,7 @@ export const BREADCRUMB_MAP: Record<string, BreadcrumbEntry[]> = {
   ],
   "/blog": [
     { label: "Home", href: "/" },
-    { label: "Advice", href: "/advice" },
+    { label: "Advice", href: "/blog" },
     { label: "Blog" },
   ],
   "/areas": [
