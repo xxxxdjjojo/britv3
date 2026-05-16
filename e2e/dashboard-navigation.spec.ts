@@ -63,7 +63,7 @@ test.describe("authenticated dashboard navigation", () => {
     await expectNoAppError(authenticatedPage);
   });
 
-  test("public mobile drawer Saved quick link routes to role-specific saved page", async ({
+  test("authenticated mobile drawer Saved quick link routes to role-specific saved page", async ({
     authenticatedPage,
   }) => {
     test.skip(

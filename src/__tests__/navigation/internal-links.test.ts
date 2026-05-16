@@ -6,6 +6,20 @@ const ROOT = process.cwd();
 const SCAN_DIRS = ["src/app", "src/components"];
 const INTERNAL_ANCHOR_RE = /<a\b[^>]*\bhref=(["'`])\/(?!\/)(.*?)\1/gs;
 const SKIP_FILE_RE = /\.(test|spec)\.tsx$/;
+const STALE_INTERNAL_HREFS = [
+  {
+    label: "/dashboard/saved",
+    pattern: /(?:href\s*=\s*|href:\s*)["'`]\/dashboard\/saved["'`]/g,
+  },
+  {
+    label: "/dashboard/seller/settings",
+    pattern: /(?:href\s*=\s*|href:\s*)["'`]\/dashboard\/seller\/settings["'`]/g,
+  },
+  {
+    label: "/property/*",
+    pattern: /href\s*=\s*(?:["'`]\/property\/|\{`\/property\/)/g,
+  },
+] as const;
 
 function listTsxFiles(dir: string): string[] {
   const absoluteDir = join(ROOT, dir);
@@ -40,6 +54,21 @@ describe("internal app navigation", () => {
         const href = `/${match[2]}`;
         return `${relative(ROOT, filePath)}:${line} uses <a href="${href}"> for an internal route`;
       });
+    });
+
+    expect(violations).toEqual([]);
+  });
+
+  it("does not point app or component links at stale internal routes", () => {
+    const violations = SCAN_DIRS.flatMap(listTsxFiles).flatMap((filePath) => {
+      const source = readFileSync(filePath, "utf8");
+
+      return STALE_INTERNAL_HREFS.flatMap(({ label, pattern }) =>
+        Array.from(source.matchAll(pattern)).map((match) => {
+          const line = source.slice(0, match.index).split("\n").length;
+          return `${relative(ROOT, filePath)}:${line} links to stale ${label}`;
+        }),
+      );
     });
 
     expect(violations).toEqual([]);

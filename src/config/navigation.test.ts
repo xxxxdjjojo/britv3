@@ -3,6 +3,7 @@ import {
   NAV_ITEMS,
   FOOTER_LINKS,
   BREADCRUMB_MAP,
+  BREADCRUMB_PATTERNS,
   ROLE_NAV_ITEMS,
   TAB_CONFIG,
   COMMAND_PALETTE_ROUTES,
@@ -14,6 +15,7 @@ const FORBIDDEN_CANONICAL_HREFS = [
   "/messages",
   "/dashboard/notifications",
   "/dashboard/mortgage_broker",
+  "/advice",
 ] as const;
 
 // Shared constant used across multiple describe blocks
@@ -38,6 +40,9 @@ function collectNavigationHrefs(): string[] {
       column.links?.map((link) => link.href) ?? [],
     ),
     ...Object.values(BREADCRUMB_MAP).flatMap((trail) =>
+      trail.flatMap((entry) => entry.href ? [entry.href] : []),
+    ),
+    ...Object.values(BREADCRUMB_PATTERNS).flatMap((trail) =>
       trail.flatMap((entry) => entry.href ? [entry.href] : []),
     ),
     ...ALL_ROLES.flatMap((role) =>
