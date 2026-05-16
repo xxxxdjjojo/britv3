@@ -1,5 +1,5 @@
 import { test as setup } from "@playwright/test";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 const TEST_USERS: Record<string, { email: string; password: string }> = {
@@ -29,8 +29,10 @@ for (const [role, creds] of Object.entries(TEST_USERS)) {
       await page.context().storageState({ path: authFile });
     } catch {
       // Auth not available (no Supabase, no test users, etc.)
-      // Save empty state so tests can detect this and skip gracefully
+      // Save an explicit empty state so authenticated specs fail on missing auth
+      // instead of inheriting unrelated analytics storage.
       await page.context().storageState({ path: authFile });
+      writeFileSync(authFile, JSON.stringify({ cookies: [], origins: [] }, null, 2));
     }
   });
 }

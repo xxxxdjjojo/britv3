@@ -35,23 +35,20 @@ type AuthFixtures = {
 export const test = base.extend<AuthFixtures>({
   role: ["homebuyer", { option: true }],
 
-  authenticatedPage: async ({ browser, role }, use, testInfo) => {
+  authenticatedPage: async ({ browser, role }, provideAuthenticatedPage) => {
     const authFile = `e2e/.auth/${role}.json`;
     const hasAuth = isAuthenticated(authFile);
 
     if (!hasAuth) {
-      testInfo.skip(
-        true,
-        `No auth state for role "${role}". Skipping authenticated test.`,
+      throw new Error(
+        `No Supabase auth state for role "${role}". Run the Playwright setup with valid test users before authenticated specs.`,
       );
-      // Return value is unused when skipped, but TS needs the callback to resolve.
-      return;
     }
 
     const context = await browser.newContext({ storageState: authFile });
     const page = await context.newPage();
 
-    await use(page);
+    await provideAuthenticatedPage(page);
 
     await context.close();
   },

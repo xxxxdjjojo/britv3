@@ -13,11 +13,29 @@ export function isAuthenticated(authFilePath: string): boolean {
       origins?: { localStorage?: unknown[] }[];
     };
 
-    const hasCookies = Array.isArray(state.cookies) && state.cookies.length > 0;
+    const hasCookies =
+      Array.isArray(state.cookies) &&
+      state.cookies.some((cookie) => {
+        if (!cookie || typeof cookie !== "object" || !("name" in cookie)) {
+          return false;
+        }
+
+        const name = String(cookie.name);
+        return name.startsWith("sb-") || name.includes("supabase");
+      });
     const hasStorage =
       Array.isArray(state.origins) &&
       state.origins.some(
-        (o) => Array.isArray(o.localStorage) && o.localStorage.length > 0,
+        (origin) =>
+          Array.isArray(origin.localStorage) &&
+          origin.localStorage.some((item) => {
+            if (!item || typeof item !== "object" || !("name" in item)) {
+              return false;
+            }
+
+            const name = String(item.name);
+            return name.startsWith("sb-") || name.includes("supabase");
+          }),
       );
 
     return hasCookies || hasStorage;
