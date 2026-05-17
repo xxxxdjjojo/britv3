@@ -190,7 +190,9 @@ describe("ROLE_NAV_ITEMS", () => {
     const hrefs = ROLE_NAV_ITEMS.mortgage_broker.map((item) => item.href);
 
     expect(hrefs).toContain("/dashboard/broker");
-    expect(hrefs).toContain("/dashboard/broker/cases");
+    expect(hrefs).toContain("/dashboard/broker/leads");
+    expect(hrefs).toContain("/dashboard/broker/pipeline");
+    expect(hrefs).toContain("/dashboard/broker/fca-verification");
     expect(hrefs).not.toContain("/dashboard/mortgage_broker");
   });
 });
@@ -232,8 +234,9 @@ describe("TAB_CONFIG", () => {
   it("uses the broker filesystem route for mortgage broker tabs", () => {
     const hrefs = TAB_CONFIG.mortgage_broker.map((tab) => tab.href);
 
-    expect(hrefs).toContain("/dashboard/broker/cases");
-    expect(hrefs).not.toContain("/dashboard/mortgage_broker/cases");
+    expect(hrefs).toContain("/dashboard/broker/leads");
+    expect(hrefs).toContain("/dashboard/broker/pipeline");
+    expect(hrefs).not.toContain("/dashboard/mortgage_broker/leads");
   });
 });
 

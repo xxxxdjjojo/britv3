@@ -1,6 +1,6 @@
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const SCREENSHOT_DIR = "test-results/phase-b-link-render";
 const INTERNAL_LITERAL_HREF_RE = /\bhref:\s*["'`]([^"'`]+)["'`]/g;
@@ -23,10 +23,10 @@ function screenshotName(href: string): string {
     .slice(0, 80);
 }
 
-async function capture(page: Page, href: string): Promise<void> {
+async function capture(page: Page, href: string, testInfo: TestInfo): Promise<void> {
   await mkdir(SCREENSHOT_DIR, { recursive: true });
   await page.screenshot({
-    path: `${SCREENSHOT_DIR}/${screenshotName(href)}.png`,
+    path: `${SCREENSHOT_DIR}/${testInfo.project.name}-${screenshotName(href)}.png`,
     fullPage: true,
   });
 }
@@ -53,7 +53,7 @@ async function collectPublicConfiguredHrefs(): Promise<string[]> {
 test.describe("configured public navigation render", () => {
   test("public configured destinations render non-error pages with screenshots", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(180_000);
 
     const hrefs = await collectPublicConfiguredHrefs();
@@ -65,7 +65,7 @@ test.describe("configured public navigation render", () => {
 
       expect(response?.status(), `${href} returned an error status`).toBeLessThan(400);
       await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
-      await capture(page, href);
+      await capture(page, href, testInfo);
       expect(new URL(page.url()).pathname, `${href} should not redirect to login`).not.toBe("/login");
       await expect(page.locator("body"), `${href} should not render an app error`).not.toContainText(
         /Page not found|This page could not be found|Application error/i,

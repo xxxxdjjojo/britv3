@@ -214,7 +214,7 @@ export default async function MarketTrendsPage() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-bold">Average Price by Region</CardTitle>
               <Link
-                href="#"
+                href="#regional-price-table"
                 className="flex items-center gap-1 text-sm font-semibold text-brand-primary"
               >
                 View Details <ArrowRight className="h-4 w-4" />
@@ -301,7 +301,7 @@ export default async function MarketTrendsPage() {
       {/* Charts Data Tables Section */}
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Average Prices by Region Table */}
-        <Card className="border-neutral-200">
+        <Card id="regional-price-table" className="scroll-mt-24 border-neutral-200">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Average Prices by Region</CardTitle>
             <CardDescription>Latest regional average house prices</CardDescription>
@@ -693,7 +693,7 @@ export default async function MarketTrendsPage() {
                 })}
               </div>
               <Link
-                href="#"
+                href="#local-authority-rankings"
                 className="mt-8 flex w-full items-center justify-center rounded-lg border border-neutral-200 py-3 text-sm font-bold text-neutral-600 transition-colors hover:bg-neutral-50"
               >
                 View Full Rankings
@@ -702,6 +702,37 @@ export default async function MarketTrendsPage() {
             </CardContent>
           </Card>
         </div>
+      </section>
+
+      {/* Full Local Authority Rankings */}
+      <section id="local-authority-rankings" className="mb-8 scroll-mt-24">
+        <h2 className="mb-4 font-heading text-xl font-bold text-neutral-900">
+          Full Local Authority Rankings
+        </h2>
+        <Card className="border-neutral-200">
+          <CardContent>
+            <div className="divide-y divide-neutral-100">
+              {YIELD_RANKINGS.map((item) => {
+                const barWidth = `${Math.round((item.yield / (YIELD_RANKINGS[0]?.yield ?? 10)) * 100)}%`;
+                const rankLabel = item.rank.padStart(2, "0");
+                return (
+                  <div key={item.rank} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
+                    <div className="w-8 text-lg font-bold text-neutral-300">{rankLabel}</div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-neutral-900">{item.area}</div>
+                      <div className="text-xs text-neutral-500">
+                        Yield: {item.yield}% &bull; {item.detail}
+                      </div>
+                    </div>
+                    <div className="h-1.5 w-28 overflow-hidden rounded-full bg-neutral-100">
+                      <div className="h-full bg-green-500" style={{ width: barWidth }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Internal Region Links */}

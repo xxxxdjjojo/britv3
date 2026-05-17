@@ -556,11 +556,11 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
   ],
   mortgage_broker: [
     { href: dashboardPathForRole("mortgage_broker"), label: "Overview", icon: LayoutDashboard },
-    { href: dashboardPathForRole("mortgage_broker", "cases"), label: "Cases", icon: FileText },
-    { href: dashboardPathForRole("mortgage_broker", "clients"), label: "Clients", icon: Users },
-    { href: dashboardPathForRole("mortgage_broker", "applications"), label: "Applications", icon: ClipboardList },
-    { href: dashboardPathForRole("mortgage_broker", "revenue"), label: "Revenue", icon: TrendingUp },
-    { href: dashboardPathForRole("mortgage_broker", "verification"), label: "Verification", icon: BadgeCheck },
+    { href: dashboardPathForRole("mortgage_broker", "leads"), label: "Leads", icon: FileText },
+    { href: dashboardPathForRole("mortgage_broker", "pipeline"), label: "Pipeline", icon: Users },
+    { href: dashboardPathForRole("mortgage_broker", "products"), label: "Products", icon: ClipboardList },
+    { href: dashboardPathForRole("mortgage_broker", "analytics"), label: "Analytics", icon: TrendingUp },
+    { href: dashboardPathForRole("mortgage_broker", "fca-verification"), label: "FCA Verification", icon: BadgeCheck },
   ],
 };
 
@@ -612,9 +612,9 @@ export const TAB_CONFIG: Record<UserRole, TabItem[]> = {
     { label: "Profile", href: "/profile", icon: User },
   ],
   mortgage_broker: [
-    { label: "Cases", href: dashboardPathForRole("mortgage_broker", "cases"), icon: Briefcase },
-    { label: "Clients", href: dashboardPathForRole("mortgage_broker", "clients"), icon: Users },
-    { label: "Applications", href: dashboardPathForRole("mortgage_broker", "applications"), icon: ClipboardList },
+    { label: "Leads", href: dashboardPathForRole("mortgage_broker", "leads"), icon: Briefcase },
+    { label: "Pipeline", href: dashboardPathForRole("mortgage_broker", "pipeline"), icon: Users },
+    { label: "Products", href: dashboardPathForRole("mortgage_broker", "products"), icon: ClipboardList },
     { label: "Messages", href: ROUTES.inbox, icon: MessageSquare },
     { label: "Profile", href: "/profile", icon: User },
   ],
@@ -730,11 +730,11 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
 
   // Dashboard — Mortgage Broker
   { label: "Broker Overview", href: dashboardPathForRole("mortgage_broker"), section: "Dashboard", keywords: ["dashboard", "overview", "broker"], roles: ["mortgage_broker"] },
-  { label: "Cases", href: dashboardPathForRole("mortgage_broker", "cases"), section: "Dashboard", keywords: ["cases", "files", "applications"], roles: ["mortgage_broker"] },
-  { label: "Clients", href: dashboardPathForRole("mortgage_broker", "clients"), section: "Dashboard", keywords: ["clients", "customers", "contacts"], roles: ["mortgage_broker"] },
-  { label: "Applications (Broker)", href: dashboardPathForRole("mortgage_broker", "applications"), section: "Dashboard", keywords: ["applications", "submissions"], roles: ["mortgage_broker"] },
-  { label: "Revenue (Broker)", href: dashboardPathForRole("mortgage_broker", "revenue"), section: "Dashboard", keywords: ["revenue", "income", "commission"], roles: ["mortgage_broker"] },
-  { label: "Verification (Broker)", href: dashboardPathForRole("mortgage_broker", "verification"), section: "Dashboard", keywords: ["verification", "fca", "compliance"], roles: ["mortgage_broker"] },
+  { label: "Leads", href: dashboardPathForRole("mortgage_broker", "leads"), section: "Dashboard", keywords: ["leads", "cases", "files", "applications"], roles: ["mortgage_broker"] },
+  { label: "Pipeline", href: dashboardPathForRole("mortgage_broker", "pipeline"), section: "Dashboard", keywords: ["pipeline", "clients", "customers", "contacts"], roles: ["mortgage_broker"] },
+  { label: "Products (Broker)", href: dashboardPathForRole("mortgage_broker", "products"), section: "Dashboard", keywords: ["products", "applications", "submissions"], roles: ["mortgage_broker"] },
+  { label: "Analytics (Broker)", href: dashboardPathForRole("mortgage_broker", "analytics"), section: "Dashboard", keywords: ["analytics", "revenue", "income", "commission"], roles: ["mortgage_broker"] },
+  { label: "FCA Verification (Broker)", href: dashboardPathForRole("mortgage_broker", "fca-verification"), section: "Dashboard", keywords: ["verification", "fca", "compliance"], roles: ["mortgage_broker"] },
 ];
 
 // ---------------------------------------------------------------------------
