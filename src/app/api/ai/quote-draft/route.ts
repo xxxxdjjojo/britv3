@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
     // 4. Rate limit: max 10 AI drafts per user per day (Upstash sliding window)
     const rateLimit = await enforceAiRateLimit(user.id, "quote_draft");
-    if (!rateLimit.ok && rateLimit.reason === "rate_limited") {
+    if (!rateLimit.ok) {
       return NextResponse.json(
         {
           error: "Daily AI draft limit reached",

@@ -6,16 +6,8 @@ const { limitMock, captureExceptionMock } = vi.hoisted(() => ({
   captureExceptionMock: vi.fn(),
 }));
 
-vi.mock("@/lib/cache/redis", () => ({
-  createRateLimiter: () => ({ limit: limitMock }),
-}));
-
 vi.mock("../../lib/cache/redis", () => ({
   createRateLimiter: () => ({ limit: limitMock }),
-}));
-
-vi.mock("@/lib/observability/capture-exception", () => ({
-  captureException: captureExceptionMock,
 }));
 
 vi.mock("../../lib/observability/capture-exception", () => ({
