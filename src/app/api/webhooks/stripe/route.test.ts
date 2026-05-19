@@ -72,6 +72,16 @@ function makeSubscriptionDeletedEvent(id = "evt_subscription_deleted") {
   };
 }
 
+function makeUnhandledEvent(id = "evt_unhandled_type") {
+  return {
+    id,
+    type: "customer.tax_id.created", // a real Stripe event type we don't handle
+    data: {
+      object: { id: "txi_test_123" },
+    },
+  };
+}
+
 async function importStripeWebhookRoute(options: {
   event: ReturnType<typeof makeSubscriptionDeletedEvent>;
   claimResult: { data: BillingEventClaim | null; error: DbError | null };
@@ -243,6 +253,31 @@ describe("Stripe webhook idempotency contract", () => {
     expect(mocks.subscriptionUpdate).not.toHaveBeenCalled();
     expect(mocks.markBillingEventProcessed).not.toHaveBeenCalled();
     expect(mocks.revalidateTag).not.toHaveBeenCalled();
+  });
+
+  it("returns 200 (NOT 500) for unhandled event types and marks them processed", async () => {
+    // Stripe sends dozens of event types we don't handle — they must still
+    // return 200 so Stripe doesn't retry them indefinitely. The default branch
+    // in stripe-event-processor.ts logs and returns undefined userId without
+    // throwing.
+    const event = makeUnhandledEvent("evt_unhandled_customer_tax_id");
+    const { POST, mocks } = await importStripeWebhookRoute({
+      event,
+      claimResult: {
+        data: { status: "claimed", should_process: true },
+        error: null,
+      },
+    });
+
+    const response = await POST(makeStripeWebhookRequest());
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ received: true });
+    expect(mocks.markBillingEventProcessed).toHaveBeenCalledTimes(1);
+    expect(mocks.markBillingEventFailed).not.toHaveBeenCalled();
+    // No subscription mutation expected for an unhandled type
+    expect(mocks.subscriptionUpdate).not.toHaveBeenCalled();
   });
 
   it("stops processing when the idempotency claim write fails", async () => {
