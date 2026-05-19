@@ -1,33 +1,40 @@
 /**
- * Inngest function: GDPR user purge.
+ * GDPR user purge — Inngest worker.
  *
- * Replaces the previous CASCADE-based blast-radius deletion. The new flow:
+ * Listens on `gdpr/user.deletion-requested` events. Deletes user-owned data
+ * from PURGE_TABLES in order, then removes the auth.users row via
+ * supabase.auth.admin.deleteUser.
  *
- *   1. App calls request_user_deletion RPC + emits "gdpr/user.deletion-requested".
- *   2. This function claims the purge via start_user_purge RPC.
- *   3. It deletes user-owned rows from every table in PURGE_TABLES, in order.
- *      Each table deletion runs as its own step so partial failures retry
- *      cleanly. Errors are captured to Sentry but do not abort the loop --
- *      we want to know about *every* table that still has data when the
- *      final auth.users delete is attempted.
- *   4. It deletes the auth.users row (which now has only ON DELETE RESTRICT
- *      references, so any forgotten table will surface a clear error).
- *   5. On success: complete_user_purge RPC.
- *   6. On any thrown error: fail_user_purge RPC + Inngest retries.
+ * Status flow (managed via kernel_deleted_users table):
+ *   pending → purging → completed | failed
  *
- * The Storage cleanup (avatars, buyer-documents) is delegated to
- * completePurge() in @/services/gdpr/purge-service so the existing logic is
- * preserved.
+ * KNOWN LIMITATION — PURGE_TABLES is intentionally NOT exhaustive.
+ * ----------------------------------------------------------------
+ * Migration 20260520000200 rewrites all ON DELETE CASCADE FKs to
+ * ON DELETE RESTRICT. ~30 additional FKs reference auth.users with default
+ * NO ACTION semantics (not in the migration's scope). On a user-deletion
+ * attempt for an engaged user (agent with offers, landlord with notices,
+ * provider with invoices, admin with audit_log entries), the loop will
+ * succeed for tables in PURGE_TABLES, then the final auth.admin.deleteUser
+ * call fails with FK violation.
  *
- * Event payload:
- *   {
- *     userId: string,
- *     requestedBy: string | null,
- *     reason: "user_request" | "admin" | "gdpr_purge" | "fraud",
- *   }
+ * This is a DELIBERATE pre-launch posture (fail-loud, not silent-failure):
+ *   • kernel_deleted_users.status flips to 'failed'
+ *   • last_error includes the FK constraint name
+ *   • Sentry captures the exception
+ *   • Inngest dashboard shows the function as failed after retries
+ *
+ * The operator runbook is at docs/runbooks/gdpr-purge-fk-blocked.md.
+ *
+ * Sprint 1 follow-ups (tracked in TODOS):
+ *   • Per-FK policy decisions for the ~30 unrewritten columns
+ *   • Either expand PURGE_TABLES or convert FKs to ON DELETE SET NULL
+ *     with appropriate column-nullability changes
+ *   • Wire the service into /api/gdpr/delete and the admin GDPR fulfillment service
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { completePurge } from "@/services/gdpr/purge-service";
@@ -35,6 +42,15 @@ import {
   captureException,
   getErrorMessage,
 } from "@/lib/observability/capture-exception";
+
+const GdprUserDeletionEventSchema = z.object({
+  userId: z.string().uuid(),
+  requestedBy: z.string().uuid().nullable().optional(),
+  reason: z
+    .enum(["user_request", "admin", "gdpr_purge", "fraud"])
+    .optional()
+    .default("user_request"),
+});
 
 export type GdprUserDeletionEvent = Readonly<{
   userId: string;
@@ -205,7 +221,25 @@ export const gdprUserPurge = inngest.createFunction(
   },
   { event: "gdpr/user.deletion-requested" },
   async ({ event, step, attempt }) => {
-    const data = event.data as GdprUserDeletionEvent;
+    // ------------------------------------------------------------------
+    // Validate the event payload at runtime. A malformed event has no
+    // trustworthy userId, so we cannot record a failure against
+    // kernel_deleted_users -- just capture to Sentry and re-throw so
+    // Inngest surfaces the bad event in the dashboard.
+    // ------------------------------------------------------------------
+    let data: z.infer<typeof GdprUserDeletionEventSchema>;
+    try {
+      data = GdprUserDeletionEventSchema.parse(event.data);
+    } catch (err) {
+      captureException(err, {
+        module: "gdpr",
+        feature: "user-purge",
+        operation: "validate-event",
+        extra: { rawData: event.data, attempt },
+      });
+      throw err instanceof Error ? err : new Error(getErrorMessage(err));
+    }
+
     const { userId, reason } = data;
     const supabase = createAdminClient();
 
@@ -224,62 +258,50 @@ export const gdprUserPurge = inngest.createFunction(
       };
     }
 
-    const tableErrors: Array<{ table: string; column: string; error: string }> =
-      [];
-
     try {
       // ------------------------------------------------------------------
       // Delete user-owned rows table-by-table. Each table is its own step
       // so an Inngest retry resumes where it left off (Inngest caches step
       // results across retries).
+      //
+      // Per-step hard-fail: throwing inside the step body causes Inngest
+      // to retry that specific step. If a step exhausts its own retries,
+      // the function throws naturally and `fail_user_purge` is called via
+      // the outer catch. This avoids the closure-accumulator pattern,
+      // which is unsafe under Inngest's retry-from-cache semantics: on a
+      // retry, the array would be freshly empty and the partial-fail
+      // guard would silently pass.
       // ------------------------------------------------------------------
       for (const target of PURGE_TABLES) {
-        const stepId = `delete-${target.table}-${target.column}`;
-        await step.run(stepId, async () => {
-          const { error } = await supabase
-            .from(target.table)
-            .delete()
-            .eq(target.column, userId);
-
-          if (error) {
-            tableErrors.push({
-              table: target.table,
-              column: target.column,
-              error: error.message,
-            });
-            captureException(error, {
-              module: "gdpr",
-              feature: "user-purge",
-              operation: "delete-table",
-              extra: {
-                userId,
-                reason,
-                table: target.table,
-                column: target.column,
-                attempt,
-              },
-            });
-          }
-
-          return { table: target.table, ok: !error };
-        });
-      }
-
-      // ------------------------------------------------------------------
-      // Hard-fail on any per-table error before we touch auth.users.
-      // Without this, the worker would proceed to completePurge() and
-      // mark status='completed' even though user data was left behind.
-      // The per-table loop is idempotent (already-deleted rows match
-      // zero rows), so Inngest retries are safe and will resume cleanly.
-      // ------------------------------------------------------------------
-      if (tableErrors.length > 0) {
-        const firstErr = tableErrors[0];
-        const message = `Partial purge: ${tableErrors.length} table errors. First: ${firstErr.table}.${firstErr.column} - ${firstErr.error}`;
-        await step.run("mark-failed-partial", async () => {
-          await callFailUserPurge(supabase, userId, message);
-        });
-        throw new Error(
-          `Partial purge for user ${userId}: ${tableErrors.length} table(s) failed`,
+        await step.run(
+          `delete-${target.table}-${target.column}`,
+          async () => {
+            const { error } = await supabase
+              .from(target.table)
+              .delete()
+              .eq(target.column, userId);
+            if (error) {
+              captureException(error, {
+                module: "gdpr",
+                feature: "purge",
+                operation: "delete-user-data",
+                extra: {
+                  userId,
+                  table: target.table,
+                  column: target.column,
+                  errorCode: error.code,
+                },
+              });
+              // Throw so Inngest retries this specific step. If we exhaust
+              // retries (default 3), the function will throw and the outer
+              // catch will call fail_user_purge — kernel_deleted_users.status
+              // stays 'failed' and the user data is NOT silently abandoned.
+              throw new Error(
+                `[gdpr-purge] Failed to delete from ${target.table}.${target.column} for user ${userId}: ${error.message}`,
+              );
+            }
+            return { table: target.table, column: target.column, ok: true };
+          },
         );
       }
 
@@ -302,7 +324,6 @@ export const gdprUserPurge = inngest.createFunction(
         status: "completed" as const,
         userId,
         attempt,
-        tableErrors,
       };
     } catch (err) {
       const message = getErrorMessage(err);
@@ -311,7 +332,7 @@ export const gdprUserPurge = inngest.createFunction(
         module: "gdpr",
         feature: "user-purge",
         operation: "purge-loop",
-        extra: { userId, reason, attempt, tableErrors },
+        extra: { userId, reason, attempt },
       });
 
       // Best-effort: record the failure so admins can see the latest error.
