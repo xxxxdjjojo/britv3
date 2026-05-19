@@ -38,6 +38,8 @@ vi.mock("@/services/referrals/unified-referral-service", () => ({
 
 const ROOT = process.cwd();
 const STRIPE_WEBHOOK_ROUTE = join(ROOT, "src/app/api/webhooks/stripe/route.ts");
+const STRIPE_EVENT_PROCESSOR = join(ROOT, "src/services/billing/stripe-event-processor.ts");
+const BILLING_EVENTS_HELPER = join(ROOT, "src/services/billing/billing-events.ts");
 const MIGRATIONS_DIR = join(ROOT, "supabase/migrations");
 
 function readMigrationSources(): string {
@@ -186,12 +188,18 @@ describe("Stripe webhook idempotency contract", () => {
   });
 
   it("claims webhook events with processed state instead of ignoreDuplicates", () => {
-    const source = readFileSync(STRIPE_WEBHOOK_ROUTE, "utf8");
+    const routeSource = readFileSync(STRIPE_WEBHOOK_ROUTE, "utf8");
+    const helperSource = readFileSync(BILLING_EVENTS_HELPER, "utf8");
 
-    expect(source).not.toContain("ignoreDuplicates: true");
-    expect(source).toContain("claim_billing_event");
-    expect(source).toContain("mark_billing_event_processed");
-    expect(source).toContain("mark_billing_event_failed");
+    expect(routeSource).not.toContain("ignoreDuplicates: true");
+    // Idempotency RPCs are invoked via the shared billing-events helper
+    // module, called by both the route and the DLQ replay function.
+    expect(helperSource).toContain("claim_billing_event");
+    expect(helperSource).toContain("mark_billing_event_processed");
+    expect(helperSource).toContain("mark_billing_event_failed");
+    expect(routeSource).toContain("claimBillingEvent");
+    expect(routeSource).toContain("markBillingEventProcessed");
+    expect(routeSource).toContain("markBillingEventFailed");
   });
 
   it("stores processed_at as completion time and tracks attempts", () => {
@@ -209,7 +217,9 @@ describe("Stripe webhook idempotency contract", () => {
   });
 
   it("uses deterministic Stripe idempotency keys for referral balance credits", () => {
-    const source = readFileSync(STRIPE_WEBHOOK_ROUTE, "utf8");
+    // Referral credit dispatch lives in the shared event processor so the DLQ
+    // replay path uses the same idempotency keys as the live webhook.
+    const source = readFileSync(STRIPE_EVENT_PROCESSOR, "utf8");
 
     expect(source).toContain("idempotencyKey");
     expect(source).toContain("referral-credit");

@@ -1,12 +1,27 @@
 /**
  * Inngest function: Stripe Webhook Dead-Letter Queue
  *
- * When the main webhook handler fails, it emits a "billing/webhook.handler_failed"
- * event. This function retries and alerts admin on final failure.
+ * When the main webhook handler fails, it emits a `billing/webhook.handler_failed`
+ * event with the original Stripe payload. This function re-runs the same
+ * dispatcher (`processStripeEvent`) so a transient failure (DB hiccup,
+ * downstream timeout) can be recovered automatically.
+ *
+ * Behaviour:
+ * - Reconstructs a Stripe.Event-shaped object from the stored payload.
+ * - Calls processStripeEvent — same code path the live webhook uses.
+ * - On success: marks the billing_events row processed and returns.
+ * - On failure: increments dlq_attempt + records last_error, then re-throws
+ *   so Inngest retries (up to 3 attempts).
+ * - On final exhaustion: sends the existing admin alert email.
  */
 
+import type Stripe from "stripe";
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getStripe } from "@/lib/stripe";
+import { processStripeEvent } from "@/services/billing/stripe-event-processor";
+import { markBillingEventProcessed } from "@/services/billing/billing-events";
+import { captureException, getErrorMessage } from "@/lib/observability/capture-exception";
 
 type WebhookFailedEvent = {
   eventId: string;
@@ -15,6 +30,20 @@ type WebhookFailedEvent = {
   payload: Record<string, unknown>;
   attempt: number;
 };
+
+/**
+ * Rebuild a Stripe.Event-shaped object from the stored payload.
+ *
+ * The payload column stores `event.data.object` (e.g. the Subscription,
+ * Checkout.Session), not the full envelope — so we wrap it back up here.
+ */
+function reconstructStripeEvent(data: WebhookFailedEvent): Stripe.Event {
+  return {
+    id: data.eventId,
+    type: data.eventType,
+    data: { object: data.payload },
+  } as unknown as Stripe.Event;
+}
 
 export const stripeWebhookDlq = inngest.createFunction(
   {
@@ -28,20 +57,71 @@ export const stripeWebhookDlq = inngest.createFunction(
     const supabase = createAdminClient();
 
     console.log(
-      `[webhook-dlq] Retrying ${data.eventType} (event: ${data.eventId}), attempt ${attempt}`,
+      `[webhook-dlq] Replaying ${data.eventType} (event: ${data.eventId}), attempt ${attempt}`,
     );
 
+    let replayError: unknown = null;
+    let replayedUserId: string | null = null;
+
+    try {
+      const stripe = getStripe();
+      const reconstructed = reconstructStripeEvent(data);
+
+      const result = await step.run("replay-stripe-event", async () => {
+        const { userId } = await processStripeEvent(supabase, stripe, reconstructed);
+        return { userId };
+      });
+
+      replayedUserId = result.userId;
+
+      // Mark the billing_events row processed now that the replay succeeded.
+      await step.run("mark-billing-event-processed", async () => {
+        await markBillingEventProcessed(supabase, reconstructed, replayedUserId);
+      });
+    } catch (err) {
+      replayError = err;
+    }
+
+    // Persist dlq_attempt + last_error on the row so operators can see retry
+    // progress even between attempts.
     await step.run("update-retry-status", async () => {
+      const errorMessageToStore = replayError
+        ? getErrorMessage(replayError)
+        : data.errorMessage;
+
       await supabase
         .from("billing_events")
         .update({
           payload: {
             ...(data.payload as Record<string, unknown>),
             dlq_attempt: attempt,
-            dlq_last_error: data.errorMessage,
+            dlq_last_error: replayError ? errorMessageToStore : null,
           },
         })
         .eq("stripe_event_id", data.eventId);
+    });
+
+    if (!replayError) {
+      console.log(
+        `[webhook-dlq] Replay succeeded for ${data.eventId} on attempt ${attempt}`,
+      );
+      return {
+        status: "replayed",
+        eventId: data.eventId,
+        attempt,
+      };
+    }
+
+    // Replay failed — capture and decide whether to alert.
+    captureException(replayError, {
+      module: "billing",
+      feature: "stripe-webhook-dlq",
+      operation: "replay-stripe-event",
+      extra: {
+        eventId: data.eventId,
+        eventType: data.eventType,
+        attempt,
+      },
     });
 
     if (attempt >= 3) {
@@ -59,7 +139,7 @@ export const stripeWebhookDlq = inngest.createFunction(
             text: [
               `Stripe Event ID: ${data.eventId}`,
               `Event Type: ${data.eventType}`,
-              `Error: ${data.errorMessage}`,
+              `Error: ${getErrorMessage(replayError)}`,
               `Attempts: ${attempt}`,
               "",
               "Action required: Check billing_events table and Stripe dashboard.",
@@ -72,10 +152,9 @@ export const stripeWebhookDlq = inngest.createFunction(
       });
     }
 
-    return {
-      status: attempt >= 3 ? "exhausted" : "retried",
-      eventId: data.eventId,
-      attempt,
-    };
+    // Re-throw so Inngest retries (preserving the existing 3-attempt config).
+    throw replayError instanceof Error
+      ? replayError
+      : new Error(getErrorMessage(replayError));
   },
 );
