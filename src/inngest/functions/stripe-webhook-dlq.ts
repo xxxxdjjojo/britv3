@@ -20,7 +20,10 @@ import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { processStripeEvent } from "@/services/billing/stripe-event-processor";
-import { markBillingEventProcessed } from "@/services/billing/billing-events";
+import {
+  claimBillingEvent,
+  markBillingEventProcessed,
+} from "@/services/billing/billing-events";
 import { captureException, getErrorMessage } from "@/lib/observability/capture-exception";
 
 type WebhookFailedEvent = {
@@ -28,6 +31,14 @@ type WebhookFailedEvent = {
   eventType: string;
   errorMessage: string;
   payload: Record<string, unknown>;
+  /**
+   * Connected account ID (Stripe Connect events: payout.*, account.updated).
+   * Captured on the live path from `event.account` so the reconstructed
+   * event used by `processStripeEvent` is not missing this field. May be
+   * null for non-Connect events or for manual admin replays where the
+   * stored payload does not carry the original envelope.
+   */
+  account: string | null;
   attempt: number;
 };
 
@@ -36,12 +47,16 @@ type WebhookFailedEvent = {
  *
  * The payload column stores `event.data.object` (e.g. the Subscription,
  * Checkout.Session), not the full envelope — so we wrap it back up here.
+ * The `account` field is restored from the captured WebhookFailedEvent so
+ * Stripe Connect handlers (payout.paid, payout.failed, account.updated) can
+ * read `event.account` the way they would on the live webhook path.
  */
 function reconstructStripeEvent(data: WebhookFailedEvent): Stripe.Event {
   return {
     id: data.eventId,
     type: data.eventType,
     data: { object: data.payload },
+    account: data.account ?? null,
   } as unknown as Stripe.Event;
 }
 
@@ -62,11 +77,32 @@ export const stripeWebhookDlq = inngest.createFunction(
 
     let replayError: unknown = null;
     let replayedUserId: string | null = null;
+    const stripe = getStripe();
+    const reconstructed = reconstructStripeEvent(data);
+
+    // Claim the billing_events row BEFORE replaying. If the event is already
+    // marked processed (e.g. by a prior successful retry or by the live path
+    // succeeding after this DLQ event was enqueued), short-circuit so we do
+    // not re-fire non-idempotent side effects: force_refresh JWT update,
+    // payment_failed emails, etc. The claim RPC is idempotent — for an
+    // already-processed row it returns should_process=false without changing
+    // status.
+    const claim = await step.run("claim-replay", async () => {
+      return await claimBillingEvent(supabase, reconstructed);
+    });
+
+    if (!claim.should_process) {
+      console.log(
+        `[webhook-dlq] Skipping replay for ${data.eventId} — already processed`,
+      );
+      return {
+        status: "skipped_already_processed",
+        eventId: data.eventId,
+        attempt,
+      };
+    }
 
     try {
-      const stripe = getStripe();
-      const reconstructed = reconstructStripeEvent(data);
-
       const result = await step.run("replay-stripe-event", async () => {
         const { userId } = await processStripeEvent(supabase, stripe, reconstructed);
         return { userId };
@@ -82,21 +118,21 @@ export const stripeWebhookDlq = inngest.createFunction(
       replayError = err;
     }
 
-    // Persist dlq_attempt + last_error on the row so operators can see retry
-    // progress even between attempts.
+    // Persist retry metadata in dedicated typed columns (attempt_count,
+    // last_attempt_at, last_error) from the Phase A migration. Do NOT mutate
+    // billing_events.payload — that column stores the original Stripe payload
+    // verbatim and admins may replay from it later.
     await step.run("update-retry-status", async () => {
       const errorMessageToStore = replayError
         ? getErrorMessage(replayError)
-        : data.errorMessage;
+        : null;
 
       await supabase
         .from("billing_events")
         .update({
-          payload: {
-            ...(data.payload as Record<string, unknown>),
-            dlq_attempt: attempt,
-            dlq_last_error: replayError ? errorMessageToStore : null,
-          },
+          attempt_count: attempt,
+          last_attempt_at: new Date().toISOString(),
+          last_error: errorMessageToStore,
         })
         .eq("stripe_event_id", data.eventId);
     });

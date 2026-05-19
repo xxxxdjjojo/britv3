@@ -122,6 +122,10 @@ export async function POST(request: Request) {
           eventType: event.type,
           errorMessage,
           payload: event.data.object as unknown as Record<string, unknown>,
+          // Preserve connected-account ID for Connect events (payout.*,
+          // account.updated). Without this the DLQ reconstructs an event
+          // missing `event.account`, causing the processor to no-op silently.
+          account: event.account ?? null,
           attempt: 1,
         },
       });
