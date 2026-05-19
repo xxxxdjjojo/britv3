@@ -52,7 +52,11 @@ export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
-    console.error("[webhook] STRIPE_WEBHOOK_SECRET is not set");
+    captureException(new Error("STRIPE_WEBHOOK_SECRET is not set"), {
+      module: "billing",
+      feature: "stripe-webhook",
+      operation: "configCheck",
+    });
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
@@ -69,7 +73,11 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Signature verification failed";
-    console.error("[webhook] Signature verification failed:", message);
+    captureException(err, {
+      module: "billing",
+      feature: "stripe-webhook",
+      operation: "verifySignature",
+    });
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
@@ -85,12 +93,11 @@ export async function POST(request: Request) {
       operation: "claim_billing_event",
       extra: { eventId: event.id, eventType: event.type },
     });
-    console.error("[webhook] Idempotency claim error:", claimError);
     return NextResponse.json({ error: "Database write failed" }, { status: 500 });
   }
 
   if (!claim.should_process) {
-    console.log(`[webhook] Duplicate event ${event.id} (${event.type}) — skipping`);
+    console.warn(`[webhook] Duplicate event ${event.id} (${event.type}) — skipping`);
     return NextResponse.json({ received: true, duplicate: true });
   }
 
@@ -110,7 +117,6 @@ export async function POST(request: Request) {
       extra: { eventId: event.id, eventType: event.type },
     });
     await markBillingEventFailed(supabase, event, err);
-    console.error("[api/webhooks/stripe] error:", event.id, err);
 
     // Emit to Inngest DLQ for retry
     try {
@@ -130,7 +136,12 @@ export async function POST(request: Request) {
         },
       });
     } catch (inngestErr) {
-      console.error("[webhook] Failed to emit DLQ event:", inngestErr);
+      captureException(inngestErr, {
+        module: "billing",
+        feature: "stripe-webhook",
+        operation: "emitDlqEvent",
+        extra: { eventId: event.id, eventType: event.type },
+      });
     }
 
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

@@ -34,8 +34,8 @@ export async function getUserEntitlements(
         module: "billing",
         feature: "entitlements",
         operation: "getUserEntitlements",
+        extra: { userId },
       });
-      console.error("[entitlements] DB query failed for user", userId, error.message);
       return { planId: null, planName: null, features: new Set() };
     }
 
@@ -57,8 +57,8 @@ export async function getUserEntitlements(
       module: "billing",
       feature: "entitlements",
       operation: "getUserEntitlements",
+      extra: { userId },
     });
-    console.error("[entitlements] Unexpected error for user", userId, err);
     return { planId: null, planName: null, features: new Set() };
   }
 }

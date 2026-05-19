@@ -9,6 +9,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { callClaude } from "./claude-service";
 import { penceToGBP } from "@/lib/currency";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -138,7 +139,14 @@ export async function saveMatchPreferences(
     .single();
 
   if (error || !data) {
-    console.error("[ai-match] saveMatchPreferences error:", error);
+    if (error) {
+      captureException(error, {
+        module: "ai",
+        feature: "ai-match",
+        operation: "saveMatchPreferences",
+        extra: { userId },
+      });
+    }
     return null;
   }
 
@@ -256,7 +264,12 @@ export async function runMatchAnalysis(
   const { data: listings, error: listingsError } = await query;
 
   if (listingsError) {
-    console.error("[ai-match] Failed to fetch listings:", listingsError);
+    captureException(listingsError, {
+      module: "ai",
+      feature: "ai-match",
+      operation: "fetchListings",
+      extra: { userId },
+    });
     return { error: "listings_fetch_failed" };
   }
 
@@ -311,7 +324,12 @@ ${typedListings.map((l) => `- ID: ${l.id} | ${l.address} | £${penceToGBP(l.pric
       throw new Error("matches is not an array");
     }
   } catch (parseErr) {
-    console.error("[ai-match] Failed to parse Claude response:", parseErr, aiResult.data.text);
+    captureException(parseErr, {
+      module: "ai",
+      feature: "ai-match",
+      operation: "parseClaudeResponse",
+      extra: { userId, rawText: aiResult.data.text },
+    });
     return { error: "parse_error" };
   }
 
@@ -342,7 +360,12 @@ ${typedListings.map((l) => `- ID: ${l.id} | ${l.address} | £${penceToGBP(l.pric
       .insert(rows);
 
     if (insertError) {
-      console.error("[ai-match] Failed to insert results:", insertError);
+      captureException(insertError, {
+        module: "ai",
+        feature: "ai-match",
+        operation: "insertResults",
+        extra: { userId, rowCount: rows.length },
+      });
       return { error: "insert_failed" };
     }
   }

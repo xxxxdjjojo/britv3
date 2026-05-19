@@ -78,7 +78,12 @@ export async function getOffers(
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("[offers-service] getOffers failed", { error });
+      captureException(error, {
+        module: "transaction",
+        feature: "offers-service",
+        operation: "getOffers",
+        extra: { userId },
+      });
       return { error: error.message };
     }
 
@@ -136,7 +141,12 @@ export async function getOffers(
       })),
     }));
   } catch (err) {
-    console.error("[offers-service] getOffers threw", { err });
+    captureException(err, {
+      module: "transaction",
+      feature: "offers-service",
+      operation: "getOffers",
+      extra: { userId },
+    });
     return { error: "Failed to fetch offers" };
   }
 }
@@ -172,7 +182,12 @@ export async function submitOffer(
       .maybeSingle();
 
     if (checkError) {
-      console.error("[offers-service] submitOffer duplicate check failed", { checkError });
+      captureException(checkError, {
+        module: "transaction",
+        feature: "offers-service",
+        operation: "submitOffer.duplicateCheck",
+        extra: { userId, listingId },
+      });
       return { error: checkError.message };
     }
 
@@ -200,13 +215,23 @@ export async function submitOffer(
       .single();
 
     if (error) {
-      console.error("[offers-service] submitOffer insert failed", { error });
+      captureException(error, {
+        module: "transaction",
+        feature: "offers-service",
+        operation: "submitOffer.insert",
+        extra: { userId, listingId },
+      });
       return { error: error.message };
     }
 
     return { offerId: (data as { id: string }).id };
   } catch (err) {
-    console.error("[offers-service] submitOffer threw", { err });
+    captureException(err, {
+      module: "transaction",
+      feature: "offers-service",
+      operation: "submitOffer",
+      extra: { userId, listingId },
+    });
     return { error: "Failed to submit offer" };
   }
 }
@@ -230,8 +255,8 @@ export async function withdrawOffer(
         module: "transaction",
         feature: "offers",
         operation: "withdrawOffer",
+        extra: { offerId },
       });
-      console.error("[offers-service] withdrawOffer failed", { error });
       return { error: error.message };
     }
 
@@ -247,8 +272,8 @@ export async function withdrawOffer(
       module: "transaction",
       feature: "offers",
       operation: "withdrawOffer",
+      extra: { offerId },
     });
-    console.error("[offers-service] withdrawOffer threw", { err });
     return { error: "Failed to withdraw offer" };
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Data layer for the /services hub page.
  * Provides top-rated providers and category counts for the services landing page.

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { AdminActionError } from "@/lib/audited-admin-action";
 

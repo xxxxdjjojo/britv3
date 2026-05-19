@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Portfolio service -- fetches landlord property portfolio data
  * with summary counts via LEFT JOINs (no N+1 queries).

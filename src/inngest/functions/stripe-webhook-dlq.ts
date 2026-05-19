@@ -71,7 +71,7 @@ export const stripeWebhookDlq = inngest.createFunction(
     const data = event.data as WebhookFailedEvent;
     const supabase = createAdminClient();
 
-    console.log(
+    console.warn(
       `[webhook-dlq] Replaying ${data.eventType} (event: ${data.eventId}), attempt ${attempt}`,
     );
 
@@ -92,7 +92,7 @@ export const stripeWebhookDlq = inngest.createFunction(
     });
 
     if (!claim.should_process) {
-      console.log(
+      console.warn(
         `[webhook-dlq] Skipping replay for ${data.eventId} — already processed`,
       );
       return {
@@ -138,7 +138,7 @@ export const stripeWebhookDlq = inngest.createFunction(
     });
 
     if (!replayError) {
-      console.log(
+      console.warn(
         `[webhook-dlq] Replay succeeded for ${data.eventId} on attempt ${attempt}`,
       );
       return {
@@ -183,7 +183,12 @@ export const stripeWebhookDlq = inngest.createFunction(
             ].join("\n"),
           });
         } catch (emailErr) {
-          console.error("[webhook-dlq] Failed to send admin alert:", emailErr);
+          captureException(emailErr, {
+            module: "billing",
+            feature: "stripe-webhook-dlq",
+            operation: "sendAdminAlert",
+            extra: { eventId: data.eventId, eventType: data.eventType },
+          });
         }
       });
     }

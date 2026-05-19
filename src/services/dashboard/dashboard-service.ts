@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Dashboard aggregation service with Redis caching.
  * Fetches role-specific dashboard data in 1-2 queries instead of 8-12,

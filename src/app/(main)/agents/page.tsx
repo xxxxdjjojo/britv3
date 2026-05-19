@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";

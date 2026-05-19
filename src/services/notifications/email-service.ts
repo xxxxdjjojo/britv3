@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Email service -- preference-aware dispatch with rate limiting.
  * Critical events send immediately; non-critical events batch into daily digest.

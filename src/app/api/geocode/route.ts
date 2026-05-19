@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * GET /api/geocode - Proxy to postcodes.io for UK postcode geocoding.
  * Supports lookup, autocomplete, and reverse geocoding.

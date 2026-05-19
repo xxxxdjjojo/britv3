@@ -14,6 +14,7 @@ import { resolveInternalPlanId } from "@/lib/billing-config";
 import { advanceReferralStatus } from "@/services/referrals/unified-referral-service";
 import { TIER_CONFIGS } from "@/lib/referral-tiers";
 import type { ReferralTier } from "@/types/referrals";
+import { captureException } from "@/lib/observability/capture-exception";
 
 export type StripeEventProcessResult = Readonly<{
   userId: string | null;
@@ -123,10 +124,13 @@ export async function processStripeEvent(
           });
         } catch (refreshErr) {
           // Non-critical: claims will update on next natural token refresh
-          console.error("[stripe-event-processor] Failed to force token refresh:", refreshErr);
+          captureException(refreshErr, {
+            module: "billing",
+            feature: "stripe-event",
+            operation: "forceTokenRefresh",
+            extra: { userId, eventType: event.type },
+          });
         }
-
-        console.log(`[stripe-event-processor] Subscription activated for user ${userId}`);
 
         // ── Referral conversion ────────────────────────────────
         // If this user was referred, advance their referral to "rewarded"
@@ -134,7 +138,6 @@ export async function processStripeEvent(
         try {
           const result = await advanceReferralStatus(supabase, userId, "rewarded");
           if (result) {
-            console.log(`[stripe-event-processor] Referral converted for user ${userId}, referrer: ${result.referrerId}, tier changed: ${result.tierChanged}`);
 
             // Find the referral to get the ID
             const { data: referral } = await supabase
@@ -226,7 +229,12 @@ export async function processStripeEvent(
                   }
                 } catch (creditErr) {
                   // Set reward status to 'failed' for retry mechanism (see TODOS)
-                  console.error("[stripe-event-processor] Stripe balance credit failed:", creditErr);
+                  captureException(creditErr, {
+                    module: "billing",
+                    feature: "stripe-event",
+                    operation: "applyReferralBalanceCredit",
+                    extra: { userId, referralId: ref.id },
+                  });
                   await supabase.from("referral_rewards")
                     .update({ status: "failed" })
                     .eq("referral_id", ref.id)
@@ -247,18 +255,22 @@ export async function processStripeEvent(
                     .single();
 
                   if (referrerProfile && refereeProfile) {
-                    const rp = referrerProfile as { first_name: string; email: string };
-                    const re = refereeProfile as { first_name: string };
+                    void (referrerProfile as { first_name: string; email: string });
+                    void (refereeProfile as { first_name: string });
                     // TODO: Import and call Resend send with ReferralConvertedEmail template
                     // await resend.emails.send({
                     //   to: rp.email,
                     //   subject: `You earned £${Math.floor(planPrice / 100)} free — ${re.first_name} just joined!`,
                     //   react: ReferralConvertedEmail({ ... }),
                     // });
-                    console.log(`[stripe-event-processor] Referral conversion email queued for ${rp.email}`);
                   }
                 } catch (emailErr) {
-                  console.error("[stripe-event-processor] Referral email send failed:", emailErr);
+                  captureException(emailErr, {
+                    module: "billing",
+                    feature: "stripe-event",
+                    operation: "sendReferralConversionEmail",
+                    extra: { userId, referralId: ref.id },
+                  });
                 }
 
                 // Send tier upgrade email if tier changed
@@ -268,19 +280,26 @@ export async function processStripeEvent(
                     void tierConfig; // Referenced for future email template
                     // TODO: Import and call Resend send with ReferralTierUpgradeEmail template
                     // await resend.emails.send({ ... });
-                    console.log(`[stripe-event-processor] Tier upgrade email queued: ${result.newTier}`);
                   } catch (tierEmailErr) {
-                    console.error("[stripe-event-processor] Tier upgrade email failed:", tierEmailErr);
+                    captureException(tierEmailErr, {
+                      module: "billing",
+                      feature: "stripe-event",
+                      operation: "sendTierUpgradeEmail",
+                      extra: { userId, referralId: ref.id, newTier: result.newTier },
+                    });
                   }
                 }
-
-                console.log(`[stripe-event-processor] Referral rewards created: ${planPrice}p each for referrer ${ref.referrer_id} and referee ${userId}`);
               }
             }
           }
         } catch (refErr) {
           // Non-critical: log but don't fail the webhook
-          console.error("[stripe-event-processor] Referral conversion error:", refErr);
+          captureException(refErr, {
+            module: "billing",
+            feature: "stripe-event",
+            operation: "referralConversion",
+            extra: { userId, eventType: event.type },
+          });
         }
       }
       break;
@@ -338,7 +357,12 @@ export async function processStripeEvent(
           });
         } catch (refreshErr) {
           // Non-critical: claims will update on next natural token refresh
-          console.error("[stripe-event-processor] Failed to force token refresh:", refreshErr);
+          captureException(refreshErr, {
+            module: "billing",
+            feature: "stripe-event",
+            operation: "forceTokenRefresh",
+            extra: { userId, eventType: event.type },
+          });
         }
       }
 
@@ -376,7 +400,12 @@ export async function processStripeEvent(
           });
         }
       } catch (refreshErr) {
-        console.error("[stripe-event-processor] Failed to force token refresh on cancellation:", refreshErr);
+        captureException(refreshErr, {
+          module: "billing",
+          feature: "stripe-event",
+          operation: "forceTokenRefreshOnCancel",
+          extra: { customerId, eventType: event.type },
+        });
       }
 
       break;
@@ -410,7 +439,12 @@ export async function processStripeEvent(
               retryUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk"}/dashboard/billing`,
             });
           } catch (emailErr) {
-            console.error("[stripe-event-processor] Failed to send payment-failed email:", emailErr);
+            captureException(emailErr, {
+              module: "billing",
+              feature: "stripe-event",
+              operation: "sendPaymentFailedEmail",
+              extra: { userId: user.userId, eventType: event.type },
+            });
           }
         }
       }
@@ -448,7 +482,12 @@ export async function processStripeEvent(
               paidAt: new Date().toISOString(),
             });
           } catch (emailErr) {
-            console.error("[stripe-event-processor] Failed to send payment-confirmation email:", emailErr);
+            captureException(emailErr, {
+              module: "billing",
+              feature: "stripe-event",
+              operation: "sendPaymentConfirmationEmail",
+              extra: { userId: user.userId, eventType: event.type },
+            });
           }
         }
       }
@@ -560,7 +599,7 @@ export async function processStripeEvent(
     }
 
     default:
-      console.log(`[stripe-event-processor] Unhandled event type: ${event.type}`);
+      console.warn(`[stripe-event-processor] Unhandled event type: ${event.type}`);
   }
 
   return { userId };

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Maintenance service -- CRUD operations for maintenance requests,
  * photo uploads with compression/validation, and status state machine.

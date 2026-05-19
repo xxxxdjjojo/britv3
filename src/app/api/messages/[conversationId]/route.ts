@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * GET /api/messages/[conversationId] -- get messages with cursor pagination.
  *   ?cursor=ISO-date  load older messages before this timestamp.

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * GET /api/billing/invoices
  * Returns the authenticated user's invoice history from Stripe.

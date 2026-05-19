@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * POST /api/email/digest -- cron-triggered daily digest email route.
  * Secured via Authorization: Bearer CRON_SECRET header.

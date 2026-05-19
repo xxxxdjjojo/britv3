@@ -2,6 +2,7 @@ import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeChainRiskScore } from "@/services/agent/chain-risk-scoring";
 import type { SaleStage } from "@/types/agent";
+import { captureException } from "@/lib/observability/capture-exception";
 
 export const chainRiskMonitor = inngest.createFunction(
   {
@@ -20,7 +21,11 @@ export const chainRiskMonitor = inngest.createFunction(
         .order("chain_group_id");
 
       if (error) {
-        console.error("[chain-risk-monitor] Failed to query chain groups:", error);
+        captureException(error, {
+          module: "tenancy",
+          feature: "chain-risk-monitor",
+          operation: "queryChainGroups",
+        });
         return [] as string[];
       }
 

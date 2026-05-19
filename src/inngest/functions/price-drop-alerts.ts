@@ -11,6 +11,7 @@
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPropertyAlert } from "@/services/email/email-service";
+import { captureException } from "@/lib/observability/capture-exception";
 
 type PriceDrop = {
   property_id: string;
@@ -35,7 +36,11 @@ export const priceDropAlerts = inngest.createFunction(
       const { data, error } = await supabase.rpc("find_recent_price_drops");
 
       if (error) {
-        console.error("[price-drop-alerts] Failed to query price drops:", error);
+        captureException(error, {
+          module: "property",
+          feature: "price-drop-alerts",
+          operation: "queryPriceDrops",
+        });
         return [] as PriceDrop[];
       }
 
@@ -123,7 +128,12 @@ export const priceDropAlerts = inngest.createFunction(
 
                 batchNotifications++;
               } catch (err) {
-                console.error(`[price-drop-alerts] Failed to notify user ${userId}:`, err);
+                captureException(err, {
+                  module: "property",
+                  feature: "price-drop-alerts",
+                  operation: "notifyUser",
+                  extra: { userId, propertyId: drop.property_id },
+                });
               }
             }
           }

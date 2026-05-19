@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * API routes for service job milestones.
  * GET  ?id={bookingId} -- list milestones with progress

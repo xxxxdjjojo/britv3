@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import type { MetadataRoute } from "next";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://britestate.co.uk";

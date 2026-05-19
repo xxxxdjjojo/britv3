@@ -188,7 +188,6 @@ export async function middleware(request: NextRequest) {
       route: pathname,
       correlationId,
     });
-    console.error("[middleware] Auth check failed:", error);
     return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
   }
 
@@ -285,7 +284,6 @@ export async function middleware(request: NextRequest) {
           route: pathname,
           correlationId,
         });
-        console.error("[middleware] Profile query failed:", error);
         return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
       }
 
@@ -298,7 +296,6 @@ export async function middleware(request: NextRequest) {
         route: pathname,
         correlationId,
       });
-      console.error("[middleware] Profile query failed:", error);
       return redirectWithHeaders("/login", nonce, request, { redirectTo: pathname });
     }
   }

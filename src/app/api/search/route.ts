@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * GET /api/search - Property search API route.
  * Validates params with Zod, delegates to search service, caches responses.
