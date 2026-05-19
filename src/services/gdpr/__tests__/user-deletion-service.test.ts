@@ -79,7 +79,7 @@ describe("requestUserDeletion", () => {
   it("does not emit Inngest event when user is already completed", async () => {
     // Arrange
     const { supabase } = makeSupabase({
-      data: { status: "completed" },
+      data: { status: "already_completed" },
       error: null,
     });
 

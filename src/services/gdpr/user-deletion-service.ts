@@ -55,13 +55,10 @@ type RpcRow = Readonly<{ status: string }>;
  * whose row is already in kernel_deleted_users resets the status to
  * 'pending' and re-emits the Inngest event so a retry can run.
  *
- * Returns `already_completed` if the kernel_deleted_users row is already
- * marked completed (we detect this by inspecting the row after the upsert
- * -- the RPC always returns 'pending' but the underlying upsert preserves
- * status='completed' rows by not overwriting them when status was already
- * completed... see request_user_deletion RPC). For Sprint 0 the worker
- * itself short-circuits on already-completed users; this client path
- * always returns 'pending' on the happy path.
+ * Returns `already_completed` when the kernel_deleted_users row is already
+ * marked completed. The RPC reports this directly via `status='already_completed'`
+ * (see migration 20260520000300_gdpr_deletion_fixes.sql); we short-circuit
+ * here and skip the Inngest emit because the worker would no-op anyway.
  */
 export async function requestUserDeletion(
   supabase: SupabaseClient,
@@ -88,23 +85,23 @@ export async function requestUserDeletion(
     }
 
     const row = data as RpcRow;
-    const status = row.status === "completed" ? "already_completed" : "pending";
 
-    // Step 2: emit the Inngest event so the worker picks it up.
-    // We skip the event if the user is already purged -- the worker would
-    // just no-op via start_user_purge anyway, but this saves a round-trip.
-    if (status === "pending") {
-      await inngest.send({
-        name: "gdpr/user.deletion-requested",
-        data: {
-          userId,
-          requestedBy: adminUserId,
-          reason,
-        },
-      });
+    // Short-circuit on already-completed users: no Inngest event needed.
+    if (row.status === "already_completed") {
+      return { status: "already_completed" };
     }
 
-    return { status };
+    // Step 2: emit the Inngest event so the worker picks up the pending purge.
+    await inngest.send({
+      name: "gdpr/user.deletion-requested",
+      data: {
+        userId,
+        requestedBy: adminUserId,
+        reason,
+      },
+    });
+
+    return { status: "pending" };
   } catch (err) {
     captureException(err, {
       module: "gdpr",

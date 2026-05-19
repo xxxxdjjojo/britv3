@@ -266,6 +266,24 @@ export const gdprUserPurge = inngest.createFunction(
       }
 
       // ------------------------------------------------------------------
+      // Hard-fail on any per-table error before we touch auth.users.
+      // Without this, the worker would proceed to completePurge() and
+      // mark status='completed' even though user data was left behind.
+      // The per-table loop is idempotent (already-deleted rows match
+      // zero rows), so Inngest retries are safe and will resume cleanly.
+      // ------------------------------------------------------------------
+      if (tableErrors.length > 0) {
+        const firstErr = tableErrors[0];
+        const message = `Partial purge: ${tableErrors.length} table errors. First: ${firstErr.table}.${firstErr.column} - ${firstErr.error}`;
+        await step.run("mark-failed-partial", async () => {
+          await callFailUserPurge(supabase, userId, message);
+        });
+        throw new Error(
+          `Partial purge for user ${userId}: ${tableErrors.length} table(s) failed`,
+        );
+      }
+
+      // ------------------------------------------------------------------
       // Storage + auth.users cleanup. completePurge() removes avatars,
       // buyer-documents, and the auth.users row. If a public.* table still
       // references the user, ON DELETE RESTRICT will surface a clear error
