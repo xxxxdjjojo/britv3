@@ -296,14 +296,14 @@ ${typedListings.map((l) => `- ID: ${l.id} | ${l.address} | £${penceToGBP(l.pric
     maxTokens: 2048,
   });
 
-  if (!aiResult) {
+  if (!aiResult.ok) {
     return { error: "ai_call_failed" };
   }
 
   // 6. Parse JSON response
   let matches: ClaudeMatchItem[];
   try {
-    const parsed = JSON.parse(aiResult.text) as {
+    const parsed = JSON.parse(aiResult.data.text) as {
       matches: ClaudeMatchItem[];
     };
     matches = parsed.matches;
@@ -311,7 +311,7 @@ ${typedListings.map((l) => `- ID: ${l.id} | ${l.address} | £${penceToGBP(l.pric
       throw new Error("matches is not an array");
     }
   } catch (parseErr) {
-    console.error("[ai-match] Failed to parse Claude response:", parseErr, aiResult.text);
+    console.error("[ai-match] Failed to parse Claude response:", parseErr, aiResult.data.text);
     return { error: "parse_error" };
   }
 

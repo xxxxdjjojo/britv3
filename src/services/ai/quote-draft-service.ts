@@ -106,8 +106,8 @@ export async function draftTradesQuote(
       outputSchema: QuoteDraftSchema,
     });
 
-    if (!result?.parsed) return null;
-    return result.parsed as QuoteDraft;
+    if (!result.ok || !result.data.parsed) return null;
+    return result.data.parsed as QuoteDraft;
   } catch (err) {
     console.error("[AI] draftTradesQuote error:", err);
     return null;
@@ -133,8 +133,8 @@ export async function draftAgentProposal(
       outputSchema: AgentProposalSchema,
     });
 
-    if (!result?.parsed) return null;
-    return result.parsed as AgentProposal;
+    if (!result.ok || !result.data.parsed) return null;
+    return result.data.parsed as AgentProposal;
   } catch (err) {
     console.error("[AI] draftAgentProposal error:", err);
     return null;

@@ -76,14 +76,14 @@ export async function POST(request: Request) {
       tone: tone as Tone,
     });
 
-    if (!result) {
+    if (!result.ok) {
       return NextResponse.json(
-        { error: "AI temporarily unavailable" },
+        { error: result.userMessage, reason: result.reason },
         { status: 503 },
       );
     }
 
-    return NextResponse.json({ description: result.text });
+    return NextResponse.json({ description: result.data.text });
   } catch (err) {
     console.error("[AI] generate-description error:", err);
     return NextResponse.json(

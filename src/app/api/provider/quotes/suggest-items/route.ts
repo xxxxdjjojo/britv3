@@ -107,18 +107,18 @@ export async function POST(request: NextRequest) {
       maxTokens: 512,
     });
 
-    if (!result) {
+    if (!result.ok) {
       return NextResponse.json({ items: [] });
     }
 
     // Strip potential markdown code fences
-    const jsonText = result.text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    const jsonText = result.data.text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
 
     let rawParsed: unknown;
     try {
       rawParsed = JSON.parse(jsonText);
     } catch {
-      console.error("[suggest-items] Failed to parse AI JSON:", result.text);
+      console.error("[suggest-items] Failed to parse AI JSON:", result.data.text);
       return NextResponse.json({ items: [] });
     }
 

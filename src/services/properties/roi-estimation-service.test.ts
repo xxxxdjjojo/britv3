@@ -138,9 +138,12 @@ describe("estimateROI", () => {
     mockGetCached.mockResolvedValue(null);
     mockGetBenchmarks.mockResolvedValue(mockBenchmarks);
     mockCallClaude.mockResolvedValue({
-      text: validClaudeJSON,
-      inputTokens: 200,
-      outputTokens: 80,
+      ok: true,
+      data: {
+        text: validClaudeJSON,
+        inputTokens: 200,
+        outputTokens: 80,
+      },
     });
   });
 
@@ -186,8 +189,12 @@ describe("estimateROI", () => {
   // -------------------------------------------------------------------------
   // Test 3: callClaude returns null → deterministic fallback
   // -------------------------------------------------------------------------
-  it("uses deterministic fallback with confidence='low' when callClaude returns null", async () => {
-    mockCallClaude.mockResolvedValue(null);
+  it("uses deterministic fallback with confidence='low' when callClaude fails", async () => {
+    mockCallClaude.mockResolvedValue({
+      ok: false,
+      reason: "unknown",
+      userMessage: "AI service is temporarily unavailable. Please try again later.",
+    });
 
     const result = await estimateROI(mockProperty, mockSupabase);
 
@@ -201,9 +208,12 @@ describe("estimateROI", () => {
   // -------------------------------------------------------------------------
   it("uses deterministic fallback when callClaude returns non-JSON text", async () => {
     mockCallClaude.mockResolvedValue({
-      text: "Sorry, I cannot help with that.",
-      inputTokens: 10,
-      outputTokens: 10,
+      ok: true,
+      data: {
+        text: "Sorry, I cannot help with that.",
+        inputTokens: 10,
+        outputTokens: 10,
+      },
     });
 
     const result = await estimateROI(mockProperty, mockSupabase);

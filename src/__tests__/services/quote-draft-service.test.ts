@@ -29,10 +29,13 @@ describe("quote-draft-service", () => {
 
     it("returns structured QuoteDraft on success", async () => {
       mockCallClaude.mockResolvedValue({
-        text: validQuoteJson,
-        parsed: JSON.parse(validQuoteJson),
-        inputTokens: 100,
-        outputTokens: 200,
+        ok: true,
+        data: {
+          text: validQuoteJson,
+          parsed: JSON.parse(validQuoteJson),
+          inputTokens: 100,
+          outputTokens: 200,
+        },
       });
 
       const { draftTradesQuote } = await import("@/services/ai/quote-draft-service");
@@ -55,8 +58,12 @@ describe("quote-draft-service", () => {
       expect(callArg.userId).toBe("user-1");
     });
 
-    it("returns null when callClaude returns null (API key not configured)", async () => {
-      mockCallClaude.mockResolvedValue(null);
+    it("returns null when callClaude fails (API key not configured)", async () => {
+      mockCallClaude.mockResolvedValue({
+        ok: false,
+        reason: "auth",
+        userMessage: "AI service is temporarily unavailable. Please try again later.",
+      });
 
       const { draftTradesQuote } = await import("@/services/ai/quote-draft-service");
       const result = await draftTradesQuote("Fix my boiler", {}, {}, "user-1");
@@ -74,10 +81,12 @@ describe("quote-draft-service", () => {
     });
 
     it("returns null on invalid JSON response", async () => {
+      // callClaude's outputSchema validation runs inside the wrapper.
+      // Simulate the wrapper having already failed with malformed_output.
       mockCallClaude.mockResolvedValue({
-        text: "This is not valid JSON",
-        inputTokens: 100,
-        outputTokens: 200,
+        ok: false,
+        reason: "malformed_output",
+        userMessage: "AI returned an unexpected response. Please try again.",
       });
 
       const { draftTradesQuote } = await import("@/services/ai/quote-draft-service");
@@ -86,11 +95,16 @@ describe("quote-draft-service", () => {
       expect(result).toBeNull();
     });
 
-    it("returns null when JSON shape is incorrect", async () => {
+    it("returns null when parsed field is missing", async () => {
+      // If callClaude returns ok but the schema didn't populate `parsed`,
+      // the service should still return null to the caller.
       mockCallClaude.mockResolvedValue({
-        text: JSON.stringify({ wrong_field: true }),
-        inputTokens: 100,
-        outputTokens: 200,
+        ok: true,
+        data: {
+          text: JSON.stringify({ wrong_field: true }),
+          inputTokens: 100,
+          outputTokens: 200,
+        },
       });
 
       const { draftTradesQuote } = await import("@/services/ai/quote-draft-service");
@@ -112,10 +126,13 @@ describe("quote-draft-service", () => {
 
     it("returns structured AgentProposal on success", async () => {
       mockCallClaude.mockResolvedValue({
-        text: validProposalJson,
-        parsed: JSON.parse(validProposalJson),
-        inputTokens: 150,
-        outputTokens: 300,
+        ok: true,
+        data: {
+          text: validProposalJson,
+          parsed: JSON.parse(validProposalJson),
+          inputTokens: 150,
+          outputTokens: 300,
+        },
       });
 
       const { draftAgentProposal } = await import("@/services/ai/quote-draft-service");
