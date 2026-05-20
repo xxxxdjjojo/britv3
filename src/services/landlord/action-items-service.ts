@@ -139,6 +139,16 @@ export function scoreActionItems(input: ActionItemInput): ScoredActionItem[] {
   ];
 
   return scored
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => {
+      // Primary: priority score desc.
+      if (b.score !== a.score) return b.score - a.score;
+      // Tiebreaker: within the same score class, surface the more urgent
+      // item first (e.g. more overdue rent days, fewer days until compliance
+      // expiry/tenancy end). Items without a daysDue field fall to the end
+      // of their score class.
+      const aDays = a.daysDue ?? -Infinity;
+      const bDays = b.daysDue ?? -Infinity;
+      return bDays - aDays;
+    })
     .slice(0, 5);
 }
