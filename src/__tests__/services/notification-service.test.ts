@@ -366,7 +366,7 @@ describe("sendCriticalEmail rate limiting", () => {
     // Since the module is mocked, we verify via the constant configuration
     // that the rate limit is set correctly in the source code.
     // The mock setup above validates the module initializes correctly.
-    expect(CRITICAL_EVENTS.size).toBe(3); // Only 3 event types get immediate email
+    expect(CRITICAL_EVENTS.size).toBe(4); // quote_received, booking_confirmed, offer_received, maintenance_request_created
   });
 });
 

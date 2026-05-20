@@ -42,6 +42,9 @@ describe("export-service", () => {
                 single: vi.fn().mockResolvedValue({ data, error: null }),
               };
             }),
+            // conversations query uses .select(...).or(...) — return a
+            // thenable resolving to the array result for the table.
+            or: vi.fn().mockResolvedValue({ data: isArray ? data : [], error: null }),
             single: vi.fn().mockResolvedValue({ data: isArray ? null : data, error: null }),
           }),
         };
@@ -68,6 +71,8 @@ describe("export-service", () => {
             then: (resolve: (v: { data: never[]; error: null }) => void) =>
               resolve({ data: [], error: null }),
           }),
+          // conversations query uses .select(...).or(...)
+          or: vi.fn().mockResolvedValue({ data: [], error: null }),
         }),
       });
 

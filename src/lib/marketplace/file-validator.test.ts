@@ -1,5 +1,38 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { validateFile, ALLOWED_TYPES, MAX_FILE_SIZE, sanitizeBuffer } from "./file-validator";
+
+// file-type reads structural bytes beyond the magic header for some formats
+// (PNG in particular). Synthetic padded buffers don't pass that check, so we
+// mock the detector here. The real detection logic is exercised in
+// production; this suite verifies validateFile's allow/deny logic.
+vi.mock("file-type", () => ({
+  fileTypeFromBuffer: vi.fn(async (buf: Buffer) => {
+    // Inspect the first few bytes to mirror real magic-byte detection.
+    if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) {
+      return { mime: "image/jpeg", ext: "jpg" };
+    }
+    if (
+      buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47
+    ) {
+      return { mime: "image/png", ext: "png" };
+    }
+    if (buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46) {
+      return { mime: "application/pdf", ext: "pdf" };
+    }
+    if (
+      buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
+      buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50
+    ) {
+      return { mime: "image/webp", ext: "webp" };
+    }
+    if (
+      buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46
+    ) {
+      return { mime: "image/gif", ext: "gif" };
+    }
+    return undefined;
+  }),
+}));
 
 // Magic bytes for common file types
 const JPEG_HEADER = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);

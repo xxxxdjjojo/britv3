@@ -22,35 +22,19 @@ describe("selectRoles", () => {
     mockedCreateClient.mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
-  it("inserts roles into user_roles table and sets active_role", async () => {
-    const mockFrom = vi.fn();
-    const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-    const mockUpdate = vi.fn().mockReturnValue({
-      eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-    });
-
-    mockFrom.mockImplementation((table: string) => {
-      if (table === "user_roles") {
-        return { insert: mockInsert };
-      }
-      if (table === "profiles") {
-        return { update: mockUpdate };
-      }
-      return {};
-    });
-
-    mockSupabase.from = mockFrom;
+  it("calls select_roles_atomic RPC with user id and roles", async () => {
+    // Service now delegates to a single atomic RPC that upserts user_roles,
+    // sets active_role, and writes the audit entry in one transaction.
+    const mockRpc = vi.fn().mockResolvedValue({ data: null, error: null });
+    mockSupabase.rpc = mockRpc;
 
     const result = await selectRoles("user-123", ["homebuyer", "landlord"]);
 
     expect(result.error).toBeNull();
-    expect(mockFrom).toHaveBeenCalledWith("user_roles");
-    expect(mockInsert).toHaveBeenCalledWith([
-      { user_id: "user-123", role: "homebuyer" },
-      { user_id: "user-123", role: "landlord" },
-    ]);
-    expect(mockFrom).toHaveBeenCalledWith("profiles");
-    expect(mockUpdate).toHaveBeenCalledWith({ active_role: "homebuyer" });
+    expect(mockRpc).toHaveBeenCalledWith("select_roles_atomic", {
+      p_user_id: "user-123",
+      p_roles: ["homebuyer", "landlord"],
+    });
   });
 
   it("rejects empty role selection", async () => {
@@ -61,29 +45,14 @@ describe("selectRoles", () => {
   });
 
   it("handles duplicate roles by deduplicating", async () => {
-    const mockFrom = vi.fn();
-    const mockInsert = vi.fn().mockResolvedValue({ data: null, error: null });
-    const mockUpdate = vi.fn().mockReturnValue({
-      eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-    });
-
-    mockFrom.mockImplementation((table: string) => {
-      if (table === "user_roles") {
-        return { insert: mockInsert };
-      }
-      if (table === "profiles") {
-        return { update: mockUpdate };
-      }
-      return {};
-    });
-
-    mockSupabase.from = mockFrom;
+    const mockRpc = vi.fn().mockResolvedValue({ data: null, error: null });
+    mockSupabase.rpc = mockRpc;
 
     await selectRoles("user-123", ["homebuyer", "homebuyer", "renter"]);
 
-    expect(mockInsert).toHaveBeenCalledWith([
-      { user_id: "user-123", role: "homebuyer" },
-      { user_id: "user-123", role: "renter" },
-    ]);
+    expect(mockRpc).toHaveBeenCalledWith("select_roles_atomic", {
+      p_user_id: "user-123",
+      p_roles: ["homebuyer", "renter"],
+    });
   });
 });

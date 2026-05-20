@@ -90,7 +90,9 @@ function createMockClient(tableResolvers: Record<string, { data: unknown; error:
 
 describe("getConversations", () => {
   it("returns conversations with participant names and unread counts", async () => {
-    const conversationsData = [
+    // Service now uses get_inbox_for_user RPC which returns enriched rows
+    // (participant_name, last_message_preview, unread_count) directly.
+    const rpcData = [
       {
         id: "conv-001",
         participant_1_id: "user-aaa",
@@ -99,33 +101,15 @@ describe("getConversations", () => {
         context_id: null,
         last_message_at: "2026-01-15T10:00:00Z",
         created_at: "2026-01-15T09:00:00Z",
+        participant_name: "Bob Smith",
+        last_message_preview: "Hello there",
+        unread_count: 2,
       },
     ];
 
-    // We need different builders for different tables.
-    // Since getConversations calls from() multiple times, we track call order.
-    const fromResults: Array<{ data: unknown; error: unknown; count?: number | null }> = [
-      // 1st: conversations query (thenable)
-      { data: conversationsData, error: null },
-      // 2nd: profiles query (single)
-      { data: { display_name: "Bob Smith" }, error: null },
-      // 3rd: messages (last msg preview, single)
-      { data: { content: "Hello there" }, error: null },
-      // 4th: conversation_read_status (single)
-      { data: { last_read_at: "2026-01-15T09:00:00Z" }, error: null },
-      // 5th: messages unread count (thenable with count)
-      { data: null, error: null, count: 2 },
-    ];
-
-    let callIndex = 0;
-    const builders = fromResults.map((r) => createBuilder(r));
-
     const client = {
-      from: vi.fn(() => {
-        const b = builders[callIndex] ?? createBuilder({ data: null, error: null });
-        callIndex++;
-        return b;
-      }),
+      from: vi.fn(() => createBuilder({ data: null, error: null })),
+      rpc: vi.fn().mockResolvedValue({ data: rpcData, error: null }),
     } as unknown as SupabaseClient;
 
     const result = await getConversations(client, "user-aaa");
@@ -139,6 +123,7 @@ describe("getConversations", () => {
   it("returns empty array when no conversations exist", async () => {
     const client = {
       from: vi.fn(() => createBuilder({ data: [], error: null })),
+      rpc: vi.fn().mockResolvedValue({ data: [], error: null }),
     } as unknown as SupabaseClient;
 
     const result = await getConversations(client, "user-aaa");
@@ -259,11 +244,19 @@ describe("sendMessage", () => {
     };
 
     let callIndex = 0;
+    // getOrCreateConversation: validateMessagingRoles -> profiles select (thenable list)
     // getOrCreateConversation: conversations select (single -> not found)
     // getOrCreateConversation: conversations insert (single -> created)
     // sendMessage: messages insert (single -> msg)
     // sendMessage: conversations update
     const builders = [
+      createBuilder({
+        data: [
+          { id: "user-aaa", active_role: "renter" },
+          { id: "user-bbb", active_role: "landlord" },
+        ],
+        error: null,
+      }), // profiles validation
       createBuilder({ data: null, error: null }), // existing conv check
       createBuilder({ data: { id: "conv-new" }, error: null }), // insert conv
       createBuilder({ data: insertedMsg, error: null }), // insert msg
@@ -295,8 +288,16 @@ describe("sendMessage", () => {
 describe("getOrCreateConversation", () => {
   it("returns existing conversation if one exists", async () => {
     let callIndex = 0;
+    // validateMessagingRoles makes a profiles call first, then the conversation select
     const builders = [
-      createBuilder({ data: { id: "conv-existing" }, error: null }),
+      createBuilder({
+        data: [
+          { id: "user-aaa", active_role: "renter" },
+          { id: "user-bbb", active_role: "landlord" },
+        ],
+        error: null,
+      }), // profiles validation
+      createBuilder({ data: { id: "conv-existing" }, error: null }), // existing conv
     ];
 
     const client = {
@@ -315,8 +316,8 @@ describe("getOrCreateConversation", () => {
     );
 
     expect(result.id).toBe("conv-existing");
-    // Should not insert (only 1 from() call)
-    expect(client.from).toHaveBeenCalledTimes(1);
+    // Validation + lookup = 2 from() calls (no insert needed)
+    expect(client.from).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -351,32 +352,10 @@ describe("updateReadStatus", () => {
 
 describe("getUnreadCount", () => {
   it("returns correct count of unread conversations", async () => {
-    let callIndex = 0;
-    const builders = [
-      // conversations list
-      createBuilder({
-        data: [
-          { id: "conv-001", last_message_at: "2026-01-15T10:00:00Z" },
-          { id: "conv-002", last_message_at: "2026-01-15T11:00:00Z" },
-        ],
-        error: null,
-      }),
-      // read status for conv-001
-      createBuilder({ data: { last_read_at: "2026-01-15T10:00:00Z" }, error: null }),
-      // messages count for conv-001 (0 unread)
-      createBuilder({ data: null, error: null, count: 0 }),
-      // read status for conv-002
-      createBuilder({ data: null, error: null }), // no read status
-      // messages count for conv-002 (3 unread)
-      createBuilder({ data: null, error: null, count: 3 }),
-    ];
-
+    // Service now uses get_unread_count RPC which returns the count directly.
     const client = {
-      from: vi.fn(() => {
-        const b = builders[callIndex] ?? createBuilder({ data: null, error: null });
-        callIndex++;
-        return b;
-      }),
+      from: vi.fn(() => createBuilder({ data: null, error: null })),
+      rpc: vi.fn().mockResolvedValue({ data: 1, error: null }),
     } as unknown as SupabaseClient;
 
     const count = await getUnreadCount(client, "user-aaa");

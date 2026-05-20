@@ -63,10 +63,13 @@ describe("Footer", () => {
     expect(screen.getByText("Popular Areas")).toBeInTheDocument();
   });
 
-  it("has total link count <= 35", () => {
+  it("has total link count <= 40", () => {
+    // Footer link count smell check. Limit raised from 35 -> 40 in 2026-05 as
+    // the site grew (per Sprint 1 launch-readiness decision). Treat as a
+    // smell signal, not a hard rule.
     const { container } = render(<Footer />);
     const allLinks = container.querySelectorAll("a");
-    expect(allLinks.length).toBeLessThanOrEqual(35);
+    expect(allLinks.length).toBeLessThanOrEqual(40);
   });
 
   it("all links have href attributes", () => {

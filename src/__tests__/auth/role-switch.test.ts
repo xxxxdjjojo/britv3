@@ -21,61 +21,29 @@ describe("switchRole", () => {
     mockedCreateClient.mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
-  it("updates active_role if user has the role", async () => {
-    const mockFrom = vi.fn();
-    const mockSelect = vi.fn().mockReturnValue({
-      eq: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          maybeSingle: vi.fn().mockResolvedValue({
-            data: { id: "role-1", user_id: "user-123", role: "landlord" },
-            error: null,
-          }),
-        }),
-      }),
-    });
-    const mockUpdate = vi.fn().mockReturnValue({
-      eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-    });
-
-    mockFrom.mockImplementation((table: string) => {
-      if (table === "user_roles") {
-        return { select: mockSelect };
-      }
-      if (table === "profiles") {
-        return { update: mockUpdate };
-      }
-      return {};
-    });
-
-    mockSupabase.from = mockFrom;
+  it("calls switch_role_atomic RPC with user id and role", async () => {
+    // Service now delegates to a single atomic RPC that verifies role
+    // ownership, updates profiles.active_role, and writes an audit entry —
+    // all in one transaction.
+    const mockRpc = vi.fn().mockResolvedValue({ data: null, error: null });
+    mockSupabase.rpc = mockRpc;
 
     const result = await switchRole("user-123", "landlord");
 
     expect(result.error).toBeNull();
-    expect(mockUpdate).toHaveBeenCalledWith({ active_role: "landlord" });
+    expect(mockRpc).toHaveBeenCalledWith("switch_role_atomic", {
+      p_user_id: "user-123",
+      p_role: "landlord",
+    });
   });
 
   it("rejects if user does not have the requested role", async () => {
-    const mockFrom = vi.fn();
-    const mockSelect = vi.fn().mockReturnValue({
-      eq: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          maybeSingle: vi.fn().mockResolvedValue({
-            data: null,
-            error: null,
-          }),
-        }),
-      }),
+    // The RPC raises a Postgres exception when the user lacks the role.
+    const mockRpc = vi.fn().mockResolvedValue({
+      data: null,
+      error: { message: "User does not have role: agent" },
     });
-
-    mockFrom.mockImplementation((table: string) => {
-      if (table === "user_roles") {
-        return { select: mockSelect };
-      }
-      return {};
-    });
-
-    mockSupabase.from = mockFrom;
+    mockSupabase.rpc = mockRpc;
 
     const result = await switchRole("user-123", "agent");
 
