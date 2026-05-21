@@ -54,7 +54,6 @@ jobs:
 
       - name: Build
         run: pnpm build
-        continue-on-error: true
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
