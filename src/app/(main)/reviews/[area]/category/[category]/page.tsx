@@ -63,7 +63,7 @@ export default async function CategoryReviewsPage({
       years_in_business,
       completed_jobs_count,
       provider_rating_stats (
-        avg_rating,
+        average_rating,
         total_reviews
       )
     `,
@@ -92,7 +92,7 @@ export default async function CategoryReviewsPage({
         : p.provider_rating_stats;
       return {
         ...p,
-        avgRating: stats ? Number(stats.avg_rating) : 0,
+        avgRating: stats ? Number(stats.average_rating) : 0,
         reviewCount: stats ? Number(stats.total_reviews) : 0,
       };
     })

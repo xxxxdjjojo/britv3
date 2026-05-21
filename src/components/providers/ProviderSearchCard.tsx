@@ -38,7 +38,7 @@ function StarRating({ rating }: { rating: number }) {
 export function ProviderSearchCard({ provider, category, latestReview }: Props) {
   const { profiles, provider_rating_stats, business_name, slug } = provider;
   const isVerified = profiles.provider_verification_status === "verified";
-  const avgRating = provider_rating_stats?.avg_rating ?? 0;
+  const avgRating = provider_rating_stats?.average_rating ?? 0;
   const totalReviews = provider_rating_stats?.total_reviews ?? 0;
 
   const truncatedReview =

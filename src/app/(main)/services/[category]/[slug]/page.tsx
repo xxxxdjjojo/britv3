@@ -144,7 +144,7 @@ async function CategoryLocationPage({
       `
       *,
       profiles!inner(id, avatar_url, full_name, provider_verification_status, email),
-      provider_rating_stats(avg_rating, total_reviews, five_star, four_star, three_star, two_star, one_star, provider_id)
+      provider_rating_stats(average_rating, total_reviews, count_5_star, count_4_star, count_3_star, count_2_star, count_1_star, provider_id)
     `,
     )
     .contains("services", [categoryDb])

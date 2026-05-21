@@ -96,7 +96,7 @@ export default function TopRatedCarousel({
           {providers.map((provider) => {
             const firstCategory = provider.services[0] ?? "other";
             const categoryLabel = CATEGORY_LABELS[firstCategory] ?? "Other";
-            const rating = provider.provider_rating_stats?.avg_rating;
+            const rating = provider.provider_rating_stats?.average_rating;
             const totalReviews = provider.provider_rating_stats?.total_reviews ?? 0;
             const isVerified =
               provider.profiles.provider_verification_status === "verified";
