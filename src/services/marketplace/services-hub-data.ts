@@ -19,10 +19,14 @@ import type { ServiceCategory } from "@/types/marketplace";
 export async function fetchTopRatedProviders(
   supabase: SupabaseClient
 ): Promise<ServiceProviderPublicProfile[]> {
+  // NOTE: `profiles` table has `display_name`, not `full_name`. Alias it via
+  // PostgREST (`full_name:display_name`) so the runtime shape consumed by
+  // `ServiceProviderPublicProfile`/`TopRatedCarousel` is preserved. `email`
+  // lives on `auth.users`, not `profiles`, so it is intentionally omitted.
   const { data, error } = await supabase
     .from("service_provider_details")
     .select(
-      "*, profiles!inner(id, avatar_url, full_name, provider_verification_status, email), provider_rating_stats(provider_id, average_rating, total_reviews, count_5_star, count_4_star, count_3_star, count_2_star, count_1_star)"
+      "*, profiles!inner(id, avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(provider_id, average_rating, total_reviews, count_5_star, count_4_star, count_3_star, count_2_star, count_1_star)"
     )
     .eq("profiles.provider_verification_status", "verified")
     .order("average_rating", { referencedTable: "provider_rating_stats", ascending: false })
