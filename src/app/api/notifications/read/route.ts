@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * POST /api/notifications/read -- mark all notifications as read.
  * Updates the user's notifications_read_at timestamp.

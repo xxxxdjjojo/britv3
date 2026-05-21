@@ -42,13 +42,13 @@ function makeMockProvider(
     },
     provider_rating_stats: {
       provider_id: "prov-1",
-      avg_rating: 4.8,
+      average_rating: 4.8,
       total_reviews: 25,
-      five_star: 20,
-      four_star: 3,
-      three_star: 1,
-      two_star: 1,
-      one_star: 0,
+      count_5_star: 20,
+      count_4_star: 3,
+      count_3_star: 1,
+      count_2_star: 1,
+      count_1_star: 0,
     },
     ...overrides,
   };
@@ -73,8 +73,8 @@ describe("services-hub-data", () => {
   describe("fetchTopRatedProviders", () => {
     it("returns providers from supabase ordered by rating", async () => {
       const providers = [
-        makeMockProvider({ id: "p1", business_name: "Top Co", provider_rating_stats: { provider_id: "p1", avg_rating: 5.0, total_reviews: 10, five_star: 10, four_star: 0, three_star: 0, two_star: 0, one_star: 0 } }),
-        makeMockProvider({ id: "p2", business_name: "Great Co", provider_rating_stats: { provider_id: "p2", avg_rating: 4.5, total_reviews: 8, five_star: 5, four_star: 3, three_star: 0, two_star: 0, one_star: 0 } }),
+        makeMockProvider({ id: "p1", business_name: "Top Co", provider_rating_stats: { provider_id: "p1", average_rating: 5.0, total_reviews: 10, count_5_star: 10, count_4_star: 0, count_3_star: 0, count_2_star: 0, count_1_star: 0 } }),
+        makeMockProvider({ id: "p2", business_name: "Great Co", provider_rating_stats: { provider_id: "p2", average_rating: 4.5, total_reviews: 8, count_5_star: 5, count_4_star: 3, count_3_star: 0, count_2_star: 0, count_1_star: 0 } }),
       ];
 
       // Override the mock chain to resolve with providers
@@ -96,7 +96,7 @@ describe("services-hub-data", () => {
       );
       expect(chainable.limit).toHaveBeenCalledWith(6);
       expect(chainable.order).toHaveBeenCalledWith(
-        "avg_rating",
+        "average_rating",
         { referencedTable: "provider_rating_stats", ascending: false }
       );
     });

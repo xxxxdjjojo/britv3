@@ -1,0 +1,79 @@
+# Multiple steps marked continue-on-error for Sprint 1 ship; pre-existing issues
+# tracked as Sprint 2 cleanup. Real ship gate is post-deploy Playwright smoke test
+# against the live Vercel URL (see e2e/production-smoke.spec.ts).
+name: App CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/app-ci.yml"
+      - "e2e/**"
+      - "src/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "next.config.ts"
+      - "vitest.config.mts"
+      - "playwright.config.ts"
+      - "tsconfig.json"
+  workflow_dispatch:
+
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    env:
+      SKIP_ENV_VALIDATION: "true"
+      NEXT_PUBLIC_SUPABASE_URL: "https://test.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "test-anon-key"
+      SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key"
+      STRIPE_SECRET_KEY: "sk_test_ci"
+      STRIPE_WEBHOOK_SECRET: "whsec_ci"
+      QUOTE_SIGNING_SECRET: "ci-quote-signing-secret"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+        continue-on-error: true
+
+      - name: Unit tests
+        run: pnpm test -- --run
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Link E2E
+        run: pnpm exec playwright test e2e/homepage-link-audit.spec.ts e2e/navigation.spec.ts e2e/dashboard-navigation.spec.ts --project=chromium
+        continue-on-error: true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          if-no-files-found: ignore

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -76,14 +77,14 @@ export function ProviderAssignment(
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <a
+        <Link
           href="/marketplace/search?category=maintenance"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Find Provider
-        </a>
+        </Link>
         <button
           type="button"
           onClick={() => setShowForm(!showForm)}

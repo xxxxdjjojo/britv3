@@ -53,12 +53,12 @@ export async function POST(request: NextRequest) {
     maxTokens: 512,
   });
 
-  if (!result) {
+  if (!result.ok) {
     return NextResponse.json(
-      { error: "AI description unavailable. Please try again later." },
+      { error: result.userMessage, reason: result.reason },
       { status: 503 },
     );
   }
 
-  return NextResponse.json({ description: result.text });
+  return NextResponse.json({ description: result.data.text });
 }

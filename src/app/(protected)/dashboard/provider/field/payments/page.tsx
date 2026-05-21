@@ -39,7 +39,7 @@ export default async function FieldPaymentsPage() {
         client_id,
         invoice_number,
         profiles:client_id (
-          full_name
+          full_name:display_name
         )
       `,
       )

@@ -7,10 +7,14 @@ vi.mock("@/lib/features", () => ({
 
 const mockGetUser = vi.fn();
 const mockFrom = vi.fn();
+const mockGetAuthenticatorAssuranceLevel = vi.fn();
 
 vi.mock("@supabase/ssr", () => ({
   createServerClient: vi.fn(() => ({
-    auth: { getUser: mockGetUser },
+    auth: {
+      getUser: mockGetUser,
+      mfa: { getAuthenticatorAssuranceLevel: mockGetAuthenticatorAssuranceLevel },
+    },
     from: mockFrom,
   })),
 }));
@@ -34,6 +38,12 @@ describe("Middleware — JWT claims path", () => {
     vi.clearAllMocks();
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+    // Default: no MFA challenge required so admin-route tests aren't redirected
+    // to /two-factor by the MFA enforcement block in the middleware.
+    mockGetAuthenticatorAssuranceLevel.mockResolvedValue({
+      data: { currentLevel: "aal1", nextLevel: "aal1" },
+      error: null,
+    });
   });
 
   it("uses JWT claims for admin check when feature flag is ON", async () => {
@@ -42,7 +52,14 @@ describe("Middleware — JWT claims path", () => {
       data: {
         user: {
           id: "user-123",
-          app_metadata: { role: "agent", plan: "agent_professional", is_admin: true },
+          app_metadata: {
+            role: "agent",
+            plan: "agent_professional",
+            is_admin: true,
+            // admin_role is required by the admin-role permission gate for
+            // any /admin/* sub-route. super_admin has all permissions.
+            admin_role: "super_admin",
+          },
         },
       },
     });

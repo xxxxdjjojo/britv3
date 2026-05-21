@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { captureException } from "@/lib/observability/capture-exception";
 
 /**
  * Complete the purge for a user after the SQL function has run.
@@ -33,7 +34,12 @@ export async function completePurge(userId: string) {
   // Delete auth.users row to free the email (BUG-13)
   const { error } = await admin.auth.admin.deleteUser(userId);
   if (error) {
-    console.error(`[purge] Failed to delete auth.users for ${userId}:`, error);
+    captureException(error, {
+      module: "gdpr",
+      feature: "purge-service",
+      operation: "deleteAuthUser",
+      extra: { userId },
+    });
     throw error;
   }
 }

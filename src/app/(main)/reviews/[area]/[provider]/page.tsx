@@ -95,7 +95,7 @@ export default async function ProviderReviewsPage({ params }: PageProps) {
       city,
       slug,
       provider_rating_stats (
-        avg_rating,
+        average_rating,
         total_reviews
       )
     `,
@@ -143,7 +143,7 @@ export default async function ProviderReviewsPage({ params }: PageProps) {
     ? providerData.provider_rating_stats[0]
     : providerData.provider_rating_stats;
 
-  const avgRating = stats ? Number(stats.avg_rating) : 0;
+  const avgRating = stats ? Number(stats.average_rating) : 0;
   const statsTotal = stats ? Number(stats.total_reviews) : totalReviews;
 
   return (

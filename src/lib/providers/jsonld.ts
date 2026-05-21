@@ -44,7 +44,7 @@ export function buildProviderJsonLd(
   if (provider.provider_rating_stats && provider.provider_rating_stats.total_reviews > 0) {
     jsonLd.aggregateRating = {
       "@type": "AggregateRating",
-      ratingValue: provider.provider_rating_stats.avg_rating ?? 0,
+      ratingValue: provider.provider_rating_stats.average_rating ?? 0,
       reviewCount: provider.provider_rating_stats.total_reviews,
       bestRating: "5",
       worstRating: "1",
@@ -157,7 +157,7 @@ export function buildSpecialistJsonLd(
   if (provider.provider_rating_stats && provider.provider_rating_stats.total_reviews > 0) {
     jsonLd.aggregateRating = {
       "@type": "AggregateRating",
-      ratingValue: provider.provider_rating_stats.avg_rating ?? 0,
+      ratingValue: provider.provider_rating_stats.average_rating ?? 0,
       reviewCount: provider.provider_rating_stats.total_reviews,
       bestRating: "5",
       worstRating: "1",

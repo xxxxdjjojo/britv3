@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * API route for service provider directory.
  * GET /api/services?category=mortgage_broker|conveyancing|surveying&postcode=SW1A1AA

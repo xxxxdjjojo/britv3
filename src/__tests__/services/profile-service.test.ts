@@ -178,7 +178,12 @@ describe("profile-service", () => {
 
       expect(result.digest_frequency).toBe("daily");
       expect(result.quiet_hours.enabled).toBe(false);
-      expect(result.per_type.new_message).toEqual({ in_app: true, email: true });
+      expect(result.per_type.new_message).toEqual({
+        in_app: true,
+        email: true,
+        push: false,
+        sms: false,
+      });
     });
   });
 });

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CheckCircle, Clock, ShieldCheck, Star, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { RFQCreateForm } from "@/components/marketplace/RFQCreateForm";
@@ -100,27 +101,27 @@ export default async function PostAJobPage() {
                   verified tradespeople.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  <a
+                  <Link
                     href="/login?callbackUrl=/post-a-job"
                     className="rounded-lg bg-[#2563EB] px-6 py-2.5 font-semibold text-white hover:bg-[#1D4ED8]"
                   >
                     Sign In
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/register?callbackUrl=/post-a-job"
                     className="rounded-lg border border-slate-300 px-6 py-2.5 font-semibold hover:border-[#2563EB] hover:text-[#2563EB]"
                   >
                     Create Account
-                  </a>
+                  </Link>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Already have an account?{" "}
-                  <a
+                  <Link
                     href="/login?callbackUrl=/post-a-job"
                     className="text-[#2563EB] hover:underline"
                   >
                     Sign in here
-                  </a>
+                  </Link>
                 </p>
               </div>
             )}

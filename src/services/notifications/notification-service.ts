@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Notification service -- O(1) event writes, feed queries, and read tracking.
  * Platform events are written once per action (not fan-out per recipient).

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCompetitorAnalysis } from "@/services/agent/agent-analytics-service";
@@ -57,33 +58,33 @@ export default async function CompetitorAnalyticsPage() {
       </div>
 
       <div className="flex gap-4 border-b pb-4">
-        <a
+        <Link
           href="/dashboard/agent/analytics"
           className="text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           My Performance
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard/agent/analytics/branch"
           className="text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           Branch Analytics
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard/agent/analytics/competitors"
           className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1"
         >
           Competitor Analysis
-        </a>
+        </Link>
       </div>
 
       {coverageAreas.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
           <p className="text-muted-foreground text-sm">
             No coverage areas set.{" "}
-            <a href="/dashboard/agent/profile" className="text-blue-600 hover:underline">
+            <Link href="/dashboard/agent/profile" className="text-blue-600 hover:underline">
               Update your agency profile
-            </a>{" "}
+            </Link>{" "}
             to add coverage areas for competitor analysis.
           </p>
         </div>

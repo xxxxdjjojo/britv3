@@ -127,7 +127,7 @@ type SpecialistHeroProps = Readonly<{
 
 export default function SpecialistHero({ provider, specialistType }: SpecialistHeroProps) {
   const rating = provider.provider_rating_stats;
-  const avg = rating?.avg_rating ?? null;
+  const avg = rating?.average_rating ?? null;
   const totalReviews = rating?.total_reviews ?? 0;
   const verificationStatus = provider.profiles.provider_verification_status ?? "pending";
 

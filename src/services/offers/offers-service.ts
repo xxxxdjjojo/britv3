@@ -5,6 +5,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { gbpToPence } from "@/lib/currency";
+import { captureException } from "@/lib/observability/capture-exception";
 import type { ServiceError } from "@/types/service-error";
 
 export type { ServiceError };
@@ -53,6 +54,8 @@ export function isServiceError(val: unknown): val is ServiceError {
   return typeof val === "object" && val !== null && "error" in val;
 }
 
+type OfferServiceError = ServiceError & Readonly<{ status?: number }>;
+
 // ---------------------------------------------------------------------------
 // Read
 // ---------------------------------------------------------------------------
@@ -75,7 +78,12 @@ export async function getOffers(
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("[offers-service] getOffers failed", { error });
+      captureException(error, {
+        module: "transaction",
+        feature: "offers-service",
+        operation: "getOffers",
+        extra: { userId },
+      });
       return { error: error.message };
     }
 
@@ -133,7 +141,12 @@ export async function getOffers(
       })),
     }));
   } catch (err) {
-    console.error("[offers-service] getOffers threw", { err });
+    captureException(err, {
+      module: "transaction",
+      feature: "offers-service",
+      operation: "getOffers",
+      extra: { userId },
+    });
     return { error: "Failed to fetch offers" };
   }
 }
@@ -169,7 +182,12 @@ export async function submitOffer(
       .maybeSingle();
 
     if (checkError) {
-      console.error("[offers-service] submitOffer duplicate check failed", { checkError });
+      captureException(checkError, {
+        module: "transaction",
+        feature: "offers-service",
+        operation: "submitOffer.duplicateCheck",
+        extra: { userId, listingId },
+      });
       return { error: checkError.message };
     }
 
@@ -197,45 +215,65 @@ export async function submitOffer(
       .single();
 
     if (error) {
-      console.error("[offers-service] submitOffer insert failed", { error });
+      captureException(error, {
+        module: "transaction",
+        feature: "offers-service",
+        operation: "submitOffer.insert",
+        extra: { userId, listingId },
+      });
       return { error: error.message };
     }
 
     return { offerId: (data as { id: string }).id };
   } catch (err) {
-    console.error("[offers-service] submitOffer threw", { err });
+    captureException(err, {
+      module: "transaction",
+      feature: "offers-service",
+      operation: "submitOffer",
+      extra: { userId, listingId },
+    });
     return { error: "Failed to submit offer" };
   }
 }
 
 /**
  * Withdraw an offer (update status to 'withdrawn').
- * Uses service-role bypass via API route — direct client update is blocked by RLS.
+ * Uses a SECURITY DEFINER RPC so ownership checks stay inside Postgres.
  */
 export async function withdrawOffer(
   supabase: SupabaseClient,
-  userId: string,
+  _userId: string,
   offerId: string,
-): Promise<null | ServiceError> {
+): Promise<null | OfferServiceError> {
   try {
-    // Note: offers_update_blocked RLS prevents direct updates from the client.
-    // This service is called from API routes which use the anon client with
-    // session context. Since the migration blocks all UPDATE via RLS, the
-    // API route should use the service-role client. We surface the error clearly.
-    const { error } = await supabase
-      .from("offers")
-      .update({ status: "withdrawn", updated_at: new Date().toISOString() })
-      .eq("id", offerId)
-      .eq("user_id", userId);
+    const { data, error } = await supabase
+      .rpc("withdraw_offer", { p_offer_id: offerId })
+      .maybeSingle();
 
     if (error) {
-      console.error("[offers-service] withdrawOffer failed", { error });
+      captureException(error, {
+        module: "transaction",
+        feature: "offers",
+        operation: "withdrawOffer",
+        extra: { offerId },
+      });
       return { error: error.message };
+    }
+
+    const result = data as { success: boolean; code: string; message: string } | null;
+    if (!result?.success) {
+      const status = result?.code === "UNAUTHORIZED" ? 401 : 404;
+      return { error: result?.message ?? "Offer not found", status };
     }
 
     return null;
   } catch (err) {
-    console.error("[offers-service] withdrawOffer threw", { err });
+    captureException(err, {
+      module: "transaction",
+      feature: "offers",
+      operation: "withdrawOffer",
+      extra: { offerId },
+    });
     return { error: "Failed to withdraw offer" };
   }
 }

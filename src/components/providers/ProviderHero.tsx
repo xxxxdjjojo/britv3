@@ -35,7 +35,7 @@ function AvatarFallback({ name }: Readonly<{ name: string | null }>) {
 
 export default function ProviderHero({ provider, category }: ProviderHeroProps) {
   const rating = provider.provider_rating_stats;
-  const avg = rating?.avg_rating ?? null;
+  const avg = rating?.average_rating ?? null;
   const totalReviews = rating?.total_reviews ?? 0;
   const categoryLabel = SLUG_TO_CATEGORY[category] ?? category;
   const verificationStatus = provider.profiles.provider_verification_status ?? "pending";

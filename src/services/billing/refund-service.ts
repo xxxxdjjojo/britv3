@@ -13,6 +13,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // ============================================================================
 // Constants
@@ -128,7 +129,12 @@ export async function createRequest(
         .eq("id", request.id);
 
       if (updateError) {
-        console.error("Failed to update refund request after Stripe refund:", updateError);
+        captureException(updateError, {
+          module: "billing",
+          feature: "refund",
+          operation: "updateAfterStripeRefund",
+          extra: { requestId: request.id, refundId: refund.id },
+        });
       }
 
       return {
@@ -161,7 +167,12 @@ export async function createRequest(
     .eq("id", request.id);
 
   if (updateError) {
-    console.error("Failed to transition refund to pending_review:", updateError);
+    captureException(updateError, {
+      module: "billing",
+      feature: "refund",
+      operation: "transitionToPendingReview",
+      extra: { requestId: request.id },
+    });
   }
 
   return {

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { addLeadActivity } from "@/services/agent/agent-lead-service";

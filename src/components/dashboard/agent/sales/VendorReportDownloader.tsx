@@ -7,19 +7,19 @@
  */
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import type { DocumentProps } from "@react-pdf/renderer";
 import type { ReactElement } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 type Props = Readonly<{
-  document: ReactElement;
+  document: ReactElement<DocumentProps>;
   fileName: string;
 }>;
 
 export function VendorReportDownloader({ document, fileName }: Props) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
-    <PDFDownloadLink document={document as any} fileName={fileName}>
+    <PDFDownloadLink document={document} fileName={fileName}>
       {({ loading }: { loading: boolean }) => (
         <Button variant="outline" size="sm" disabled={loading}>
           {loading ? (

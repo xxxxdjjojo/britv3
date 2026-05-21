@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Tenant application service -- manage applicant pipeline for rental properties.
  * Enforces valid state transitions and sends emails via Resend on status changes.

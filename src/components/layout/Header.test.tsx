@@ -24,6 +24,18 @@ vi.mock("@/components/shared/Logo", () => ({
   Logo: () => <span>Britestate</span>,
 }));
 
+// Stub useRole — SavedBadge calls it and would otherwise hit supabase.from()
+// on the test client (which only mocks auth.*), triggering an unhandled rejection.
+vi.mock("@/hooks/useRole", () => ({
+  useRole: () => ({
+    roles: [],
+    activeRole: null,
+    loading: false,
+    switchRole: vi.fn(),
+    refetch: vi.fn(),
+  }),
+}));
+
 // Mock Supabase client
 const mockGetUser = vi.fn().mockResolvedValue({ data: { user: null } });
 const mockOnAuthStateChange = vi.fn().mockReturnValue({

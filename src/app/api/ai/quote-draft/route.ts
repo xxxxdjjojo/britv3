@@ -1,15 +1,14 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import {
   draftTradesQuote,
   draftAgentProposal,
   getMarketPricing,
   getRateCard,
 } from "@/services/ai/quote-draft-service";
-
-const MAX_DAILY_DRAFTS = 10;
+import { enforceAiRateLimit } from "@/services/ai/rate-limit";
 
 const requestSchema = z.object({
   rfq_description: z.string().min(1).max(5000),
@@ -58,31 +57,15 @@ export async function POST(request: Request) {
 
     const { rfq_description, draft_type } = parsed.data;
 
-    // 4. Rate limit: max 10 AI drafts per user per day
-    const admin = createAdminClient();
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
-
-    const { count, error: countError } = await admin
-      .from("ai_usage_log")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .in("feature", ["quote_draft", "agent_proposal"])
-      .gte("created_at", todayStart.toISOString());
-
-    if (countError) {
-      console.error("[AI] Failed to check daily draft count:", countError);
-      return NextResponse.json(
-        { error: "Internal server error" },
-        { status: 500 },
-      );
-    }
-
-    if ((count ?? 0) >= MAX_DAILY_DRAFTS) {
+    // 4. Rate limit: max 10 AI drafts per user per day (Upstash sliding window)
+    const rateLimit = await enforceAiRateLimit(user.id, "quote_draft");
+    if (!rateLimit.ok) {
       return NextResponse.json(
         {
           error: "Daily AI draft limit reached",
-          limit: MAX_DAILY_DRAFTS,
+          limit: rateLimit.limit,
+          remaining: rateLimit.remaining,
+          reset: rateLimit.reset,
         },
         { status: 429 },
       );

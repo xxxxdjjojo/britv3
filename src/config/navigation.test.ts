@@ -3,12 +3,20 @@ import {
   NAV_ITEMS,
   FOOTER_LINKS,
   BREADCRUMB_MAP,
+  BREADCRUMB_PATTERNS,
   ROLE_NAV_ITEMS,
   TAB_CONFIG,
   COMMAND_PALETTE_ROUTES,
   navLinkClasses,
   footerLinkClasses,
 } from "./navigation";
+
+const FORBIDDEN_CANONICAL_HREFS = [
+  "/messages",
+  "/dashboard/notifications",
+  "/dashboard/mortgage_broker",
+  "/advice",
+] as const;
 
 // Shared constant used across multiple describe blocks
 const ALL_ROLES = [
@@ -20,6 +28,32 @@ const ALL_ROLES = [
   "service_provider",
   "mortgage_broker",
 ] as const;
+
+function collectNavigationHrefs(): string[] {
+  return [
+    ...NAV_ITEMS.flatMap((item) =>
+      item.sections?.flatMap((section) =>
+        section.links.map((link) => link.href),
+      ) ?? (item.href ? [item.href] : []),
+    ),
+    ...FOOTER_LINKS.flatMap((column) =>
+      column.links?.map((link) => link.href) ?? [],
+    ),
+    ...Object.values(BREADCRUMB_MAP).flatMap((trail) =>
+      trail.flatMap((entry) => entry.href ? [entry.href] : []),
+    ),
+    ...Object.values(BREADCRUMB_PATTERNS).flatMap((trail) =>
+      trail.flatMap((entry) => entry.href ? [entry.href] : []),
+    ),
+    ...ALL_ROLES.flatMap((role) =>
+      ROLE_NAV_ITEMS[role].map((item) => item.href),
+    ),
+    ...ALL_ROLES.flatMap((role) =>
+      TAB_CONFIG[role].map((tab) => tab.href),
+    ),
+    ...COMMAND_PALETTE_ROUTES.map((route) => route.href),
+  ];
+}
 
 // ---------------------------------------------------------------------------
 // NAV_ITEMS
@@ -151,6 +185,16 @@ describe("ROLE_NAV_ITEMS", () => {
       }
     }
   });
+
+  it("uses the broker filesystem route for mortgage broker navigation", () => {
+    const hrefs = ROLE_NAV_ITEMS.mortgage_broker.map((item) => item.href);
+
+    expect(hrefs).toContain("/dashboard/broker");
+    expect(hrefs).toContain("/dashboard/broker/leads");
+    expect(hrefs).toContain("/dashboard/broker/pipeline");
+    expect(hrefs).toContain("/dashboard/broker/fca-verification");
+    expect(hrefs).not.toContain("/dashboard/mortgage_broker");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -177,6 +221,22 @@ describe("TAB_CONFIG", () => {
         expect(tab.icon).toBeDefined();
       }
     }
+  });
+
+  it("uses inbox for message tabs", () => {
+    for (const role of ALL_ROLES) {
+      const messagesTab = TAB_CONFIG[role].find((tab) => tab.label === "Messages");
+
+      expect(messagesTab?.href).toBe("/inbox");
+    }
+  });
+
+  it("uses the broker filesystem route for mortgage broker tabs", () => {
+    const hrefs = TAB_CONFIG.mortgage_broker.map((tab) => tab.href);
+
+    expect(hrefs).toContain("/dashboard/broker/leads");
+    expect(hrefs).toContain("/dashboard/broker/pipeline");
+    expect(hrefs).not.toContain("/dashboard/mortgage_broker/leads");
   });
 });
 
@@ -208,6 +268,38 @@ describe("COMMAND_PALETTE_ROUTES", () => {
     for (const route of dashboardRoutes) {
       expect(route.roles).toBeDefined();
       expect(route.roles!.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("uses broker filesystem routes for mortgage broker commands", () => {
+    const mortgageBrokerRoutes = COMMAND_PALETTE_ROUTES.filter((route) =>
+      route.roles?.includes("mortgage_broker"),
+    );
+
+    expect(mortgageBrokerRoutes.map((route) => route.href)).toContain(
+      "/dashboard/broker",
+    );
+    expect(
+      mortgageBrokerRoutes.some((route) =>
+        route.href.startsWith("/dashboard/mortgage_broker"),
+      ),
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Canonical hrefs
+// ---------------------------------------------------------------------------
+
+describe("canonical hrefs", () => {
+  it("does not render legacy shared-navigation routes from navigation config", () => {
+    const hrefs = collectNavigationHrefs();
+
+    for (const forbiddenHref of FORBIDDEN_CANONICAL_HREFS) {
+      expect(hrefs).not.toContain(forbiddenHref);
+      expect(
+        hrefs.some((href) => href.startsWith(`${forbiddenHref}/`)),
+      ).toBe(false);
     }
   });
 });

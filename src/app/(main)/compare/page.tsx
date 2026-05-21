@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { GitCompareArrows } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useCompare } from "@/components/compare/useCompare";
@@ -21,7 +22,7 @@ export default function ComparePage() {
     supabase
       .from("service_provider_details")
       .select(
-        "id, slug, business_name, services, city, service_postcodes, accreditations, response_time_hours, pricing, profiles(avatar_url, full_name, provider_verification_status), provider_rating_stats(average_rating, total_reviews)",
+        "id, slug, business_name, services, city, service_postcodes, accreditations, response_time_hours, pricing, profiles(avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(average_rating, total_reviews)",
       )
       .in("id", ids)
       .then(({ data }) => {
@@ -61,12 +62,12 @@ export default function ComparePage() {
               Browse provider profiles and click &quot;Compare&quot; to add up
               to 3 providers.
             </p>
-            <a
+            <Link
               href="/services"
               className="bg-[#2563EB] text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               Find Providers
-            </a>
+            </Link>
           </div>
         ) : (
           <CompareTable providers={providers} />

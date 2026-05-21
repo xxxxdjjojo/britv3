@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Data layer for the /services hub page.
  * Provides top-rated providers and category counts for the services landing page.
@@ -18,13 +19,17 @@ import type { ServiceCategory } from "@/types/marketplace";
 export async function fetchTopRatedProviders(
   supabase: SupabaseClient
 ): Promise<ServiceProviderPublicProfile[]> {
+  // NOTE: `profiles` table has `display_name`, not `full_name`. Alias it via
+  // PostgREST (`full_name:display_name`) so the runtime shape consumed by
+  // `ServiceProviderPublicProfile`/`TopRatedCarousel` is preserved. `email`
+  // lives on `auth.users`, not `profiles`, so it is intentionally omitted.
   const { data, error } = await supabase
     .from("service_provider_details")
     .select(
-      "*, profiles!inner(id, avatar_url, full_name, provider_verification_status, email), provider_rating_stats(provider_id, avg_rating, total_reviews, five_star, four_star, three_star, two_star, one_star)"
+      "*, profiles!inner(id, avatar_url, full_name:display_name, provider_verification_status), provider_rating_stats(provider_id, average_rating, total_reviews, count_5_star, count_4_star, count_3_star, count_2_star, count_1_star)"
     )
     .eq("profiles.provider_verification_status", "verified")
-    .order("avg_rating", { referencedTable: "provider_rating_stats", ascending: false })
+    .order("average_rating", { referencedTable: "provider_rating_stats", ascending: false })
     .limit(6);
 
   if (error) {
@@ -106,13 +111,13 @@ function makeFallbackProvider(
     },
     provider_rating_stats: {
       provider_id: id,
-      avg_rating: avgRating,
+      average_rating: avgRating,
       total_reviews: totalReviews,
-      five_star: Math.round(totalReviews * 0.7),
-      four_star: Math.round(totalReviews * 0.2),
-      three_star: Math.round(totalReviews * 0.1),
-      two_star: 0,
-      one_star: 0,
+      count_5_star: Math.round(totalReviews * 0.7),
+      count_4_star: Math.round(totalReviews * 0.2),
+      count_3_star: Math.round(totalReviews * 0.1),
+      count_2_star: 0,
+      count_1_star: 0,
     },
   };
 }

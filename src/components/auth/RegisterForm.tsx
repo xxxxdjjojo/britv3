@@ -297,9 +297,9 @@ export function RegisterForm() {
           />
           <label htmlFor="terms-accepted" className="text-xs text-neutral-600 leading-relaxed cursor-pointer">
             I agree to the{" "}
-            <Link href="/terms" className="text-brand-accent hover:underline" target="_blank">Terms of Service</Link>
+            <Link href="/legal/terms" className="text-brand-accent hover:underline" target="_blank">Terms of Service</Link>
             {" "}and{" "}
-            <Link href="/privacy" className="text-brand-accent hover:underline" target="_blank">Privacy Policy</Link>
+            <Link href="/legal/privacy" className="text-brand-accent hover:underline" target="_blank">Privacy Policy</Link>
           </label>
         </div>
         {errors.termsAccepted && (

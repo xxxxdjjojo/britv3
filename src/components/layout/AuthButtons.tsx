@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bell, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 import { SavedBadge } from "./SavedBadge";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -21,7 +22,7 @@ export function AuthButtons({ user, transparent = false }: AuthButtonsProps) {
         <SavedBadge transparent={transparent} />
 
         <Link
-          href="/dashboard/notifications"
+          href={ROUTES.notifications}
           className={cn(
             "relative inline-flex items-center justify-center rounded-lg p-2 transition-colors",
             transparent

@@ -115,7 +115,7 @@ export function ProviderDashboard({ data }: Readonly<{ data: ProviderData }>) {
           <Button
             size="sm"
             className="bg-brand-secondary text-foreground hover:bg-brand-secondary/90 w-fit"
-            render={<Link href="/dashboard/service_provider/verification" />}
+            render={<Link href="/dashboard/provider/verification" />}
           >
               Continue Verification
               <ArrowRight className="ml-1 size-4" />
@@ -243,7 +243,7 @@ export function ProviderDashboard({ data }: Readonly<{ data: ProviderData }>) {
                       <span>{lead.posted}</span>
                     </div>
                   </div>
-                  <Button size="sm" render={<Link href="/dashboard/service_provider/quotes/new" />}>
+                  <Button size="sm" render={<Link href="/dashboard/provider/quotes/builder" />}>
                       Send Quote
                   </Button>
                 </div>
@@ -260,11 +260,11 @@ export function ProviderDashboard({ data }: Readonly<{ data: ProviderData }>) {
               <CardTitle className="text-base">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
-              <Button className="w-full" render={<Link href="/dashboard/service_provider/availability" />}>
+              <Button className="w-full" render={<Link href="/dashboard/provider/availability" />}>
                   <CalendarCheck className="mr-1.5 size-4" />
                   Update Availability
               </Button>
-              <Button variant="outline" className="w-full" render={<Link href="/dashboard/service_provider/quotes/new" />}>
+              <Button variant="outline" className="w-full" render={<Link href="/dashboard/provider/quotes/builder" />}>
                   <FileText className="mr-1.5 size-4" />
                   New Quote
               </Button>
@@ -318,7 +318,7 @@ export function ProviderDashboard({ data }: Readonly<{ data: ProviderData }>) {
                 this month.
               </p>
               <Link
-                href="/dashboard/service_provider/insights"
+                href="/dashboard/provider/analytics"
                 className="text-brand-secondary inline-flex items-center gap-1 text-xs font-medium hover:underline"
               >
                 View Market Insights

@@ -1,9 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Twitter, Linkedin, Link2, Mail, Clock, Calendar } from "lucide-react";
+import { ArrowRight, Twitter, Linkedin, Mail, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CopyLinkButton } from "./CopyLinkButton";
 
-const MOCK_ARTICLE = {
+type ArticleBlock =
+  | { type: "paragraph"; text: string }
+  | { type: "h2"; text: string }
+  | { type: "h3"; text: string }
+  | { type: "blockquote"; text: string }
+  | { type: "list"; items: string[] };
+
+type BlogArticle = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  author: {
+    name: string;
+    initials: string;
+    title: string;
+    bio: string;
+  };
+  date: string;
+  readTime: string;
+  body: ArticleBlock[];
+};
+
+const MOCK_ARTICLE: BlogArticle = {
   slug: "stamp-duty-guide-2025",
   title: "First-Time Buyer's Complete Guide to Stamp Duty 2025",
   excerpt:
@@ -83,6 +107,127 @@ const MOCK_ARTICLE = {
   ],
 };
 
+const BLOG_ARTICLES: Record<string, BlogArticle> = {
+  [MOCK_ARTICLE.slug]: MOCK_ARTICLE,
+  "uk-property-market-forecast-2026": {
+    ...MOCK_ARTICLE,
+    slug: "uk-property-market-forecast-2026",
+    title: "UK Property Market Forecast: What to Expect in 2026",
+    excerpt:
+      "As interest rates stabilise, we analyse the potential growth areas and investment opportunities across major UK cities for the upcoming year.",
+    category: "Market Trends",
+    date: "28 Feb 2026",
+    readTime: "6 min read",
+    author: {
+      name: "Emma Clarke",
+      initials: "EC",
+      title: "Market Analyst at Britestate",
+      bio: "Emma tracks regional housing data, buyer demand, and affordability signals across the UK market.",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "The UK property market in 2026 is expected to be shaped by improving affordability, steadier mortgage pricing, and renewed confidence in well-connected regional cities.",
+      },
+      {
+        type: "h2",
+        text: "Affordability Will Lead Buyer Behaviour",
+      },
+      {
+        type: "paragraph",
+        text: "Buyers are still highly payment-sensitive, so areas with strong transport links and comparatively lower monthly costs are likely to outperform overheated prime postcodes.",
+      },
+      {
+        type: "h2",
+        text: "Regional Cities Remain Competitive",
+      },
+      {
+        type: "paragraph",
+        text: "Manchester, Birmingham, Bristol, Leeds, and parts of Glasgow continue to attract demand from movers looking for employment access, rental resilience, and more space.",
+      },
+    ],
+  },
+  "first-time-buyer-checklist": {
+    ...MOCK_ARTICLE,
+    slug: "first-time-buyer-checklist",
+    title: "First-Time Buyer's Checklist: From Viewing to Keys",
+    excerpt:
+      "Navigating your first property purchase can be daunting. Our comprehensive guide breaks down every step of the process to ensure a smooth transaction.",
+    category: "Buying Guide",
+    date: "18 Feb 2026",
+    readTime: "7 min read",
+    body: [
+      {
+        type: "paragraph",
+        text: "Buying your first home is easier to manage when each decision is broken into a clear sequence, from finance preparation through exchange and completion.",
+      },
+      {
+        type: "h2",
+        text: "Before You View",
+      },
+      {
+        type: "list",
+        items: [
+          "Confirm your deposit and monthly affordability",
+          "Get an agreement in principle",
+          "Shortlist locations by commute, schools, and running costs",
+          "Research recent sold prices before making offers",
+        ],
+      },
+      {
+        type: "h2",
+        text: "After Your Offer Is Accepted",
+      },
+      {
+        type: "paragraph",
+        text: "Instruct your solicitor quickly, book the right survey, keep your mortgage broker updated, and track each milestone so delays do not drift unnoticed.",
+      },
+    ],
+  },
+  "eco-friendly-upgrades": {
+    ...MOCK_ARTICLE,
+    slug: "eco-friendly-upgrades",
+    title: "Eco-Friendly Upgrades That Add Value to Your Home",
+    excerpt:
+      "Discover which sustainable improvements offer the best return on investment while lowering your carbon footprint and energy bills.",
+    category: "Sustainability",
+    date: "12 Feb 2026",
+    readTime: "5 min read",
+    author: {
+      name: "Rachel Hughes",
+      initials: "RH",
+      title: "Homes Editor at Britestate",
+      bio: "Rachel writes about home improvements, energy performance, and design decisions that improve everyday living.",
+    },
+    body: [
+      {
+        type: "paragraph",
+        text: "Energy-efficient upgrades can make a home cheaper to run, more comfortable to live in, and more attractive to future buyers.",
+      },
+      {
+        type: "h2",
+        text: "Start With Fabric Improvements",
+      },
+      {
+        type: "paragraph",
+        text: "Insulation, draught-proofing, and high-performance glazing often deliver more reliable comfort gains than visible technology upgrades alone.",
+      },
+      {
+        type: "h2",
+        text: "Choose Upgrades Buyers Understand",
+      },
+      {
+        type: "paragraph",
+        text: "Solar panels, smart heating controls, efficient boilers, and EV charging points can all strengthen a listing when the benefits are documented clearly.",
+      },
+    ],
+  },
+};
+
+function getArticleBySlug(slug: string): BlogArticle {
+  return BLOG_ARTICLES[slug] ?? MOCK_ARTICLE;
+}
+
 const RELATED_ARTICLES = [
   {
     slug: "conveyancing-timeline-explained",
@@ -137,10 +282,10 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  void slug;
+  const post = getArticleBySlug(slug);
   return {
-    title: `${MOCK_ARTICLE.title} | Britestate Blog`,
-    description: MOCK_ARTICLE.excerpt,
+    title: `${post.title} | Britestate Blog`,
+    description: post.excerpt,
   };
 }
 
@@ -150,9 +295,8 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  void slug;
 
-  const post = MOCK_ARTICLE;
+  const post = getArticleBySlug(slug);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -235,13 +379,7 @@ export default async function BlogPostPage({
                 <Linkedin className="size-4" />
                 Share on LinkedIn
               </a>
-              <Link
-                href="#"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 text-neutral-700 text-sm font-medium hover:border-brand-primary hover:text-brand-primary transition-colors bg-white"
-              >
-                <Link2 className="size-4" />
-                Copy Link
-              </Link>
+              <CopyLinkButton url={`https://britestate.co.uk/blog/${post.slug}`} />
             </div>
           </header>
 

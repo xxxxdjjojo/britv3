@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ShieldCheck, Clock, MapPin, Star, Plus } from "lucide-react";
 import { useCompare } from "@/components/compare/useCompare";
 import type { CompareProvider } from "@/types/providers";
@@ -29,13 +30,13 @@ function StarDisplay({ rating }: { rating: number }) {
 function EmptySlot() {
   return (
     <td className="p-8 text-center align-top">
-      <a
+      <Link
         href="/services"
         className="flex flex-col items-center gap-2 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 hover:border-[#2563EB] transition-colors text-slate-400 hover:text-[#2563EB]"
       >
         <Plus className="w-8 h-8" />
         <span className="text-sm font-medium">Add a Provider</span>
-      </a>
+      </Link>
     </td>
   );
 }
@@ -236,12 +237,12 @@ export function CompareTable({ providers }: CompareTableProps) {
                 provider ? (
                   <td key={provider.id} className="p-6 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <a
+                      <Link
                         href={`/services/${provider.slug}`}
                         className="w-full px-4 py-2.5 rounded-lg bg-[#2563EB] text-white text-sm font-semibold hover:bg-blue-700 transition-colors text-center"
                       >
                         View Profile
-                      </a>
+                      </Link>
                       <button
                         onClick={() => remove(provider.id)}
                         className="text-xs text-slate-400 hover:text-red-500 transition-colors"

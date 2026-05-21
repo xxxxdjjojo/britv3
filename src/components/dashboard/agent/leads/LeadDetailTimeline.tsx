@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -305,10 +306,10 @@ export function LeadDetailTimeline({
               </Button>
             )}
             <Button variant="outline" asChild>
-              <a href="/dashboard/agent/viewings">
+              <Link href="/dashboard/agent/viewings">
                 <Calendar className="mr-2 size-4" />
                 Book Viewing
-              </a>
+              </Link>
             </Button>
           </CardContent>
         </Card>

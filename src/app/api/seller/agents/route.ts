@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const idList = ids.split(",").filter(Boolean).slice(0, 3);
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, full_name, avatar_url, metadata")
+      .select("id, full_name:display_name, avatar_url, metadata")
       .in("id", idList);
     if (error) return NextResponse.json({ error: String(error) }, { status: 500 });
     profiles = data;
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, full_name, avatar_url, metadata")
+      .select("id, full_name:display_name, avatar_url, metadata")
       .in("id", agentIds)
       .limit(20);
     if (error) return NextResponse.json({ error: String(error) }, { status: 500 });

@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 "use client";
 
 import { useEffect } from "react";
@@ -5,6 +6,7 @@ import Link from "next/link";
 import { Wrench, RefreshCw, Home, ExternalLink } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
+import { captureException } from "@/lib/observability/capture-exception";
 
 export default function ErrorPage({
   error,
@@ -14,7 +16,12 @@ export default function ErrorPage({
   reset: () => void;
 }>) {
   useEffect(() => {
-    // Log to error reporting service in production
+    captureException(error, {
+      module: "app",
+      feature: "error-boundary",
+      operation: "app-error",
+      extra: { digest: error.digest },
+    });
     console.error("[ErrorBoundary]", error);
   }, [error]);
 

@@ -21,7 +21,7 @@ const NAV_ITEMS = [
   { label: "Enquiries", href: "/dashboard/seller/enquiries", icon: MessageSquare },
   { label: "Viewings", href: "/dashboard/seller/viewings", icon: Eye },
   { label: "Market Analytics", href: "/dashboard/seller/analytics", icon: BarChart2 },
-  { label: "Settings", href: "/dashboard/seller/settings", icon: Settings },
+  { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 type Props = Readonly<{
@@ -80,7 +80,7 @@ function SidebarContent({ userName, avatarUrl }: Props) {
             <p className="text-white text-sm font-semibold truncate">{userName}</p>
             <p className="text-white/50 text-xs">Premium Seller</p>
           </div>
-          <Link href="/logout" className="text-white/40 hover:text-white transition-colors" title="Sign out">
+          <Link href="/login" className="text-white/40 hover:text-white transition-colors" title="Sign out">
             <LogOut size={14} />
           </Link>
         </div>

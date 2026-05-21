@@ -31,13 +31,13 @@ export type ProviderProfile = {
 
 export type ProviderRatingStats = {
   provider_id: string;
-  avg_rating: number | null;
+  average_rating: number | null;
   total_reviews: number;
-  five_star: number;
-  four_star: number;
-  three_star: number;
-  two_star: number;
-  one_star: number;
+  count_5_star: number;
+  count_4_star: number;
+  count_3_star: number;
+  count_2_star: number;
+  count_1_star: number;
 };
 
 // ---------------------------------------------------------------------------

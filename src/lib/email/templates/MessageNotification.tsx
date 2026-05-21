@@ -26,7 +26,7 @@ export default function MessageNotification({
   recipientName = "there",
   senderName = "Someone",
   messagePreview = "",
-  conversationUrl = "https://britestate.com/messages",
+  conversationUrl = "https://britestate.com/inbox",
 }: MessageNotificationProps) {
   return (
     <Html>

@@ -7,6 +7,7 @@
 
 import { inngest } from "@/inngest/client";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { captureException } from "@/lib/observability/capture-exception";
 
 export const jwtHookMonitor = inngest.createFunction(
   {
@@ -26,7 +27,11 @@ export const jwtHookMonitor = inngest.createFunction(
         .gte("created_at", oneHourAgo);
 
       if (error) {
-        console.error("[jwt-hook-monitor] Failed to query errors:", error);
+        captureException(error, {
+          module: "auth",
+          feature: "jwt-hook-monitor",
+          operation: "queryErrors",
+        });
         return -1;
       }
 
@@ -39,8 +44,16 @@ export const jwtHookMonitor = inngest.createFunction(
 
     if (errorCount > 0) {
       await step.run("send-alert", async () => {
-        console.error(
-          `[jwt-hook-monitor] ALERT: ${errorCount} JWT hook errors in the last hour`,
+        captureException(
+          new Error(
+            `JWT auth hook errored ${errorCount} times in the last hour`,
+          ),
+          {
+            module: "auth",
+            feature: "jwt-hook-monitor",
+            operation: "alertHookErrors",
+            extra: { errorCount },
+          },
         );
 
         const adminEmail = process.env.ADMIN_ALERT_EMAIL ?? "admin@britestate.co.uk";
@@ -64,7 +77,11 @@ export const jwtHookMonitor = inngest.createFunction(
             ].join("\n"),
           });
         } catch (emailErr) {
-          console.error("[jwt-hook-monitor] Failed to send alert:", emailErr);
+          captureException(emailErr, {
+            module: "auth",
+            feature: "jwt-hook-monitor",
+            operation: "sendAlertEmail",
+          });
         }
       });
 

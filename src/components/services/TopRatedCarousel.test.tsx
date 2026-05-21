@@ -38,13 +38,13 @@ function makeMockProvider(overrides?: Partial<ServiceProviderPublicProfile>): Se
     },
     provider_rating_stats: {
       provider_id: "prov-1",
-      avg_rating: 4.8,
+      average_rating: 4.8,
       total_reviews: 42,
-      five_star: 30,
-      four_star: 10,
-      three_star: 2,
-      two_star: 0,
-      one_star: 0,
+      count_5_star: 30,
+      count_4_star: 10,
+      count_3_star: 2,
+      count_2_star: 0,
+      count_1_star: 0,
     },
     ...overrides,
   };
@@ -75,13 +75,13 @@ describe("TopRatedCarousel", () => {
     const provider = makeMockProvider({
       provider_rating_stats: {
         provider_id: "prov-1",
-        avg_rating: 4.5,
+        average_rating: 4.5,
         total_reviews: 20,
-        five_star: 10,
-        four_star: 5,
-        three_star: 3,
-        two_star: 1,
-        one_star: 1,
+        count_5_star: 10,
+        count_4_star: 5,
+        count_3_star: 3,
+        count_2_star: 1,
+        count_1_star: 1,
       },
     });
     render(<TopRatedCarousel providers={[provider]} />);

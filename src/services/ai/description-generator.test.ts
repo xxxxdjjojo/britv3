@@ -52,9 +52,12 @@ describe("description generator", () => {
 
   it("calls callClaude with correct feature and formatted user message", async () => {
     mockCallClaude.mockResolvedValue({
-      text: "A beautiful property...",
-      inputTokens: 50,
-      outputTokens: 100,
+      ok: true,
+      data: {
+        text: "A beautiful property...",
+        inputTokens: 50,
+        outputTokens: 100,
+      },
     });
 
     const { generatePropertyDescription } = await import("./description-generator");
@@ -73,8 +76,13 @@ describe("description generator", () => {
     expect(callArg.userMessage).toContain("Richmond, London");
   });
 
-  it("returns null when callClaude returns null", async () => {
-    mockCallClaude.mockResolvedValue(null);
+  it("propagates a failure result when callClaude fails", async () => {
+    const failure = {
+      ok: false,
+      reason: "rate_limit",
+      userMessage: "AI service is busy right now. Please try again in a moment.",
+    };
+    mockCallClaude.mockResolvedValue(failure);
 
     const { generatePropertyDescription } = await import("./description-generator");
     const result = await generatePropertyDescription({
@@ -83,7 +91,7 @@ describe("description generator", () => {
       tone: "friendly",
     });
 
-    expect(result).toBeNull();
+    expect(result).toEqual(failure);
   });
 
   it("buildUserMessage formats property attributes into structured prompt", async () => {

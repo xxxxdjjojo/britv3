@@ -9,6 +9,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UserEntitlements } from "@/types/entitlements";
 import { getEntitlementsForPlan } from "@/lib/plan-entitlements";
+import { captureException } from "@/lib/observability/capture-exception";
 
 const ACTIVE_STATUSES = ["active", "trialing"] as const;
 
@@ -29,7 +30,12 @@ export async function getUserEntitlements(
       .maybeSingle();
 
     if (error) {
-      console.error("[entitlements] DB query failed for user", userId, error.message);
+      captureException(error, {
+        module: "billing",
+        feature: "entitlements",
+        operation: "getUserEntitlements",
+        extra: { userId },
+      });
       return { planId: null, planName: null, features: new Set() };
     }
 
@@ -47,7 +53,12 @@ export async function getUserEntitlements(
       features,
     };
   } catch (err) {
-    console.error("[entitlements] Unexpected error for user", userId, err);
+    captureException(err, {
+      module: "billing",
+      feature: "entitlements",
+      operation: "getUserEntitlements",
+      extra: { userId },
+    });
     return { planId: null, planName: null, features: new Set() };
   }
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAgentPerformanceReport } from "@/services/agent/agent-analytics-service";
@@ -49,24 +50,24 @@ export default async function AgentAnalyticsPage() {
       </div>
 
       <div className="flex gap-4 border-b pb-4">
-        <a
+        <Link
           href="/dashboard/agent/analytics"
           className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1"
         >
           My Performance
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard/agent/analytics/branch"
           className="text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           Branch Analytics
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard/agent/analytics/competitors"
           className="text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           Competitor Analysis
-        </a>
+        </Link>
       </div>
 
       <AgentPerformanceCharts initialReport={report} agentId={user.id} />

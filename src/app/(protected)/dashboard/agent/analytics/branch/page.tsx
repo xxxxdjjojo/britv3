@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -64,33 +65,33 @@ export default async function BranchAnalyticsPage() {
       </div>
 
       <div className="flex gap-4 border-b pb-4">
-        <a
+        <Link
           href="/dashboard/agent/analytics"
           className="text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           My Performance
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard/agent/analytics/branch"
           className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-1"
         >
           Branch Analytics
-        </a>
-        <a
+        </Link>
+        <Link
           href="/dashboard/agent/analytics/competitors"
           className="text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           Competitor Analysis
-        </a>
+        </Link>
       </div>
 
       {branches.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
           <p className="text-muted-foreground text-sm">
             No branches found.{" "}
-            <a href="/dashboard/agent/team/branches" className="text-blue-600 hover:underline">
+            <Link href="/dashboard/agent/team/branches" className="text-blue-600 hover:underline">
               Create a branch
-            </a>{" "}
+            </Link>{" "}
             to view branch analytics.
           </p>
         </div>

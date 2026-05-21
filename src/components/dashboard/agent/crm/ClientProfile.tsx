@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -98,12 +99,12 @@ export function ClientProfile({ client }: Props) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <a
+          <Link
             href="/dashboard/agent/crm"
             className="mb-2 inline-block text-sm text-muted-foreground hover:underline"
           >
             ← Back to CRM
-          </a>
+          </Link>
 
           {isEditing ? (
             <form onSubmit={handleSubmit(onSaveEdit)} className="space-y-3">

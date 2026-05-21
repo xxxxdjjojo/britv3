@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * API routes for transaction milestones.
  * GET  ?id={transactionId} -- list milestones with progress

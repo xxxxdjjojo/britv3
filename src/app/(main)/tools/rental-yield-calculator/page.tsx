@@ -789,7 +789,7 @@ export default function RentalYieldCalculatorPage() {
               <p className="text-xs text-neutral-400">
                 Found this tool useful?{" "}
                 <Link
-                  href="#"
+                  href="/contact?topic=feedback&source=rental-yield-calculator"
                   className="text-brand-primary hover:underline"
                 >
                   Leave feedback

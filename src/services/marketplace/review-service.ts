@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Review service -- handles review CRUD, helpfulness voting, provider responses, and flagging.
  * All operations require an authenticated Supabase client (RLS enforced).

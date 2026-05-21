@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * ROI Estimation Service.
  *
@@ -283,14 +284,13 @@ export async function estimateROI(
       model: "claude-sonnet-4-6",
     });
 
-    // 6. On null result (any failure in wrapper), use deterministic fallback
-    let rawContent: string;
-    if (aiResult === null) {
+    // 6. On any failure in wrapper, use deterministic fallback
+    if (!aiResult.ok) {
       fallback_used = true;
-      error_type = "ClaudeUnavailable";
+      error_type = `ClaudeUnavailable:${aiResult.reason}`;
       const result = buildDeterministicFallback(
         benchmarks,
-        "Claude API unavailable",
+        `Claude API unavailable: ${aiResult.reason}`,
       );
       await setCache(cacheKey, result, CACHE_TTL_SECONDS).catch(() => undefined);
       success = true;
@@ -304,7 +304,7 @@ export async function estimateROI(
       });
       return result;
     }
-    rawContent = aiResult.text;
+    const rawContent = aiResult.data.text;
 
     // 7. Parse + Zod validate the raw text from Claude
     let parsed: unknown;

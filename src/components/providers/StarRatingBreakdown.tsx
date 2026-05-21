@@ -30,15 +30,15 @@ function FilledStars({ rating }: Readonly<{ rating: number }>) {
 }
 
 export default function StarRatingBreakdown({ stats }: StarRatingBreakdownProps) {
-  const avg = stats.avg_rating ?? 0;
+  const avg = stats.average_rating ?? 0;
   const total = stats.total_reviews;
 
   const starCounts: { label: string; count: number }[] = [
-    { label: "5★", count: stats.five_star },
-    { label: "4★", count: stats.four_star },
-    { label: "3★", count: stats.three_star },
-    { label: "2★", count: stats.two_star },
-    { label: "1★", count: stats.one_star },
+    { label: "5★", count: stats.count_5_star },
+    { label: "4★", count: stats.count_4_star },
+    { label: "3★", count: stats.count_3_star },
+    { label: "2★", count: stats.count_2_star },
+    { label: "1★", count: stats.count_1_star },
   ];
 
   return (

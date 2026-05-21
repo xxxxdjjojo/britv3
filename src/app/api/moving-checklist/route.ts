@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * API routes for the moving checklist.
  * GET  /api/moving-checklist?offer_id=xxx  — list items (offer_id optional)

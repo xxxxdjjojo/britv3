@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { withdrawOffer, isServiceError } from "@/services/offers/offers-service";
 
@@ -19,12 +18,13 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Use admin client to bypass the offers_update_blocked RLS policy
-    const adminSupabase = createAdminClient();
-    const result = await withdrawOffer(adminSupabase, user.id, offerId);
+    const result = await withdrawOffer(supabase, user.id, offerId);
 
     if (isServiceError(result)) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+      return NextResponse.json(
+        { error: result.error },
+        { status: "status" in result && typeof result.status === "number" ? result.status : 500 },
+      );
     }
 
     return NextResponse.json({ success: true });

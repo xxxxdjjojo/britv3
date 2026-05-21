@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, MailX, RefreshCw } from "lucide-react";
 
@@ -66,7 +67,7 @@ export default function UnsubscribeClient({ token, status }: Props) {
             You can re-enable them at any time from your notification settings.
           </p>
           <Button variant="outline" asChild>
-            <a href="/settings/notifications">Manage Preferences</a>
+            <Link href="/settings/notifications">Manage Preferences</Link>
           </Button>
         </div>
       </div>

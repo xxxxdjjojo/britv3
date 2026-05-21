@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import { NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { createClient } from "@/lib/supabase/server";
@@ -76,14 +77,14 @@ export async function POST(request: Request) {
       tone: tone as Tone,
     });
 
-    if (!result) {
+    if (!result.ok) {
       return NextResponse.json(
-        { error: "AI temporarily unavailable" },
+        { error: result.userMessage, reason: result.reason },
         { status: 503 },
       );
     }
 
-    return NextResponse.json({ description: result.text });
+    return NextResponse.json({ description: result.data.text });
   } catch (err) {
     console.error("[AI] generate-description error:", err);
     return NextResponse.json(

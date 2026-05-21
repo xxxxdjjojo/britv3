@@ -115,7 +115,7 @@ const MOCK_SERVICES = [
     title: "Mortgage Pre-approval",
     description:
       "Get pre-approved to strengthen your offer and speed up the buying process.",
-    href: "/services/mortgage",
+    href: "/mortgage-brokers",
   },
   {
     id: "s2",
@@ -123,7 +123,7 @@ const MOCK_SERVICES = [
     title: "Legal Advice",
     description:
       "Connect with qualified solicitors for conveyancing and property law guidance.",
-    href: "/services/legal",
+    href: "/conveyancers",
   },
   {
     id: "s3",
@@ -131,7 +131,7 @@ const MOCK_SERVICES = [
     title: "Moving Concierge",
     description:
       "Stress-free moving with vetted removal companies and change-of-address services.",
-    href: "/services/moving",
+    href: "/post-a-job",
   },
 ];
 
@@ -309,7 +309,7 @@ export function HomebuyerDashboard({
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Recent Activity</CardTitle>
-            <Button variant="ghost" size="sm" render={<Link href="/dashboard/homebuyer/activity" />}>
+            <Button variant="ghost" size="sm" render={<Link href="/notifications" />}>
               View all
               <ArrowRight className="ml-1 size-3" />
             </Button>

@@ -8,6 +8,7 @@
 import { callClaude } from "./claude-service";
 import { QuoteDraftSchema, AgentProposalSchema } from "@/lib/ai/schemas";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { captureException } from "@/lib/observability/capture-exception";
 
 // -- Types -------------------------------------------------------------------
 
@@ -106,10 +107,15 @@ export async function draftTradesQuote(
       outputSchema: QuoteDraftSchema,
     });
 
-    if (!result?.parsed) return null;
-    return result.parsed as QuoteDraft;
+    if (!result.ok || !result.data.parsed) return null;
+    return result.data.parsed as QuoteDraft;
   } catch (err) {
-    console.error("[AI] draftTradesQuote error:", err);
+    captureException(err, {
+      module: "ai",
+      feature: "quote-draft",
+      operation: "draftTradesQuote",
+      extra: { userId },
+    });
     return null;
   }
 }
@@ -133,10 +139,15 @@ export async function draftAgentProposal(
       outputSchema: AgentProposalSchema,
     });
 
-    if (!result?.parsed) return null;
-    return result.parsed as AgentProposal;
+    if (!result.ok || !result.data.parsed) return null;
+    return result.data.parsed as AgentProposal;
   } catch (err) {
-    console.error("[AI] draftAgentProposal error:", err);
+    captureException(err, {
+      module: "ai",
+      feature: "quote-draft",
+      operation: "draftAgentProposal",
+      extra: { userId },
+    });
     return null;
   }
 }
@@ -158,13 +169,23 @@ export async function getMarketPricing(
       .maybeSingle();
 
     if (error) {
-      console.error("[AI] getMarketPricing error:", error);
+      captureException(error, {
+        module: "ai",
+        feature: "quote-draft",
+        operation: "getMarketPricing",
+        extra: { serviceCategory, region },
+      });
       return null;
     }
 
     return data as Record<string, unknown> | null;
   } catch (err) {
-    console.error("[AI] getMarketPricing error:", err);
+    captureException(err, {
+      module: "ai",
+      feature: "quote-draft",
+      operation: "getMarketPricing",
+      extra: { serviceCategory, region },
+    });
     return null;
   }
 }
@@ -184,14 +205,24 @@ export async function getRateCard(
       .maybeSingle();
 
     if (error) {
-      console.error("[AI] getRateCard error:", error);
+      captureException(error, {
+        module: "ai",
+        feature: "quote-draft",
+        operation: "getRateCard",
+        extra: { userId },
+      });
       return null;
     }
 
     const details = data?.provider_details as Record<string, unknown> | null;
     return details?.rate_card as Record<string, unknown> ?? null;
   } catch (err) {
-    console.error("[AI] getRateCard error:", err);
+    captureException(err, {
+      module: "ai",
+      feature: "quote-draft",
+      operation: "getRateCard",
+      extra: { userId },
+    });
     return null;
   }
 }

@@ -51,13 +51,13 @@ export async function fetchProviderBySlug(
       ),
       provider_rating_stats (
         provider_id,
-        avg_rating,
+        average_rating,
         total_reviews,
-        five_star,
-        four_star,
-        three_star,
-        two_star,
-        one_star
+        count_5_star,
+        count_4_star,
+        count_3_star,
+        count_2_star,
+        count_1_star
       )
     `,
     )

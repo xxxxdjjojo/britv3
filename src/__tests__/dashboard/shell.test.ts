@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type { UserRole } from "@/types/auth";
+import { dashboardPathForRole } from "../../lib/routes";
+import type { UserRole } from "../../types/auth";
 
 /**
  * Dashboard shell integration tests.
@@ -20,7 +21,7 @@ const VALID_ROLES: UserRole[] = [
 describe("Dashboard shell configuration", () => {
   it("has nav items defined for all 7 roles", async () => {
     // Dynamically import to avoid server-only module issues
-    const { ROLES } = await import("@/lib/constants");
+    const { ROLES } = await import("../../lib/constants");
 
     expect(ROLES).toHaveLength(7);
     for (const role of VALID_ROLES) {
@@ -40,12 +41,12 @@ describe("Dashboard shell configuration", () => {
       seller: "/dashboard/seller",
       landlord: "/dashboard/landlord",
       agent: "/dashboard/agent",
-      service_provider: "/dashboard/service_provider",
-      mortgage_broker: "/dashboard/mortgage_broker",
+      service_provider: "/dashboard/provider",
+      mortgage_broker: "/dashboard/broker",
     };
 
     for (const role of VALID_ROLES) {
-      expect(expectedOverviewPaths[role]).toBe(`/dashboard/${role}`);
+      expect(expectedOverviewPaths[role]).toBe(dashboardPathForRole(role));
     }
   });
 
@@ -68,7 +69,7 @@ describe("Dashboard shell configuration", () => {
 
   it("dashboard redirect path follows /dashboard/{active_role} pattern", () => {
     for (const role of VALID_ROLES) {
-      const path = `/dashboard/${role}`;
+      const path = dashboardPathForRole(role);
       expect(path).toMatch(/^\/dashboard\/[a-z_]+$/);
     }
   });

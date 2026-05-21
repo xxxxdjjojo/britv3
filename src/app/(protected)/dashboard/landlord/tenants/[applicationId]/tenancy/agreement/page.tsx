@@ -37,7 +37,7 @@ export default async function TenancyAgreementPage({ params }: Props) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name:display_name")
       .eq("id", user.id)
       .single();
     if (profile?.full_name) landlordName = profile.full_name;

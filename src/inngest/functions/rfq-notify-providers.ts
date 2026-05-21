@@ -56,7 +56,7 @@ export const rfqNotifyProviders = inngest.createFunction(
           .limit(0);
 
         if (tableCheck) {
-          console.log(
+          console.warn(
             "Notifications table not available yet (Phase 3); skipping in-app notifications",
           );
           return ids;
@@ -91,7 +91,6 @@ export const rfqNotifyProviders = inngest.createFunction(
     // Step 4: Email fallback for unread notifications
     await step.run("send-email-fallback", async () => {
       if (notificationIds.length === 0) {
-        console.log("No notification IDs to check for email fallback");
         return { emailsSent: 0 };
       }
 
@@ -123,14 +122,9 @@ export const rfqNotifyProviders = inngest.createFunction(
         .filter((u) => unreadUserIds.includes(u.id))
         .map((u) => ({ id: u.id, email: u.email }));
 
-      // Log email fallback (Resend integration deferred to communication phase)
-      console.log(
-        `Email fallback: ${unreadEmails.length} providers haven't viewed RFQ "${rfq?.title}" notification`,
-      );
-      for (const user of unreadEmails) {
-        console.log(`  Would email ${user.email} about RFQ ${rfqId}`);
-      }
-
+      // TODO: Resend integration deferred to communication phase.
+      // Currently we count unread providers but do not actually email.
+      void rfq;
       return { emailsSent: unreadEmails.length };
     });
 

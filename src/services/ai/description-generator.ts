@@ -6,7 +6,7 @@
 import { getDescriptionPrompt } from "@/config/prompts/property-description";
 import type { Tone } from "@/config/prompts/property-description";
 import { callClaude } from "./claude-service";
-import type { AiCallResult } from "./types";
+import type { CallClaudeResult } from "./claude-service";
 
 /** Input attributes for generating a property description */
 export type PropertyDescriptionInput = Readonly<{
@@ -51,11 +51,12 @@ export function buildUserMessage(attrs: PropertyDescriptionInput): string {
 
 /**
  * Generate a property description using Claude AI.
- * Returns null if AI is unavailable or rate limited (graceful degradation).
+ * Returns a discriminated union — callers should branch on `result.ok` and
+ * surface `result.userMessage` when degrading gracefully.
  */
 export async function generatePropertyDescription(
   options: GenerateDescriptionOptions,
-): Promise<AiCallResult | null> {
+): Promise<CallClaudeResult<unknown>> {
   const systemPrompt = getDescriptionPrompt(options.tone);
   const userMessage = buildUserMessage(options.listing);
 

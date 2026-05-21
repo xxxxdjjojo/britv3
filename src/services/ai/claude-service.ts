@@ -7,15 +7,24 @@
  * - Token tracking / usage logging
  * - Input sanitization via sanitizeAiInput
  * - Zod output validation when outputSchema is provided
- * - Graceful degradation (returns null on any failure)
+ * - Typed discriminated-union failure surface so callers can render
+ *   user-safe fallback messages instead of generic 500s.
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import Anthropic, {
+  APIConnectionError,
+  APIConnectionTimeoutError,
+  APIError,
+  AuthenticationError,
+  BadRequestError,
+  RateLimitError,
+} from "@anthropic-ai/sdk";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sanitizeAiInput } from "@/lib/ai/sanitize";
 import { getCached, setCache } from "@/lib/cache/redis";
+import { captureException } from "@/lib/observability/capture-exception";
 import type { AiCallOptions, AiCallResult } from "./types";
 
 const MODEL = "claude-haiku-4-5-20251001";
@@ -23,6 +32,61 @@ const MODEL = "claude-haiku-4-5-20251001";
 // Pricing per million tokens (Claude Haiku 4.5)
 const INPUT_PRICE_PER_MILLION = 1.0; // $1.00 per 1M input tokens
 const OUTPUT_PRICE_PER_MILLION = 5.0; // $5.00 per 1M output tokens
+
+// -- Typed failure surface ---------------------------------------------------
+
+export type CallClaudeFailureReason =
+  | "daily_spend_exhausted"
+  | "global_rate_limit"
+  | "user_rate_limit"
+  | "rate_limit"
+  | "overloaded"
+  | "auth"
+  | "bad_request"
+  | "timeout"
+  | "connection"
+  | "no_text_block"
+  | "malformed_output"
+  | "refusal"
+  | "unknown";
+
+export type CallClaudeFailure = Readonly<{
+  ok: false;
+  reason: CallClaudeFailureReason;
+  userMessage: string;
+}>;
+
+export type CallClaudeSuccess<T> = Readonly<{
+  ok: true;
+  data: AiCallResult<T>;
+}>;
+
+export type CallClaudeResult<T> = CallClaudeSuccess<T> | CallClaudeFailure;
+
+const USER_MESSAGES: Readonly<Record<CallClaudeFailureReason, string>> = {
+  daily_spend_exhausted:
+    "AI is temporarily unavailable due to high usage today. Please try again tomorrow.",
+  global_rate_limit:
+    "AI service is busy right now. Please try again in a moment.",
+  user_rate_limit: "You've reached your AI usage limit for today.",
+  rate_limit: "AI service is busy right now. Please try again in a moment.",
+  overloaded: "AI service is overloaded. Please try again in a moment.",
+  auth: "AI service is temporarily unavailable. Please try again later.",
+  bad_request:
+    "We couldn't process that request. Please try again with different input.",
+  timeout: "AI service took too long to respond. Please try again.",
+  connection:
+    "We couldn't reach the AI service. Please check your connection and try again.",
+  no_text_block: "AI returned an unexpected response. Please try again.",
+  malformed_output: "AI returned an unexpected response. Please try again.",
+  refusal:
+    "AI declined to respond to that request. Try rephrasing or use a different approach.",
+  unknown: "AI service is temporarily unavailable. Please try again later.",
+};
+
+function failure(reason: CallClaudeFailureReason): CallClaudeFailure {
+  return { ok: false, reason, userMessage: USER_MESSAGES[reason] };
+}
 
 // -- Rate limiters (lazy-initialized) -----------------------------------------
 
@@ -100,10 +164,18 @@ async function logUsage(
       listing_id: listingId ?? null,
     });
     if (error) {
-      console.error("[AI] Failed to log usage:", error);
+      captureException(error, {
+        module: "ai",
+        feature: "callClaude",
+        operation: "log-usage",
+      });
     }
   } catch (err) {
-    console.error("[AI] Usage logging error:", err);
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "log-usage",
+    });
   }
 }
 
@@ -112,44 +184,61 @@ async function logUsage(
 /**
  * Call Claude with cost controls, rate limiting, input sanitization,
  * and usage tracking. Optionally validates JSON output against a Zod schema.
- * Returns null on any failure -- callers should handle graceful degradation.
+ *
+ * Returns a discriminated union: `{ ok: true, data }` on success, or
+ * `{ ok: false, reason, userMessage }` on any failure. Callers should branch
+ * on `result.ok` and surface `result.userMessage` for graceful degradation.
  */
 export async function callClaude<T = unknown>(
   options: AiCallOptions<T>,
-): Promise<AiCallResult<T> | null> {
+): Promise<CallClaudeResult<T>> {
+  // 1. Check daily spend limit
+  const dailyLimit = parseFloat(process.env.AI_DAILY_SPEND_LIMIT ?? "10");
+  const currentSpend = await getDailySpend();
+  if (currentSpend >= dailyLimit) {
+    captureException(new Error("AI daily spend limit reached"), {
+      module: "ai",
+      feature: "callClaude",
+      operation: "daily-spend-check",
+      extra: { reason: "daily_spend_exhausted", currentSpend, dailyLimit },
+    });
+    return failure("daily_spend_exhausted");
+  }
+
+  // 2. Check global rate limit
+  const globalResult = await getGlobalLimiter().limit("global");
+  if (!globalResult.success) {
+    captureException(new Error("AI global rate limit exceeded"), {
+      module: "ai",
+      feature: "callClaude",
+      operation: "global-rate-limit",
+      extra: { reason: "global_rate_limit" },
+    });
+    return failure("global_rate_limit");
+  }
+
+  // 3. Check per-user rate limit
+  const userResult = await getUserLimiter().limit(options.userId);
+  if (!userResult.success) {
+    captureException(new Error("AI user rate limit exceeded"), {
+      module: "ai",
+      feature: "callClaude",
+      operation: "user-rate-limit",
+      extra: { reason: "user_rate_limit", userId: options.userId },
+    });
+    return failure("user_rate_limit");
+  }
+
+  // 4. Sanitize user input
+  const sanitizedMessage = sanitizeAiInput(options.userMessage);
+
+  // 5. Call Claude API
   try {
-    // 1. Check daily spend limit
-    const dailyLimit = parseFloat(
-      process.env.AI_DAILY_SPEND_LIMIT ?? "10",
-    );
-    const currentSpend = await getDailySpend();
-    if (currentSpend >= dailyLimit) {
-      console.warn("[AI] Daily spend limit reached:", currentSpend);
-      return null;
-    }
-
-    // 2. Check global rate limit
-    const globalResult = await getGlobalLimiter().limit("global");
-    if (!globalResult.success) {
-      console.warn("[AI] Global rate limit exceeded");
-      return null;
-    }
-
-    // 3. Check per-user rate limit
-    const userResult = await getUserLimiter().limit(options.userId);
-    if (!userResult.success) {
-      console.warn("[AI] User rate limit exceeded:", options.userId);
-      return null;
-    }
-
-    // 4. Sanitize user input
-    const sanitizedMessage = sanitizeAiInput(options.userMessage);
-
-    // 5. Call Claude API
     const client = new Anthropic();
-    const requestOptions = options.timeoutMs !== undefined
-      ? { signal: AbortSignal.timeout(options.timeoutMs) }
-      : undefined;
+    const requestOptions =
+      options.timeoutMs !== undefined
+        ? { signal: AbortSignal.timeout(options.timeoutMs) }
+        : undefined;
     const response = await client.messages.create(
       {
         model: options.model ?? MODEL,
@@ -160,29 +249,61 @@ export async function callClaude<T = unknown>(
       requestOptions,
     );
 
-    // 6. Extract text from response
-    const textBlock = response.content.find((block) => block.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
-      console.error("[AI] No text block in response");
-      return null;
+    // 6. Refusal check (before text-block extraction)
+    if (response.stop_reason === "refusal") {
+      captureException(new Error("Anthropic refused to respond"), {
+        module: "ai",
+        feature: "callClaude",
+        operation: "anthropic-call",
+        extra: { reason: "refusal", stopReason: response.stop_reason },
+      });
+      return failure("refusal");
     }
 
-    // 7. Validate output via Zod schema if provided
+    // 7. Extract text from response
+    const textBlock = response.content.find((block) => block.type === "text");
+    if (!textBlock || textBlock.type !== "text") {
+      captureException(new Error("No text block in Anthropic response"), {
+        module: "ai",
+        feature: "callClaude",
+        operation: "anthropic-call",
+        extra: { reason: "no_text_block" },
+      });
+      return failure("no_text_block");
+    }
+
+    // 8. Validate output via Zod schema if provided
     if (options.outputSchema) {
       try {
         const parsed = JSON.parse(textBlock.text);
         const validated = options.outputSchema.parse(parsed);
-        await logUsage(options.feature, options.userId, response.usage.input_tokens, response.usage.output_tokens);
-        await incrementDailySpend(response.usage.input_tokens, response.usage.output_tokens);
+        await logUsage(
+          options.feature,
+          options.userId,
+          response.usage.input_tokens,
+          response.usage.output_tokens,
+        );
+        await incrementDailySpend(
+          response.usage.input_tokens,
+          response.usage.output_tokens,
+        );
         return {
-          text: textBlock.text,
-          inputTokens: response.usage.input_tokens,
-          outputTokens: response.usage.output_tokens,
-          parsed: validated,
+          ok: true,
+          data: {
+            text: textBlock.text,
+            inputTokens: response.usage.input_tokens,
+            outputTokens: response.usage.output_tokens,
+            parsed: validated,
+          },
         };
       } catch (parseErr) {
-        console.error("[AI] Output validation failed:", parseErr);
-        return null;
+        captureException(parseErr, {
+          module: "ai",
+          feature: "callClaude",
+          operation: "output-validation",
+          extra: { reason: "malformed_output" },
+        });
+        return failure("malformed_output");
       }
     }
 
@@ -192,7 +313,7 @@ export async function callClaude<T = unknown>(
       outputTokens: response.usage.output_tokens,
     };
 
-    // 8. Log usage and update spend counter
+    // 9. Log usage and update spend counter
     await logUsage(
       options.feature,
       options.userId,
@@ -201,9 +322,77 @@ export async function callClaude<T = unknown>(
     );
     await incrementDailySpend(result.inputTokens, result.outputTokens);
 
-    return result;
+    return { ok: true, data: result };
   } catch (err) {
-    console.error("[AI] callClaude error:", err);
-    return null;
+    return mapAnthropicError(err);
   }
+}
+
+/**
+ * Narrow an Anthropic SDK / network error into a typed failure result.
+ * Always reports to Sentry with a `reason` tag for triage.
+ */
+function mapAnthropicError(err: unknown): CallClaudeFailure {
+  if (err instanceof RateLimitError) {
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "anthropic-call",
+      extra: { reason: "rate_limit" },
+    });
+    return failure("rate_limit");
+  }
+  if (err instanceof AuthenticationError) {
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "anthropic-call",
+      extra: { reason: "auth" },
+    });
+    return failure("auth");
+  }
+  if (err instanceof BadRequestError) {
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "anthropic-call",
+      extra: { reason: "bad_request" },
+    });
+    return failure("bad_request");
+  }
+  if (err instanceof APIConnectionTimeoutError) {
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "anthropic-call",
+      extra: { reason: "timeout" },
+    });
+    return failure("timeout");
+  }
+  if (err instanceof APIConnectionError) {
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "anthropic-call",
+      extra: { reason: "connection" },
+    });
+    return failure("connection");
+  }
+  // Overloaded — HTTP 529 surfaces as APIError (no dedicated class)
+  if (err instanceof APIError && err.status === 529) {
+    captureException(err, {
+      module: "ai",
+      feature: "callClaude",
+      operation: "anthropic-call",
+      extra: { reason: "overloaded" },
+    });
+    return failure("overloaded");
+  }
+  captureException(err, {
+    module: "ai",
+    feature: "callClaude",
+    operation: "anthropic-call",
+    extra: { reason: "unknown" },
+  });
+  return failure("unknown");
 }

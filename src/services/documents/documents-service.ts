@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 /**
  * Buyer documents service — upload, list, and delete user documents.
  * Stores files in Supabase Storage bucket "buyer-documents" at path

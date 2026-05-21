@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- TODO Sprint 1: migrate console.error to captureException (see src/lib/observability/capture-exception.ts) */
 import { adminOnly, type AdminContext, adminWithPermission, type AdminContextWithRole } from "@/lib/admin-guard";
 import { logAdminAction } from "@/lib/admin-audit";
 import type { AdminPermission } from "@/lib/admin-permissions";

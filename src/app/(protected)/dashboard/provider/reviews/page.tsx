@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Star } from "lucide-react";
 import { ReviewsBreakdown } from "@/components/dashboard/provider/ReviewsBreakdown";
@@ -27,7 +28,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
   let query = supabase
     .from("reviews")
     .select(
-      "id, created_at, overall_rating, comment, provider_response, reviewer:reviewer_id(full_name)",
+      "id, created_at, overall_rating, comment, provider_response, reviewer:reviewer_id(full_name:display_name)",
     )
     .eq("reviewee_id", user.id)
     .order("created_at", { ascending: false });
@@ -108,7 +109,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
 
       {/* Rating filter chips */}
       <div className="flex flex-wrap gap-2">
-        <a
+        <Link
           href="/dashboard/provider/reviews"
           className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
             !ratingFilter
@@ -117,9 +118,9 @@ export default async function ProviderReviewsPage(props: Readonly<{
           }`}
         >
           All
-        </a>
+        </Link>
         {([5, 4, 3, 2, 1] as const).map((star) => (
-          <a
+          <Link
             key={star}
             href={`/dashboard/provider/reviews?rating=${star}`}
             className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
@@ -130,7 +131,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
           >
             <Star className="size-3 fill-amber-400 text-amber-400" />
             {star}★
-          </a>
+          </Link>
         ))}
       </div>
 
