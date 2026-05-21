@@ -1,6 +1,7 @@
 {
   "name": "my-app",
   "version": "0.3.4",
+  "packageManager": "pnpm@11.0.9",
   "private": true,
   "scripts": {
     "dev": "next dev",
