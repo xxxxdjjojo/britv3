@@ -33,7 +33,7 @@ export default async function RespondToReviewPage(props: Readonly<{
   const { data: raw } = await supabase
     .from("reviews")
     .select(
-      "id, created_at, overall_rating, comment, provider_response, reviewee_id, reviewer:reviewer_id(full_name)",
+      "id, created_at, overall_rating, comment, provider_response, reviewee_id, reviewer:reviewer_id(full_name:display_name)",
     )
     .eq("id", id)
     .maybeSingle();

@@ -11,7 +11,7 @@ export default async function SellerDashboardLayout(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url, active_role")
+    .select("full_name:display_name, avatar_url, active_role")
     .eq("id", user.id)
     .maybeSingle();
 

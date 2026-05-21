@@ -53,7 +53,7 @@ export default async function MarketplaceLandingPage() {
   const { data: featuredRaw } = await supabase
     .from("provider_rating_stats")
     .select(
-      "provider_id, average_rating, total_reviews, service_provider_details!inner(id, slug, business_name, services, city, profiles!inner(avatar_url, full_name, provider_verification_status))",
+      "provider_id, average_rating, total_reviews, service_provider_details!inner(id, slug, business_name, services, city, profiles!inner(avatar_url, full_name:display_name, provider_verification_status))",
     )
     .order("average_rating", { ascending: false })
     .gt("total_reviews", 5)

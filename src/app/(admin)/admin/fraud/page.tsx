@@ -64,9 +64,10 @@ export default async function FraudDetectionPage() {
   const twoWeeksAgo = new Date(
     now - 14 * 24 * 60 * 60 * 1000,
   ).toISOString();
+  // TODO Sprint 3: fetch email via service-role on auth.users (profiles has no email column)
   const { data: newUsers } = await supabase
     .from("profiles")
-    .select("id, full_name, email, role, is_suspended, created_at")
+    .select("id, full_name:display_name, role, is_suspended, created_at")
     .gte("created_at", twoWeeksAgo)
     .eq("is_suspended", false)
     .limit(100);
@@ -80,9 +81,10 @@ export default async function FraudDetectionPage() {
   let signals: FraudSignal[] = [];
 
   if (allCandidateIds.size > 0) {
+    // TODO Sprint 3: fetch email via service-role on auth.users (profiles has no email column)
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, full_name, email, role, is_suspended, created_at")
+      .select("id, full_name:display_name, role, is_suspended, created_at")
       .in("id", [...allCandidateIds])
       .limit(200);
 
@@ -98,7 +100,7 @@ export default async function FraudDetectionPage() {
         return {
           userId: p.id as string,
           fullName: p.full_name as string | null,
-          email: p.email as string | null,
+          email: null, // TODO Sprint 3: fetch email via service-role on auth.users
           role: p.role as string | null,
           createdAt: p.created_at as string | null,
           isSuspended: p.is_suspended as boolean | null,

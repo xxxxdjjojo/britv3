@@ -53,7 +53,7 @@ export default async function LeasePage({
   // Fetch landlord name from profile
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name:display_name")
     .eq("id", user.id)
     .single();
 

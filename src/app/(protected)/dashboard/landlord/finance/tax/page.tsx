@@ -151,7 +151,7 @@ export default async function TaxSummaryPage({ searchParams }: Props) {
   // Get landlord name for export
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name:display_name")
     .eq("id", user.id)
     .single();
 

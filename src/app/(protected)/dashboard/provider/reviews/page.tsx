@@ -28,7 +28,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
   let query = supabase
     .from("reviews")
     .select(
-      "id, created_at, overall_rating, comment, provider_response, reviewer:reviewer_id(full_name)",
+      "id, created_at, overall_rating, comment, provider_response, reviewer:reviewer_id(full_name:display_name)",
     )
     .eq("reviewee_id", user.id)
     .order("created_at", { ascending: false });

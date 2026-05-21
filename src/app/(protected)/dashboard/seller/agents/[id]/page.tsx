@@ -17,7 +17,7 @@ export default async function AgentProfilePage({ params }: Props) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, avatar_url, metadata")
+    .select("id, full_name:display_name, avatar_url, metadata")
     .eq("id", id)
     .maybeSingle();
 

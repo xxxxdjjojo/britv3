@@ -143,7 +143,7 @@ async function CategoryLocationPage({
     .select(
       `
       *,
-      profiles!inner(id, avatar_url, full_name, provider_verification_status, email),
+      profiles!inner(id, avatar_url, full_name:display_name, provider_verification_status),
       provider_rating_stats(average_rating, total_reviews, count_5_star, count_4_star, count_3_star, count_2_star, count_1_star, provider_id)
     `,
     )

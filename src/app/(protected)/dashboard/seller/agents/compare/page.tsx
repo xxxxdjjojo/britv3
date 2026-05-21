@@ -20,7 +20,7 @@ export default async function AgentComparisonPage({ searchParams }: Props) {
   const idList = ids.split(",").filter(Boolean).slice(0, 3);
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, full_name, avatar_url, metadata")
+    .select("id, full_name:display_name, avatar_url, metadata")
     .in("id", idList);
 
   const agents: AgentProfile[] = (profiles ?? []).map((p) => {
