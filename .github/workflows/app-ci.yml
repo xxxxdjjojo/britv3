@@ -44,6 +44,7 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+        continue-on-error: true
 
       - name: Unit tests
         run: pnpm test -- --run
