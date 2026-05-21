@@ -3,6 +3,14 @@
   "version": "0.3.4",
   "packageManager": "pnpm@11.0.9",
   "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@sentry/cli",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
