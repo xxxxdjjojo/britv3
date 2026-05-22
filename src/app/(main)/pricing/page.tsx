@@ -1,5 +1,7 @@
 // src/app/(main)/pricing/page.tsx
 
+import { Suspense } from "react";
+
 import Link from "next/link";
 
 import { PricingTabs } from "@/components/pricing/PricingTabs";
@@ -150,7 +152,11 @@ export default function PricingPage() {
       </div>
 
       <div className="mt-10">
-        <PricingTabs tabs={TABS} defaultTab="sellers" />
+        {/* PricingTabs reads ?tab and ?force_variant via useSearchParams; */}
+        {/* Suspense boundary required for static prerender on Next.js 16. */}
+        <Suspense fallback={<div className="h-96" aria-busy="true" />}>
+          <PricingTabs tabs={TABS} defaultTab="sellers" />
+        </Suspense>
       </div>
 
       <p className="mt-16 text-center text-sm text-neutral-500">
