@@ -3,15 +3,21 @@
 // MEMO PIVOT v2 — invite-only seed onboarding for the first 50 trades,
 // 10 agents, 20 developers.
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 
 import {
   generateInviteCode,
   validateInviteCode,
   redeemInviteCode,
   INVITE_QUOTAS,
+  InviteQuotaExceededError,
+  __resetInviteStoreForTests,
   type InviteAudience,
 } from "@/lib/invite-codes";
+
+beforeEach(() => {
+  __resetInviteStoreForTests();
+});
 
 describe("INVITE_QUOTAS — memo seed targets", () => {
   it("trade quota is 50", () => {
@@ -72,5 +78,42 @@ describe("redeemInviteCode", () => {
     });
     expect(result.audience).toBe("trade");
     expect(result.userId).toBe("user-1");
+  });
+});
+
+describe("quota enforcement at redemption time", () => {
+  it(
+    "rejects the 21st developer redemption (quota = 20)",
+    async () => {
+      const quota = INVITE_QUOTAS.developer;
+      for (let i = 0; i < quota; i++) {
+        const code = generateInviteCode("developer");
+        await redeemInviteCode(code, `user-${i}`, { skipPersistence: true });
+      }
+      const overflow = generateInviteCode("developer");
+      await expect(
+        redeemInviteCode(overflow, "user-overflow", { skipPersistence: true }),
+      ).rejects.toBeInstanceOf(InviteQuotaExceededError);
+    },
+    10_000,
+  );
+
+  it("quota is enforced per audience, not globally", async () => {
+    // Fill agent quota (10), then verify trade is still open.
+    const agentQuota = INVITE_QUOTAS.agent;
+    for (let i = 0; i < agentQuota; i++) {
+      const code = generateInviteCode("agent");
+      await redeemInviteCode(code, `agent-${i}`, { skipPersistence: true });
+    }
+    const tradeCode = generateInviteCode("trade");
+    const result = await redeemInviteCode(tradeCode, "trade-1", {
+      skipPersistence: true,
+    });
+    expect(result.audience).toBe("trade");
+
+    const overAgent = generateInviteCode("agent");
+    await expect(
+      redeemInviteCode(overAgent, "agent-overflow", { skipPersistence: true }),
+    ).rejects.toBeInstanceOf(InviteQuotaExceededError);
   });
 });

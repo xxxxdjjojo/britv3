@@ -18,20 +18,26 @@ CREATE INDEX IF NOT EXISTS invite_codes_redeemed_idx ON invite_codes(redeemed_at
 
 ALTER TABLE invite_codes ENABLE ROW LEVEL SECURITY;
 
--- Anyone can validate (no auth required for code lookup)
+-- SELECT is admin-only. Public validation goes through the API route
+-- (`/api/invites/[code]`) which uses the service-role client to skip RLS.
+-- This prevents anon/authenticated clients from dumping unredeemed codes.
 DROP POLICY IF EXISTS "Anyone can validate invite codes" ON invite_codes;
-CREATE POLICY "Anyone can validate invite codes" ON invite_codes
-  FOR SELECT TO anon, authenticated
-  USING (true);
+DROP POLICY IF EXISTS "Admins can read invite codes" ON invite_codes;
+CREATE POLICY "Admins can read invite codes" ON invite_codes
+  FOR SELECT TO authenticated
+  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
 
--- Only the holder of a valid (unredeemed) code can redeem it
+-- Redemption stays open to authenticated users — they can update any
+-- still-unredeemed code so long as they set redeemed_by = themselves.
+-- This is safe because validation happens server-side first and the
+-- code itself is the secret.
 DROP POLICY IF EXISTS "Authenticated users can redeem their own invite" ON invite_codes;
 CREATE POLICY "Authenticated users can redeem their own invite" ON invite_codes
   FOR UPDATE TO authenticated
   USING (redeemed_at IS NULL)
   WITH CHECK (redeemed_at IS NOT NULL AND redeemed_by = auth.uid());
 
--- Admins can create / list
+-- Admins manage (insert/delete/update) everything
 DROP POLICY IF EXISTS "Admins manage invite codes" ON invite_codes;
 CREATE POLICY "Admins manage invite codes" ON invite_codes
   FOR ALL TO authenticated

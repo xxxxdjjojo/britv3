@@ -14,6 +14,15 @@ export const INVITE_QUOTAS: Readonly<Record<InviteAudience, number>> = {
   developer: 20,
 };
 
+export class InviteQuotaExceededError extends Error {
+  constructor(audience: InviteAudience, quota: number) {
+    super(
+      `Invite quota exhausted for audience "${audience}" (limit: ${quota})`,
+    );
+    this.name = "InviteQuotaExceededError";
+  }
+}
+
 const AUDIENCE_PREFIX: Readonly<Record<InviteAudience, string>> = {
   trade: "TRADE",
   agent: "AGENT",
@@ -56,6 +65,7 @@ interface InviteOptions {
 
 // In-memory store used only when skipPersistence is true (test path).
 const redeemedCodes: Set<string> = new Set();
+const inMemoryAudienceCount = new Map<InviteAudience, number>();
 
 function parseCode(code: string): InviteAudience | null {
   if (!CODE_REGEX.test(code)) return null;
@@ -74,11 +84,13 @@ export async function validateInviteCode(
   if (options.skipPersistence) {
     return redeemedCodes.has(code) ? null : { audience };
   }
-  // Production path: look up in Supabase (best-effort; missing table
-  // returns null so legacy environments don't crash).
+  // Production path: look up in Supabase via the service-role client.
+  // RLS restricts SELECT on invite_codes to admins, so the user-context
+  // client would return null for anon visitors. The service-role client
+  // bypasses RLS, allowing public validation by code value only.
   try {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("invite_codes")
       .select("audience, redeemed_at")
@@ -92,6 +104,32 @@ export async function validateInviteCode(
   }
 }
 
+/**
+ * Count redeemed codes for an audience. Used by redeemInviteCode to
+ * enforce INVITE_QUOTAS at redemption time.
+ */
+async function countRedeemed(
+  audience: InviteAudience,
+  options: InviteOptions,
+): Promise<number> {
+  if (options.skipPersistence) {
+    return inMemoryAudienceCount.get(audience) ?? 0;
+  }
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const { count, error } = await supabase
+      .from("invite_codes")
+      .select("id", { count: "exact", head: true })
+      .eq("audience", audience)
+      .not("redeemed_at", "is", null);
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function redeemInviteCode(
   code: string,
   userId: string,
@@ -101,16 +139,23 @@ export async function redeemInviteCode(
   if (!audience) {
     throw new Error("Invalid invite code");
   }
+  const quota = INVITE_QUOTAS[audience];
+  const alreadyRedeemed = await countRedeemed(audience, options);
+  if (alreadyRedeemed >= quota) {
+    throw new InviteQuotaExceededError(audience, quota);
+  }
+
   if (options.skipPersistence) {
     if (redeemedCodes.has(code)) {
       throw new Error("Invite code already redeemed");
     }
     redeemedCodes.add(code);
+    inMemoryAudienceCount.set(audience, alreadyRedeemed + 1);
     return { audience, userId };
   }
   try {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("invite_codes")
       .update({ redeemed_at: new Date().toISOString(), redeemed_by: userId })
@@ -131,4 +176,5 @@ export async function redeemInviteCode(
 /** Test-only — wipes the in-memory redeemed-codes store. */
 export function __resetInviteStoreForTests(): void {
   redeemedCodes.clear();
+  inMemoryAudienceCount.clear();
 }
