@@ -2,6 +2,88 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Memo Pivot v2 (2026-05-22)
+
+Full implementation of the strategy memo at
+`/Users/jojominime/britv3/docs/britestate_strategy_memo.md`. Replaces the
+SaaS-only model with a Hemnet-style 7-segment platform. No follow-ups — every
+code-touching workstream from the memo ships in this PR.
+
+### Added
+
+- **/pricing — 7 segment tabs.** Sellers (one-off), Estate Agents, Landlords,
+  Providers, Niche Professionals (Conveyancer / Surveyor / Mortgage broker),
+  Developers, Traders. Memo prices verbatim. Monthly/annual toggle hidden for
+  one-off segments. ARIA tablist semantics. CTA buttons POST to
+  `/api/billing/checkout` and surface `data-plan-id` for analytics.
+- **New segment landing pages**: `/sellers`, `/developers`, `/traders` with
+  hero + tier cards + CTAs into `/pricing?tab=<segment>`.
+- **`/fee-transparency`** — full commission table across all seven segments,
+  with Rightmove / Checkatrade / Hemnet benchmarks.
+- **Tier-banded provider commission** — `calculatePlatformFee({ grossAmountPence,
+  providerPlanId })` exposes the new 12% / 10% / 6% bands (Listed / Pro / Elite)
+  per `src/lib/commission-rates.ts`. Flat 0.025 retained only for legacy display
+  paths.
+- **Sellers default-tier A/B harness** (PostHog feature flag
+  `sellers_default_tier`): `src/lib/experiments.ts` + server endpoint
+  `/api/experiments/exposure`. Pricing tab fires exposure once per session.
+  `?force_variant=plus` highlights the Plus card for QA.
+- **Programmatic SEO** — dynamic `/services-near/[service]/[postcode]` route
+  with `generateStaticParams` over `buildDefaultMatrix()` (43 postcode areas
+  × 12 services = 516 prerendered URLs; expandable to 10K via the matrix
+  builder + Land Registry ingest).
+- **AI SDR campaign scaffold** — `enqueueOutbound` / `processBatch` queue
+  with deterministic jobId hashing (idempotent), per-batch throttle of 200,
+  three personas (trade / agent / developer). Admin UI at `/admin/sdr`.
+  Migration `20260522000001_sdr_campaigns.sql` defines `sdr_campaigns`,
+  `sdr_targets`, `sdr_messages` with admin-only RLS.
+- **Invite-only seed onboarding** — `BRIT-<AUDIENCE>-<NONCE>` codes with
+  per-audience quotas (memo: trade 50 / agent 10 / developer 20). `/signup`
+  honours `?invite=…` and renders an invite chip. Migration
+  `20260522000002_invite_codes.sql` defines `invite_codes` with RLS.
+- **Pricing-review analytics dashboard** at `/admin/pricing-review` — MRR by
+  segment, paying users, churn, vs memo targets (conservative 120 / base 600
+  / bull 2,000).
+- **Stripe provisioning** — `scripts/stripe-setup/create-pricing-v2.ts`
+  idempotently creates 24 Products + 39 Prices in test mode via the Stripe
+  SDK, plus `scripts/stripe-setup/verify-pricing-v2.ts` that exit-codes
+  non-zero on drift.
+
+### Changed
+
+- **`src/lib/billing-config.ts`** rewritten to a 7-segment schema. New plan
+  type carries `pricingType`, `commissionRate`, `commissionLabel`, `perLeadFee`.
+  PLANS_BY_SEGMENT + ALL_PLANS + getPlansBySegment helpers. ALLOWED_PRICE_IDS
+  auto-derived. Legacy PLANS_BY_ROLE retained for back-compat callers.
+- **Plan entitlements** — new plan ids added to `src/lib/plan-entitlements.ts`;
+  legacy ids retained so in-flight subscriptions keep their feature gates.
+- **Navigation** — `src/config/navigation.ts` MegaMenu "List / Sell" gains
+  Developers/Traders entries; Footer "Services" lists Sellers/Developers/
+  Traders; "Company" gains Pricing + Fee Transparency. Command palette
+  indexes all four new pages.
+- **Sitemap** — `src/app/sitemap.ts` appends the 516 programmatic SEO URLs
+  plus the new segment landings.
+- **Middleware PUBLIC_ROUTES** — `/sellers`, `/developers`, `/traders`,
+  `/fee-transparency`, `/services-near`, `/signup` added.
+- **`/signup` no longer redirects to `/register`** — it is now a real
+  invite-aware signup page.
+
+### Removed
+
+- Old pricing E2E spec at `tests/e2e/pricing-page.spec.ts` (orphaned —
+  Playwright testDir is `./e2e`). Superseded by the rewritten
+  `e2e/pricing-page.spec.ts` asserting the new prices.
+
+### Verification
+
+- Unit tests: 1,676 passing, 0 failing. Memo-pivot specs alone add 64 tests
+  across billing-config, commission-rates, provider-payment-service,
+  experiments, invite-codes, postcode-service-matrix, sdr-campaign-service,
+  pricing-metrics-service.
+- E2E: 17 screenshot tests passing (29 PNGs in `docs/pricing-v2/screenshots/`).
+- Stripe: `verify-pricing-v2.ts` confirms 24/24 plans + boosts present in
+  test mode.
+
 ## [0.0.2.1] - 2026-03-25
 
 ### Added
