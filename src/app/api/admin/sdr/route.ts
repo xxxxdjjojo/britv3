@@ -18,7 +18,7 @@ const EnqueueSchema = z.object({
   contact: z.string().min(3).max(254),
   audience: z.enum(["trade", "agent", "developer"]),
   postcode: z.string().max(12).optional(),
-  meta: z.record(z.unknown()).optional(),
+  meta: z.record(z.string(), z.unknown()).optional(),
 });
 
 async function isAdmin(): Promise<boolean> {

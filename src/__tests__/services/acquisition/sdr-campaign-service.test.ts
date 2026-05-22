@@ -37,7 +37,6 @@ describe("enqueueOutbound", () => {
   });
 
   it("rejects unknown personas", async () => {
-    // @ts-expect-error — invalid persona on purpose
     await expect(enqueueOutbound(FAKE_TARGET, "unknown")).rejects.toThrow();
   });
 });

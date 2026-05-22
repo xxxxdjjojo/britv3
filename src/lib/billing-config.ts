@@ -32,6 +32,9 @@ export type PricingType = "subscription" | "one_off";
 /** Legacy role enum kept for code paths still using BillingRole. */
 export type BillingRole = "agent" | "landlord" | "provider";
 
+/** Back-compat alias for legacy callers that imported BillingInterval. */
+export type BillingInterval = "monthly" | "annual";
+
 export type Plan = Readonly<{
   /** Internal stable identifier — never exposed to Stripe. */
   id: string;
