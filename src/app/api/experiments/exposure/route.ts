@@ -9,6 +9,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
+import { createRateLimiter } from "@/lib/cache/redis";
+
+// Allowlist of feature-flag names the public endpoint will accept.
+// Locking this down prevents an attacker from polluting PostHog with
+// arbitrary flag names and skewing experiment statistics or driving
+// up event-based billing.
+const KNOWN_FLAGS = new Set([
+  "sellers_default_tier",
+]);
+
+// 30 req/min/IP. Fails open if Redis is unavailable (telemetry endpoint —
+// availability trumps the rate-limit on transient outage).
+const exposureLimiter = createRateLimiter(30, "1 m");
+
 const ExposureSchema = z.object({
   flag: z.string().min(1).max(120),
   variant: z.string().min(1).max(120),
@@ -32,7 +46,21 @@ function getPostHogServer(): PostHogServer | null {
   }
 }
 
+function clientIp(request: NextRequest): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const ip = clientIp(request);
+  const rl = await exposureLimiter.limit(`exposure:${ip}`);
+  if (!rl.success) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -47,6 +75,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
   const { flag, variant } = parsed.data;
+  if (!KNOWN_FLAGS.has(flag)) {
+    return NextResponse.json({ error: "unknown_flag" }, { status: 400 });
+  }
 
   const ph = getPostHogServer();
   if (ph?.capture) {

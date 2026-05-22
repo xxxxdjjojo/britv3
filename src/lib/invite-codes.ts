@@ -29,7 +29,9 @@ const AUDIENCE_PREFIX: Readonly<Record<InviteAudience, string>> = {
   developer: "DEVELOPER",
 };
 
-const CODE_REGEX = /^BRIT-(TRADE|AGENT|DEVELOPER)-[A-Z0-9]{6,}$/;
+// Exactly 8 alphanumerics — matches generateInviteCode output. Tighter
+// regex narrows the brute-force keyspace from ~36^6 to ~36^8.
+const CODE_REGEX = /^BRIT-(TRADE|AGENT|DEVELOPER)-[A-Z0-9]{8}$/;
 
 function isInviteAudience(value: string): value is InviteAudience {
   return value === "trade" || value === "agent" || value === "developer";

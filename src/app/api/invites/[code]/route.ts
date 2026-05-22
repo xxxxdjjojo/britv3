@@ -4,14 +4,34 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 
+import { createRateLimiter } from "@/lib/cache/redis";
 import { createClient } from "@/lib/supabase/server";
 import { redeemInviteCode, validateInviteCode } from "@/lib/invite-codes";
+
+// 60 GET/min/IP — anonymous validation lookup. Narrows brute-force
+// enumeration of invite codes. Fails open on Redis outage; the 8-char
+// alphanumeric keyspace (~2.8T) still makes blind brute force impractical.
+const inviteValidateLimiter = createRateLimiter(60, "1 m");
 
 interface RouteCtx {
   params: Promise<{ code: string }>;
 }
 
-export async function GET(_req: NextRequest, ctx: RouteCtx): Promise<NextResponse> {
+function clientIp(request: NextRequest): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
+export async function GET(req: NextRequest, ctx: RouteCtx): Promise<NextResponse> {
+  const ip = clientIp(req);
+  const rl = await inviteValidateLimiter.limit(`invite_validate:${ip}`);
+  if (!rl.success) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
   const { code } = await ctx.params;
   const result = await validateInviteCode(code);
   if (!result) {
