@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] — Memo Pivot v2 (2026-05-22)
+## [0.1.0.0] - 2026-05-22 — Memo Pivot v2
 
 Full implementation of the strategy memo at
 `/Users/jojominime/britv3/docs/britestate_strategy_memo.md`. Replaces the
