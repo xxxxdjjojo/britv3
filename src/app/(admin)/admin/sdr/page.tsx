@@ -20,10 +20,10 @@ async function requireAdmin(): Promise<void> {
   }
   const { data } = await supabase
     .from("profiles")
-    .select("role")
+    .select("is_admin")
     .eq("id", user.id)
     .maybeSingle();
-  if (data?.role !== "admin") {
+  if (data?.is_admin !== true) {
     throw new Error("Forbidden");
   }
 }

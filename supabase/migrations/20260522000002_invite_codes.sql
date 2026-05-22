@@ -25,7 +25,7 @@ DROP POLICY IF EXISTS "Anyone can validate invite codes" ON invite_codes;
 DROP POLICY IF EXISTS "Admins can read invite codes" ON invite_codes;
 CREATE POLICY "Admins can read invite codes" ON invite_codes
   FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
+  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true));
 
 -- Redemption stays open to authenticated users — they can update any
 -- still-unredeemed code so long as they set redeemed_by = themselves.
@@ -41,5 +41,5 @@ CREATE POLICY "Authenticated users can redeem their own invite" ON invite_codes
 DROP POLICY IF EXISTS "Admins manage invite codes" ON invite_codes;
 CREATE POLICY "Admins manage invite codes" ON invite_codes
   FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'))
-  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
+  USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true));

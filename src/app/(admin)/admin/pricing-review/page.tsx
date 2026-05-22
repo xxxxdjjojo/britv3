@@ -24,10 +24,10 @@ async function requireAdmin(): Promise<boolean> {
     if (!user) return false;
     const { data } = await supabase
       .from("profiles")
-      .select("role")
+      .select("is_admin")
       .eq("id", user.id)
       .maybeSingle();
-    return data?.role === "admin";
+    return data?.is_admin === true;
   } catch {
     return false;
   }
