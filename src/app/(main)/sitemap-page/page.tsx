@@ -31,6 +31,16 @@ const sections = [
     ],
   },
   {
+    heading: "Sell & Develop",
+    links: [
+      { label: "Sellers", href: "/sellers" },
+      { label: "Developers", href: "/developers" },
+      { label: "Traders", href: "/traders" },
+      { label: "Pricing & Plans", href: "/pricing" },
+      { label: "Fee Transparency", href: "/fee-transparency" },
+    ],
+  },
+  {
     heading: "Tools",
     links: [
       { label: "Mortgage Calculator", href: "/tools" },

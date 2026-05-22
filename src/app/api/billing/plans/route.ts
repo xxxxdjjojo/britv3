@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     priceIdAnnual: plan.priceIdAnnual,
     priceMonthly: plan.priceMonthly,
     priceAnnual: plan.priceAnnual,
-    role: plan.role,
+    role: plan.segment,
     features: plan.features,
     highlighted: plan.highlighted,
   }));

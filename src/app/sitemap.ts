@@ -128,13 +128,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] DB query failed, using static-only:", err);
   }
 
+  /* --- Memo Pivot v2 — programmatic SEO matrix --- */
+  // Lazy require so the matrix tree-shakes out of production if disabled.
+  const { buildDefaultMatrix } = await import("@/lib/seo/postcode-service-matrix");
+  const programmaticPages: MetadataRoute.Sitemap = buildDefaultMatrix().map((p) => ({
+    url: `${BASE_URL}/services-near/${p.service}/${p.postcode.toLowerCase()}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.5,
+  }));
+
+  /* --- Memo Pivot v2 — new segment landing pages --- */
+  const segmentLandingPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/sellers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/developers`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/traders`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/fee-transparency`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+  ];
+
   return [
     ...staticPages,
     ...legalPages,
     ...servicePages,
+    ...segmentLandingPages,
     ...toolPages,
     ...marketplacePages,
     ...areaPages,
+    ...programmaticPages,
     ...propertyPages,
     ...agentPages,
   ];

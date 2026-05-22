@@ -1,120 +1,180 @@
 // src/app/(main)/pricing/page.tsx
-import { PLANS_BY_ROLE } from "@/lib/billing-config";
-import type { Plan } from "@/lib/billing-config";
-import { PricingTabs } from "@/components/pricing/PricingTabs";
+
+import { Suspense } from "react";
+
 import Link from "next/link";
 
-// Marketing metadata that doesn't belong in billing-config.ts.
-// Prices, names, and features are derived from PLANS_BY_ROLE (source of truth).
-type PlanMeta = Readonly<{
-  audience: string;
-  cta: string;
-  ctaHref: string;
-  badge?: string;
-}>;
+import { PricingTabs } from "@/components/pricing/PricingTabs";
+import type {
+  PlanCardData,
+  SegmentTabConfig,
+} from "@/components/pricing/types";
+import {
+  ALL_PLANS,
+  PLANS_BY_SEGMENT,
+  type Plan,
+  type Segment,
+} from "@/lib/billing-config";
 
-const PLAN_META: Record<string, PlanMeta> = {
-  // Provider plans
-  provider_member: { audience: "Getting started", cta: "Request invite", ctaHref: "/register?role=service_provider" },
-  provider_professional: { audience: "For growing businesses", cta: "Request invite", ctaHref: "/register?role=service_provider&plan=professional", badge: "Most Popular" },
-  provider_elite: { audience: "For established firms", cta: "Request invite", ctaHref: "/register?role=service_provider&plan=elite" },
-  // Agent plans
-  agent_performance: { audience: "Zero risk, zero cost", cta: "Apply as founding agency", ctaHref: "/register?role=agent" },
-  agent_professional: { audience: "Growing agencies", cta: "Apply as founding agency", ctaHref: "/register?role=agent&plan=professional", badge: "Most Popular" },
-  agent_enterprise: { audience: "High-volume agencies", cta: "Contact sales", ctaHref: "/register?role=agent&plan=enterprise" },
-  // Landlord plans
-  landlord_ess: { audience: "Up to 3 properties", cta: "Start free trial", ctaHref: "/register?role=landlord" },
-  landlord_pro: { audience: "Unlimited properties", cta: "Start free trial", ctaHref: "/register?role=landlord&plan=professional", badge: "Most Popular" },
+// Marketing copy bound to memo segments. Plans, prices and features come
+// from billing-config (single source of truth).
+const SEGMENT_COPY: Record<
+  Segment,
+  Readonly<{
+    label: string;
+    description: string;
+    ctaHrefBase: string;
+    role?: string;
+  }>
+> = {
+  seller: {
+    label: "Sellers",
+    description:
+      "List with a real photographer, real story, and zero estate-agent commission. Pay one-off, pay less to complete.",
+    ctaHrefBase: "/register",
+    role: "seller",
+  },
+  agent: {
+    label: "Estate Agents",
+    description:
+      "Free to list. Revenue-share only on the leads we originate. Save 76% versus Rightmove's enhanced tier.",
+    ctaHrefBase: "/register",
+    role: "agent",
+  },
+  landlord: {
+    label: "Landlords",
+    description:
+      "From hobbyists to portfolio operators. Tenant screening, rent collection, and a small per-let fee — no surprise charges.",
+    ctaHrefBase: "/register",
+    role: "landlord",
+  },
+  provider: {
+    label: "Providers",
+    description:
+      "Verified tradespeople. Pay less commission as you climb tiers — Listed 12%, Pro 10%, Elite 6%.",
+    ctaHrefBase: "/register",
+    role: "service_provider",
+  },
+  provider_niche: {
+    label: "Professionals",
+    description:
+      "Conveyancers, surveyors and mortgage brokers — niche tools, qualified leads, integrated transactions.",
+    ctaHrefBase: "/register",
+    role: "service_provider",
+  },
+  developer: {
+    label: "Developers",
+    description:
+      "Showcase entire developments. Investor exposure, AI renders, and a fraction-of-a-percent completion fee.",
+    ctaHrefBase: "/register",
+    role: "developer",
+  },
+  trader: {
+    label: "Traders",
+    description:
+      "Flippers and property traders — off-market deal feed, comp tools, 0.50% on resale.",
+    ctaHrefBase: "/register",
+    role: "trader",
+  },
 };
 
-function planToTabData(plan: Plan) {
-  const meta = PLAN_META[plan.id] ?? { audience: "", cta: "Get started", ctaHref: "/register" };
+function planToCard(plan: Plan): PlanCardData {
+  const copy = SEGMENT_COPY[plan.segment];
+  const ctaHref = `${copy.ctaHrefBase}?role=${copy.role ?? "buyer"}&plan=${encodeURIComponent(plan.id)}`;
   return {
+    planId: plan.id,
     name: plan.name,
-    audience: meta.audience,
+    audience: plan.name,
+    segment: plan.segment,
+    pricingType: plan.pricingType,
+    priceIdMonthly: plan.priceIdMonthly,
+    priceIdAnnual: plan.priceIdAnnual,
     monthlyPricePence: plan.priceMonthly,
     annualPricePence: plan.priceAnnual,
     features: plan.features,
-    cta: meta.cta,
-    ctaHref: meta.ctaHref,
+    cta:
+      plan.priceMonthly === 0 && plan.priceAnnual === 0
+        ? "Get started free"
+        : plan.pricingType === "one_off"
+          ? "Choose this tier"
+          : "Subscribe",
+    ctaHref,
     highlighted: plan.highlighted,
-    badge: meta.badge,
+    badge: plan.highlighted ? "Most popular" : undefined,
+    commissionLabel: plan.commissionLabel,
   };
 }
 
-const PRICING_TABS = [
-  {
-    id: "homeowners",
-    label: "Homeowners",
-    description:
-      "Free forever for homebuyers and renters. Search properties, get AI recommendations, and book viewings.",
-    plans: [
-      {
-        name: "Free",
-        audience: "Homebuyers & Renters",
-        monthlyPricePence: 0,
-        annualPricePence: 0,
-        features: [
-          "Property search & saved searches",
-          "AI-powered recommendations",
-          "Viewing bookings",
-          "Transaction tracking",
-          "Marketplace access",
-          "Move-in service bundles",
-        ],
-        cta: "Sign up free",
-        ctaHref: "/register",
-      },
-    ],
-  },
-  {
-    id: "tradespeople",
-    label: "Tradespeople",
-    description:
-      "Join Britain's most trusted trade network. Invite-only membership with verified leads.",
-    plans: PLANS_BY_ROLE.provider.map(planToTabData),
-  },
-  {
-    id: "agents",
-    label: "Estate Agents",
-    description:
-      "Zero upfront costs. We only earn when you earn — performance-based pricing.",
-    plans: PLANS_BY_ROLE.agent.map(planToTabData),
-  },
-  {
-    id: "landlords",
-    label: "Landlords",
-    description:
-      "Manage your rental portfolio with professional tools and tenant screening.",
-    plans: PLANS_BY_ROLE.landlord.map(planToTabData),
-  },
-];
+function buildTabs(): readonly SegmentTabConfig[] {
+  const order: readonly Segment[] = [
+    "seller",
+    "agent",
+    "landlord",
+    "provider",
+    "provider_niche",
+    "developer",
+    "trader",
+  ];
+  return order.map((segment) => {
+    const copy = SEGMENT_COPY[segment];
+    const plans = PLANS_BY_SEGMENT[segment].map(planToCard);
+    const pricingTypes = new Set(plans.map((p) => p.pricingType));
+    const pricingType: "subscription" | "one_off" | "mixed" =
+      pricingTypes.size === 1
+        ? (Array.from(pricingTypes)[0] as "subscription" | "one_off")
+        : "mixed";
+    return {
+      id: segment === "provider_niche" ? "providers-niche" : `${segment}s`,
+      label: copy.label,
+      description: copy.description,
+      pricingType,
+      plans,
+    };
+  });
+}
+
+const TABS = buildTabs();
 
 export default function PricingPage() {
+  // Memo: ALL_PLANS used here only to surface the count in source for tests
+  // and reviewers — keeps billing-config as the single import surface.
+  void ALL_PLANS;
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="text-center">
         <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
           Simple, Transparent Pricing
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600">
-          Free for homeowners. Performance-based for agents. Membership-based
-          for tradespeople.
+        <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-600">
+          Seven segments. One platform. Pay less than the incumbents,
+          earn more than them, and only pay when value lands.
         </p>
       </div>
 
       <div className="mt-10">
-        <PricingTabs tabs={PRICING_TABS} defaultTab="tradespeople" />
+        {/* PricingTabs reads ?tab and ?force_variant via useSearchParams; */}
+        {/* Suspense boundary required for static prerender on Next.js 16. */}
+        <Suspense fallback={<div className="h-96" aria-busy="true" />}>
+          <PricingTabs tabs={TABS} defaultTab="sellers" />
+        </Suspense>
       </div>
 
       <p className="mt-16 text-center text-sm text-neutral-500">
-        Have questions?{" "}
+        See the commission detail on the{" "}
+        <Link
+          href="/fee-transparency"
+          className="text-[#1B4D3E] underline-offset-4 hover:underline"
+        >
+          fee transparency
+        </Link>{" "}
+        page, or{" "}
         <Link
           href="/contact"
           className="text-[#1B4D3E] underline-offset-4 hover:underline"
         >
-          Contact our sales team
+          talk to sales
         </Link>
+        .
       </p>
     </div>
   );

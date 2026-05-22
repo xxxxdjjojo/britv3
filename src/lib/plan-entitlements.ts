@@ -99,21 +99,133 @@ const LANDLORD_PROFESSIONAL: readonly FeatureKey[] = [
 ];
 
 // ============================================================================
+// Memo Pivot v2 — entitlement bundles for new segments
+// ============================================================================
+
+const SELLER_TIER: readonly FeatureKey[] = [
+  "PROFILE_BASIC",
+  "SUPPORT_EMAIL",
+];
+
+const SELLER_PLUS_TIER: readonly FeatureKey[] = [
+  ...SELLER_TIER,
+  "PROFILE_FEATURED",
+  "SUPPORT_PRIORITY",
+];
+
+const SELLER_PREMIUM_TIER: readonly FeatureKey[] = [
+  ...SELLER_PLUS_TIER,
+  "PROFILE_PREMIUM_BADGE",
+  "SUPPORT_DEDICATED",
+];
+
+const LANDLORD_FREE_TIER: readonly FeatureKey[] = [
+  "SUPPORT_EMAIL",
+];
+
+const LANDLORD_PORTFOLIO_TIER: readonly FeatureKey[] = [
+  ...LANDLORD_PROFESSIONAL,
+  "TEAM_MULTI_USER",
+  "API_ACCESS",
+  "SUPPORT_DEDICATED",
+];
+
+const PROVIDER_LISTED_TIER: readonly FeatureKey[] = [
+  "QUOTES_BASIC",
+  "LEADS_STANDARD",
+  "PROFILE_BASIC",
+  "SUPPORT_EMAIL",
+];
+
+const PROVIDER_NICHE_TIER: readonly FeatureKey[] = [
+  ...PROVIDER_PROFESSIONAL,
+  "PROFILE_PREMIUM_BADGE",
+];
+
+const DEVELOPER_BASE_TIER: readonly FeatureKey[] = [
+  "PROFILE_FEATURED",
+  "LEADS_STANDARD",
+  "SUPPORT_EMAIL",
+  "REFERRAL_PROGRAM",
+];
+
+const DEVELOPER_MULTI_TIER: readonly FeatureKey[] = [
+  ...DEVELOPER_BASE_TIER,
+  "LEADS_PRIORITY",
+  "ANALYTICS_ADVANCED",
+  "SUPPORT_PRIORITY",
+];
+
+const DEVELOPER_ENTERPRISE_TIER: readonly FeatureKey[] = [
+  ...DEVELOPER_MULTI_TIER,
+  "API_ACCESS",
+  "TEAM_MULTI_USER",
+  "SUPPORT_DEDICATED",
+  "WHITE_LABEL",
+];
+
+const TRADER_PRO_TIER: readonly FeatureKey[] = [
+  "PROFILE_FEATURED",
+  "LEADS_PRIORITY",
+  "ANALYTICS_BASIC",
+  "SUPPORT_EMAIL",
+];
+
+const TRADER_ELITE_TIER: readonly FeatureKey[] = [
+  ...TRADER_PRO_TIER,
+  "LEADS_FIRST_ACCESS",
+  "API_ACCESS",
+  "SUPPORT_PRIORITY",
+];
+
+// ============================================================================
 // Plan ID → feature set map
+// Includes both legacy IDs (for in-flight subscriptions) and new memo-v2 IDs.
 // ============================================================================
 
 const PLAN_ENTITLEMENTS: Record<string, readonly FeatureKey[]> = {
-  // Provider
+  // --- Provider (legacy) ---
   provider_member: PROVIDER_MEMBER,
   provider_professional: PROVIDER_PROFESSIONAL,
+  // --- Provider (memo v2) ---
+  provider_listed: PROVIDER_LISTED_TIER,
+  provider_pro: PROVIDER_PROFESSIONAL,
   provider_elite: PROVIDER_ELITE,
-  // Agent
+  provider_conveyancer: PROVIDER_NICHE_TIER,
+  provider_surveyor: PROVIDER_NICHE_TIER,
+  provider_mortgage_broker: PROVIDER_NICHE_TIER,
+
+  // --- Agent (legacy) ---
   agent_performance: AGENT_PERFORMANCE,
   agent_professional: AGENT_PROFESSIONAL,
   agent_enterprise: AGENT_ENTERPRISE,
-  // Landlord
+  // --- Agent (memo v2) ---
+  agent_listed: AGENT_PERFORMANCE,
+  agent_pro: AGENT_PROFESSIONAL,
+  agent_elite: AGENT_ENTERPRISE,
+
+  // --- Landlord (legacy) ---
   landlord_ess: LANDLORD_ESSENTIAL,
+  // --- Landlord (memo v2) ---
+  landlord_free: LANDLORD_FREE_TIER,
+  landlord_essential: LANDLORD_ESSENTIAL,
   landlord_pro: LANDLORD_PROFESSIONAL,
+  landlord_portfolio: LANDLORD_PORTFOLIO_TIER,
+
+  // --- Sellers (memo v2 — new segment) ---
+  seller_basic: SELLER_TIER,
+  seller_plus: SELLER_PLUS_TIER,
+  seller_premium: SELLER_PREMIUM_TIER,
+  seller_nsnf: SELLER_TIER,
+
+  // --- Developers (memo v2 — new segment) ---
+  developer_single: DEVELOPER_BASE_TIER,
+  developer_multi: DEVELOPER_MULTI_TIER,
+  developer_enterprise: DEVELOPER_ENTERPRISE_TIER,
+
+  // --- Traders (memo v2 — new segment) ---
+  trader_pro: TRADER_PRO_TIER,
+  trader_elite: TRADER_ELITE_TIER,
 };
 
 // ============================================================================
@@ -125,22 +237,29 @@ const PLAN_ENTITLEMENTS: Record<string, readonly FeatureKey[]> = {
 
 const LEGACY_PLAN_IDS: Record<string, string> = {
   agent_basic: "agent_performance",
-  agent_pro: "agent_professional",
   agent_ent: "agent_enterprise",
   provider_starter: "provider_member",
   provider_growth: "provider_professional",
+  // agent_pro intentionally NOT aliased — memo pivot v2 made it a first-class
+  // plan id (£99) in PLAN_ENTITLEMENTS. The pre-v1 alias to agent_professional
+  // would mislabel new £99 subscribers as the retired £297 tier.
 };
 
 /**
  * Get the set of features available to a given plan.
  * Returns empty set for null/unknown plans.
- * Resolves legacy plan IDs via LEGACY_PLAN_IDS alias map.
+ *
+ * Lookup order: PLAN_ENTITLEMENTS first (canonical), then LEGACY_PLAN_IDS
+ * (for pre-v1-rename subscriptions that haven't been migrated).
  */
 export function getEntitlementsForPlan(
   planId: string | null,
 ): ReadonlySet<FeatureKey> {
   if (!planId) return new Set();
-  const resolvedId = LEGACY_PLAN_IDS[planId] ?? planId;
+  const direct = PLAN_ENTITLEMENTS[planId];
+  if (direct) return new Set(direct);
+  const resolvedId = LEGACY_PLAN_IDS[planId];
+  if (!resolvedId) return new Set();
   const features = PLAN_ENTITLEMENTS[resolvedId];
   if (!features) return new Set();
   return new Set(features);
@@ -166,9 +285,17 @@ export function getMinimumPlanForFeature(
   feature: FeatureKey,
 ): string | null {
   const rolePrefixes: Record<string, string[]> = {
-    provider: ["provider_member", "provider_professional", "provider_elite"],
-    agent: ["agent_performance", "agent_professional", "agent_enterprise"],
-    landlord: ["landlord_ess", "landlord_pro"],
+    // Memo Pivot v2 — canonical (buyable) plan ids only. Legacy ids stay
+    // resolvable via getEntitlementsForPlan but are no longer surfaced as
+    // upgrade targets, since they're retired from /pricing.
+    provider: ["provider_listed", "provider_pro", "provider_elite"],
+    agent: ["agent_listed", "agent_pro", "agent_elite"],
+    landlord: [
+      "landlord_free",
+      "landlord_essential",
+      "landlord_pro",
+      "landlord_portfolio",
+    ],
   };
 
   const planIds = rolePrefixes[role];

@@ -108,12 +108,16 @@ describe("hasFeature", () => {
 });
 
 describe("getMinimumPlanForFeature", () => {
-  it("returns provider_member for QUOTES_BASIC", () => {
-    expect(getMinimumPlanForFeature("provider", "QUOTES_BASIC")).toBe("provider_member");
+  // Memo pivot v2 — upgrade prompts surface canonical (currently buyable)
+  // plan ids only. Legacy ids still resolve via getEntitlementsForPlan for
+  // in-flight subscriptions, but they're no longer returned as suggestions.
+
+  it("returns provider_listed for QUOTES_BASIC (lowest tier with feature)", () => {
+    expect(getMinimumPlanForFeature("provider", "QUOTES_BASIC")).toBe("provider_listed");
   });
 
-  it("returns provider_professional for BOOKING_SYSTEM", () => {
-    expect(getMinimumPlanForFeature("provider", "BOOKING_SYSTEM")).toBe("provider_professional");
+  it("returns provider_pro for BOOKING_SYSTEM", () => {
+    expect(getMinimumPlanForFeature("provider", "BOOKING_SYSTEM")).toBe("provider_pro");
   });
 
   it("returns provider_elite for API_ACCESS", () => {
@@ -124,7 +128,7 @@ describe("getMinimumPlanForFeature", () => {
     expect(getMinimumPlanForFeature("provider", "NONEXISTENT" as never)).toBeNull();
   });
 
-  it("returns agent_professional for LISTINGS_UNLIMITED", () => {
-    expect(getMinimumPlanForFeature("agent", "LISTINGS_UNLIMITED")).toBe("agent_professional");
+  it("returns agent_pro for LISTINGS_UNLIMITED", () => {
+    expect(getMinimumPlanForFeature("agent", "LISTINGS_UNLIMITED")).toBe("agent_pro");
   });
 });

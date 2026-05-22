@@ -82,6 +82,17 @@ pnpm test:e2e              # E2E tests (Playwright)
 - `(protected)/` — authenticated routes, guarded by middleware
 - `dashboard/[role]/` — role-specific dashboards (homebuyer, renter, seller, landlord, agent, provider)
 
+**Memo Pivot v2 surfaces (added 2026-05-22):**
+- `/pricing` renders 7 segment tabs (Sellers, Estate Agents, Landlords, Providers, Niche Professionals, Developers, Traders). Source of truth: `src/lib/billing-config.ts` (`PLANS_BY_SEGMENT`).
+- Segment landings: `/sellers`, `/developers`, `/traders`.
+- `/fee-transparency` lists every segment's commission band.
+- Programmatic SEO: `/services-near/[service]/[postcode]` (≥500 SSG routes; cap 10K).
+- Admin: `/admin/sdr` (outbound campaign queue), `/admin/pricing-review` (week-13 checkpoint dashboard).
+- Tier-banded marketplace commission: `calculatePlatformFee` in `src/services/provider/provider-payment-service.ts`, rates in `src/lib/commission-rates.ts`.
+- Sellers default-tier A/B: PostHog flag `sellers_default_tier` (basic | plus) — harness in `src/lib/experiments.ts`, exposure at `/api/experiments/exposure`.
+- Stripe provisioning: `scripts/stripe-setup/create-pricing-v2.ts` (idempotent) + `verify-pricing-v2.ts`.
+- See `docs/architecture/ADR-007-pricing-v2-pivot.md`, `docs/pricing-v2/README.md`, `docs/api/billing-v2.md`.
+
 ## Coding Conventions
 
 ### TypeScript

@@ -1,13 +1,16 @@
 /**
- * Server-side billing configuration.
+ * Server-side billing configuration — Memo Pivot v2 (7 segments).
  *
- * Price IDs live here — never inline in client components.
- * All price IDs are read from env vars; fall-through to test-mode fixtures
- * only in development so misconfigured production deploys fail loudly.
+ * Source of truth for every customer-facing pricing tier. The pricing
+ * page, checkout API, webhook handler and Stripe provisioning script all
+ * resolve plan metadata through this module.
  *
- * SECURITY: this file imports server-only so it cannot be bundled into
- * client code. Any attempt to import it in a Client Component will throw
- * at build time.
+ * Price IDs come from env vars (populated by
+ * `scripts/stripe-setup/create-pricing-v2.ts`). Local fallbacks are used
+ * only in development so a misconfigured production deploy fails loud.
+ *
+ * SECURITY: this file imports "server-only" so it cannot be bundled into
+ * client code. Any client-side import throws at build time.
  */
 import "server-only";
 
@@ -15,268 +18,601 @@ import "server-only";
 // Types
 // ============================================================================
 
+export type Segment =
+  | "seller"
+  | "agent"
+  | "landlord"
+  | "provider"
+  | "provider_niche"
+  | "developer"
+  | "trader";
+
+export type PricingType = "subscription" | "one_off";
+
+/** Legacy role enum kept for code paths still using BillingRole. */
 export type BillingRole = "agent" | "landlord" | "provider";
 
+/** Back-compat alias for legacy callers that imported BillingInterval. */
+export type BillingInterval = "monthly" | "annual";
+
 export type Plan = Readonly<{
-  id: string;          // slug, e.g. "agent_basic"
-  name: string;        // display name
-  priceIdMonthly: string;   // Stripe price ID — monthly billing
-  priceIdAnnual: string;    // Stripe price ID — annual billing
-  priceMonthly: number;     // pence / month
-  priceAnnual: number;      // pence / year
-  role: BillingRole;
+  /** Internal stable identifier — never exposed to Stripe. */
+  id: string;
+  /** Display name. */
+  name: string;
+  /** Segment this plan belongs to. */
+  segment: Segment;
+  /** Subscription vs one-off pricing. */
+  pricingType: PricingType;
+  /** Stripe Price ID for the monthly cadence (or the single one-off price). */
+  priceIdMonthly: string;
+  /** Stripe Price ID for the annual cadence ("" for one-off or free plans). */
+  priceIdAnnual: string;
+  /** Per-month / one-off price in pence. Free plans use 0. */
+  priceMonthly: number;
+  /** Per-year price in pence. 0 for one-off / free plans. */
+  priceAnnual: number;
+  /** Commission rate applied at completion / per-job (0..1 decimal). */
+  commissionRate?: number;
+  /** Display copy for the commission, e.g. "0.50% on completion". */
+  commissionLabel?: string;
+  /** Flat per-lead fee in pence (mortgage broker etc.). */
+  perLeadFee?: number;
+  /** Marketing bullet points. */
   features: readonly string[];
+  /** Highlight as "Most popular". */
   highlighted?: boolean;
 }>;
 
-/**
- * @deprecated — use priceIdMonthly / priceIdAnnual instead.
- * Kept only for backwards-compat helpers.
- */
-export type BillingInterval = "monthly" | "annual";
-
 // ============================================================================
-// Price ID allowlist
-// Every priceId accepted by the checkout API must appear in this set.
+// Env helpers
 // ============================================================================
 
-export const ALLOWED_PRICE_IDS: ReadonlySet<string> = new Set([
-  // Agent plans — monthly
-  process.env.STRIPE_AGENT_PERF_PRICE_ID ?? "price_agent_perf_test",
-  process.env.STRIPE_AGENT_PRO_PRICE_ID ?? "price_agent_pro_test",
-  process.env.STRIPE_AGENT_ENT_PRICE_ID ?? "price_agent_ent_test",
-  // Agent plans — annual
-  process.env.STRIPE_AGENT_PERF_ANNUAL_PRICE_ID ?? "price_agent_perf_annual_test",
-  process.env.STRIPE_AGENT_PRO_ANNUAL_PRICE_ID ?? "price_agent_pro_annual_test",
-  process.env.STRIPE_AGENT_ENT_ANNUAL_PRICE_ID ?? "price_agent_ent_annual_test",
-  // Landlord plans — monthly (unchanged)
-  process.env.STRIPE_LANDLORD_ESSENTIAL_PRICE_ID ?? "price_landlord_ess_test",
-  process.env.STRIPE_LANDLORD_PRO_PRICE_ID ?? "price_landlord_pro_test",
-  // Landlord plans — annual (unchanged)
-  process.env.STRIPE_LANDLORD_ESSENTIAL_ANNUAL_PRICE_ID ?? "price_landlord_ess_annual_test",
-  process.env.STRIPE_LANDLORD_PRO_ANNUAL_PRICE_ID ?? "price_landlord_pro_annual_test",
-  // Provider plans — monthly
-  process.env.STRIPE_PROVIDER_MEMBER_PRICE_ID ?? "price_provider_member_test",
-  process.env.STRIPE_PROVIDER_PRO_PRICE_ID ?? "price_provider_pro_test",
-  process.env.STRIPE_PROVIDER_ELITE_PRICE_ID ?? "price_provider_elite_test",
-  // Provider plans — annual
-  process.env.STRIPE_PROVIDER_MEMBER_ANNUAL_PRICE_ID ?? "price_provider_member_annual_test",
-  process.env.STRIPE_PROVIDER_PRO_ANNUAL_PRICE_ID ?? "price_provider_pro_annual_test",
-  process.env.STRIPE_PROVIDER_ELITE_ANNUAL_PRICE_ID ?? "price_provider_elite_annual_test",
-  // One-time boosts (unchanged)
-  process.env.STRIPE_BOOST_7D_PRICE_ID ?? "price_boost_7d_test",
-  process.env.STRIPE_BOOST_14D_PRICE_ID ?? "price_boost_14d_test",
-  process.env.STRIPE_BOOST_30D_PRICE_ID ?? "price_boost_30d_test",
-]);
+const FREE = "free";
 
-export function isPriceIdAllowed(priceId: string): boolean {
-  return ALLOWED_PRICE_IDS.has(priceId);
+function envOrTest(key: string, testFallback: string): string {
+  const v = process.env[key];
+  return v && v.length > 0 ? v : testFallback;
 }
 
 // ============================================================================
-// Plan definitions
+// Plan registry
+// Order within each segment matters — it controls UI display order.
 // ============================================================================
+
+export const SELLER_PLANS: readonly Plan[] = [
+  {
+    id: "seller_basic",
+    name: "Basic",
+    segment: "seller",
+    pricingType: "one_off",
+    priceIdMonthly: envOrTest("STRIPE_SELLER_BASIC_PRICE_ID", "price_seller_basic_test"),
+    priceIdAnnual: "",
+    priceMonthly: 9900,
+    priceAnnual: 0,
+    commissionRate: 0.005,
+    commissionLabel: "0.50% on completion",
+    features: [
+      "Listing on Britestate (15 photos)",
+      "Standard hero placement",
+      "Tour-booking inbox",
+      "Email support",
+    ],
+  },
+  {
+    id: "seller_plus",
+    name: "Plus",
+    segment: "seller",
+    pricingType: "one_off",
+    priceIdMonthly: envOrTest("STRIPE_SELLER_PLUS_PRICE_ID", "price_seller_plus_test"),
+    priceIdAnnual: "",
+    priceMonthly: 24900,
+    priceAnnual: 0,
+    commissionRate: 0.0035,
+    commissionLabel: "0.35% on completion",
+    highlighted: true,
+    features: [
+      "Everything in Basic",
+      "Drone tour + floorplan",
+      "Premium hero placement",
+      "AI Story generator included",
+      "Priority support (24hr SLA)",
+    ],
+  },
+  {
+    id: "seller_premium",
+    name: "Premium",
+    segment: "seller",
+    pricingType: "one_off",
+    priceIdMonthly: envOrTest("STRIPE_SELLER_PREMIUM_PRICE_ID", "price_seller_premium_test"),
+    priceIdAnnual: "",
+    priceMonthly: 44900,
+    priceAnnual: 0,
+    commissionRate: 0.0025,
+    commissionLabel: "0.25% on completion",
+    features: [
+      "Everything in Plus",
+      "Dedicated listing concierge",
+      "AI Valuation included",
+      "Featured weekly Digest",
+      "Photo + video shoot",
+    ],
+  },
+  {
+    id: "seller_nsnf",
+    name: "No-Sale-No-Fee",
+    segment: "seller",
+    pricingType: "one_off",
+    priceIdMonthly: FREE,
+    priceIdAnnual: "",
+    priceMonthly: 0,
+    priceAnnual: 0,
+    commissionRate: 0.01,
+    commissionLabel: "1.00% on completion (no upfront)",
+    features: [
+      "Zero upfront cost",
+      "Full Basic listing experience",
+      "Pay only when sale completes",
+    ],
+  },
+];
 
 export const AGENT_PLANS: readonly Plan[] = [
   {
-    id: "agent_performance",
-    name: "Performance",
-    priceIdMonthly: process.env.STRIPE_AGENT_PERF_PRICE_ID ?? "price_agent_perf_test",
-    priceIdAnnual: process.env.STRIPE_AGENT_PERF_ANNUAL_PRICE_ID ?? "price_agent_perf_annual_test",
-    priceMonthly: 0, // £0/month — performance-based (50/50 commission split)
+    id: "agent_listed",
+    name: "Listed",
+    segment: "agent",
+    pricingType: "subscription",
+    priceIdMonthly: FREE,
+    priceIdAnnual: FREE,
+    priceMonthly: 0,
     priceAnnual: 0,
-    role: "agent",
+    commissionLabel: "Revenue-share only on Britestate-originated leads",
     features: [
-      "Up to 25 active listings",
-      "Standard property photos",
-      "Lead management",
+      "Unlimited free listings",
+      "Standard profile",
+      "Britestate-originated leads opt-in",
       "Email support",
-      "50/50 commission split on sales",
-      "70/30 split on managed rentals",
     ],
   },
   {
-    id: "agent_professional",
-    name: "Professional",
-    priceIdMonthly: process.env.STRIPE_AGENT_PRO_PRICE_ID ?? "price_agent_pro_test",
-    priceIdAnnual: process.env.STRIPE_AGENT_PRO_ANNUAL_PRICE_ID ?? "price_agent_pro_annual_test",
-    priceMonthly: 29700, // £297/month
-    priceAnnual: 285000, // £2,850/year — save £714 (2.4 months free)
-    role: "agent",
+    id: "agent_pro",
+    name: "Pro",
+    segment: "agent",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_AGENT_PRO_PRICE_ID", "price_agent_pro_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_AGENT_PRO_ANNUAL_PRICE_ID", "price_agent_pro_v2_annual_test"),
+    priceMonthly: 9900,
+    priceAnnual: 95000,
+    commissionLabel: "70/30 split on Britestate-originated leads",
     highlighted: true,
     features: [
-      "Unlimited active listings",
-      "Premium photo hosting",
-      "Full CRM suite",
-      "Viewing calendar",
-      "Offer management",
-      "Priority support",
-      "75/25 commission split on sales",
-      "85/15 split on managed rentals",
+      "Everything in Listed",
+      "Featured branch profile",
+      "Lead intake CRM",
+      "Viewing-calendar embed",
+      "70/30 revenue share on Britestate leads",
+      "Priority support (8hr SLA)",
     ],
   },
   {
-    id: "agent_enterprise",
-    name: "Enterprise",
-    priceIdMonthly: process.env.STRIPE_AGENT_ENT_PRICE_ID ?? "price_agent_ent_test",
-    priceIdAnnual: process.env.STRIPE_AGENT_ENT_ANNUAL_PRICE_ID ?? "price_agent_ent_annual_test",
-    priceMonthly: 49700, // £497/month
-    priceAnnual: 477000, // £4,770/year — save £1,194 (2.4 months free)
-    role: "agent",
+    id: "agent_elite",
+    name: "Elite",
+    segment: "agent",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_AGENT_ELITE_PRICE_ID", "price_agent_elite_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_AGENT_ELITE_ANNUAL_PRICE_ID", "price_agent_elite_v2_annual_test"),
+    priceMonthly: 34900,
+    priceAnnual: 335000,
+    commissionLabel: "85/15 split on Britestate-originated leads",
     features: [
-      "Everything in Professional",
+      "Everything in Pro",
       "Multi-branch management",
-      "Team member accounts",
+      "Team accounts",
       "API access",
       "Dedicated account manager",
+      "85/15 revenue share on Britestate leads",
       "Custom branding",
-      "90/10 commission split on sales",
-      "95/5 split on managed rentals",
     ],
   },
 ];
 
 export const LANDLORD_PLANS: readonly Plan[] = [
   {
-    id: "landlord_ess",
+    id: "landlord_free",
+    name: "Free",
+    segment: "landlord",
+    pricingType: "subscription",
+    priceIdMonthly: FREE,
+    priceIdAnnual: FREE,
+    priceMonthly: 0,
+    priceAnnual: 0,
+    commissionLabel: "10% of first month rent on letting",
+    features: [
+      "1 property",
+      "Basic tenant inbox",
+      "Document storage",
+    ],
+  },
+  {
+    id: "landlord_essential",
     name: "Essential",
-    priceIdMonthly: process.env.STRIPE_LANDLORD_ESSENTIAL_PRICE_ID ?? "price_landlord_ess_test",
-    priceIdAnnual: process.env.STRIPE_LANDLORD_ESSENTIAL_ANNUAL_PRICE_ID ?? "price_landlord_ess_annual_test",
-    priceMonthly: 1900,
-    priceAnnual: 18200, // ~£182/yr — save £46 vs monthly
-    role: "landlord",
+    segment: "landlord",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_LANDLORD_ESSENTIAL_PRICE_ID", "price_landlord_essential_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_LANDLORD_ESSENTIAL_ANNUAL_PRICE_ID", "price_landlord_essential_v2_annual_test"),
+    priceMonthly: 1500,
+    priceAnnual: 14400,
+    commissionLabel: "9% of first month rent on letting",
     features: [
       "Up to 3 properties",
       "Tenant screening",
       "Document storage",
-      "Basic maintenance tracking",
+      "Maintenance log",
     ],
   },
   {
     id: "landlord_pro",
-    name: "Professional",
-    priceIdMonthly: process.env.STRIPE_LANDLORD_PRO_PRICE_ID ?? "price_landlord_pro_test",
-    priceIdAnnual: process.env.STRIPE_LANDLORD_PRO_ANNUAL_PRICE_ID ?? "price_landlord_pro_annual_test",
-    priceMonthly: 4900,
-    priceAnnual: 47000, // ~£470/yr — save £118 vs monthly
-    role: "landlord",
+    name: "Pro",
+    segment: "landlord",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_LANDLORD_PRO_PRICE_ID", "price_landlord_pro_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_LANDLORD_PRO_ANNUAL_PRICE_ID", "price_landlord_pro_v2_annual_test"),
+    priceMonthly: 3900,
+    priceAnnual: 37400,
+    commissionLabel: "8% of first month rent on letting",
     highlighted: true,
     features: [
-      "Unlimited properties",
-      "Advanced tenant screening",
+      "Up to 10 properties",
+      "Advanced screening",
       "Rent collection tools",
       "Maintenance workflows",
       "Financial reporting",
-      "Priority support",
+    ],
+  },
+  {
+    id: "landlord_portfolio",
+    name: "Portfolio",
+    segment: "landlord",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_LANDLORD_PORTFOLIO_PRICE_ID", "price_landlord_portfolio_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_LANDLORD_PORTFOLIO_ANNUAL_PRICE_ID", "price_landlord_portfolio_v2_annual_test"),
+    priceMonthly: 9900,
+    priceAnnual: 95000,
+    commissionLabel: "8% of first month rent on letting",
+    features: [
+      "Unlimited properties",
+      "Multi-user team accounts",
+      "API access",
+      "Bulk listing tools",
+      "Dedicated account manager",
     ],
   },
 ];
 
 export const PROVIDER_PLANS: readonly Plan[] = [
   {
-    id: "provider_member",
-    name: "Member",
-    priceIdMonthly: process.env.STRIPE_PROVIDER_MEMBER_PRICE_ID ?? "price_provider_member_test",
-    priceIdAnnual: process.env.STRIPE_PROVIDER_MEMBER_ANNUAL_PRICE_ID ?? "price_provider_member_annual_test",
-    priceMonthly: 4700, // £47/month
-    priceAnnual: 47000, // £470/year — save £94 (2 months free)
-    role: "provider",
+    id: "provider_listed",
+    name: "Listed",
+    segment: "provider",
+    pricingType: "subscription",
+    priceIdMonthly: FREE,
+    priceIdAnnual: FREE,
+    priceMonthly: 0,
+    priceAnnual: 0,
+    commissionRate: 0.12,
+    commissionLabel: "12% per job",
     features: [
       "Verified profile listing",
-      "Britestate Trust Badge",
+      "Britestate Trust badge (basic)",
       "3 quotes per month",
-      "Review collection system",
-      "Mobile app access",
-      "Basic lead notifications",
       "Email support",
     ],
   },
   {
-    id: "provider_professional",
-    name: "Professional",
-    priceIdMonthly: process.env.STRIPE_PROVIDER_PRO_PRICE_ID ?? "price_provider_pro_test",
-    priceIdAnnual: process.env.STRIPE_PROVIDER_PRO_ANNUAL_PRICE_ID ?? "price_provider_pro_annual_test",
-    priceMonthly: 9700, // £97/month
-    priceAnnual: 97000, // £970/year — save £194 (2 months free)
-    role: "provider",
+    id: "provider_pro",
+    name: "Pro",
+    segment: "provider",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_PROVIDER_PRO_PRICE_ID", "price_provider_pro_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_PROVIDER_PRO_ANNUAL_PRICE_ID", "price_provider_pro_v2_annual_test"),
+    priceMonthly: 3900,
+    priceAnnual: 37400,
+    commissionRate: 0.10,
+    commissionLabel: "10% per job",
     highlighted: true,
     features: [
-      "Everything in Member",
+      "Everything in Listed",
       "Unlimited quote responses",
       "Priority lead matching",
-      "Integrated booking system",
-      "Automated follow-ups",
-      "Basic CRM & analytics",
-      "Branded quote templates",
+      "Booking system",
+      "Basic CRM + analytics",
       "Priority support (4hr SLA)",
     ],
   },
   {
     id: "provider_elite",
     name: "Elite",
-    priceIdMonthly: process.env.STRIPE_PROVIDER_ELITE_PRICE_ID ?? "price_provider_elite_test",
-    priceIdAnnual: process.env.STRIPE_PROVIDER_ELITE_ANNUAL_PRICE_ID ?? "price_provider_elite_annual_test",
-    priceMonthly: 19700, // £197/month
-    priceAnnual: 197000, // £1,970/year — save £394 (2 months free)
-    role: "provider",
+    segment: "provider",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_PROVIDER_ELITE_PRICE_ID", "price_provider_elite_v2_test"),
+    priceIdAnnual: envOrTest("STRIPE_PROVIDER_ELITE_ANNUAL_PRICE_ID", "price_provider_elite_v2_annual_test"),
+    priceMonthly: 14900,
+    priceAnnual: 143000,
+    commissionRate: 0.06,
+    commissionLabel: "6% per job",
     features: [
-      "Everything in Professional",
+      "Everything in Pro",
       "First-access to premium jobs",
       "Multi-user team accounts",
-      "Advanced workflow automation",
-      "White-label customer portal",
+      "Workflow automation",
       "API access",
       "Dedicated account manager",
-      "Recruitment posting access",
-      "Premium trust badges",
+      "Premium Trust badge",
     ],
   },
 ];
 
-export const PLANS_BY_ROLE: Record<BillingRole, readonly Plan[]> = {
+export const PROVIDER_NICHE_PLANS: readonly Plan[] = [
+  {
+    id: "provider_conveyancer",
+    name: "Conveyancer",
+    segment: "provider_niche",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_PROVIDER_CONVEYANCER_PRICE_ID", "price_provider_conveyancer_test"),
+    priceIdAnnual: envOrTest("STRIPE_PROVIDER_CONVEYANCER_ANNUAL_PRICE_ID", "price_provider_conveyancer_annual_test"),
+    priceMonthly: 7900,
+    priceAnnual: 75800,
+    commissionRate: 0.06,
+    commissionLabel: "6% per transaction",
+    features: [
+      "Verified conveyancer badge",
+      "Direct transaction integration",
+      "Automated client onboarding",
+      "Document workspace",
+    ],
+  },
+  {
+    id: "provider_surveyor",
+    name: "Surveyor",
+    segment: "provider_niche",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_PROVIDER_SURVEYOR_PRICE_ID", "price_provider_surveyor_test"),
+    priceIdAnnual: envOrTest("STRIPE_PROVIDER_SURVEYOR_ANNUAL_PRICE_ID", "price_provider_surveyor_annual_test"),
+    priceMonthly: 7900,
+    priceAnnual: 75800,
+    commissionRate: 0.06,
+    commissionLabel: "6% per transaction",
+    features: [
+      "Verified surveyor badge",
+      "Direct booking from listings",
+      "Report template library",
+      "Document workspace",
+    ],
+  },
+  {
+    id: "provider_mortgage_broker",
+    name: "Mortgage Broker",
+    segment: "provider_niche",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_PROVIDER_MORTGAGE_BROKER_PRICE_ID", "price_provider_mortgage_broker_test"),
+    priceIdAnnual: envOrTest("STRIPE_PROVIDER_MORTGAGE_BROKER_ANNUAL_PRICE_ID", "price_provider_mortgage_broker_annual_test"),
+    priceMonthly: 4900,
+    priceAnnual: 47000,
+    perLeadFee: 3500,
+    commissionLabel: "£35 per qualified lead",
+    features: [
+      "Verified broker badge",
+      "Qualified-lead routing",
+      "AI affordability prescreen",
+      "Client portal",
+    ],
+  },
+];
+
+export const DEVELOPER_PLANS: readonly Plan[] = [
+  {
+    id: "developer_single",
+    name: "Single",
+    segment: "developer",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_DEVELOPER_SINGLE_PRICE_ID", "price_developer_single_test"),
+    priceIdAnnual: envOrTest("STRIPE_DEVELOPER_SINGLE_ANNUAL_PRICE_ID", "price_developer_single_annual_test"),
+    priceMonthly: 29900,
+    priceAnnual: 287000,
+    commissionRate: 0.0025,
+    commissionLabel: "0.25% on completion",
+    features: [
+      "Up to 1 development",
+      "Showcase storefront",
+      "Lead capture forms",
+      "Email support",
+    ],
+  },
+  {
+    id: "developer_multi",
+    name: "Multi",
+    segment: "developer",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_DEVELOPER_MULTI_PRICE_ID", "price_developer_multi_test"),
+    priceIdAnnual: envOrTest("STRIPE_DEVELOPER_MULTI_ANNUAL_PRICE_ID", "price_developer_multi_annual_test"),
+    priceMonthly: 79900,
+    priceAnnual: 767000,
+    commissionRate: 0.0020,
+    commissionLabel: "0.20% on completion",
+    highlighted: true,
+    features: [
+      "Up to 5 developments",
+      "AI render upgrades",
+      "Investor exposure feed",
+      "Priority support",
+    ],
+  },
+  {
+    id: "developer_enterprise",
+    name: "Enterprise",
+    segment: "developer",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_DEVELOPER_ENTERPRISE_PRICE_ID", "price_developer_enterprise_test"),
+    priceIdAnnual: envOrTest("STRIPE_DEVELOPER_ENTERPRISE_ANNUAL_PRICE_ID", "price_developer_enterprise_annual_test"),
+    priceMonthly: 199900,
+    priceAnnual: 1919000,
+    commissionRate: 0.0015,
+    commissionLabel: "0.15% on completion",
+    features: [
+      "Unlimited developments",
+      "Custom storefront branding",
+      "Dedicated account manager",
+      "API + integrations",
+      "First placement on AI Digest",
+    ],
+  },
+];
+
+export const TRADER_PLANS: readonly Plan[] = [
+  {
+    id: "trader_pro",
+    name: "Pro",
+    segment: "trader",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_TRADER_PRO_PRICE_ID", "price_trader_pro_test"),
+    priceIdAnnual: envOrTest("STRIPE_TRADER_PRO_ANNUAL_PRICE_ID", "price_trader_pro_annual_test"),
+    priceMonthly: 9900,
+    priceAnnual: 95000,
+    commissionRate: 0.005,
+    commissionLabel: "0.50% on resale",
+    features: [
+      "Up to 5 active flips",
+      "Off-market alerts",
+      "Comp tools",
+      "Email support",
+    ],
+  },
+  {
+    id: "trader_elite",
+    name: "Elite",
+    segment: "trader",
+    pricingType: "subscription",
+    priceIdMonthly: envOrTest("STRIPE_TRADER_ELITE_PRICE_ID", "price_trader_elite_test"),
+    priceIdAnnual: envOrTest("STRIPE_TRADER_ELITE_ANNUAL_PRICE_ID", "price_trader_elite_annual_test"),
+    priceMonthly: 29900,
+    priceAnnual: 287000,
+    commissionRate: 0.005,
+    commissionLabel: "0.50% on resale",
+    features: [
+      "Unlimited active flips",
+      "First-access deal feed",
+      "Bulk acquisition tools",
+      "Dedicated deal scout",
+      "API access",
+    ],
+  },
+];
+
+// ============================================================================
+// Boost (one-time) prices
+// ============================================================================
+
+export const BOOST_PRICES = {
+  "7d": {
+    priceId: envOrTest("STRIPE_BOOST_7D_PRICE_ID", "price_boost_7d_test"),
+    label: "7-day boost",
+    price: 1500,
+  },
+  "14d": {
+    priceId: envOrTest("STRIPE_BOOST_14D_PRICE_ID", "price_boost_14d_test"),
+    label: "14-day boost",
+    price: 2500,
+  },
+  "30d": {
+    priceId: envOrTest("STRIPE_BOOST_30D_PRICE_ID", "price_boost_30d_test"),
+    label: "30-day boost",
+    price: 4500,
+  },
+  ai_valuation: {
+    priceId: envOrTest("STRIPE_BOOST_AI_VALUATION_PRICE_ID", "price_boost_ai_valuation_test"),
+    label: "AI Valuation report",
+    price: 2900,
+  },
+  story: {
+    priceId: envOrTest("STRIPE_BOOST_STORY_PRICE_ID", "price_boost_story_test"),
+    label: "AI Story listing",
+    price: 7900,
+  },
+  digest: {
+    priceId: envOrTest("STRIPE_BOOST_DIGEST_PRICE_ID", "price_boost_digest_test"),
+    label: "Weekly Digest feature",
+    price: 3900,
+  },
+} as const;
+
+// ============================================================================
+// Aggregates
+// ============================================================================
+
+export const PLANS_BY_SEGMENT: Readonly<Record<Segment, readonly Plan[]>> = {
+  seller: SELLER_PLANS,
+  agent: AGENT_PLANS,
+  landlord: LANDLORD_PLANS,
+  provider: PROVIDER_PLANS,
+  provider_niche: PROVIDER_NICHE_PLANS,
+  developer: DEVELOPER_PLANS,
+  trader: TRADER_PLANS,
+};
+
+export const ALL_PLANS: readonly Plan[] = [
+  ...SELLER_PLANS,
+  ...AGENT_PLANS,
+  ...LANDLORD_PLANS,
+  ...PROVIDER_PLANS,
+  ...PROVIDER_NICHE_PLANS,
+  ...DEVELOPER_PLANS,
+  ...TRADER_PLANS,
+];
+
+/** Back-compat: legacy callers expect `BillingRole → Plan[]`. */
+export const PLANS_BY_ROLE: Readonly<Record<BillingRole, readonly Plan[]>> = {
   agent: AGENT_PLANS,
   landlord: LANDLORD_PLANS,
   provider: PROVIDER_PLANS,
 };
 
-export function getPlanByPriceId(priceId: string): Plan | undefined {
-  return [
-    ...AGENT_PLANS,
-    ...LANDLORD_PLANS,
-    ...PROVIDER_PLANS,
-  ].find((p) => p.priceIdMonthly === priceId || p.priceIdAnnual === priceId);
+export function getPlansBySegment(segment: Segment): readonly Plan[] {
+  return PLANS_BY_SEGMENT[segment];
 }
 
 // ============================================================================
-// Boost (one-time featured listing) price IDs
+// Allowlist
 // ============================================================================
 
-export const BOOST_PRICES = {
-  "7d": {
-    priceId: process.env.STRIPE_BOOST_7D_PRICE_ID ?? "price_boost_7d_test",
-    label: "7-day boost",
-    price: 1500, // £15
-  },
-  "14d": {
-    priceId: process.env.STRIPE_BOOST_14D_PRICE_ID ?? "price_boost_14d_test",
-    label: "14-day boost",
-    price: 2500, // £25
-  },
-  "30d": {
-    priceId: process.env.STRIPE_BOOST_30D_PRICE_ID ?? "price_boost_30d_test",
-    label: "30-day boost",
-    price: 4500, // £45
-  },
-} as const;
+const allowedSet = new Set<string>([FREE]);
+for (const plan of ALL_PLANS) {
+  if (plan.priceIdMonthly) allowedSet.add(plan.priceIdMonthly);
+  if (plan.priceIdAnnual) allowedSet.add(plan.priceIdAnnual);
+}
+for (const boost of Object.values(BOOST_PRICES)) {
+  allowedSet.add(boost.priceId);
+}
+
+export const ALLOWED_PRICE_IDS: ReadonlySet<string> = allowedSet;
+
+export function isPriceIdAllowed(priceId: string): boolean {
+  return ALLOWED_PRICE_IDS.has(priceId);
+}
 
 // ============================================================================
-// Plan ID resolution
+// Lookups
 // ============================================================================
+
+export function getPlanByPriceId(priceId: string): Plan | undefined {
+  return ALL_PLANS.find(
+    (p) => p.priceIdMonthly === priceId || p.priceIdAnnual === priceId,
+  );
+}
 
 /**
  * Resolve a Stripe price ID to our internal plan ID.
- * Used by the webhook to store the correct plan_name in the subscriptions table.
- * Falls back to the provided fallback (typically Stripe's plan nickname).
+ * Returns the fallback string when the price ID is unknown.
  */
 export function resolveInternalPlanId(
   stripePriceId: string | undefined | null,
@@ -293,11 +629,10 @@ export function resolveInternalPlanId(
 
 /**
  * Validate that a URL is same-origin to prevent open-redirect phishing.
- * Accepts relative paths (/dashboard/billing) and absolute URLs on the
- * app's own origin.
+ * Accepts relative paths and absolute URLs on the app's own origin.
  */
 export function isValidReturnUrl(url: string): boolean {
-  if (url.startsWith("/")) return true; // relative path — always safe
+  if (url.startsWith("/")) return true;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!appUrl) return false;
   try {

@@ -16,6 +16,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
+import { getCommissionRate } from "@/lib/commission-rates";
 import type { StripeConnectAccount } from "@/types/provider-dashboard";
 
 // ---------------------------------------------------------------------------
@@ -96,10 +97,36 @@ export type OnboardingLink = Readonly<{
 }>;
 
 // ---------------------------------------------------------------------------
-// Platform fee constant
+// Platform fee — memo v2 tier-banded
 // ---------------------------------------------------------------------------
 
-const PLATFORM_FEE_RATE = 0.025; // 2.5%
+/**
+ * @deprecated Memo pivot v2 replaces the flat 2.5% rate with per-plan banding.
+ * Retained only for legacy read paths that have no recorded plan id.
+ */
+const PLATFORM_FEE_RATE = 0.025;
+
+/**
+ * Compute the platform fee for a provider job/transaction.
+ *
+ * Memo Pivot v2 — the rate is per-plan (Listed 12%, Pro 10%, Elite 6%,
+ * niche providers 6%). When the provider's plan id is unknown the
+ * conservative DEFAULT_COMMISSION_RATE (12%) is applied so we never
+ * under-charge.
+ *
+ * Returns the fee in pence. Always at most `grossAmountPence` (a
+ * malformed gross value can never owe more than itself).
+ */
+export function calculatePlatformFee(args: {
+  grossAmountPence: number;
+  providerPlanId: string | null | undefined;
+}): number {
+  const { grossAmountPence, providerPlanId } = args;
+  if (!Number.isFinite(grossAmountPence) || grossAmountPence <= 0) return 0;
+  const rate = getCommissionRate(providerPlanId);
+  const fee = Math.round(grossAmountPence * rate);
+  return Math.min(fee, grossAmountPence);
+}
 
 // ---------------------------------------------------------------------------
 // getStripeConnectAccount

@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "version": "0.3.4",
+  "version": "0.1.0.0",
   "packageManager": "pnpm@10.18.3",
   "private": true,
   "pnpm": {
@@ -22,6 +22,7 @@
     "analyze": "ANALYZE=true pnpm build",
     "ingest:land-registry": "node scripts/ingest-land-registry.mjs",
     "ingest:test-connection": "node scripts/test-supabase-connection.mjs",
+    "ingest:verify": "node scripts/verify-land-registry.mjs",
     "gstack:install": "bun ../scripts/gstack/install.ts",
     "gstack:registry-init": "bun ../scripts/gstack/skill-registry.ts",
     "gstack:registry-validate": "bun ../scripts/gstack/skill-registry.ts --validate",
