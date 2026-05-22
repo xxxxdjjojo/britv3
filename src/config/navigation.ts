@@ -265,7 +265,8 @@ export const NAV_ITEMS: NavItem[] = [
       {
         heading: "Sellers",
         links: [
-          { label: "Sell Your Home", href: "/valuation" },
+          { label: "Sell Your Home", href: "/sellers" },
+          { label: "Get a Valuation", href: "/valuation" },
           { label: "Find an Estate Agent", href: "/agents" },
         ],
       },
@@ -274,6 +275,13 @@ export const NAV_ITEMS: NavItem[] = [
         links: [
           { label: "List a Rental", href: "/dashboard/landlord/properties" },
           { label: "Landlord Dashboard", href: "/dashboard/landlord" },
+        ],
+      },
+      {
+        heading: "Developers & Traders",
+        links: [
+          { label: "Developers", href: "/developers" },
+          { label: "Traders", href: "/traders" },
         ],
       },
       {
@@ -316,10 +324,10 @@ export const FOOTER_LINKS: FooterColumn[] = [
     heading: "Services",
     links: [
       { label: "Find Tradespeople", href: "/marketplace" },
+      { label: "Sellers", href: "/sellers" },
+      { label: "Developers", href: "/developers" },
+      { label: "Traders", href: "/traders" },
       { label: "Estate Agents", href: "/agents" },
-      { label: "Mortgage Brokers", href: "/services/mortgage-brokers" },
-      { label: "Surveyors", href: "/surveyors" },
-      { label: "Post a Job", href: "/post-a-job" },
     ],
   },
   {
@@ -336,8 +344,9 @@ export const FOOTER_LINKS: FooterColumn[] = [
     heading: "Company",
     links: [
       { label: "About", href: "/about" },
+      { label: "Pricing & Plans", href: "/pricing" },
+      { label: "Fee Transparency", href: "/fee-transparency" },
       { label: "Careers", href: "/careers" },
-      { label: "Press", href: "/press" },
       { label: "Contact", href: "/contact" },
       { label: "Blog", href: "/blog" },
       { label: "Help Centre", href: "/help" },
@@ -675,6 +684,10 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   { label: "Press", href: "/press", section: "Company", keywords: ["press", "media", "news"] },
   { label: "Contact", href: "/contact", section: "Company", keywords: ["contact", "support", "email"] },
   { label: "Pricing & Plans", href: "/pricing", section: "Company", keywords: ["pricing", "plans", "subscription"] },
+  { label: "Sellers", href: "/sellers", section: "Services", keywords: ["sellers", "sell", "listing", "completion"] },
+  { label: "Developers", href: "/developers", section: "Services", keywords: ["developers", "schemes", "new build", "investor"] },
+  { label: "Traders", href: "/traders", section: "Services", keywords: ["traders", "flippers", "off-market", "resale"] },
+  { label: "Fee Transparency", href: "/fee-transparency", section: "Company", keywords: ["fee", "commission", "transparency", "rates"] },
 
   // Public — Legal
   { label: "Legal Hub", href: "/legal", section: "Legal", keywords: ["legal", "terms", "privacy"] },
