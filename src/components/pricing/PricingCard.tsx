@@ -94,11 +94,19 @@ export function PricingCard(props: PricingCardProps) {
       : "border-neutral-200";
 
   async function handlePaidClick(): Promise<void> {
-    const payload: CheckoutCtaPayload = {
+    // /api/billing/checkout uses snake_case (price_id, mode, return_url).
+    // The extra camelCase fields (planId, segment, interval) ride along as
+    // analytics hints; the route ignores unknown keys.
+    const payload: CheckoutCtaPayload & {
+      readonly price_id: string;
+      readonly mode: "subscription" | "payment";
+    } = {
       planId,
       priceId: activePriceId,
       interval: activeInterval,
       segment,
+      price_id: activePriceId,
+      mode: pricingType === "one_off" ? "payment" : "subscription",
     };
     try {
       // Fire-and-forget — the public /pricing page can't complete checkout

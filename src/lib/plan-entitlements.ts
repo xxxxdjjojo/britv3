@@ -237,22 +237,29 @@ const PLAN_ENTITLEMENTS: Record<string, readonly FeatureKey[]> = {
 
 const LEGACY_PLAN_IDS: Record<string, string> = {
   agent_basic: "agent_performance",
-  agent_pro: "agent_professional",
   agent_ent: "agent_enterprise",
   provider_starter: "provider_member",
   provider_growth: "provider_professional",
+  // agent_pro intentionally NOT aliased — memo pivot v2 made it a first-class
+  // plan id (£99) in PLAN_ENTITLEMENTS. The pre-v1 alias to agent_professional
+  // would mislabel new £99 subscribers as the retired £297 tier.
 };
 
 /**
  * Get the set of features available to a given plan.
  * Returns empty set for null/unknown plans.
- * Resolves legacy plan IDs via LEGACY_PLAN_IDS alias map.
+ *
+ * Lookup order: PLAN_ENTITLEMENTS first (canonical), then LEGACY_PLAN_IDS
+ * (for pre-v1-rename subscriptions that haven't been migrated).
  */
 export function getEntitlementsForPlan(
   planId: string | null,
 ): ReadonlySet<FeatureKey> {
   if (!planId) return new Set();
-  const resolvedId = LEGACY_PLAN_IDS[planId] ?? planId;
+  const direct = PLAN_ENTITLEMENTS[planId];
+  if (direct) return new Set(direct);
+  const resolvedId = LEGACY_PLAN_IDS[planId];
+  if (!resolvedId) return new Set();
   const features = PLAN_ENTITLEMENTS[resolvedId];
   if (!features) return new Set();
   return new Set(features);
@@ -278,9 +285,17 @@ export function getMinimumPlanForFeature(
   feature: FeatureKey,
 ): string | null {
   const rolePrefixes: Record<string, string[]> = {
-    provider: ["provider_member", "provider_professional", "provider_elite"],
-    agent: ["agent_performance", "agent_professional", "agent_enterprise"],
-    landlord: ["landlord_ess", "landlord_pro"],
+    // Memo Pivot v2 — canonical (buyable) plan ids only. Legacy ids stay
+    // resolvable via getEntitlementsForPlan but are no longer surfaced as
+    // upgrade targets, since they're retired from /pricing.
+    provider: ["provider_listed", "provider_pro", "provider_elite"],
+    agent: ["agent_listed", "agent_pro", "agent_elite"],
+    landlord: [
+      "landlord_free",
+      "landlord_essential",
+      "landlord_pro",
+      "landlord_portfolio",
+    ],
   };
 
   const planIds = rolePrefixes[role];
