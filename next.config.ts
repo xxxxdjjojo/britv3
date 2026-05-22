@@ -66,7 +66,8 @@ const nextConfig: NextConfig = {
       { source: "/cookies", destination: "/legal/cookies", permanent: true },
       { source: "/accessibility", destination: "/legal/accessibility", permanent: true },
       { source: "/complaints", destination: "/legal/complaints", permanent: true },
-      { source: "/signup", destination: "/register", permanent: false },
+      // /signup is now a real route (memo pivot v2) — invite-only seed
+      // signup lives there. /register remains the canonical default.
       {
         source: "/dashboard/service_provider/:path*",
         destination: "/dashboard/provider/:path*",

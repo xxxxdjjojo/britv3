@@ -15,15 +15,15 @@ const SAMPLES: ReadonlyArray<{ service: string; postcode: string }> = [
 
 test.describe("Programmatic SEO routes", () => {
   for (const { service, postcode } of SAMPLES) {
-    test(`/services/${service}/${postcode} returns 200`, async ({ page }) => {
-      const response = await page.goto(`/services/${service}/${postcode}`);
+    test(`/services-near/${service}/${postcode} returns 200`, async ({ page }) => {
+      const response = await page.goto(`/services-near/${service}/${postcode}`);
       expect(response?.status() ?? 500).toBe(200);
     });
 
-    test(`/services/${service}/${postcode} mentions the postcode and service in copy`, async ({
+    test(`/services-near/${service}/${postcode} mentions the postcode and service in copy`, async ({
       page,
     }) => {
-      await page.goto(`/services/${service}/${postcode}`);
+      await page.goto(`/services-near/${service}/${postcode}`);
       const body = (await page.locator("body").innerText()).toLowerCase();
       expect(body).toContain(service.toLowerCase());
       expect(body).toContain(postcode.toLowerCase());
@@ -34,7 +34,7 @@ test.describe("Programmatic SEO routes", () => {
     const res = await request.get("/sitemap.xml");
     expect(res.status()).toBe(200);
     const xml = await res.text();
-    const matches = xml.match(/\/services\/[a-z-]+\/[A-Z0-9]+/g) ?? [];
+    const matches = xml.match(/\/services-near\/[a-z-]+\/[a-z0-9]+/g) ?? [];
     expect(matches.length).toBeGreaterThanOrEqual(100);
   });
 });

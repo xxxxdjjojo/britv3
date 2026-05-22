@@ -132,7 +132,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Lazy require so the matrix tree-shakes out of production if disabled.
   const { buildDefaultMatrix } = await import("@/lib/seo/postcode-service-matrix");
   const programmaticPages: MetadataRoute.Sitemap = buildDefaultMatrix().map((p) => ({
-    url: `${BASE_URL}/services/${p.service}/${p.postcode.toLowerCase()}`,
+    url: `${BASE_URL}/services-near/${p.service}/${p.postcode.toLowerCase()}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.5,
