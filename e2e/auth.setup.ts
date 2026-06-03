@@ -4,10 +4,12 @@ import { dirname } from "node:path";
 
 const TEST_USERS: Record<string, { email: string; password: string }> = {
   homebuyer: { email: "test-buyer@britestate.test", password: "TestPassword123!" },
+  renter: { email: "test-renter@britestate.test", password: "TestPassword123!" },
   seller: { email: "test-seller@britestate.test", password: "TestPassword123!" },
   landlord: { email: "test-landlord@britestate.test", password: "TestPassword123!" },
   agent: { email: "test-agent@britestate.test", password: "TestPassword123!" },
   provider: { email: "test-provider@britestate.test", password: "TestPassword123!" },
+  mortgage_broker: { email: "test-broker@britestate.test", password: "TestPassword123!" },
   admin: { email: "test-admin@britestate.test", password: "TestPassword123!" },
 };
 
