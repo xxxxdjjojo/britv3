@@ -57,6 +57,7 @@ export const PUBLIC_LINK_RENDER_ROUTES: LinkRenderRoute[] = [
   { group: "services", label: "Plumbers in London", path: "/services/tradespeople/plumbers/london" },
   { group: "services", label: "Estate Agents", path: "/agents" },
   { group: "services", label: "Mortgage Brokers", path: "/mortgage-brokers" },
+  { group: "services", label: "Mortgage Brokers Service", path: "/services/mortgage-brokers" },
   { group: "services", label: "Conveyancers", path: "/conveyancers" },
   { group: "services", label: "Surveyors", path: "/surveyors" },
   { group: "services", label: "Architects", path: "/architects" },

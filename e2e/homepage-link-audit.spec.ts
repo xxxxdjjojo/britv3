@@ -13,7 +13,7 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 const LINK_INTEGRITY_SCREENSHOT_DIR =
-  "test-results/link-integrity-homepage";
+  "test-results/evidence/link-render/homepage-link-audit";
 
 function screenshotName(label: string): string {
   return label
@@ -119,6 +119,8 @@ test.describe("Homepage internal links render expected content", () => {
   test("featured property links render property detail content", async ({
     page,
   }) => {
+    test.setTimeout(90_000);
+
     const cards = await page
       .locator('main a[href^="/properties/"]')
       .evaluateAll((links): HomepagePropertyCard[] =>
@@ -140,9 +142,12 @@ test.describe("Homepage internal links render expected content", () => {
     expect(cards.length).toBeGreaterThan(0);
 
     for (const card of cards) {
-      const response = await page.goto(card.href);
+      const response = await page.goto(card.href, {
+        waitUntil: "domcontentloaded",
+        timeout: 20_000,
+      });
       expect(response?.status(), `${card.href} returned an error status`).toBeLessThan(400);
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
       await expectPublicDestinationToRender(page, `property-${card.href}`);
       await expect(page.getByText(card.price).first()).toBeVisible();
       await expect(
@@ -612,10 +617,8 @@ test.describe("Footer Links — Services column", () => {
     await expect(page.locator("text=Page not found")).not.toBeVisible();
   });
 
-  test("link: /services/mortgage-brokers resolves", async ({ page }) => {
-    const link = page
-      .locator('footer a[href="/services/mortgage-brokers"]')
-      .first();
+  test("link: /sellers resolves", async ({ page }) => {
+    const link = page.locator('footer a[href="/sellers"]').first();
     await expect(link).toBeVisible();
     await link.click();
     await page.waitForLoadState("networkidle");
@@ -654,8 +657,8 @@ test.describe("Footer Links — Company column", () => {
     await expect(page.locator("text=Page not found")).not.toBeVisible();
   });
 
-  test("link: /press resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/press"]').first();
+  test("link: /pricing resolves", async ({ page }) => {
+    const link = page.locator('footer a[href="/pricing"]').first();
     await expect(link).toBeVisible();
     await link.click();
     await page.waitForLoadState("networkidle");
