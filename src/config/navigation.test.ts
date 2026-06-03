@@ -10,6 +10,7 @@ import {
   navLinkClasses,
   footerLinkClasses,
 } from "./navigation";
+import { savedDashboardPathForRole } from "@/lib/routes";
 
 const FORBIDDEN_CANONICAL_HREFS = [
   "/messages",
@@ -301,6 +302,22 @@ describe("canonical hrefs", () => {
         hrefs.some((href) => href.startsWith(`${forbiddenHref}/`)),
       ).toBe(false);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// role-aware quick links
+// ---------------------------------------------------------------------------
+
+describe("role-aware quick links", () => {
+  it("uses renderable saved destinations for every role", () => {
+    expect(savedDashboardPathForRole("homebuyer")).toBe("/dashboard/homebuyer/saved");
+    expect(savedDashboardPathForRole("renter")).toBe("/dashboard/renter/saved");
+    expect(savedDashboardPathForRole("seller")).toBe("/dashboard/seller/saved");
+    expect(savedDashboardPathForRole("landlord")).toBe("/dashboard/landlord/saved");
+    expect(savedDashboardPathForRole("agent")).toBe("/dashboard/agent/saved");
+    expect(savedDashboardPathForRole("service_provider")).toBe("/dashboard");
+    expect(savedDashboardPathForRole("mortgage_broker")).toBe("/dashboard");
   });
 });
 

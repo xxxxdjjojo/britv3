@@ -1,19 +1,23 @@
 import { mkdir } from "node:fs/promises";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 /**
  * Homepage Link Audit
  *
- * Verifies every internal link on the homepage resolves without a 404.
+ * Verifies homepage internal link sources resolve to rendering public pages.
  * External links (social media) are excluded.
- *
- * Tests are grouped by page section and use `.first()` to avoid strict-mode
- * violations when the same href appears in multiple places (e.g. /search in
- * header nav AND hero section).
  */
 
 const LINK_INTEGRITY_SCREENSHOT_DIR =
   "test-results/evidence/link-render/homepage-link-audit";
+const APP_ERROR_RE =
+  /Page not found|This page could not be found|Application error|Something went wrong/i;
+
+type DestinationOptions = Readonly<{
+  allowLoginPath?: boolean;
+  expectedPath?: string;
+  timeout?: number;
+}>;
 
 function screenshotName(label: string): string {
   return label
@@ -22,6 +26,10 @@ function screenshotName(label: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function captureLinkAuditScreenshot(
@@ -38,16 +46,86 @@ async function captureLinkAuditScreenshot(
 async function expectPublicDestinationToRender(
   page: Page,
   label: string,
+  options: DestinationOptions = {},
 ): Promise<void> {
   await captureLinkAuditScreenshot(page, label);
-  await expect(page.locator("body")).not.toContainText(
-    /Page not found|This page could not be found|Application error/i,
-  );
-  expect(new URL(page.url()).pathname, `${label} must not fall through to login`).not.toBe("/login");
+  await expect(page.locator("body")).not.toContainText(APP_ERROR_RE);
+
+  const pathname = new URL(page.url()).pathname;
+  if (options.expectedPath) {
+    expect(pathname, `${label} should land on ${options.expectedPath}`).toBe(
+      options.expectedPath,
+    );
+  }
+  if (!options.allowLoginPath) {
+    expect(pathname, `${label} must not fall through to login`).not.toBe(
+      "/login",
+    );
+  }
+
   await expect(
     page.getByRole("heading").first(),
     `${label} should render a visible page heading`,
   ).toBeVisible();
+}
+
+async function waitForPageToSettle(page: Page): Promise<void> {
+  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
+}
+
+async function openHomepage(page: Page): Promise<void> {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await waitForPageToSettle(page);
+}
+
+function pathForHref(href: string): string {
+  return new URL(href, "http://localhost").pathname;
+}
+
+async function gotoAndAssertPublicDestination(
+  page: Page,
+  href: string,
+  label: string,
+  options: DestinationOptions = {},
+): Promise<void> {
+  const response = await page.goto(href, {
+    waitUntil: "domcontentloaded",
+    timeout: options.timeout ?? 20_000,
+  });
+
+  expect(response?.status(), `${label} (${href}) returned an error status`).toBeLessThan(400);
+  await waitForPageToSettle(page);
+  await expectPublicDestinationToRender(page, label, {
+    allowLoginPath: options.allowLoginPath ?? pathForHref(href) === "/login",
+    expectedPath: options.expectedPath ?? pathForHref(href),
+  });
+}
+
+async function expectSourceLinkToRender(
+  page: Page,
+  link: Locator,
+  href: string,
+  label: string,
+): Promise<void> {
+  await expect(link, `${label} source link should be visible`).toBeVisible();
+  await expect(link, `${label} source link should keep its href`).toHaveAttribute(
+    "href",
+    href,
+  );
+  await gotoAndAssertPublicDestination(page, href, label);
+}
+
+function sectionByHeading(page: Page, heading: RegExp): Locator {
+  return page.locator("section").filter({
+    has: page.getByRole("heading", { name: heading }),
+  }).first();
+}
+
+function footerColumn(page: Page, heading: string): Locator {
+  return page
+    .locator("footer h4", { hasText: new RegExp(`^${escapeRegex(heading)}$`) })
+    .locator("xpath=..")
+    .first();
 }
 
 async function dismissCookieConsentBanner(page: Page): Promise<void> {
@@ -73,14 +151,51 @@ type HomepagePropertyCard = {
   location: string;
 };
 
+type SourceLinkCase = Readonly<{
+  href: string;
+  label: string;
+  name: RegExp;
+}>;
+
+function runSourceLinkGroup(
+  title: string,
+  cases: SourceLinkCase[],
+  getScope: (page: Page) => Locator,
+): void {
+  test.describe(title, () => {
+    test.beforeEach(async ({ page }) => {
+      await openHomepage(page);
+    });
+
+    for (const linkCase of cases) {
+      test(`link: ${linkCase.href} (${linkCase.label}) resolves`, async ({
+        page,
+      }) => {
+        const scope = getScope(page);
+        await expect(scope, `${title} source should be visible`).toBeVisible();
+
+        const link = scope
+          .locator(`a[href="${linkCase.href}"]`, { hasText: linkCase.name })
+          .first();
+
+        await expectSourceLinkToRender(
+          page,
+          link,
+          linkCase.href,
+          `${title}-${linkCase.label}-${linkCase.href}`,
+        );
+      });
+    }
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Strict public link integrity coverage
 // ---------------------------------------------------------------------------
 
 test.describe("Homepage internal links render expected content", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await openHomepage(page);
   });
 
   test("homepage blog card links render the matching article", async ({
@@ -105,10 +220,7 @@ test.describe("Homepage internal links render expected content", () => {
     expect(cards.length).toBeGreaterThan(0);
 
     for (const card of cards) {
-      const response = await page.goto(card.href);
-      expect(response?.status(), `${card.href} returned an error status`).toBeLessThan(400);
-      await page.waitForLoadState("networkidle");
-      await expectPublicDestinationToRender(page, `blog-${card.href}`);
+      await gotoAndAssertPublicDestination(page, card.href, `blog-${card.href}`);
       await expect(
         page.getByRole("heading", { name: card.title }).first(),
         `${card.href} should render homepage card title "${card.title}"`,
@@ -142,13 +254,7 @@ test.describe("Homepage internal links render expected content", () => {
     expect(cards.length).toBeGreaterThan(0);
 
     for (const card of cards) {
-      const response = await page.goto(card.href, {
-        waitUntil: "domcontentloaded",
-        timeout: 20_000,
-      });
-      expect(response?.status(), `${card.href} returned an error status`).toBeLessThan(400);
-      await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
-      await expectPublicDestinationToRender(page, `property-${card.href}`);
+      await gotoAndAssertPublicDestination(page, card.href, `property-${card.href}`);
       await expect(page.getByText(card.price).first()).toBeVisible();
       await expect(
         page.getByText(new RegExp(`${card.title}|${card.location}`, "i")).first(),
@@ -202,284 +308,98 @@ test.describe("Homepage internal links render expected content", () => {
     expect(publicLinks.size).toBeGreaterThan(0);
 
     for (const [href, label] of publicLinks) {
-      const response = await page.goto(href, { waitUntil: "domcontentloaded" });
-      expect(response?.status(), `${label} (${href}) returned an error status`).toBeLessThan(400);
-      await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
-      await expectPublicDestinationToRender(page, `mega-${label}-${href}`);
+      await gotoAndAssertPublicDestination(page, href, `mega-${label}-${href}`);
     }
   });
 });
 
 // ---------------------------------------------------------------------------
-// 1. Header Navigation
+// 1. Source-scoped homepage links
 // ---------------------------------------------------------------------------
 
-test.describe("Header Navigation", () => {
+runSourceLinkGroup(
+  "Header Auth Links",
+  [
+    { href: "/login", label: "Sign In", name: /^Sign In$/i },
+    { href: "/register", label: "List Property", name: /^List Property$/i },
+  ],
+  (page) => page.locator("header").first(),
+);
+
+runSourceLinkGroup(
+  "Hero Section",
+  [
+    { href: "/search?type=buy", label: "Buy tab", name: /^Buy$/i },
+    { href: "/search?type=rent", label: "Rent tab", name: /^Rent$/i },
+    {
+      href: "/search?type=find-services",
+      label: "Find Services tab",
+      name: /^Find Services$/i,
+    },
+    { href: "/search", label: "Search bar", name: /Search by school/i },
+  ],
+  (page) => sectionByHeading(page, /Find your perfect British home/i),
+);
+
+runSourceLinkGroup(
+  "Featured Properties Tabs",
+  [
+    { href: "/search?status=for-sale", label: "For Sale", name: /^For Sale$/i },
+    { href: "/search?status=to-rent", label: "To Rent", name: /^To Rent$/i },
+    {
+      href: "/search?status=new-builds",
+      label: "New Builds",
+      name: /^New Builds$/i,
+    },
+    { href: "/search", label: "View all properties", name: /View all properties/i },
+  ],
+  (page) => sectionByHeading(page, /Featured Properties/i),
+);
+
+runSourceLinkGroup(
+  "Service Category Cards",
+  [
+    {
+      href: "/services/tradespeople?category=plumber",
+      label: "Plumbers",
+      name: /Plumbers/i,
+    },
+    {
+      href: "/services/tradespeople?category=electrician",
+      label: "Electricians",
+      name: /Electricians/i,
+    },
+    {
+      href: "/services/tradespeople?category=builder",
+      label: "Builders",
+      name: /Builders/i,
+    },
+    { href: "/agents", label: "Estate Agents", name: /Estate Agents/i },
+    {
+      href: "/services/mortgage-brokers",
+      label: "Mortgage Brokers",
+      name: /Mortgage Brokers/i,
+    },
+    { href: "/services/surveyors", label: "Surveyors", name: /Surveyors/i },
+    { href: "/services", label: "Browse all services", name: /Browse all services/i },
+  ],
+  (page) => sectionByHeading(page, /Trusted professionals/i),
+);
+
+runSourceLinkGroup(
+  "Blog Section",
+  [{ href: "/blog", label: "Read more on our blog", name: /Read more on our blog/i }],
+  (page) => sectionByHeading(page, /Latest from the Blog/i),
+);
+
+test.describe("Blog Section — Article Cards", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await openHomepage(page);
   });
 
-  test("link: /search?type=buy (Buy) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/search?type=buy"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search?type=rent (Rent) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/search?type=rent"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /services (Find Services) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/services"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /valuation (Valuations) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/valuation"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /blog (Advice) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/blog"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /login (Sign In) resolves", async ({ page }) => {
-    let link = page.locator('a[href="/login"]:visible').first();
-    if ((await link.count()) === 0) {
-      await page.getByRole("button", { name: /open menu/i }).click();
-      link = page.locator('[role="dialog"] a[href="/login"]').first();
-    }
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /register?role=seller (List Your Property) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/register?role=seller"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 2. Hero Section
-// ---------------------------------------------------------------------------
-
-test.describe("Hero Section", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-  });
-
-  test("link: hero Buy tab (/search?type=buy) resolves", async ({ page }) => {
-    // The hero tab may share the same href as the nav link; .first() is fine here
-    const link = page.locator('a[href="/search?type=buy"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: hero Rent tab (/search?type=rent) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/search?type=rent"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: hero Find Services tab (/search?type=find-services) resolves", async ({
-    page,
-  }) => {
-    const link = page
-      .locator('a[href="/search?type=find-services"]')
-      .first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: hero search bar (/search) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/search"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 3. Featured Properties Tabs
-// ---------------------------------------------------------------------------
-
-test.describe("Featured Properties Tabs", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-  });
-
-  test("link: /search?status=for-sale (For Sale tab) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/search?status=for-sale"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search?status=to-rent (To Rent tab) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/search?status=to-rent"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search?status=new-builds (New Builds tab) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/search?status=new-builds"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search (View all) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/search"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 4. Service Category Cards
-// ---------------------------------------------------------------------------
-
-test.describe("Service Category Cards", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-  });
-
-  test("link: /services/tradespeople?category=plumber (Plumbers) resolves", async ({
-    page,
-  }) => {
-    const link = page
-      .locator('a[href="/services/tradespeople?category=plumber"]')
-      .first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /services/tradespeople?category=electrician (Electricians) resolves", async ({
-    page,
-  }) => {
-    const link = page
-      .locator('a[href="/services/tradespeople?category=electrician"]')
-      .first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /services/tradespeople?category=builder (Builders) resolves", async ({
-    page,
-  }) => {
-    const link = page
-      .locator('a[href="/services/tradespeople?category=builder"]')
-      .first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /agents (Estate Agents) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/agents"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /services/mortgage-brokers (Mortgage Brokers) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/services/mortgage-brokers"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /services/surveyors (Surveyors) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/services/surveyors"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /services (Browse all services) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/services"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 5. Blog Section
-// ---------------------------------------------------------------------------
-
-test.describe("Blog Section", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-  });
-
-  test("blog post links all resolve (no 404s)", async ({ page }) => {
-    // Collect all /blog/... links on the page (excludes the /blog index link)
-    const blogPostLinks = page.locator('a[href^="/blog/"]');
-    const count = await blogPostLinks.count();
-    // There should be at least 1 blog post link; if the section is absent skip
-    if (count === 0) {
-      test.skip();
-      return;
-    }
+  test("blog post links all render real articles", async ({ page }) => {
+    const blogSection = sectionByHeading(page, /Latest from the Blog/i);
+    const blogPostLinks = blogSection.locator('a[href^="/blog/"]');
     const hrefs = Array.from(
       new Set(
         await blogPostLinks.evaluateAll((links) =>
@@ -490,341 +410,116 @@ test.describe("Blog Section", () => {
       ),
     );
 
-    // Test each blog post destination in turn
+    expect(hrefs.length).toBeGreaterThan(0);
+
     for (const href of hrefs) {
-      await page.goto(href);
-      await page.waitForLoadState("networkidle");
-      await expect(page.locator("text=Page not found")).not.toBeVisible();
+      await gotoAndAssertPublicDestination(page, href, `blog-card-${href}`);
     }
   });
-
-  test("link: /blog (Read more on our blog) resolves", async ({ page }) => {
-    const link = page.locator('a[href="/blog"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
 });
 
-// ---------------------------------------------------------------------------
-// 6. CTA Banner
-// ---------------------------------------------------------------------------
+runSourceLinkGroup(
+  "CTA Banner",
+  [
+    {
+      href: "/register?role=seller",
+      label: "List Your Property",
+      name: /^List Your Property$/i,
+    },
+    { href: "/services", label: "Find a Professional", name: /^Find a Professional$/i },
+  ],
+  (page) => sectionByHeading(page, /Ready to get started/i),
+);
 
-test.describe("CTA Banner", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-  });
+runSourceLinkGroup(
+  "Footer Links — Properties column",
+  [
+    { href: "/search?type=buy", label: "Buy", name: /^Buy$/i },
+    { href: "/search?type=rent", label: "Rent", name: /^Rent$/i },
+    { href: "/search?type=new-builds", label: "New Builds", name: /^New Builds$/i },
+    { href: "/search?type=commercial", label: "Commercial", name: /^Commercial$/i },
+    { href: "/sold-prices", label: "Sold Prices", name: /^Sold Prices$/i },
+  ],
+  (page) => footerColumn(page, "Properties"),
+);
 
-  test("link: /register?role=seller (List Your Property CTA) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/register?role=seller"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
+runSourceLinkGroup(
+  "Footer Links — Services column",
+  [
+    { href: "/marketplace", label: "Find Tradespeople", name: /^Find Tradespeople$/i },
+    { href: "/sellers", label: "Sellers", name: /^Sellers$/i },
+    { href: "/developers", label: "Developers", name: /^Developers$/i },
+    { href: "/traders", label: "Traders", name: /^Traders$/i },
+    { href: "/agents", label: "Estate Agents", name: /^Estate Agents$/i },
+  ],
+  (page) => footerColumn(page, "Services"),
+);
 
-  test("link: /services (Find a Professional CTA) resolves", async ({
-    page,
-  }) => {
-    const link = page.locator('a[href="/services"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
+runSourceLinkGroup(
+  "Footer Links — Tools column",
+  [
+    {
+      href: "/tools/stamp-duty-calculator",
+      label: "Stamp Duty Calculator",
+      name: /^Stamp Duty Calculator$/i,
+    },
+    {
+      href: "/tools/mortgage-calculator",
+      label: "Mortgage Calculator",
+      name: /^Mortgage Calculator$/i,
+    },
+    { href: "/valuation", label: "Valuation", name: /^Valuation$/i },
+    { href: "/areas", label: "Area Guides", name: /^Area Guides$/i },
+    { href: "/market-trends", label: "Market Trends", name: /^Market Trends$/i },
+  ],
+  (page) => footerColumn(page, "Tools"),
+);
 
-// ---------------------------------------------------------------------------
-// 7. Footer Links
-// ---------------------------------------------------------------------------
+runSourceLinkGroup(
+  "Footer Links — Company column",
+  [
+    { href: "/about", label: "About", name: /^About$/i },
+    { href: "/pricing", label: "Pricing & Plans", name: /^Pricing & Plans$/i },
+    {
+      href: "/fee-transparency",
+      label: "Fee Transparency",
+      name: /^Fee Transparency$/i,
+    },
+    { href: "/careers", label: "Careers", name: /^Careers$/i },
+    { href: "/contact", label: "Contact", name: /^Contact$/i },
+    { href: "/blog", label: "Blog", name: /^Blog$/i },
+    { href: "/help", label: "Help Centre", name: /^Help Centre$/i },
+  ],
+  (page) => footerColumn(page, "Company"),
+);
 
-test.describe("Footer Links — Properties column", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    await page.locator("footer").scrollIntoViewIfNeeded();
-  });
+runSourceLinkGroup(
+  "Footer Links — Legal column",
+  [
+    { href: "/legal", label: "Legal Hub", name: /^Legal Hub$/i },
+    { href: "/legal/terms", label: "Terms", name: /^Terms$/i },
+    { href: "/legal/privacy", label: "Privacy", name: /^Privacy$/i },
+    { href: "/legal/cookies", label: "Cookies", name: /^Cookies$/i },
+    { href: "/legal/accessibility", label: "Accessibility", name: /^Accessibility$/i },
+    { href: "/legal/complaints", label: "Complaints", name: /^Complaints$/i },
+  ],
+  (page) => footerColumn(page, "Legal"),
+);
 
-  test("link: /search?type=buy resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/search?type=buy"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search?type=rent resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/search?type=rent"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search?type=new-builds resolves", async ({ page }) => {
-    const link = page
-      .locator('footer a[href="/search?type=new-builds"]')
-      .first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /search?type=commercial resolves", async ({ page }) => {
-    const link = page
-      .locator('footer a[href="/search?type=commercial"]')
-      .first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /sold-prices resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/sold-prices"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-test.describe("Footer Links — Services column", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    await page.locator("footer").scrollIntoViewIfNeeded();
-  });
-
-  test("link: /marketplace resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/marketplace"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /agents resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/agents"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /sellers resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/sellers"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /valuation resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/valuation"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-test.describe("Footer Links — Company column", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    await page.locator("footer").scrollIntoViewIfNeeded();
-  });
-
-  test("link: /about resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/about"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /careers resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/careers"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /pricing resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/pricing"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /contact resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/contact"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /blog (Company column) resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/blog"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /help resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/help"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-test.describe("Footer Links — Legal column", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    await page.locator("footer").scrollIntoViewIfNeeded();
-  });
-
-  test("link: /legal resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/legal"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /legal/terms resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/legal/terms"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /legal/privacy resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/legal/privacy"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /legal/cookies resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/legal/cookies"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /legal/accessibility resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/legal/accessibility"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /legal/complaints resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/legal/complaints"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
-
-test.describe("Footer Links — Area Guides column", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    await page.locator("footer").scrollIntoViewIfNeeded();
-  });
-
-  test("link: /areas/london resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/london"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/manchester resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/manchester"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/birmingham resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/birmingham"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/bristol resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/bristol"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/leeds resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/leeds"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/edinburgh resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/edinburgh"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/oxford resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/oxford"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas/cambridge resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas/cambridge"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-
-  test("link: /areas (all area guides) resolves", async ({ page }) => {
-    const link = page.locator('footer a[href="/areas"]').first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await page.waitForLoadState("networkidle");
-    await expect(page.locator("text=Page not found")).not.toBeVisible();
-  });
-});
+runSourceLinkGroup(
+  "Footer Links — Popular Areas column",
+  [
+    { href: "/areas/london", label: "London", name: /^London$/i },
+    { href: "/areas/manchester", label: "Manchester", name: /^Manchester$/i },
+    { href: "/areas/birmingham", label: "Birmingham", name: /^Birmingham$/i },
+    { href: "/areas/bristol", label: "Bristol", name: /^Bristol$/i },
+    { href: "/areas/leeds", label: "Leeds", name: /^Leeds$/i },
+    { href: "/areas/edinburgh", label: "Edinburgh", name: /^Edinburgh$/i },
+    { href: "/areas/oxford", label: "Oxford", name: /^Oxford$/i },
+    { href: "/areas/cambridge", label: "Cambridge", name: /^Cambridge$/i },
+  ],
+  (page) => footerColumn(page, "Popular Areas"),
+);
 
 // ---------------------------------------------------------------------------
 // 8. Interactive Elements (non-navigation)
@@ -832,8 +527,7 @@ test.describe("Footer Links — Area Guides column", () => {
 
 test.describe("Interactive Elements", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await openHomepage(page);
   });
 
   test("Cookie Preferences button is present and clickable", async ({
@@ -859,11 +553,11 @@ test.describe("Interactive Elements", () => {
       await expect(altBtn).toBeVisible();
       await altBtn.click();
       // After click, either a modal appears or the page stays the same — no navigation should 404
-      await expect(page.locator("text=Page not found")).not.toBeVisible();
+      await expect(page.locator("body")).not.toContainText(APP_ERROR_RE);
     } else {
       await expect(cookieBtn).toBeVisible();
       await cookieBtn.click();
-      await expect(page.locator("text=Page not found")).not.toBeVisible();
+      await expect(page.locator("body")).not.toContainText(APP_ERROR_RE);
     }
   });
 

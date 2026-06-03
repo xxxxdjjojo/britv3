@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MobileNav } from "./MobileNav";
-import { dashboardPathForRole } from "@/lib/routes";
+import { savedDashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
 
 let mockActiveRole: UserRole | null = null;
@@ -53,6 +53,10 @@ describe("MobileNav", () => {
     open: true,
     onOpenChange: vi.fn(),
   };
+
+  beforeEach(() => {
+    mockActiveRole = null;
+  });
 
   it("renders when open=true", () => {
     render(<MobileNav {...defaultProps} />);
@@ -116,13 +120,13 @@ describe("MobileNav", () => {
     "agent",
     "service_provider",
     "mortgage_broker",
-  ] as UserRole[])("saved quick link targets the active %s saved route", (role) => {
+  ] as UserRole[])("saved quick link targets the valid %s saved destination", (role) => {
     mockActiveRole = role;
     render(<MobileNav {...defaultProps} />);
 
     expect(screen.getByRole("link", { name: /^saved$/i })).toHaveAttribute(
       "href",
-      dashboardPathForRole(role, "saved"),
+      savedDashboardPathForRole(role),
     );
   });
 

@@ -1,6 +1,6 @@
 import { mkdir } from "node:fs/promises";
 import { ROLE_NAV_ITEMS, TAB_CONFIG } from "../src/config/navigation";
-import { dashboardPathForRole } from "../src/lib/routes";
+import { dashboardPathForRole, savedDashboardPathForRole } from "../src/lib/routes";
 import type { UserRole as AppRole } from "../src/types/auth";
 import { test, expect, type Page, type UserRole as AuthRole } from "./fixtures/auth";
 
@@ -72,8 +72,21 @@ async function capture(page: Page, name: string): Promise<void> {
 
 async function expectNoAppError(page: Page): Promise<void> {
   await expect(page.locator("body")).not.toContainText(
-    /Page not found|This page could not be found|Application error/i,
+    /Page not found|This page could not be found|Application error|Something went wrong/i,
   );
+}
+
+async function expectDashboardDestinationToRender(
+  page: Page,
+  href: string,
+  screenshotName: string,
+): Promise<void> {
+  const response = await page.goto(href, { waitUntil: "domcontentloaded" });
+  expect(response?.status(), `${href} returned an error status`).toBeLessThan(400);
+  await page.waitForLoadState("load", { timeout: 10_000 }).catch(() => undefined);
+  await expectNoAppError(page);
+  await expect(page.getByRole("heading").first()).toBeVisible();
+  await capture(page, screenshotName);
 }
 
 for (const roleCase of DASHBOARD_CASES) {
@@ -111,6 +124,14 @@ for (const roleCase of DASHBOARD_CASES) {
       }
 
       await expectNoAppError(authenticatedPage);
+
+      for (const item of ROLE_NAV_ITEMS[roleCase.appRole]) {
+        await expectDashboardDestinationToRender(
+          authenticatedPage,
+          item.href,
+          `${roleCase.slug}-desktop-${item.label}`,
+        );
+      }
     });
 
     test("mobile bottom tabs render configured links", async ({
@@ -139,6 +160,14 @@ for (const roleCase of DASHBOARD_CASES) {
       }
 
       await expectNoAppError(authenticatedPage);
+
+      for (const tab of TAB_CONFIG[roleCase.appRole]) {
+        await expectDashboardDestinationToRender(
+          authenticatedPage,
+          tab.href,
+          `${roleCase.slug}-mobile-${tab.label}`,
+        );
+      }
     });
 
     test("authenticated mobile drawer Saved quick link routes to role-specific saved page", async ({
@@ -149,7 +178,9 @@ for (const roleCase of DASHBOARD_CASES) {
         "Public drawer quick links are validated on the mobile project.",
       );
 
-      const expectedHref = dashboardPathForRole(roleCase.appRole, "saved");
+      const expectedHref = savedDashboardPathForRole(roleCase.appRole);
+      const expectedFinalPath =
+        expectedHref === "/dashboard" ? roleCase.basePath : expectedHref;
 
       await authenticatedPage.goto("/");
       await authenticatedPage.getByLabel(/open menu/i).click();
@@ -160,7 +191,9 @@ for (const roleCase of DASHBOARD_CASES) {
       await capture(authenticatedPage, `${roleCase.slug}-mobile-drawer-before`);
 
       await savedLink.click();
-      await expect(authenticatedPage).toHaveURL(new RegExp(`${escapeRegExp(expectedHref)}$`));
+      await expect(authenticatedPage).toHaveURL(
+        new RegExp(`${escapeRegExp(expectedFinalPath)}$`),
+      );
       await expectNoAppError(authenticatedPage);
       await capture(authenticatedPage, `${roleCase.slug}-mobile-saved-after`);
     });

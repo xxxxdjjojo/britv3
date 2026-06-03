@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/hooks/useRole";
-import { dashboardPathForRole, ROUTES } from "@/lib/routes";
+import { ROUTES, savedDashboardPathForRole } from "@/lib/routes";
 
 type SavedBadgeProps = Readonly<{
   count?: number;
@@ -14,7 +14,7 @@ type SavedBadgeProps = Readonly<{
 
 export function SavedBadge({ count = 0, className, transparent = false }: SavedBadgeProps) {
   const { activeRole } = useRole();
-  const savedHref = activeRole ? dashboardPathForRole(activeRole, "saved") : ROUTES.dashboard.root;
+  const savedHref = activeRole ? savedDashboardPathForRole(activeRole) : ROUTES.dashboard.root;
 
   return (
     <Link

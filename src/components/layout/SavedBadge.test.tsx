@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { SavedBadge } from "./SavedBadge";
-import { dashboardPathForRole, ROUTES } from "@/lib/routes";
+import { ROUTES, savedDashboardPathForRole } from "@/lib/routes";
 import type { UserRole } from "@/types/auth";
 
 let mockActiveRole: UserRole | null = null;
@@ -47,12 +47,12 @@ describe("SavedBadge", () => {
     "agent",
     "service_provider",
     "mortgage_broker",
-  ] as UserRole[])("links %s users to their saved dashboard route", (role) => {
+  ] as UserRole[])("links %s users to their valid saved destination", (role) => {
     mockActiveRole = role;
     render(<SavedBadge />);
 
     expect(
       screen.getByRole("link", { name: /saved properties/i }),
-    ).toHaveAttribute("href", dashboardPathForRole(role, "saved"));
+    ).toHaveAttribute("href", savedDashboardPathForRole(role));
   });
 });
