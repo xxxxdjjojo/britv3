@@ -2,11 +2,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { CommandPalette } from "./CommandPalette";
 import { CommandPaletteProvider } from "@/contexts/CommandPaletteContext";
+import type { UserRole } from "@/types/auth";
 
 // Mock next/navigation
 const mockPush = vi.fn();
+let mockActiveRole: UserRole | null = null;
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
+}));
+
+vi.mock("@/hooks/useRole", () => ({
+  useRole: () => ({ activeRole: mockActiveRole }),
 }));
 
 function renderPalette() {
@@ -20,6 +27,7 @@ function renderPalette() {
 describe("CommandPalette", () => {
   beforeEach(() => {
     mockPush.mockClear();
+    mockActiveRole = null;
   });
 
   it("opens on Cmd+K keypress (context state changes)", () => {
@@ -157,5 +165,31 @@ describe("CommandPalette", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith("/sold-prices");
+  });
+
+  it("hides role-scoped dashboard commands when no active role is present", () => {
+    renderPalette();
+
+    act(() => {
+      fireEvent.keyDown(document, { key: "k", metaKey: true });
+    });
+
+    expect(screen.getByText("Property Search")).toBeInTheDocument();
+    expect(screen.queryByText("Homebuyer Overview")).not.toBeInTheDocument();
+    expect(screen.queryByText("Agent Overview")).not.toBeInTheDocument();
+  });
+
+  it("shows only dashboard commands for the active role", () => {
+    mockActiveRole = "homebuyer";
+    renderPalette();
+
+    act(() => {
+      fireEvent.keyDown(document, { key: "k", metaKey: true });
+    });
+
+    expect(screen.getByText("Homebuyer Overview")).toBeInTheDocument();
+    expect(screen.getByText("Saved Properties")).toBeInTheDocument();
+    expect(screen.queryByText("Agent Overview")).not.toBeInTheDocument();
+    expect(screen.queryByText("Provider Overview")).not.toBeInTheDocument();
   });
 });

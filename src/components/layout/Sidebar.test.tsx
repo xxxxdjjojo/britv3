@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Sidebar } from "./Sidebar";
+import { ROLE_NAV_ITEMS } from "@/config/navigation";
+import type { UserRole } from "@/types/auth";
+
+let mockActiveRole: UserRole | null = "homebuyer";
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -16,7 +20,7 @@ vi.mock("next/navigation", () => ({
 
 // Mock useRole
 vi.mock("@/hooks/useRole", () => ({
-  useRole: () => ({ activeRole: "homebuyer" as const }),
+  useRole: () => ({ activeRole: mockActiveRole }),
 }));
 
 // Mock useAuth
@@ -58,6 +62,7 @@ vi.mock("@/components/ui/button", () => ({
 
 describe("Sidebar", () => {
   beforeEach(() => {
+    mockActiveRole = "homebuyer";
     vi.stubGlobal("sessionStorage", {
       getItem: vi.fn().mockReturnValue(null),
       setItem: vi.fn(),
@@ -126,4 +131,19 @@ describe("Sidebar", () => {
     render(<Sidebar />);
     expect(screen.getByText("Test User")).toBeInTheDocument();
   });
+
+  it.each(Object.keys(ROLE_NAV_ITEMS) as UserRole[])(
+    "renders every configured dashboard link for %s",
+    (role) => {
+      mockActiveRole = role;
+      render(<Sidebar />);
+
+      for (const item of ROLE_NAV_ITEMS[role]) {
+        const link = screen.getByText(item.label).closest("a");
+
+        expect(link).toBeInTheDocument();
+        expect(link).toHaveAttribute("href", item.href);
+      }
+    },
+  );
 });
