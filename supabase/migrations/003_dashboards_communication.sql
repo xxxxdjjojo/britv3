@@ -97,9 +97,13 @@ CREATE INDEX idx_platform_events_entity ON public.platform_events (entity_id, cr
 -- Query pattern: events by actor for activity feeds
 CREATE INDEX idx_platform_events_actor ON public.platform_events (actor_id, created_at DESC);
 
--- Partial index for cleanup: events older than 90 days
-CREATE INDEX idx_platform_events_cleanup ON public.platform_events (created_at)
-  WHERE created_at < NOW() - INTERVAL '90 days';
+-- Index for cleanup queries on old events. NOTE: this was originally a
+-- partial index with `WHERE created_at < NOW() - INTERVAL '90 days'`, which
+-- Postgres rejects (index predicates must be immutable; NOW() is not) — the
+-- invalid statement made this migration unrunnable and blocked `supabase
+-- start` on fresh databases. A plain b-tree on created_at serves the same
+-- cleanup scans.
+CREATE INDEX idx_platform_events_cleanup ON public.platform_events (created_at);
 
 -- ---------------------------------------------------------------------------
 -- 5. market_pricing -- market intelligence for AI quote drafting
