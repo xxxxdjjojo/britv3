@@ -57,9 +57,20 @@ test.describe("Property page — planning applications section", () => {
     ).toBeVisible();
 
     // Disclaimer always renders under the section, with or without live data.
+    // The section streams in via <Suspense> and the server-side PlanIt fetch
+    // can take up to 10s, so allow time for the stream to resolve. Scope to
+    // the section: during streaming Next.js keeps a hidden template copy of
+    // the resolved content at the end of <body>, which would otherwise trip
+    // strict mode with a second (hidden) match.
+    const heading = page.getByRole("heading", {
+      level: 2,
+      name: PLANNING_HEADING,
+    });
     await expect(
-      page.getByText(/verify with the local planning authority/i),
-    ).toBeVisible();
+      heading
+        .locator("..")
+        .getByText(/verify with the local planning authority/i),
+    ).toBeVisible({ timeout: 15_000 });
   });
 
   test("planning links open in new tab", async ({ page }) => {
@@ -72,6 +83,15 @@ test.describe("Property page — planning applications section", () => {
     // <div><h2/>…content…</div> block pattern used in PropertyDetail).
     const section = heading.locator("..");
     const links = section.locator("a");
+
+    // Wait for the Suspense stream to resolve (server-side PlanIt fetch has a
+    // 10s timeout): either application rows or the empty/unavailable state.
+    await expect(
+      links
+        .first()
+        .or(section.getByText(/no planning applications|currently unavailable/i)),
+    ).toBeVisible({ timeout: 15_000 });
+
     const linkCount = await links.count();
 
     if (linkCount > 0) {
@@ -167,37 +187,28 @@ test.describe("Listing wizard — planning permission status is required", () =>
     );
     expect(patchRes.ok()).toBe(true);
 
+    // Planning permission status lives on step 2 (Details) with the other
+    // NTSELAT material information, as a required pill group that gates the
+    // Continue button.
     await page.goto(
-      `/dashboard/seller/listings/create?step=4&id=${listingId}`,
+      `/dashboard/seller/listings/create?step=2&id=${listingId}`,
     );
     if (page.url().includes("/login")) {
       test.skip(true, "Auth not available — no test users");
       return;
     }
 
-    // We are on the Description step.
     await expect(
-      page.getByRole("heading", { name: /AI Description/i }),
+      page.getByText(/planning permission status/i).first(),
     ).toBeVisible();
 
-    // Fill the description so planning status is the only blocker.
-    await page
-      .locator("textarea")
-      .first()
-      .fill("A lovely three-bedroom terraced house close to local amenities.");
+    // Bedrooms/bathrooms were seeded via the PATCH above, so the planning
+    // declaration is the only thing blocking Continue.
+    const continueButton = page.getByRole("button", { name: /^continue$/i });
+    await expect(continueButton).toBeDisabled();
 
-    // Attempt to advance WITHOUT selecting a planning permission status.
-    await page.getByRole("button", { name: /^continue$/i }).click();
-    await expect(
-      page.getByText(/planning permission status is required/i),
-    ).toBeVisible();
-
-    // Selecting a status clears the validation error.
-    await page
-      .getByLabel(/planning permission status/i)
-      .selectOption({ label: "None known" });
-    await expect(
-      page.getByText(/planning permission status is required/i),
-    ).toBeHidden();
+    // Declaring a status unblocks the step.
+    await page.getByRole("button", { name: /^none known$/i }).click();
+    await expect(continueButton).toBeEnabled();
   });
 });

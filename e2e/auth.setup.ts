@@ -23,7 +23,7 @@ for (const [role, creds] of Object.entries(TEST_USERS)) {
     try {
       await page.goto("/login");
       await page.getByLabel("Email").fill(creds.email);
-      await page.getByLabel("Password").fill(creds.password);
+      await page.getByLabel("Password", { exact: true }).fill(creds.password);
       await page.getByRole("button", { name: /sign in|log in/i }).click();
       await page.waitForURL("**/dashboard**", { timeout: 10_000 });
 
