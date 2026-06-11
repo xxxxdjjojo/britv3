@@ -127,9 +127,27 @@ function parseDistance(raw: number | string | null | undefined): number {
   return isNaN(n) || n < 0 ? 0 : n;
 }
 
-/** Prefer the council's own page (source_url), then PlanIt's link/url. */
+/** Only http(s) URLs may reach an href — blocks javascript:/data: XSS. */
+function isSafeHttpUrl(candidate: string): boolean {
+  try {
+    const parsed = new URL(candidate);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Prefer the council's own page (source_url), then PlanIt's link/url.
+ * Candidates with a non-http(s) scheme are skipped (external data is
+ * rendered into anchor hrefs).
+ */
 function pickUrl(record: PlanItRecord): string | null {
-  return record.source_url || record.link || record.url || null;
+  const candidates = [record.source_url, record.link, record.url];
+  for (const candidate of candidates) {
+    if (candidate && isSafeHttpUrl(candidate)) return candidate;
+  }
+  return null;
 }
 
 /**

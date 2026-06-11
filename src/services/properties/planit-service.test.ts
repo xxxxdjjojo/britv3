@@ -264,6 +264,59 @@ describe("fetchNearbyPlanningApplications — links render properly", () => {
     expect(result).toHaveLength(1);
     expect(result![0].reference).toBe("KEEP/2");
   });
+
+  it("rejects non-http(s) url schemes (XSS via javascript:/data: hrefs)", async () => {
+    // Arrange
+    fetchMock.mockResolvedValue(
+      jsonResponse({
+        records: [
+          makeRecord({
+            uid: "EVIL/1",
+            source_url: "javascript:alert(1)",
+            link: null,
+            url: null,
+          }),
+          makeRecord({
+            uid: "EVIL/2",
+            source_url: "data:text/html,<script>alert(1)</script>",
+            link: null,
+            url: null,
+          }),
+          makeRecord({ uid: "KEEP/3" }),
+        ],
+      }),
+    );
+
+    // Act
+    const result = await fetchNearbyPlanningApplications(LAT, LNG);
+
+    // Assert — unsafe-scheme records are skipped entirely.
+    expect(result).toHaveLength(1);
+    expect(result![0].reference).toBe("KEEP/3");
+  });
+
+  it("falls back to the next candidate when source_url has an unsafe scheme", async () => {
+    // Arrange
+    fetchMock.mockResolvedValue(
+      jsonResponse({
+        records: [
+          makeRecord({
+            uid: "FALLBACK/1",
+            source_url: "javascript:alert(1)",
+            link: "https://www.planit.org.uk/planapplic/FALLBACK1/",
+            url: null,
+          }),
+        ],
+      }),
+    );
+
+    // Act
+    const result = await fetchNearbyPlanningApplications(LAT, LNG);
+
+    // Assert
+    expect(result).toHaveLength(1);
+    expect(result![0].url).toBe("https://www.planit.org.uk/planapplic/FALLBACK1/");
+  });
 });
 
 // ---------------------------------------------------------------------------
