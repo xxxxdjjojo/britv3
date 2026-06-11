@@ -196,7 +196,12 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
     }
 
     const result = await response.json();
-    setDraftListingId(result.listing.id);
+    // API envelope is { data: { listing } }; tolerate the legacy bare shape.
+    const draftId = result.data?.listing?.id ?? result.listing?.id;
+    if (!draftId) {
+      throw new Error("Draft created but no listing id returned");
+    }
+    setDraftListingId(draftId);
   }, [draftListingId, mode, form]);
 
   const handleNext = useCallback(async () => {
