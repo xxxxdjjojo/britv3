@@ -57,6 +57,7 @@ const PROPERTY_FIELDS = new Set([
   "tenure",
   "lease_remaining_years",
   "council_tax_band",
+  "planning_permission_status",
   "year_built",
   "new_build",
 ]);
@@ -191,6 +192,19 @@ export async function updateListing(
   }
 
   const { propertyData, listingData } = splitFields(input as unknown as Record<string, unknown>);
+
+  // Publish guard: planning permission status must be declared before going live
+  if (listingData.status === "active") {
+    const effectivePlanningStatus =
+      propertyData.planning_permission_status ??
+      (existing.properties as Property | null)?.planning_permission_status;
+
+    if (effectivePlanningStatus == null) {
+      throw new Error(
+        "planning_permission_status is required to publish a listing",
+      );
+    }
+  }
 
   let updatedProperty = existing.properties as Property;
   let updatedListing = existing as Listing;

@@ -18,6 +18,12 @@ import type { ListingFormValues } from "../ListingForm";
 
 const EPC_RATINGS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const COUNCIL_TAX_BANDS = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
+const PLANNING_PERMISSION_OPTIONS = [
+  { value: "granted", label: "Granted" },
+  { value: "pending", label: "Decision pending" },
+  { value: "refused", label: "Refused" },
+  { value: "none_known", label: "None known" },
+] as const;
 
 export function Description(
   props: Readonly<{ form: UseFormReturn<ListingFormValues> }>,
@@ -193,6 +199,45 @@ export function Description(
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Planning Permission Status */}
+      <div className="space-y-2">
+        <Label htmlFor="planning_permission_status">
+          Planning permission status
+        </Label>
+        <Select
+          value={watch("planning_permission_status") ?? ""}
+          onValueChange={(val) =>
+            setValue(
+              "planning_permission_status",
+              val as ListingFormValues["planning_permission_status"],
+              { shouldValidate: true },
+            )
+          }
+        >
+          <SelectTrigger
+            id="planning_permission_status"
+            aria-invalid={!!errors.planning_permission_status}
+          >
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            {PLANNING_PERMISSION_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.planning_permission_status && (
+          <p className="text-xs text-error">
+            {errors.planning_permission_status.message}
+          </p>
+        )}
+        <p className="text-xs text-neutral-400">
+          Required under NTSELAT material information rules.
+        </p>
       </div>
     </div>
   );

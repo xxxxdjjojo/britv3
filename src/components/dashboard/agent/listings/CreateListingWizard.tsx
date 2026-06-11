@@ -29,6 +29,7 @@ type WizardData = {
   bedrooms: number;
   bathrooms: number;
   floor_area: number | null;
+  planning_permission_status: string;
   // Step 3: Photos (handled separately via ref)
   // Step 4: Price
   price: number;
@@ -130,6 +131,7 @@ export function CreateListingWizard() {
       bedrooms: 1,
       bathrooms: 1,
       floor_area: null,
+      planning_permission_status: "",
       price: 0,
       pricing_qualifier: "",
       description: "",
@@ -142,7 +144,7 @@ export function CreateListingWizard() {
 
   const STEP_FIELDS: Array<(keyof WizardData)[]> = [
     ["postcode", "address_line_1", "city"],
-    ["property_type", "bedrooms", "bathrooms"],
+    ["property_type", "bedrooms", "bathrooms", "planning_permission_status"],
     [], // photos — no required fields
     ["price", "pricing_qualifier"],
     ["description"],
@@ -316,6 +318,38 @@ export function CreateListingWizard() {
                 placeholder="Optional"
               />
             </Field>
+            <Field
+              label="Planning Permission Status"
+              error={errors.planning_permission_status?.message}
+            >
+              <input
+                type="hidden"
+                {...register("planning_permission_status", {
+                  required: "Planning permission status is required",
+                })}
+              />
+              <Select
+                value={values.planning_permission_status}
+                onValueChange={(v) =>
+                  setValue("planning_permission_status", v ?? "", {
+                    shouldValidate: true,
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="granted">Granted</SelectItem>
+                  <SelectItem value="pending">Decision pending</SelectItem>
+                  <SelectItem value="refused">Refused</SelectItem>
+                  <SelectItem value="none_known">None known</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Required under NTSELAT material information rules.
+              </p>
+            </Field>
           </div>
         );
 
@@ -443,6 +477,15 @@ export function CreateListingWizard() {
                 [
                   "Floor Area",
                   values.floor_area ? `${values.floor_area} sq ft` : "Not provided",
+                ],
+                [
+                  "Planning Permission",
+                  {
+                    granted: "Permission granted",
+                    pending: "Decision pending",
+                    refused: "Refused",
+                    none_known: "None known",
+                  }[values.planning_permission_status] ?? "Not set",
                 ],
                 [
                   "Price",

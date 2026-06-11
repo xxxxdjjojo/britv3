@@ -23,7 +23,7 @@ import { Review } from "./ListingFormSteps/Review";
 
 // -- Zod schema ---------------------------------------------------------------
 
-const listingFormSchema = z.object({
+export const listingFormSchema = z.object({
   // Step 1: Property Details
   listing_type: z.enum(["sale", "rent"]),
   address_line1: z.string().min(1, "Address is required"),
@@ -50,6 +50,9 @@ const listingFormSchema = z.object({
   epc_rating: z.enum(["A", "B", "C", "D", "E", "F", "G"]).optional().nullable(),
   epc_score: z.number().min(1).max(100).optional().nullable(),
   council_tax_band: z.string().optional().nullable(),
+  planning_permission_status: z.enum(["granted", "pending", "refused", "none_known"], {
+    message: "Planning permission status is required",
+  }),
 
   // Step 3: Pricing
   price: z.number({ message: "Price is required" }).min(1, "Price must be positive"),
@@ -67,7 +70,7 @@ const STEP_FIELDS: (keyof ListingFormValues)[][] = [
   // Step 0: Property Details
   ["listing_type", "address_line1", "city", "postcode", "property_type", "bedrooms", "bathrooms"],
   // Step 1: Description
-  ["title", "description"],
+  ["title", "description", "planning_permission_status"],
   // Step 2: Pricing
   ["price"],
   // Step 3: Media (no form fields to validate)
@@ -115,6 +118,7 @@ function mapInitialData(data: ListingWithProperty): Partial<ListingFormValues> {
     epc_rating: property.epc_rating,
     epc_score: property.epc_score,
     council_tax_band: property.council_tax_band,
+    planning_permission_status: property.planning_permission_status ?? undefined,
     price: listing.price,
     price_qualifier: listing.price_qualifier,
     rent_frequency: listing.rent_frequency,
@@ -262,6 +266,7 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
         epc_rating: values.epc_rating || null,
         epc_score: values.epc_score || null,
         council_tax_band: values.council_tax_band || null,
+        planning_permission_status: values.planning_permission_status,
         price: values.price,
         price_qualifier: values.price_qualifier || null,
         rent_frequency: values.rent_frequency || null,
@@ -314,6 +319,7 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
         epc_rating: values.epc_rating || null,
         epc_score: values.epc_score || null,
         council_tax_band: values.council_tax_band || null,
+        planning_permission_status: values.planning_permission_status || null,
         price: values.price || 0,
         price_qualifier: values.price_qualifier || null,
         rent_frequency: values.rent_frequency || null,
