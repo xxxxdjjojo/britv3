@@ -47,6 +47,12 @@ export type RentFrequency = "weekly" | "monthly" | "yearly";
 
 export type EpcRating = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
+export type PlanningPermissionStatus =
+  | "granted"
+  | "pending"
+  | "refused"
+  | "none_known";
+
 // -- Table row types --------------------------------------------------------
 
 /** Mirrors public.properties table */
@@ -72,6 +78,7 @@ export type Property = Readonly<{
   tenure: TenureType | null;
   lease_remaining_years: number | null;
   council_tax_band: string | null;
+  planning_permission_status: PlanningPermissionStatus | null;
   year_built: number | null;
   new_build: boolean;
   created_at: Date;
@@ -232,6 +239,7 @@ export type CreatePropertyInput = Readonly<{
   tenure?: TenureType | null;
   lease_remaining_years?: number | null;
   council_tax_band?: string | null;
+  planning_permission_status?: PlanningPermissionStatus | null;
   year_built?: number | null;
   new_build?: boolean;
 }>;

@@ -81,6 +81,7 @@ const mockProperty: Property = {
   tenure: null,
   lease_remaining_years: null,
   council_tax_band: null,
+  planning_permission_status: null,
   year_built: null,
   new_build: false,
   created_at: new Date(),

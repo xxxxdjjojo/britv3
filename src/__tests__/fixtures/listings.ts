@@ -34,6 +34,7 @@ export function createMockProperty(overrides?: Partial<Property>): Property {
     tenure: "freehold",
     lease_remaining_years: null,
     council_tax_band: "D",
+    planning_permission_status: null,
     year_built: 1935,
     new_build: false,
     created_at: new Date("2026-02-15T10:00:00Z"),
