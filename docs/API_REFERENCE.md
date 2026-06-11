@@ -98,7 +98,7 @@ Complete list of all APIs required to run the platform at 100%.
 | GET | `/api/areas/:postcode/crime` | Get crime statistics |
 | GET | `/api/areas/:postcode/transport` | Get transport links and commute times |
 | GET | `/api/areas/:postcode/flood-risk` | Get flood risk data |
-| GET | `/api/areas/:postcode/planning` | Get nearby planning applications |
+| — | ~~`/api/areas/:postcode/planning`~~ | Superseded — planning applications are server-rendered on the property detail page via `src/services/properties/planit-service.ts` (PlanIt API, lat/lng radius search, 24h Redis cache) |
 | GET | `/api/areas/:postcode/sold-prices` | Get recent sold prices in area |
 
 ---
