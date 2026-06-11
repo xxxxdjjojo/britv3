@@ -17,6 +17,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
+    "test:db": "RUN_DB_TESTS=1 vitest run --config vitest.db.config.ts db-tests --testTimeout=120000",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "analyze": "ANALYZE=true pnpm build",
