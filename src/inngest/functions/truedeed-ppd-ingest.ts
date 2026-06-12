@@ -41,8 +41,11 @@ import {
 import type { PpdIngestCounts } from "@/services/truedeed/ppd-ingest-service";
 
 // Fixed source: HMLR PPD monthly update (new version). See SECURITY NOTE.
+// HTTPS S3 REST endpoint deliberately (the s3-website endpoint HMLR links to
+// is HTTP-only; this data feeds invoice candidates, so transport integrity
+// matters).
 const PPD_MONTHLY_UPDATE_URL =
-  "http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-monthly-update-new-version.csv";
+  "https://prod.publicdata.landregistry.gov.uk.s3.eu-west-1.amazonaws.com/pp-monthly-update-new-version.csv";
 
 /** Rows accumulated per applyPpdRows call (the service chunks writes at 500). */
 const APPLY_BATCH_SIZE = 5000;
