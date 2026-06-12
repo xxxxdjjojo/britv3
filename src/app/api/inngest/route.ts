@@ -17,6 +17,19 @@ import {
 } from "@/inngest/functions/truedeed-ppd-match";
 import { truedeedAuditQuery } from "@/inngest/functions/truedeed-audit-query";
 import { truedeedReleaseHeldCandidates } from "@/inngest/functions/truedeed-release-held-candidates";
+import {
+  truedeedInvoiceCreated,
+  truedeedInvoicePaymentFailed,
+  truedeedInvoiceReminder,
+  truedeedInvoiceFinalNotice,
+  truedeedInvoiceSuspended,
+  truedeedInvoicePaid,
+  truedeedMandateBroken,
+} from "@/inngest/functions/truedeed-invoice-emails";
+import {
+  truedeedDunningTick,
+  truedeedInvoiceCandidateApproved,
+} from "@/inngest/functions/truedeed-dunning-tick";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -36,5 +49,14 @@ export const { GET, POST, PUT } = serve({
     truedeedPpdMatchLookback,
     truedeedAuditQuery,
     truedeedReleaseHeldCandidates,
+    truedeedInvoiceCreated,
+    truedeedInvoicePaymentFailed,
+    truedeedInvoiceReminder,
+    truedeedInvoiceFinalNotice,
+    truedeedInvoiceSuspended,
+    truedeedInvoicePaid,
+    truedeedMandateBroken,
+    truedeedDunningTick,
+    truedeedInvoiceCandidateApproved,
   ],
 });
