@@ -5,6 +5,10 @@ import {
   submitOffer,
   isServiceError,
 } from "@/services/offers/offers-service";
+import {
+  recordIntroduction,
+  recordIntroductionEvent,
+} from "@/services/truedeed/introduction-service";
 
 export async function GET() {
   try {
@@ -96,6 +100,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Analytics tracked client-side via hooks
+
+    // Truedeed §5 capture hook — ensure the introduction exists, then log
+    // the offer relay. Fire-and-forget, never breaks the offer.
+    try {
+      await recordIntroduction({
+        applicantId: user.id,
+        listingId,
+        contactType: "enquiry",
+      });
+      await recordIntroductionEvent({
+        applicantId: user.id,
+        listingId,
+        eventType: "offer_relayed",
+        payload: { offerId: result.offerId },
+      });
+    } catch (hookErr) {
+      console.warn("[truedeed] introduction capture failed (offer)", {
+        error_type: hookErr instanceof Error ? hookErr.name : "unknown",
+      });
+    }
 
     return NextResponse.json({ offerId: result.offerId }, { status: 201 });
   } catch (err) {

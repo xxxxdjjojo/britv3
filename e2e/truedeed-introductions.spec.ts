@@ -19,7 +19,13 @@
 // contact) so failures are feature-absence, not setup problems.
 
 import { test, expect } from "./fixtures/auth";
-import type { APIRequestContext, Browser, BrowserContext } from "@playwright/test";
+import type {
+  APIRequestContext,
+  Browser,
+  BrowserContext,
+  Locator,
+  Page,
+} from "@playwright/test";
 import { isAuthenticated } from "./fixtures/helpers";
 
 const AGENT_AUTH = "e2e/.auth/agent.json";
@@ -151,13 +157,57 @@ async function sendBuyerEnquiry(
       },
     },
   );
-  if (res.status() === 429 && listing.wasReused) {
+  if (res.ok()) return;
+
+  // The contact route is limited per *IP* (5/10min), which this suite can
+  // exhaust on its own. The messages surface carries the same §5 capture
+  // hook but is limited per *user* — fall back to it so the test stays
+  // deterministic regardless of which capture surface fires.
+  if (res.status() === 429) {
+    const msgRes = await buyerRequest.post("/api/messages", {
+      data: {
+        recipient_id: agentId,
+        content:
+          "Hi — I'm interested in this property and would like to arrange a viewing. (Truedeed E2E, message surface)",
+        context_type: "listing",
+        context_id: listing.listingId,
+      },
+    });
+    expect(
+      msgRes.ok(),
+      `buyer message POST failed: ${msgRes.status()} ${await msgRes.text()}`,
+    ).toBe(true);
     return;
   }
   expect(
     res.ok(),
     `buyer contact POST failed: ${res.status()} ${await res.text()}`,
   ).toBe(true);
+}
+
+/**
+ * The rebuttal deadline is stamped asynchronously (Inngest notify function →
+ * mark_introduction_notified), so after the introduction row appears the
+ * deadline can lag by a few seconds. Reload until the row carries a date.
+ */
+async function waitForRowWithDeadline(
+  page: Page,
+  applicantName: string,
+): Promise<Locator> {
+  const row = page.getByRole("row").filter({ hasText: applicantName }).first();
+  await expect(row).toBeVisible({ timeout: 15_000 });
+  await expect(async () => {
+    await page.reload();
+    const fresh = page
+      .getByRole("row")
+      .filter({ hasText: applicantName })
+      .first();
+    await expect(fresh).toBeVisible();
+    await expect(fresh.getByText(DATE_PATTERN).first()).toBeVisible({
+      timeout: 1_000,
+    });
+  }).toPass({ timeout: 45_000, intervals: [2_000] });
+  return page.getByRole("row").filter({ hasText: applicantName }).first();
 }
 
 // ---------------------------------------------------------------------------
@@ -199,11 +249,10 @@ test.describe("Truedeed — agent introductions ledger", () => {
 
       // …and a ledger row for this buyer: applicant name, Active status
       // badge, and a rebuttal deadline date.
-      const row = page
-        .getByRole("row")
-        .filter({ hasText: buyerProfile.displayName })
-        .first();
-      await expect(row).toBeVisible();
+      const row = await waitForRowWithDeadline(
+        page,
+        buyerProfile.displayName,
+      );
       await expect(row.getByText(/active/i).first()).toBeVisible();
       await expect(row.getByText(DATE_PATTERN).first()).toBeVisible();
     } finally {
@@ -230,6 +279,15 @@ test.describe("Truedeed — agent introductions ledger", () => {
     await expect(
       page.getByRole("heading", { name: /introductions/i }),
     ).toBeVisible();
+
+    // The Dispute button only renders once the async notify step has stamped
+    // the rebuttal deadline — wait for any row to carry one.
+    await expect(async () => {
+      await page.reload();
+      await expect(
+        page.getByRole("button", { name: /dispute/i }).first(),
+      ).toBeVisible({ timeout: 1_000 });
+    }).toPass({ timeout: 45_000, intervals: [2_000] });
 
     // Act — open the dispute modal from the first open introduction.
     await page.getByRole("button", { name: /dispute/i }).first().click();

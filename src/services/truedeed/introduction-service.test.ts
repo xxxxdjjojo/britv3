@@ -107,8 +107,7 @@ function createSupabaseMock(overrides?: {
       overrides?.profileSelect ??
       ok({
         id: APPLICANT_ID,
-        full_name: "Jane Buyer",
-        email: "jane.buyer@example.com",
+        display_name: "Jane Buyer",
       }),
   });
   const introductions = createTableChain({
@@ -138,8 +137,23 @@ function createSupabaseMock(overrides?: {
     }
   });
 
-  const supabase = { from, rpc: vi.fn().mockResolvedValue(ok()) };
-  return { supabase, from, listings, profiles, introductions, statusHistory, auditLog, events };
+  // The real profiles table has no email column — the service resolves the
+  // applicant's email via the auth admin API (auth.users is the source of
+  // truth for email).
+  const getUserById = vi.fn().mockResolvedValue({
+    data: { user: { id: APPLICANT_ID, email: "jane.buyer@example.com" } },
+    error: null,
+  });
+
+  const supabase = {
+    from,
+    rpc: vi.fn().mockResolvedValue(ok()),
+    auth: { admin: { getUserById } },
+  };
+  return {
+    supabase, from, listings, profiles, introductions, statusHistory,
+    auditLog, events, getUserById,
+  };
 }
 
 beforeEach(() => {
