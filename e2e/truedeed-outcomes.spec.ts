@@ -56,29 +56,28 @@ async function getProfile(
   };
 }
 
-type SeededListing = { listingId: string; wasReused: boolean };
+type SeededListing = {
+  listingId: string;
+  addressLine1: string;
+  wasReused: boolean;
+};
 
 /**
- * Seed an active listing owned by the test agent via the canonical
- * POST /api/listings body — reuse-first, same as the Phase 1 suite, because
- * the contact API is rate limited (5 requests / 10 min / IP).
+ * Seed a FRESH active listing owned by the test agent. Unlike the Phase 1
+ * suite this never reuses an existing listing: the outcome flow is one-shot
+ * per introduction (a reused listing means a reused introduction whose
+ * outcome was already reported by a previous run/project, turning the
+ * report into an invalid_state 409 and leaving the admin queue empty). The
+ * unique address also lets assertions scope to THIS run's row. Enquiries use
+ * the per-user /api/messages fallback, so the per-IP contact limit is moot.
  */
 async function seedActiveAgentListing(
   agentRequest: APIRequestContext,
 ): Promise<SeededListing> {
-  const listRes = await agentRequest.get("/api/listings?status=active");
-  if (listRes.ok()) {
-    const listJson = (await listRes.json()) as {
-      data?: Array<{ listing?: { id?: string } }>;
-    };
-    const existing = (listJson.data ?? [])[0]?.listing?.id;
-    if (existing) {
-      return { listingId: existing, wasReused: true };
-    }
-  }
+  const uniqueAddress = `${Date.now() % 1_000_000} Outcome Row`;
 
   const baseBody = {
-    address_line1: "9 Outcome Row",
+    address_line1: uniqueAddress,
     city: "London",
     county: "Greater London",
     postcode: "SW1A 1AA",
@@ -118,7 +117,7 @@ async function seedActiveAgentListing(
   };
   const id = json.data?.listing?.id;
   expect(id, "create listing response missing listing id").toBeTruthy();
-  return { listingId: id!, wasReused: false };
+  return { listingId: id!, addressLine1: uniqueAddress, wasReused: false };
 }
 
 /**
@@ -212,12 +211,14 @@ test.describe.serial("Truedeed — outcome reporting and invoice candidates", ()
     ).toBeVisible();
 
     // The introduction row is written synchronously but can lag a reload —
-    // poll until the row carries its Report outcome affordance.
+    // poll until THIS run's row (scoped by its unique address — the buyer
+    // name appears on rows from earlier runs too) carries its Report
+    // outcome affordance.
     await expect(async () => {
       await page.reload();
       const row = page
         .getByRole("row")
-        .filter({ hasText: buyerDisplayName })
+        .filter({ hasText: listing.addressLine1 })
         .first();
       await expect(row).toBeVisible({ timeout: 1_000 });
       await expect(
@@ -227,7 +228,7 @@ test.describe.serial("Truedeed — outcome reporting and invoice candidates", ()
 
     await page
       .getByRole("row")
-      .filter({ hasText: buyerDisplayName })
+      .filter({ hasText: listing.addressLine1 })
       .first()
       .getByRole("button", { name: /report outcome/i })
       .click();
@@ -244,11 +245,11 @@ test.describe.serial("Truedeed — outcome reporting and invoice candidates", ()
       .last()
       .click();
 
-    // Assert — confirmation toast or the row flipping to Completed.
+    // Assert — confirmation toast or THIS run's row flipping to Completed.
     const confirmation = page.getByText(/reported/i).first();
     const completedRow = page
       .getByRole("row")
-      .filter({ hasText: buyerDisplayName })
+      .filter({ hasText: listing.addressLine1 })
       .first()
       .getByText(/completed/i)
       .first();
@@ -279,6 +280,13 @@ test.describe.serial("Truedeed — outcome reporting and invoice candidates", ()
   });
 
   test("reject requires a note", async ({ browser }) => {
+    // Queue-mutating tests run on a single project: chromium and mobile run
+    // in parallel against ONE shared admin queue, so "first card" actions
+    // would race across projects.
+    test.skip(
+      test.info().project.name !== "chromium",
+      "admin queue mutations are single-project to avoid cross-project races",
+    );
     // Arrange — the previous test left a pending candidate in the queue.
     const adminContext = await openRoleContext(browser, ADMIN_AUTH);
     try {
@@ -302,6 +310,10 @@ test.describe.serial("Truedeed — outcome reporting and invoice candidates", ()
   });
 
   test("admin approve flow", async ({ browser }) => {
+    test.skip(
+      test.info().project.name !== "chromium",
+      "admin queue mutations are single-project to avoid cross-project races",
+    );
     // Arrange
     const adminContext = await openRoleContext(browser, ADMIN_AUTH);
     try {

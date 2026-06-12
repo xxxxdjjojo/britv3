@@ -48,14 +48,29 @@ export type IntroductionRow = AgentIntroduction & {
   underReview?: boolean;
 };
 
+/** Statuses on which an agent can report (or update) an outcome. */
+const OUTCOME_REPORTABLE_STATUSES: ReadonlySet<IntroductionStatus> = new Set([
+  "active",
+  "converted_sstc",
+  "converted_exchanged",
+  "converted_completed",
+]);
+
 type Props = Readonly<{
   introductions: IntroductionRow[];
   onSelect: (id: string) => void;
   /** Optional dedicated dispute handler; falls back to onSelect. */
   onDispute?: (id: string) => void;
+  /** When provided, qualifying rows show a "Report outcome" button. */
+  onReportOutcome?: (id: string) => void;
 }>;
 
-export function IntroductionsTable({ introductions, onSelect, onDispute }: Props) {
+export function IntroductionsTable({
+  introductions,
+  onSelect,
+  onDispute,
+  onReportOutcome,
+}: Props) {
   if (introductions.length === 0) {
     return (
       <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
@@ -75,6 +90,7 @@ export function IntroductionsTable({ introductions, onSelect, onDispute }: Props
           <TableHead>Occurred</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Rebuttal window</TableHead>
+          {onReportOutcome && <TableHead>Outcome</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -99,6 +115,23 @@ export function IntroductionsTable({ introductions, onSelect, onDispute }: Props
                   onDispute={onDispute ?? onSelect}
                 />
               </TableCell>
+              {onReportOutcome && (
+                <TableCell>
+                  {OUTCOME_REPORTABLE_STATUSES.has(intro.status) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onReportOutcome(intro.id);
+                      }}
+                    >
+                      Report outcome
+                    </Button>
+                  )}
+                </TableCell>
+              )}
             </TableRow>
           );
         })}

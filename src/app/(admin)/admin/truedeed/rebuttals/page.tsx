@@ -7,6 +7,10 @@ export const metadata = {
   title: "Truedeed Rebuttals - Admin - Britestate",
 };
 
+// Live moderation state — never serve a cached render (the page reads no
+// dynamic API, so Next would otherwise cache the first RSC output).
+export const dynamic = "force-dynamic";
+
 export default async function AdminTruedeedRebuttalsPage() {
   let items: PendingRebuttal[] = [];
 

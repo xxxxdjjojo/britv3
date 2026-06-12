@@ -64,3 +64,47 @@ export type PendingRebuttal = {
   submittedAt: string;
   branchName: string;
 };
+
+/** Agent-reported deal outcome (reported_outcomes.outcome). */
+export type OutcomeType =
+  | "offer_accepted"
+  | "exchanged"
+  | "completed"
+  | "fell_through"
+  | "tenancy_commenced"
+  | "tenancy_abandoned";
+
+/** Input for outcome-service reportOutcome (agent outcome-report form). */
+export type ReportOutcomeInput = {
+  introductionId: string;
+  reportedBy: string;
+  outcome: OutcomeType;
+  completionDate?: Date;
+  agreedPricePence?: number;
+};
+
+/**
+ * Item shape for the admin invoice-candidate review queue
+ * (admin/truedeed/candidates): candidate + introduction facts + outcome.
+ */
+export type CandidateReviewItem = {
+  candidateId: string;
+  source: "agent_report" | "audit_match";
+  status: "pending_review" | "on_hold_branch_query";
+  amountPence: number | null;
+  vatPence: number | null;
+  holdExpiresAt: string | null;
+  introduction: {
+    applicantName: string;
+    occurredAt: string;
+    notifiedAt: string | null;
+    rebuttalDeadline: string | null;
+    listingAddress: string;
+    eventsCount: number;
+  };
+  outcome: {
+    outcome: OutcomeType;
+    completionDate: string | null;
+    agreedPricePence: number | null;
+  } | null;
+};

@@ -79,7 +79,7 @@ const CANDIDATE_ROW = {
     rebuttal_deadline: "2026-06-19T17:00:00.000Z",
     listing: {
       property: {
-        address_line_1: "12 Synthetic Street",
+        address_line1: "12 Synthetic Street",
         city: "London",
         postcode: "SW1A 1AA",
       },
@@ -96,7 +96,7 @@ const CANDIDATE_ROW = {
 const HELD_CANDIDATE_ROW = {
   ...CANDIDATE_ROW,
   id: HELD_CANDIDATE_ID,
-  source: "land_registry_match",
+  source: "audit_match",
   status: "on_hold_branch_query",
   hold_expires_at: "2026-06-20T10:00:00.000Z",
   reported_outcome: null,
@@ -231,7 +231,7 @@ describe("listPendingCandidates", () => {
     const held = result!.find((c) => c.candidateId === HELD_CANDIDATE_ID);
     expect(held).toMatchObject({
       candidateId: HELD_CANDIDATE_ID,
-      source: "land_registry_match",
+      source: "audit_match",
       status: "on_hold_branch_query",
       outcome: null,
       holdExpiresAt: "2026-06-20T10:00:00.000Z",
