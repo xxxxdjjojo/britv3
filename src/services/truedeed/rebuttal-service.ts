@@ -103,11 +103,18 @@ export async function submitRebuttal(
       return { ok: false, error: "no_evidence" };
     }
 
-    // 5. Upload evidence — paths namespaced by introduction id.
+    // 5. Upload evidence — paths namespaced by introduction id. The client
+    // filename is untrusted: strip any directory components and reduce it to
+    // a safe character set so it can never traverse out of the
+    // introduction's evidence folder (storage keys are evidence references).
     const storage = supabase.storage.from(EVIDENCE_BUCKET);
     const storagePaths: string[] = [];
     for (const [index, file] of files.entries()) {
-      const path = `${introductionId}/${Date.now()}-${index}-${file.name}`;
+      const safeName =
+        (file.name.split(/[\\/]/).pop() ?? "evidence")
+          .replace(/[^A-Za-z0-9._-]/g, "_")
+          .replace(/^\.+/, "_") || "evidence";
+      const path = `${introductionId}/${Date.now()}-${index}-${safeName}`;
       const { error: uploadError } = await storage.upload(path, file);
       if (uploadError) return { ok: false, error: "upload_failed" };
       storagePaths.push(path);

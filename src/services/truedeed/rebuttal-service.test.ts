@@ -265,6 +265,39 @@ describe("submitRebuttal — success", () => {
     }
   });
 
+  it("sanitises client filenames: traversal and special characters cannot escape the introduction's folder", async () => {
+    const { upload } = arm(createSupabaseMock());
+
+    const hostile = [
+      new File(["x"], "../../other-intro/escape.pdf", {
+        type: "application/pdf",
+      }),
+      new File(["x"], "..\\windows\\esc ape%00.pdf", {
+        type: "application/pdf",
+      }),
+      new File(["x"], "...hidden.pdf", { type: "application/pdf" }),
+    ];
+
+    const result = await submitRebuttal({
+      introductionId: INTRO_ID,
+      userId: AGENT_ID,
+      evidenceDatedAt: new Date("2026-05-20T00:00:00.000Z"),
+      files: hostile,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(upload).toHaveBeenCalledTimes(3);
+    for (const call of upload.mock.calls) {
+      const path = String(call[0]);
+      // Exactly one folder level — the introduction id — and a key made only
+      // of safe characters that cannot start with a dot.
+      expect(path).toMatch(
+        new RegExp(`^${INTRO_ID}/[A-Za-z0-9_][A-Za-z0-9._-]*$`),
+      );
+      expect(path).not.toContain("..");
+    }
+  });
+
   it("inserts the rebuttals row with evidence_storage_paths, writes the audit log, and returns the rebuttalId", async () => {
     const { rebuttals, auditLog } = arm(createSupabaseMock());
 
