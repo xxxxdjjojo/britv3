@@ -10,6 +10,13 @@ import { gdprUserPurge } from "@/inngest/functions/gdpr-user-purge";
 import { truedeedNotifyIntroduction } from "@/inngest/functions/truedeed-notify-introduction";
 import { truedeedHashAnchor } from "@/inngest/functions/truedeed-hash-anchor";
 import { truedeedExpireIntroductions } from "@/inngest/functions/truedeed-expire-introductions";
+import { truedeedPpdIngest } from "@/inngest/functions/truedeed-ppd-ingest";
+import {
+  truedeedPpdMatch,
+  truedeedPpdMatchLookback,
+} from "@/inngest/functions/truedeed-ppd-match";
+import { truedeedAuditQuery } from "@/inngest/functions/truedeed-audit-query";
+import { truedeedReleaseHeldCandidates } from "@/inngest/functions/truedeed-release-held-candidates";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -24,5 +31,10 @@ export const { GET, POST, PUT } = serve({
     truedeedNotifyIntroduction,
     truedeedHashAnchor,
     truedeedExpireIntroductions,
+    truedeedPpdIngest,
+    truedeedPpdMatch,
+    truedeedPpdMatchLookback,
+    truedeedAuditQuery,
+    truedeedReleaseHeldCandidates,
   ],
 });
