@@ -78,7 +78,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden flex-col border-r border-border/60 bg-surface lg:flex transition-all duration-200 ease-out",
+        "sticky top-14 hidden h-[calc(100vh-3.5rem)] flex-col self-start overflow-y-auto border-r border-border/60 bg-surface lg:flex transition-all duration-200 ease-out",
         collapsed ? "w-16" : "w-64",
       )}
     >

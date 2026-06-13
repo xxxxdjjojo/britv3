@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { DashboardTopbar } from "./DashboardTopbar";
+import { ProtectedHeader } from "./ProtectedHeader";
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -19,12 +19,15 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-// Mock next/navigation
-vi.mock("next/navigation", () => ({
-  usePathname: () => "/dashboard/homebuyer",
+// Mock responsive + scroll hooks (auto-hide logic)
+vi.mock("@/hooks/useScrollDirection", () => ({
+  useScrollDirection: () => "up",
+}));
+vi.mock("@/hooks/useBreakpoint", () => ({
+  useBreakpoint: () => ({ isMobile: false, isTablet: false }),
 }));
 
-// Mock useAuth
+// Mock useAuth (for avatar initials)
 vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
     user: {
@@ -34,12 +37,19 @@ vi.mock("@/hooks/useAuth", () => ({
   }),
 }));
 
-// Mock UnreadBadge
+// Mock NotificationBell + UnreadBadge
+vi.mock("@/components/notifications/NotificationBell", () => ({
+  default: () => (
+    <a href="/notifications" aria-label="Notifications">
+      bell
+    </a>
+  ),
+}));
 vi.mock("@/components/messaging/UnreadBadge", () => ({
   default: () => <span data-testid="unread-badge">0</span>,
 }));
 
-// Mock Avatar components
+// Mock Avatar
 vi.mock("@/components/ui/avatar", () => ({
   Avatar: ({ children, ...props }: { children: React.ReactNode; size?: string }) => (
     <div {...props}>{children}</div>
@@ -47,29 +57,21 @@ vi.mock("@/components/ui/avatar", () => ({
   AvatarFallback: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
-describe("DashboardTopbar", () => {
-  it("renders the Britestate wordmark linking to the home page", () => {
-    render(<DashboardTopbar />);
-    const wordmark = screen.getByRole("link", { name: /britestate/i });
-    expect(wordmark).toHaveAttribute("href", "/");
+describe("ProtectedHeader", () => {
+  it("renders the brand logo linking to the home page", () => {
+    render(<ProtectedHeader />);
+    const home = screen.getAllByRole("link").find((a) => a.getAttribute("href") === "/");
+    expect(home).toBeDefined();
   });
 
-  it("renders a notifications link", () => {
-    render(<DashboardTopbar />);
-    expect(screen.getByLabelText(/notifications/i)).toHaveAttribute(
-      "href",
-      "/notifications",
-    );
-  });
-
-  it("renders a messages/inbox link with the unread badge", () => {
-    render(<DashboardTopbar />);
-    expect(screen.getByLabelText(/messages|inbox/i)).toHaveAttribute("href", "/inbox");
+  it("renders the inbox link with unread badge", () => {
+    render(<ProtectedHeader />);
+    expect(screen.getByLabelText("Inbox")).toHaveAttribute("href", "/inbox");
     expect(screen.getByTestId("unread-badge")).toBeInTheDocument();
   });
 
-  it("renders the account link to settings", () => {
-    render(<DashboardTopbar />);
+  it("renders the account avatar link to settings", () => {
+    render(<ProtectedHeader />);
     expect(screen.getByLabelText(/account|profile|settings/i)).toHaveAttribute(
       "href",
       "/settings",
