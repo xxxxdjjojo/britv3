@@ -87,9 +87,10 @@ function SwipeableConversationRow(
 
   return (
     <div className="relative overflow-hidden rounded-lg">
-      {/* Archive action revealed behind the row */}
+      {/* Archive action revealed behind the row (only while swiping) */}
       <div
-        className="absolute right-0 inset-y-0 flex items-center bg-destructive px-4 text-destructive-foreground text-sm font-medium"
+        className="absolute right-0 inset-y-0 flex items-center rounded-r-lg bg-destructive px-4 text-destructive-foreground text-sm font-medium transition-opacity"
+        style={{ opacity: offset < 0 ? 1 : 0 }}
         aria-hidden="true"
       >
         Archive
@@ -157,7 +158,7 @@ function ConversationRow(
         onSelect(conv.id, otherUserId);
       }}
       className={cn(
-        "flex items-center gap-3 w-full text-left rounded-xl px-3 py-3 transition-colors hover:bg-muted/60",
+        "flex items-center gap-3 w-full text-left rounded-xl px-3 py-3 transition-colors bg-surface hover:bg-muted/60",
         isActive && "bg-brand-primary-lighter border-l-2 border-brand-primary",
       )}
     >
