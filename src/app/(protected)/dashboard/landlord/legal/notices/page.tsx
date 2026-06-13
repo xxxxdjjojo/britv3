@@ -113,13 +113,13 @@ const S8_GROUNDS = [
 
 function StatusBadge({ status }: Readonly<{ status: string }>) {
   const colours: Record<string, string> = {
-    draft: "bg-gray-100 text-gray-700",
+    draft: "bg-muted text-gray-700",
     generated: "bg-blue-100 text-blue-700",
     served: "bg-green-100 text-green-700",
   };
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colours[status] ?? "bg-gray-100 text-gray-700"}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colours[status] ?? "bg-muted text-gray-700"}`}
     >
       {status}
     </span>

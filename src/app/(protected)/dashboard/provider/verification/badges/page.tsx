@@ -47,7 +47,7 @@ export default async function BadgesPage() {
 
         {activeBadgeCount > 0 && (
           <div className="flex shrink-0 items-center gap-2 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-[#E8F5EE] text-brand-primary">
               <Award className="size-5" />
             </div>
             <div>

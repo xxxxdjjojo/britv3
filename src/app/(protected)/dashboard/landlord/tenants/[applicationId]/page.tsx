@@ -38,7 +38,7 @@ const CREDIT_STYLES: Record<CreditCheckStatus, string> = {
   pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   passed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
   failed: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  not_run: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+  not_run: "bg-muted text-gray-600 dark:bg-gray-800 dark:text-gray-400",
 };
 
 // -- Page ---------------------------------------------------------------------
@@ -139,7 +139,7 @@ export default async function ApplicationDetailPage({ params }: Props) {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">References</span>
-                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-muted text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {application.references_status
                     ? application.references_status.charAt(0).toUpperCase() +
                       application.references_status.slice(1)
@@ -194,7 +194,7 @@ export default async function ApplicationDetailPage({ params }: Props) {
                       <span
                         className={`absolute -left-1.5 size-3 rounded-full border-2 border-white dark:border-background ${
                           isActive
-                            ? "bg-[#1B4D3E]"
+                            ? "bg-brand-primary"
                             : isPast
                               ? "bg-green-400"
                               : "bg-slate-300 dark:bg-slate-600"
@@ -203,7 +203,7 @@ export default async function ApplicationDetailPage({ params }: Props) {
                       <p
                         className={`text-sm font-medium ${
                           isActive
-                            ? "text-[#1B4D3E] dark:text-emerald-400"
+                            ? "text-brand-primary dark:text-emerald-400"
                             : isPast
                               ? "text-slate-600 dark:text-slate-300"
                               : "text-muted-foreground"

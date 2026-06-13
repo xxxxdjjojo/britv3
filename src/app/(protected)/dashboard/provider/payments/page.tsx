@@ -16,7 +16,7 @@ export default async function PaymentsPage() {
   if (process.env.FEATURE_STRIPE_CONNECT_ENABLED !== "true") {
     return (
       <div className="p-6 max-w-7xl">
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-surface py-20 text-center">
           <CreditCard className="size-12 text-neutral-300" />
           <h2 className="mt-4 text-lg font-semibold text-neutral-700">
             Payments coming soon

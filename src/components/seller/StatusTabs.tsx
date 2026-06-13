@@ -33,14 +33,14 @@ export function StatusTabs({ tabs }: Props) {
           className={cn(
             "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors duration-150",
             active === tab.key
-              ? "border-[#1B4D3E] text-[#1B4D3E]"
+              ? "border-brand-primary text-brand-primary"
               : "border-transparent text-slate-500 hover:text-slate-700",
           )}
         >
           {tab.label}
           <span className={cn(
             "rounded-full px-2 py-0.5 text-xs font-semibold",
-            active === tab.key ? "bg-[#1B4D3E]/10 text-[#1B4D3E]" : "bg-slate-100 text-slate-500",
+            active === tab.key ? "bg-brand-primary/10 text-brand-primary" : "bg-muted text-slate-500",
           )}>
             {tab.count}
           </span>

@@ -126,7 +126,7 @@ export default async function SellerDashboardHome() {
             Create your first listing to start tracking views, enquiries, and offers from buyers.
           </p>
           <Link href="/dashboard/seller/listings/create?step=1"
-            className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors shadow-lg shadow-[#1B4D3E]/20">
+            className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors shadow-lg shadow-brand-primary/20">
             Create Your First Listing
           </Link>
         </div>

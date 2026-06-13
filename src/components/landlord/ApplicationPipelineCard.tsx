@@ -15,9 +15,9 @@ const STATUS_STYLES: Record<
   { bg: string; text: string; dot: string; label: string }
 > = {
   received: {
-    bg: "bg-gray-100 dark:bg-gray-800/40",
+    bg: "bg-muted dark:bg-gray-800/40",
     text: "text-gray-700 dark:text-gray-300",
-    dot: "bg-gray-500",
+    dot: "bg-muted-foreground",
     label: "Received",
   },
   shortlisted: {
@@ -45,7 +45,7 @@ const STATUS_STYLES: Record<
     label: "Rejected",
   },
   withdrawn: {
-    bg: "bg-gray-100 dark:bg-gray-800/40",
+    bg: "bg-muted dark:bg-gray-800/40",
     text: "text-gray-600 dark:text-gray-400",
     dot: "bg-gray-400",
     label: "Withdrawn",
@@ -100,7 +100,7 @@ export function ApplicationPipelineCard({
       <CardContent className="p-4 space-y-3">
         {/* Header: avatar + name */}
         <div className="flex items-start gap-3">
-          <div className="size-9 shrink-0 rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E] dark:bg-[#1B4D3E]/20 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+          <div className="size-9 shrink-0 rounded-full bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
             {initials}
           </div>
           <div className="min-w-0 flex-1">
@@ -154,7 +154,7 @@ export function ApplicationPipelineCard({
           {onMoveToNextStage && (
             <button
               onClick={onMoveToNextStage}
-              className="text-xs text-[#1B4D3E] dark:text-emerald-400 font-medium hover:underline"
+              className="text-xs text-brand-primary dark:text-emerald-400 font-medium hover:underline"
             >
               Move stage
             </button>

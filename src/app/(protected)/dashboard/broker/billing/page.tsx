@@ -66,24 +66,24 @@ export default function BillingPage() {
     <div className="p-6 space-y-6 max-w-5xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Billing</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Billing</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Manage your subscription and payment details.
         </p>
       </div>
 
       {/* Current Plan */}
-      <Card className="border-[#1B4D3E]/20">
+      <Card className="border-brand-primary/20">
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex size-12 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
                 <Crown className="size-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold text-neutral-900">Professional Plan</h2>
-                  <Badge className="bg-[#1B4D3E] text-white">Current</Badge>
+                  <Badge className="bg-brand-primary text-white">Current</Badge>
                 </div>
                 <p className="text-sm text-neutral-500">
                   {formatCurrency(49.99)}/month &middot; Next billing: 1 April 2026
@@ -105,7 +105,7 @@ export default function BillingPage() {
           {PLANS.map((plan) => (
             <Card
               key={plan.name}
-              className={plan.current ? "border-2 border-[#1B4D3E] shadow-md" : ""}
+              className={plan.current ? "border-2 border-brand-primary shadow-md" : ""}
             >
               <CardContent className="p-6">
                 <div className="mb-4">
@@ -120,7 +120,7 @@ export default function BillingPage() {
                 <ul className="mb-6 space-y-2">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start gap-2 text-sm text-neutral-600">
-                      <CheckCircle2 className="size-4 shrink-0 text-[#1B4D3E] mt-0.5" />
+                      <CheckCircle2 className="size-4 shrink-0 text-brand-primary mt-0.5" />
                       {feature}
                     </li>
                   ))}
@@ -130,7 +130,7 @@ export default function BillingPage() {
                     Current Plan
                   </Button>
                 ) : (
-                  <Button className="w-full bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+                  <Button className="w-full bg-brand-primary text-white hover:bg-brand-primary-dark">
                     {plan.price > 49.99 ? "Upgrade" : "Downgrade"}
                     <ArrowRight className="ml-1.5 size-4" />
                   </Button>
@@ -142,14 +142,14 @@ export default function BillingPage() {
       </div>
 
       {/* Payment History */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200">
-        <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4">
+      <div className="bg-white rounded-xl shadow-sm border border-border">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-neutral-900">Payment History</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-100 bg-neutral-50/50">
+              <tr className="border-b border-neutral-100 bg-muted/50">
                 <th className="px-6 py-2.5 text-left font-semibold text-neutral-600">Date</th>
                 <th className="px-6 py-2.5 text-left font-semibold text-neutral-600">Description</th>
                 <th className="px-6 py-2.5 text-right font-semibold text-neutral-600">Amount</th>

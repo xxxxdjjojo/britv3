@@ -104,12 +104,12 @@ export default function BrokerDashboardPage() {
       {/* Two-Column Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6">
           <h2 className="mb-4 text-base font-semibold text-neutral-900">Recent Activity</h2>
           <div className="space-y-3">
             {RECENT_ACTIVITY.map((item) => (
               <div key={item.id} className="flex items-start gap-3">
-                <div className="mt-1.5 size-2 shrink-0 rounded-full bg-[#1B4D3E]" />
+                <div className="mt-1.5 size-2 shrink-0 rounded-full bg-brand-primary" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-neutral-700 truncate">{item.text}</p>
                   <p className="text-xs text-neutral-400">{item.time}</p>
@@ -120,12 +120,12 @@ export default function BrokerDashboardPage() {
         </div>
 
         {/* Pipeline Summary */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold text-neutral-900">Pipeline Summary</h2>
             <Link
               href="/dashboard/broker/pipeline"
-              className="text-xs font-medium text-[#1B4D3E] hover:underline"
+              className="text-xs font-medium text-brand-primary hover:underline"
             >
               View all
             </Link>
@@ -152,23 +152,23 @@ export default function BrokerDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-border p-6">
         <h2 className="mb-4 text-base font-semibold text-neutral-900">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <Link href="/dashboard/broker/leads">
-            <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+            <Button className="bg-brand-primary text-white hover:bg-brand-primary-dark">
               <Inbox className="mr-2 size-4" />
               View Leads
             </Button>
           </Link>
           <Link href="/dashboard/broker/products">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="border-border text-neutral-700 hover:bg-muted">
               <PackageSearch className="mr-2 size-4" />
               Compare Products
             </Button>
           </Link>
           <Link href="/dashboard/broker/fca-verification">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="border-border text-neutral-700 hover:bg-muted">
               <ShieldCheck className="mr-2 size-4" />
               FCA Status
               <ArrowRight className="ml-1.5 size-4" />

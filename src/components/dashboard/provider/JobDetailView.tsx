@@ -163,7 +163,7 @@ function StatusPanel({
               className={[
                 "w-full rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-50",
                 t.variant === "primary"
-                  ? "bg-[#1B4D3E] text-white hover:bg-[#163d31]"
+                  ? "bg-brand-primary text-white hover:bg-[#163d31]"
                   : "border border-red-300 bg-white text-red-600 hover:bg-red-50",
               ].join(" ")}
             >
@@ -208,7 +208,7 @@ function QuoteSummary({
           <p className="text-xs text-neutral-500">No quote submitted yet.</p>
           <Link
             href={`/dashboard/provider/quotes/new?jobId=${jobId}`}
-            className="inline-block rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
+            className="inline-block rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
           >
             Create Quote
           </Link>
@@ -259,7 +259,7 @@ function InvoicePanel({
           <p className="text-xs text-neutral-500">Job complete — no invoice yet.</p>
           <Link
             href={`/dashboard/provider/jobs/${jobId}/invoice/new`}
-            className="inline-block rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
+            className="inline-block rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
           >
             Generate Invoice
           </Link>
@@ -313,7 +313,7 @@ function ReviewPanel({
         <div className="space-y-2">
           <p className="text-xs text-neutral-500">No review yet.</p>
           <button
-            className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-surface transition"
             onClick={() => {
               // Placeholder: request review flow not yet built
               alert(`Review request for job ${jobId} — coming soon`);
@@ -346,7 +346,7 @@ export function JobDetailView({
       <div>
         <Link
           href="/dashboard/provider/jobs/active"
-          className="text-sm text-[#1B4D3E] hover:underline"
+          className="text-sm text-brand-primary hover:underline"
         >
           ← Back to Active Jobs
         </Link>
@@ -434,7 +434,7 @@ export function JobDetailView({
           </div>
 
           {/* Message placeholder */}
-          <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-6 flex items-center gap-3">
+          <div className="rounded-xl border border-dashed border-neutral-200 bg-surface p-6 flex items-center gap-3">
             <MessageSquare className="size-5 text-neutral-300 shrink-0" />
             <p className="text-sm text-neutral-400">Message history coming soon</p>
           </div>

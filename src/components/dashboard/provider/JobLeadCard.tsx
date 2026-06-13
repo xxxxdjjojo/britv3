@@ -74,7 +74,7 @@ function DeclineDialog(props: Readonly<{
           This lead will be removed from your list. Please provide a reason.
         </p>
         <select
-          className="mt-4 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]"
+          className="mt-4 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-brand-primary"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         >
@@ -171,8 +171,8 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             {/* Category icon avatar */}
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1B4D3E]/10">
-              <Wrench className="size-5 text-[#1B4D3E]" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
+              <Wrench className="size-5 text-brand-primary" />
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-neutral-900">
@@ -217,7 +217,7 @@ export function JobLeadCard({ lead, providerId, onRemove }: JobLeadCardProps) {
         <div className="mt-4 flex gap-2">
           <Button
             size="sm"
-            className="flex-1 bg-[#1B4D3E] text-white hover:bg-[#163d31]"
+            className="flex-1 bg-brand-primary text-white hover:bg-[#163d31]"
             onClick={handleAccept}
             disabled={accepting || declining}
           >

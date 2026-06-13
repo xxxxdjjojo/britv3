@@ -289,7 +289,7 @@ export function HomebuyerDashboard({ data }: Readonly<{ data: HomebuyerData }>) 
             <div className="flex flex-col divide-y divide-neutral-200">
               {MOCK_ACTIVITY.map((item) => (
                 <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-50">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface">
                     <item.icon className={`size-5 ${item.iconColor}`} />
                   </div>
                   <div className="flex-1 space-y-0.5">
@@ -317,7 +317,7 @@ export function HomebuyerDashboard({ data }: Readonly<{ data: HomebuyerData }>) 
           {MOCK_SERVICES.map((service) => (
             <Card key={service.id} className="transition hover:shadow-md">
               <CardContent className="flex flex-col items-start gap-3 p-5">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-neutral-50">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-surface">
                   <service.icon className="size-5 text-brand-primary" />
                 </div>
                 <h3 className="text-sm font-semibold text-neutral-900">

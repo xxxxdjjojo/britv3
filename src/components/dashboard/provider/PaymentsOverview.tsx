@@ -82,7 +82,7 @@ function BalanceCards({ balance }: Readonly<{ balance: StripeBalance }>) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {/* Available */}
-      <div className="rounded-xl bg-[#1B4D3E] p-6 text-white">
+      <div className="rounded-xl bg-brand-primary p-6 text-white">
         <p className="text-sm font-medium text-white/70">Available Balance</p>
         <p className="mt-2 text-3xl font-bold">
           {formatGBP(balance.availablePence)}
@@ -116,17 +116,17 @@ function PayoutEtaBanner({ balance }: Readonly<{ balance: StripeBalance }>) {
   }
 
   return (
-    <div className="rounded-lg bg-[#E8F5EE] border-l-4 border-[#1B4D3E] px-5 py-4">
+    <div className="rounded-lg bg-[#E8F5EE] border-l-4 border-brand-primary px-5 py-4">
       <div className="flex items-center gap-3">
-        <Calendar className="size-5 shrink-0 text-[#1B4D3E]" />
+        <Calendar className="size-5 shrink-0 text-brand-primary" />
         <div>
-          <p className="text-sm font-semibold text-[#1B4D3E]">
+          <p className="text-sm font-semibold text-brand-primary">
             Next payout:{" "}
             <span className="font-bold">{formatGBP(balance.nextPayoutAmountPence)}</span>
             {" "}arriving{" "}
             <span className="font-bold">{formatPayoutDate(balance.nextPayoutDate)}</span>
           </p>
-          <p className="mt-0.5 text-xs text-[#1B4D3E]/70">
+          <p className="mt-0.5 text-xs text-brand-primary/70">
             Stripe typically takes 2 business days to process payouts.
           </p>
         </div>
@@ -142,7 +142,7 @@ function PayoutEtaBanner({ balance }: Readonly<{ balance: StripeBalance }>) {
 function PayoutRow({ payout }: Readonly<{ payout: PayoutRecord }>) {
   const { label, className, Icon } = statusConfig(payout.status);
   return (
-    <tr className="border-b border-neutral-100 hover:bg-neutral-50 transition">
+    <tr className="border-b border-neutral-100 hover:bg-surface transition">
       <td className="py-3 px-4 text-sm text-neutral-600">
         {formatDate(payout.initiatedAt)}
       </td>
@@ -221,7 +221,7 @@ export function PaymentsOverview(
           <h2 className="text-base font-semibold text-neutral-900">Payout History</h2>
           <Link
             href="/dashboard/provider/payments"
-            className="text-xs font-medium text-[#1B4D3E] hover:underline flex items-center gap-1"
+            className="text-xs font-medium text-brand-primary hover:underline flex items-center gap-1"
           >
             View all
             <ArrowUpRight className="size-3" />
@@ -241,7 +241,7 @@ export function PaymentsOverview(
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-neutral-50 border-b border-neutral-200">
+                  <tr className="bg-surface border-b border-neutral-200">
                     <th className="py-3 px-4 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wide">
                       Date
                     </th>

@@ -84,7 +84,7 @@ async function DashboardContent() {
   return (
     <div className="space-y-8 p-8">
       {/* Welcome Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-[#1B4D3E] p-8 text-white shadow-xl shadow-[#1B4D3E]/10 md:p-12">
+      <section className="relative overflow-hidden rounded-2xl bg-brand-primary p-8 text-white shadow-xl shadow-brand-primary/10 md:p-12">
         <div className="relative z-10 max-w-2xl">
           <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-white/60">
             Welcome back
@@ -176,7 +176,7 @@ async function DashboardContent() {
             {alerts.length > 3 && (
               <Link
                 href="/dashboard/landlord/compliance"
-                className="text-sm font-bold text-[#1B4D3E] hover:underline"
+                className="text-sm font-bold text-brand-primary hover:underline"
               >
                 View all ({alerts.length})
               </Link>
@@ -208,7 +208,7 @@ async function DashboardContent() {
       {/* Key Dates */}
       <section className="space-y-4">
         <h3 className="flex items-center gap-2 text-xl font-bold">
-          <Calendar className="size-5 text-[#1B4D3E]" />
+          <Calendar className="size-5 text-brand-primary" />
           Key Dates
         </h3>
         <KeyDatesTicker dates={keyDates} />
@@ -231,7 +231,7 @@ async function DashboardContent() {
               href={action.href}
               className="group rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:bg-slate-900 dark:border-slate-800"
             >
-              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-[#1B4D3E]">
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 group-hover:text-brand-primary">
                 {action.label}
               </p>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">

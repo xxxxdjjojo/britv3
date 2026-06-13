@@ -8,7 +8,7 @@ type UpcomingJobsListProps = Readonly<{
 
 const STATUS_CLASSES: Record<string, string> = {
   scheduled: "bg-neutral-100 text-neutral-700",
-  confirmed: "bg-[#E8F5EE] text-[#1B4D3E]",
+  confirmed: "bg-[#E8F5EE] text-brand-primary",
   en_route: "bg-blue-50 text-blue-700",
   in_progress: "bg-amber-50 text-amber-700",
 };
@@ -46,9 +46,9 @@ export function UpcomingJobsList({ jobs }: UpcomingJobsListProps) {
           <li key={job.id} className="py-3 first:pt-0 last:pb-0">
             <Link
               href={`/dashboard/provider/jobs/active/${job.id}`}
-              className="flex items-start gap-3 rounded-lg transition-colors hover:bg-neutral-50 -mx-2 px-2"
+              className="flex items-start gap-3 rounded-lg transition-colors hover:bg-surface -mx-2 px-2"
             >
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-[#E8F5EE] text-[#1B4D3E]">
+              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-[#E8F5EE] text-brand-primary">
                 <CalendarDays className="size-4" />
               </span>
               <div className="flex flex-1 flex-col gap-0.5 min-w-0">

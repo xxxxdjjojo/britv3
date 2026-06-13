@@ -405,7 +405,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                 <button
                   type="button"
                   onClick={() => setShowAddDialog(false)}
-                  className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-surface dark:hover:bg-neutral-800 transition-colors"
                 >
                   Cancel
                 </button>
@@ -489,7 +489,7 @@ export function PortfolioGrid({ initialItems, providerId }: Props) {
                 <button
                   type="button"
                   onClick={() => setEditState(null)}
-                  className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-surface dark:hover:bg-neutral-800 transition-colors"
                 >
                   Cancel
                 </button>

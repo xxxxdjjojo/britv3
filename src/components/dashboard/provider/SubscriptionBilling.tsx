@@ -168,13 +168,13 @@ function CurrentPlanBanner(
   const badgeColour =
     currentPlanId === "free"
       ? "bg-neutral-100 text-neutral-600"
-      : "bg-[#E8F5EE] text-[#1B4D3E]";
+      : "bg-[#E8F5EE] text-brand-primary";
 
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-[#1B4D3E] text-white">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-brand-primary text-white">
             <Icon className="size-6" />
           </div>
           <div>
@@ -252,16 +252,16 @@ function PlanComparisonTable(
                       isCurrent
                         ? "bg-[#E8F5EE]"
                         : plan.highlight
-                          ? "bg-neutral-50"
+                          ? "bg-surface"
                           : ""
                     }`}
                   >
                     <div className="flex flex-col items-center gap-1">
                       <Icon
-                        className={`size-5 ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-400"}`}
+                        className={`size-5 ${isCurrent ? "text-brand-primary" : "text-neutral-400"}`}
                       />
                       <span
-                        className={`text-sm font-bold ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-800"}`}
+                        className={`text-sm font-bold ${isCurrent ? "text-brand-primary" : "text-neutral-800"}`}
                       >
                         {plan.name}
                       </span>
@@ -276,7 +276,7 @@ function PlanComparisonTable(
                         </span>
                       )}
                       {isCurrent && (
-                        <span className="rounded-full bg-[#1B4D3E] px-2 py-0.5 text-xs font-medium text-white">
+                        <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
                           Current
                         </span>
                       )}
@@ -303,7 +303,7 @@ function PlanComparisonTable(
                       key={plan.id}
                       className={`py-3 px-4 text-center text-sm ${
                         isCurrent
-                          ? "bg-[#E8F5EE] text-[#1B4D3E] font-medium"
+                          ? "bg-[#E8F5EE] text-brand-primary font-medium"
                           : "text-neutral-600"
                       }`}
                     >
@@ -323,7 +323,7 @@ function PlanComparisonTable(
             ))}
 
             {/* CTA row */}
-            <tr className="border-t border-neutral-200 bg-neutral-50">
+            <tr className="border-t border-neutral-200 bg-surface">
               <td className="py-4 pl-6 pr-4 text-sm font-medium text-neutral-500">
                 Action
               </td>
@@ -339,7 +339,7 @@ function PlanComparisonTable(
                     className={`py-4 px-4 text-center ${isCurrent ? "bg-[#E8F5EE]" : ""}`}
                   >
                     {isCurrent ? (
-                      <span className="inline-flex items-center gap-1 text-sm font-medium text-[#1B4D3E]">
+                      <span className="inline-flex items-center gap-1 text-sm font-medium text-brand-primary">
                         <Check className="size-4" /> Current
                       </span>
                     ) : isDowngrade ? (
@@ -352,7 +352,7 @@ function PlanComparisonTable(
                     ) : (
                       <button
                         onClick={() => onUpgrade(plan.id)}
-                        className="rounded-lg bg-[#1B4D3E] px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-[#163d31]"
+                        className="rounded-lg bg-brand-primary px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-[#163d31]"
                       >
                         Upgrade
                       </button>
@@ -377,16 +377,16 @@ function PlanComparisonTable(
           return (
             <div
               key={plan.id}
-              className={`p-5 ${isCurrent ? "bg-[#E8F5EE] border-l-4 border-[#1B4D3E]" : ""}`}
+              className={`p-5 ${isCurrent ? "bg-[#E8F5EE] border-l-4 border-brand-primary" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`size-5 ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-400"}`}
+                    className={`size-5 ${isCurrent ? "text-brand-primary" : "text-neutral-400"}`}
                   />
                   <div>
                     <p
-                      className={`text-sm font-bold ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-800"}`}
+                      className={`text-sm font-bold ${isCurrent ? "text-brand-primary" : "text-neutral-800"}`}
                     >
                       {plan.name}
                     </p>
@@ -398,7 +398,7 @@ function PlanComparisonTable(
                   </div>
                 </div>
                 {isCurrent ? (
-                  <span className="rounded-full bg-[#1B4D3E] px-2 py-0.5 text-xs font-medium text-white">
+                  <span className="rounded-full bg-brand-primary px-2 py-0.5 text-xs font-medium text-white">
                     Current
                   </span>
                 ) : isDowngrade ? (
@@ -411,7 +411,7 @@ function PlanComparisonTable(
                 ) : (
                   <button
                     onClick={() => onUpgrade(plan.id)}
-                    className="rounded-lg bg-[#1B4D3E] px-3 py-1 text-xs font-semibold text-white"
+                    className="rounded-lg bg-brand-primary px-3 py-1 text-xs font-semibold text-white"
                   >
                     Upgrade
                   </button>
@@ -428,7 +428,7 @@ function PlanComparisonTable(
                     >
                       <span className="text-neutral-500">{row.label}</span>
                       <span
-                        className={`font-medium ${isCurrent ? "text-[#1B4D3E]" : "text-neutral-700"}`}
+                        className={`font-medium ${isCurrent ? "text-brand-primary" : "text-neutral-700"}`}
                       >
                         {typeof value === "number"
                           ? value === 0
@@ -457,7 +457,7 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
 
   if (!stripeEnabled) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-6">
+      <div className="rounded-xl border border-dashed border-neutral-200 bg-surface p-6">
         <div className="flex items-center gap-3">
           <CreditCard className="size-5 text-neutral-400" />
           <div>
@@ -481,7 +481,7 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {/* Card artwork */}
-          <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-50">
+          <div className="flex size-12 items-center justify-center rounded-lg border border-neutral-200 bg-surface">
             <CreditCard className="size-6 text-neutral-400" />
           </div>
           <div>
@@ -492,7 +492,7 @@ function PaymentMethodSection(props: Readonly<{ stripeEnabled: boolean }>) {
             <p className="mt-0.5 text-xs text-neutral-400">Expires 12 / 2028</p>
           </div>
         </div>
-        <button className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50">
+        <button className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-surface">
           Update
         </button>
       </div>
@@ -538,7 +538,7 @@ function BillingHistorySection(
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-neutral-50 border-b border-neutral-200">
+              <tr className="bg-surface border-b border-neutral-200">
                 <th className="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
                   Date
                 </th>
@@ -557,7 +557,7 @@ function BillingHistorySection(
               {rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50 transition"
+                  className="border-b border-neutral-100 last:border-0 hover:bg-surface transition"
                 >
                   <td className="py-3 px-6 text-sm text-neutral-600">
                     {formatDate(row.date)}
@@ -576,7 +576,7 @@ function BillingHistorySection(
                     {row.invoiceUrl ? (
                       <a
                         href={row.invoiceUrl}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-[#1B4D3E] hover:underline"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-brand-primary hover:underline"
                       >
                         <Download className="size-3" />
                         Download

@@ -53,7 +53,7 @@ function ReviewerAvatar({
     : "?";
 
   return (
-    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+    <div className="w-10 h-10 rounded-full bg-muted dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
       <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
         {initials}
       </span>
@@ -174,7 +174,7 @@ export function ReviewsTab({
 
               {/* Provider response */}
               {review.provider_response && (
-                <div className="ml-8 mt-4 p-4 bg-[#1B4D3E]/5 dark:bg-[#1B4D3E]/10 rounded-lg border-l-4 border-[#1B4D3E]">
+                <div className="ml-8 mt-4 p-4 bg-brand-primary/5 dark:bg-brand-primary/10 rounded-lg border-l-4 border-brand-primary">
                   <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Response from {providerName}:
                   </p>
@@ -195,7 +195,7 @@ export function ReviewsTab({
             type="button"
             onClick={goToPrev}
             disabled={page <= 1 || loading}
-            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-surface dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             aria-label="Previous page"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -232,7 +232,7 @@ export function ReviewsTab({
                   className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                     page === item
                       ? "bg-[#2563EB] text-white"
-                      : "border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      : "border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-surface dark:hover:bg-slate-800"
                   }`}
                 >
                   {item}
@@ -244,7 +244,7 @@ export function ReviewsTab({
             type="button"
             onClick={goToNext}
             disabled={page >= totalPages || loading}
-            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-surface dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             aria-label="Next page"
           >
             <ChevronRight className="w-4 h-4" />

@@ -42,7 +42,7 @@ const COLUMNS: KanbanColumn[] = [
   {
     status: "received",
     label: "Received",
-    headerClass: "bg-gray-100 dark:bg-gray-800/40",
+    headerClass: "bg-muted dark:bg-gray-800/40",
     countClass: "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300",
   },
   {
@@ -280,7 +280,7 @@ export function TenantScreeningClient({ initialApplications }: TenantScreeningCl
               </div>
 
               {/* Column body */}
-              <div className="flex-1 min-h-[120px] rounded-b-lg border border-t-0 border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/20 p-2">
+              <div className="flex-1 min-h-[120px] rounded-b-lg border border-t-0 border-slate-200 dark:border-slate-700 bg-surface/50 dark:bg-slate-800/20 p-2">
                 {colApps.length === 0 ? (
                   <p className="text-xs text-muted-foreground text-center pt-6">No applications</p>
                 ) : (

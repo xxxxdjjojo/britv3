@@ -39,12 +39,12 @@ export function ActionItemsCard({ items }: ActionItemsCardProps) {
             >
               <Icon className={cn("mt-0.5 size-5 shrink-0", URGENCY_STYLES[item.urgency])} />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-slate-900 group-hover:text-[#1B4D3E] dark:text-slate-100">
+                <p className="text-sm font-bold text-slate-900 group-hover:text-brand-primary dark:text-slate-100">
                   {item.title}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-500">{item.description}</p>
               </div>
-              <ArrowRight className="mt-1 size-4 shrink-0 text-slate-300 group-hover:text-[#1B4D3E]" />
+              <ArrowRight className="mt-1 size-4 shrink-0 text-slate-300 group-hover:text-brand-primary" />
             </Link>
           );
         })}

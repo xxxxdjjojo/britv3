@@ -63,7 +63,7 @@ export default async function SubscriptionPage({
           <p className="mt-1 text-sm text-orange-700 dark:text-orange-300">
             Subscribe to unlock Britestate&apos;s full feature set.
           </p>
-          <Button className="mt-4 bg-[#1B4D3E] text-white hover:bg-[#2D7A5F]" asChild>
+          <Button className="mt-4 bg-brand-primary text-white hover:bg-brand-primary-light" asChild>
             <Link href={`${basePath}/checkout/subscription`}>Choose a plan</Link>
           </Button>
         </div>
@@ -74,7 +74,7 @@ export default async function SubscriptionPage({
             <CardHeader>
               <CardTitle className="flex items-center justify-between text-base">
                 <span className="flex items-center gap-2">
-                  <CreditCard size={16} className="text-[#1B4D3E]" />
+                  <CreditCard size={16} className="text-brand-primary" />
                   Current Plan
                 </span>
                 <Badge className={
@@ -140,10 +140,10 @@ export default async function SubscriptionPage({
               {plans.map((plan) => {
                 const isCurrent = plan.name === subscription.plan_name;
                 return (
-                  <Card key={plan.id} className={`relative ${isCurrent ? "border-[#1B4D3E] ring-1 ring-[#1B4D3E]/20" : ""}`}>
+                  <Card key={plan.id} className={`relative ${isCurrent ? "border-brand-primary ring-1 ring-brand-primary/20" : ""}`}>
                     {isCurrent && (
                       <div className="absolute -top-2.5 left-4">
-                        <Badge className="bg-[#1B4D3E] text-white text-xs">Current</Badge>
+                        <Badge className="bg-brand-primary text-white text-xs">Current</Badge>
                       </div>
                     )}
                     <CardContent className="pt-6 pb-4">
@@ -155,7 +155,7 @@ export default async function SubscriptionPage({
                       <ul className="mt-3 space-y-1.5">
                         {plan.features.slice(0, 3).map((f) => (
                           <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                            <CheckCircle2 size={12} className="mt-0.5 shrink-0 text-[#1B4D3E]" />
+                            <CheckCircle2 size={12} className="mt-0.5 shrink-0 text-brand-primary" />
                             {f}
                           </li>
                         ))}

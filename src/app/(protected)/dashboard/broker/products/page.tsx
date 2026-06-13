@@ -93,14 +93,14 @@ export default function ProductsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Mortgage Products</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Mortgage Products</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Compare mortgage products across lenders to find the best deal for your clients.
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4">
+      <div className="bg-white rounded-xl shadow-sm border border-border p-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Search */}
           <div>
@@ -178,11 +178,11 @@ export default function ProductsPage() {
       </p>
 
       {/* Products Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50/50">
+              <tr className="border-b border-border bg-muted/50">
                 <th className="px-4 py-3 text-left font-semibold text-neutral-600">Lender</th>
                 <th className="px-4 py-3 text-left font-semibold text-neutral-600">Product</th>
                 <th className="px-4 py-3 text-right font-semibold text-neutral-600">Rate</th>
@@ -197,11 +197,11 @@ export default function ProductsPage() {
               {filtered.map((product) => (
                 <tr
                   key={product.id}
-                  className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors cursor-pointer"
+                  className="border-b border-neutral-100 hover:bg-muted transition-colors cursor-pointer"
                 >
                   <td className="px-4 py-3 font-medium text-neutral-900">{product.lender}</td>
                   <td className="px-4 py-3 text-neutral-700">{product.productName}</td>
-                  <td className="px-4 py-3 text-right font-bold text-[#1B4D3E]">{product.rate.toFixed(2)}%</td>
+                  <td className="px-4 py-3 text-right font-bold text-brand-primary">{product.rate.toFixed(2)}%</td>
                   <td className="px-4 py-3 text-center">
                     <Badge variant="outline" className={RATE_TYPE_COLORS[product.rateType]}>
                       {RATE_TYPE_LABELS[product.rateType]}

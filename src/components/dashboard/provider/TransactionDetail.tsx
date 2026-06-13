@@ -132,7 +132,7 @@ export function TransactionDetail(
       {/* Back link */}
       <Link
         href="/dashboard/provider/payments"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-[#1B4D3E] transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-brand-primary transition-colors"
       >
         <ArrowLeft className="size-4" />
         Back to Payments
@@ -168,7 +168,7 @@ export function TransactionDetail(
             {tx.jobId && (
               <Link
                 href={`/dashboard/provider/jobs/${tx.jobId}`}
-                className="inline-flex items-center gap-2 text-sm font-medium text-[#1B4D3E] hover:underline"
+                className="inline-flex items-center gap-2 text-sm font-medium text-brand-primary hover:underline"
               >
                 <Briefcase className="size-4" />
                 View related job
@@ -215,7 +215,7 @@ export function TransactionDetail(
 
       {/* Stripe reference */}
       {tx.stripePaymentIntentId && (
-        <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+        <div className="rounded-xl border border-neutral-200 bg-surface p-4">
           <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1">
             Stripe Reference
           </p>

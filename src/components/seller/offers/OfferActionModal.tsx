@@ -79,7 +79,7 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
             <p className="text-2xl font-black text-slate-900 mt-1">£{(offer.amount / 100).toLocaleString("en-GB")}</p>
             <p className="text-sm text-slate-500">from {offer.buyer_name}</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close dialog" className="p-2 rounded-lg text-slate-400 hover:bg-slate-50">
+          <button type="button" onClick={onClose} aria-label="Close dialog" className="p-2 rounded-lg text-slate-400 hover:bg-surface">
             <X size={18} />
           </button>
         </div>
@@ -102,7 +102,7 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
             ].map(({ label, value, onChange, type, placeholder }) => (
               <div key={label}>
                 <label className="text-xs font-semibold text-slate-600">{label} <span className="text-slate-400">(optional)</span></label>
-                <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="mt-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30" />
+                <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="mt-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30" />
               </div>
             ))}
           </div>
@@ -114,12 +114,12 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
               <label className="text-xs font-semibold text-slate-600">Counter Amount (£)</label>
               <div className="relative mt-1">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">£</span>
-                <input type="text" value={counterAmount} onChange={(e) => setCounterAmount(e.target.value.replace(/[^0-9]/g, ""))} placeholder="360,000" className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30" />
+                <input type="text" value={counterAmount} onChange={(e) => setCounterAmount(e.target.value.replace(/[^0-9]/g, ""))} placeholder="360,000" className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-brand-primary/30" />
               </div>
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-600">Message to buyer <span className="text-slate-400">(optional)</span></label>
-              <textarea value={counterMessage} onChange={(e) => setCounterMessage(e.target.value)} rows={3} placeholder="Explain your counter offer..." className="mt-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30" />
+              <textarea value={counterMessage} onChange={(e) => setCounterMessage(e.target.value)} rows={3} placeholder="Explain your counter offer..." className="mt-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/30" />
             </div>
           </div>
         )}
@@ -130,8 +130,8 @@ export function OfferActionModal({ offer, action, onClose, onSuccess }: Props) {
         )}
         {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
         <div className="flex gap-3 mt-6">
-          <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="button" onClick={handleSubmit} disabled={submitting} className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 ${action === "reject" ? "bg-red-500 text-white hover:bg-red-600" : "bg-[#1B4D3E] text-white hover:bg-[#2D7A5F]"}`}>
+          <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-surface">Cancel</button>
+          <button type="button" onClick={handleSubmit} disabled={submitting} className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 ${action === "reject" ? "bg-red-500 text-white hover:bg-red-600" : "bg-brand-primary text-white hover:bg-brand-primary-light"}`}>
             {submitting ? "Saving..." : action === "accept" ? "Accept Offer" : action === "counter" ? "Send Counter" : "Reject Offer"}
           </button>
         </div>

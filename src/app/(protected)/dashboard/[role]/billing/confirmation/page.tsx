@@ -75,11 +75,11 @@ export default function PaymentConfirmationPage() {
   // Polling state — waiting for webhook to confirm subscription
   if (status === "polling") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E8F5EE] to-white p-6 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 dark:bg-brand-primary/20">
             <Loader2
-              className="animate-spin text-[#1B4D3E] dark:text-emerald-400"
+              className="animate-spin text-brand-primary dark:text-emerald-400"
               size={44}
             />
           </div>
@@ -103,7 +103,7 @@ export default function PaymentConfirmationPage() {
   // Timeout state — webhook took too long, show a softer message
   if (status === "timeout") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E8F5EE] to-white p-6 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
             <CheckCircle2 className="text-amber-600 dark:text-amber-400" size={44} />
@@ -122,7 +122,7 @@ export default function PaymentConfirmationPage() {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button
-              className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
+              className="bg-brand-primary text-white hover:bg-brand-primary-light gap-2"
               asChild
             >
               <Link href={dashboardPath}>
@@ -150,11 +150,11 @@ export default function PaymentConfirmationPage() {
 
   // Success state — webhook confirmed, subscription is active
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#E8F5EE] to-white p-6 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-primary-lighter to-white p-6 dark:from-gray-900 dark:to-gray-950">
       <div className="w-full max-w-md space-y-6 text-center">
         {/* Success icon */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1B4D3E]/10 dark:bg-[#1B4D3E]/20">
-          <CheckCircle2 className="text-[#1B4D3E] dark:text-emerald-400" size={44} />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 dark:bg-brand-primary/20">
+          <CheckCircle2 className="text-brand-primary dark:text-emerald-400" size={44} />
         </div>
 
         <div>
@@ -166,7 +166,7 @@ export default function PaymentConfirmationPage() {
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             Welcome to{" "}
-            <span className="font-semibold text-[#1B4D3E] dark:text-emerald-400">
+            <span className="font-semibold text-brand-primary dark:text-emerald-400">
               {decodeURIComponent(plan)}
             </span>
             .
@@ -195,7 +195,7 @@ export default function PaymentConfirmationPage() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button
-            className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
+            className="bg-brand-primary text-white hover:bg-brand-primary-light gap-2"
             asChild
           >
             <Link href={dashboardPath}>

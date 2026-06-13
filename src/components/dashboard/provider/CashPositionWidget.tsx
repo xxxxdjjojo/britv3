@@ -35,7 +35,7 @@ export function CashPositionWidget({ cashPosition }: CashPositionWidgetProps) {
       {/* Header */}
       <CardHeader className="border-b border-neutral-100">
         <div className="flex items-center gap-2">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+          <div className="flex size-9 items-center justify-center rounded-lg bg-[#E8F5EE] text-brand-primary">
             <PoundSterling className="size-5" />
           </div>
           <CardTitle className="text-base font-semibold text-neutral-900">
@@ -87,7 +87,7 @@ export function CashPositionWidget({ cashPosition }: CashPositionWidgetProps) {
 
         {/* Stripe balance row — only shown when there is a balance */}
         {hasStripeBalance && (
-          <div className="rounded-lg bg-neutral-50 px-4 py-3 flex items-center justify-between gap-4">
+          <div className="rounded-lg bg-surface px-4 py-3 flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-medium text-neutral-500">Stripe — Available</p>
               <p className="text-sm font-semibold text-neutral-800">

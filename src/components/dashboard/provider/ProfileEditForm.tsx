@@ -199,7 +199,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="relative flex size-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-neutral-300 bg-neutral-50 hover:border-[#1B4D3E] hover:bg-[#E8F5EE] transition-colors"
+              className="relative flex size-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-neutral-300 bg-surface hover:border-brand-primary hover:bg-[#E8F5EE] transition-colors"
               aria-label="Upload profile photo"
             >
               {avatarPreview ? (
@@ -325,7 +325,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
               {qualifications.map((q, i) => (
                 <span
                   key={i}
-                  className="flex items-center gap-1 rounded-full bg-[#E8F5EE] px-3 py-1 text-xs font-medium text-[#1B4D3E]"
+                  className="flex items-center gap-1 rounded-full bg-[#E8F5EE] px-3 py-1 text-xs font-medium text-brand-primary"
                 >
                   {q}
                   <button
@@ -356,8 +356,8 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
                   className={[
                     "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                     isSelected
-                      ? "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E]"
-                      : "border-neutral-200 text-neutral-600 hover:border-[#1B4D3E]/50 hover:text-neutral-900",
+                      ? "border-brand-primary bg-[#E8F5EE] text-brand-primary"
+                      : "border-neutral-200 text-neutral-600 hover:border-brand-primary/50 hover:text-neutral-900",
                   ].join(" ")}
                 >
                   {SERVICE_CATEGORY_LABELS[cat]}
@@ -372,7 +372,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
           <Button
             type="submit"
             disabled={isSaving}
-            className="bg-[#1B4D3E] text-white hover:bg-[#163d31] min-w-32"
+            className="bg-brand-primary text-white hover:bg-[#163d31] min-w-32"
           >
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
@@ -395,7 +395,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
                     className="size-full object-cover"
                   />
                 ) : (
-                  <User className="size-8 text-[#1B4D3E]" />
+                  <User className="size-8 text-brand-primary" />
                 )}
               </div>
               <div className="text-center">
@@ -406,7 +406,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
                   <p className="text-xs text-neutral-500">{watch("phone")}</p>
                 )}
                 {watch("website") && (
-                  <p className="truncate text-xs text-[#1B4D3E]">
+                  <p className="truncate text-xs text-brand-primary">
                     {watch("website")}
                   </p>
                 )}
@@ -426,7 +426,7 @@ export function ProfileEditForm({ profile, userId }: ProfileEditFormProps) {
                 {selectedServices.slice(0, 5).map((cat) => (
                   <span
                     key={cat}
-                    className="rounded-full bg-[#E8F5EE] px-2 py-0.5 text-[11px] font-medium text-[#1B4D3E]"
+                    className="rounded-full bg-[#E8F5EE] px-2 py-0.5 text-[11px] font-medium text-brand-primary"
                   >
                     {SERVICE_CATEGORY_LABELS[cat as ServiceCategory]}
                   </span>

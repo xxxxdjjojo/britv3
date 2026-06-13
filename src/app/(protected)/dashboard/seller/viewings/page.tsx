@@ -58,7 +58,7 @@ export default function ManageViewingsPage() {
             onClick={() => setViewMode(mode)}
             className={cn(
               "px-4 py-3 text-sm font-medium border-b-2 -mb-px capitalize transition-colors duration-150",
-              viewMode === mode ? "border-[#1B4D3E] text-[#1B4D3E]" : "border-transparent text-slate-500 hover:text-slate-700",
+              viewMode === mode ? "border-brand-primary text-brand-primary" : "border-transparent text-slate-500 hover:text-slate-700",
             )}
           >
             {mode} viewings
@@ -70,11 +70,11 @@ export default function ManageViewingsPage() {
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
               <div className="flex gap-4">
-                <div className="h-16 w-24 rounded-xl bg-slate-100" />
+                <div className="h-16 w-24 rounded-xl bg-muted" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-slate-100 rounded w-3/4" />
-                  <div className="h-3 bg-slate-100 rounded w-1/2" />
-                  <div className="h-3 bg-slate-100 rounded w-2/3" />
+                  <div className="h-4 bg-muted rounded w-3/4" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                  <div className="h-3 bg-muted rounded w-2/3" />
                 </div>
               </div>
             </div>

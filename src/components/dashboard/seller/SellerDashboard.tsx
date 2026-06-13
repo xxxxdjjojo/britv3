@@ -114,7 +114,7 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
               <h2 className="font-heading text-lg font-bold tracking-tight text-neutral-900">
                 Views Trend
               </h2>
-              <span className="rounded-full bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-500">
+              <span className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-neutral-500">
                 Last 30 Days
               </span>
             </div>
@@ -157,9 +157,9 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
                 <button
                   key={action.id}
                   type="button"
-                  className="group flex items-center gap-3 rounded-xl border border-border p-3 text-left transition hover:border-brand-primary/30 hover:bg-neutral-50"
+                  className="group flex items-center gap-3 rounded-xl border border-border p-3 text-left transition hover:border-brand-primary/30 hover:bg-surface"
                 >
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-brand-primary transition group-hover:bg-brand-primary group-hover:text-white">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface text-brand-primary transition group-hover:bg-brand-primary group-hover:text-white">
                     <action.icon className="size-5" />
                   </div>
                   <div className="flex-1">
@@ -190,7 +190,7 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
             {MOCK_ENQUIRIES.map((enquiry) => (
               <Card key={enquiry.id}>
                 <CardContent className="flex gap-4 p-5">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-700">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-neutral-700">
                     {enquiry.initials}
                   </div>
                   <div className="flex-1 space-y-2">
@@ -232,7 +232,7 @@ export function SellerDashboard({ data }: Readonly<{ data: SellerData }>) {
             {MOCK_VIEWINGS.map((viewing) => (
               <Card key={viewing.id}>
                 <CardContent className="flex items-center gap-4 p-5">
-                  <div className="flex w-14 shrink-0 flex-col items-center justify-center rounded-lg border-l-2 border-brand-primary bg-neutral-50 py-2">
+                  <div className="flex w-14 shrink-0 flex-col items-center justify-center rounded-lg border-l-2 border-brand-primary bg-surface py-2">
                     <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">
                       {viewing.month}
                     </span>

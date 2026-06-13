@@ -29,7 +29,7 @@ const STAGES: { key: PipelineStage; label: string; color: string; bgColor: strin
   { key: "application_submitted", label: "Application Submitted", color: "bg-purple-500", bgColor: "bg-purple-50 border-purple-200" },
   { key: "underwriting", label: "Underwriting", color: "bg-orange-500", bgColor: "bg-orange-50 border-orange-200" },
   { key: "approved", label: "Approved", color: "bg-emerald-500", bgColor: "bg-emerald-50 border-emerald-200" },
-  { key: "completed", label: "Completed", color: "bg-neutral-400", bgColor: "bg-neutral-50 border-neutral-200" },
+  { key: "completed", label: "Completed", color: "bg-neutral-400", bgColor: "bg-muted border-border" },
 ];
 
 const MOCK_CLIENTS: PipelineClient[] = [
@@ -107,7 +107,7 @@ function ClientCard({ client }: Readonly<{ client: PipelineClient }>) {
   const ltv = Math.round((client.loanAmount / client.propertyValue) * 100);
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+    <div className="rounded-xl border border-border bg-white p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
       <div className="flex items-start justify-between mb-2">
         <h4 className="text-sm font-semibold text-neutral-900 truncate">{client.name}</h4>
         <Badge variant="outline" className="shrink-0 text-[10px] ml-2">
@@ -147,7 +147,7 @@ export default function PipelinePage() {
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Client Pipeline</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Client Pipeline</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Track your mortgage clients from initial enquiry through to completion.
         </p>
@@ -172,7 +172,7 @@ export default function PipelinePage() {
                 </div>
 
                 {/* Column Body */}
-                <div className="rounded-b-lg border border-t-0 border-neutral-200 bg-neutral-50/50 p-2 min-h-[300px] space-y-2">
+                <div className="rounded-b-lg border border-t-0 border-border bg-muted/50 p-2 min-h-[300px] space-y-2">
                   {stageClients.length === 0 ? (
                     <p className="py-8 text-center text-xs text-neutral-400">No clients</p>
                   ) : (

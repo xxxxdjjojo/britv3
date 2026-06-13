@@ -33,20 +33,20 @@ export function ConversionFunnel({ funnel }: Props) {
       count: funnel.enquired,
       rate: calcRate(funnel.enquired, funnel.viewed),
       colorClass: "bg-[#d1e8e2]",
-      labelColorClass: "text-[#1B4D3E]",
+      labelColorClass: "text-brand-primary",
     },
     {
       label: "Quotes Sent",
       count: funnel.quoted,
       rate: calcRate(funnel.quoted, funnel.enquired),
-      colorClass: "bg-[#1B4D3E]/60",
+      colorClass: "bg-brand-primary/60",
       labelColorClass: "text-white",
     },
     {
       label: "Bookings",
       count: funnel.booked,
       rate: calcRate(funnel.booked, funnel.quoted),
-      colorClass: "bg-[#1B4D3E]",
+      colorClass: "bg-brand-primary",
       labelColorClass: "text-white",
     },
   ];

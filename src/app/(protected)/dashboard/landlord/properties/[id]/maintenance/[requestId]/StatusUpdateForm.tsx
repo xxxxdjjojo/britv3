@@ -86,7 +86,7 @@ export function StatusUpdateForm(
               className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
                 selectedStatus === status
                   ? "border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-300"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                  : "border-gray-300 text-gray-700 hover:bg-surface dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
               }`}
             >
               {STATUS_LABELS[status]}

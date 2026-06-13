@@ -30,7 +30,7 @@ const PRIORITY_CONFIG: Record<
     label: "Low",
     icon: ArrowDown,
     className:
-      "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+      "bg-muted text-slate-600 dark:bg-slate-800 dark:text-slate-400",
   },
 };
 

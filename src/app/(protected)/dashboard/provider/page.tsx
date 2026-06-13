@@ -64,7 +64,7 @@ export default async function ProviderDashboardPage() {
 
       {/* ── Verification Banner ──────────────────────────────────────────────── */}
       {!isVerified && (
-        <div className="w-full rounded-xl bg-[#1B4D3E] p-5 text-white">
+        <div className="w-full rounded-xl bg-brand-primary p-5 text-white">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1 space-y-3">
               <p className="text-sm font-semibold">
@@ -88,7 +88,7 @@ export default async function ProviderDashboardPage() {
             <Link href="/dashboard/provider/verification">
               <Button
                 size="sm"
-                className="shrink-0 bg-white text-[#1B4D3E] hover:bg-white/90 font-semibold"
+                className="shrink-0 bg-white text-brand-primary hover:bg-white/90 font-semibold"
               >
                 Complete Verification
                 <ArrowRight className="ml-1.5 size-4" />
@@ -149,7 +149,7 @@ export default async function ProviderDashboardPage() {
             <h2 className="text-base font-semibold text-neutral-900">Upcoming Jobs</h2>
             <Link
               href="/dashboard/provider/jobs/active"
-              className="text-xs font-medium text-[#1B4D3E] hover:underline"
+              className="text-xs font-medium text-brand-primary hover:underline"
             >
               View all
             </Link>
@@ -163,25 +163,25 @@ export default async function ProviderDashboardPage() {
         <h2 className="mb-4 text-base font-semibold text-neutral-900">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <Link href="/dashboard/provider/quotes/builder">
-            <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+            <Button className="bg-brand-primary text-white hover:bg-[#163d31]">
               <FileText className="mr-2 size-4" />
               New Quote
             </Button>
           </Link>
           <Link href="/dashboard/provider/payments">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-surface">
               <CreditCard className="mr-2 size-4" />
               Log Payment
             </Button>
           </Link>
           <Link href="/dashboard/provider/portfolio">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-surface">
               <Image className="mr-2 size-4" />
               Add Portfolio Item
             </Button>
           </Link>
           <Link href="/dashboard/provider/reviews">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-surface">
               <Star className="mr-2 size-4" />
               Invite to Review
             </Button>

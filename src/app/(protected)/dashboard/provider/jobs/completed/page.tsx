@@ -50,11 +50,11 @@ function StarRating({ rating }: Readonly<{ rating: number | null }>) {
 
 function CompletedJobRow({ job }: Readonly<{ job: CompletedJob }>) {
   return (
-    <tr className="border-b border-neutral-100 hover:bg-neutral-50 transition">
+    <tr className="border-b border-neutral-100 hover:bg-surface transition">
       <td className="py-3 px-4">
         <Link
           href={`/dashboard/provider/jobs/${job.id}`}
-          className="text-sm font-medium text-[#1B4D3E] hover:underline"
+          className="text-sm font-medium text-brand-primary hover:underline"
         >
           {job.title}
         </Link>
@@ -83,11 +83,11 @@ function SearchForm({ query }: Readonly<{ query: string }>) {
         name="q"
         defaultValue={query}
         placeholder="Search jobs…"
-        className="flex-1 rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]"
+        className="flex-1 rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-primary"
       />
       <button
         type="submit"
-        className="rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
+        className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-[#163d31] transition"
       >
         Search
       </button>
@@ -120,7 +120,7 @@ function Pagination(props: Readonly<{
         {props.page > 1 ? (
           <Link
             href={buildHref(props.page - 1)}
-            className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-neutral-700 hover:bg-neutral-50 transition"
+            className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-neutral-700 hover:bg-surface transition"
           >
             <ChevronLeft className="size-4" />
             Prev
@@ -134,7 +134,7 @@ function Pagination(props: Readonly<{
         {props.page < totalPages ? (
           <Link
             href={buildHref(props.page + 1)}
-            className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-neutral-700 hover:bg-neutral-50 transition"
+            className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-neutral-700 hover:bg-surface transition"
           >
             Next
             <ChevronRight className="size-4" />
@@ -199,7 +199,7 @@ export default async function CompletedJobsPage(props: Readonly<{
       </div>
 
       {result.data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50 py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-surface py-16 text-center">
           <CheckCircle className="size-10 text-neutral-300" />
           <p className="mt-3 text-sm font-medium text-neutral-500">
             {query ? "No jobs match your search" : "No completed jobs yet"}
@@ -215,7 +215,7 @@ export default async function CompletedJobsPage(props: Readonly<{
           <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
             <table className="w-full">
               <thead>
-                <tr className="bg-neutral-50 border-b border-neutral-200">
+                <tr className="bg-surface border-b border-neutral-200">
                   <th className="py-3 px-4 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wide">
                     Job Title
                   </th>

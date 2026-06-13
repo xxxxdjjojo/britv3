@@ -73,13 +73,13 @@ function parseRegBadge(
 const RING_CLASSES: Record<SpecialistType, string> = {
   mortgage_broker: "ring-blue-800 bg-blue-800/10",
   conveyancer: "ring-blue-700 bg-blue-700/10",
-  surveyor: "ring-[#1B4D3E] bg-[#1B4D3E]/10",
+  surveyor: "ring-brand-primary bg-brand-primary/10",
 };
 
 const REG_BADGE_CLASSES: Record<SpecialistType, string> = {
   mortgage_broker: "bg-blue-800",
   conveyancer: "bg-blue-700",
-  surveyor: "bg-[#1B4D3E]",
+  surveyor: "bg-brand-primary",
 };
 
 const CATEGORY_LABEL: Record<SpecialistType, string> = {
@@ -167,7 +167,7 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
           </div>
           {/* Verified overlay */}
           {verificationStatus === "verified" && (
-            <span className="absolute -bottom-1 -right-1 bg-[#1B4D3E] text-white p-1 rounded-full border-2 border-white">
+            <span className="absolute -bottom-1 -right-1 bg-brand-primary text-white p-1 rounded-full border-2 border-white">
               <ShieldCheck className="w-3.5 h-3.5" />
             </span>
           )}
@@ -251,7 +251,7 @@ export default function SpecialistHero({ provider, specialistType }: SpecialistH
             {provider.phone && (
               <a
                 href={`tel:${provider.phone}`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-surface dark:hover:bg-slate-800 transition-colors"
               >
                 Call
               </a>

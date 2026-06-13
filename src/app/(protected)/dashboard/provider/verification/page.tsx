@@ -95,7 +95,7 @@ export default async function VerificationOverviewPage() {
           {/* Badge count summary */}
           <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-[#E8F5EE] text-brand-primary">
                 <Award className="size-5" />
               </div>
               <div>
@@ -119,10 +119,10 @@ export default async function VerificationOverviewPage() {
             {badges.map((badge) => (
               <li
                 key={badge.id}
-                className="flex items-center gap-2 rounded-full border border-[#1B4D3E]/20 bg-[#E8F5EE] px-4 py-2"
+                className="flex items-center gap-2 rounded-full border border-brand-primary/20 bg-[#E8F5EE] px-4 py-2"
               >
-                <Award className="size-4 text-[#1B4D3E]" />
-                <span className="text-sm font-semibold text-[#1B4D3E]">
+                <Award className="size-4 text-brand-primary" />
+                <span className="text-sm font-semibold text-brand-primary">
                   {badge.badge_label}
                 </span>
                 {badge.expires_at && (
@@ -142,7 +142,7 @@ export default async function VerificationOverviewPage() {
       )}
 
       {badges.length === 0 && (
-        <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-8 text-center">
+        <div className="rounded-xl border border-dashed border-neutral-200 bg-surface p-8 text-center">
           <Award className="mx-auto mb-3 size-8 text-neutral-300" />
           <p className="text-sm font-medium text-neutral-500">
             No badges earned yet

@@ -52,7 +52,7 @@ function EarningsTooltip({ active, payload, label }: EarningsTooltipProps) {
   return (
     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 shadow-md">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className="text-sm font-semibold text-[#1B4D3E]">{formatPounds(value)}</p>
+      <p className="text-sm font-semibold text-brand-primary">{formatPounds(value)}</p>
     </div>
   );
 }
@@ -69,7 +69,7 @@ function CategoriesBarTooltip({ active, payload, label }: CategoriesBarTooltipPr
   return (
     <div className="rounded-lg border border-neutral-200 bg-white px-3 py-2 shadow-md">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className="text-sm font-semibold text-[#1B4D3E]">{value} bookings</p>
+      <p className="text-sm font-semibold text-brand-primary">{value} bookings</p>
     </div>
   );
 }
@@ -92,14 +92,14 @@ export function AnalyticsCharts({ earningsByMonth, topCategories, period, onPeri
           <h2 className="text-lg font-semibold text-neutral-900">Performance Overview</h2>
           <p className="text-xs text-neutral-500 mt-0.5">Stats updated daily at 02:00 UTC</p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-neutral-200 bg-neutral-50 p-1">
+        <div className="flex gap-1 rounded-lg border border-neutral-200 bg-surface p-1">
           {PERIODS.map((p) => (
             <button
               key={p}
               onClick={() => onPeriodChange(p)}
               className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 period === p
-                  ? "bg-[#1B4D3E] text-white shadow-sm"
+                  ? "bg-brand-primary text-white shadow-sm"
                   : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >

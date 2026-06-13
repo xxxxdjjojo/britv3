@@ -31,7 +31,7 @@ export function StripeConnectOnboarding() {
   }
 
   return (
-    <div className="w-full rounded-xl bg-[#1B4D3E] text-white p-6 md:p-8">
+    <div className="w-full rounded-xl bg-brand-primary text-white p-6 md:p-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         {/* Left: icon + copy */}
         <div className="flex items-start gap-4">
@@ -58,7 +58,7 @@ export function StripeConnectOnboarding() {
           <Button
             onClick={handleConnect}
             disabled={loading}
-            className="bg-white text-[#1B4D3E] hover:bg-white/90 font-semibold"
+            className="bg-white text-brand-primary hover:bg-white/90 font-semibold"
           >
             {loading ? (
               <>

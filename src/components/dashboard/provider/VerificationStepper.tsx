@@ -52,12 +52,12 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
             {/* Circle indicator */}
             <div className="relative z-10 flex shrink-0 items-start pt-0.5">
               {isApproved ? (
-                <div className="flex size-10 items-center justify-center rounded-full bg-[#1B4D3E]">
+                <div className="flex size-10 items-center justify-center rounded-full bg-brand-primary">
                   <Check className="size-5 text-white" strokeWidth={2.5} />
                 </div>
               ) : isInProgress ? (
-                <div className="flex size-10 items-center justify-center rounded-full border-2 border-dashed border-[#1B4D3E] bg-white">
-                  <span className="text-xs font-bold text-[#1B4D3E]">{step.step_number}</span>
+                <div className="flex size-10 items-center justify-center rounded-full border-2 border-dashed border-brand-primary bg-white">
+                  <span className="text-xs font-bold text-brand-primary">{step.step_number}</span>
                 </div>
               ) : (
                 <div className="flex size-10 items-center justify-center rounded-full border-2 border-neutral-300 bg-white">
@@ -72,7 +72,7 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
                 <span
                   className={[
                     "text-sm font-semibold",
-                    isApproved ? "text-[#1B4D3E]" : "text-neutral-900",
+                    isApproved ? "text-brand-primary" : "text-neutral-900",
                   ].join(" ")}
                 >
                   {step.label}
@@ -102,7 +102,7 @@ export function VerificationStepper({ steps }: VerificationStepperProps) {
                 <div className="mt-2 flex items-center gap-3">
                   <Link
                     href={href}
-                    className="inline-block text-xs font-semibold text-[#1B4D3E] hover:underline"
+                    className="inline-block text-xs font-semibold text-brand-primary hover:underline"
                   >
                     {step.status === "rejected" ? "Re-apply" : step.status === "not_started" ? "Get started" : "Continue"} &rarr;
                   </Link>

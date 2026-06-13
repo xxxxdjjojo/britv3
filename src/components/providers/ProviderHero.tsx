@@ -27,7 +27,7 @@ function AvatarFallback({ name }: Readonly<{ name: string | null }>) {
         .toUpperCase()
     : "?";
   return (
-    <div className="w-full h-full flex items-center justify-center bg-[#1B4D3E] text-white text-4xl font-bold">
+    <div className="w-full h-full flex items-center justify-center bg-brand-primary text-white text-4xl font-bold">
       {initials}
     </div>
   );
@@ -75,7 +75,7 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
         <div className="flex flex-col md:flex-row gap-6 -mt-20 relative z-10">
           {/* Avatar */}
           <div className="relative shrink-0">
-            <div className="w-40 h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-slate-100">
+            <div className="w-40 h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-muted">
               {provider.profiles.avatar_url ? (
                 <Image
                   src={provider.profiles.avatar_url}
@@ -90,7 +90,7 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
             </div>
             {/* Verified shield overlay */}
             {verificationStatus === "verified" && (
-              <span className="absolute bottom-2 right-2 bg-[#1B4D3E] text-white p-1.5 rounded-full border-2 border-white">
+              <span className="absolute bottom-2 right-2 bg-brand-primary text-white p-1.5 rounded-full border-2 border-white">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -158,7 +158,7 @@ export default function ProviderHero({ provider, category }: ProviderHeroProps) 
               {provider.phone && (
                 <a
                   href={`tel:${provider.phone}`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-lg hover:bg-surface dark:hover:bg-slate-800 transition-colors"
                 >
                   Call
                 </a>

@@ -29,7 +29,7 @@ const STATUS_CONFIG: Record<VerificationStatus, { label: string; color: string; 
   verified: { label: "Verified", color: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: CheckCircle2 },
   pending: { label: "Pending Review", color: "bg-amber-50 text-amber-700 border-amber-200", icon: Clock },
   expired: { label: "Expired", color: "bg-red-50 text-red-700 border-red-200", icon: AlertTriangle },
-  not_submitted: { label: "Not Submitted", color: "bg-neutral-50 text-neutral-500 border-neutral-200", icon: FileText },
+  not_submitted: { label: "Not Submitted", color: "bg-muted text-neutral-500 border-border", icon: FileText },
 };
 
 const MOCK_DOCUMENTS: Document[] = [
@@ -87,16 +87,16 @@ export default function FCAVerificationPage() {
     <div className="p-6 space-y-6 max-w-4xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">FCA Verification</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">FCA Verification</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Manage your Financial Conduct Authority registration and compliance documents.
         </p>
       </div>
 
       {/* FCA Number Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-start gap-4">
-          <div className="flex size-11 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+          <div className="flex size-11 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
             <ShieldCheck className="size-5" />
           </div>
           <div className="flex-1 space-y-4">
@@ -120,7 +120,7 @@ export default function FCAVerificationPage() {
                   className="mt-1"
                 />
               </div>
-              <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+              <Button className="bg-brand-primary text-white hover:bg-brand-primary-dark">
                 Verify
               </Button>
             </div>
@@ -132,17 +132,17 @@ export default function FCAVerificationPage() {
       </div>
 
       {/* Verification Progress */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-semibold text-neutral-900">Document Verification</h2>
-          <span className="text-sm font-semibold text-[#1B4D3E]">
+          <span className="text-sm font-semibold text-brand-primary">
             {verifiedCount}/{totalCount} verified
           </span>
         </div>
         <div className="space-y-1 mb-6">
           <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
             <div
-              className="h-full rounded-full bg-[#1B4D3E] transition-all"
+              className="h-full rounded-full bg-brand-primary transition-all"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -154,7 +154,7 @@ export default function FCAVerificationPage() {
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="flex flex-col gap-4 rounded-lg border border-neutral-200 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">

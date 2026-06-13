@@ -186,7 +186,7 @@ export default async function SavedPropertiesPage() {
           {/* Add Property dashed tile */}
           <Link
             href="/search"
-            className="flex min-h-[18rem] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface text-center transition-colors hover:border-brand-primary hover:bg-neutral-50"
+            className="flex min-h-[18rem] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface text-center transition-colors hover:border-brand-primary hover:bg-muted"
           >
             <div className="flex size-12 items-center justify-center rounded-full border border-border bg-white text-brand-primary">
               <Plus className="size-5" />

@@ -121,13 +121,13 @@ export function Step1AddressType({ listing }: Props) {
               onChange={(e) => setPostcode(e.target.value.toUpperCase())}
               onKeyDown={(e) => { if (e.key === "Enter") void lookupPostcode(); }}
               placeholder="e.g. SW1A 1AA"
-              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
             />
             <button
               type="button"
               onClick={() => void lookupPostcode()}
               disabled={lookingUp}
-              className="px-5 py-3 rounded-xl bg-[#1B4D3E] text-white text-sm font-semibold hover:bg-[#2D7A5F] transition-colors disabled:opacity-50"
+              className="px-5 py-3 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary-light transition-colors disabled:opacity-50"
             >
               {lookingUp ? "Looking up..." : "Find Address"}
             </button>
@@ -135,7 +135,7 @@ export function Step1AddressType({ listing }: Props) {
           {error && <p className="text-red-500 text-xs">{error}</p>}
 
           {(postcodeData || listing?.address_line_1) && (
-            <div className="mt-3 space-y-3 bg-slate-50 rounded-xl p-4">
+            <div className="mt-3 space-y-3 bg-surface rounded-xl p-4">
               <div>
                 <label className="text-xs font-semibold text-slate-600">Address Line 1</label>
                 <input
@@ -143,7 +143,7 @@ export function Step1AddressType({ listing }: Props) {
                   value={selectedAddress}
                   onChange={(e) => setSelectedAddress(e.target.value)}
                   placeholder="e.g. 14 Elm Road"
-                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
               <div>
@@ -153,7 +153,7 @@ export function Step1AddressType({ listing }: Props) {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="e.g. London"
-                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
             </div>
@@ -172,8 +172,8 @@ export function Step1AddressType({ listing }: Props) {
                 className={cn(
                   "flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-sm font-semibold transition-all duration-150",
                   propertyType === key
-                    ? "border-[#1B4D3E] bg-[#1B4D3E]/5 text-[#1B4D3E]"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
+                    : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-surface",
                 )}
               >
                 <span className="text-2xl">{icon}</span>
@@ -208,7 +208,7 @@ export function Step1AddressType({ listing }: Props) {
                 className={cn(
                   "flex-1 py-3 rounded-xl border-2 text-sm font-semibold capitalize transition-all duration-150",
                   tenure === t
-                    ? "border-[#1B4D3E] bg-[#1B4D3E]/5 text-[#1B4D3E]"
+                    ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
                     : "border-slate-200 text-slate-600 hover:border-slate-300",
                 )}
               >
@@ -219,7 +219,7 @@ export function Step1AddressType({ listing }: Props) {
 
           {tenure === "leasehold" && (
             <>
-              <div className="bg-slate-100 rounded-xl p-4">
+              <div className="bg-muted rounded-xl p-4">
                 <label className="text-xs font-semibold text-slate-600">Years Remaining on Lease</label>
                 <input
                   type="number"
@@ -228,7 +228,7 @@ export function Step1AddressType({ listing }: Props) {
                   value={leaseholdYears}
                   onChange={(e) => setLeaseholdYears(e.target.value)}
                   placeholder="e.g. 125"
-                  className="mt-2 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                  className="mt-2 w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
               {leaseholdYears && parseInt(leaseholdYears) > 0 && parseInt(leaseholdYears) < 80 && (

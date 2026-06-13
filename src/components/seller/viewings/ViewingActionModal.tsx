@@ -14,9 +14,9 @@ type Props = Readonly<{
 }>;
 
 const ACTION_CONFIG: Record<Action, { title: string; description: string; confirmLabel: string; confirmClass: string }> = {
-  confirm: { title: "Confirm Viewing", description: "Confirm this viewing appointment. The buyer will be notified.", confirmLabel: "Confirm Viewing", confirmClass: "bg-[#1B4D3E] text-white hover:bg-[#2D7A5F]" },
+  confirm: { title: "Confirm Viewing", description: "Confirm this viewing appointment. The buyer will be notified.", confirmLabel: "Confirm Viewing", confirmClass: "bg-brand-primary text-white hover:bg-brand-primary-light" },
   cancel: { title: "Cancel Viewing", description: "Cancel this viewing. Please provide a reason so the buyer can be informed.", confirmLabel: "Cancel Viewing", confirmClass: "bg-red-500 text-white hover:bg-red-600" },
-  reschedule: { title: "Reschedule Viewing", description: "Choose a new date and time for this viewing.", confirmLabel: "Reschedule", confirmClass: "bg-[#1B4D3E] text-white hover:bg-[#2D7A5F]" },
+  reschedule: { title: "Reschedule Viewing", description: "Choose a new date and time for this viewing.", confirmLabel: "Reschedule", confirmClass: "bg-brand-primary text-white hover:bg-brand-primary-light" },
 };
 
 export function ViewingActionModal({ viewing, action, onClose, onSuccess }: Props) {
@@ -71,11 +71,11 @@ export function ViewingActionModal({ viewing, action, onClose, onSuccess }: Prop
             <h3 id="viewing-action-title" className="text-lg font-bold text-slate-900 font-['Plus_Jakarta_Sans']">{config.title}</h3>
             <p className="text-sm text-slate-500 mt-1">{config.description}</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close dialog" className="p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors flex-shrink-0">
+          <button type="button" onClick={onClose} aria-label="Close dialog" className="p-2 rounded-lg text-slate-400 hover:bg-surface hover:text-slate-600 transition-colors flex-shrink-0">
             <X size={18} />
           </button>
         </div>
-        <div className="bg-slate-50 rounded-xl p-4 mb-5">
+        <div className="bg-surface rounded-xl p-4 mb-5">
           <p className="text-sm font-semibold text-slate-700">{viewing.buyer_name}</p>
           <p className="text-xs text-slate-500 mt-1">
             {new Date(viewing.viewing_datetime).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
@@ -89,7 +89,7 @@ export function ViewingActionModal({ viewing, action, onClose, onSuccess }: Prop
               value={newDatetime}
               onChange={(e) => setNewDatetime(e.target.value)}
               min={new Date().toISOString().slice(0, 16)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
             />
           </div>
         )}
@@ -102,12 +102,12 @@ export function ViewingActionModal({ viewing, action, onClose, onSuccess }: Prop
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             placeholder={action === "cancel" ? "Let the buyer know why..." : "Any additional notes..."}
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
           />
         </div>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <div className="flex gap-3">
-          <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+          <button type="button" onClick={onClose} className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-surface transition-colors">
             Back
           </button>
           <button

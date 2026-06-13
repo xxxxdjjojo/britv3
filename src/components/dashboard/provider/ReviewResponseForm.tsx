@@ -11,7 +11,7 @@ const MIN_CHARS = 10;
 
 function ReadOnlyReview({ review }: Readonly<{ review: ReviewRow }>) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5">
+    <div className="rounded-xl border border-neutral-200 bg-surface p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-neutral-800">
@@ -136,7 +136,7 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
             onChange={(e) => setResponse(e.target.value)}
             disabled={submitting}
             maxLength={MAX_CHARS}
-            className="w-full resize-none rounded-lg border border-neutral-200 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 disabled:opacity-60"
+            className="w-full resize-none rounded-lg border border-neutral-200 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20 disabled:opacity-60"
           />
           <div className="mt-1 flex justify-between text-xs">
             <span className="text-neutral-400">
@@ -175,7 +175,7 @@ export function ReviewResponseForm({ review }: ReviewResponseFormProps) {
           <Button
             type="submit"
             disabled={!isValid || submitting}
-            className="flex-1 bg-[#1B4D3E] text-white hover:bg-[#163d31] sm:flex-none sm:min-w-[140px]"
+            className="flex-1 bg-brand-primary text-white hover:bg-[#163d31] sm:flex-none sm:min-w-[140px]"
           >
             <Send className="mr-1.5 size-4" />
             {submitting ? "Submitting…" : "Post Response"}

@@ -60,12 +60,12 @@ export default function BrokerProfilePage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Broker Profile</h1>
+          <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Broker Profile</h1>
           <p className="mt-1 text-sm text-neutral-500">
             Manage your public-facing profile information.
           </p>
         </div>
-        <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31] gap-1.5">
+        <Button className="bg-brand-primary text-white hover:bg-brand-primary-dark gap-1.5">
           <Save className="size-4" />
           Save Changes
         </Button>
@@ -79,7 +79,7 @@ export default function BrokerProfilePage() {
               <div className="flex size-24 items-center justify-center rounded-full bg-neutral-100 border-2 border-dashed border-neutral-300">
                 <UserCircle className="size-12 text-neutral-400" />
               </div>
-              <button className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-[#1B4D3E] text-white shadow-sm hover:bg-[#163d31]">
+              <button className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full bg-brand-primary text-white shadow-sm hover:bg-brand-primary-dark">
                 <Camera className="size-4" />
               </button>
             </div>
@@ -160,7 +160,7 @@ export default function BrokerProfilePage() {
                 <ShieldCheck className="size-3.5 text-neutral-400" />
                 FCA Number
               </Label>
-              <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-neutral-200 bg-neutral-50">
+              <div className="flex items-center gap-2 h-9 px-3 rounded-md border border-border bg-muted">
                 <span className="text-sm text-neutral-700">{fcaNumber}</span>
                 <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
                   Verified
@@ -179,7 +179,7 @@ export default function BrokerProfilePage() {
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={4}
-            className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] focus:border-transparent"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
             placeholder="Tell potential clients about your experience and expertise..."
           />
           <p className="text-xs text-neutral-400">{bio.length}/500 characters</p>
@@ -199,8 +199,8 @@ export default function BrokerProfilePage() {
                 onClick={() => toggleSpecialism(s)}
                 className={
                   selectedSpecialisms.has(s)
-                    ? "rounded-full border-2 border-[#1B4D3E] bg-[#E8F5EE] px-3 py-1.5 text-xs font-semibold text-[#1B4D3E] transition-colors"
-                    : "rounded-full border-2 border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300"
+                    ? "rounded-full border-2 border-brand-primary bg-brand-primary-lighter px-3 py-1.5 text-xs font-semibold text-brand-primary transition-colors"
+                    : "rounded-full border-2 border-border bg-white px-3 py-1.5 text-xs font-medium text-neutral-600 transition-colors hover:border-neutral-300"
                 }
               >
                 {s}
