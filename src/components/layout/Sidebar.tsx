@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRole } from "@/hooks/useRole";
 import { useAuth } from "@/hooks/useAuth";
-import { ROLE_NAV_ITEMS, navLinkClasses } from "@/config/navigation";
+import { ROLE_NAV_ITEMS, ROLE_PRIMARY_CTA, navLinkClasses } from "@/config/navigation";
 import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -18,10 +18,22 @@ import {
   Mail,
   Bell,
   User,
+  CalendarPlus,
 } from "lucide-react";
+import type { UserRole } from "@/types/auth";
 import UnreadBadge from "@/components/messaging/UnreadBadge";
 
 const RETURN_URL_KEY = "britestate-return-url";
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  homebuyer: "Homebuyer",
+  renter: "Renter",
+  seller: "Seller",
+  landlord: "Landlord",
+  agent: "Estate Agent",
+  service_provider: "Service Provider",
+  mortgage_broker: "Mortgage Broker",
+};
 
 function getReturnUrl(): string {
   if (typeof window === "undefined") return "/";
@@ -66,12 +78,12 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden flex-col border-r bg-white lg:flex transition-all duration-200 ease-out",
+        "hidden flex-col border-r border-border/60 bg-surface lg:flex transition-all duration-200 ease-out",
         collapsed ? "w-16" : "w-64",
       )}
     >
       {/* Back to Site */}
-      <div className={cn("border-b p-2", collapsed && "px-1")}>
+      <div className={cn("p-2", collapsed && "px-1")}>
         <Link
           href={returnUrl}
           className={cn(
@@ -84,6 +96,18 @@ export function Sidebar() {
           {!collapsed && <span>Back to Site</span>}
         </Link>
       </div>
+
+      {/* Role eyebrow — Stitch "Welcome back / role" block */}
+      {!collapsed && activeRole && (
+        <div className="px-5 pb-3 pt-1">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Welcome back
+          </p>
+          <p className="font-heading text-lg font-bold text-brand-primary-dark">
+            {ROLE_LABELS[activeRole]}
+          </p>
+        </div>
+      )}
 
       {/* Role Switcher */}
       <div className={cn("border-b p-2", collapsed && "px-1")}>
@@ -195,6 +219,23 @@ export function Sidebar() {
           {!collapsed && <span>Profile</span>}
         </Link>
       </nav>
+
+      {/* Primary CTA — Stitch dark-green action pinned above account */}
+      {activeRole && (
+        <div className={cn("mt-auto p-3", collapsed && "px-2")}>
+          <Button
+            className={cn(
+              "w-full gap-2 bg-brand-primary text-white hover:bg-brand-primary-dark",
+              collapsed && "px-0",
+            )}
+            render={<Link href={ROLE_PRIMARY_CTA[activeRole].href} />}
+            title={collapsed ? ROLE_PRIMARY_CTA[activeRole].label : undefined}
+          >
+            <CalendarPlus className="size-4 shrink-0" />
+            {!collapsed && <span>{ROLE_PRIMARY_CTA[activeRole].label}</span>}
+          </Button>
+        </div>
+      )}
 
       {/* Collapse toggle */}
       <div className="border-t p-2">

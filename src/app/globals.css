@@ -57,6 +57,13 @@
   --color-brand-secondary-light: #F5ECD7;
   --color-brand-accent: #2563EB;
   --color-brand-accent-light: #EFF6FF;
+  /* Stitch design parity: deepest green + brighter gold CTA */
+  --color-brand-primary-dark: #003629;
+  --color-brand-gold: #FDCD74;
+  --color-brand-gold-foreground: #7B5804;
+
+  /* Warm dashboard surface (theme-aware, mirrors semantic token pattern) */
+  --color-surface: var(--surface);
 
   /* --- Neutral Palette --- */
   --color-neutral-950: #0A0A0B;
@@ -106,6 +113,7 @@
 :root {
   --background: #FFFFFF;
   --foreground: #0A0A0B;
+  --surface: #FAF9F8;
   --card: #FFFFFF;
   --card-foreground: #0A0A0B;
   --popover: #FFFFFF;
@@ -142,6 +150,7 @@
 .dark {
   --background: #0A0A0B;
   --foreground: #F8F8FA;
+  --surface: #11140F;
   --card: #171719;
   --card-foreground: #F8F8FA;
   --popover: #171719;
