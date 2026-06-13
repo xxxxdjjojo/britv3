@@ -47,16 +47,18 @@ export function DashboardWelcome({
               {actions.map((action) => (
                 <Button
                   key={action.label}
+                  asChild
                   variant={action.variant ?? "default"}
                   className={
                     action.variant === "outline"
                       ? "border-white/20 bg-white/10 text-white hover:bg-white/20"
                       : "bg-brand-gold text-brand-gold-foreground hover:bg-brand-gold/90"
                   }
-                  render={<Link href={action.href} />}
                 >
-                  {action.icon && <action.icon className="mr-2 size-4" />}
-                  {action.label}
+                  <Link href={action.href}>
+                    {action.icon && <action.icon className="mr-2 size-4" />}
+                    {action.label}
+                  </Link>
                 </Button>
               ))}
             </div>

@@ -51,11 +51,13 @@ export function InsightPanel({
         )}
         {action && (
           <Button
+            asChild
             className="mt-1 w-fit gap-2 bg-brand-gold text-brand-gold-foreground hover:bg-brand-gold/90"
-            render={<Link href={action.href} />}
           >
-            {action.label}
-            <ArrowRight className="size-4" />
+            <Link href={action.href}>
+              {action.label}
+              <ArrowRight className="size-4" />
+            </Link>
           </Button>
         )}
       </div>
