@@ -36,11 +36,15 @@ export function DashboardShell({
   const heading = title ?? `${ROLE_LABELS[role]} Dashboard`;
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6 lg:p-8">
-      {/* Header */}
+    <div className="flex flex-col gap-6">
+      {/* Header — Stitch editorial: eyebrow above a large heading */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight">{heading}</h1>
-        <p className="text-muted-foreground text-sm">{greeting}</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          {greeting}
+        </p>
+        <h1 className="font-heading text-3xl font-bold tracking-tight md:text-4xl">
+          {heading}
+        </h1>
       </div>
 
       {/* Main layout: content + sidebar */}
