@@ -157,18 +157,18 @@ function ConversationRow(
         onSelect(conv.id, otherUserId);
       }}
       className={cn(
-        "flex items-center gap-3 w-full text-left rounded-lg px-3 py-3 transition-colors hover:bg-muted/50",
-        isActive && "bg-muted border-l-2 border-primary",
+        "flex items-center gap-3 w-full text-left rounded-xl px-3 py-3 transition-colors hover:bg-muted/60",
+        isActive && "bg-brand-primary-lighter border-l-2 border-brand-primary",
       )}
     >
       <div className="relative">
         <Avatar>
-          <AvatarFallback className="bg-muted text-foreground text-sm font-medium">
+          <AvatarFallback className="bg-brand-primary-lighter text-brand-primary-dark text-sm font-semibold">
             {initials}
           </AvatarFallback>
         </Avatar>
         {hasUnread && (
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-card" />
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-brand-primary border-2 border-surface" />
         )}
       </div>
 
@@ -176,8 +176,8 @@ function ConversationRow(
         <div className="flex items-center justify-between gap-2">
           <span
             className={cn(
-              "text-sm truncate text-foreground",
-              hasUnread ? "font-bold" : "font-medium",
+              "text-sm truncate",
+              hasUnread ? "font-bold text-brand-primary-dark" : "font-medium text-foreground",
             )}
           >
             {name}
@@ -284,8 +284,8 @@ export default function InboxList(
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold text-foreground mb-3">Messages</h2>
+      <div className="p-4 border-b border-border bg-surface">
+        <h2 className="font-heading text-lg font-bold text-foreground mb-3">Messages</h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

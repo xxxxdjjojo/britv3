@@ -80,11 +80,36 @@ const STEP_FIELDS: (keyof ListingFormValues)[][] = [
 ];
 
 const STEPS = [
-  { label: "Property", short: "Details" },
-  { label: "Description", short: "Info" },
-  { label: "Pricing", short: "Price" },
-  { label: "Media", short: "Photos" },
-  { label: "Review", short: "Review" },
+  {
+    label: "Property",
+    short: "Details",
+    heading: "Property Details",
+    subtitle: "Define the location and fundamental nature of the property.",
+  },
+  {
+    label: "Description",
+    short: "Info",
+    heading: "Listing Details",
+    subtitle: "Describe the property and its key features for buyers.",
+  },
+  {
+    label: "Pricing",
+    short: "Price",
+    heading: "Pricing",
+    subtitle: "Set the asking price and any associated charges.",
+  },
+  {
+    label: "Media",
+    short: "Photos",
+    heading: "Photos & Media",
+    subtitle: "Upload images to showcase the property.",
+  },
+  {
+    label: "Review",
+    short: "Review",
+    heading: "Review & Publish",
+    subtitle: "Check everything looks right before going live.",
+  },
 ];
 
 type ListingFormProps = Readonly<{
@@ -351,28 +376,44 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
     }
   }, [form, draftListingId, initialData, router, role]);
 
+  const activeStep = STEPS[currentStep];
+
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="mx-auto max-w-2xl space-y-8">
+      {/* Per-step heading */}
+      <header className="space-y-1 text-center">
+        <p className="text-xs font-medium tracking-wide text-brand-primary uppercase">
+          Step {currentStep + 1} of {STEPS.length}
+        </p>
+        <h2 className="font-heading text-3xl font-bold text-brand-primary-dark">
+          {activeStep.heading}
+        </h2>
+        <p className="text-sm text-neutral-500">{activeStep.subtitle}</p>
+      </header>
+
       {/* Step Indicator */}
-      <nav aria-label="Form steps" className="flex items-center justify-between">
+      <nav
+        aria-label="Form steps"
+        className="flex items-center justify-center"
+      >
         {STEPS.map((step, index) => (
           <div key={step.label} className="flex items-center">
             <div className="flex flex-col items-center">
               <div
-                className={`flex size-8 items-center justify-center rounded-full text-sm font-medium ${
+                className={`flex size-9 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
                   index === currentStep
-                    ? "bg-brand-accent text-white"
+                    ? "bg-brand-primary text-white shadow-sm"
                     : index < currentStep
-                      ? "bg-brand-accent/20 text-brand-accent"
+                      ? "bg-brand-primary-lighter text-brand-primary"
                       : "bg-neutral-100 text-neutral-400"
                 }`}
               >
                 {index + 1}
               </div>
               <span
-                className={`mt-1 hidden text-xs sm:block ${
+                className={`mt-1.5 hidden text-xs sm:block ${
                   index === currentStep
-                    ? "font-medium text-neutral-900"
+                    ? "font-medium text-brand-primary-dark"
                     : "text-neutral-400"
                 }`}
               >
@@ -382,7 +423,9 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
             {index < STEPS.length - 1 && (
               <div
                 className={`mx-2 h-px w-8 sm:w-12 ${
-                  index < currentStep ? "bg-brand-accent/40" : "bg-neutral-200"
+                  index < currentStep
+                    ? "bg-brand-primary/40"
+                    : "bg-neutral-200"
                 }`}
               />
             )}
@@ -398,7 +441,7 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
       )}
 
       {/* Step Content */}
-      <div className="min-h-[400px]">
+      <div className="min-h-[400px] rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
         {currentStep === 0 && <PropertyDetails form={form} />}
         {currentStep === 1 && <Description form={form} />}
         {currentStep === 2 && <Pricing form={form} />}
@@ -411,7 +454,7 @@ export function ListingForm({ mode, initialData, role }: ListingFormProps) {
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between border-t border-neutral-100 pt-4">
+      <div className="flex items-center justify-between border-t border-border pt-4">
         <Button
           type="button"
           variant="outline"
