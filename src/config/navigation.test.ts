@@ -199,6 +199,44 @@ describe("ROLE_NAV_ITEMS", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Homebuyer dashboard nav — Stitch design parity
+// The Stitch buyer sidebar surfaces AI Match, Offers, Moving Checklist, and
+// Financial Tools alongside the core items. Each must map to an EXISTING route.
+// ---------------------------------------------------------------------------
+
+describe("homebuyer dashboard nav — Stitch parity", () => {
+  const hrefs = (): string[] => ROLE_NAV_ITEMS.homebuyer.map((item) => item.href);
+
+  it("surfaces AI Match (existing /ai-match route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/ai-match");
+  });
+
+  it("surfaces Offers (existing /offers route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/offers");
+  });
+
+  it("surfaces Moving Checklist (existing /moving route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/moving");
+  });
+
+  it("surfaces Financial Tools (existing /calculators route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/calculators");
+  });
+
+  it("retains the original core items", () => {
+    expect(hrefs()).toEqual(
+      expect.arrayContaining([
+        "/dashboard/homebuyer",
+        "/dashboard/homebuyer/saved",
+        "/dashboard/homebuyer/searches",
+        "/dashboard/homebuyer/viewings",
+        "/dashboard/homebuyer/documents",
+      ]),
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
 // TAB_CONFIG
 // ---------------------------------------------------------------------------
 
