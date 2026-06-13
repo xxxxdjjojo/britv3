@@ -8,7 +8,6 @@ import {
 } from "@/services/provider/provider-dashboard-service";
 import { getCashPosition } from "@/services/provider/provider-cash-position-service";
 import { getSmartActions } from "@/services/provider/provider-smart-actions-service";
-import { KPICard } from "@/components/dashboard/provider/KPICard";
 import { ActivityFeed } from "@/components/dashboard/provider/ActivityFeed";
 import { UpcomingJobsList } from "@/components/dashboard/provider/UpcomingJobsList";
 import { CashPositionWidget } from "@/components/dashboard/provider/CashPositionWidget";
@@ -50,12 +49,13 @@ export default async function ProviderDashboardPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-7xl">
-      {/* ── Page Header ─────────────────────────────────────────────────────── */}
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
-          {businessName
-            ? `Welcome back, ${businessName}`
-            : "Provider Dashboard"}
+      {/* ── Page Header — Stitch editorial: eyebrow above a large heading ────── */}
+      <div className="flex flex-col gap-1">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Welcome back
+        </p>
+        <h1 className="font-heading text-3xl font-bold tracking-tight md:text-4xl">
+          {businessName ?? "Provider Dashboard"}
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
           Here&apos;s what&apos;s happening with your business today.
@@ -101,28 +101,35 @@ export default async function ProviderDashboardPage() {
       {/* ── Smart Action Suggestions ─────────────────────────────────────────── */}
       <SmartActionsCard actions={smartActions} />
 
-      {/* ── 4 KPI Cards ─────────────────────────────────────────────────────── */}
+      {/* ── 4 Stat Tiles — Stitch editorial chrome ──────────────────────────── */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <KPICard
-          title="New Leads"
-          value={stats.totalLeads}
-          icon={Inbox}
-        />
-        <KPICard
-          title="Active Jobs"
-          value={stats.activeJobs}
-          icon={Briefcase}
-        />
-        <KPICard
-          title="Pending Reviews"
-          value={stats.averageRating > 0 ? `${stats.averageRating}★` : "—"}
-          icon={Star}
-        />
-        <KPICard
-          title="Total Earnings"
-          value={monthlyEarnings}
-          icon={PoundSterling}
-        />
+        {[
+          { label: "New Leads", value: stats.totalLeads, icon: Inbox },
+          { label: "Active Jobs", value: stats.activeJobs, icon: Briefcase },
+          {
+            label: "Pending Reviews",
+            value: stats.averageRating > 0 ? `${stats.averageRating}★` : "—",
+            icon: Star,
+          },
+          { label: "Total Earnings", value: monthlyEarnings, icon: PoundSterling },
+        ].map(({ label, value, icon: Icon }) => (
+          <div
+            key={label}
+            className="flex items-start gap-4 rounded-xl border border-border bg-white p-4 transition-shadow hover:shadow-sm md:p-5"
+          >
+            <div className="bg-brand-primary/10 text-brand-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
+              <Icon className="size-5" />
+            </div>
+            <div className="flex flex-1 flex-col gap-1">
+              <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.1em]">
+                {label}
+              </p>
+              <p className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+                {value}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* ── Cash Position Widget ─────────────────────────────────────────────── */}

@@ -1,6 +1,5 @@
 
 import Link from "next/link";
-import { KPICard } from "@/components/dashboard/provider/KPICard";
 import { Button } from "@/components/ui/button";
 import {
   Inbox,
@@ -10,6 +9,8 @@ import {
   PackageSearch,
   ShieldCheck,
   ArrowRight,
+  TrendingUp,
+  type LucideIcon,
 } from "lucide-react";
 
 const RECENT_ACTIVITY = [
@@ -20,12 +21,52 @@ const RECENT_ACTIVITY = [
   { id: 5, text: "New review: 5 stars from David Collins", time: "2 days ago" },
 ];
 
+type StatTileProps = Readonly<{
+  title: string;
+  value: string | number;
+  icon: LucideIcon;
+  trend?: { value: number; direction: "up" | "down" };
+}>;
+
+function StatTile({ title, value, icon: Icon, trend }: StatTileProps) {
+  return (
+    <div className="bg-surface rounded-xl border border-border p-5 transition-shadow hover:shadow-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="bg-brand-primary/10 text-brand-primary flex size-10 items-center justify-center rounded-lg">
+          <Icon className="size-5" />
+        </div>
+        {trend && (
+          <span
+            className={[
+              "flex items-center gap-1 text-xs font-semibold",
+              trend.direction === "up" ? "text-green-600" : "text-red-600",
+            ].join(" ")}
+          >
+            <TrendingUp className="size-3" />
+            {trend.value > 0 ? "+" : ""}
+            {trend.value}
+          </span>
+        )}
+      </div>
+      <p className="text-muted-foreground mb-1 text-[11px] font-semibold uppercase tracking-[0.1em]">
+        {title}
+      </p>
+      <p className="font-heading text-2xl md:text-3xl font-bold tracking-tight text-brand-primary-dark">
+        {value}
+      </p>
+    </div>
+  );
+}
+
 export default function BrokerDashboardPage() {
   return (
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Welcome back
+        </p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark mt-1">
           Mortgage Broker Dashboard
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
@@ -35,24 +76,24 @@ export default function BrokerDashboardPage() {
 
       {/* 4 KPI Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <KPICard
+        <StatTile
           title="Active Leads"
           value={12}
           icon={Inbox}
           trend={{ value: 3, direction: "up" }}
         />
-        <KPICard
+        <StatTile
           title="Clients in Pipeline"
           value={8}
           icon={GitBranch}
           trend={{ value: 2, direction: "up" }}
         />
-        <KPICard
+        <StatTile
           title="Avg Completion Time"
           value="34 days"
           icon={Clock}
         />
-        <KPICard
+        <StatTile
           title="Revenue This Month"
           value="£12,450"
           icon={PoundSterling}
