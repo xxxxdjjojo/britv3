@@ -39,13 +39,13 @@ export function FieldBottomNav() {
               className={[
                 "flex min-h-12 flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors",
                 active
-                  ? "text-[#1B4D3E]"
+                  ? "text-brand-primary"
                   : "text-neutral-400 hover:text-neutral-600",
               ].join(" ")}
               aria-current={active ? "page" : undefined}
             >
               <Icon
-                className={["size-5 shrink-0", active ? "text-[#1B4D3E]" : "text-neutral-400"].join(
+                className={["size-5 shrink-0", active ? "text-brand-primary" : "text-neutral-400"].join(
                   " ",
                 )}
                 aria-hidden="true"

@@ -7,6 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
 import type { ListingFormValues } from "../ListingForm";
 
+const PLANNING_PERMISSION_LABELS: Record<string, string> = {
+  granted: "Permission granted",
+  pending: "Decision pending",
+  refused: "Refused",
+  none_known: "None known",
+};
+
 function formatPrice(price: number): string {
   return new Intl.NumberFormat("en-GB", {
     style: "currency",
@@ -119,6 +126,12 @@ export function Review(
             <p className="text-neutral-500">
               EPC: {values.epc_rating}
               {values.epc_score ? ` (${values.epc_score})` : ""}
+            </p>
+          )}
+          {values.planning_permission_status && (
+            <p className="text-neutral-500">
+              Planning permission:{" "}
+              {PLANNING_PERMISSION_LABELS[values.planning_permission_status]}
             </p>
           )}
         </CardContent>

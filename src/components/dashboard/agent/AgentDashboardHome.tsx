@@ -81,37 +81,27 @@ type KpiCardProps = {
   label: string;
   value: number | string;
   icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
   trend?: "up" | "down" | "flat";
 };
 
-function KpiCard({
-  label,
-  value,
-  icon: Icon,
-  iconBg,
-  iconColor,
-  trend,
-}: KpiCardProps) {
+function KpiCard({ label, value, icon: Icon, trend }: KpiCardProps) {
   return (
-    <Card>
-      <CardContent className="flex items-center gap-4 pt-6">
-        <div
-          className={cn(
-            "flex size-12 shrink-0 items-center justify-center rounded-xl",
-            iconBg,
-          )}
-        >
-          <Icon className={cn("size-5", iconColor)} />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-xs text-muted-foreground">{label}</span>
-          <span className="text-2xl font-bold text-foreground">{value}</span>
+    <div className="bg-surface rounded-xl border border-border p-5 transition-shadow hover:shadow-sm h-full">
+      <div className="flex items-start gap-4">
+        <span className="bg-brand-primary/10 text-brand-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
+          <Icon className="size-5" />
+        </span>
+        <div className="flex flex-1 flex-col gap-1">
+          <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-[0.1em]">
+            {label}
+          </p>
+          <p className="font-heading text-2xl md:text-3xl font-bold tracking-tight">
+            {value}
+          </p>
           {trend && (
             <span
               className={cn(
-                "flex items-center gap-0.5 text-xs font-medium",
+                "mt-1 flex items-center gap-0.5 text-xs font-medium",
                 trend === "up" && "text-emerald-600 dark:text-emerald-400",
                 trend === "down" && "text-red-500 dark:text-red-400",
                 trend === "flat" && "text-muted-foreground",
@@ -124,8 +114,8 @@ function KpiCard({
             </span>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -237,11 +227,14 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Welcome back
+          </p>
+          <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark mt-1">
             Agent Dashboard
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Welcome back, {agentName.split("@")[0]}. Here&apos;s what&apos;s happening.
+          <p className="text-muted-foreground mt-1">
+            {agentName.split("@")[0]}, here&apos;s what&apos;s happening.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -278,40 +271,30 @@ export function AgentDashboardHome({ kpis, activityFeed, agentName, todaysDiary 
                   label="Active Listings"
                   value={kpis.active_listings_count}
                   icon={Building}
-                  iconBg="bg-blue-100 dark:bg-blue-900/40"
-                  iconColor="text-blue-600 dark:text-blue-400"
                   trend={kpis.active_listings_count > 0 ? "up" : "flat"}
                 />
                 <KpiCard
                   label="New Leads"
                   value={kpis.new_leads_count}
                   icon={UserPlus}
-                  iconBg="bg-emerald-100 dark:bg-emerald-900/40"
-                  iconColor="text-emerald-600 dark:text-emerald-400"
                   trend={kpis.new_leads_count > 0 ? "up" : "flat"}
                 />
                 <KpiCard
                   label="Viewings This Week"
                   value={kpis.viewings_this_week_count}
                   icon={Eye}
-                  iconBg="bg-amber-100 dark:bg-amber-900/40"
-                  iconColor="text-amber-600 dark:text-amber-400"
                   trend="flat"
                 />
                 <KpiCard
                   label="Pending Offers"
                   value={kpis.pending_offers_count}
                   icon={FileText}
-                  iconBg="bg-purple-100 dark:bg-purple-900/40"
-                  iconColor="text-purple-600 dark:text-purple-400"
                   trend={kpis.pending_offers_count > 0 ? "up" : "flat"}
                 />
                 <KpiCard
                   label="Performance Score"
                   value={`${performancePct}%`}
                   icon={TrendingUp}
-                  iconBg="bg-rose-100 dark:bg-rose-900/40"
-                  iconColor="text-rose-600 dark:text-rose-400"
                   trend={performancePct >= 50 ? "up" : performancePct > 0 ? "flat" : "down"}
                 />
               </div>

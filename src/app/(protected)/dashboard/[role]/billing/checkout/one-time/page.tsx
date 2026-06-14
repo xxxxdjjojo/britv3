@@ -143,8 +143,8 @@ function OneTimeCheckoutContent() {
           {/* Left: Boost details */}
           <div className="lg:col-span-2 space-y-5">
             <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F5EE] dark:bg-[#1B4D3E]/20">
-                <Zap className="text-[#1B4D3E] dark:text-emerald-400" size={18} />
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary-lighter dark:bg-brand-primary/20">
+                <Zap className="text-brand-primary dark:text-emerald-400" size={18} />
               </div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {checkoutState.boost.label}
@@ -210,7 +210,7 @@ function OneTimeCheckoutContent() {
             onClick={() => setSelectedBoost(boost)}
             className={`relative cursor-pointer transition-all ${
               selectedBoost?.id === boost.id
-                ? "border-2 border-[#1B4D3E] ring-2 ring-[#1B4D3E]/10 shadow-md"
+                ? "border-2 border-brand-primary ring-2 ring-brand-primary/10 shadow-md"
                 : "hover:shadow-md"
             } ${boost.highlighted ? "border-[#2563EB]" : ""}`}
           >
@@ -222,14 +222,14 @@ function OneTimeCheckoutContent() {
               </div>
             )}
             <CardContent className="pt-6 pb-4 text-center">
-              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#E8F5EE] dark:bg-[#1B4D3E]/20">
-                <Zap className="text-[#1B4D3E] dark:text-emerald-400" size={18} />
+              <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary-lighter dark:bg-brand-primary/20">
+                <Zap className="text-brand-primary dark:text-emerald-400" size={18} />
               </div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">{boost.label}</p>
               <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">{boost.price}</p>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{boost.description}</p>
               {selectedBoost?.id === boost.id && (
-                <div className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-[#1B4D3E] dark:text-emerald-400">
+                <div className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-brand-primary dark:text-emerald-400">
                   <CheckCircle2 size={14} />
                   Selected
                 </div>
@@ -243,7 +243,7 @@ function OneTimeCheckoutContent() {
         <Button
           onClick={() => void handleCheckout()}
           disabled={!selectedBoost || isLoading || !stripePromise}
-          className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-2"
+          className="bg-brand-primary text-white hover:bg-brand-primary-light gap-2"
         >
           {isLoading ? (
             <><Loader2 size={14} className="animate-spin" />Loading checkout…</>
@@ -270,7 +270,7 @@ export default function OneTimeCheckoutPage() {
     <Suspense
       fallback={
         <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#1B4D3E]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
         </div>
       }
     >

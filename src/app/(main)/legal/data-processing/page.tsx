@@ -113,7 +113,7 @@ export default function DataProcessingPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-neutral-50">
+                <tr className="bg-muted">
                   <th className="border border-neutral-200 p-3 text-left font-semibold">Sub-Processor</th>
                   <th className="border border-neutral-200 p-3 text-left font-semibold">Purpose</th>
                   <th className="border border-neutral-200 p-3 text-left font-semibold">Location</th>

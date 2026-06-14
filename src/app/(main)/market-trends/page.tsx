@@ -165,7 +165,7 @@ export default async function MarketTrendsPage() {
                 <div
                   className={`mt-2 flex items-center gap-1 text-sm font-semibold ${
                     kpi.trend === "up"
-                      ? "text-green-600"
+                      ? "text-success"
                       : kpi.trend === "down"
                         ? "text-red-600"
                         : "text-neutral-400"
@@ -261,10 +261,10 @@ export default async function MarketTrendsPage() {
                 {HOT_MARKETS.slice(0, 3).map((market) => (
                   <div
                     key={market.city}
-                    className="flex items-center justify-between rounded-lg bg-neutral-50 p-3"
+                    className="flex items-center justify-between rounded-lg bg-muted p-3"
                   >
                     <span className="text-sm font-semibold text-neutral-900">{market.city}</span>
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-sm font-bold text-green-600">
+                    <span className="inline-flex items-center rounded-full bg-success/10 px-2.5 py-0.5 text-sm font-bold text-success">
                       {market.change}
                     </span>
                   </div>
@@ -275,7 +275,7 @@ export default async function MarketTrendsPage() {
             {/* Cold Zones */}
             <div className="border-t border-neutral-100 pt-4">
               <div className="mb-3 flex items-center justify-between">
-                <span className="flex items-center gap-1 text-xs font-bold uppercase text-blue-500">
+                <span className="flex items-center gap-1 text-xs font-bold uppercase text-brand-primary">
                   <Snowflake className="h-4 w-4" /> Cold Zones
                 </span>
                 <span className="text-xs font-medium text-neutral-400">Stagnant</span>
@@ -284,7 +284,7 @@ export default async function MarketTrendsPage() {
                 {COLD_MARKETS.slice(0, 3).map((market) => (
                   <div
                     key={market.city}
-                    className="flex items-center justify-between rounded-lg bg-neutral-50 p-3"
+                    className="flex items-center justify-between rounded-lg bg-muted p-3"
                   >
                     <span className="text-sm font-semibold text-neutral-900">{market.city}</span>
                     <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-bold text-red-600">
@@ -321,7 +321,7 @@ export default async function MarketTrendsPage() {
                     <tr key={row.region} className="border-b border-neutral-100 last:border-0">
                       <td className="py-2.5 font-medium text-neutral-900">{row.region}</td>
                       <td className="py-2.5 text-right text-neutral-700">{row.avgPriceFormatted}</td>
-                      <td className="py-2.5 text-right font-semibold text-green-600">
+                      <td className="py-2.5 text-right font-semibold text-success">
                         {row.yoyChangeFormatted}
                       </td>
                     </tr>
@@ -436,7 +436,7 @@ export default async function MarketTrendsPage() {
                   <span className="text-neutral-600">Asking</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="h-3 w-3 rounded-full bg-green-500" />
+                  <span className="h-3 w-3 rounded-full bg-success" />
                   <span className="text-neutral-600">Sold</span>
                 </div>
               </div>
@@ -453,7 +453,7 @@ export default async function MarketTrendsPage() {
                 <line className="text-neutral-100" stroke="currentColor" strokeWidth="1" x1="0" x2="400" y1="50" y2="50" />
                 <line className="text-neutral-100" stroke="currentColor" strokeWidth="1" x1="0" x2="400" y1="100" y2="100" />
                 <path d="M0,40 C50,30 100,50 150,45 S250,20 300,35 S400,25 400,25" fill="none" className="stroke-brand-primary" strokeWidth="2" />
-                <path d="M0,50 C50,45 100,60 150,55 S250,35 300,45 S400,38 400,38" fill="none" className="stroke-green-500" strokeWidth="2" />
+                <path d="M0,50 C50,45 100,60 150,55 S250,35 300,45 S400,38 400,38" fill="none" className="stroke-success" strokeWidth="2" />
               </svg>
               <div className="mt-4 flex justify-between px-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                 <span>Oct</span>
@@ -518,31 +518,31 @@ export default async function MarketTrendsPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Avg Price</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">+1.2%</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>£3,500</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Transactions</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">+5.5%</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>+4,800</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Days to Sell</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">-1 day</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>Faster</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Price Gap</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">-0.1%</p>
                 <div className="mt-1 flex items-center justify-center gap-1 text-sm text-neutral-400">
@@ -561,34 +561,34 @@ export default async function MarketTrendsPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Avg Price</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">+3.8%</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>£10,900</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Transactions</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">+12%</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>+9,900</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Days to Sell</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">-3 days</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>Faster</span>
                 </div>
               </div>
-              <div className="rounded-lg bg-neutral-50 p-4 text-center">
+              <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">Price Gap</p>
                 <p className="mt-1 text-xl font-bold text-neutral-900">-0.3%</p>
-                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-green-600">
+                <div className="mt-1 flex items-center justify-center gap-1 text-sm text-success">
                   <TrendingUp className="h-3 w-3" />
                   <span>Narrowing</span>
                 </div>
@@ -686,7 +686,7 @@ export default async function MarketTrendsPage() {
                         </div>
                       </div>
                       <div className="h-1.5 w-24 overflow-hidden rounded-full bg-neutral-100">
-                        <div className="h-full bg-green-500" style={{ width: barWidth }} />
+                        <div className="h-full bg-success" style={{ width: barWidth }} />
                       </div>
                     </div>
                   );
@@ -694,7 +694,7 @@ export default async function MarketTrendsPage() {
               </div>
               <Link
                 href="#local-authority-rankings"
-                className="mt-8 flex w-full items-center justify-center rounded-lg border border-neutral-200 py-3 text-sm font-bold text-neutral-600 transition-colors hover:bg-neutral-50"
+                className="mt-8 flex w-full items-center justify-center rounded-lg border border-neutral-200 py-3 text-sm font-bold text-neutral-600 transition-colors hover:bg-muted"
               >
                 View Full Rankings
                 <ChevronRight className="ml-1 h-4 w-4" />
@@ -725,7 +725,7 @@ export default async function MarketTrendsPage() {
                       </div>
                     </div>
                     <div className="h-1.5 w-28 overflow-hidden rounded-full bg-neutral-100">
-                      <div className="h-full bg-green-500" style={{ width: barWidth }} />
+                      <div className="h-full bg-success" style={{ width: barWidth }} />
                     </div>
                   </div>
                 );

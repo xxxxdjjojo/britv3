@@ -68,7 +68,7 @@ export default async function ConveyancerProfilePage({ params }: Params) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen bg-surface dark:bg-slate-950">
         <main className="max-w-7xl mx-auto px-6 py-8">
           <SpecialistHero provider={provider} specialistType="conveyancer" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

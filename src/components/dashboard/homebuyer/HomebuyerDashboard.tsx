@@ -10,11 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DashboardWelcome } from "@/components/dashboard/shared/DashboardWelcome";
+import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import {
   Heart,
-  Bell,
   Calendar,
-  Mail,
   MapPin,
   Bed,
   Bath,
@@ -139,9 +138,8 @@ const MOCK_SERVICES = [
 // Component
 // ---------------------------------------------------------------------------
 
-export function HomebuyerDashboard({
-  data,
-}: Readonly<{ data: HomebuyerData }>) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function HomebuyerDashboard({ data }: Readonly<{ data: HomebuyerData }>) {
   const userName = "James";
 
   return (
@@ -162,37 +160,10 @@ export function HomebuyerDashboard({
         ]}
       />
 
-      {/* ── 2. Stats Row ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard
-          icon={<Heart className="size-5 text-brand-primary" />}
-          label="Saved Properties"
-          value={data.saved_properties_count || 12}
-          sub="+2 this week"
-        />
-        <StatCard
-          icon={<Bell className="size-5 text-brand-primary" />}
-          label="Active Alerts"
-          value={data.active_searches_count || 4}
-        />
-        <StatCard
-          icon={<Calendar className="size-5 text-brand-primary" />}
-          label="Viewings Scheduled"
-          value={data.upcoming_viewings.length || 3}
-          sub="Next: Tomorrow"
-        />
-        <StatCard
-          icon={<Mail className="size-5 text-brand-primary" />}
-          label="Agent Messages"
-          value={15}
-          sub="8 New"
-        />
-      </div>
-
-      {/* ── 3. New Properties Carousel ────────────────────────────────── */}
+      {/* ── 2. New Properties Carousel ────────────────────────────────── */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-900">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="font-heading text-lg font-bold tracking-tight text-neutral-900">
             New Properties For You
           </h2>
           <div className="flex gap-2">
@@ -258,7 +229,7 @@ export function HomebuyerDashboard({
         </div>
       </section>
 
-      {/* ── 4. Split: Next Viewing + Recent Activity ──────────────────── */}
+      {/* ── 3. Split: Next Viewing + Recent Activity ──────────────────── */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left — Next Viewing (1/3) */}
         <Card className="lg:col-span-1">
@@ -318,7 +289,7 @@ export function HomebuyerDashboard({
             <div className="flex flex-col divide-y divide-neutral-200">
               {MOCK_ACTIVITY.map((item) => (
                 <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-50">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface">
                     <item.icon className={`size-5 ${item.iconColor}`} />
                   </div>
                   <div className="flex-1 space-y-0.5">
@@ -339,16 +310,14 @@ export function HomebuyerDashboard({
         </Card>
       </div>
 
-      {/* ── 5. Recommended Services ───────────────────────────────────── */}
+      {/* ── 4. Recommended Services ───────────────────────────────────── */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-neutral-900">
-          Recommended Services
-        </h2>
+        <SectionHeader title="Recommended Services" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {MOCK_SERVICES.map((service) => (
             <Card key={service.id} className="transition hover:shadow-md">
               <CardContent className="flex flex-col items-start gap-3 p-5">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-neutral-50">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-surface">
                   <service.icon className="size-5 text-brand-primary" />
                 </div>
                 <h3 className="text-sm font-semibold text-neutral-900">
@@ -372,38 +341,5 @@ export function HomebuyerDashboard({
         </div>
       </section>
     </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Stat card sub-component
-// ---------------------------------------------------------------------------
-
-function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-}: Readonly<{
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  sub?: string;
-}>) {
-  return (
-    <Card>
-      <CardContent className="flex items-start gap-4 p-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-neutral-50">
-          {icon}
-        </div>
-        <div className="space-y-0.5">
-          <p className="text-xs text-neutral-500">{label}</p>
-          <p className="text-xl font-bold text-neutral-900">{value}</p>
-          {sub && (
-            <p className="text-xs text-neutral-500">{sub}</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
   );
 }

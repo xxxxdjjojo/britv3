@@ -29,7 +29,7 @@ const ROLE_COLOURS: Record<TeamRole, string> = {
   senior_negotiator: "bg-blue-100 text-blue-700",
   negotiator: "bg-green-100 text-green-700",
   lettings_manager: "bg-purple-100 text-purple-700",
-  viewer: "bg-gray-100 text-gray-700",
+  viewer: "bg-muted text-gray-700",
 };
 
 const ROLE_BADGE_VARIANT: Record<TeamRole, "default" | "secondary" | "outline" | "destructive"> = {

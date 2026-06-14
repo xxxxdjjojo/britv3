@@ -25,9 +25,9 @@ function statusBadge(status: string) {
     paid: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
     open: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
     uncollectible: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    void: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300",
+    void: "bg-muted text-muted-foreground dark:bg-gray-800 dark:text-gray-300",
   };
-  const cls = map[status] ?? "bg-gray-100 text-gray-800";
+  const cls = map[status] ?? "bg-muted text-muted-foreground";
   return (
     <Badge className={`${cls} text-xs`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}

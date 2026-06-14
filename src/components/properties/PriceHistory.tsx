@@ -29,6 +29,7 @@ type HistoryEntry = {
 type PriceHistoryProps = Readonly<{
   history: HistoryEntry[];
   comparables?: LandRegistryComparable[] | null;
+  pastSales?: LandRegistryComparable[] | null;
   className?: string;
 }>;
 
@@ -194,6 +195,77 @@ function ComparablesTable({
 }
 
 // ---------------------------------------------------------------------------
+// Past sale history (this exact property — HM Land Registry)
+// ---------------------------------------------------------------------------
+
+function PastSaleHistory({
+  sales,
+}: {
+  sales: LandRegistryComparable[];
+}) {
+  const sortedSales = [...sales].sort((a, b) => b.date.localeCompare(a.date));
+  const headline = sortedSales[0];
+
+  return (
+    <div className="rounded-xl border bg-card p-5">
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h3 className="text-base font-semibold text-foreground">
+            Sale history for this property
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Recorded by HM Land Registry · {sortedSales.length} sale
+            {sortedSales.length === 1 ? "" : "s"}
+          </p>
+        </div>
+        {headline && (
+          <div className="text-right shrink-0">
+            <p className="text-xs text-muted-foreground">Last sold</p>
+            <p className="text-lg font-bold text-foreground">
+              {formatPrice(headline.price)}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(headline.date).toLocaleDateString("en-GB", {
+                month: "short",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <ol className="space-y-2">
+        {sortedSales.map((sale) => (
+          <li
+            key={`${sale.date}-${sale.price}`}
+            className="flex items-center justify-between gap-4 rounded-lg bg-muted/40 px-3 py-2 text-sm"
+          >
+            <div className="min-w-0">
+              <p className="font-medium text-foreground">
+                {formatPrice(sale.price)}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {sale.property_type}
+                {sale.new_build ? " · New Build" : ""}
+                {" · "}
+                {sale.tenure}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground shrink-0">
+              {new Date(sale.date).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Market insights placeholder
 // ---------------------------------------------------------------------------
 
@@ -216,10 +288,15 @@ function MarketInsights() {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function PriceHistory({ history, comparables, className }: PriceHistoryProps) {
+export function PriceHistory({
+  history,
+  comparables,
+  pastSales,
+  className,
+}: PriceHistoryProps) {
   const [activeTab, setActiveTab] = useState<Tab>("history");
 
-  if (history.length === 0 && !comparables?.length) {
+  if (history.length === 0 && !comparables?.length && !pastSales?.length) {
     return null;
   }
 
@@ -267,6 +344,11 @@ export function PriceHistory({ history, comparables, className }: PriceHistoryPr
             {changePct}% since listed
           </div>
         </div>
+      )}
+
+      {/* Past sale history — HM Land Registry record for this exact address */}
+      {pastSales && pastSales.length > 0 && (
+        <PastSaleHistory sales={pastSales} />
       )}
 
       {/* Tab bar */}

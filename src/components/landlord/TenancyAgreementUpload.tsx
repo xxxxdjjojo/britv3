@@ -109,20 +109,20 @@ export function TenancyAgreementUpload({ tenancyId, propertyId, tenantName }: Pr
       {...getRootProps()}
       className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors cursor-pointer ${
         isDragActive
-          ? "border-[#1B4D3E] bg-[#1B4D3E]/5"
-          : "border-slate-300 dark:border-slate-600 hover:border-[#1B4D3E]/50 hover:bg-slate-50 dark:hover:bg-slate-800/30"
+          ? "border-brand-primary bg-brand-primary/5"
+          : "border-slate-300 dark:border-slate-600 hover:border-brand-primary/50 hover:bg-surface dark:hover:bg-slate-800/30"
       } ${uploading ? "pointer-events-none opacity-60" : ""}`}
     >
       <input {...getInputProps()} />
       {uploading ? (
         <>
-          <Loader2 className="size-8 animate-spin text-[#1B4D3E] mb-3" />
+          <Loader2 className="size-8 animate-spin text-brand-primary mb-3" />
           <p className="text-sm font-medium">Uploading...</p>
         </>
       ) : (
         <>
           <Upload
-            className={`size-8 mb-3 ${isDragActive ? "text-[#1B4D3E]" : "text-muted-foreground"}`}
+            className={`size-8 mb-3 ${isDragActive ? "text-brand-primary" : "text-muted-foreground"}`}
           />
           <p className="text-sm font-medium">
             {isDragActive ? "Drop the PDF here" : "Drag & drop your PDF here"}

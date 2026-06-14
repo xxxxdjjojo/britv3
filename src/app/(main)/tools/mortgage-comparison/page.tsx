@@ -232,7 +232,7 @@ export default function MortgageComparisonPage() {
                             key={`${p.lender}-${p.product}`}
                             className={
                               isCheapest
-                                ? "bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
+                                ? "bg-success/10 hover:bg-success/20"
                                 : undefined
                             }
                           >
@@ -242,7 +242,7 @@ export default function MortgageComparisonPage() {
                                 {isCheapest && (
                                   <Badge
                                     variant="secondary"
-                                    className="bg-green-100 text-xs text-green-800 dark:bg-green-900 dark:text-green-200"
+                                    className="bg-success/10 text-xs text-success"
                                   >
                                     Lowest
                                   </Badge>
@@ -330,17 +330,17 @@ export default function MortgageComparisonPage() {
                 </div>
                 <h3 className="text-lg font-bold">Speak to a Broker</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Get a personalised mortgage quote from an FCA-regulated broker
                 in minutes.
               </p>
               <Link
                 href="/marketplace?category=mortgage-broker"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-muted"
               >
                 Find a Broker
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter">
                 Free, no-obligation quote
               </p>
             </div>
@@ -353,7 +353,7 @@ export default function MortgageComparisonPage() {
                 </h3>
                 <Link
                   href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <PiggyBank className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -365,7 +365,7 @@ export default function MortgageComparisonPage() {
                 </Link>
                 <Link
                   href="/tools/remortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Calculator className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -381,7 +381,7 @@ export default function MortgageComparisonPage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-muted/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
                 <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">

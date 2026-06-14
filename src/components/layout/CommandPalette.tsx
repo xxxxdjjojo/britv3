@@ -14,21 +14,27 @@ import {
 } from "@/components/ui/command";
 import { COMMAND_PALETTE_ROUTES } from "@/config/navigation";
 import { useCommandPalette } from "@/contexts/CommandPaletteContext";
+import { useRole } from "@/hooks/useRole";
 
 export function CommandPalette() {
   const { open, setOpen } = useCommandPalette();
+  const { activeRole } = useRole();
   const router = useRouter();
 
   // Group routes by section (memoized)
   const groupedRoutes = useMemo(() => {
     const groups = new Map<string, typeof COMMAND_PALETTE_ROUTES>();
     for (const route of COMMAND_PALETTE_ROUTES) {
+      if (route.roles && (!activeRole || !route.roles.includes(activeRole))) {
+        continue;
+      }
+
       const existing = groups.get(route.section) ?? [];
       existing.push(route);
       groups.set(route.section, existing);
     }
     return groups;
-  }, []);
+  }, [activeRole]);
 
   // Handle Cmd+K / Ctrl+K
   const handleKeyDown = useCallback(

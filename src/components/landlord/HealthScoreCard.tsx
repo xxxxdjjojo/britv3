@@ -121,7 +121,7 @@ function SubScoreRow({ icon: Icon, label, score, max }: SubScoreRowProps) {
             {score}/{max}
           </span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted dark:bg-slate-800">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500",
@@ -203,7 +203,7 @@ export function HealthScoreCard({ score }: HealthScoreCardProps) {
       {score.total_score < 100 && (
         <Link
           href={weakest.href}
-          className="mt-4 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 transition-colors hover:border-[#1B4D3E]/20 hover:bg-[#1B4D3E]/5 dark:border-slate-800 dark:bg-slate-800/50 dark:hover:border-[#1B4D3E]/40"
+          className="mt-4 flex items-center justify-between rounded-xl border border-slate-100 bg-surface px-4 py-3 transition-colors hover:border-brand-primary/20 hover:bg-brand-primary/5 dark:border-slate-800 dark:bg-slate-800/50 dark:hover:border-brand-primary/40"
         >
           <div>
             <p className="text-xs font-bold text-slate-600 dark:text-slate-300">
@@ -211,7 +211,7 @@ export function HealthScoreCard({ score }: HealthScoreCardProps) {
             </p>
             <p className="text-xs text-slate-400">{weakest.tip}</p>
           </div>
-          <ArrowRight className="size-4 shrink-0 text-[#1B4D3E]" />
+          <ArrowRight className="size-4 shrink-0 text-brand-primary" />
         </Link>
       )}
     </div>

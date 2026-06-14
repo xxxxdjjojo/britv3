@@ -10,6 +10,7 @@ import {
   navLinkClasses,
   footerLinkClasses,
 } from "./navigation";
+import { savedDashboardPathForRole } from "@/lib/routes";
 
 const FORBIDDEN_CANONICAL_HREFS = [
   "/messages",
@@ -198,6 +199,44 @@ describe("ROLE_NAV_ITEMS", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Homebuyer dashboard nav — Stitch design parity
+// The Stitch buyer sidebar surfaces AI Match, Offers, Moving Checklist, and
+// Financial Tools alongside the core items. Each must map to an EXISTING route.
+// ---------------------------------------------------------------------------
+
+describe("homebuyer dashboard nav — Stitch parity", () => {
+  const hrefs = (): string[] => ROLE_NAV_ITEMS.homebuyer.map((item) => item.href);
+
+  it("surfaces AI Match (existing /ai-match route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/ai-match");
+  });
+
+  it("surfaces Offers (existing /offers route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/offers");
+  });
+
+  it("surfaces Moving Checklist (existing /moving route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/moving");
+  });
+
+  it("surfaces Financial Tools (existing /calculators route)", () => {
+    expect(hrefs()).toContain("/dashboard/homebuyer/calculators");
+  });
+
+  it("retains the original core items", () => {
+    expect(hrefs()).toEqual(
+      expect.arrayContaining([
+        "/dashboard/homebuyer",
+        "/dashboard/homebuyer/saved",
+        "/dashboard/homebuyer/searches",
+        "/dashboard/homebuyer/viewings",
+        "/dashboard/homebuyer/documents",
+      ]),
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
 // TAB_CONFIG
 // ---------------------------------------------------------------------------
 
@@ -301,6 +340,22 @@ describe("canonical hrefs", () => {
         hrefs.some((href) => href.startsWith(`${forbiddenHref}/`)),
       ).toBe(false);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// role-aware quick links
+// ---------------------------------------------------------------------------
+
+describe("role-aware quick links", () => {
+  it("uses renderable saved destinations for every role", () => {
+    expect(savedDashboardPathForRole("homebuyer")).toBe("/dashboard/homebuyer/saved");
+    expect(savedDashboardPathForRole("renter")).toBe("/dashboard/renter/saved");
+    expect(savedDashboardPathForRole("seller")).toBe("/dashboard/seller/saved");
+    expect(savedDashboardPathForRole("landlord")).toBe("/dashboard/landlord/saved");
+    expect(savedDashboardPathForRole("agent")).toBe("/dashboard/agent/saved");
+    expect(savedDashboardPathForRole("service_provider")).toBe("/dashboard");
+    expect(savedDashboardPathForRole("mortgage_broker")).toBe("/dashboard");
   });
 });
 

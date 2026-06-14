@@ -94,6 +94,26 @@ describe("BottomTabBar", () => {
     expect(badge).toBeInTheDocument();
   });
 
+  it.each([
+    "homebuyer",
+    "renter",
+    "seller",
+    "landlord",
+    "agent",
+    "service_provider",
+    "mortgage_broker",
+  ] as UserRole[])("renders every configured bottom tab for %s", (role) => {
+    mockActiveRole = role;
+    render(<BottomTabBar />);
+
+    for (const tab of TAB_CONFIG[role]) {
+      const link = screen.getByText(tab.label).closest("a");
+
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute("href", tab.href);
+    }
+  });
+
   it("returns null when no active role", () => {
     mockActiveRole = null;
     const { container } = render(<BottomTabBar />);

@@ -66,7 +66,7 @@ export default async function MaintenanceRequestPage({
       <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
         <Link
           href="/dashboard/landlord/maintenance"
-          className="hover:text-[#1B4D3E] transition-colors"
+          className="hover:text-brand-primary transition-colors"
         >
           Maintenance
         </Link>

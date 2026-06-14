@@ -5,6 +5,10 @@ import {
   getAvailableSlots,
   isServiceError,
 } from "@/services/viewings/viewings-service";
+import {
+  recordIntroduction,
+  recordIntroductionEvent,
+} from "@/services/truedeed/introduction-service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,6 +70,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Analytics tracked client-side via hooks
+
+    // Truedeed §5 capture hook — fire-and-forget, never breaks the booking
+    try {
+      await recordIntroduction({
+        applicantId: user.id,
+        listingId,
+        contactType: "viewing_request",
+      });
+      await recordIntroductionEvent({
+        applicantId: user.id,
+        listingId,
+        eventType: "viewing_booked",
+        payload: { viewingId: result.viewingId },
+      });
+    } catch (hookErr) {
+      console.warn("[truedeed] introduction capture failed (viewing)", {
+        error_type: hookErr instanceof Error ? hookErr.name : "unknown",
+      });
+    }
 
     return NextResponse.json({ viewingId: result.viewingId }, { status: 201 });
   } catch (err) {

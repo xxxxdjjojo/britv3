@@ -4,10 +4,12 @@ import { isAuthenticated } from "./helpers";
 /** User roles matching the application. */
 export type UserRole =
   | "homebuyer"
+  | "renter"
   | "seller"
   | "landlord"
   | "agent"
   | "provider"
+  | "mortgage_broker"
   | "admin";
 
 type AuthFixtures = {

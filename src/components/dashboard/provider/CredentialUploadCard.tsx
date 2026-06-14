@@ -135,7 +135,7 @@ export function CredentialUploadCard({
 
       {/* Existing filename */}
       {displayFileName && (
-        <div className="mb-3 flex items-center gap-2 rounded-lg bg-neutral-50 px-3 py-2">
+        <div className="mb-3 flex items-center gap-2 rounded-lg bg-surface px-3 py-2">
           <FileText className="size-4 shrink-0 text-neutral-400" />
           <span className="truncate text-xs text-neutral-600">{displayFileName}</span>
         </div>
@@ -160,10 +160,10 @@ export function CredentialUploadCard({
           className={[
             "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-5 text-center transition-colors",
             isDraggingOver
-              ? "border-[#1B4D3E] bg-[#E8F5EE]"
+              ? "border-brand-primary bg-[#E8F5EE]"
               : uploadStatus === "uploading"
-                ? "border-neutral-200 bg-neutral-50 opacity-60"
-                : "border-neutral-200 bg-neutral-50 hover:border-[#1B4D3E] hover:bg-[#E8F5EE]",
+                ? "border-neutral-200 bg-surface opacity-60"
+                : "border-neutral-200 bg-surface hover:border-brand-primary hover:bg-[#E8F5EE]",
           ].join(" ")}
         >
           <Upload className="size-5 text-neutral-400" />
@@ -172,7 +172,7 @@ export function CredentialUploadCard({
               "Uploading…"
             ) : (
               <>
-                <span className="font-semibold text-[#1B4D3E]">Click to upload</span> or drag &amp;
+                <span className="font-semibold text-brand-primary">Click to upload</span> or drag &amp;
                 drop
                 <br />
                 PDF, JPEG or PNG — max 10 MB

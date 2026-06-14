@@ -2,33 +2,23 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { InsightPanel } from "@/components/dashboard/InsightPanel";
+import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Upload, Eye, Trash2, Shield, Clock, FolderOpen } from "lucide-react";
+  FileText,
+  Upload,
+  Eye,
+  Trash2,
+  ShieldCheck,
+  BadgeCheck,
+  FolderOpen,
+  Fingerprint,
+  Banknote,
+  Home,
+  type LucideIcon,
+} from "lucide-react";
 import { useDocuments, useUploadDocument, useDeleteDocument } from "@/hooks/useDocuments";
 import type { UserDocument, DocumentType } from "@/services/documents/documents-service";
 
@@ -61,6 +51,41 @@ const STATUS_LABELS: Record<UserDocument["status"], string> = {
   rejected: "Rejected",
 };
 
+const STATUS_PILL_CLASSES: Record<UserDocument["status"], string> = {
+  uploaded: "bg-muted text-muted-foreground",
+  pending_review: "bg-warning/10 text-warning",
+  verified: "bg-success/10 text-success",
+  rejected: "bg-error/10 text-error",
+};
+
+type DropZone = Readonly<{
+  type: DocumentType;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}>;
+
+const DROP_ZONES: readonly DropZone[] = [
+  {
+    type: "id_proof",
+    label: "Identity",
+    description: "Passport, driving licence, or proof of address.",
+    icon: Fingerprint,
+  },
+  {
+    type: "proof_of_funds",
+    label: "Financial",
+    description: "Proof of funds, bank statements, or mortgage in principle.",
+    icon: Banknote,
+  },
+  {
+    type: "aip_letter",
+    label: "Property",
+    description: "AIP letters, surveys, and property-related paperwork.",
+    icon: Home,
+  },
+];
+
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -73,21 +98,6 @@ function formatDate(isoString: string): string {
     month: "short",
     year: "numeric",
   }).format(new Date(isoString));
-}
-
-function statusVariant(
-  status: UserDocument["status"],
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "verified":
-      return "default";
-    case "rejected":
-      return "destructive";
-    case "pending_review":
-      return "secondary";
-    default:
-      return "outline";
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -104,13 +114,9 @@ export default function DocumentsPage() {
   const deleteDocument = useDeleteDocument();
 
   const allDocs = documents ?? [];
-  const verifiedCount = allDocs.filter((d) => d.status === "verified").length;
-  const pendingCount = allDocs.filter((d) => d.status === "pending_review").length;
-  const rejectedCount = allDocs.filter((d) => d.status === "rejected").length;
 
-  const docsByType = (type: DocumentType) => allDocs.filter((d) => d.document_type === type);
-
-  const handleUploadClick = () => {
+  const handleUploadClick = (documentType: DocumentType) => {
+    setSelectedDocumentType(documentType);
     fileInputRef.current?.click();
   };
 
@@ -165,227 +171,191 @@ export default function DocumentsPage() {
     }
   };
 
-  const DocumentRow = ({ doc }: { doc: UserDocument }) => (
-    <TableRow key={doc.id}>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <FileText className="size-4 text-muted-foreground" />
-          <span className="font-medium">{doc.file_name}</span>
-        </div>
-      </TableCell>
-      <TableCell>
-        <Badge variant="outline">{DOCUMENT_TYPE_LABELS[doc.document_type]}</Badge>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-1 text-sm">
-          <Clock className="size-3" />
-          {formatDate(doc.created_at)}
-        </div>
-      </TableCell>
-      <TableCell className="text-sm text-muted-foreground">
-        {formatBytes(doc.file_size_bytes)}
-      </TableCell>
-      <TableCell>
-        <Badge variant={statusVariant(doc.status)}>
-          {doc.status === "verified" && <Shield className="mr-1 size-3" />}
-          {STATUS_LABELS[doc.status]}
-        </Badge>
-      </TableCell>
-      <TableCell className="text-right">
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" size="icon" aria-label="View document">
-            <Eye className="size-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Delete document"
-            onClick={() => handleDelete(doc.id, doc.file_name)}
-            disabled={deleteDocument.isPending}
-          >
-            <Trash2 className="size-4" />
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-
-  const EmptyState = ({ message }: { message: string }) => (
-    <div className="py-12 text-center text-muted-foreground">
-      <FolderOpen className="mx-auto mb-4 size-12 opacity-40" />
-      <p className="text-sm">{message}</p>
-    </div>
-  );
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Document Vault</h1>
-          <p className="text-muted-foreground">
-            Securely store and manage your property documents
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            value={selectedDocumentType}
-            onValueChange={(v) => setSelectedDocumentType(v as DocumentType)}
-          >
-            <SelectTrigger className="w-44">
-              <SelectValue placeholder="Document type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="id_proof">ID Proof</SelectItem>
-              <SelectItem value="proof_of_funds">Proof of Funds</SelectItem>
-              <SelectItem value="aip_letter">AIP Letter</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button onClick={handleUploadClick} disabled={isUploading}>
-            <Upload className="mr-2 size-4" />
-            {isUploading ? "Uploading…" : "Upload Document"}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-            onChange={handleFileChange}
-          />
-        </div>
+    <div className="space-y-8">
+      {/* Heading */}
+      <header className="space-y-2">
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+          Document Vault
+        </h1>
+        <p className="max-w-2xl text-muted-foreground">
+          Manage your essential documentation with institutional-grade security. Your documents are
+          encrypted and only shared with your consent.
+        </p>
+      </header>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+        onChange={handleFileChange}
+      />
+
+      {/* Category drop-zones */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {DROP_ZONES.map((zone) => {
+          const Icon = zone.icon;
+          return (
+            <div
+              key={zone.type}
+              className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+                  <Icon className="size-5" />
+                </span>
+                <h2 className="font-heading text-lg font-bold text-brand-primary-dark">
+                  {zone.label}
+                </h2>
+              </div>
+              <p className="text-sm text-muted-foreground">{zone.description}</p>
+              <button
+                type="button"
+                onClick={() => handleUploadClick(zone.type)}
+                disabled={isUploading}
+                aria-label={`Upload ${zone.label} document`}
+                className="group flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-6 text-center transition-colors hover:border-brand-primary/60 hover:bg-brand-primary/5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Upload className="size-6 text-muted-foreground transition-colors group-hover:text-brand-primary" />
+                <span className="text-sm font-medium text-brand-primary-dark">
+                  {isUploading ? "Uploading…" : "Drop file to upload"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  PDF, JPG, or PNG up to 50 MB
+                </span>
+              </button>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Documents</CardDescription>
-            {isLoading ? (
-              <Skeleton className="h-9 w-12" />
-            ) : (
-              <CardTitle className="text-3xl">{allDocs.length}</CardTitle>
-            )}
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Verified</CardDescription>
-            {isLoading ? (
-              <Skeleton className="h-9 w-12" />
-            ) : (
-              <CardTitle className="text-3xl text-green-600">{verifiedCount}</CardTitle>
-            )}
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Pending Review</CardDescription>
-            {isLoading ? (
-              <Skeleton className="h-9 w-12" />
-            ) : (
-              <CardTitle className="text-3xl text-amber-600">{pendingCount}</CardTitle>
-            )}
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Rejected</CardDescription>
-            {isLoading ? (
-              <Skeleton className="h-9 w-12" />
-            ) : (
-              <CardTitle className="text-3xl text-red-600">{rejectedCount}</CardTitle>
-            )}
-          </CardHeader>
-        </Card>
-      </div>
+      {/* Recent uploads */}
+      <section className="space-y-4">
+        <SectionHeader title="Recent Uploads" />
 
-      {error && (
-        <Card>
-          <CardContent className="py-8 text-center text-sm text-destructive">
-            Failed to load documents. Please refresh the page.
-          </CardContent>
-        </Card>
-      )}
+        <div className="overflow-hidden rounded-xl border border-border bg-surface">
+          {error ? (
+            <div className="py-10 text-center text-sm text-error">
+              Failed to load documents. Please refresh the page.
+            </div>
+          ) : isLoading ? (
+            <div className="space-y-3 p-6">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : allDocs.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground">
+              <FolderOpen className="mx-auto mb-4 size-12 opacity-40" />
+              <p className="text-sm">
+                No documents uploaded yet. Use a category above to add your first document.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                    <th scope="col" className="px-5 py-3 font-semibold">
+                      Document
+                    </th>
+                    <th scope="col" className="px-5 py-3 font-semibold">
+                      Category
+                    </th>
+                    <th scope="col" className="px-5 py-3 font-semibold">
+                      Size
+                    </th>
+                    <th scope="col" className="px-5 py-3 font-semibold">
+                      Date
+                    </th>
+                    <th scope="col" className="px-5 py-3 font-semibold">
+                      Status
+                    </th>
+                    <th scope="col" className="px-5 py-3 text-right font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allDocs.map((doc) => (
+                    <tr
+                      key={doc.id}
+                      className="border-b border-border last:border-0 transition-colors hover:bg-muted/40"
+                    >
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <span className="flex size-9 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+                            <FileText className="size-4" />
+                          </span>
+                          <span className="font-medium text-brand-primary-dark">
+                            {doc.file_name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-muted-foreground">
+                        {DOCUMENT_TYPE_LABELS[doc.document_type]}
+                      </td>
+                      <td className="px-5 py-4 text-muted-foreground">
+                        {formatBytes(doc.file_size_bytes)}
+                      </td>
+                      <td className="px-5 py-4 text-muted-foreground">
+                        {formatDate(doc.created_at)}
+                      </td>
+                      <td className="px-5 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.04em] ${STATUS_PILL_CLASSES[doc.status]}`}
+                        >
+                          {STATUS_LABELS[doc.status]}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="icon" aria-label="View document">
+                            <Eye className="size-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Delete document"
+                            onClick={() => handleDelete(doc.id, doc.file_name)}
+                            disabled={deleteDocument.isPending}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
 
-      <Tabs defaultValue="all">
-        <TabsList>
-          <TabsTrigger value="all">All Documents</TabsTrigger>
-          <TabsTrigger value="id_proof">ID Proof</TabsTrigger>
-          <TabsTrigger value="proof_of_funds">Proof of Funds</TabsTrigger>
-          <TabsTrigger value="aip_letter">AIP Letter</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all">
-          <Card>
-            <CardContent className="p-0">
-              {isLoading ? (
-                <div className="space-y-4 p-6">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
-                </div>
-              ) : allDocs.length === 0 ? (
-                <EmptyState message="No documents uploaded yet. Use the Upload button to add your first document." />
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Document</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Uploaded</TableHead>
-                      <TableHead>Size</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {allDocs.map((doc) => (
-                      <DocumentRow key={doc.id} doc={doc} />
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {(["id_proof", "proof_of_funds", "aip_letter"] as DocumentType[]).map((type) => (
-          <TabsContent key={type} value={type}>
-            <Card>
-              <CardContent className="p-0">
-                {isLoading ? (
-                  <div className="space-y-4 p-6">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                  </div>
-                ) : docsByType(type).length === 0 ? (
-                  <EmptyState
-                    message={`No ${DOCUMENT_TYPE_LABELS[type]} documents uploaded yet.`}
-                  />
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Document</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Uploaded</TableHead>
-                        <TableHead>Size</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {docsByType(type).map((doc) => (
-                        <DocumentRow key={doc.id} doc={doc} />
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
-      </Tabs>
+      {/* Privacy & encryption */}
+      <InsightPanel
+        title="Privacy & Encryption"
+        eyebrow="Institutional-grade security"
+        icon={ShieldCheck}
+        action={{ label: "Review Security Policy", href: "/legal/privacy" }}
+      >
+        <p>
+          We utilise AES-256 bit encryption at rest and TLS 1.3 in transit. Your private documents
+          are never visible to third parties without your explicit, timestamped digital signature.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-white">
+            <ShieldCheck className="size-3.5 text-brand-gold" />
+            Encrypted
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.06em] text-white">
+            <BadgeCheck className="size-3.5 text-brand-gold" />
+            GDPR-Compliant
+          </span>
+        </div>
+      </InsightPanel>
     </div>
   );
 }

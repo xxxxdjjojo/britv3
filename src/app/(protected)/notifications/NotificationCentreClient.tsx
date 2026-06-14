@@ -67,13 +67,13 @@ function getIconConfig(eventType: EventType): IconConfig {
     case "new_message":
       return {
         icon: MessageSquare,
-        bg: "bg-slate-100",
+        bg: "bg-muted",
         color: "text-slate-600",
       };
     case "review_posted":
       return { icon: Star, bg: "bg-amber-100", color: "text-amber-600" };
     default:
-      return { icon: Bell, bg: "bg-slate-100", color: "text-slate-600" };
+      return { icon: Bell, bg: "bg-muted", color: "text-slate-600" };
   }
 }
 

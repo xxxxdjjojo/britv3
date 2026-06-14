@@ -17,7 +17,14 @@ import {
 } from "lucide-react";
 import { Gallery } from "@/components/properties/Gallery";
 import { FloorPlan } from "@/components/properties/FloorPlan";
-import { PriceHistory } from "@/components/properties/PriceHistory";
+import {
+  PriceHistorySection,
+  PriceHistorySectionSkeleton,
+} from "@/components/properties/PriceHistorySection";
+import {
+  PlanningApplicationsSection,
+  PlanningApplicationsSectionSkeleton,
+} from "@/components/properties/detail/PlanningApplicationsSection";
 import type { EpcRating, ListingType } from "@/types/property";
 import type { PriceHistoryEntry } from "@/services/properties/property-detail-service";
 import { createClient } from "@/lib/supabase/server";
@@ -126,6 +133,21 @@ function formatTenure(raw: string | null): string {
   return formatPropertyType(raw);
 }
 
+function formatPlanningStatus(raw: string | null | undefined): string {
+  switch (raw) {
+    case "granted":
+      return "Permission granted";
+    case "pending":
+      return "Decision pending";
+    case "refused":
+      return "Refused";
+    case "none_known":
+      return "None known";
+    default:
+      return "Not declared";
+  }
+}
+
 
 function formatPriceHistory(
   rows: PriceHistoryEntry[],
@@ -144,9 +166,9 @@ function postcodeDistrict(postcode: string): string {
 
 const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const EPC_COLORS: Record<string, string> = {
-  A: "bg-green-600",
-  B: "bg-green-500",
-  C: "bg-lime-500",
+  A: "bg-success",
+  B: "bg-success/80",
+  C: "bg-success/60",
   D: "bg-yellow-400",
   E: "bg-orange-400",
   F: "bg-orange-600",
@@ -354,7 +376,7 @@ export default async function PropertyPage({
             <div>
               <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
               {priceReduced && originalPrice != null && (
-                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                <Badge variant="secondary" className="text-xs bg-success/10 text-success dark:bg-success/20 dark:text-success">
                   Reduced from £{originalPrice.toLocaleString("en-GB")}
                 </Badge>
               )}
@@ -461,6 +483,11 @@ export default async function PropertyPage({
                     value: councilTax,
                   },
                   {
+                    icon: <FileText className="size-4" />,
+                    label: "Planning",
+                    value: formatPlanningStatus(property.planningPermissionStatus),
+                  },
+                  {
                     icon: <Zap className="size-4" />,
                     label: "EPC Rating",
                     value: epc,
@@ -530,14 +557,19 @@ export default async function PropertyPage({
               </div>
             </section>
 
-            {/* Price History */}
-            {priceHistoryFormatted.length > 0 && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">Price history</h2>
-                <Separator className="mb-4" />
-                <PriceHistory history={priceHistoryFormatted} />
-              </section>
-            )}
+            {/* Price history + HM Land Registry sale history & nearby sales */}
+            <section>
+              <h2 className="text-xl font-semibold mb-3">Price history</h2>
+              <Separator className="mb-4" />
+              <Suspense fallback={<PriceHistorySectionSkeleton />}>
+                <PriceHistorySection
+                  history={priceHistoryFormatted}
+                  postcode={property.postcode}
+                  addressLine1={property.addressLine1}
+                  addressLine2={property.addressLine2}
+                />
+              </Suspense>
+            </section>
 
             {/* EPC display */}
             {property.epcRating && (
@@ -589,6 +621,22 @@ export default async function PropertyPage({
                     </p>
                   )}
                 </div>
+              </section>
+            )}
+
+            {/* Planning applications nearby (PlanIt) */}
+            {property.coordinates && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">
+                  Planning applications
+                </h2>
+                <Separator className="mb-4" />
+                <Suspense fallback={<PlanningApplicationsSectionSkeleton />}>
+                  <PlanningApplicationsSection
+                    lat={property.coordinates.lat}
+                    lng={property.coordinates.lng}
+                  />
+                </Suspense>
               </section>
             )}
 

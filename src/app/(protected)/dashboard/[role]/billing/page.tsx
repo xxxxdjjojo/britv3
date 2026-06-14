@@ -35,7 +35,7 @@ function statusConfig(status: string) {
     case "past_due":
       return { label: "Past due", icon: AlertCircle, color: "text-orange-600", bg: "bg-orange-50 border-orange-200 dark:bg-orange-950 dark:border-orange-800" };
     default:
-      return { label: "No plan", icon: AlertCircle, color: "text-gray-500", bg: "bg-gray-50 border-gray-200 dark:bg-gray-900 dark:border-gray-800" };
+      return { label: "No plan", icon: AlertCircle, color: "text-gray-500", bg: "bg-surface border-border dark:bg-gray-900 dark:border-gray-800" };
   }
 }
 
@@ -163,8 +163,8 @@ export default async function BillingPage({
             <Link key={action.href} href={action.href}>
               <Card className="h-full cursor-pointer transition-shadow hover:shadow-md">
                 <CardContent className="flex items-start gap-4 py-5">
-                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE] dark:bg-[#1B4D3E]/20">
-                    <Icon className="text-[#1B4D3E] dark:text-emerald-400" size={18} />
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary-lighter dark:bg-brand-primary/20">
+                    <Icon className="text-brand-primary dark:text-emerald-400" size={18} />
                   </div>
                   <div className="min-w-0">
                     <p className="font-medium text-gray-900 dark:text-gray-100">{action.label}</p>

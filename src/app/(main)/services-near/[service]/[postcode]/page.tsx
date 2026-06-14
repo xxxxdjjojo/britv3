@@ -66,12 +66,12 @@ export default async function ServiceAreaPage({ params }: Props) {
   if (!isValidService) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <h1 className="font-heading text-3xl font-bold text-neutral-900">
+        <h1 className="font-heading text-3xl font-bold text-brand-primary-dark">
           Service not found
         </h1>
-        <p className="mt-4 text-neutral-700">
+        <p className="mt-4 text-muted-foreground">
           The service <strong>{service}</strong> isn&apos;t on Britestate yet.{" "}
-          <Link href="/marketplace" className="text-[#1B4D3E] underline-offset-4 hover:underline">
+          <Link href="/marketplace" className="text-brand-primary underline-offset-4 hover:underline">
             Browse all services
           </Link>
           .
@@ -83,52 +83,52 @@ export default async function ServiceAreaPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-wide text-[#1B4D3E]">
+        <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
           Britestate · {area}
         </p>
-        <h1 className="mt-2 font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="mt-2 font-heading text-4xl font-bold text-brand-primary-dark sm:text-5xl">
           {label}s in {area}
         </h1>
-        <p className="mt-4 max-w-3xl text-lg text-neutral-700">
+        <p className="mt-4 max-w-3xl text-lg text-muted-foreground">
           Verified, Britestate-rated {label.toLowerCase()}s serving {area}. Compare
           quotes, ratings, and availability in minutes.
         </p>
       </header>
 
       <section className="mt-12 grid gap-6 sm:grid-cols-2">
-        <div className="rounded-xl border border-neutral-200 p-6">
-          <h2 className="font-heading text-xl font-bold text-neutral-900">
+        <div className="rounded-xl border border-border p-6">
+          <h2 className="font-heading text-xl font-bold text-foreground">
             Why Britestate {label.toLowerCase()}s?
           </h2>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-neutral-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-muted-foreground">
             <li>Verified Companies House checks on every listing</li>
             <li>Britestate Trust badge for reviewed providers</li>
             <li>Transparent quotes — no surprise fees</li>
             <li>Insurance documents on file</li>
           </ul>
         </div>
-        <div className="rounded-xl border border-neutral-200 p-6">
-          <h2 className="font-heading text-xl font-bold text-neutral-900">
+        <div className="rounded-xl border border-border p-6">
+          <h2 className="font-heading text-xl font-bold text-foreground">
             Get quotes from {area} {label.toLowerCase()}s
           </h2>
-          <p className="mt-3 text-neutral-700">
+          <p className="mt-3 text-muted-foreground">
             Tell us the job. We&apos;ll route it to verified {label.toLowerCase()}s
             covering {area}.
           </p>
           <Link
             href={`/post-a-job?service=${encodeURIComponent(service)}&postcode=${encodeURIComponent(area)}`}
-            className="mt-5 inline-block rounded-md bg-[#1B4D3E] px-4 py-2 text-sm font-medium text-white hover:bg-[#2D7A5F]"
+            className="mt-5 inline-block rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary-light"
           >
             Post a job
           </Link>
         </div>
       </section>
 
-      <section className="mt-12 rounded-xl bg-neutral-50 p-6 sm:p-8">
-        <h2 className="font-heading text-xl font-bold text-neutral-900">
+      <section className="mt-12 rounded-xl bg-surface p-6 sm:p-8">
+        <h2 className="font-heading text-xl font-bold text-foreground">
           Common {label.toLowerCase()} jobs in {area}
         </h2>
-        <p className="mt-3 text-neutral-700">
+        <p className="mt-3 text-muted-foreground">
           Britestate gathers thousands of jobs across {area}. Typical
           requests for a local {label.toLowerCase()} include emergency
           callouts, scheduled maintenance, and property-transaction

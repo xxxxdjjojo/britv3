@@ -66,13 +66,13 @@ function LeadCard({ lead }: { lead: ProviderLead }) {
       <div className="mt-3 flex gap-2">
         <Link
           href={`/dashboard/provider/jobs/${lead.id}?action=accept`}
-          className="flex-1 rounded-lg bg-[#1B4D3E] py-2.5 text-center text-sm font-semibold text-white hover:bg-[#163d31]"
+          className="flex-1 rounded-lg bg-brand-primary py-2.5 text-center text-sm font-semibold text-white hover:bg-[#163d31]"
         >
           Accept
         </Link>
         <Link
           href={`/dashboard/provider/jobs/${lead.id}?action=decline`}
-          className="flex-1 rounded-lg border border-neutral-200 py-2.5 text-center text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          className="flex-1 rounded-lg border border-neutral-200 py-2.5 text-center text-sm font-medium text-neutral-700 hover:bg-surface"
         >
           Decline
         </Link>
@@ -107,7 +107,7 @@ function ActiveJobCard({ job }: { job: ActiveJob }) {
       <div className="mt-3">
         <Link
           href={`/dashboard/provider/jobs/${job.id}`}
-          className="block w-full rounded-lg border border-neutral-200 py-2.5 text-center text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          className="block w-full rounded-lg border border-neutral-200 py-2.5 text-center text-sm font-medium text-neutral-700 hover:bg-surface"
         >
           View job
         </Link>

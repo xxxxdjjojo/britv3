@@ -11,7 +11,7 @@ const STATUS_CONFIG: Record<ViewingStatus, { label: string; className: string }>
   pending: { label: "Pending", className: "bg-amber-100 text-amber-700" },
   confirmed: { label: "Confirmed", className: "bg-emerald-100 text-emerald-700" },
   rescheduled: { label: "Rescheduled", className: "bg-blue-100 text-blue-700" },
-  cancelled: { label: "Cancelled", className: "bg-slate-100 text-slate-500" },
+  cancelled: { label: "Cancelled", className: "bg-muted text-slate-500" },
   completed: { label: "Completed", className: "bg-purple-100 text-purple-700" },
 };
 
@@ -36,7 +36,7 @@ export function ViewingCard({ viewing, onUpdated }: Props) {
               <Image src={listingThumb} alt={address} fill className="object-cover" sizes="96px" />
             </div>
           ) : (
-            <div className="h-16 w-24 rounded-xl bg-slate-100 flex-shrink-0 flex items-center justify-center">
+            <div className="h-16 w-24 rounded-xl bg-muted flex-shrink-0 flex items-center justify-center">
               <MapPin size={18} className="text-slate-300" />
             </div>
           )}
@@ -74,11 +74,11 @@ export function ViewingCard({ viewing, onUpdated }: Props) {
         {!["cancelled", "completed"].includes(viewing.status) && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-50">
             {viewing.status === "pending" && (
-              <button type="button" onClick={() => setModalAction("confirm")} className="px-3 py-1.5 rounded-lg bg-[#1B4D3E] text-white text-xs font-semibold hover:bg-[#2D7A5F] transition-colors">
+              <button type="button" onClick={() => setModalAction("confirm")} className="px-3 py-1.5 rounded-lg bg-brand-primary text-white text-xs font-semibold hover:bg-brand-primary-light transition-colors">
                 Confirm
               </button>
             )}
-            <button type="button" onClick={() => setModalAction("reschedule")} className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 transition-colors">
+            <button type="button" onClick={() => setModalAction("reschedule")} className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-surface transition-colors">
               Reschedule
             </button>
             <button type="button" onClick={() => setModalAction("cancel")} className="px-3 py-1.5 rounded-lg text-red-500 text-xs font-semibold hover:bg-red-50 transition-colors">

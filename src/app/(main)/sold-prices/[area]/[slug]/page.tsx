@@ -123,9 +123,9 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                     <p className="text-2xl font-black text-primary font-heading">£{lastPrice.toLocaleString()}</p>
                     <p className="text-xs text-neutral-500 mt-1">{lastDate}</p>
                   </div>
-                  <div className="rounded-xl bg-primary/5 p-5 border-l-4 border-emerald-500">
+                  <div className="rounded-xl bg-primary/5 p-5 border-l-4 border-success">
                     <p className="text-xs text-neutral-500 font-medium uppercase tracking-wide mb-1">Market Performance</p>
-                    <p className="text-2xl font-black text-emerald-700">{growth}</p>
+                    <p className="text-2xl font-black text-success">{growth}</p>
                     <p className="text-xs text-neutral-500 mt-1">Since last purchase</p>
                   </div>
                   <div className="rounded-xl bg-primary/5 p-5">
@@ -165,7 +165,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
                         <p className="text-sm text-primary/60">{entry.date}</p>
                       </div>
                       {entry.change && (
-                        <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                        <span className="text-xs font-medium text-success bg-success/10 px-2 py-1 rounded-full">
                           {entry.change}
                         </span>
                       )}
@@ -249,7 +249,7 @@ export default async function SoldPricesSlugPage({ params }: SoldPriceSlugProps)
               <div className="bg-white/10 rounded-lg p-4 mb-6">
                 <p className="text-sm text-white/80">
                   Local prices in {areaName} have increased by{" "}
-                  <span className="font-bold text-emerald-300">{areaGrowth}%</span> in the last 12 months
+                  <span className="font-bold text-success">{areaGrowth}%</span> in the last 12 months
                 </p>
               </div>
               <button className="w-full bg-white text-primary font-bold py-3 rounded-lg hover:bg-neutral-100 transition-all flex items-center justify-center gap-2">

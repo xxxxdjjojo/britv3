@@ -429,8 +429,8 @@ export function QuoteBuilderForm({
       <div className="space-y-6">
         {/* Restore banner */}
         {showRestoreBanner && (
-          <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm dark:border-amber-800 dark:bg-amber-950">
-            <span className="text-amber-800 dark:text-amber-200">
+          <div className="flex items-center justify-between rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm">
+            <span className="text-warning">
               You have an unsaved draft. Restore it?
             </span>
             <div className="flex items-center gap-2">
@@ -441,7 +441,7 @@ export function QuoteBuilderForm({
                 type="button"
                 onClick={handleDismissRestore}
                 aria-label="Dismiss"
-                className="text-amber-600 hover:text-amber-800 dark:text-amber-400"
+                className="text-warning/70 hover:text-warning"
               >
                 <X className="size-4" />
               </button>
@@ -450,11 +450,16 @@ export function QuoteBuilderForm({
         )}
 
         {/* Client / Job section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Client &amp; Job</CardTitle>
+        <Card className="rounded-xl border border-border shadow-sm">
+          <CardHeader className="border-b border-border pb-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+              Step 1
+            </p>
+            <CardTitle className="font-heading text-lg font-bold tracking-tight text-brand-primary-dark">
+              Client &amp; Job
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label
@@ -543,9 +548,16 @@ export function QuoteBuilderForm({
         </Card>
 
         {/* Line items */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-base">Line Items</CardTitle>
+        <Card className="rounded-xl border border-border shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border pb-4">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+                Step 2
+              </p>
+              <CardTitle className="font-heading text-lg font-bold tracking-tight text-brand-primary-dark">
+                Line Items
+              </CardTitle>
+            </div>
             <div className="flex items-center gap-2">
               {/* Template actions */}
               <Button
@@ -574,7 +586,7 @@ export function QuoteBuilderForm({
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-5">
             {/* Save template inline dialog */}
             {showSaveTemplate && (
               <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
@@ -638,12 +650,12 @@ export function QuoteBuilderForm({
             )}
 
             {/* Column headers */}
-            <div className="hidden grid-cols-[1fr_56px_88px_72px_80px_32px] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-              <span>Description</span>
-              <span className="text-right">Qty</span>
-              <span className="text-right">Unit Price</span>
-              <span className="text-right">VAT %</span>
-              <span className="text-right">Total</span>
+            <div className="hidden grid-cols-[1fr_56px_88px_72px_80px_32px] gap-2 sm:grid">
+              <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">Description</span>
+              <span className="text-right text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">Qty</span>
+              <span className="text-right text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">Unit Price</span>
+              <span className="text-right text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">VAT %</span>
+              <span className="text-right text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">Total</span>
               <span />
             </div>
 
@@ -776,22 +788,24 @@ export function QuoteBuilderForm({
             </div>
 
             {/* Totals summary */}
-            <dl className="ml-auto w-44 space-y-1 border-t border-border pt-3 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">Subtotal</dt>
-                <dd className="font-medium">{fmtGbp(subtotalPence)}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-muted-foreground">VAT</dt>
-                <dd className="font-medium">{fmtGbp(vatPence)}</dd>
-              </div>
-              <div className="flex justify-between border-t border-border pt-1">
-                <dt className="font-bold text-foreground">Total</dt>
-                <dd className="font-bold text-foreground">
-                  {fmtGbp(totalPence)}
-                </dd>
-              </div>
-            </dl>
+            <div className="mt-2 rounded-xl border border-border bg-surface p-4">
+              <dl className="ml-auto w-full max-w-[220px] space-y-1.5 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">Subtotal</dt>
+                  <dd className="font-medium text-foreground">{fmtGbp(subtotalPence)}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">VAT</dt>
+                  <dd className="font-medium text-foreground">{fmtGbp(vatPence)}</dd>
+                </div>
+                <div className="flex justify-between border-t border-border pt-2">
+                  <dt className="font-bold text-brand-primary-dark">Total</dt>
+                  <dd className="font-bold text-brand-primary-dark text-base">
+                    {fmtGbp(totalPence)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
 
             {/* ---------------------------------------------------------------- */}
             {/* Staged Payments Toggle                                           */}
@@ -813,8 +827,8 @@ export function QuoteBuilderForm({
             </div>
 
             {stagedPaymentsEnabled && (
-              <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              <div className="space-y-3 rounded-xl border border-border bg-surface p-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
                   Payment Milestones
                 </p>
 
@@ -865,10 +879,10 @@ export function QuoteBuilderForm({
                 {/* Allocation indicator */}
                 {milestoneFields.length > 0 && (
                   <div
-                    className={`mt-2 rounded-md px-3 py-2 text-sm ${
+                    className={`mt-2 rounded-lg px-3 py-2 text-sm ${
                       milestonesValid
-                        ? "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"
-                        : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                        ? "bg-success/10 text-success"
+                        : "bg-warning/10 text-warning"
                     }`}
                   >
                     {milestonesValid ? (
@@ -888,11 +902,16 @@ export function QuoteBuilderForm({
         </Card>
 
         {/* Notes + valid until */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Details</CardTitle>
+        <Card className="rounded-xl border border-border shadow-sm">
+          <CardHeader className="border-b border-border pb-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+              Step 3
+            </p>
+            <CardTitle className="font-heading text-lg font-bold tracking-tight text-brand-primary-dark">
+              Details
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-5">
             <div>
               <label
                 htmlFor="notes"
@@ -924,12 +943,13 @@ export function QuoteBuilderForm({
         </Card>
 
         {/* Action buttons */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 pt-2">
           <Button
             type="button"
             variant="outline"
             disabled={submitting || formState.isSubmitting}
             onClick={handleSubmit((values) => submitQuote(values, "draft"))}
+            className="rounded-xl border-border px-6"
           >
             Save Draft
           </Button>
@@ -937,6 +957,7 @@ export function QuoteBuilderForm({
             type="button"
             disabled={submitting || formState.isSubmitting}
             onClick={handleSubmit((values) => submitQuote(values, "send"))}
+            className="rounded-xl bg-brand-gold px-6 text-brand-gold-foreground hover:bg-brand-gold/90"
           >
             Send to Client
           </Button>
@@ -947,7 +968,7 @@ export function QuoteBuilderForm({
       {/* Right pane — Preview                                               */}
       {/* ------------------------------------------------------------------ */}
       <div className="lg:sticky lg:top-6 lg:self-start">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
           Live Preview
         </p>
         <QuotePreview

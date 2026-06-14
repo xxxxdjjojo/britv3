@@ -1,12 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MobileNav } from "./MobileNav";
+import { savedDashboardPathForRole } from "@/lib/routes";
+import type { UserRole } from "@/types/auth";
+
+let mockActiveRole: UserRole | null = null;
 
 // Mock next/link to render plain <a> tags
 vi.mock("next/link", () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
     <a href={href} {...props}>{children}</a>
   ),
+}));
+
+vi.mock("@/hooks/useRole", () => ({
+  useRole: () => ({ activeRole: mockActiveRole }),
 }));
 
 // Mock @base-ui/react/dialog to render simple DOM elements for Sheet
@@ -45,6 +53,10 @@ describe("MobileNav", () => {
     open: true,
     onOpenChange: vi.fn(),
   };
+
+  beforeEach(() => {
+    mockActiveRole = null;
+  });
 
   it("renders when open=true", () => {
     render(<MobileNav {...defaultProps} />);
@@ -98,6 +110,24 @@ describe("MobileNav", () => {
     expect(savedLink).toHaveAttribute("href", "/dashboard");
     expect(notificationsLink).toHaveAttribute("href", "/notifications");
     expect(messagesLink).toHaveAttribute("href", "/inbox");
+  });
+
+  it.each([
+    "homebuyer",
+    "renter",
+    "seller",
+    "landlord",
+    "agent",
+    "service_provider",
+    "mortgage_broker",
+  ] as UserRole[])("saved quick link targets the valid %s saved destination", (role) => {
+    mockActiveRole = role;
+    render(<MobileNav {...defaultProps} />);
+
+    expect(screen.getByRole("link", { name: /^saved$/i })).toHaveAttribute(
+      "href",
+      savedDashboardPathForRole(role),
+    );
   });
 
   it("auth buttons present (Sign In and Get Started)", () => {

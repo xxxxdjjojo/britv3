@@ -84,7 +84,7 @@ export function Step5Price({ listing, listingId }: Props) {
               value={formatWithCommas(priceStr)}
               onChange={(e) => setPriceStr(e.target.value.replace(/[^0-9,]/g, "").replace(/,/g, ""))}
               placeholder="350,000"
-              className="w-full pl-9 pr-4 py-4 rounded-xl border border-slate-200 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+              className="w-full pl-9 pr-4 py-4 rounded-xl border border-slate-200 text-lg font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
             />
           </div>
           {priceNum > 0 && (
@@ -105,16 +105,16 @@ export function Step5Price({ listing, listingId }: Props) {
                 className={cn(
                   "w-full flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all duration-150",
                   listingType === key
-                    ? "border-[#1B4D3E] bg-[#1B4D3E]/5"
+                    ? "border-brand-primary bg-brand-primary/5"
                     : "border-slate-200 hover:border-slate-300",
                 )}
               >
                 <div className={cn(
                   "mt-0.5 h-4 w-4 rounded-full border-2 flex-shrink-0",
-                  listingType === key ? "border-[#1B4D3E] bg-[#1B4D3E]" : "border-slate-300",
+                  listingType === key ? "border-brand-primary bg-brand-primary" : "border-slate-300",
                 )} />
                 <div>
-                  <p className={cn("text-sm font-bold", listingType === key ? "text-[#1B4D3E]" : "text-slate-900")}>
+                  <p className={cn("text-sm font-bold", listingType === key ? "text-brand-primary" : "text-slate-900")}>
                     {label}
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">{desc}</p>
@@ -131,7 +131,7 @@ export function Step5Price({ listing, listingId }: Props) {
           <select
             value={qualifier ?? ""}
             onChange={(e) => setQualifier((e.target.value || null) as PriceQualifier)}
-            className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 bg-white"
+            className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 bg-white"
           >
             <option value="">None</option>
             {PRICE_QUALIFIERS.map(({ key, label }) => (

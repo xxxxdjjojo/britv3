@@ -54,7 +54,7 @@ export default function HelpPage() {
       </div>
 
       {/* Contact CTA */}
-      <div className="mt-16 rounded-xl border border-neutral-200 bg-neutral-50 p-8 text-center">
+      <div className="mt-16 rounded-xl border border-neutral-200 bg-muted p-8 text-center">
         <p className="text-base font-medium text-neutral-900">
           Can&apos;t find what you&apos;re looking for?
         </p>

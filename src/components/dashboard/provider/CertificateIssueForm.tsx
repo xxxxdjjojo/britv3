@@ -153,7 +153,7 @@ export function CertificateIssueForm({
         </Label>
         <select
           id="certificateType"
-          className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           {...register("certificateType")}
           aria-invalid={!!errors.certificateType}
         >
@@ -228,7 +228,7 @@ export function CertificateIssueForm({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="bg-[#1B4D3E] text-white hover:bg-[#163d31] min-w-40"
+          className="bg-brand-primary text-white hover:bg-[#163d31] min-w-40"
         >
           {isSubmitting ? "Issuing..." : "Issue Certificate"}
         </Button>

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { BrokerSidebar } from "@/components/dashboard/broker/BrokerSidebar";
 
 export default async function BrokerLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
@@ -17,12 +16,6 @@ export default async function BrokerLayout({ children }: Readonly<{ children: Re
     redirect(`/dashboard/${profile?.active_role ?? "homebuyer"}`);
   }
 
-  return (
-    <div className="flex min-h-screen">
-      <BrokerSidebar />
-      <main className="flex-1 overflow-auto p-4 sm:p-6 lg:pl-72 lg:pr-8 lg:py-8">
-        {children}
-      </main>
-    </div>
-  );
+  // Render children directly — parent dashboard/layout.tsx provides the shared Sidebar.
+  return <>{children}</>;
 }

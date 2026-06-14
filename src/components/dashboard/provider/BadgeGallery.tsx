@@ -72,7 +72,7 @@ function BadgeCard({ badge }: { badge: ProviderBadge }) {
 
       {/* Icon + label */}
       <div className="flex items-center gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE] text-[#1B4D3E]">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#E8F5EE] text-brand-primary">
           <Icon className="size-5" />
         </div>
         <div>
@@ -114,7 +114,7 @@ export function BadgeGallery({ badges }: Props) {
 
   if (badges.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-8 text-center">
+      <div className="rounded-xl border border-dashed border-neutral-200 bg-surface p-8 text-center">
         <Award className="mx-auto mb-3 size-8 text-neutral-300" />
         <p className="text-sm font-medium text-neutral-500">No badges earned yet</p>
         <p className="mt-1 text-xs text-neutral-400">

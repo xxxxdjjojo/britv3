@@ -138,7 +138,7 @@ function EmbeddedCheckoutView() {
               <ul className="mt-4 space-y-2">
                 {features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[#1B4D3E] dark:text-emerald-400" />
+                    <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-brand-primary dark:text-emerald-400" />
                     {f}
                   </li>
                 ))}
@@ -182,7 +182,7 @@ function PlanSelectionView() {
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#1B4D3E]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
       </div>
     );
   }
@@ -236,7 +236,7 @@ export default function SubscriptionCheckoutPage() {
     <Suspense
       fallback={
         <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#1B4D3E]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
         </div>
       }
     >

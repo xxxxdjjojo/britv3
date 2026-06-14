@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { NAV_ITEMS, navLinkClasses } from "@/config/navigation";
-import { dashboardPathForRole, ROUTES } from "@/lib/routes";
+import { ROUTES, savedDashboardPathForRole } from "@/lib/routes";
 import { useRole } from "@/hooks/useRole";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +26,7 @@ export function MobileNav({
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const { activeRole } = useRole();
   const close = () => onOpenChange(false);
-  const savedHref = activeRole ? dashboardPathForRole(activeRole, "saved") : ROUTES.dashboard.root;
+  const savedHref = activeRole ? savedDashboardPathForRole(activeRole) : ROUTES.dashboard.root;
   const quickLinks = [
     { href: savedHref, label: "Saved", icon: Heart },
     { href: ROUTES.notifications, label: "Notifications", icon: Bell },

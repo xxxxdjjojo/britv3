@@ -9,6 +9,17 @@ import type {
   ListingStatus,
   SellerDashboardKPIs,
 } from "@/types/seller";
+import type { PlanningPermissionStatus } from "@/types/property";
+
+/**
+ * seller_listings rows carry planning_permission_status (NTSELAT material
+ * information), which is not yet part of the SellerListing type.
+ */
+type SellerListingPatch = Partial<
+  Omit<SellerListing, "id" | "seller_id" | "created_at" | "updated_at">
+> & {
+  planning_permission_status?: PlanningPermissionStatus | null;
+};
 
 /** Fetch all listings for the authenticated seller with view/save/enquiry counts */
 export async function getSellerListings(
@@ -133,7 +144,7 @@ export async function createListing(
 export async function updateListing(
   supabase: SupabaseClient,
   listingId: string,
-  patch: Partial<Omit<SellerListing, "id" | "seller_id" | "created_at" | "updated_at">>,
+  patch: SellerListingPatch,
 ): Promise<SellerListing> {
   const { data, error } = await supabase
     .from("seller_listings")
@@ -150,6 +161,19 @@ export async function publishListing(
   supabase: SupabaseClient,
   listingId: string,
 ): Promise<SellerListing> {
+  const listing = await getListingById(supabase, listingId);
+  const planningStatus = (
+    listing as (SellerListing & {
+      planning_permission_status?: PlanningPermissionStatus | null;
+    }) | null
+  )?.planning_permission_status;
+
+  if (planningStatus == null) {
+    throw new Error(
+      "planning_permission_status is required to publish a listing",
+    );
+  }
+
   return updateListing(supabase, listingId, {
     status: "active",
     published_at: new Date().toISOString(),

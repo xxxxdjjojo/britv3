@@ -3,17 +3,17 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/types/auth";
 import { getMyListings } from "@/services/listings/listing-service";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus,
   Eye,
   Heart,
+  MessageSquare,
   BarChart3,
   Pencil,
   ClipboardList,
+  MapPin,
 } from "lucide-react";
 
 const ALLOWED_ROLES: UserRole[] = ["agent", "seller"];
@@ -26,13 +26,13 @@ const STATUS_TABS = [
   { value: "sold", label: "Sold / Let" },
 ] as const;
 
-const STATUS_COLORS: Record<string, string> = {
-  draft: "bg-neutral-100 text-neutral-600",
-  active: "bg-green-100 text-green-700",
-  under_offer: "bg-amber-100 text-amber-700",
-  sold: "bg-blue-100 text-blue-700",
-  let: "bg-blue-100 text-blue-700",
-  withdrawn: "bg-red-100 text-red-700",
+const STATUS_PILLS: Record<string, string> = {
+  draft: "bg-warning/10 text-warning",
+  active: "bg-success/10 text-success",
+  under_offer: "bg-brand-primary/10 text-brand-primary",
+  sold: "bg-brand-primary/10 text-brand-primary",
+  let: "bg-brand-primary/10 text-brand-primary",
+  withdrawn: "bg-destructive/10 text-destructive",
   archived: "bg-neutral-100 text-neutral-500",
 };
 
@@ -50,6 +50,12 @@ function formatDate(date: Date | string): string {
     month: "short",
     year: "numeric",
   }).format(new Date(date));
+}
+
+function formatStatus(status: string): string {
+  return status
+    .replace("_", " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 export const metadata = {
@@ -93,34 +99,39 @@ export default async function MyListingsPage(
   const filteredListings =
     statusFilter === "sold"
       ? listings.filter(
-          (l) =>
-            l.listing.status === "sold" || l.listing.status === "let",
+          (l) => l.listing.status === "sold" || l.listing.status === "let",
         )
       : listings;
 
   const activeTab = searchParams.status ?? "all";
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Editorial header */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900">My Listings</h1>
-          <p className="mt-1 text-sm text-neutral-500">
-            {count} {count === 1 ? "listing" : "listings"} total
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+            My Listings
+          </h1>
+          <p className="mt-2 text-sm text-neutral-500">
+            Manage and track your premium property portfolio —{" "}
+            <span className="font-medium text-neutral-700">
+              {count} {count === 1 ? "listing" : "listings"}
+            </span>{" "}
+            total
           </p>
         </div>
         <Link href={`/dashboard/${role}/listings/new`}>
-          <Button className="gap-2">
+          <Button className="gap-2 bg-brand-primary text-white hover:bg-brand-primary-dark">
             <Plus className="size-4" />
             Create New Listing
           </Button>
         </Link>
-      </div>
+      </header>
 
       {/* Status Tabs */}
       <Tabs defaultValue={activeTab}>
-        <TabsList>
+        <TabsList className="bg-transparent p-0">
           {STATUS_TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               <Link
@@ -132,119 +143,155 @@ export default async function MyListingsPage(
           ))}
         </TabsList>
 
-        <TabsContent value={activeTab} className="mt-4">
+        <TabsContent value={activeTab} className="mt-6">
           {filteredListings.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="flex size-16 items-center justify-center rounded-full bg-neutral-100">
-                  <ClipboardList className="size-8 text-neutral-400" />
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-neutral-900">
-                  No listings yet
-                </h3>
-                <p className="mt-2 max-w-md text-sm text-neutral-500">
-                  You haven&apos;t created any listings yet. Create your first
-                  listing to get started.
-                </p>
-                <Link href={`/dashboard/${role}/listings/new`} className="mt-4">
-                  <Button variant="outline" className="gap-2">
-                    <Plus className="size-4" />
-                    Create Listing
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface py-16 text-center">
+              <div className="flex size-16 items-center justify-center rounded-full bg-brand-primary/10">
+                <ClipboardList className="size-8 text-brand-primary" />
+              </div>
+              <h3 className="mt-5 font-heading text-xl font-bold text-brand-primary-dark">
+                No listings yet
+              </h3>
+              <p className="mt-2 max-w-md text-sm text-neutral-500">
+                You haven&apos;t created any listings yet. Create your first
+                listing to start building your portfolio.
+              </p>
+              <Link href={`/dashboard/${role}/listings/new`} className="mt-6">
+                <Button className="gap-2 bg-brand-primary text-white hover:bg-brand-primary-dark">
+                  <Plus className="size-4" />
+                  Create Listing
+                </Button>
+              </Link>
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredListings.map(({ listing, property, media }) => {
                 const thumbnail = media?.[0]?.thumbnail_url ?? null;
+                const pillClass =
+                  STATUS_PILLS[listing.status] ??
+                  "bg-neutral-100 text-neutral-600";
 
                 return (
-                  <Card key={listing.id}>
-                    <CardContent className="flex gap-4 p-4">
-                      {/* Thumbnail */}
-                      <div className="size-20 shrink-0 overflow-hidden rounded-md bg-neutral-100">
-                        {thumbnail ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={thumbnail}
-                            alt={property.title}
-                            className="size-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex size-full items-center justify-center text-neutral-300">
-                            <ClipboardList className="size-8" />
+                  <article
+                    key={listing.id}
+                    className="group flex flex-col gap-5 rounded-xl border border-border bg-white p-4 transition-shadow hover:shadow-md sm:flex-row"
+                  >
+                    {/* Thumbnail */}
+                    <div className="aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl bg-neutral-100 sm:aspect-square sm:size-36">
+                      {thumbnail ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={thumbnail}
+                          alt={property.title}
+                          className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex size-full items-center justify-center text-neutral-300">
+                          <ClipboardList className="size-10" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${pillClass}`}
+                            >
+                              {formatStatus(listing.status)}
+                            </span>
+                            <span className="text-xs text-neutral-400">
+                              Listed {formatDate(listing.listed_date)}
+                            </span>
                           </div>
-                        )}
+                          <h3 className="truncate font-heading text-lg font-bold text-brand-primary-dark">
+                            {property.title}
+                          </h3>
+                          <p className="mt-0.5 flex items-center gap-1 truncate text-sm text-neutral-500">
+                            <MapPin className="size-3.5 shrink-0" />
+                            {property.address_line1}, {property.city}{" "}
+                            {property.postcode}
+                          </p>
+                        </div>
+                        <span className="shrink-0 font-heading text-xl font-bold text-brand-primary">
+                          {formatPrice(listing.price)}
+                        </span>
                       </div>
 
-                      {/* Info */}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <h3 className="truncate font-medium text-neutral-900">
-                              {property.title}
-                            </h3>
-                            <p className="truncate text-sm text-neutral-500">
-                              {property.address_line1}, {property.city}{" "}
-                              {property.postcode}
-                            </p>
-                          </div>
-                          <Badge
-                            className={
-                              STATUS_COLORS[listing.status] ??
-                              "bg-neutral-100 text-neutral-600"
-                            }
-                          >
-                            {listing.status.replace("_", " ")}
-                          </Badge>
-                        </div>
-
-                        <div className="mt-2 flex items-center gap-4">
-                          <span className="text-lg font-bold text-neutral-900">
-                            {formatPrice(listing.price)}
-                          </span>
-                          <span className="flex items-center gap-1 text-xs text-neutral-400">
-                            <Eye className="size-3" />
-                            {listing.view_count}
-                          </span>
-                          <span className="flex items-center gap-1 text-xs text-neutral-400">
-                            <Heart className="size-3" />
-                            {listing.favorite_count}
-                          </span>
-                          <span className="text-xs text-neutral-400">
-                            Listed {formatDate(listing.listed_date)}
-                          </span>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="mt-3 flex gap-2">
-                          <Link
-                            href={`/dashboard/${role}/listings/${listing.id}`}
-                          >
-                            <Button variant="outline" size="sm" className="gap-1">
-                              <Pencil className="size-3" />
-                              Edit
-                            </Button>
-                          </Link>
-                          <Link
-                            href={`/dashboard/${role}/listings/${listing.id}/analytics`}
-                          >
-                            <Button variant="outline" size="sm" className="gap-1">
-                              <BarChart3 className="size-3" />
-                              Analytics
-                            </Button>
-                          </Link>
-                        </div>
+                      {/* Key stats */}
+                      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+                        <Stat
+                          icon={<Eye className="size-4" />}
+                          label="Views"
+                          value={listing.view_count}
+                        />
+                        <Stat
+                          icon={<Heart className="size-4" />}
+                          label="Saves"
+                          value={listing.favorite_count}
+                        />
+                        <Stat
+                          icon={<MessageSquare className="size-4" />}
+                          label="Enquiries"
+                          value={listing.enquiry_count}
+                        />
                       </div>
-                    </CardContent>
-                  </Card>
+
+                      {/* Actions */}
+                      <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                        <Link href={`/dashboard/${role}/listings/${listing.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5 border-border"
+                          >
+                            <Pencil className="size-3.5" />
+                            Edit
+                          </Button>
+                        </Link>
+                        <Link
+                          href={`/dashboard/${role}/listings/${listing.id}/analytics`}
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5 border-border"
+                          >
+                            <BarChart3 className="size-3.5" />
+                            Analytics
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
                 );
               })}
             </div>
           )}
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function Stat({
+  icon,
+  label,
+  value,
+}: Readonly<{ icon: React.ReactNode; label: string; value: number }>) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-brand-primary/70">{icon}</span>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-sm font-bold text-brand-primary-dark">
+          {value}
+        </span>
+        <span className="text-xs uppercase tracking-wide text-neutral-400">
+          {label}
+        </span>
+      </div>
     </div>
   );
 }

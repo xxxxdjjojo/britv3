@@ -60,7 +60,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
 
       {/* Provider response — or reply CTA */}
       {review.provider_response ? (
-        <div className="mt-4 rounded-lg bg-neutral-50 px-4 py-3">
+        <div className="mt-4 rounded-lg bg-surface px-4 py-3">
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">
             Your response
           </p>
@@ -72,7 +72,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
         <div className="mt-4">
           <Link
             href={`/dashboard/provider/reviews/${review.id}/respond`}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1B4D3E] hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-primary hover:underline"
           >
             <MessageSquarePlus className="size-3.5" />
             Reply to this review

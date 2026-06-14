@@ -139,14 +139,14 @@ export default function PaymentMethodsPage() {
               {methods.map((method) => (
                 <div key={method.id} className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-14 items-center justify-center rounded-md border border-gray-200 bg-gray-50 text-xs font-semibold dark:border-gray-700 dark:bg-gray-800">
+                    <div className="flex h-10 w-14 items-center justify-center rounded-md border border-border bg-surface text-xs font-semibold dark:border-gray-700 dark:bg-gray-800">
                       {brandIcon(method.brand)}
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         •••• {method.last4}
                         {method.isDefault && (
-                          <Badge className="ml-2 bg-[#E8F5EE] text-[#1B4D3E] text-xs dark:bg-[#1B4D3E]/20 dark:text-emerald-400">
+                          <Badge className="ml-2 bg-brand-primary-lighter text-brand-primary text-xs dark:bg-brand-primary/20 dark:text-emerald-400">
                             Default
                           </Badge>
                         )}

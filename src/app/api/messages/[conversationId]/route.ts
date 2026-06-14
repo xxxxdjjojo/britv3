@@ -15,6 +15,7 @@ import {
   sendMessageSchema,
 } from "@/services/messaging/message-service";
 import { createRateLimiter } from "@/lib/cache/redis";
+import { captureListingMessageIntroduction } from "@/lib/truedeed/capture-message";
 
 /** 10 messages per minute per user — shared across message endpoints. */
 const messageRateLimiter = createRateLimiter(10, "1 m");
@@ -84,6 +85,15 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const msg = await sendMessage(supabase, user.id, parsed.data);
+
+    // Truedeed §5 capture hook — fire-and-forget, never breaks the send
+    await captureListingMessageIntroduction({
+      senderId: user.id,
+      contextType: parsed.data.context_type,
+      contextId: parsed.data.context_id,
+      conversationId,
+    });
+
     return NextResponse.json({ message: msg }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/messages/conversationId]", err);

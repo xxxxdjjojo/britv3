@@ -67,11 +67,11 @@ export function WizardShell({
           <span className="text-sm font-medium text-slate-500">
             Step {step} of {totalSteps} — {STEP_LABELS[step]}
           </span>
-          <span className="text-sm font-semibold text-[#1B4D3E]">{pct}%</span>
+          <span className="text-sm font-semibold text-brand-primary">{pct}%</span>
         </div>
-        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#1B4D3E] rounded-full transition-all duration-500"
+            className="h-full bg-brand-primary rounded-full transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -85,7 +85,7 @@ export function WizardShell({
         <button
           type="button"
           onClick={goBack}
-          className="px-6 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+          className="px-6 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-surface transition-colors"
         >
           {step === 1 ? "Cancel" : "Back"}
         </button>
@@ -94,10 +94,10 @@ export function WizardShell({
           onClick={onContinue}
           disabled={continueDisabled || isLoading}
           className={cn(
-            "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all shadow-lg shadow-[#1B4D3E]/20",
+            "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all shadow-lg shadow-brand-primary/20",
             continueDisabled || isLoading
               ? "bg-slate-300 cursor-not-allowed shadow-none"
-              : "bg-[#1B4D3E] hover:bg-[#2D7A5F] active:scale-95",
+              : "bg-brand-primary hover:bg-brand-primary-light active:scale-95",
           )}
         >
           {isLoading ? "Saving..." : continueLabel}

@@ -52,6 +52,7 @@ export type PropertyDetail = {
     tenure: string | null;
     leaseRemainingYears: number | null;
     councilTaxBand: string | null;
+    planningPermissionStatus: string | null;
     yearBuilt: number | null;
     newBuild: boolean;
     coordinates: { lat: number; lng: number } | null;
@@ -192,6 +193,7 @@ function getMockPropertyBySlug(slug: string): PropertyDetail | null {
       tenure: mock.tenure,
       leaseRemainingYears: mock.tenure === "leasehold" ? 95 : null,
       councilTaxBand: ["A", "B", "C", "D", "E"][Number(mock.id) % 5] ?? "C",
+      planningPermissionStatus: null,
       yearBuilt: 2000 + Number(mock.id),
       newBuild: false,
       coordinates: { lat: mock.lat, lng: mock.lng },
@@ -276,6 +278,7 @@ export async function getPropertyBySlug(
         tenure,
         lease_remaining_years,
         council_tax_band,
+        planning_permission_status,
         year_built,
         new_build,
         coordinates
@@ -382,6 +385,8 @@ export async function getPropertyBySlug(
       leaseRemainingYears:
         (property.lease_remaining_years as number | null) ?? null,
       councilTaxBand: (property.council_tax_band as string | null) ?? null,
+      planningPermissionStatus:
+        (property.planning_permission_status as string | null) ?? null,
       yearBuilt: (property.year_built as number | null) ?? null,
       newBuild: (property.new_build as boolean) ?? false,
       coordinates: parseCoordinates(property.coordinates),

@@ -29,3 +29,11 @@ export function dashboardPathForRole(role: UserRole, path = ""): string {
 
   return `${base}${normalizedPath}`;
 }
+
+export function savedDashboardPathForRole(role: UserRole): string {
+  if (role === "service_provider" || role === "mortgage_broker") {
+    return ROUTES.dashboard.root;
+  }
+
+  return dashboardPathForRole(role, "saved");
+}

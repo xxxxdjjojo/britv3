@@ -76,7 +76,7 @@ export function TradesPersonAssignModal({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search providers by name…"
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E] dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          className="w-full rounded-xl border border-slate-200 bg-surface py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
         />
       </div>
 
@@ -90,8 +90,8 @@ export function TradesPersonAssignModal({
               onClick={() => setCategoryFilter(cat)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
                 categoryFilter === cat
-                  ? "bg-[#1B4D3E] text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                  ? "bg-brand-primary text-white"
+                  : "bg-muted text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
               }`}
             >
               {cat === "all" ? "All Categories" : formatCategory(cat)}
@@ -120,7 +120,7 @@ export function TradesPersonAssignModal({
                 className={`flex items-center justify-between rounded-xl border p-4 transition-colors ${
                   isAssigned
                     ? "border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-900/20"
-                    : "border-slate-200 bg-white hover:border-[#1B4D3E]/30 dark:border-slate-800 dark:bg-slate-900"
+                    : "border-slate-200 bg-white hover:border-brand-primary/30 dark:border-slate-800 dark:bg-slate-900"
                 }`}
               >
                 <div className="min-w-0 flex-1">
@@ -134,7 +134,7 @@ export function TradesPersonAssignModal({
                   </div>
                   <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                     {provider.category && (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 dark:bg-slate-800">
+                      <span className="rounded-full bg-muted px-2 py-0.5 dark:bg-slate-800">
                         {formatCategory(provider.category)}
                       </span>
                     )}
@@ -160,7 +160,7 @@ export function TradesPersonAssignModal({
                   className={`ml-4 shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
                     isAssigned
                       ? "border border-green-600 text-green-700 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-900/30"
-                      : "bg-[#1B4D3E] text-white hover:bg-[#1B4D3E]/90"
+                      : "bg-brand-primary text-white hover:bg-brand-primary/90"
                   }`}
                 >
                   {isAssigned ? "Reassign" : "Assign"}

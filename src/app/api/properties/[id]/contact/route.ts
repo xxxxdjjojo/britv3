@@ -4,6 +4,7 @@ import { createRateLimiter } from "@/lib/cache/redis";
 import { log } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
 import { sendMessage } from "@/services/messaging/message-service";
+import { recordIntroduction } from "@/services/truedeed/introduction-service";
 
 // ---------------------------------------------------------------------------
 // Validation schema
@@ -121,6 +122,19 @@ export async function POST(
       context_type: "listing",
       context_id: propertyId,
     });
+
+    // Truedeed §5 capture hook — fire-and-forget, never breaks the enquiry
+    try {
+      await recordIntroduction({
+        applicantId: user.id,
+        listingId: propertyId,
+        contactType: "enquiry",
+      });
+    } catch (hookErr) {
+      console.warn("[truedeed] introduction capture failed (contact)", {
+        error_type: hookErr instanceof Error ? hookErr.name : "unknown",
+      });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

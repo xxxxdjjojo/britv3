@@ -59,3 +59,9 @@ playwright-report/
 
 # supabase local dev temp files (may contain credentials)
 supabase/.temp/
+
+# Land Registry ingest checkpoint (transient, holds chunk progress)
+.ingest-land-registry-state.json
+
+# Codex local config (contains API keys — never commit)
+.codex/

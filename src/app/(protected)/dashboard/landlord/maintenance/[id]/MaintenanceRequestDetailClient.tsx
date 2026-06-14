@@ -183,7 +183,7 @@ export function MaintenanceRequestDetailClient({
                     type="button"
                     disabled={isUpdatingStatus}
                     onClick={() => handleStatusChange(s)}
-                    className="rounded-lg border border-[#1B4D3E] px-3 py-1.5 text-xs font-semibold text-[#1B4D3E] hover:bg-[#1B4D3E] hover:text-white transition-colors disabled:opacity-50"
+                    className="rounded-lg border border-brand-primary px-3 py-1.5 text-xs font-semibold text-brand-primary hover:bg-brand-primary hover:text-white transition-colors disabled:opacity-50"
                   >
                     {s.replace("_", " ").replace(/^\w/, (c) => c.toUpperCase())}
                   </button>
@@ -216,9 +216,9 @@ export function MaintenanceRequestDetailClient({
                     <div
                       className={`flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-all ${
                         isCompleted
-                          ? "bg-[#1B4D3E] text-white"
+                          ? "bg-brand-primary text-white"
                           : isActive
-                            ? "bg-[#1B4D3E] text-white ring-4 ring-[#1B4D3E]/20"
+                            ? "bg-brand-primary text-white ring-4 ring-brand-primary/20"
                             : "border-2 border-slate-200 text-slate-400 dark:border-slate-700"
                       }`}
                     >
@@ -240,7 +240,7 @@ export function MaintenanceRequestDetailClient({
                     <div
                       className={`mx-1 h-0.5 flex-1 rounded-full ${
                         stepIndex < currentStepIndex
-                          ? "bg-[#1B4D3E]"
+                          ? "bg-brand-primary"
                           : "bg-slate-200 dark:bg-slate-700"
                       }`}
                     />
@@ -288,14 +288,14 @@ export function MaintenanceRequestDetailClient({
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Add internal notes about this request…"
             rows={4}
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E] dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            className="w-full rounded-lg border border-slate-200 bg-surface px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
           />
           <div className="mt-3 flex justify-end">
             <button
               type="button"
               disabled={isSavingNotes}
               onClick={handleNotesSave}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1B4D3E]/90 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
             >
               <Save className="size-4" />
               {isSavingNotes ? "Saving…" : "Save Notes"}
@@ -313,8 +313,8 @@ export function MaintenanceRequestDetailClient({
               Tenant
             </h2>
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-[#1B4D3E]/10">
-                <User className="size-5 text-[#1B4D3E]" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-brand-primary/10">
+                <User className="size-5 text-brand-primary" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -353,7 +353,7 @@ export function MaintenanceRequestDetailClient({
               </div>
               <Link
                 href={`/dashboard/landlord/maintenance/${request.id}/assign`}
-                className="inline-flex items-center gap-1 text-xs font-medium text-[#1B4D3E] hover:underline"
+                className="inline-flex items-center gap-1 text-xs font-medium text-brand-primary hover:underline"
               >
                 Reassign
                 <ChevronRight className="size-3" />
@@ -366,7 +366,7 @@ export function MaintenanceRequestDetailClient({
               </p>
               <Link
                 href={`/dashboard/landlord/maintenance/${request.id}/assign`}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1B4D3E] px-4 py-2 text-sm font-semibold text-[#1B4D3E] hover:bg-[#1B4D3E] hover:text-white transition-colors"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-primary hover:text-white transition-colors"
               >
                 <HardHat className="size-4" />
                 Assign Tradesperson
@@ -424,14 +424,14 @@ export function MaintenanceRequestDetailClient({
           <div className="space-y-2">
             <a
               href={`tel:`}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-surface dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               <Phone className="size-4 text-slate-400" />
               Call tenant
             </a>
             <a
               href={`mailto:`}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-surface dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               <Mail className="size-4 text-slate-400" />
               Email tenant

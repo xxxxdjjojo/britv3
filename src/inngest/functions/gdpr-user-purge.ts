@@ -306,6 +306,31 @@ export const gdprUserPurge = inngest.createFunction(
       }
 
       // ------------------------------------------------------------------
+      // Truedeed introductions ledger: append-only evidence, so rows are
+      // GDPR-scrubbed (applicant PII erased, hash chain preserved) rather
+      // than deleted — the SECURITY DEFINER function is the only write path
+      // the immutability trigger allows. Must run BEFORE auth.users removal
+      // so the applicant_id FK can be nulled.
+      // ------------------------------------------------------------------
+      await step.run("scrub-truedeed-introductions", async () => {
+        const { error } = await supabase.rpc("gdpr_scrub_introductions", {
+          p_user_id: userId,
+        });
+        if (error) {
+          captureException(error, {
+            module: "gdpr",
+            feature: "purge",
+            operation: "scrub-truedeed-introductions",
+            extra: { userId, errorCode: error.code },
+          });
+          throw new Error(
+            `[gdpr-purge] Failed to scrub introductions for user ${userId}: ${error.message}`,
+          );
+        }
+        return { ok: true };
+      });
+
+      // ------------------------------------------------------------------
       // Storage + auth.users cleanup. completePurge() removes avatars,
       // buyer-documents, and the auth.users row. If a public.* table still
       // references the user, ON DELETE RESTRICT will surface a clear error

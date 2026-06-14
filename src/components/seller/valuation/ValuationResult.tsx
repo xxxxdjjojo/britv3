@@ -20,7 +20,7 @@ export function ValuationResult({
 }: Props) {
   return (
     <div className="space-y-6">
-      <div className="bg-[#1B4D3E] rounded-2xl p-8 text-white">
+      <div className="bg-brand-primary rounded-2xl p-8 text-white">
         <p className="text-white/60 text-sm font-medium">Estimated Value for {postcode}</p>
         <p className="text-5xl font-extrabold mt-2 font-['Plus_Jakarta_Sans']">
           {poundStr(aiEstimate)}

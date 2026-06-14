@@ -12,7 +12,7 @@ const ServiceAreaMapEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[500px] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50">
+      <div className="flex h-[500px] items-center justify-center rounded-xl border border-neutral-200 bg-surface">
         <p className="text-sm text-neutral-500">Loading map…</p>
       </div>
     ),

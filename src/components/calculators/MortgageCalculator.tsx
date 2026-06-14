@@ -36,13 +36,15 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 2,
   }).format(value);
 
-const formatCompact = (value: number) =>
-  new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-    notation: "compact",
-    maximumFractionDigits: 0,
-  }).format(value);
+// Hand-rolled instead of Intl `notation: "compact"`: ICU versions differ on
+// the suffix case ("K" vs "k") between Node and browsers, which caused a
+// hydration mismatch on every property page render.
+const formatCompact = (value: number): string => {
+  const thousands = Math.round(value / 1_000);
+  if (Math.abs(thousands) >= 1_000) return `£${Math.round(value / 1_000_000)}M`;
+  if (Math.abs(value) >= 1_000) return `£${thousands}K`;
+  return `£${Math.round(value)}`;
+};
 
 type MortgageCalculatorProps = Readonly<{
   initialPrice?: number;

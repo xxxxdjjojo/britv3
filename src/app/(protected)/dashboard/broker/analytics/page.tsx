@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
     <div className="p-6 space-y-6 max-w-7xl">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Analytics</h1>
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">Analytics</h1>
         <p className="mt-1 text-sm text-neutral-500">
           Track your business performance and identify growth opportunities.
         </p>
@@ -92,7 +92,7 @@ export default function AnalyticsPage() {
       {/* Charts Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Monthly Performance */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6">
           <h2 className="mb-4 text-base font-semibold text-neutral-900 flex items-center gap-2">
             <BarChart3 className="size-4 text-neutral-400" />
             Monthly Performance
@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
                   <div className="flex-1">
                     <div className="h-6 rounded-md bg-neutral-100 overflow-hidden">
                       <div
-                        className="h-full rounded-md bg-[#1B4D3E] transition-all"
+                        className="h-full rounded-md bg-brand-primary transition-all"
                         style={{ width: `${barWidth}%` }}
                       />
                     </div>
@@ -123,7 +123,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Enquiry Breakdown */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6">
           <h2 className="mb-4 text-base font-semibold text-neutral-900">Enquiry Breakdown</h2>
           <div className="space-y-3">
             {ENQUIRY_TYPES.map((item) => (
@@ -134,7 +134,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="h-2 rounded-full bg-neutral-100 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#1B4D3E] transition-all"
+                    className="h-full rounded-full bg-brand-primary transition-all"
                     style={{ width: `${item.pct}%` }}
                   />
                 </div>
@@ -144,12 +144,12 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top Lenders */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 lg:col-span-2">
+        <div className="bg-white rounded-xl shadow-sm border border-border p-6 lg:col-span-2">
           <h2 className="mb-4 text-base font-semibold text-neutral-900">Top Lenders Used</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-neutral-200">
+                <tr className="border-b border-border">
                   <th className="px-3 py-2 text-left font-semibold text-neutral-600">Lender</th>
                   <th className="px-3 py-2 text-right font-semibold text-neutral-600">Deals Placed</th>
                   <th className="px-3 py-2 text-right font-semibold text-neutral-600">Avg Rate</th>
@@ -164,12 +164,12 @@ export default function AnalyticsPage() {
                     <tr key={lender.name} className="border-b border-neutral-100">
                       <td className="px-3 py-2.5 font-medium text-neutral-900">{lender.name}</td>
                       <td className="px-3 py-2.5 text-right text-neutral-700">{lender.deals}</td>
-                      <td className="px-3 py-2.5 text-right font-semibold text-[#1B4D3E]">{lender.avgRate.toFixed(2)}%</td>
+                      <td className="px-3 py-2.5 text-right font-semibold text-brand-primary">{lender.avgRate.toFixed(2)}%</td>
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-1.5 rounded-full bg-neutral-100 overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-[#1B4D3E]"
+                              className="h-full rounded-full bg-brand-primary"
                               style={{ width: `${share}%` }}
                             />
                           </div>

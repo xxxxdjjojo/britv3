@@ -94,7 +94,7 @@ export function Step7Review({ listing, listingId }: Props) {
               <Image src={thumb} alt="Listing cover" fill className="object-cover" sizes="(max-width: 768px) 100vw, 700px" />
             </div>
           ) : (
-            <div className="w-full h-56 bg-slate-100 flex items-center justify-center text-slate-300 text-sm">No cover photo</div>
+            <div className="w-full h-56 bg-muted flex items-center justify-center text-slate-300 text-sm">No cover photo</div>
           )}
           <div className="p-6">
             <p className="text-xs text-slate-400">{listing.postcode}</p>
@@ -132,7 +132,7 @@ export function Step7Review({ listing, listingId }: Props) {
                 }}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-2 py-1.5 -mx-2",
-                  !item.complete && "cursor-pointer hover:bg-slate-50 transition-colors",
+                  !item.complete && "cursor-pointer hover:bg-surface transition-colors",
                 )}
               >
                 {item.complete ? (

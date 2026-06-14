@@ -203,7 +203,7 @@ export function ServicesManager({
         <button
           type="button"
           onClick={openAddDialog}
-          className="flex items-center gap-2 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#163d31] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2"
+          className="flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#163d31] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
         >
           <Plus className="size-4" />
           Add Service
@@ -212,7 +212,7 @@ export function ServicesManager({
 
       {/* Service list */}
       {services.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-12 text-center">
+        <div className="rounded-xl border border-dashed border-neutral-200 bg-surface p-12 text-center">
           <p className="text-sm font-medium text-neutral-500">
             No services added yet
           </p>
@@ -222,7 +222,7 @@ export function ServicesManager({
           <button
             type="button"
             onClick={openAddDialog}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#1B4D3E] px-4 py-2 text-sm font-semibold text-[#1B4D3E] transition-colors hover:bg-[#E8F5EE]"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary transition-colors hover:bg-[#E8F5EE]"
           >
             <Plus className="size-4" />
             Add Service
@@ -292,7 +292,7 @@ export function ServicesManager({
                   value={form.name}
                   onChange={(e) => handleFieldChange("name", e.target.value)}
                   placeholder="e.g. Boiler installation"
-                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
@@ -310,7 +310,7 @@ export function ServicesManager({
                   onChange={(e) =>
                     handleFieldChange("category", e.target.value)
                   }
-                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                  className="block w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 >
                   {SERVICE_CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -336,7 +336,7 @@ export function ServicesManager({
                     handleFieldChange("description", e.target.value)
                   }
                   placeholder="Brief description of what this service includes…"
-                  className="block w-full resize-none rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                  className="block w-full resize-none rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 placeholder-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
               </div>
 
@@ -358,7 +358,7 @@ export function ServicesManager({
                       className={[
                         "flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors",
                         form.pricing_type === value
-                          ? "border-[#1B4D3E] bg-[#E8F5EE] text-[#1B4D3E]"
+                          ? "border-brand-primary bg-[#E8F5EE] text-brand-primary"
                           : "border-neutral-300 text-neutral-700 hover:border-neutral-400",
                       ].join(" ")}
                     >
@@ -402,7 +402,7 @@ export function ServicesManager({
                         handleFieldChange("price_amount", e.target.value)
                       }
                       placeholder="0.00"
-                      className="block w-full rounded-lg border border-neutral-300 py-2 pl-7 pr-3 text-sm text-neutral-900 placeholder-neutral-400 focus:border-[#1B4D3E] focus:outline-none focus:ring-1 focus:ring-[#1B4D3E]"
+                      className="block w-full rounded-lg border border-neutral-300 py-2 pl-7 pr-3 text-sm text-neutral-900 placeholder-neutral-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     />
                   </div>
                 </div>
@@ -421,14 +421,14 @@ export function ServicesManager({
                   type="button"
                   onClick={closeDialog}
                   disabled={isPending}
-                  className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 disabled:opacity-50"
+                  className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-surface disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex items-center gap-2 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#163d31] disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#163d31] disabled:opacity-50"
                 >
                   {isPending && <Loader2 className="size-4 animate-spin" />}
                   {editingService ? "Save Changes" : "Add Service"}

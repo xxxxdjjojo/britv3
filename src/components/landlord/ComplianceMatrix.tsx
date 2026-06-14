@@ -14,21 +14,27 @@ type ComplianceMatrixProps = Readonly<{
 }>;
 
 const STATUS_STYLES: Record<string, string> = {
-  valid: "bg-emerald-50 dark:bg-emerald-900/10",
-  expiring: "bg-amber-50 dark:bg-amber-900/10",
-  expired: "bg-red-50 dark:bg-red-900/10",
-  missing: "bg-slate-50 dark:bg-slate-800/50",
+  valid: "bg-success/5",
+  expiring: "bg-warning/5",
+  expired: "bg-error/5",
+  missing: "bg-surface",
 };
 
-function MatrixCellContent({ cell, propertyId }: Readonly<{ cell: MatrixCell; propertyId: string }>) {
+const LEGEND = [
+  { label: "Valid", dot: "bg-success" },
+  { label: "Expiring", dot: "bg-warning" },
+  { label: "Expired", dot: "bg-error" },
+] as const;
+
+function MatrixCellContent({ cell }: Readonly<{ cell: MatrixCell }>) {
   if (cell.status === "missing") {
     return (
       <Link
         href={`/dashboard/landlord/compliance/upload?category=${cell.category}`}
-        className="flex flex-col items-center gap-1 text-slate-400 hover:text-[#1B4D3E]"
+        className="flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-brand-primary"
       >
         <Upload className="size-4" />
-        <span className="text-[10px]">Upload</span>
+        <span className="text-[10px] font-medium uppercase tracking-wide">Upload</span>
       </Link>
     );
   }
@@ -40,9 +46,7 @@ function MatrixCellContent({ cell, propertyId }: Readonly<{ cell: MatrixCell; pr
       {days !== null ? (
         <ComplianceCountdownBadge daysUntilExpiry={days} />
       ) : (
-        <Badge className="border-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-          Valid
-        </Badge>
+        <Badge className="border-0 bg-success/10 text-success">Valid</Badge>
       )}
     </div>
   );
@@ -51,60 +55,88 @@ function MatrixCellContent({ cell, propertyId }: Readonly<{ cell: MatrixCell; pr
 export function ComplianceMatrix({ data }: ComplianceMatrixProps) {
   if (data.properties.length === 0) {
     return (
-      <div className="rounded-xl border bg-white p-12 text-center dark:bg-slate-900">
+      <div className="rounded-xl border border-border bg-white p-12 text-center dark:bg-slate-900">
         <p className="text-muted-foreground">No properties in your portfolio yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border bg-white dark:bg-slate-900">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b bg-slate-50 dark:bg-slate-800/50">
-            <th className="sticky left-0 z-10 bg-slate-50 px-4 py-3 text-left font-semibold dark:bg-slate-800/50">
-              Property
-            </th>
-            {data.categories.map((cat) => {
-              const meta = getCategoryMeta(cat);
-              return (
-                <th key={cat} className="px-3 py-3 text-center font-semibold whitespace-nowrap">
-                  <div className="flex flex-col items-center gap-1">
-                    {meta && <meta.icon className="size-4 text-slate-500" />}
-                    <span className="text-xs">{meta?.label ?? cat}</span>
-                  </div>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {data.properties.map((property) => (
-            <tr key={property.propertyId} className="border-b last:border-b-0">
-              <td className="sticky left-0 z-10 bg-white px-4 py-3 font-medium dark:bg-slate-900">
-                <div className="flex items-center gap-2">
-                  <span className="truncate max-w-[200px]">{property.propertyAddress}</span>
-                  {property.isHmo && (
-                    <Badge variant="secondary" className="shrink-0 text-[10px]">HMO</Badge>
-                  )}
-                </div>
-              </td>
+    <section className="overflow-hidden rounded-xl border border-border bg-white dark:bg-slate-900">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4">
+        <h2 className="font-heading text-lg font-bold tracking-tight text-brand-primary">
+          Property Portfolio Matrix
+        </h2>
+        <ul className="flex items-center gap-4">
+          {LEGEND.map((item) => (
+            <li key={item.label} className="flex items-center gap-1.5">
+              <span className={cn("size-2 rounded-full", item.dot)} aria-hidden />
+              <span className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                {item.label}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </header>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border bg-surface">
+              <th className="sticky left-0 z-10 bg-surface px-5 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                Property
+              </th>
               {data.categories.map((cat) => {
-                const cell = property.cells.find((c) => c.category === cat);
-                if (!cell) return <td key={cat} className="px-3 py-3" />;
+                const meta = getCategoryMeta(cat);
                 return (
-                  <td
+                  <th
                     key={cat}
-                    className={cn("px-3 py-3 text-center", STATUS_STYLES[cell.status])}
+                    className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-[0.06em] whitespace-nowrap text-muted-foreground"
                   >
-                    <MatrixCellContent cell={cell} propertyId={property.propertyId} />
-                  </td>
+                    <div className="flex flex-col items-center gap-1">
+                      {meta && <meta.icon className="size-4 text-muted-foreground" />}
+                      <span>{meta?.label ?? cat}</span>
+                    </div>
+                  </th>
                 );
               })}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {data.properties.map((property) => (
+              <tr
+                key={property.propertyId}
+                className="border-b border-border last:border-b-0 transition-colors hover:bg-surface/60"
+              >
+                <td className="sticky left-0 z-10 border-l-2 border-l-brand-primary bg-white px-5 py-4 font-medium dark:bg-slate-900">
+                  <div className="flex items-center gap-2">
+                    <span className="max-w-[200px] truncate text-brand-primary-dark">
+                      {property.propertyAddress}
+                    </span>
+                    {property.isHmo && (
+                      <Badge variant="secondary" className="shrink-0 text-[10px]">
+                        HMO
+                      </Badge>
+                    )}
+                  </div>
+                </td>
+                {data.categories.map((cat) => {
+                  const cell = property.cells.find((c) => c.category === cat);
+                  if (!cell) return <td key={cat} className="px-3 py-4" />;
+                  return (
+                    <td
+                      key={cat}
+                      className={cn("px-3 py-4 text-center", STATUS_STYLES[cell.status])}
+                    >
+                      <MatrixCellContent cell={cell} />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }

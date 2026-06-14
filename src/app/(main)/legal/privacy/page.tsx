@@ -130,7 +130,7 @@ export default function PrivacyPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-neutral-50">
+                <tr className="bg-muted">
                   <th className="border border-neutral-200 p-3 text-left font-semibold">
                     Processing Activity
                   </th>
@@ -252,7 +252,7 @@ export default function PrivacyPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-neutral-50">
+                <tr className="bg-muted">
                   <th className="border border-neutral-200 p-3 text-left font-semibold">
                     Recipient
                   </th>
@@ -305,7 +305,7 @@ export default function PrivacyPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-neutral-50">
+                <tr className="bg-muted">
                   <th className="border border-neutral-200 p-3 text-left font-semibold">
                     Data Type
                   </th>

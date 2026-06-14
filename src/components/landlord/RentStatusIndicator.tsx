@@ -34,7 +34,7 @@ const STATUS_STYLES: Record<
     label: "Overdue",
   },
   not_due: {
-    bg: "bg-gray-100 dark:bg-gray-800",
+    bg: "bg-muted dark:bg-gray-800",
     text: "text-gray-600 dark:text-gray-400",
     label: "Not Due",
   },

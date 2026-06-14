@@ -15,7 +15,7 @@ export function ClientRedirect({ targetPath }: Props) {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin w-6 h-6 border-2 border-[#2563EB] border-t-transparent rounded-full" />
+      <div className="animate-spin w-6 h-6 border-2 border-brand-primary border-t-transparent rounded-full" />
     </div>
   );
 }

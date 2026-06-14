@@ -174,7 +174,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
                   {ref.status === "pending" && (
                     <button
                       type="button"
-                      className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
+                      className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-surface"
                     >
                       <Mail className="size-3" />
                       Send Request
@@ -184,7 +184,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
                     <>
                       <button
                         type="button"
-                        className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
+                        className="inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-surface"
                       >
                         <Bell className="size-3" />
                         Remind
@@ -207,7 +207,7 @@ export function ReferenceTracker({ references, referenceType, providerId }: Prop
               key={`empty-${i}`}
               type="button"
               onClick={() => setDialogOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm font-medium text-neutral-400 transition hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-600"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 bg-surface p-4 text-sm font-medium text-neutral-400 transition hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-600"
             >
               <UserPlus className="size-4" />
               Add Reference
