@@ -3,13 +3,21 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
+import {
+  AlertTriangle,
+  Calendar,
+  Mail,
+  Phone,
+  ShieldCheck,
+  StickyNote,
+  Banknote,
+} from "lucide-react";
 
 import type { Tenancy, TenancyStatus } from "@/types/landlord";
 import { TenancyStatusBadge, isTenancyExpired } from "@/components/landlord/TenancyStatusBadge";
 import { TenancyForm } from "@/components/landlord/TenancyForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle } from "lucide-react";
 
 export default function TenancyDetailPage() {
   const router = useRouter();
@@ -122,19 +130,61 @@ export default function TenancyDetailPage() {
     tenancy.lease_end_date,
   );
 
+  const rentFormatted = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 0,
+  }).format(tenancy.rent_amount);
+
+  const depositFormatted =
+    tenancy.deposit_amount != null
+      ? new Intl.NumberFormat("en-GB", {
+          style: "currency",
+          currency: "GBP",
+          minimumFractionDigits: 0,
+        }).format(tenancy.deposit_amount)
+      : null;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">
+      {/* ── Page header ── */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          {/* Eyebrow: status badge */}
+          <div className="flex items-center gap-2">
+            <TenancyStatusBadge
+              status={tenancy.status as TenancyStatus}
+              leaseEndDate={tenancy.lease_end_date}
+            />
+          </div>
+          {/* Hero heading */}
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
             {tenancy.tenant_name}
           </h1>
-          <TenancyStatusBadge
-            status={tenancy.status as TenancyStatus}
-            leaseEndDate={tenancy.lease_end_date}
-          />
+          {/* Contact subtitle */}
+          {(tenancy.tenant_email || tenancy.tenant_phone) && (
+            <p className="flex items-center gap-2 text-sm text-neutral-500">
+              {tenancy.tenant_email && (
+                <span className="flex items-center gap-1">
+                  <Mail className="size-3.5" />
+                  {tenancy.tenant_email}
+                </span>
+              )}
+              {tenancy.tenant_email && tenancy.tenant_phone && (
+                <span className="text-neutral-300">·</span>
+              )}
+              {tenancy.tenant_phone && (
+                <span className="flex items-center gap-1">
+                  <Phone className="size-3.5" />
+                  {tenancy.tenant_phone}
+                </span>
+              )}
+            </p>
+          )}
         </div>
-        <div className="flex gap-2">
+
+        {/* Action buttons */}
+        <div className="flex shrink-0 gap-2">
           {expired && (
             <>
               <Button variant="outline" onClick={() => setEditing(true)}>
@@ -168,14 +218,14 @@ export default function TenancyDetailPage() {
 
       {/* Expired tenancy warning banner */}
       {expired && tenancy.lease_end_date && (
-        <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" />
+        <div className="flex items-start gap-3 rounded-xl border border-error/20 bg-error/10 p-4">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-error" />
           <div>
-            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+            <p className="text-sm font-medium text-error">
               Tenancy expired on{" "}
               {new Date(tenancy.lease_end_date).toLocaleDateString("en-GB")}
             </p>
-            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+            <p className="mt-1 text-xs text-error/70">
               This tenancy has passed its end date. Please renew the lease or
               formally end the tenancy to keep your records up to date.
             </p>
@@ -183,77 +233,224 @@ export default function TenancyDetailPage() {
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Tenancy Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* ── Top row: Rent hero + Tenancy Overview ── */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Rent hero card (dark green) */}
+        <div className="flex flex-col justify-between rounded-xl bg-brand-primary-dark p-6 text-white shadow-md">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/60">
+              Rent Amount
+            </p>
+            <p className="mt-2 font-heading text-4xl font-bold tracking-tight">
+              {rentFormatted}
+            </p>
+            <p className="mt-1 text-sm text-white/70">
+              per {tenancy.rent_frequency}
+            </p>
+          </div>
+          <div className="mt-6 border-t border-white/20 pt-4">
+            <p className="text-xs text-white/50">Lease start</p>
+            <p className="mt-0.5 text-sm font-semibold text-white">
+              {new Date(tenancy.lease_start_date).toLocaleDateString("en-GB")}
+            </p>
+          </div>
+        </div>
+
+        {/* Tenancy Overview stat tiles */}
+        <div className="lg:col-span-2 flex flex-col justify-between rounded-xl border border-border bg-white p-6 shadow-sm">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+              Tenancy Overview
+            </p>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {/* Start Date */}
+            <div className="rounded-lg bg-surface p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Start Date
+              </p>
+              <p className="mt-1 text-base font-semibold text-neutral-800">
+                {new Date(tenancy.lease_start_date).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+              <p className="mt-0.5 text-xs text-neutral-400">Fixed Term</p>
+            </div>
+            {/* End Date */}
+            <div className="rounded-lg bg-surface p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                End Date
+              </p>
+              <p className="mt-1 text-base font-semibold text-neutral-800">
+                {tenancy.lease_end_date
+                  ? new Date(tenancy.lease_end_date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "Periodic"}
+              </p>
+              {tenancy.lease_end_date && (
+                <p className="mt-0.5 text-xs text-neutral-400">
+                  {expired ? "Expired" : "Active"}
+                </p>
+              )}
+            </div>
+            {/* Deposit Held */}
+            <div className="rounded-lg bg-surface p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Deposit Held
+              </p>
+              <p className="mt-1 text-base font-semibold text-neutral-800">
+                {depositFormatted ?? "—"}
+              </p>
+              {tenancy.deposit_scheme && (
+                <p className="mt-0.5 text-xs text-neutral-400">
+                  Protected by {tenancy.deposit_scheme}
+                </p>
+              )}
+            </div>
+          </div>
+          {/* Rent frequency label row */}
+          <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+            <p className="text-xs text-neutral-400">Rent Frequency</p>
+            <p className="text-sm font-semibold capitalize text-neutral-700">
+              {tenancy.rent_frequency}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Second row: Tenant Contact | Tenancy Details | Notes ── */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Tenant Contact */}
+        <Card className="rounded-xl border-border shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+              <Mail className="size-4 text-neutral-400" />
+              Tenant Contact
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             <div>
-              <dt className="text-sm text-muted-foreground">Tenant Name</dt>
-              <dd className="font-medium">{tenancy.tenant_name}</dd>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Tenant Name
+              </p>
+              <p className="mt-0.5 text-sm font-medium text-neutral-800">
+                {tenancy.tenant_name}
+              </p>
             </div>
             {tenancy.tenant_email && (
               <div>
-                <dt className="text-sm text-muted-foreground">Email</dt>
-                <dd className="font-medium">{tenancy.tenant_email}</dd>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                  Email
+                </p>
+                <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-neutral-800">
+                  <Mail className="size-3.5 text-neutral-400" />
+                  {tenancy.tenant_email}
+                </p>
               </div>
             )}
             {tenancy.tenant_phone && (
               <div>
-                <dt className="text-sm text-muted-foreground">Phone</dt>
-                <dd className="font-medium">{tenancy.tenant_phone}</dd>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                  Phone
+                </p>
+                <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-neutral-800">
+                  <Phone className="size-3.5 text-neutral-400" />
+                  {tenancy.tenant_phone}
+                </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Key Dates */}
+        <Card className="rounded-xl border-border shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+              <Calendar className="size-4 text-neutral-400" />
+              Key Dates
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             <div>
-              <dt className="text-sm text-muted-foreground">Lease Start</dt>
-              <dd className="font-medium">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Lease Start
+              </p>
+              <p className="mt-0.5 text-sm font-medium text-neutral-800">
                 {new Date(tenancy.lease_start_date).toLocaleDateString("en-GB")}
-              </dd>
+              </p>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Lease End</dt>
-              <dd className="font-medium">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Lease End
+              </p>
+              <p className="mt-0.5 text-sm font-medium text-neutral-800">
                 {tenancy.lease_end_date
                   ? new Date(tenancy.lease_end_date).toLocaleDateString("en-GB")
                   : "Periodic"}
-              </dd>
+              </p>
             </div>
             <div>
-              <dt className="text-sm text-muted-foreground">Rent</dt>
-              <dd className="font-medium">
-                {new Intl.NumberFormat("en-GB", {
-                  style: "currency",
-                  currency: "GBP",
-                  minimumFractionDigits: 0,
-                }).format(tenancy.rent_amount)}
-                /{tenancy.rent_frequency}
-              </dd>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                Rent
+              </p>
+              <p className="mt-0.5 flex items-center gap-1.5 text-sm font-medium text-neutral-800">
+                <Banknote className="size-3.5 text-neutral-400" />
+                {rentFormatted}/{tenancy.rent_frequency}
+              </p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Deposit & Notes */}
+        <Card className="rounded-xl border-border shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+              <ShieldCheck className="size-4 text-neutral-400" />
+              Deposit &amp; Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             {tenancy.deposit_amount != null && (
               <div>
-                <dt className="text-sm text-muted-foreground">Deposit</dt>
-                <dd className="font-medium">
-                  {new Intl.NumberFormat("en-GB", {
-                    style: "currency",
-                    currency: "GBP",
-                    minimumFractionDigits: 0,
-                  }).format(tenancy.deposit_amount)}
-                  {tenancy.deposit_scheme && ` (${tenancy.deposit_scheme})`}
-                </dd>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                  Deposit
+                </p>
+                <p className="mt-0.5 text-sm font-medium text-neutral-800">
+                  {depositFormatted}
+                  {tenancy.deposit_scheme && (
+                    <span className="ml-1 text-xs text-neutral-400">
+                      ({tenancy.deposit_scheme})
+                    </span>
+                  )}
+                </p>
               </div>
             )}
-            {tenancy.notes && (
-              <div className="sm:col-span-2 lg:col-span-3">
-                <dt className="text-sm text-muted-foreground">Notes</dt>
-                <dd className="whitespace-pre-wrap font-medium">{tenancy.notes}</dd>
+            {tenancy.notes ? (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400">
+                  Notes
+                </p>
+                <p className="mt-0.5 whitespace-pre-wrap text-sm text-neutral-700">
+                  {tenancy.notes}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-4 text-center">
+                <StickyNote className="size-6 text-neutral-300" />
+                <p className="mt-2 text-xs text-neutral-400">No notes added</p>
               </div>
             )}
-          </dl>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
-      <div className="flex gap-3">
+      {/* ── Footer actions ── */}
+      <div className="flex gap-3 border-t border-border pt-4">
         <Button variant="outline" onClick={() => router.back()}>
           Back
         </Button>
