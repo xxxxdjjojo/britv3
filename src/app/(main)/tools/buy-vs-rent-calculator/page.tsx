@@ -249,7 +249,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setPropertyPrice(Number(e.target.value))
                         }
-                        className="pl-7 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pl-7 bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                     </div>
                   </div>
@@ -285,7 +285,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setMonthlyRent(Number(e.target.value))
                         }
-                        className="pl-7 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pl-7 bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setGrowthRate(Number(e.target.value))
                         }
-                        className="pr-8 text-right bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pr-8 text-right bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
                         %
@@ -344,7 +344,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setDepositPercent(Number(e.target.value))
                         }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pr-8 bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
                         %
@@ -364,7 +364,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setMortgageRate(Number(e.target.value))
                         }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pr-8 bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
                         %
@@ -384,7 +384,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setRentInflation(Number(e.target.value))
                         }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pr-8 bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
                         %
@@ -404,7 +404,7 @@ export default function BuyVsRentCalculatorPage() {
                         onChange={(e) =>
                           setInvestmentReturn(Number(e.target.value))
                         }
-                        className="pr-8 bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
+                        className="pr-8 bg-muted dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">
                         %
@@ -530,7 +530,7 @@ export default function BuyVsRentCalculatorPage() {
                         return (
                           <tr
                             key={row.year}
-                            className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
+                            className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-muted dark:hover:bg-neutral-800/50 transition-colors"
                           >
                             <td className="py-3 px-4 font-bold text-neutral-900 dark:text-white">
                               Year {row.year}
@@ -558,7 +558,7 @@ export default function BuyVsRentCalculatorPage() {
                 </div>
 
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
+                  <div className="p-4 rounded-lg bg-muted dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
                     <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">
                       Total Rent Paid (10yr)
                     </h4>
@@ -569,7 +569,7 @@ export default function BuyVsRentCalculatorPage() {
                       )}
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
+                  <div className="p-4 rounded-lg bg-muted dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
                     <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">
                       Mortgage Payments (10yr)
                     </h4>
@@ -658,7 +658,7 @@ export default function BuyVsRentCalculatorPage() {
                 <div className="space-y-4">
                   <Link
                     href={`/tools/mortgage-calculator?price=${propertyPrice}`}
-                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-muted dark:hover:bg-neutral-800 transition-colors"
                   >
                     <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
                       <Calculator className="size-5" />
@@ -674,7 +674,7 @@ export default function BuyVsRentCalculatorPage() {
                   </Link>
                   <Link
                     href={`/tools/stamp-duty-calculator?price=${propertyPrice}`}
-                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-muted dark:hover:bg-neutral-800 transition-colors"
                   >
                     <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
                       <PiggyBank className="size-5" />
@@ -690,7 +690,7 @@ export default function BuyVsRentCalculatorPage() {
                   </Link>
                   <Link
                     href="/tools/affordability-calculator"
-                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-muted dark:hover:bg-neutral-800 transition-colors"
                   >
                     <div className="size-10 rounded-lg bg-brand-primary-lighter flex items-center justify-center text-brand-primary shrink-0">
                       <Home className="size-5" />

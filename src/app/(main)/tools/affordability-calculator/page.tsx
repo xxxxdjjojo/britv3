@@ -494,7 +494,7 @@ export default function AffordabilityCalculatorPage() {
               </Card>
 
               {/* Trust Badge */}
-              <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-800/50">
+              <div className="rounded-xl border border-dashed border-neutral-200 bg-muted p-6 dark:border-neutral-700 dark:bg-neutral-800/50">
                 <div className="mb-4 flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded bg-white shadow-sm dark:bg-neutral-800">
                     <ShieldCheck className="h-6 w-6 text-neutral-400" />

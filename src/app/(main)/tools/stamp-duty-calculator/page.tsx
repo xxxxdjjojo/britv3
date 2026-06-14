@@ -137,17 +137,17 @@ export default function StampDutyCalculatorPage() {
                 </div>
                 <h3 className="text-lg font-bold">Ready to Move?</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Get a competitive conveyancing quote from our panel of trusted
                 solicitors in minutes.
               </p>
               <Link
                 href="/marketplace?category=conveyancing"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-muted"
               >
                 Find a Solicitor
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter">
                 Free, no-obligation quote
               </p>
             </div>
@@ -163,7 +163,7 @@ export default function StampDutyCalculatorPage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-muted/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
                 <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-[11px] leading-relaxed text-neutral-500 italic dark:text-neutral-400">
