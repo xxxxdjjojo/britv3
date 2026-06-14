@@ -13,6 +13,7 @@ import {
   Plus,
   RotateCcw,
   X,
+  MapPin,
 } from "lucide-react";
 import { useViewings, useCancelViewing } from "@/hooks/useViewings";
 import type { Viewing } from "@/services/viewings/viewings-service";
@@ -33,10 +34,10 @@ function formatTime(isoString: string): string {
 }
 
 const STATUS_STYLES: Record<Viewing["status"], string> = {
-  confirmed: "bg-success-light text-success",
-  rescheduled: "bg-warning-light text-warning",
-  completed: "bg-brand-primary-lighter text-brand-primary",
-  cancelled: "bg-error-light text-error",
+  confirmed: "bg-success/10 text-success",
+  rescheduled: "bg-warning/10 text-warning",
+  completed: "bg-brand-primary/10 text-brand-primary",
+  cancelled: "bg-error/10 text-error",
 };
 
 const LEGEND: ReadonlyArray<{ label: string; dot: string }> = [
@@ -53,7 +54,7 @@ function statusLabel(status: Viewing["status"]): string {
 function StatusBadge({ status }: Readonly<{ status: Viewing["status"] }>) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[status]}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] ${STATUS_STYLES[status]}`}
     >
       {statusLabel(status)}
     </span>
@@ -91,7 +92,10 @@ export default function ViewingsPage({
       {/* Header */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="font-heading text-4xl font-bold tracking-tight text-brand-primary-dark sm:text-5xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Schedule &amp; Management
+          </p>
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
             Viewings
           </h1>
           <p className="max-w-xl text-sm text-muted-foreground">
@@ -99,19 +103,24 @@ export default function ViewingsPage({
             viewings you&apos;ve already experienced.
           </p>
         </div>
-        <Link href={`/dashboard/${role}/viewings/book`}>
-          <Button>
-            <Plus className="mr-2 size-4" />
-            Book a Viewing
+        <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" className="text-sm">
+            Filter
           </Button>
-        </Link>
+          <Link href={`/dashboard/${role}/viewings/book`}>
+            <Button>
+              <Plus className="mr-2 size-4" />
+              Book a Viewing
+            </Button>
+          </Link>
+        </div>
       </header>
 
       {/* Schedule + Next Viewing */}
       <section className="grid gap-6 lg:grid-cols-3">
         {/* Calendar Schedule panel */}
         <div className="rounded-xl border border-border bg-surface p-6 lg:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-5 flex items-center justify-between">
             <h2 className="font-heading text-lg font-bold text-neutral-900">
               Calendar Schedule
             </h2>
@@ -128,25 +137,30 @@ export default function ViewingsPage({
         </div>
 
         {/* Next Viewing highlight + legend */}
-        <div className="space-y-6">
-          <div className="rounded-xl bg-brand-primary p-6 text-white">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-gold">
+        <div className="space-y-5">
+          {/* Next Viewing card */}
+          <div className="rounded-xl bg-brand-primary p-6 text-white shadow-md">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-gold">
               Next Viewing
             </p>
             {nextViewing ? (
               <>
-                <p className="mt-3 text-lg font-semibold">
+                <p className="mt-3 font-heading text-lg font-semibold leading-snug">
                   {nextViewing.property_address}
                 </p>
-                <div className="mt-2 flex items-center gap-4 text-sm text-white/80">
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="size-4" />
+                <div className="mt-3 space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm text-white/80">
+                    <Calendar className="size-4 shrink-0" />
                     {formatDate(nextViewing.scheduled_at)}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="size-4" />
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-white/80">
+                    <Clock className="size-4 shrink-0" />
                     {formatTime(nextViewing.scheduled_at)}
-                  </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-white/80">
+                    <MapPin className="size-4 shrink-0" />
+                    {nextViewing.type === "virtual" ? "Virtual" : "In Person"}
+                  </div>
                 </div>
                 <div className="mt-5 flex gap-3">
                   <Button
@@ -172,7 +186,7 @@ export default function ViewingsPage({
 
           {/* Legend */}
           <div className="rounded-xl border border-border bg-surface p-5">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
               Viewing Statuses
             </p>
             <ul className="space-y-2.5">
@@ -191,7 +205,7 @@ export default function ViewingsPage({
       </section>
 
       {error && (
-        <div className="rounded-xl border border-error/30 bg-error-light px-6 py-4 text-sm text-error">
+        <div className="rounded-xl border border-error/30 bg-error/10 px-6 py-4 text-sm text-error">
           Failed to load viewings. Please refresh the page.
         </div>
       )}
@@ -202,8 +216,8 @@ export default function ViewingsPage({
 
         {isLoading ? (
           <div className="space-y-3">
-            <Skeleton className="h-24 w-full rounded-xl" />
-            <Skeleton className="h-24 w-full rounded-xl" />
+            <Skeleton className="h-28 w-full rounded-xl" />
+            <Skeleton className="h-28 w-full rounded-xl" />
           </div>
         ) : upcoming.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-surface py-12 text-center">
@@ -220,57 +234,82 @@ export default function ViewingsPage({
             {upcoming.map((v) => (
               <li
                 key={v.id}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-surface p-4"
+                className="flex overflow-hidden rounded-xl border border-border bg-surface shadow-sm"
               >
-                <div className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-brand-primary-lighter text-brand-primary">
-                  <Calendar className="size-6" />
+                {/* Thumbnail area */}
+                <div className="hidden w-32 shrink-0 items-center justify-center bg-brand-primary/8 sm:flex">
+                  <div className="flex flex-col items-center gap-1.5 text-brand-primary/60">
+                    <Calendar className="size-8" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wide">
+                      Property
+                    </span>
+                  </div>
                 </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                {/* Content */}
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-3 p-4">
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <StatusBadge status={v.status} />
                     <p className="truncate font-heading font-semibold text-neutral-900">
                       {v.property_address}
                     </p>
-                    <StatusBadge status={v.status} />
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="size-3.5" />
+                        {formatDate(v.scheduled_at)}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="size-3.5" />
+                        {formatTime(v.scheduled_at)}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        {v.type === "virtual" ? (
+                          <>
+                            <Video className="size-3.5" />
+                            Virtual
+                          </>
+                        ) : (
+                          <>
+                            <MapPin className="size-3.5" />
+                            In Person
+                          </>
+                        )}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="size-3.5" />
-                      {formatDate(v.scheduled_at)}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="size-3.5" />
-                      {formatTime(v.scheduled_at)}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      {v.type === "virtual" ? (
-                        <>
-                          <Video className="size-3.5" />
-                          Virtual
-                        </>
-                      ) : (
-                        "In Person"
-                      )}
-                    </span>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <Link href={`/dashboard/${role}/viewings/${v.id}/reschedule`}>
-                    <Button variant="outline" size="sm">
-                      <RotateCcw className="mr-1 size-3.5" />
-                      Reschedule
+                  {/* Date badge */}
+                  <div className="hidden shrink-0 flex-col items-end md:flex">
+                    <span className="rounded-lg border border-border px-3 py-1.5 text-center">
+                      <span className="block text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
+                        {new Intl.DateTimeFormat("en-GB", { month: "short" }).format(
+                          new Date(v.scheduled_at),
+                        )}
+                      </span>
+                      <span className="block font-heading text-2xl font-bold leading-none text-neutral-900">
+                        {new Date(v.scheduled_at).getDate()}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 sm:shrink-0">
+                    <Link href={`/dashboard/${role}/viewings/${v.id}/reschedule`}>
+                      <Button variant="outline" size="sm">
+                        <RotateCcw className="mr-1 size-3.5" />
+                        Reschedule
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCancel(v.id)}
+                      disabled={cancelViewing.isPending}
+                    >
+                      <X className="mr-1 size-3.5" />
+                      Cancel
                     </Button>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleCancel(v.id)}
-                    disabled={cancelViewing.isPending}
-                  >
-                    <X className="mr-1 size-3.5" />
-                    Cancel
-                  </Button>
+                  </div>
                 </div>
               </li>
             ))}
@@ -284,9 +323,9 @@ export default function ViewingsPage({
 
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-40 w-full rounded-xl" />
-            <Skeleton className="h-40 w-full rounded-xl" />
-            <Skeleton className="h-40 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
+            <Skeleton className="h-48 w-full rounded-xl" />
           </div>
         ) : past.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-surface py-12 text-center">
@@ -300,21 +339,34 @@ export default function ViewingsPage({
             {past.map((v) => (
               <article
                 key={v.id}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-muted/40 p-5"
+                className="flex flex-col overflow-hidden rounded-xl border border-border bg-surface shadow-sm"
               >
-                <div className="flex items-center justify-between">
-                  <StatusBadge status={v.status} />
-                  <span className="text-xs text-muted-foreground">
-                    {v.type === "virtual" ? "Virtual" : "In Person"}
-                  </span>
+                {/* Thumbnail header */}
+                <div className="flex h-28 items-center justify-center bg-brand-primary/6">
+                  <div className="flex flex-col items-center gap-1.5 text-brand-primary/50">
+                    <Calendar className="size-8" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wide">
+                      Property
+                    </span>
+                  </div>
                 </div>
-                <p className="font-heading font-semibold text-neutral-900">
-                  {v.property_address}
-                </p>
-                <p className="mt-auto flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Calendar className="size-3.5" />
-                  {formatDate(v.scheduled_at)}
-                </p>
+
+                {/* Card body */}
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <StatusBadge status={v.status} />
+                    <span className="text-xs text-muted-foreground">
+                      {v.type === "virtual" ? "Virtual" : "In Person"}
+                    </span>
+                  </div>
+                  <p className="font-heading font-semibold text-neutral-900 leading-snug">
+                    {v.property_address}
+                  </p>
+                  <p className="mt-auto flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Calendar className="size-3.5" />
+                    {formatDate(v.scheduled_at)}
+                  </p>
+                </div>
               </article>
             ))}
           </div>
@@ -364,35 +416,44 @@ function ScheduleCalendar({
 
   return (
     <div>
-      <p className="mb-3 text-sm font-semibold text-neutral-900">{monthLabel}</p>
+      <p className="mb-4 font-heading text-sm font-bold text-neutral-900">{monthLabel}</p>
       <div className="grid grid-cols-7 gap-1 text-center">
         {WEEKDAYS.map((day) => (
           <div
             key={day}
-            className="pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            className="pb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400"
           >
             {day}
           </div>
         ))}
         {cells.map((day, idx) => {
           if (day === null) {
-            return <div key={`blank-${idx}`} className="min-h-16" />;
+            return <div key={`blank-${idx}`} className="min-h-14" />;
           }
           const events = byDay.get(day) ?? [];
+          const hasEvents = events.length > 0;
           return (
             <div
               key={day}
-              className="min-h-16 rounded-lg border border-border/60 p-1.5 text-left"
+              className={`min-h-14 rounded-lg p-1.5 text-left transition-colors ${
+                hasEvents
+                  ? "border border-brand-primary/20 bg-brand-primary/4"
+                  : "border border-border/40"
+              }`}
             >
-              <span className="text-xs font-medium text-muted-foreground">
+              <span
+                className={`text-xs font-semibold ${
+                  hasEvents ? "text-brand-primary" : "text-muted-foreground"
+                }`}
+              >
                 {day}
               </span>
-              <div className="mt-1 space-y-1">
+              <div className="mt-1 space-y-0.5">
                 {events.map((v) => (
                   <span
                     key={v.id}
                     title={`${v.property_address} · ${formatTime(v.scheduled_at)}`}
-                    className={`block truncate rounded px-1 py-0.5 text-[10px] font-medium ${
+                    className={`block truncate rounded px-1 py-0.5 text-[10px] font-semibold ${
                       v.id === nextViewingId
                         ? "bg-brand-primary text-white"
                         : STATUS_STYLES[v.status]
