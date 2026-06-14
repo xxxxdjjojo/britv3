@@ -155,7 +155,7 @@ export default async function CityAreaGuidePage({ params }: CityPageProps) {
               <p className="text-sm text-neutral-500 mb-2">{stat.label}</p>
               <p className="text-3xl font-bold text-primary font-heading">{stat.value}</p>
               {stat.subIcon ? (
-                <p className="text-emerald-600 font-bold flex items-center gap-1 mt-1 text-sm">
+                <p className="text-success font-bold flex items-center gap-1 mt-1 text-sm">
                   <TrendingUp className="size-4" /> {stat.sub} YoY
                 </p>
               ) : (
