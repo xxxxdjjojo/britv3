@@ -94,9 +94,9 @@ function formatPrice(price: number, listingType?: ListingType): string {
 }
 
 const EPC_COLOURS: Record<string, string> = {
-  A: "bg-green-700 text-white",
-  B: "bg-green-500 text-white",
-  C: "bg-lime-500 text-white",
+  A: "bg-success text-white",
+  B: "bg-success/80 text-white",
+  C: "bg-success/60 text-white",
   D: "bg-yellow-500 text-neutral-900",
   E: "bg-amber-500 text-neutral-900",
   F: "bg-orange-500 text-white",
@@ -635,7 +635,7 @@ function SearchPageInner() {
       {/* Area search */}
       <div className="border-b border-neutral-200 px-4 py-4">
         <label className="mb-1.5 block text-sm font-semibold text-neutral-900">Area</label>
-        <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+        <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-muted px-3 py-2">
           <Search className="size-4 shrink-0 text-neutral-400" />
           <input
             type="text"
@@ -760,7 +760,7 @@ function SearchPageInner() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-neutral-50">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-surface">
       {/* ------------------------------------------------------------------ */}
       {/* Top sticky bar                                                       */}
       {/* ------------------------------------------------------------------ */}
@@ -790,7 +790,7 @@ function SearchPageInner() {
         {viewMode !== "map" && (
           <div className="flex items-center gap-3 px-4 py-3">
             {/* Compact search input */}
-            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-neutral-200 bg-muted px-3 py-2">
               <Search className="size-4 shrink-0 text-neutral-400" />
               <input
                 type="text"
@@ -1059,7 +1059,7 @@ function SearchPageInner() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-neutral-50"><p className="text-sm text-neutral-400">Loading search...</p></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-surface"><p className="text-sm text-neutral-400">Loading search...</p></div>}>
       <SearchPageInner />
     </Suspense>
   );

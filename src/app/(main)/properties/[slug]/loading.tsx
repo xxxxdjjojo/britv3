@@ -1,7 +1,7 @@
 export default function PropertyDetailLoading() {
   return (
     <div
-      className="min-h-screen bg-neutral-50"
+      className="min-h-screen bg-surface"
       role="status"
       aria-label="Loading property details"
     >

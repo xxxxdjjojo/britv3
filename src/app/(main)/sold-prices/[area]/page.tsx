@@ -43,7 +43,7 @@ const CHART_BARS = [
 
 function VsAskingBadge({ value }: Readonly<{ value: number }>) {
   if (value > 0) {
-    return <span className="font-medium text-green-600">+{value}%</span>;
+    return <span className="font-medium text-success">+{value}%</span>;
   }
   if (value < 0) {
     return <span className="font-medium text-red-500">{value}%</span>;
@@ -158,7 +158,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-bold">{stats.avgPrice}</h3>
               {stats.yoyChange !== undefined && (
-                <span className="flex items-center text-sm font-medium text-green-500">
+                <span className="flex items-center text-sm font-medium text-success">
                   <TrendingUp className="size-3" /> {stats.yoyChange}
                 </span>
               )}
@@ -228,17 +228,17 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                 Recent Sales in {areaName}
               </CardTitle>
               <div className="flex gap-2">
-                <button className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">
+                <button className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800">
                   <Filter className="size-3.5" /> Filter
                 </button>
-                <button className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">
+                <button className="flex items-center gap-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800">
                   <Download className="size-3.5" /> Export
                 </button>
               </div>
             </CardHeader>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-neutral-50 text-xs uppercase tracking-wider text-neutral-500 dark:bg-neutral-800/50">
+                <thead className="bg-muted text-xs uppercase tracking-wider text-neutral-500 dark:bg-neutral-800/50">
                   <tr>
                     <th className="px-6 py-4 font-semibold">Address</th>
                     <th className="px-6 py-4 font-semibold">Type &amp; Beds</th>
@@ -271,7 +271,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                 >
                   <ChevronLeft className="size-4" />
                 </button>
-                <button className="rounded-lg border border-neutral-200 p-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800">
+                <button className="rounded-lg border border-neutral-200 p-2 hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800">
                   <ChevronRight className="size-4" />
                 </button>
               </div>
@@ -357,7 +357,7 @@ export default async function SoldPricesPage({ params }: SoldPricesPageProps) {
                 </p>
               </div>
             </div>
-            <div className="bg-neutral-50 p-4 dark:bg-neutral-800/50">
+            <div className="bg-muted p-4 dark:bg-neutral-800/50">
               <div className="flex items-center gap-2 text-xs text-neutral-500">
                 <Info className="size-4 shrink-0" />
                 Prices shown are approximate based on public land registry data.

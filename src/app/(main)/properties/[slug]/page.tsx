@@ -166,9 +166,9 @@ function postcodeDistrict(postcode: string): string {
 
 const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const EPC_COLORS: Record<string, string> = {
-  A: "bg-green-600",
-  B: "bg-green-500",
-  C: "bg-lime-500",
+  A: "bg-success",
+  B: "bg-success/80",
+  C: "bg-success/60",
   D: "bg-yellow-400",
   E: "bg-orange-400",
   F: "bg-orange-600",
@@ -376,7 +376,7 @@ export default async function PropertyPage({
             <div>
               <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
               {priceReduced && originalPrice != null && (
-                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                <Badge variant="secondary" className="text-xs bg-success/10 text-success dark:bg-success/20 dark:text-success">
                   Reduced from £{originalPrice.toLocaleString("en-GB")}
                 </Badge>
               )}
