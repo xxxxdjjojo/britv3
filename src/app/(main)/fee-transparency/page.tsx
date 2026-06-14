@@ -160,7 +160,7 @@ export default function FeeTransparencyPage() {
         ))}
       </section>
 
-      <section className="mt-16 rounded-2xl bg-neutral-50 p-6 sm:p-8">
+      <section className="mt-16 rounded-2xl bg-muted p-6 sm:p-8">
         <h2 className="font-heading text-xl font-bold text-neutral-900">
           How these rates compare
         </h2>
@@ -184,7 +184,7 @@ export default function FeeTransparencyPage() {
           should evolve with the market it supports.{" "}
           <Link
             href="/contact"
-            className="text-[#1B4D3E] underline-offset-4 hover:underline"
+            className="text-brand-primary underline-offset-4 hover:underline"
           >
             Get in touch
           </Link>

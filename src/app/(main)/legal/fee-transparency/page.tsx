@@ -92,7 +92,7 @@ export default function FeeTransparencyPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-neutral-50">
+                <tr className="bg-muted">
                   <th className="border border-neutral-200 px-4 py-2 text-left font-semibold">Plan</th>
                   <th className="border border-neutral-200 px-4 py-2 text-left font-semibold">Monthly Fee (excl. VAT)</th>
                   <th className="border border-neutral-200 px-4 py-2 text-left font-semibold">Listings Included</th>
@@ -106,7 +106,7 @@ export default function FeeTransparencyPage() {
                   <td className="border border-neutral-200 px-4 py-2">Up to [X]</td>
                   <td className="border border-neutral-200 px-4 py-2">Basic analytics</td>
                 </tr>
-                <tr className="bg-neutral-50">
+                <tr className="bg-muted">
                   <td className="border border-neutral-200 px-4 py-2">Professional</td>
                   <td className="border border-neutral-200 px-4 py-2">&pound;[X]</td>
                   <td className="border border-neutral-200 px-4 py-2">Up to [X]</td>
