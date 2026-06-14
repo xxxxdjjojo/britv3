@@ -59,9 +59,9 @@ export default async function PostAJobPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] px-6 py-16 text-white">
+      <section className="bg-gradient-to-br from-brand-primary-dark to-brand-primary px-6 py-16 text-white">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight">
+          <h1 className="mb-4 text-4xl font-heading font-extrabold tracking-tight">
             Post a Job — Get Free Quotes
           </h1>
           <p className="mb-8 text-xl text-white/80">
@@ -103,13 +103,13 @@ export default async function PostAJobPage() {
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link
                     href="/login?callbackUrl=/post-a-job"
-                    className="rounded-lg bg-[#2563EB] px-6 py-2.5 font-semibold text-white hover:bg-[#1D4ED8]"
+                    className="rounded-lg bg-brand-primary px-6 py-2.5 font-semibold text-white hover:bg-brand-primary-dark"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/register?callbackUrl=/post-a-job"
-                    className="rounded-lg border border-slate-300 px-6 py-2.5 font-semibold hover:border-[#2563EB] hover:text-[#2563EB]"
+                    className="rounded-lg border border-border px-6 py-2.5 font-semibold hover:border-brand-primary hover:text-brand-primary"
                   >
                     Create Account
                   </Link>
@@ -118,7 +118,7 @@ export default async function PostAJobPage() {
                   Already have an account?{" "}
                   <Link
                     href="/login?callbackUrl=/post-a-job"
-                    className="text-[#2563EB] hover:underline"
+                    className="text-brand-primary hover:underline"
                   >
                     Sign in here
                   </Link>
@@ -140,7 +140,7 @@ export default async function PostAJobPage() {
                   className="flex gap-3 rounded-lg border border-border bg-card p-4"
                 >
                   <div className="mt-0.5 shrink-0">
-                    <Icon className="size-5 text-[#2563EB]" />
+                    <Icon className="size-5 text-brand-primary" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">
