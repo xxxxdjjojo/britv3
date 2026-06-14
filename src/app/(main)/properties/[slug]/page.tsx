@@ -48,7 +48,7 @@ import { TransportWidget } from "@/components/properties/detail/TransportWidget"
 import { SchoolCatchmentWidget } from "@/components/properties/detail/SchoolCatchmentWidget";
 import { BroadbandWidget } from "@/components/properties/detail/BroadbandWidget";
 import { FloodRiskWidget } from "@/components/properties/detail/FloodRiskWidget";
-import { CrimeStatsChart } from "@/components/properties/detail/CrimeStatsChart";
+import { CrimeStatsChartLazy } from "@/components/properties/detail/CrimeStatsChartLazy";
 
 // Wave 6 — Sidebar calculators
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
@@ -669,7 +669,7 @@ export default async function PropertyPage({
                       connectionType={null}
                     />
                     <FloodRiskWidget riskLevel={null} source={null} />
-                    <CrimeStatsChart stats={[]} boroughAvg={null} />
+                    <CrimeStatsChartLazy stats={[]} boroughAvg={null} />
                   </div>
                 </Suspense>
               </section>
