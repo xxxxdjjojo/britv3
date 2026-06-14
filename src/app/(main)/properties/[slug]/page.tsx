@@ -69,12 +69,15 @@ import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
 import { isFeatureEnabled } from "@/lib/features";
 
 // ---------------------------------------------------------------------------
-// Static params — ISR handles on-demand rendering
+// Rendering mode
 // ---------------------------------------------------------------------------
+// This route renders per-user data via cookies()-backed Supabase auth
+// (save state, existing viewing, view count). Marking it dynamic prevents the
+// DYNAMIC_SERVER_USAGE error that a static/ISR render produces when cookies()
+// is read (previously: HTTP 500 on a direct GET). See PERFORMANCE_AUDIT.md R2.
+// A static-shell + per-user islands refactor (R4) is the follow-up for caching.
 
-export async function generateStaticParams() {
-  return [];
-}
+export const dynamic = "force-dynamic";
 
 // ---------------------------------------------------------------------------
 // Metadata
