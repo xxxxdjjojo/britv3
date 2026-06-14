@@ -162,7 +162,7 @@ export default async function ServicesPage() {
       <TopRatedCarousel providers={providers} />
 
       {/* ── Section 4: How It Works ── */}
-      <section className="bg-gray-50 py-24">
+      <section className="bg-surface py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
             <h2 className="font-heading text-3xl font-bold text-brand-primary sm:text-4xl">
@@ -232,7 +232,7 @@ export default async function ServicesPage() {
                   "Criminal record checks",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
                     <span className="font-medium text-brand-primary">
                       {item}
                     </span>
@@ -270,7 +270,7 @@ export default async function ServicesPage() {
           </p>
           <Link
             href="/post-a-job"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-10 py-4 font-bold text-brand-primary transition-colors hover:bg-gray-100"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-10 py-4 font-bold text-brand-primary transition-colors hover:bg-surface"
           >
             Post a Job Free
             <ArrowRight className="h-4 w-4" />
