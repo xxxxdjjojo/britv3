@@ -68,18 +68,20 @@ export function TotpEnrollmentCard({
   onDismissBackupCodes: () => void;
 }>) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="size-5 text-brand-primary" />
-          Two-Factor Authentication
+    <Card className="rounded-xl border border-border">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="flex items-center gap-2 font-heading text-base font-semibold text-brand-primary-dark">
+            <Shield className="size-4 text-brand-primary" />
+            Two-Factor Authentication
+          </CardTitle>
           {!mfaLoading && (
             <Badge
               variant={mfaState === "ENABLED" ? "default" : "secondary"}
               className={
                 mfaState === "ENABLED"
-                  ? "bg-success/20 text-success"
-                  : undefined
+                  ? "bg-success/20 text-success border-0"
+                  : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400 border-0"
               }
             >
               {mfaState === "ENABLED"
@@ -89,8 +91,8 @@ export function TotpEnrollmentCard({
                   : "Not set up"}
             </Badge>
           )}
-        </CardTitle>
-        <CardDescription>
+        </div>
+        <CardDescription className="text-sm text-muted-foreground">
           Add an extra layer of security by requiring a verification code in
           addition to your password.
         </CardDescription>
@@ -102,7 +104,7 @@ export function TotpEnrollmentCard({
             Loading 2FA status…
           </div>
         ) : mfaState === "DISABLED" ? (
-          <Button onClick={onStartEnroll} disabled={enrolling}>
+          <Button onClick={onStartEnroll} disabled={enrolling} className="w-full sm:w-auto">
             {enrolling ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
@@ -114,7 +116,7 @@ export function TotpEnrollmentCard({
           <div className="space-y-4">
             {/* Resume banner when page loads with an unverified factor */}
             {!totpData && (
-              <div className="flex items-center gap-2 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
+              <div className="flex items-center gap-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
                 <AlertTriangle className="size-4 shrink-0 text-warning" />
                 <span>
                   2FA setup is incomplete. Restart setup to get a fresh QR
@@ -130,16 +132,18 @@ export function TotpEnrollmentCard({
                   Authenticator, Authy).
                 </p>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                  <img
-                    src={totpData.qr_code}
-                    alt="QR code for authenticator app"
-                    className="h-40 w-40 rounded-md border"
-                  />
-                  <div className="flex-1 space-y-1">
+                  <div className="shrink-0 rounded-xl border border-border bg-white p-2 dark:bg-neutral-900">
+                    <img
+                      src={totpData.qr_code}
+                      alt="QR code for authenticator app"
+                      className="h-36 w-36 rounded-md"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
                     <p className="text-xs text-muted-foreground">
                       Or enter this key manually:
                     </p>
-                    <code className="block break-all rounded-md bg-muted px-3 py-2 font-mono text-sm">
+                    <code className="block break-all rounded-lg border border-border bg-muted px-3 py-2 font-mono text-sm">
                       {totpData.secret}
                     </code>
                   </div>
@@ -148,8 +152,10 @@ export function TotpEnrollmentCard({
             )}
 
             {totpData && (
-              <div className="space-y-2">
-                <Label htmlFor="totp-code">Verification Code</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="totp-code" className="text-sm font-medium">
+                  Verification Code
+                </Label>
                 <div className="flex gap-2">
                   <Input
                     id="totp-code"
@@ -193,14 +199,14 @@ export function TotpEnrollmentCard({
         ) : (
           /* ENABLED */
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm">
-              <CheckCircle className="size-4 text-success" />
-              <span className="font-medium">Authenticator App — Active</span>
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-success/5 px-3 py-2 text-sm">
+              <CheckCircle className="size-4 shrink-0 text-success" />
+              <span className="font-medium text-success">Authenticator App — Active</span>
             </div>
 
             {/* Backup codes — shown once after verify or regenerate */}
             {backupCodes && (
-              <div className="rounded-md border border-warning/40 bg-warning/10 p-4 space-y-3">
+              <div className="rounded-xl border border-warning/40 bg-warning/10 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium text-warning-foreground">
                   <AlertTriangle className="size-4 shrink-0 text-warning" />
                   Download before closing — codes will not be shown again
@@ -209,13 +215,13 @@ export function TotpEnrollmentCard({
                   {backupCodes.map((code) => (
                     <code
                       key={code}
-                      className="font-mono text-sm rounded bg-background px-2 py-1"
+                      className="font-mono text-sm rounded-md border border-border bg-background px-2 py-1"
                     >
                       {code}
                     </code>
                   ))}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -248,7 +254,7 @@ export function TotpEnrollmentCard({
               </div>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 size="sm"

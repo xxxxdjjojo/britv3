@@ -53,46 +53,72 @@ export default async function AccountSettingsPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h2 className="font-heading text-xl font-semibold text-neutral-900 dark:text-white">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Account Settings
+        </p>
+        <h2 className="mt-1 font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
           Profile
         </h2>
-        <p className="mt-1 font-body text-sm text-neutral-500">
+        <p className="mt-2 font-body text-sm text-neutral-500">
           Manage your public profile and personal details
         </p>
       </div>
 
-      {/* Avatar section */}
-      <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Profile Photo
-        </h3>
-        <AvatarUploader
-          userId={user.id}
-          avatarUrl={profile?.avatar_url ?? null}
-          firstName={firstName}
-          lastName={lastName}
-        />
+      {/* Identity section — editorial two-column layout */}
+      <section className="rounded-xl border border-border bg-white">
+        <div className="flex flex-col gap-6 p-6 md:flex-row md:gap-10">
+          {/* Left: section label + description */}
+          <div className="md:w-56 md:shrink-0">
+            <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+              Profile Photo
+            </h3>
+            <p className="mt-1.5 font-body text-sm text-neutral-500">
+              Your portrait is visible to concierge agents and authorised sellers during private viewings.
+            </p>
+          </div>
+
+          {/* Right: avatar uploader */}
+          <div className="flex-1">
+            <AvatarUploader
+              userId={user.id}
+              avatarUrl={profile?.avatar_url ?? null}
+              firstName={firstName}
+              lastName={lastName}
+            />
+          </div>
+        </div>
       </section>
 
-      {/* Identity & contact section */}
-      <section className="space-y-4">
-        <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
-          Identity &amp; Contact
-        </h3>
-        <ProfileForm
-          initialData={{
-            first_name: firstName,
-            last_name: lastName,
-            phone: profile?.phone ?? null,
-            postcode: profile?.postcode ?? null,
-            bio: profile?.bio ?? null,
-            email,
-          }}
-          activeRole={activeRole}
-          roleData={roleData}
-        />
-      </section>
+      {/* Contact info section — editorial two-column layout */}
+      <section className="rounded-xl border border-border bg-white">
+        <div className="flex flex-col gap-6 p-6 md:flex-row md:gap-10">
+          {/* Left: section label + description */}
+          <div className="md:w-56 md:shrink-0">
+            <h3 className="font-heading text-base font-semibold text-neutral-900 dark:text-white">
+              Identity &amp; Contact
+            </h3>
+            <p className="mt-1.5 font-body text-sm text-neutral-500">
+              Ensure your contact details are verified to receive off-market opportunities.
+            </p>
+          </div>
 
+          {/* Right: form */}
+          <div className="flex-1">
+            <ProfileForm
+              initialData={{
+                first_name: firstName,
+                last_name: lastName,
+                phone: profile?.phone ?? null,
+                postcode: profile?.postcode ?? null,
+                bio: profile?.bio ?? null,
+                email,
+              }}
+              activeRole={activeRole}
+              roleData={roleData}
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
