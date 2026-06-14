@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Pencil, Trash2, Star, StarOff, ImageIcon } from "lucide-react";
+import { GripVertical, Pencil, Trash2, MapPin, ImageIcon } from "lucide-react";
 import type { ProviderPortfolioItem } from "@/types/provider-dashboard";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -49,118 +49,131 @@ export function PortfolioItemCard({ item, onEdit, onDelete, onToggleFeatured }: 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const bucketBase = `${supabaseUrl}/storage/v1/object/public/portfolio/`;
 
-  const beforeSrc = item.before_image_path ? `${bucketBase}${item.before_image_path}` : null;
-  const afterSrc = item.after_image_path ? `${bucketBase}${item.after_image_path}` : null;
+  // Prefer the "after" image as the hero; fall back to "before"
+  const heroSrc = item.after_image_path
+    ? `${bucketBase}${item.after_image_path}`
+    : item.before_image_path
+      ? `${bucketBase}${item.before_image_path}`
+      : null;
+
+  const categoryLabel = item.category
+    ? (CATEGORY_LABELS[item.category] ?? item.category)
+    : null;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden flex flex-col"
+      className="group bg-white dark:bg-neutral-900 rounded-xl border border-border shadow-sm overflow-hidden flex flex-col transition-shadow hover:shadow-md"
     >
-      {/* Before / After images */}
-      <div className="grid grid-cols-2 divide-x divide-neutral-200 dark:divide-neutral-700 h-40">
-        <div className="relative bg-neutral-100 dark:bg-neutral-800 flex flex-col">
-          <span className="absolute top-1 left-1 z-10 text-xs font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">
-            Before
-          </span>
-          {beforeSrc ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={beforeSrc}
-              alt={`${item.title} — before`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-neutral-400">
-              <ImageIcon className="w-8 h-8" />
-            </div>
-          )}
-        </div>
-        <div className="relative bg-neutral-100 dark:bg-neutral-800 flex flex-col">
-          <span className="absolute top-1 left-1 z-10 text-xs font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">
-            After
-          </span>
-          {afterSrc ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={afterSrc}
-              alt={`${item.title} — after`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-neutral-400">
-              <ImageIcon className="w-8 h-8" />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Card body */}
-      <div className="p-3 flex flex-col gap-2 flex-1">
-        <div className="flex items-start gap-2">
-          {/* Drag handle */}
-          <button
-            {...attributes}
-            {...listeners}
-            aria-label="Drag to reorder"
-            className="mt-0.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 cursor-grab active:cursor-grabbing shrink-0"
-          >
-            <GripVertical className="w-4 h-4" />
-          </button>
-
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-neutral-900 dark:text-neutral-100 truncate">
-              {item.title}
-            </p>
-            {item.category && (
-              <span className="inline-block mt-0.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium">
-                {CATEGORY_LABELS[item.category] ?? item.category}
-              </span>
-            )}
+      {/* Hero image */}
+      <div className="relative bg-surface dark:bg-neutral-800 h-52 overflow-hidden">
+        {heroSrc ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={heroSrc}
+            alt={item.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-neutral-300 dark:text-neutral-600">
+            <ImageIcon className="w-10 h-10" />
           </div>
-        </div>
+        )}
 
-        {item.description && (
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
-            {item.description}
-          </p>
+        {/* Drag handle overlay */}
+        <button
+          {...attributes}
+          {...listeners}
+          aria-label="Drag to reorder"
+          className="absolute top-2 left-2 z-10 flex items-center justify-center w-7 h-7 rounded-lg bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+        >
+          <GripVertical className="w-4 h-4" />
+        </button>
+
+        {/* Featured badge */}
+        {item.is_featured && (
+          <span className="absolute top-2 right-2 z-10 text-[10px] font-bold uppercase tracking-[0.1em] bg-brand-gold text-brand-gold-foreground px-2 py-0.5 rounded-full">
+            Featured
+          </span>
         )}
       </div>
 
-      {/* Actions */}
-      <div className="px-3 pb-3 flex items-center gap-2 justify-end">
-        <button
-          onClick={() => onToggleFeatured(item.id, !item.is_featured)}
-          title={item.is_featured ? "Remove featured" : "Set as featured"}
-          className={`p-1.5 rounded-lg transition-colors ${
-            item.is_featured
-              ? "text-amber-500 hover:text-amber-600 bg-amber-50 dark:bg-amber-900/20"
-              : "text-neutral-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20"
-          }`}
-        >
-          {item.is_featured ? (
-            <Star className="w-4 h-4 fill-current" />
-          ) : (
-            <StarOff className="w-4 h-4" />
+      {/* Card body */}
+      <div className="flex flex-col gap-2 p-4 flex-1">
+        {/* Title row */}
+        <div className="flex items-start gap-2">
+          <p className="font-heading font-semibold text-sm text-neutral-900 dark:text-neutral-100 leading-snug flex-1 min-w-0">
+            {item.title}
+          </p>
+          {categoryLabel && (
+            <span className="shrink-0 inline-flex items-center text-[10px] font-bold uppercase tracking-[0.08em] bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full">
+              {categoryLabel}
+            </span>
           )}
-        </button>
+        </div>
 
-        <button
-          onClick={() => onEdit(item)}
-          title="Edit project"
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
+        {/* Description */}
+        {item.description && (
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+            {item.description}
+          </p>
+        )}
 
-        <button
-          onClick={() => onDelete(item.id)}
-          title="Delete project"
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        {/* Location placeholder row */}
+        <div className="flex items-center gap-1 text-xs text-neutral-400 mt-auto pt-1">
+          <MapPin className="w-3 h-3 shrink-0" />
+          <span className="truncate">
+            {item.category ? CATEGORY_LABELS[item.category] ?? item.category : "—"}
+          </span>
+        </div>
+      </div>
+
+      {/* Action bar */}
+      <div className="px-4 pb-3 flex items-center justify-between gap-2 border-t border-border pt-2.5">
+        {/* Edit / Delete */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onEdit(item)}
+            title="Edit project"
+            className="p-1.5 rounded-lg text-neutral-400 hover:text-brand-primary hover:bg-brand-primary/10 transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => onDelete(item.id)}
+            title="Delete project"
+            className="p-1.5 rounded-lg text-neutral-400 hover:text-error hover:bg-error/10 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* Visibility / featured toggle */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-medium uppercase tracking-[0.08em] text-neutral-400">
+            {item.is_featured ? "Visible" : "Hidden"}
+          </span>
+          <button
+            role="switch"
+            aria-checked={item.is_featured}
+            onClick={() => onToggleFeatured(item.id, !item.is_featured)}
+            title={item.is_featured ? "Remove featured" : "Set as featured"}
+            className={[
+              "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200",
+              item.is_featured
+                ? "bg-brand-primary"
+                : "bg-neutral-200 dark:bg-neutral-700",
+            ].join(" ")}
+          >
+            <span
+              className={[
+                "pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition-transform duration-200",
+                item.is_featured ? "translate-x-4" : "translate-x-0",
+              ].join(" ")}
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

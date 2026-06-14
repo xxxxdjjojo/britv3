@@ -31,18 +31,22 @@ export function StripeConnectOnboarding() {
   }
 
   return (
-    <div className="w-full rounded-xl bg-brand-primary text-white p-6 md:p-8">
-      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <div className="relative w-full overflow-hidden rounded-xl bg-brand-primary-dark text-white p-6 md:p-8 shadow-lg">
+      {/* Decorative circles */}
+      <div className="pointer-events-none absolute -right-8 -top-8 size-40 rounded-full bg-white/5" />
+      <div className="pointer-events-none absolute -right-2 -bottom-10 size-28 rounded-full bg-white/5" />
+
+      <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         {/* Left: icon + copy */}
         <div className="flex items-start gap-4">
-          <div className="shrink-0 rounded-full bg-white/10 p-3">
-            <CreditCard className="size-6 text-white" />
+          <div className="shrink-0 rounded-xl bg-brand-gold/20 p-3">
+            <CreditCard className="size-6 text-brand-gold" />
           </div>
           <div>
             <h2 className="text-lg font-semibold">
               Connect your bank account to receive payments
             </h2>
-            <p className="mt-1 text-sm text-white/80">
+            <p className="mt-1 text-sm text-white/70">
               Set up Stripe Connect to receive client payments directly into your bank
               account. Takes 5 minutes — you&apos;ll need your business details and bank
               information.
@@ -58,7 +62,7 @@ export function StripeConnectOnboarding() {
           <Button
             onClick={handleConnect}
             disabled={loading}
-            className="bg-white text-brand-primary hover:bg-white/90 font-semibold"
+            className="bg-brand-gold text-brand-gold-foreground hover:opacity-90 font-semibold shadow-sm"
           >
             {loading ? (
               <>
@@ -72,7 +76,7 @@ export function StripeConnectOnboarding() {
               </>
             )}
           </Button>
-          <p className="text-xs text-white/60">Powered by Stripe</p>
+          <p className="text-xs text-white/50">Powered by Stripe</p>
         </div>
       </div>
     </div>

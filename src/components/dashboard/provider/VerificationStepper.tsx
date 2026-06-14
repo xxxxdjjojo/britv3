@@ -1,5 +1,13 @@
+import type React from "react";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import {
+  Check,
+  ShieldCheck,
+  FileText,
+  GraduationCap,
+  Users,
+  Star,
+} from "lucide-react";
 import type { VerificationStep } from "@/services/provider/provider-verification-service";
 
 const STEP_LINKS: Record<string, string> = {
@@ -8,6 +16,14 @@ const STEP_LINKS: Record<string, string> = {
   qualifications: "/dashboard/provider/verification/credentials",
   client_references: "/dashboard/provider/verification/references/client",
   peer_references: "/dashboard/provider/verification/references/peer",
+};
+
+const STEP_ICONS: Record<string, React.ElementType> = {
+  id_check: ShieldCheck,
+  insurance: FileText,
+  qualifications: GraduationCap,
+  client_references: Users,
+  peer_references: Star,
 };
 
 const STATUS_LABEL: Record<VerificationStep["status"], string> = {
@@ -20,10 +36,18 @@ const STATUS_LABEL: Record<VerificationStep["status"], string> = {
 
 const STATUS_BADGE_CLASS: Record<VerificationStep["status"], string> = {
   not_started: "bg-neutral-100 text-neutral-500",
-  in_progress: "bg-[#FEF9C3] text-[#CA8A04]",
-  submitted: "bg-blue-50 text-blue-600",
-  approved: "bg-[#DCFCE7] text-[#16A34A]",
-  rejected: "bg-red-50 text-red-600",
+  in_progress: "bg-warning/10 text-warning",
+  submitted: "bg-info/10 text-info",
+  approved: "bg-success/10 text-success",
+  rejected: "bg-error/10 text-error",
+};
+
+const ACTION_LABEL: Record<VerificationStep["status"], string | null> = {
+  not_started: "Get started",
+  in_progress: "Continue",
+  submitted: null,
+  approved: null,
+  rejected: "Re-apply",
 };
 
 type VerificationStepperProps = Readonly<{
@@ -32,94 +56,105 @@ type VerificationStepperProps = Readonly<{
 
 export function VerificationStepper({ steps }: VerificationStepperProps) {
   return (
-    <ol className="relative space-y-0">
-      {steps.map((step, idx) => {
-        const isLast = idx === steps.length - 1;
+    <div>
+      <h2 className="mb-6 text-base font-semibold text-neutral-900">Verification Steps</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {steps.map((step) => {
         const isApproved = step.status === "approved";
-        const isInProgress = step.status === "in_progress" || step.status === "submitted";
         const href = STEP_LINKS[step.stepId] ?? "/dashboard/provider/verification";
+        const actionLabel = ACTION_LABEL[step.status];
+        const Icon = STEP_ICONS[step.stepId] ?? ShieldCheck;
 
         return (
-          <li key={step.stepId} className="relative flex gap-4">
-            {/* Vertical connecting line */}
-            {!isLast && (
+          <div
+            key={step.stepId}
+            className={[
+              "relative flex flex-col gap-3 rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md",
+              isApproved
+                ? "border-success/20 bg-success/5"
+                : "border-border bg-white",
+            ].join(" ")}
+          >
+            {/* Status badge */}
+            <div className="flex items-center justify-between gap-2">
               <div
-                aria-hidden="true"
-                className="absolute left-[19px] top-10 bottom-0 w-px bg-neutral-200"
-              />
+                className={[
+                  "flex size-9 shrink-0 items-center justify-center rounded-lg",
+                  isApproved
+                    ? "bg-success/10 text-success"
+                    : "bg-brand-primary-lighter text-brand-primary",
+                ].join(" ")}
+              >
+                {isApproved ? (
+                  <Check className="size-4" strokeWidth={2.5} />
+                ) : (
+                  <Icon className="size-4" />
+                )}
+              </div>
+              <span
+                className={[
+                  "rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em]",
+                  STATUS_BADGE_CLASS[step.status],
+                ].join(" ")}
+              >
+                {STATUS_LABEL[step.status]}
+              </span>
+            </div>
+
+            {/* Title + required badge */}
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm font-semibold text-neutral-900 leading-snug">
+                {step.label}
+              </p>
+              {step.required && (
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+                  Required
+                </span>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-xs text-neutral-500 leading-relaxed">
+              {step.description}
+            </p>
+
+            {/* Rejection reason */}
+            {step.status === "rejected" && step.rejectionReason && (
+              <div className="rounded-lg border border-error/20 bg-error/5 p-2 text-xs text-error">
+                <span className="font-semibold">Reason:</span>{" "}
+                {step.rejectionReason}
+              </div>
             )}
 
-            {/* Circle indicator */}
-            <div className="relative z-10 flex shrink-0 items-start pt-0.5">
-              {isApproved ? (
-                <div className="flex size-10 items-center justify-center rounded-full bg-brand-primary">
-                  <Check className="size-5 text-white" strokeWidth={2.5} />
-                </div>
-              ) : isInProgress ? (
-                <div className="flex size-10 items-center justify-center rounded-full border-2 border-dashed border-brand-primary bg-white">
-                  <span className="text-xs font-bold text-brand-primary">{step.step_number}</span>
-                </div>
-              ) : (
-                <div className="flex size-10 items-center justify-center rounded-full border-2 border-neutral-300 bg-white">
-                  <span className="text-xs font-medium text-neutral-400">{step.step_number}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Step content */}
-            <div className="flex-1 pb-8">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={[
-                    "text-sm font-semibold",
-                    isApproved ? "text-brand-primary" : "text-neutral-900",
-                  ].join(" ")}
+            {/* Action links */}
+            {actionLabel && (
+              <div className="mt-auto flex items-center gap-3 pt-1">
+                <Link
+                  href={href}
+                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.08em] text-brand-primary transition-colors hover:text-brand-primary-dark"
                 >
-                  {step.label}
-                </span>
-                {step.required && (
-                  <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
-                    Required
-                  </span>
-                )}
-                <span
-                  className={[
-                    "rounded-full px-2 py-0.5 text-xs font-medium",
-                    STATUS_BADGE_CLASS[step.status],
-                  ].join(" ")}
-                >
-                  {STATUS_LABEL[step.status]}
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-neutral-500">{step.description}</p>
-              {/* Rejection reason */}
-              {step.status === "rejected" && step.rejectionReason && (
-                <div className="mt-2 rounded-md bg-red-50 border border-red-200 p-2 text-xs text-red-700">
-                  <span className="font-medium">Reason:</span> {step.rejectionReason}
-                </div>
-              )}
-              {step.status !== "approved" && (
-                <div className="mt-2 flex items-center gap-3">
+                  {actionLabel} &rarr;
+                </Link>
+                {step.status === "rejected" && (
                   <Link
-                    href={href}
-                    className="inline-block text-xs font-semibold text-brand-primary hover:underline"
+                    href="/help?topic=verification"
+                    className="text-xs text-neutral-400 underline underline-offset-2 hover:text-neutral-600"
                   >
-                    {step.status === "rejected" ? "Re-apply" : step.status === "not_started" ? "Get started" : "Continue"} &rarr;
+                    Contact Support
                   </Link>
-                  {step.status === "rejected" && (
-                    <Link
-                      href="/help?topic=verification"
-                      className="text-xs text-neutral-500 underline underline-offset-2 hover:text-neutral-700"
-                    >
-                      Contact Support
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
-          </li>
+                )}
+              </div>
+            )}
+
+            {step.status === "submitted" && (
+              <p className="mt-auto pt-1 text-xs font-medium text-info">
+                Under review — no action needed.
+              </p>
+            )}
+          </div>
         );
       })}
-    </ol>
+      </div>
+    </div>
   );
 }
