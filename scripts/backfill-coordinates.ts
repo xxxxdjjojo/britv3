@@ -14,10 +14,39 @@
  *   pnpm tsx scripts/backfill-coordinates.ts            # dry run
  *   pnpm tsx scripts/backfill-coordinates.ts --commit   # write
  */
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { geocodePostcode } from "../src/services/geocoding/postcodes-io";
 
 const COMMIT = process.argv.includes("--commit");
+
+/**
+ * Load .env.local then .env from the cwd into process.env, without overriding
+ * vars already set on the command line. Values may carry trailing emoji/text
+ * annotations (project convention), so only the first whitespace-bounded token
+ * is taken, with surrounding quotes stripped.
+ */
+function loadLocalEnv(): void {
+  for (const file of [".env.local", ".env"]) {
+    let content: string;
+    try {
+      content = readFileSync(join(process.cwd(), file), "utf8");
+    } catch {
+      continue;
+    }
+    for (const line of content.split("\n")) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.+)$/);
+      if (!match) continue;
+      const [, key, rawValue] = match;
+      if (process.env[key]) continue;
+      const value = rawValue.trim().split(/\s+/)[0].replace(/^["']|["']$/g, "");
+      if (value) process.env[key] = value;
+    }
+  }
+}
+
+loadLocalEnv();
 
 const SUPABASE_URL =
   process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
