@@ -41,12 +41,8 @@ import { WhatIfFloorPlan } from "@/components/properties/roi/WhatIfFloorPlan";
 import { VirtualTourViewer } from "@/components/properties/detail/VirtualTourViewer";
 import { VideoTourPlayer } from "@/components/properties/detail/VideoTourPlayer";
 
-// Wave 6 — Local area intelligence widgets
-import { TransportWidget } from "@/components/properties/detail/TransportWidget";
-import { SchoolCatchmentWidget } from "@/components/properties/detail/SchoolCatchmentWidget";
-import { BroadbandWidget } from "@/components/properties/detail/BroadbandWidget";
-import { FloodRiskWidget } from "@/components/properties/detail/FloodRiskWidget";
-import { CrimeStatsChart } from "@/components/properties/detail/CrimeStatsChart";
+// Local area — real-data section (self-gates per layer; widgets degrade to null)
+import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
 
 // Wave 6 — Sidebar calculators
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
@@ -67,7 +63,6 @@ import { groupImagesByRoom } from "@/lib/properties/group-images-by-room";
 import { MapEmbedClient } from "@/components/maps/MapEmbedClient";
 import { buildPropertyJsonLd } from "@/lib/seo/property-jsonld";
 import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
-import { isFeatureEnabled } from "@/lib/features";
 
 // ---------------------------------------------------------------------------
 // Static params — ISR handles on-demand rendering
@@ -614,36 +609,22 @@ export default async function PropertyPage({
               </section>
             )}
 
-            {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
-            {isFeatureEnabled("local_area_intelligence") && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">
-                  Local Area Intelligence
-                </h2>
-                <Separator className="mb-4" />
-                <Suspense
-                  fallback={
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
-                      ))}
-                    </div>
-                  }
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <TransportWidget nearbyStations={[]} />
-                    <SchoolCatchmentWidget schools={[]} />
-                    <BroadbandWidget
-                      downloadMbps={null}
-                      uploadMbps={null}
-                      provider={null}
-                      connectionType={null}
-                    />
-                    <FloodRiskWidget riskLevel={null} source={null} />
-                    <CrimeStatsChart stats={[]} boroughAvg={null} />
+            {/* ── LOCAL AREA — real data, each layer self-gates on data ── */}
+            {property.coordinates && (
+              <Suspense
+                fallback={
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[1, 2].map((n) => (
+                      <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
+                    ))}
                   </div>
-                </Suspense>
-              </section>
+                }
+              >
+                <LocalAreaSection
+                  lat={property.coordinates.lat}
+                  lng={property.coordinates.lng}
+                />
+              </Suspense>
             )}
 
             {/* ── ROI SECTION (Wave 4) ── */}

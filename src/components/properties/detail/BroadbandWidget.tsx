@@ -92,18 +92,9 @@ export function BroadbandWidget({
 }: Props) {
   const hasData = downloadMbps != null || uploadMbps != null;
 
+  // Graceful absence: render nothing when there is no data to show.
   if (!hasData) {
-    return (
-      <div className="rounded-xl border bg-card p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Wifi className="size-4 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium">Broadband</p>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Broadband data unavailable.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   const rating = downloadMbps != null ? speedRating(downloadMbps) : null;

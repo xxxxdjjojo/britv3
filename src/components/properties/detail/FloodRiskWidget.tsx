@@ -1,4 +1,4 @@
-import { Droplets, ExternalLink } from "lucide-react";
+import { Droplets } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -53,28 +53,9 @@ const RISK_CONFIG: Record<
 // ---------------------------------------------------------------------------
 
 export function FloodRiskWidget({ riskLevel, source }: Props) {
+  // Graceful absence: render nothing when there is no data to show.
   if (!riskLevel) {
-    return (
-      <div className="rounded-xl border bg-card p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Droplets className="size-4 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium">Flood Risk</p>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Flood risk data unavailable. Check the official{" "}
-          <a
-            href="https://check-long-term-flood-risk.service.gov.uk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 underline underline-offset-2 hover:text-foreground"
-          >
-            gov.uk flood risk checker
-            <ExternalLink className="size-3" />
-          </a>
-          .
-        </p>
-      </div>
-    );
+    return null;
   }
 
   const config = RISK_CONFIG[riskLevel];

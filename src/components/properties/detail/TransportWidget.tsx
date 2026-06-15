@@ -59,17 +59,9 @@ function formatDistance(miles: number): string {
  * Server Component — purely presentational, driven by the `nearbyStations` prop.
  */
 export function TransportWidget({ nearbyStations }: TransportWidgetProps) {
+  // Graceful absence: render nothing when there is no data to show.
   if (!nearbyStations || nearbyStations.length === 0) {
-    return (
-      <div className="rounded-xl border bg-card p-4">
-        <h3 className="font-semibold mb-2 flex items-center gap-2">
-          <Train className="size-4" /> Transport
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          Transport information not available
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
