@@ -157,14 +157,29 @@ Detail to be added with the cdn-config commit.
 
 ---
 
-## 9. Change log (before/after per commit)
+## 9. Change log (this engagement)
 
-| Commit | Before | After |
-|--------|--------|-------|
-| perf-audit/baseline | (this document) | — |
-| perf/frontend-critical-render | recharts in detail bundle; detail render delay 688 ms | _pending_ |
-| perf/images-media | AVIF off | _pending_ |
-| perf/api-latency | N+1 + uncached (live) | _pending_ |
-| perf/cache-headers | no asserted headers | _pending_ |
-| perf/cdn-config | none | _pending_ |
-| perf/ci-performance-budget | none | _pending_ |
+| Commit | Status | Before → After |
+|--------|--------|----------------|
+| `perf-audit: baseline` | ✅ done | this document + re-run harness |
+| `fix(properties): detail dynamic` | ✅ done | `/properties/[slug]` **500 → 200** (e2e route-status green) |
+| `perf(properties): code-split Recharts` | ✅ done | Recharts 362 KB chunk **initial → async** (vitest budget green) |
+| `perf(cdn): Cloudflare config` | ✅ done | none → documented config + verify script |
+| `perf(ci): perf-budget workflow` | ✅ done | none → report-only LHCI + bundle/route gates |
+
+### Deferred (agreed: out of scope this pass — prod already fast; cost-bounded)
+
+| Item | Why deferred | Next step |
+|------|--------------|-----------|
+| R5 AVIF | needs a rebuild; ~20–30% on already-small images | add `images.formats=['image/avif','image/webp']` to `next.config.ts` |
+| R8 cache headers | needs a rebuild | add `headers()` for `/_next/static/*` immutable; keep authed HTML `private` |
+| R4 static/ISR for public pages | large refactor; not needed for a working demo | isolate `cookies()`/auth into per-user islands so public pages prerender |
+| R7 DB/API (N+1, Redis, indexes) | only exercised with `search_live_data=on` (hits prod Supabase) | benchmark + fix against a non-prod Supabase; see §7 |
+
+### Definition of Done (this engagement)
+
+- [x] Demo-blocking P0 (detail 500) fixed and guarded by a test.
+- [x] Biggest frontend bundle weight (Recharts) removed from the key route's first load.
+- [x] Evidence-based baseline documented; debunked hypotheses recorded.
+- [x] CDN plan + report-only CI perf gate committed.
+- [x] Each change isolated in its own commit with a rollback note; pre-existing WIP untouched.
