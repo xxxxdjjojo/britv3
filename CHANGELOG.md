@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0.0] - 2026-06-15 — Wandsworth median sold-price maps
+
+Median registered sold price by postcode district, visualised as a colour-coded
+map. MVP scoped to one borough (Wandsworth) to validate the visual and the
+pricing algorithm before scaling. Not a £/m² product — no floor-area data, so
+the honest metric is median sold price with transaction count and confidence.
+
+### Added
+
+- **`/search/map` — price heatmap.** MapLibre choropleth of median sold price by
+  postcode district (green = lower → red = higher), with a filter bar (property
+  type, time window), a ranked sub-area panel (bottom sheet on mobile),
+  hover/click area card, and a fixed legend. Districts with fewer than 5 sales
+  render neutral grey ("insufficient data").
+- **`/search/market-map/[area]` — area price explorer.** Median / transactions /
+  data-period / confidence summary cards, a quarterly median-price trend chart,
+  a focused map, sub-areas ranked cheapest → most expensive, recent
+  transactions, and a disclaimer that this is not a £/m² estimate.
+- **`GET /api/market-map`** (+ `/api/market-map/transactions`). GeoJSON
+  FeatureCollection of median sold price by postcode district, computed
+  read-only over the existing `price_paid_data` (HM Land Registry) table — no
+  schema change. Robust local log/percentile colour scale; confidence by
+  transaction count; `metadata.sqm_available: false`.
+- Navigation + command-palette links under Buy → Data. Unit tests for postcode
+  normalisation, median, confidence classification, and colour-bucket assignment.
+
 ## [0.1.0.0] - 2026-05-22 — Memo Pivot v2
 
 Full implementation of the strategy memo at
