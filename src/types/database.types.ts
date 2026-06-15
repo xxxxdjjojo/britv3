@@ -2654,6 +2654,39 @@ export type Database = {
         }
         Relationships: []
       }
+      transport_stops: {
+        Row: {
+          atco_code: string
+          coordinates: unknown
+          created_at: string
+          id: string
+          locality: string | null
+          name: string
+          source: string
+          stop_type: string
+        }
+        Insert: {
+          atco_code: string
+          coordinates: unknown
+          created_at?: string
+          id?: string
+          locality?: string | null
+          name: string
+          source?: string
+          stop_type: string
+        }
+        Update: {
+          atco_code?: string
+          coordinates?: unknown
+          created_at?: string
+          id?: string
+          locality?: string | null
+          name?: string
+          source?: string
+          stop_type?: string
+        }
+        Relationships: []
+      }
       user_documents: {
         Row: {
           created_at: string
@@ -3197,6 +3230,19 @@ export type Database = {
           expiry_date: string
           property_id: string
           uploaded_by: string
+        }[]
+      }
+      get_nearby_transport_stops: {
+        Args: {
+          center_lat: number
+          center_lng: number
+          max_results?: number
+          radius_meters?: number
+        }
+        Returns: {
+          distance_meters: number
+          name: string
+          stop_type: string
         }[]
       }
       get_property_financial_summary: {

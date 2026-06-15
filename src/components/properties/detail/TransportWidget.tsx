@@ -1,4 +1,4 @@
-import { Train, Circle, Bus, Cable } from "lucide-react";
+import { Train, Circle, Bus, Cable, Ship } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -6,7 +6,7 @@ import { Train, Circle, Bus, Cable } from "lucide-react";
 
 export type TransportStop = {
   name: string;
-  type: "rail" | "tube" | "bus" | "tram";
+  type: "rail" | "tube" | "bus" | "tram" | "ferry";
   distance_miles: number;
   lines?: string[];
 };
@@ -29,6 +29,8 @@ function StopIcon({ type }: { type: TransportStop["type"] }) {
       return <Bus className="size-4 shrink-0 text-muted-foreground" />;
     case "tram":
       return <Cable className="size-4 shrink-0 text-muted-foreground" />;
+    case "ferry":
+      return <Ship className="size-4 shrink-0 text-muted-foreground" />;
   }
 }
 
@@ -42,6 +44,8 @@ function typeLabel(type: TransportStop["type"]): string {
       return "Bus";
     case "tram":
       return "Tram";
+    case "ferry":
+      return "Ferry";
   }
 }
 

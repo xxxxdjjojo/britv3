@@ -2,8 +2,10 @@ import type { ReactNode } from "react";
 import { Separator } from "@/components/ui/separator";
 import { fetchNearbySchools } from "@/services/properties/ofsted-service";
 import { getAreaCrime } from "@/services/properties/crime-service";
+import { getNearbyTransport } from "@/services/properties/transport-service";
 import { SchoolCatchmentWidget } from "./SchoolCatchmentWidget";
 import { CrimeStatsChart } from "./CrimeStatsChart";
+import { TransportWidget } from "./TransportWidget";
 
 type LocalAreaSectionProps = Readonly<{ lat: number; lng: number }>;
 
@@ -17,18 +19,21 @@ function SourceNote({ children }: { children: ReactNode }) {
  * label. The whole section is omitted when no layer has data — graceful
  * absence, per the no-empty-widgets rule. Each layer degrades independently.
  *
- * Currently wired: nearest schools (GIAS/Ofsted) and crime (data.police.uk).
- * Transport, broadband and flood widgets exist but await their data layers.
+ * Currently wired: nearest schools (GIAS/Ofsted), crime (data.police.uk) and
+ * transport stations (NaPTAN/DfT). Broadband and flood widgets exist but await
+ * their data layers.
  */
 export async function LocalAreaSection({ lat, lng }: LocalAreaSectionProps) {
-  const [schools, crime] = await Promise.all([
+  const [schools, crime, transport] = await Promise.all([
     fetchNearbySchools(lat, lng).catch(() => null),
     getAreaCrime(lat, lng).catch(() => null),
+    getNearbyTransport(lat, lng).catch(() => null),
   ]);
 
   const hasSchools = !!schools && schools.length > 0;
   const hasCrime = !!crime && crime.stats.length > 0;
-  if (!hasSchools && !hasCrime) return null;
+  const hasTransport = !!transport && transport.length > 0;
+  if (!hasSchools && !hasCrime && !hasTransport) return null;
 
   return (
     <section>
@@ -49,6 +54,14 @@ export async function LocalAreaSection({ lat, lng }: LocalAreaSectionProps) {
             <SourceNote>
               Source: data.police.uk · {crime.month} (Open Government Licence
               v3.0)
+            </SourceNote>
+          </div>
+        )}
+        {hasTransport && (
+          <div>
+            <TransportWidget nearbyStations={transport} />
+            <SourceNote>
+              Source: NaPTAN / DfT (Open Government Licence v3.0)
             </SourceNote>
           </div>
         )}
