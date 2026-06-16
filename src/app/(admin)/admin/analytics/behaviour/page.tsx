@@ -95,8 +95,7 @@ async function BehaviourContent() {
         <div className="rounded-xl border border-border bg-card p-5">
           <p className="text-xs text-neutral-500 mb-0.5">Sessions (30 days)</p>
           <p
-            className="text-2xl font-semibold text-neutral-900"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-2xl font-semibold text-neutral-900"
           >
             {data.sessionCount.toLocaleString("en-GB")}
           </p>
@@ -104,8 +103,7 @@ async function BehaviourContent() {
         <div className="rounded-xl border border-border bg-card p-5">
           <p className="text-xs text-neutral-500 mb-0.5">Unique pages tracked</p>
           <p
-            className="text-2xl font-semibold text-neutral-900"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-2xl font-semibold text-neutral-900"
           >
             {data.topPages.length}
           </p>
@@ -113,8 +111,7 @@ async function BehaviourContent() {
         <div className="rounded-xl border border-border bg-card p-5">
           <p className="text-xs text-neutral-500 mb-0.5">Top page views</p>
           <p
-            className="text-2xl font-semibold text-neutral-900"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-2xl font-semibold text-neutral-900"
           >
             {(data.topPages[0]?.views ?? 0).toLocaleString("en-GB")}
           </p>
@@ -129,8 +126,7 @@ async function BehaviourContent() {
       {/* Top 10 pages */}
       <div className="rounded-xl border border-border bg-card p-6">
         <h2
-          className="text-base font-semibold text-neutral-900 mb-4"
-          style={{ fontFamily: "Plus Jakarta Sans" }}
+          className="font-heading text-base font-semibold text-neutral-900 mb-4"
         >
           Top 10 Pages by Pageview (30 days)
         </h2>
@@ -171,8 +167,7 @@ function FunnelsPlaceholder() {
   return (
     <div className="rounded-xl border border-dashed border-border bg-muted p-6">
       <h2
-        className="text-base font-semibold text-neutral-600 mb-2"
-        style={{ fontFamily: "Plus Jakarta Sans" }}
+        className="font-heading text-base font-semibold text-neutral-600 mb-2"
       >
         User Funnels
       </h2>
@@ -203,6 +198,7 @@ export default function UserBehaviourPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Analytics"
         title="User Behaviour"
         description="PostHog pageview analytics, sessions, and user funnels."
       />

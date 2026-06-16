@@ -26,6 +26,7 @@ export default async function AdminTruedeedInvoiceCandidatesPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="TrueDeed"
         title="Invoice candidates"
         description="Truedeed introduction-fee candidates awaiting an approve/reject decision."
       />

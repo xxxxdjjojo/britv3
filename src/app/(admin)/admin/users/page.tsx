@@ -20,6 +20,7 @@ export default async function AdminUsersPage({
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title="User Management"
         description="Search, view, suspend, ban, and activate user accounts."
       />

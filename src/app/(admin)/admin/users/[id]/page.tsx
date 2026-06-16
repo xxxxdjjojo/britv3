@@ -34,6 +34,7 @@ export default async function AdminUserDetailPage({
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title={user.display_name ?? "Unknown User"}
         description={user.email ?? undefined}
       />

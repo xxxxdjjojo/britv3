@@ -51,6 +51,7 @@ export default async function RolesPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Team"
         title="Roles & Permissions"
         description="View user counts per role and manage admin promotions."
       />

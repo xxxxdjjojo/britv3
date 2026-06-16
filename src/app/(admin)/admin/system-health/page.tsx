@@ -87,6 +87,7 @@ export default async function SystemHealthPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="System Health"
         description="Real-time status checks for all external services."
       />

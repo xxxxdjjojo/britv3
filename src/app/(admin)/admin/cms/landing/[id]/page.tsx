@@ -41,6 +41,7 @@ export default async function AdminLandingEditorPage({ params }: Props) {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title={isNew ? "New Landing Page" : "Edit Landing Page"}
         description="Create and publish marketing landing pages."
       />

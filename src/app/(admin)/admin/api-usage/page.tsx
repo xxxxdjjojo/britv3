@@ -77,6 +77,7 @@ export default async function ApiUsagePage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="API Usage"
         description="Rate limit statistics and request volume from Upstash Redis."
       />
