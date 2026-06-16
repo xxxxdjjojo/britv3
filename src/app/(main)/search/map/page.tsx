@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function MapPage() {
   return (
     <main
-      className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden md:h-[calc(100dvh-4rem)]"
+      className="flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden md:min-h-[calc(100dvh-4rem)]"
       aria-labelledby="map-page-heading"
     >
       {/* Visually-hidden page heading for screen readers */}

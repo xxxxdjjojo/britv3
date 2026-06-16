@@ -50,7 +50,7 @@ export default async function AreaMapPage({ params }: RouteParams) {
 
   return (
     <main
-      className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden md:h-[calc(100dvh-4rem)]"
+      className="flex min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden md:min-h-[calc(100dvh-4rem)]"
       aria-labelledby="area-map-heading"
     >
       {/* Visually-hidden page heading */}

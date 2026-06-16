@@ -159,6 +159,10 @@ export function Breadcrumbs(
   // Return null for dashboard/authenticated routes
   if (pathname.startsWith("/dashboard")) return null;
 
+  // Return null for map pages that render their own inner breadcrumb nav
+  if (pathname === "/search/map") return null;
+  if (pathname.startsWith("/search/market-map")) return null;
+
   const trail = resolveBreadcrumbs(pathname);
   const jsonLd = buildJsonLd(trail);
 
