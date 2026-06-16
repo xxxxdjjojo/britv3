@@ -1,13 +1,12 @@
 import { Droplets } from "lucide-react";
+import type { FloodRiskLevel } from "@/services/properties/flood-service";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type RiskLevel = "Low" | "Medium" | "High" | "Very High";
-
 type Props = Readonly<{
-  riskLevel: RiskLevel | null;
+  riskLevel: FloodRiskLevel | null;
   source?: string | null;
 }>;
 
@@ -16,35 +15,35 @@ type Props = Readonly<{
 // ---------------------------------------------------------------------------
 
 const RISK_CONFIG: Record<
-  RiskLevel,
+  FloodRiskLevel,
   { badgeClass: string; dotClass: string; description: string }
 > = {
-  Low: {
+  "Very Low": {
     badgeClass:
       "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     dotClass: "bg-green-500",
     description:
-      "Low probability of flooding. Less than 1 in 1,000 chance of river or sea flooding each year.",
+      "Very low risk. This area has less than a 0.1% (1 in 1,000) chance of flooding from rivers or the sea each year.",
+  },
+  Low: {
+    badgeClass:
+      "bg-lime-100 text-lime-800 dark:bg-lime-900/30 dark:text-lime-400",
+    dotClass: "bg-lime-500",
+    description:
+      "Low risk. This area has between a 0.1% (1 in 1,000) and 1% (1 in 100) chance of flooding from rivers or the sea each year.",
   },
   Medium: {
     badgeClass:
       "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
     dotClass: "bg-amber-500",
     description:
-      "Medium probability of flooding. Between 1 in 100 and 1 in 1,000 chance of river or sea flooding each year.",
+      "Medium risk. This area has between a 1% (1 in 100) and 3.3% (1 in 30) chance of flooding from rivers or the sea each year.",
   },
   High: {
-    badgeClass:
-      "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
-    dotClass: "bg-orange-500",
-    description:
-      "High probability of flooding. Greater than 1 in 100 chance of river or sea flooding, or greater than 1 in 200 chance of sea flooding each year.",
-  },
-  "Very High": {
     badgeClass: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
     dotClass: "bg-red-500",
     description:
-      "Very high probability of flooding. Property is in an area known to flood regularly. Consider specialist insurance and flood resilience measures.",
+      "High risk. This area has a 3.3% (1 in 30) or greater chance of flooding from rivers or the sea each year. These figures account for flood defences.",
   },
 };
 
