@@ -91,7 +91,7 @@ export default async function SystemHealthPage() {
         description="Real-time status checks for all external services."
       />
 
-      <div className="mb-6 p-4 rounded-lg border border-neutral-200 bg-white">
+      <div className="mb-6 p-4 rounded-lg border border-border bg-card">
         <p className={`text-sm font-semibold ${overallColor}`}>{overallStatus}</p>
         <p className="text-xs text-neutral-400 mt-0.5">
           Checked at {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}

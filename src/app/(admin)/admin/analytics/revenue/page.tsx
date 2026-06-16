@@ -98,7 +98,7 @@ function KpiCard({
   subtitle,
 }: Readonly<{ label: string; value: string; subtitle?: string }>) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5">
+    <div className="rounded-xl border border-border bg-card p-5">
       <p className="text-xs text-neutral-500 mb-0.5">{label}</p>
       <p
         className="text-2xl font-semibold text-neutral-900"
@@ -159,7 +159,7 @@ async function RevenueContent() {
 
       {/* Subscription breakdown */}
       {stripeData && stripeData.planBreakdown.length > 0 && (
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
             className="text-base font-semibold text-neutral-900 mb-4"
             style={{ fontFamily: "Plus Jakarta Sans" }}
@@ -188,7 +188,7 @@ async function RevenueContent() {
       )}
 
       {/* Monthly Revenue Chart */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <h2
           className="text-base font-semibold text-neutral-900 mb-1"
           style={{ fontFamily: "Plus Jakarta Sans" }}
