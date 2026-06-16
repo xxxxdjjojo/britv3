@@ -338,7 +338,7 @@ export default async function BlogPostPage({
             </p>
 
             {/* Author + meta row */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-neutral-50 rounded-xl border border-neutral-100">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-muted rounded-xl border border-neutral-100">
               <span className="size-12 rounded-full bg-brand-primary text-white font-bold text-sm flex items-center justify-center shrink-0">
                 {post.author.initials}
               </span>
@@ -506,7 +506,7 @@ export default async function BlogPostPage({
                   <Link
                     key={article.slug}
                     href={`/blog/${article.slug}`}
-                    className="group flex flex-col gap-1 p-3 rounded-xl hover:bg-neutral-50 transition-colors"
+                    className="group flex flex-col gap-1 p-3 rounded-xl hover:bg-muted transition-colors"
                   >
                     <span className="inline-block bg-brand-primary-lighter text-brand-primary text-xs font-semibold px-2 py-0.5 rounded-full w-fit mb-1">
                       {article.category}

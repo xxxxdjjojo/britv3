@@ -1,4 +1,5 @@
-import { fetchLandRegistryComparables } from "@/services/properties/land-registry-service";
+import { getSoldPriceData } from "@/services/land-registry/land-registry";
+import { extractPaon, toComparables } from "@/services/land-registry/convert";
 import { PriceHistory } from "./PriceHistory";
 
 type AskingPriceEntry = Readonly<{
@@ -14,19 +15,25 @@ type PriceHistorySectionProps = Readonly<{
   addressLine2: string | null;
 }>;
 
-/**
- * Server component: renders the asking-price history alongside HM Land Registry
- * sold-price comparables for the property's postcode. Comparables come from the
- * cached, never-throwing `fetchLandRegistryComparables`, so the section degrades
- * to asking-price history alone when no Land Registry data is available.
- */
 export async function PriceHistorySection({
   history,
   postcode,
+  addressLine1,
+  addressLine2,
 }: PriceHistorySectionProps) {
-  const comparables = await fetchLandRegistryComparables(postcode);
+  const { exactHistory, areaSummary } = await getSoldPriceData({
+    postcode,
+    paon: extractPaon(addressLine1),
+    saon: addressLine2,
+  });
 
-  return <PriceHistory history={[...history]} comparables={comparables} />;
+  return (
+    <PriceHistory
+      history={[...history]}
+      comparables={toComparables(areaSummary.recentSales)}
+      pastSales={toComparables(exactHistory)}
+    />
+  );
 }
 
 export function PriceHistorySectionSkeleton() {

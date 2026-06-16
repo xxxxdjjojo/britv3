@@ -118,6 +118,8 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Data",
         links: [
           { label: "Sold Prices", href: "/sold-prices" },
+          { label: "Price Heatmap Map", href: "/search/map" },
+          { label: "Wandsworth Market Map", href: "/search/market-map/wandsworth" },
           { label: "Market Trends", href: "/market-trends" },
         ],
       },
@@ -666,6 +668,8 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   // Public — Data
   { label: "Sold Prices", href: "/sold-prices", section: "Data", keywords: ["sold", "prices", "history", "data"] },
   { label: "Market Trends", href: "/market-trends", section: "Data", keywords: ["market", "trends", "data", "analytics"] },
+  { label: "Price Heatmap Map", href: "/search/map", section: "Data", keywords: ["map", "heatmap", "median", "sold", "price", "area", "wandsworth"] },
+  { label: "Wandsworth Market Map", href: "/search/market-map/wandsworth", section: "Data", keywords: ["wandsworth", "market", "map", "median", "sold", "price", "district"] },
 
   // Public — Tools & Valuations
   { label: "Free Instant Valuation", href: "/valuation", section: "Tools", keywords: ["valuation", "value", "estimate", "free"] },

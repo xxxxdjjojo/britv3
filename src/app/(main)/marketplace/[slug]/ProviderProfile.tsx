@@ -189,7 +189,7 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
                       <CardContent className="space-y-2 text-sm">
                         {provider.qualifications?.map((q) => (
                           <div key={q} className="flex items-center gap-1.5">
-                            <CheckCircle2 className="size-3.5 text-green-600" />
+                            <CheckCircle2 className="size-3.5 text-success" />
                             <span>{q}</span>
                           </div>
                         ))}
@@ -273,7 +273,7 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div
                       key={i}
-                      className="aspect-[4/3] rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm text-muted-foreground"
+                      className="aspect-[4/3] rounded-xl bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 flex items-center justify-center text-sm text-muted-foreground"
                     >
                       Project photo {i}
                     </div>
@@ -291,7 +291,7 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-200 dark:border-slate-700">
+                      <tr className="border-b border-border dark:border-slate-700">
                         <th className="text-left py-3 px-4 font-semibold text-foreground">Service</th>
                         <th className="text-right py-3 px-4 font-semibold text-foreground">Price Range</th>
                       </tr>
@@ -299,7 +299,7 @@ export function ProviderProfile({ provider }: ProviderProfileProps) {
                     <tbody>
                       {Object.keys(provider.pricing).length > 0 ? (
                         Object.entries(provider.pricing).map(([key, value]) => (
-                          <tr key={key} className="border-b border-slate-100 dark:border-slate-800">
+                          <tr key={key} className="border-b border-border dark:border-slate-800">
                             <td className="py-3 px-4 capitalize text-muted-foreground">
                               {key.replace(/_/g, " ")}
                             </td>

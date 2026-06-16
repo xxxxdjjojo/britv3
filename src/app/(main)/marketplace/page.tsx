@@ -80,9 +80,9 @@ export default async function MarketplaceLandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#1B4D3E] to-[#2563EB] text-white py-20 px-6">
+      <section className="bg-gradient-to-br from-brand-primary-dark to-brand-primary text-white py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl font-extrabold mb-4 tracking-tight">
+          <h1 className="text-5xl font-heading font-extrabold mb-4 tracking-tight">
             Find Trusted Professionals Near You
           </h1>
           <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
@@ -99,11 +99,11 @@ export default async function MarketplaceLandingPage() {
               type="text"
               name="q"
               placeholder="Search plumbers, electricians..."
-              className="flex-1 px-4 py-3 rounded-lg text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-white"
+              className="flex-1 px-4 py-3 rounded-lg text-foreground placeholder-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-white"
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+              className="px-6 py-3 bg-white text-brand-primary font-semibold rounded-lg hover:bg-surface transition-colors"
             >
               Search
             </button>
@@ -112,7 +112,7 @@ export default async function MarketplaceLandingPage() {
       </section>
 
       {/* Stats bar */}
-      <section className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-5">
+      <section className="bg-surface dark:bg-slate-900 border-b border-border dark:border-slate-800 py-5">
         <div className="max-w-5xl mx-auto px-6 flex flex-wrap justify-center gap-8 text-center">
           {[
             "10,000+ Verified Pros",
@@ -121,7 +121,7 @@ export default async function MarketplaceLandingPage() {
           ].map((stat) => (
             <span
               key={stat}
-              className="text-sm font-semibold text-slate-600 dark:text-slate-300"
+              className="text-sm font-semibold text-muted-foreground dark:text-slate-300"
             >
               {stat}
             </span>
@@ -131,7 +131,7 @@ export default async function MarketplaceLandingPage() {
 
       {/* Category grid */}
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
+        <h2 className="text-3xl font-heading font-bold text-foreground dark:text-white mb-8">
           Browse by Service
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -139,15 +139,15 @@ export default async function MarketplaceLandingPage() {
             <a
               key={slug}
               href={href}
-              className="group flex flex-col items-center p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#2563EB] hover:shadow-md transition-all"
+              className="group flex flex-col items-center p-6 bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-700 hover:border-brand-primary hover:shadow-md transition-all"
             >
-              <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
-                <Icon className="w-6 h-6 text-[#2563EB]" />
+              <div className="w-12 h-12 rounded-full bg-brand-primary/10 dark:bg-brand-primary/20 flex items-center justify-center mb-3 group-hover:bg-brand-primary/20 dark:group-hover:bg-brand-primary/30 transition-colors">
+                <Icon className="w-6 h-6 text-brand-primary" />
               </div>
-              <span className="font-semibold text-slate-900 dark:text-white text-sm text-center">
+              <span className="font-semibold text-foreground dark:text-white text-sm text-center">
                 {label}
               </span>
-              <span className="text-xs text-slate-500 mt-1 text-center">
+              <span className="text-xs text-muted-foreground mt-1 text-center">
                 Verified professionals
               </span>
             </a>
@@ -157,9 +157,9 @@ export default async function MarketplaceLandingPage() {
 
       {/* Featured providers */}
       {featured.length > 0 && (
-        <section className="bg-slate-50 dark:bg-slate-900/50 py-16">
+        <section className="bg-surface dark:bg-slate-900/50 py-16">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">
+            <h2 className="text-3xl font-heading font-bold text-foreground dark:text-white mb-8">
               Top Rated Providers This Week
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -170,10 +170,10 @@ export default async function MarketplaceLandingPage() {
                   <a
                     key={item.provider_id}
                     href={`/services/${p.slug}`}
-                    className="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-[#2563EB] hover:shadow-md transition-all"
+                    className="flex items-start gap-4 bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-700 p-5 hover:border-brand-primary hover:shadow-md transition-all"
                   >
                     {/* Avatar */}
-                    <div className="w-14 h-14 rounded-full bg-slate-200 dark:bg-slate-700 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                    <div className="w-14 h-14 rounded-full bg-muted dark:bg-slate-700 flex-shrink-0 overflow-hidden flex items-center justify-center">
                       {profile.avatar_url ? (
                         <img
                           src={profile.avatar_url}
@@ -181,37 +181,37 @@ export default async function MarketplaceLandingPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-xl font-bold text-slate-400">
+                        <span className="text-xl font-bold text-muted-foreground">
                           {(profile.full_name ?? p.business_name).charAt(0)}
                         </span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                        <h3 className="font-semibold text-foreground dark:text-white text-sm truncate">
                           {profile.full_name ?? p.business_name}
                         </h3>
                         {profile.provider_verification_status === "verified" && (
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-success flex-shrink-0" />
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         {p.business_name}
                       </p>
                       {/* Rating */}
                       <div className="flex items-center gap-1 mt-1.5">
                         <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="text-xs font-semibold text-foreground dark:text-slate-200">
                           {item.average_rating.toFixed(1)}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-muted-foreground">
                           ({item.total_reviews})
                         </span>
                       </div>
                       {p.city && (
                         <div className="flex items-center gap-1 mt-1">
-                          <MapPin className="w-3 h-3 text-slate-400" />
-                          <span className="text-xs text-slate-500">{p.city}</span>
+                          <MapPin className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">{p.city}</span>
                         </div>
                       )}
                     </div>
@@ -226,17 +226,17 @@ export default async function MarketplaceLandingPage() {
       {/* Post a Job CTA */}
       <section className="max-w-7xl mx-auto px-6 pb-0 pt-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Need a tradesperson?</h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Post your job for free and get quotes from up to 5 verified professionals.</p>
-            <Link href="/post-a-job" className="inline-block px-6 py-3 bg-[#2563EB] text-white font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-border dark:border-slate-700 p-8">
+            <h3 className="text-xl font-heading font-bold text-foreground dark:text-white mb-2">Need a tradesperson?</h3>
+            <p className="text-muted-foreground dark:text-slate-400 mb-5 text-sm">Post your job for free and get quotes from up to 5 verified professionals.</p>
+            <Link href="/post-a-job" className="inline-block px-6 py-3 bg-brand-primary text-white font-semibold rounded-lg hover:bg-brand-primary-dark transition-colors">
               Post a Job — It&apos;s Free
             </Link>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Are you a tradesperson?</h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-5 text-sm">Browse jobs posted by homeowners in your area and send quotes directly.</p>
-            <Link href="/dashboard/provider/jobs/leads" className="inline-block px-6 py-3 bg-[#1B4D3E] text-white font-semibold rounded-lg hover:bg-[#163D30] transition-colors">
+          <div className="bg-muted dark:bg-slate-900/50 rounded-xl border border-border dark:border-slate-700 p-8">
+            <h3 className="text-xl font-heading font-bold text-foreground dark:text-white mb-2">Are you a tradesperson?</h3>
+            <p className="text-muted-foreground dark:text-slate-400 mb-5 text-sm">Browse jobs posted by homeowners in your area and send quotes directly.</p>
+            <Link href="/dashboard/provider/jobs/leads" className="inline-block px-6 py-3 bg-brand-primary text-white font-semibold rounded-lg hover:bg-brand-primary-dark transition-colors">
               Browse Available Jobs
             </Link>
           </div>
@@ -245,15 +245,15 @@ export default async function MarketplaceLandingPage() {
 
       {/* For professionals CTA */}
       <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="bg-gradient-to-r from-[#1B4D3E] to-[#2563EB] rounded-2xl p-10 text-center text-white">
-          <h2 className="text-3xl font-bold mb-3">Are you a professional?</h2>
+        <div className="bg-gradient-to-r from-brand-primary-dark to-brand-primary rounded-2xl p-10 text-center text-white">
+          <h2 className="text-3xl font-heading font-bold mb-3">Are you a professional?</h2>
           <p className="text-white/80 mb-7 max-w-xl mx-auto">
             Join 10,000+ verified providers on Britestate and grow your
             business with quality leads.
           </p>
           <Link
             href="/register?professional=service_provider"
-            className="inline-block px-8 py-3.5 bg-white text-[#2563EB] font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+            className="inline-block px-8 py-3.5 bg-white text-brand-primary font-semibold rounded-lg hover:bg-surface transition-colors"
           >
             List Your Business
           </Link>

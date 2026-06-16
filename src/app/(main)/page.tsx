@@ -398,7 +398,7 @@ export default function HomePage() {
       </section>
 
       {/* ── 4. Find Services ── */}
-      <section className="px-6 py-16 lg:py-24 bg-neutral-50">
+      <section className="px-6 py-16 lg:py-24 bg-surface">
         <div className="max-w-7xl mx-auto flex flex-col gap-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
@@ -497,7 +497,7 @@ export default function HomePage() {
 
       {/* ── 6. Testimonials ── */}
       {/* Fix 4: Removed dead carousel controls and pagination dots; display as 3-column grid */}
-      <section className="bg-neutral-50 py-20 overflow-hidden">
+      <section className="bg-surface py-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative">
           <div className="mb-12">
             <h2 className="text-neutral-900 text-3xl lg:text-4xl font-bold mb-3 font-heading">

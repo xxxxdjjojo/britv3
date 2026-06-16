@@ -15,7 +15,7 @@ export default function ToolsLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-surface">
       {children}
     </div>
   );

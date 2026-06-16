@@ -228,7 +228,7 @@ export default function RentalYieldCalculatorPage() {
                       {formatPercent(results.grossYield)}%
                     </span>
                   </div>
-                  <div className="mt-4 flex items-center text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  <div className="mt-4 flex items-center text-xs font-medium text-brand-primary">
                     <TrendingUp className="mr-1 size-3" />
                     {results.grossYield > LONDON_AVERAGE_YIELD
                       ? "Above market average"
@@ -335,7 +335,7 @@ export default function RentalYieldCalculatorPage() {
                         onChange={(e) =>
                           setPurchasePrice(parseNumericInput(e.target.value))
                         }
-                        className="h-12 rounded-lg border-neutral-200 bg-neutral-50 pl-8 pr-4 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                        className="h-12 rounded-lg border-neutral-200 bg-muted pl-8 pr-4 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
                       />
                     </div>
                   </div>
@@ -354,7 +354,7 @@ export default function RentalYieldCalculatorPage() {
                         onChange={(e) =>
                           setMonthlyRent(parseNumericInput(e.target.value))
                         }
-                        className="h-12 rounded-lg border-neutral-200 bg-neutral-50 pl-8 pr-4 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                        className="h-12 rounded-lg border-neutral-200 bg-muted pl-8 pr-4 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
                       />
                     </div>
                   </div>
@@ -370,7 +370,7 @@ export default function RentalYieldCalculatorPage() {
                         onChange={(e) =>
                           setDepositPercent(parseNumericInput(e.target.value))
                         }
-                        className="h-12 rounded-lg border-neutral-200 bg-neutral-50 pl-4 pr-8 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                        className="h-12 rounded-lg border-neutral-200 bg-muted pl-4 pr-8 font-medium text-neutral-900 focus-visible:border-brand-primary focus-visible:ring-brand-primary/50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-neutral-400">
                         %
@@ -616,7 +616,7 @@ export default function RentalYieldCalculatorPage() {
                         Net Annual Profit
                       </span>
                       <span
-                        className={`font-bold ${results.annualProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}
+                        className={`font-bold ${results.annualProfit >= 0 ? "text-success" : "text-error"}`}
                       >
                         {formatCurrency(results.annualProfit)}
                       </span>
@@ -669,7 +669,7 @@ export default function RentalYieldCalculatorPage() {
                         Annual Net Profit
                       </span>
                       <span
-                        className={`font-semibold ${results.annualProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}
+                        className={`font-semibold ${results.annualProfit >= 0 ? "text-success" : "text-error"}`}
                       >
                         {formatCurrency(results.annualProfit)}
                       </span>
@@ -679,7 +679,7 @@ export default function RentalYieldCalculatorPage() {
                         Cash-on-Cash Return
                       </span>
                       <span
-                        className={`font-bold ${results.cashOnCash >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}
+                        className={`font-bold ${results.cashOnCash >= 0 ? "text-success" : "text-error"}`}
                       >
                         {formatPercent(results.cashOnCash)}%
                       </span>
