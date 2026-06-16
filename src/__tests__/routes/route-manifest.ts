@@ -12,7 +12,7 @@
 
 import { readdirSync } from "node:fs";
 import path from "node:path";
-import { ROLE_TO_ROUTE } from "@/lib/constants";
+import { ROUTE_TO_ROLE } from "@/lib/constants";
 import { dashboardPathForRole } from "@/lib/routes";
 import type { UserRole as AppRole } from "@/types/auth";
 
@@ -35,6 +35,7 @@ export type RouteEntry = Readonly<{
 // ---------------------------------------------------------------------------
 
 const APP_DIR = path.resolve(__dirname, "../../app");
+// Route pages are `.tsx`-only by repo convention (no `.jsx`/`.js`/`.mdx` pages).
 const PAGE_FILE = "page.tsx";
 
 /** A route group directory like `(protected)` — transparent to the URL. */
@@ -131,17 +132,10 @@ function roleForUrl(urlPath: string, surface: string): RouteRole {
   if (seg === "[role]") return "[role]";
   if (SHARED_DASHBOARD_DIRS.has(seg)) return "shared";
 
-  const role = ROLE_TO_ROLE_FROM_SLUG[seg];
+  // ROUTE_TO_ROLE maps URL slug → app role (e.g. provider → service_provider).
+  const role = ROUTE_TO_ROLE[seg];
   return role ?? "shared";
 }
-
-/** URL slug → app role (e.g. provider → service_provider). */
-const ROLE_TO_ROLE_FROM_SLUG: Readonly<Record<string, AppRole>> = Object.entries(
-  ROLE_TO_ROUTE,
-).reduce<Record<string, AppRole>>((acc, [role, slug]) => {
-  acc[slug] = role as AppRole;
-  return acc;
-}, {});
 
 let cachedRoutes: RouteEntry[] | null = null;
 
@@ -207,9 +201,7 @@ function matchSegments(dir: string, segments: string[]): string | null {
  * expanded to that role's URL slug. Excludes any path with a `[param]` segment.
  */
 export function staticRoutesForRole(role: AppRole): string[] {
-  const base = dashboardPathForRole(role); // e.g. /dashboard/provider
-  const slug = ROLE_TO_ROUTE[role]; // e.g. provider
-  const literalPrefix = `/dashboard/${slug}`;
+  const base = dashboardPathForRole(role); // e.g. /dashboard/provider — also the literal-dir prefix
   const result = new Set<string>();
 
   for (const entry of getDashboardRoutes()) {
@@ -226,10 +218,7 @@ export function staticRoutesForRole(role: AppRole): string[] {
     if (entry.dynamic) continue;
 
     // Routes physically under the role's literal directory.
-    if (
-      entry.urlPath === literalPrefix ||
-      entry.urlPath.startsWith(`${literalPrefix}/`)
-    ) {
+    if (entry.urlPath === base || entry.urlPath.startsWith(`${base}/`)) {
       result.add(entry.urlPath);
     }
   }
@@ -247,6 +236,7 @@ export function staticRoutesForRole(role: AppRole): string[] {
  * fail route-contract.test.ts until it is added to nav or to this allowlist.
  *
  * Generated from the live tree on 2026-06-16; keep in sync deliberately.
+ * On failure, the nav-parity test's diff IS the regeneration source for this list.
  */
 export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   // Dashboard root — role-redirect landing, never linked directly.

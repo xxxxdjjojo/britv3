@@ -8,7 +8,7 @@
  * Runs with no server and no Supabase — pure filesystem reads via the manifest.
  */
 
-import { execFileSync } from "node:child_process";
+import { readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { ROLE_NAV_ITEMS, TAB_CONFIG } from "@/config/navigation";
@@ -49,16 +49,22 @@ describe("route manifest", () => {
   it("discovers dashboard and admin pages matching the filesystem", () => {
     const appDir = path.resolve(__dirname, "../../app");
 
+    // Independent recursive count of `page.tsx` files — deliberately does NOT
+    // reuse the manifest's walk, so it stays a genuine cross-check (not a
+    // tautology). Pure `node:fs`, so it runs on any OS / CI without a shell.
     const countPages = (relDir: string): number => {
-      const out = execFileSync(
-        "bash",
-        [
-          "-c",
-          `find "${path.join(appDir, relDir)}" -name page.tsx | wc -l`,
-        ],
-        { encoding: "utf8" },
-      );
-      return Number(out.trim());
+      const walk = (dir: string): number => {
+        let count = 0;
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+          if (entry.isDirectory()) {
+            count += walk(path.join(dir, entry.name));
+          } else if (entry.isFile() && entry.name === "page.tsx") {
+            count += 1;
+          }
+        }
+        return count;
+      };
+      return walk(path.join(appDir, relDir));
     };
 
     const fsDashboard = countPages("(protected)/dashboard");
