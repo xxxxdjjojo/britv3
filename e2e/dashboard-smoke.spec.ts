@@ -49,18 +49,19 @@ const SMOKE_CASES: readonly SmokeCase[] = [
  * Whole roles whose dashboard is unreachable for the seeded test user. Every
  * route is fixme'd via a single tracked finding rather than fixme-ing each path.
  *
- * FINDING — service_provider (auth role "provider"):
- *   `src/app/(protected)/dashboard/provider/layout.tsx` calls
- *   `resolveProviderId()`, which throws for the seeded provider user (no
- *   provider record), and the catch redirects to `/onboarding/provider`. That
- *   path does NOT exist (the real onboarding page is `/register/onboarding/
- *   [role]`), so it renders the 404 "Page not found" page. Result: ALL 46
- *   provider dashboard routes 404. Two underlying bugs — a dead redirect target
- *   and a missing provider seed record. Confirmed reproducible across 3 runs.
+ * NOTE — service_provider (auth role "provider") is now SEEDED and runs:
+ *   `dashboard/provider/layout.tsx` → `resolveProviderId()` requires a
+ *   `service_provider_details` row for the user. `supabase/seed/seed-test-users.ts`
+ *   now upserts that row for `test-provider@britestate.test`, so the layout no
+ *   longer 404s and all 46 provider routes are covered.
+ *
+ * FINDING (app bug, left for a later milestone — NOT fixed here): the layout's
+ *   catch path still redirects a provider-with-no-record to `/onboarding/provider`,
+ *   which does not exist (real onboarding is `/register/onboarding/[role]`) and
+ *   renders the 404 page. Only relevant when the provider record is absent; the
+ *   seed sidesteps it for E2E but the dead redirect target should be fixed.
  */
-const FIXME_ROLES: ReadonlySet<AppRole> = new Set<AppRole>([
-  "service_provider",
-]);
+const FIXME_ROLES: ReadonlySet<AppRole> = new Set<AppRole>([]);
 
 /**
  * Individual routes confirmed to genuinely fail the smoke assertions (real
