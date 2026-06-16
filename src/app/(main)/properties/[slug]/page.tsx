@@ -623,6 +623,7 @@ export default async function PropertyPage({
                 <LocalAreaSection
                   lat={property.coordinates.lat}
                   lng={property.coordinates.lng}
+                  postcode={property.postcode}
                 />
               </Suspense>
             )}

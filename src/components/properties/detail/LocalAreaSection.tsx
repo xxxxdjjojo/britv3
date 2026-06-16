@@ -3,11 +3,17 @@ import { Separator } from "@/components/ui/separator";
 import { fetchNearbySchools } from "@/services/properties/ofsted-service";
 import { getAreaCrime } from "@/services/properties/crime-service";
 import { getNearbyTransport } from "@/services/properties/transport-service";
+import { getBroadbandCoverage } from "@/services/properties/broadband-service";
 import { SchoolCatchmentWidget } from "./SchoolCatchmentWidget";
 import { CrimeStatsChart } from "./CrimeStatsChart";
 import { TransportWidget } from "./TransportWidget";
+import { BroadbandWidget } from "./BroadbandWidget";
 
-type LocalAreaSectionProps = Readonly<{ lat: number; lng: number }>;
+type LocalAreaSectionProps = Readonly<{
+  lat: number;
+  lng: number;
+  postcode: string;
+}>;
 
 function SourceNote({ children }: { children: ReactNode }) {
   return <p className="mt-1.5 text-[11px] text-muted-foreground">{children}</p>;
@@ -19,21 +25,31 @@ function SourceNote({ children }: { children: ReactNode }) {
  * label. The whole section is omitted when no layer has data — graceful
  * absence, per the no-empty-widgets rule. Each layer degrades independently.
  *
- * Currently wired: nearest schools (GIAS/Ofsted), crime (data.police.uk) and
- * transport stations (NaPTAN/DfT). Broadband and flood widgets exist but await
- * their data layers.
+ * Currently wired: nearest schools (GIAS/Ofsted), crime (data.police.uk),
+ * transport stations (NaPTAN/DfT) and broadband availability (Ofcom). The
+ * flood widget exists but awaits its data layer.
  */
-export async function LocalAreaSection({ lat, lng }: LocalAreaSectionProps) {
-  const [schools, crime, transport] = await Promise.all([
+export async function LocalAreaSection({
+  lat,
+  lng,
+  postcode,
+}: LocalAreaSectionProps) {
+  const [schools, crime, transport, broadband] = await Promise.all([
     fetchNearbySchools(lat, lng).catch(() => null),
     getAreaCrime(lat, lng).catch(() => null),
     getNearbyTransport(lat, lng).catch(() => null),
+    getBroadbandCoverage(postcode).catch(() => null),
   ]);
 
   const hasSchools = !!schools && schools.length > 0;
   const hasCrime = !!crime && crime.stats.length > 0;
   const hasTransport = !!transport && transport.length > 0;
-  if (!hasSchools && !hasCrime && !hasTransport) return null;
+  const hasBroadband =
+    !!broadband &&
+    (broadband.superfastPct != null ||
+      broadband.ultrafastPct != null ||
+      broadband.gigabitPct != null);
+  if (!hasSchools && !hasCrime && !hasTransport && !hasBroadband) return null;
 
   return (
     <section>
@@ -62,6 +78,20 @@ export async function LocalAreaSection({ lat, lng }: LocalAreaSectionProps) {
             <TransportWidget nearbyStations={transport} />
             <SourceNote>
               Source: NaPTAN / DfT (Open Government Licence v3.0)
+            </SourceNote>
+          </div>
+        )}
+        {hasBroadband && broadband && (
+          <div>
+            <BroadbandWidget
+              superfastPct={broadband.superfastPct}
+              ultrafastPct={broadband.ultrafastPct}
+              gigabitPct={broadband.gigabitPct}
+              belowUsoPct={broadband.belowUsoPct}
+            />
+            <SourceNote>
+              Source: Ofcom Connected Nations 2025 (Open Government Licence
+              v3.0)
             </SourceNote>
           </div>
         )}

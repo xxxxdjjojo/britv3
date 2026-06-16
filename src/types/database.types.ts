@@ -648,6 +648,36 @@ export type Database = {
           },
         ]
       }
+      broadband_coverage: {
+        Row: {
+          below_uso_pct: number | null
+          gigabit_pct: number | null
+          postcode: string
+          sfbb_pct: number | null
+          source: string
+          ufbb_pct: number | null
+          updated_at: string
+        }
+        Insert: {
+          below_uso_pct?: number | null
+          gigabit_pct?: number | null
+          postcode: string
+          sfbb_pct?: number | null
+          source?: string
+          ufbb_pct?: number | null
+          updated_at?: string
+        }
+        Update: {
+          below_uso_pct?: number | null
+          gigabit_pct?: number | null
+          postcode?: string
+          sfbb_pct?: number | null
+          source?: string
+          ufbb_pct?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       consent_audit_log: {
         Row: {
           consent_type: string
