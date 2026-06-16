@@ -1,0 +1,47 @@
+name: Branch Sweep
+
+# Anti-sprawl guard: reports branches with no open PR and stale/red PRs so nothing
+# lingers off `origin/main`. REPORT-ONLY — it never closes anything yet. Flip
+# CLOSE_ZOMBIES to "true" only after the report has been trusted for a week.
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # daily 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOSE_ZOMBIES: "false" # report-only; do not close branches/PRs yet
+    steps:
+      - name: Report branches with no open PR and stale PRs
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          echo "## Branch Sweep — $(date -u +%F)"
+          echo ""
+          echo "### Branches with no open PR"
+          # All remote branches except main
+          mapfile -t BRANCHES < <(gh api "repos/$REPO/branches" --paginate --jq '.[].name' | grep -v '^main$' || true)
+          # Heads that have an open PR
+          mapfile -t PR_HEADS < <(gh pr list --repo "$REPO" --state open --json headRefName --jq '.[].headRefName' || true)
+          for b in "${BRANCHES[@]:-}"; do
+            [ -z "$b" ] && continue
+            if printf '%s\n' "${PR_HEADS[@]:-}" | grep -qx "$b"; then continue; fi
+            last=$(gh api "repos/$REPO/branches/$b" --jq '.commit.commit.committer.date' 2>/dev/null || echo "?")
+            echo "- \`$b\` — no open PR (last commit: $last)"
+          done
+          echo ""
+          echo "### Open PRs not updated in > 24h"
+          gh pr list --repo "$REPO" --state open \
+            --json number,title,updatedAt,headRefName \
+            --jq '.[] | "- #\(.number) \(.headRefName) — updated \(.updatedAt)"'
+          echo ""
+          echo "CLOSE_ZOMBIES=$CLOSE_ZOMBIES (report-only when false)"
