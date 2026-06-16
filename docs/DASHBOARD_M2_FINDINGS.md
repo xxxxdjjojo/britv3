@@ -67,6 +67,23 @@ Live smoke requires the dev server (Playwright auto-starts `pnpm dev`) and the h
 all-role seed users. Runtime ≈ 6–8 min; `retries: 2` (scoped, not global) absorbs hosted-DB transient
 fetch flake — it cannot green the deterministic F1–F7 failures.
 
+## ⚠️ E2E determinism caveat (important)
+
+The live smoke specs run against the **shared hosted Supabase** (`ynkqzzpcbpphjczmrfva`), which other
+processes/sessions actively use. Observed consequence: each E2E spec passed when run in isolation
+(e.g. provider 46/46 immediately after seeding the provider record), but a later **consolidated
+full-suite re-run regressed** — provider routes 404'd again and the overall pass count dropped —
+without any code change. Root cause is environmental: concurrent mutation of the shared DB
+(the same churn that switched git branches mid-task) and hosted-DB transient flake under full-suite
+load. The `retries: 2` absorbs single-request transients but not data that disappears between specs.
+
+**Implication:** the E2E **test code is correct and committed**, and the **route-contract suite is
+deterministically green (13/13, server-less)**. But E2E pass/fail is **not reproducible** against a
+shared hosted project. These smoke specs belong in **CI with a dedicated/ephemeral Supabase** (or a
+local instance) seeded fresh per run — not a shared hosted DB driven by multiple agents. Until then,
+treat the E2E suite as a coverage scaffold whose green status must be read per-isolated-run, and
+prioritise standing up an isolated test DB before relying on it as a gate.
+
 ## Next (M3)
 Feature-level tests dashboard-by-dashboard (filters, forms, sort, pagination, tabs, empty/loading/
 error states) + runtime smoke of dynamic routes with seeded entity fixtures. M4 fixes F1–F7 via TDD.
