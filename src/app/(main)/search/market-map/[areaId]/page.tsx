@@ -65,7 +65,7 @@ export default async function AreaMapPage({ params }: RouteParams) {
       >
         <Link
           href="/search"
-          className="flex items-center gap-1 font-sans text-xs text-[#7A7A88] hover:text-[#1B4D3E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+          className="flex items-center gap-1 font-sans text-xs text-[#7A7A88] hover:text-[#1B4D3E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
         >
           <ArrowLeft className="size-3" aria-hidden="true" />
           Search
@@ -75,7 +75,7 @@ export default async function AreaMapPage({ params }: RouteParams) {
         </span>
         <Link
           href="/search/map"
-          className="font-sans text-xs text-[#7A7A88] hover:text-[#1B4D3E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
+          className="font-sans text-xs text-[#7A7A88] hover:text-[#1B4D3E] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]"
         >
           Price Map
         </Link>

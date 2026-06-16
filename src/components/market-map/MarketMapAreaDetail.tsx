@@ -111,7 +111,7 @@ export function MarketMapAreaDetail({
             className={cn(
               "shrink-0 rounded p-0.5 text-[#7A7A88]",
               "hover:bg-[#F1F1F5] hover:text-[#2E2E33]",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E]",
             )}
           >
             <svg

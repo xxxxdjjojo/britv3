@@ -71,7 +71,7 @@ export function MarketMapAreaList({ features, selectedAreaId, onSelect }: Props)
         className={cn(
           "flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 text-left",
           "transition-colors duration-150",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-1",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-1",
           isSelected
             ? "bg-[#E8F5EE] ring-1 ring-[#1B4D3E]"
             : "hover:bg-[#F1F1F5]",

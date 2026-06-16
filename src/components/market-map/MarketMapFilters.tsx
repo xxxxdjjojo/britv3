@@ -80,7 +80,7 @@ function ChipButton({
       className={cn(
         "rounded-[var(--radius-md)] border px-3 py-1.5 text-sm font-medium",
         "transition-all duration-300",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-1",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-1",
         active
           ? "border-[#1B4D3E] bg-white text-[#1B4D3E] shadow-[var(--shadow-sm)]"
           : "border-transparent bg-transparent text-[#46464F] hover:bg-[#E8F5EE] hover:text-[#003629]",
@@ -215,7 +215,7 @@ export function MarketMapFilters({
                   className={cn(
                     "flex-1 rounded-[calc(var(--radius-md)-2px)] px-3 py-1.5 text-sm font-medium capitalize",
                     "transition-all duration-300",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-1",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-1",
                     scaleMode === mode
                       ? "bg-[#1B4D3E] text-white shadow-[var(--shadow-sm)]"
                       : "text-[#46464F] hover:text-[#003629]",
@@ -243,7 +243,7 @@ export function MarketMapFilters({
             "w-full rounded-[var(--radius-md)] bg-[#1B4D3E] px-4 py-3",
             "font-sans text-sm font-semibold text-white",
             "transition-colors duration-150 hover:bg-[#003629]",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B4D3E] focus-visible:ring-offset-2",
           )}
         >
           Apply Filters
