@@ -16,6 +16,7 @@ export default async function AdminBlogPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title="Blog Articles"
         description="Create and manage blog posts."
       />

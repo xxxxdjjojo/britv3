@@ -26,6 +26,7 @@ export default async function GdprQueuePage({
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="GDPR Queue"
         description="Manage data export and deletion requests from users."
       />

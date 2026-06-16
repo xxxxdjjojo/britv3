@@ -211,6 +211,7 @@ export default function PlatformMetricsPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Analytics"
         title="Platform Metrics"
         description="Real-time aggregate statistics from the Britestate platform database."
       />

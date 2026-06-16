@@ -16,6 +16,7 @@ export default async function AdminLandingPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title="Landing Pages"
         description="Create and manage marketing landing pages."
       />

@@ -12,6 +12,7 @@ export default async function AdminVerificationsPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title="Provider Verifications"
         description={`${verifications.length} item${verifications.length !== 1 ? "s" : ""} awaiting review.`}
       />

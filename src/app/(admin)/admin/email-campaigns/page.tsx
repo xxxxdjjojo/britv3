@@ -17,6 +17,7 @@ export default async function AdminEmailCampaignsPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Growth"
         title="Email Campaigns"
         description="Create and send email campaigns to your users."
       />

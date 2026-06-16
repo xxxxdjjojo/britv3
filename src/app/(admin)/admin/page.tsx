@@ -97,6 +97,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Overview"
         title="Admin Dashboard"
         description="Overview of platform activity and content moderation."
       />
@@ -119,8 +120,7 @@ export default function AdminDashboardPage() {
 
         <div className="rounded-xl border border-border bg-card p-6">
           <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-base font-semibold text-neutral-900 mb-4"
           >
             Recent Activity
           </h2>
