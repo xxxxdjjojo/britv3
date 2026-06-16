@@ -1,8 +1,9 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getPlatformMetrics } from "@/services/admin/analytics-service";
 import { getAuditLog } from "@/services/admin/audit-service";
-import { CountCard } from "@/components/admin/CountCard";
+import { StatCard } from "@/components/dashboard/StatCard";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminDashboardCharts } from "@/components/admin/AdminDashboardCharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,36 +14,21 @@ async function KpiCards() {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-      <CountCard
-        title="Total Users"
-        count={metrics.totalUsers}
-        href="/admin/users"
-        icon="Users"
-      />
-      <CountCard
-        title="Active Listings"
-        count={metrics.activeListings}
-        href="/admin/moderation"
-        icon="Building2"
-      />
-      <CountCard
-        title="Pending Verifications"
-        count={metrics.pendingVerifications}
-        href="/admin/verifications"
-        icon="BadgeCheck"
-      />
-      <CountCard
-        title="Open Reports"
-        count={metrics.openReports}
-        href="/admin/reported"
-        icon="ShieldAlert"
-      />
-      <CountCard
-        title="Total Reviews"
-        count={metrics.totalReviews}
-        href="/admin/reviews"
-        icon="Star"
-      />
+      <Link href="/admin/users" className="block">
+        <StatCard label="Total Users" value={metrics.totalUsers.toLocaleString()} icon="Users" />
+      </Link>
+      <Link href="/admin/moderation" className="block">
+        <StatCard label="Active Listings" value={metrics.activeListings.toLocaleString()} icon="Building2" />
+      </Link>
+      <Link href="/admin/verifications" className="block">
+        <StatCard label="Pending Verifications" value={metrics.pendingVerifications.toLocaleString()} icon="BadgeCheck" />
+      </Link>
+      <Link href="/admin/reported" className="block">
+        <StatCard label="Open Reports" value={metrics.openReports.toLocaleString()} icon="ShieldAlert" />
+      </Link>
+      <Link href="/admin/reviews" className="block">
+        <StatCard label="Total Reviews" value={metrics.totalReviews.toLocaleString()} icon="Star" />
+      </Link>
     </div>
   );
 }
@@ -111,6 +97,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Overview"
         title="Admin Dashboard"
         description="Overview of platform activity and content moderation."
       />
@@ -121,11 +108,8 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
-            <h2
-              className="text-base font-semibold text-neutral-900 mb-4"
-              style={{ fontFamily: "Plus Jakarta Sans" }}
-            >
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="font-heading text-base font-semibold text-neutral-900 mb-4">
               Platform Revenue (Mock)
             </h2>
             <Suspense fallback={<ChartSkeleton />}>
@@ -134,10 +118,9 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-base font-semibold text-neutral-900 mb-4"
           >
             Recent Activity
           </h2>

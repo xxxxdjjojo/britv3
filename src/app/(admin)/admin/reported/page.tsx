@@ -12,6 +12,7 @@ export default async function AdminReportedPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title="Reported Content"
         description={`${reportList.length} report${reportList.length !== 1 ? "s" : ""} awaiting review`}
       />

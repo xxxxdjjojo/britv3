@@ -34,6 +34,7 @@ export default async function AdminUserDetailPage({
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title={user.display_name ?? "Unknown User"}
         description={user.email ?? undefined}
       />
@@ -41,7 +42,7 @@ export default async function AdminUserDetailPage({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Profile card */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-border bg-card p-6">
             <h2
               className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-4"
             >
@@ -116,7 +117,7 @@ export default async function AdminUserDetailPage({
 
         {/* Actions panel */}
         <div>
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="text-sm font-semibold text-neutral-500 uppercase tracking-wide mb-4">
               Actions
             </h2>

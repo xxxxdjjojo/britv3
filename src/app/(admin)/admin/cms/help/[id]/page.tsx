@@ -41,6 +41,7 @@ export default async function AdminHelpEditorPage({ params }: Props) {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title={isNew ? "New Help Article" : "Edit Help Article"}
         description="Write and publish help centre content."
       />

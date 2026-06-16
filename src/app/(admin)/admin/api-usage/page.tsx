@@ -77,6 +77,7 @@ export default async function ApiUsagePage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="API Usage"
         description="Rate limit statistics and request volume from Upstash Redis."
       />
@@ -91,19 +92,19 @@ export default async function ApiUsagePage() {
         <div className="space-y-6">
           {/* Summary cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg border border-neutral-200 bg-white">
+            <div className="p-4 rounded-lg border border-border bg-card">
               <p className="text-xs text-neutral-500 mb-1">Requests / hour</p>
               <p className="text-2xl font-semibold text-neutral-900">
                 {stats.requestsPerHour.toLocaleString()}
               </p>
             </div>
-            <div className="p-4 rounded-lg border border-neutral-200 bg-white">
+            <div className="p-4 rounded-lg border border-border bg-card">
               <p className="text-xs text-neutral-500 mb-1">Top endpoints tracked</p>
               <p className="text-2xl font-semibold text-neutral-900">
                 {stats.topEndpoints.length}
               </p>
             </div>
-            <div className="p-4 rounded-lg border border-neutral-200 bg-white">
+            <div className="p-4 rounded-lg border border-border bg-card">
               <p className="text-xs text-neutral-500 mb-1">Rate-limited IPs</p>
               <p className="text-2xl font-semibold text-red-600">
                 {stats.rateLimitedIps.length}
@@ -119,9 +120,9 @@ export default async function ApiUsagePage() {
             {stats.topEndpoints.length === 0 ? (
               <p className="text-sm text-neutral-400">No endpoint data recorded yet.</p>
             ) : (
-              <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+              <div className="border border-border rounded-lg overflow-hidden bg-card">
                 <table className="w-full text-sm">
-                  <thead className="border-b border-neutral-200 bg-neutral-50">
+                  <thead className="border-b border-border bg-muted">
                     <tr>
                       <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                         Endpoint
@@ -133,7 +134,7 @@ export default async function ApiUsagePage() {
                   </thead>
                   <tbody className="divide-y divide-neutral-100">
                     {stats.topEndpoints.map((ep) => (
-                      <tr key={ep.endpoint} className="hover:bg-neutral-50 transition-colors">
+                      <tr key={ep.endpoint} className="hover:bg-muted transition-colors">
                         <td className="px-4 py-3 font-mono text-xs text-neutral-700">
                           {ep.endpoint}
                         </td>
@@ -156,7 +157,7 @@ export default async function ApiUsagePage() {
             {stats.rateLimitedIps.length === 0 ? (
               <p className="text-sm text-neutral-400">No IPs currently rate-limited.</p>
             ) : (
-              <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+              <div className="border border-border rounded-lg overflow-hidden bg-card">
                 <ul className="divide-y divide-neutral-100">
                   {stats.rateLimitedIps.map((ip) => (
                     <li key={ip} className="px-4 py-2.5 font-mono text-sm text-neutral-700">

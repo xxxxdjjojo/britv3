@@ -16,6 +16,7 @@ export default async function AdminReviewsPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title="Review Moderation"
         description={`${reports.length} report${reports.length !== 1 ? "s" : ""} awaiting action.`}
       />

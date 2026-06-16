@@ -18,7 +18,7 @@ export function UserDetailModal({ user, open, onClose }: Props) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="relative w-full max-w-md rounded-lg bg-card p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-neutral-900">User Details</h2>
           <button

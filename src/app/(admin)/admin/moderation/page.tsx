@@ -27,6 +27,7 @@ export default async function AdminModerationPage({
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Moderation"
         title="Listing Moderation"
         description="Review, approve, reject, and flag property listings."
       />

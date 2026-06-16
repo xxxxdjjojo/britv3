@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { StatCard } from "@/components/dashboard/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Building2, MessageSquare, TrendingUp } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -109,35 +109,6 @@ async function fetchPlatformAnalytics(): Promise<PlatformAnalytics> {
   };
 }
 
-// ── KPI Card ──────────────────────────────────────────────────────────────────
-
-function KpiCard({
-  label,
-  value,
-  icon: Icon,
-  color,
-}: Readonly<{ label: string; value: number; icon: React.ElementType; color: string }>) {
-  return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5 flex items-start gap-4">
-      <div
-        className="rounded-lg p-2.5 shrink-0"
-        style={{ backgroundColor: `${color}15` }}
-      >
-        <Icon className="h-5 w-5" style={{ color }} />
-      </div>
-      <div>
-        <p className="text-xs text-neutral-500 mb-0.5">{label}</p>
-        <p
-          className="text-2xl font-semibold text-neutral-900"
-          style={{ fontFamily: "Plus Jakarta Sans" }}
-        >
-          {value.toLocaleString("en-GB")}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 // ── Main section (async) ──────────────────────────────────────────────────────
 
 async function PlatformMetricsContent() {
@@ -147,46 +118,18 @@ async function PlatformMetricsContent() {
     <div className="space-y-8">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <KpiCard
-          label="Admin Actions Today"
-          value={analytics.dau}
-          icon={TrendingUp}
-          color="#1B4D3E"
-        />
-        <KpiCard
-          label="Active Users (30d)"
-          value={analytics.mau}
-          icon={TrendingUp}
-          color="#D4A853"
-        />
-        <KpiCard
-          label="Total Users"
-          value={analytics.totalUsers}
-          icon={Users}
-          color="#2563EB"
-        />
-        <KpiCard
-          label="Total Properties"
-          value={analytics.totalProperties}
-          icon={Building2}
-          color="#1B4D3E"
-        />
-        <KpiCard
-          label="Total Messages"
-          value={analytics.totalMessages}
-          icon={MessageSquare}
-          color="#D4A853"
-        />
+        <StatCard label="Admin Actions Today" value={analytics.dau.toLocaleString("en-GB")} icon="TrendingUp" />
+        <StatCard label="Active Users (30d)" value={analytics.mau.toLocaleString("en-GB")} icon="TrendingUp" />
+        <StatCard label="Total Users" value={analytics.totalUsers.toLocaleString("en-GB")} icon="Users" />
+        <StatCard label="Total Properties" value={analytics.totalProperties.toLocaleString("en-GB")} icon="Building2" />
+        <StatCard label="Total Messages" value={analytics.totalMessages.toLocaleString("en-GB")} icon="MessageSquare" />
       </div>
 
       {/* Tables */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Users by Role */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
-          <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
-          >
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="font-heading text-base font-semibold text-neutral-900 mb-4">
             Users by Role
           </h2>
           {analytics.usersByRole.length === 0 ? (
@@ -214,11 +157,8 @@ async function PlatformMetricsContent() {
         </div>
 
         {/* Listings by Status */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
-          <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
-          >
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="font-heading text-base font-semibold text-neutral-900 mb-4">
             Listings by Status
           </h2>
           {analytics.listingsByStatus.length === 0 ? (
@@ -271,6 +211,7 @@ export default function PlatformMetricsPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Analytics"
         title="Platform Metrics"
         description="Real-time aggregate statistics from the Britestate platform database."
       />

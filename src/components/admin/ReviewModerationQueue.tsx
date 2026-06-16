@@ -18,7 +18,7 @@ function ReportCard({
   onDismiss: (reportId: string, note?: string) => void;
 }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="mb-3 flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ function ReportCard({
 export function ReviewModerationQueue({ reports, onResolve, onDismiss }: Props) {
   if (reports.length === 0) {
     return (
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-sm text-neutral-500">
+      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-neutral-500">
         No reported reviews. Everything looks good.
       </div>
     );

@@ -138,9 +138,9 @@ export function AuditLogClient({
       </div>
 
       {/* Table */}
-      <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-border rounded-lg overflow-hidden bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 bg-neutral-50">
+          <thead className="border-b border-border bg-muted">
             <tr>
               <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                 Action
@@ -163,7 +163,7 @@ export function AuditLogClient({
             {entries.map((entry) => (
               <tr
                 key={entry.id}
-                className="hover:bg-neutral-50 transition-colors"
+                className="hover:bg-muted transition-colors"
               >
                 <td className="px-4 py-3 font-mono text-xs text-neutral-800">
                   {entry.action}

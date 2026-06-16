@@ -16,6 +16,7 @@ export default async function AdminSeoPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title="SEO Management"
         description="Edit SEO titles and descriptions for all published articles."
       />

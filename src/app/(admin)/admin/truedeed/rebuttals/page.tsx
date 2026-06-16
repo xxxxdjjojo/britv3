@@ -25,6 +25,7 @@ export default async function AdminTruedeedRebuttalsPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="TrueDeed"
         title="Rebuttals"
         description="Pending Truedeed introduction disputes awaiting a decision."
       />
