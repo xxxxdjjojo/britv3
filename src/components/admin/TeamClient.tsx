@@ -74,7 +74,7 @@ export function TeamClient({ members, isSuperAdmin = false }: Props) {
 
       <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 bg-neutral-50">
+          <thead className="border-b border-neutral-200 bg-muted">
             <tr>
               <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                 Admin
@@ -91,11 +91,11 @@ export function TeamClient({ members, isSuperAdmin = false }: Props) {
             {members.map((member) => (
               <tr
                 key={member.id}
-                className="hover:bg-neutral-50 transition-colors"
+                className="hover:bg-muted transition-colors"
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-7 w-7 rounded-full bg-[#1B4D3E] flex items-center justify-center shrink-0">
+                    <div className="h-7 w-7 rounded-full bg-brand-primary flex items-center justify-center shrink-0">
                       <UserCheck className="h-4 w-4 text-white" />
                     </div>
                     <div>

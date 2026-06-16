@@ -16,10 +16,15 @@ import {
   Eye,
   Tag,
   Building,
+  Building2,
   Users,
   Briefcase,
   Star,
   PoundSterling,
+  BadgeCheck,
+  ShieldAlert,
+  TrendingUp,
+  MessageSquare,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,10 +53,15 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Eye,
   Tag,
   Building,
+  Building2,
   Users,
   Briefcase,
   Star,
   PoundSterling,
+  BadgeCheck,
+  ShieldAlert,
+  TrendingUp,
+  MessageSquare,
 };
 
 // ---------------------------------------------------------------------------
@@ -75,7 +85,12 @@ export function StatCard({
   trend,
   icon,
   accent,
-}: Readonly<StatCardData & { accent?: StatAccent }>) {
+}: Readonly<
+  Pick<StatCardData, "label" | "value"> &
+    Partial<Pick<StatCardData, "change" | "trend" | "icon">> & {
+      accent?: StatAccent;
+    }
+>) {
   const IconComponent = icon ? ICON_MAP[icon] : null;
   const trendConfig = trend ? TREND_CONFIG[trend] : null;
   const TrendIcon = trendConfig?.icon;

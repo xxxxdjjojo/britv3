@@ -49,7 +49,7 @@ export function CmsArticleList({
       ) : (
         <div className="rounded-lg border border-neutral-200 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-neutral-50 border-b border-neutral-200">
+            <thead className="bg-muted border-b border-neutral-200">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-neutral-600">
                   Title
@@ -65,7 +65,7 @@ export function CmsArticleList({
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {articles.map((article) => (
-                <tr key={article.id} className="hover:bg-neutral-50">
+                <tr key={article.id} className="hover:bg-muted">
                   <td className="px-4 py-3 font-medium text-neutral-800">
                     {article.title}
                   </td>

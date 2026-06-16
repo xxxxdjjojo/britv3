@@ -134,7 +134,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
       {showCreate && (
         <form
           onSubmit={handleCreate}
-          className="rounded-lg border border-neutral-200 p-4 space-y-4 bg-neutral-50"
+          className="rounded-lg border border-neutral-200 p-4 space-y-4 bg-muted"
         >
           <h3 className="font-semibold text-neutral-800">Create Promo Code</h3>
 
@@ -258,7 +258,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
       ) : (
         <div className="rounded-lg border border-neutral-200 overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-neutral-50 border-b border-neutral-200">
+            <thead className="bg-muted border-b border-neutral-200">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-neutral-600">
                   Code
@@ -277,7 +277,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {promoCodes.map((code) => (
-                <tr key={code.id} className="hover:bg-neutral-50">
+                <tr key={code.id} className="hover:bg-muted">
                   <td className="px-4 py-3 font-mono font-medium text-neutral-800">
                     {code.code}
                   </td>

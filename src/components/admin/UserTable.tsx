@@ -21,7 +21,7 @@ export function UserTable({ users, onSuspend, onActivate, onViewDetails }: Props
   return (
     <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
       <table className="min-w-full divide-y divide-neutral-200 text-sm">
-        <thead className="bg-neutral-50">
+        <thead className="bg-muted">
           <tr>
             <th className="px-4 py-3 text-left font-medium text-neutral-600">Name</th>
             <th className="px-4 py-3 text-left font-medium text-neutral-600">Email</th>
@@ -33,7 +33,7 @@ export function UserTable({ users, onSuspend, onActivate, onViewDetails }: Props
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {users.map((user) => (
-            <tr key={user.id} className="hover:bg-neutral-50">
+            <tr key={user.id} className="hover:bg-muted">
               <td className="px-4 py-3 font-medium text-neutral-900">
                 {user.display_name ?? "—"}
               </td>

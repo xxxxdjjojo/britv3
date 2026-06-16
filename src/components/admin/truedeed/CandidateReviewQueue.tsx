@@ -116,8 +116,8 @@ export function CandidateReviewQueue({ items, onDecide }: Props) {
               <Badge
                 className={
                   item.source === "agent_report"
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-purple-100 text-purple-700"
+                    ? "bg-brand-primary/10 text-brand-primary"
+                    : "bg-brand-secondary-light text-brand-secondary"
                 }
               >
                 {sourceBadge(item.source)}

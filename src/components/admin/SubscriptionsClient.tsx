@@ -49,7 +49,7 @@ export function SubscriptionsClient({ subscriptions }: Props) {
     <>
       <div className="rounded-lg border border-neutral-200 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-neutral-50 border-b border-neutral-200">
+          <thead className="bg-muted border-b border-neutral-200">
             <tr>
               <th className="text-left px-4 py-3 font-medium text-neutral-600">
                 User ID
@@ -68,7 +68,7 @@ export function SubscriptionsClient({ subscriptions }: Props) {
           </thead>
           <tbody className="divide-y divide-neutral-100">
             {subscriptions.map((sub) => (
-              <tr key={sub.id} className="hover:bg-neutral-50">
+              <tr key={sub.id} className="hover:bg-muted">
                 <td className="px-4 py-3 font-mono text-xs text-neutral-600">
                   {sub.user_id.slice(0, 8)}...
                 </td>

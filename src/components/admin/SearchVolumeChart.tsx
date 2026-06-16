@@ -47,7 +47,7 @@ export function SearchVolumeChart({ data }: Props) {
         <Line
           type="monotone"
           dataKey="count"
-          stroke="#2563EB"
+          stroke="#1B4D3E"
           strokeWidth={2}
           dot={false}
         />

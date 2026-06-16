@@ -21,7 +21,7 @@ const STATUS_MAP: Record<string, { label: string; className: string }> = {
     label: "Email Failed",
     className: "bg-red-100 text-red-600",
   },
-  open: { label: "Open", className: "bg-blue-100 text-blue-700" },
+  open: { label: "Open", className: "bg-brand-primary/10 text-brand-primary" },
   resolved: { label: "Resolved", className: "bg-green-100 text-green-600" },
   dismissed: {
     label: "Dismissed",
