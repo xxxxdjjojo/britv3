@@ -36,7 +36,10 @@ const err = (error: unknown): DbResult => ({ data: null, error, count: null });
 function createCountChain(result: DbResult) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chain: any = {};
-  for (const method of ["eq", "in", "neq", "match", "is", "order", "limit"]) {
+  for (const method of [
+    "eq", "in", "neq", "not", "match", "is", "order", "limit",
+    "gte", "lte", "gt", "lt",
+  ]) {
     chain[method] = vi.fn(() => chain);
   }
   // select() returns a thenable so `const { count } = await ...select(...)` works.
