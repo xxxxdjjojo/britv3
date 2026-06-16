@@ -33,3 +33,14 @@ export type PricePaidSummary = Readonly<{
   areaTrend: AreaPriceTrend[];
   averagePrice: number;
 }>;
+
+export type SoldPriceData = Readonly<{
+  exactHistory: PricePaidRecord[];
+  areaSummary: PricePaidSummary;
+}>;
+
+export type SoldPriceLookup = Readonly<{
+  postcode: string;
+  paon: string | null;
+  saon: string | null;
+}>;
