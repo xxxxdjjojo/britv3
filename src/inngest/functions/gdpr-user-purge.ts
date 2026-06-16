@@ -331,6 +331,58 @@ export const gdprUserPurge = inngest.createFunction(
       });
 
       // ------------------------------------------------------------------
+      // Truedeed invoice disputes (Phase 5): same evidence-grade posture as
+      // introductions — the row is preserved as decision evidence, but
+      // raised_by is nulled, grounds is replaced with '[erased]', and the
+      // evidence file paths are wiped. The actual objects in the
+      // rebuttal-evidence bucket are removed first so storage doesn't
+      // outlive the row's references.
+      // ------------------------------------------------------------------
+      await step.run("scrub-truedeed-invoice-disputes", async () => {
+        const { data: rows } = await supabase
+          .from("invoice_disputes")
+          .select("id, evidence_storage_paths")
+          .eq("raised_by", userId);
+        const paths = ((rows ?? []) as Array<{
+          evidence_storage_paths: string[] | null;
+        }>)
+          .flatMap((r) => r.evidence_storage_paths ?? [])
+          .filter((p): p is string => typeof p === "string" && p.length > 0);
+        if (paths.length > 0) {
+          const { error: storageError } = await supabase.storage
+            .from("rebuttal-evidence")
+            .remove(paths);
+          if (storageError) {
+            captureException(storageError, {
+              module: "gdpr",
+              feature: "purge",
+              operation: "remove-dispute-evidence",
+              extra: { userId, pathCount: paths.length },
+            });
+            // Storage removal failures are non-fatal: the row scrub below
+            // still wipes the references. Storage cleanup can be retried
+            // out-of-band via the operator runbook.
+          }
+        }
+
+        const { error } = await supabase.rpc("gdpr_scrub_invoice_disputes", {
+          p_user_id: userId,
+        });
+        if (error) {
+          captureException(error, {
+            module: "gdpr",
+            feature: "purge",
+            operation: "scrub-truedeed-invoice-disputes",
+            extra: { userId, errorCode: error.code },
+          });
+          throw new Error(
+            `[gdpr-purge] Failed to scrub invoice_disputes for user ${userId}: ${error.message}`,
+          );
+        }
+        return { ok: true };
+      });
+
+      // ------------------------------------------------------------------
       // Storage + auth.users cleanup. completePurge() removes avatars,
       // buyer-documents, and the auth.users row. If a public.* table still
       // references the user, ON DELETE RESTRICT will surface a clear error
