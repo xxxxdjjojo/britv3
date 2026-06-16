@@ -144,8 +144,8 @@ function NavLink({
       className={cn(
         "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm transition-colors ml-1",
         isActive
-          ? "border-l-2 border-[#2563EB] bg-[#EEF2FB] text-[#2563EB] font-medium"
-          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-800",
+          ? "border-l-2 border-brand-primary bg-brand-primary/10 text-brand-primary font-semibold"
+          : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
       )}
     >
       <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -213,14 +213,8 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
 
   return (
     <>
-      <div
-        className="flex h-16 shrink-0 items-center px-4"
-        style={{ backgroundColor: "#1B4D3E" }}
-      >
-        <span
-          className="text-sm font-semibold uppercase tracking-widest text-white"
-          style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-        >
+      <div className="flex h-16 shrink-0 items-center bg-brand-primary px-4">
+        <span className="font-heading text-sm font-semibold uppercase tracking-widest text-white">
           Admin Console
         </span>
       </div>
@@ -235,10 +229,10 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
         ))}
       </nav>
 
-      <div className="border-t border-neutral-200 p-3">
+      <div className="border-t border-border/60 p-3">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-neutral-800 transition-colors"
+          className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
         >
           <LogOut className="h-3.5 w-3.5 shrink-0" />
           Back to Platform
@@ -250,7 +244,7 @@ function SidebarContent({ adminRole }: { adminRole: AdminRole }) {
 
 export function AdminSidebar({ adminRole }: Readonly<{ adminRole: AdminRole }>) {
   return (
-    <ResponsiveSidebar className="border-neutral-200 bg-white">
+    <ResponsiveSidebar className="border-border/60 bg-surface">
       <SidebarContent adminRole={adminRole} />
     </ResponsiveSidebar>
   );
