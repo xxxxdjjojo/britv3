@@ -1178,6 +1178,50 @@ export type Database = {
           },
         ]
       }
+      mobility_scores: {
+        Row: {
+          bike_cycleway_count: number | null
+          bike_score: number | null
+          computed_at: string
+          property_id: string
+          source: string
+          transit_score: number | null
+          transit_stop_count: number | null
+          walk_amenity_count: number | null
+          walk_score: number | null
+        }
+        Insert: {
+          bike_cycleway_count?: number | null
+          bike_score?: number | null
+          computed_at?: string
+          property_id: string
+          source?: string
+          transit_score?: number | null
+          transit_stop_count?: number | null
+          walk_amenity_count?: number | null
+          walk_score?: number | null
+        }
+        Update: {
+          bike_cycleway_count?: number | null
+          bike_score?: number | null
+          computed_at?: string
+          property_id?: string
+          source?: string
+          transit_score?: number | null
+          transit_stop_count?: number | null
+          walk_amenity_count?: number | null
+          walk_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mobility_scores_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       moderation_queue: {
         Row: {
           assigned_at: string | null
