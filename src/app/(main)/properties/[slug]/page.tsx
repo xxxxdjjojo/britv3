@@ -627,6 +627,7 @@ export default async function PropertyPage({
                   lat={property.coordinates.lat}
                   lng={property.coordinates.lng}
                   postcode={property.postcode}
+                  propertyId={property.id}
                 />
               </Suspense>
             )}

@@ -5,16 +5,19 @@ import { getAreaCrime } from "@/services/properties/crime-service";
 import { getNearbyTransport } from "@/services/properties/transport-service";
 import { getBroadbandCoverage } from "@/services/properties/broadband-service";
 import { getFloodRisk } from "@/services/properties/flood-service";
+import { getMobilityScores } from "@/services/properties/mobility-service";
 import { SchoolCatchmentWidget } from "./SchoolCatchmentWidget";
 import { CrimeStatsChartLazy } from "./CrimeStatsChartLazy";
 import { TransportWidget } from "./TransportWidget";
 import { BroadbandWidget } from "./BroadbandWidget";
 import { FloodRiskWidget } from "./FloodRiskWidget";
+import { MobilityScoresWidget } from "./MobilityScoresWidget";
 
 type LocalAreaSectionProps = Readonly<{
   lat: number;
   lng: number;
   postcode: string;
+  propertyId: string;
 }>;
 
 function SourceNote({ children }: { children: ReactNode }) {
@@ -28,21 +31,24 @@ function SourceNote({ children }: { children: ReactNode }) {
  * absence, per the no-empty-widgets rule. Each layer degrades independently.
  *
  * Currently wired: nearest schools (GIAS/Ofsted), crime (data.police.uk),
- * transport stations (NaPTAN/DfT), broadband availability (Ofcom) and flood
- * risk (Environment Agency NaFRA2).
+ * transport stations (NaPTAN/DfT), broadband availability (Ofcom), flood risk
+ * (Environment Agency NaFRA2) and mobility scores (OpenStreetMap + NaPTAN).
  */
 export async function LocalAreaSection({
   lat,
   lng,
   postcode,
+  propertyId,
 }: LocalAreaSectionProps) {
-  const [schools, crime, transport, broadband, flood] = await Promise.all([
-    fetchNearbySchools(lat, lng).catch(() => null),
-    getAreaCrime(lat, lng).catch(() => null),
-    getNearbyTransport(lat, lng).catch(() => null),
-    getBroadbandCoverage(postcode).catch(() => null),
-    getFloodRisk(lat, lng).catch(() => null),
-  ]);
+  const [schools, crime, transport, broadband, flood, mobility] =
+    await Promise.all([
+      fetchNearbySchools(lat, lng).catch(() => null),
+      getAreaCrime(lat, lng).catch(() => null),
+      getNearbyTransport(lat, lng).catch(() => null),
+      getBroadbandCoverage(postcode).catch(() => null),
+      getFloodRisk(lat, lng).catch(() => null),
+      getMobilityScores(propertyId).catch(() => null),
+    ]);
 
   const hasSchools = !!schools && schools.length > 0;
   const hasCrime = !!crime && crime.stats.length > 0;
@@ -53,7 +59,15 @@ export async function LocalAreaSection({
       broadband.ultrafastPct != null ||
       broadband.gigabitPct != null);
   const hasFlood = !!flood;
-  if (!hasSchools && !hasCrime && !hasTransport && !hasBroadband && !hasFlood)
+  const hasMobility = !!mobility;
+  if (
+    !hasSchools &&
+    !hasCrime &&
+    !hasTransport &&
+    !hasBroadband &&
+    !hasFlood &&
+    !hasMobility
+  )
     return null;
 
   return (
@@ -106,6 +120,20 @@ export async function LocalAreaSection({
             <SourceNote>
               Source: Environment Agency · Risk of Flooding from Rivers and Sea
               (Open Government Licence v3.0)
+            </SourceNote>
+          </div>
+        )}
+        {hasMobility && mobility && (
+          <div>
+            <MobilityScoresWidget
+              walk={mobility.walk}
+              transit={mobility.transit}
+              bike={mobility.bike}
+              basis={mobility.basis}
+            />
+            <SourceNote>
+              Source: OpenStreetMap contributors (ODbL) &amp; NaPTAN / DfT (Open
+              Government Licence v3.0) · independent estimate, not Walk Score®
             </SourceNote>
           </div>
         )}
