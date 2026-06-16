@@ -78,4 +78,11 @@ export type MarketMapMetadata = {
   source: "HM Land Registry Price Paid Data joined to postcode geography";
   /** Minimum transactions required for a non-grey bucket (confidence >= Low). */
   minimum_transactions: 5;
+  /**
+   * Optional UI hint for the street / micro-area layer (zoom ≥ 16).
+   * When present, the map UI should display this label instead of a generic
+   * geography-level label. Value: "micro-area sold-price band".
+   * NOT "street valuation" and NOT "£/m²".
+   */
+  band_label?: "micro-area sold-price band";
 };

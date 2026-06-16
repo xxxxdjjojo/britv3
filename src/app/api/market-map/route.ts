@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCached, setCache } from "@/lib/cache/redis";
 import { getMarketMapFeatures } from "@/services/market-map/market-map-service";
+import { getMicroAreaFeatures } from "@/services/market-map/micro-area-service";
 import { geographyLevelForZoom, GEOGRAPHY_LEVELS } from "@/lib/market-map/geography";
 import type { GeographyLevel } from "@/lib/market-map/geography";
 import type { MarketMapFilters } from "@/services/market-map/types";
@@ -174,7 +175,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     ...(q.bbox !== undefined ? { bbox: q.bbox } : {}),
   };
 
-  const featureCollection = await getMarketMapFeatures(filters);
+  // Street level uses H3 hex-cell aggregation (micro-area layer).
+  // All other levels use the polygon choropleth path.
+  const featureCollection =
+    geographyLevel === "street"
+      ? await getMicroAreaFeatures(filters)
+      : await getMarketMapFeatures(filters);
 
   // Write to cache (best-effort — never throws).
   try {
