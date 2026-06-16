@@ -138,8 +138,8 @@ function roleForUrl(urlPath: string, surface: string): RouteRole {
 /** URL slug → app role (e.g. provider → service_provider). */
 const ROLE_TO_ROLE_FROM_SLUG: Readonly<Record<string, AppRole>> = Object.entries(
   ROLE_TO_ROUTE,
-).reduce<Record<string, AppRole>>((acc, [slug, role]) => {
-  acc[slug] = role;
+).reduce<Record<string, AppRole>>((acc, [role, slug]) => {
+  acc[slug] = role as AppRole;
   return acc;
 }, {});
 
@@ -213,6 +213,16 @@ export function staticRoutesForRole(role: AppRole): string[] {
   const result = new Set<string>();
 
   for (const entry of getDashboardRoutes()) {
+    // Generic `[role]` routes: the `[role]` segment is a role placeholder, not
+    // a dynamic data param. Expand it to this role's base, but skip routes
+    // whose remaining segments carry a real `[param]` (e.g. `[role]/.../[id]`).
+    if (entry.role === "[role]") {
+      const remainder = entry.urlPath.replace("/dashboard/[role]", "");
+      if (remainder.includes("[")) continue;
+      result.add(`${base}${remainder}`);
+      continue;
+    }
+
     if (entry.dynamic) continue;
 
     // Routes physically under the role's literal directory.
@@ -221,13 +231,6 @@ export function staticRoutesForRole(role: AppRole): string[] {
       entry.urlPath.startsWith(`${literalPrefix}/`)
     ) {
       result.add(entry.urlPath);
-      continue;
-    }
-
-    // Generic `[role]` routes expanded to this role's base.
-    if (entry.role === "[role]") {
-      const generic = entry.urlPath.replace("/dashboard/[role]", base);
-      result.add(generic);
     }
   }
 
@@ -254,68 +257,216 @@ export const KNOWN_OFFNAV_ROUTES: readonly string[] = [
   "/dashboard/rfqs",
   "/dashboard/rfqs/create",
   "/dashboard/saved",
-  // Agent — most sub-pages are reached from in-page tabs, not the sidebar.
+  // Agent — role-specific sub-pages plus the shared `[role]` tools, none in nav.
+  "/dashboard/agent/ai-match",
   "/dashboard/agent/analytics",
   "/dashboard/agent/analytics/branch",
   "/dashboard/agent/analytics/competitors",
+  "/dashboard/agent/applications",
   "/dashboard/agent/billing",
   "/dashboard/agent/billing/boost",
+  "/dashboard/agent/billing/checkout/one-time",
+  "/dashboard/agent/billing/checkout/subscription",
+  "/dashboard/agent/billing/confirmation",
+  "/dashboard/agent/billing/failed",
+  "/dashboard/agent/billing/invoices",
+  "/dashboard/agent/billing/payment-methods",
+  "/dashboard/agent/billing/refund",
+  "/dashboard/agent/billing/subscription",
   "/dashboard/agent/billing/truedeed",
+  "/dashboard/agent/calculators",
   "/dashboard/agent/crm",
+  "/dashboard/agent/documents",
   "/dashboard/agent/integrations",
   "/dashboard/agent/integrations/feeds",
   "/dashboard/agent/introductions",
   "/dashboard/agent/listings/archived",
   "/dashboard/agent/listings/create",
+  "/dashboard/agent/listings/new",
   "/dashboard/agent/listings/sold",
+  "/dashboard/agent/moving",
   "/dashboard/agent/offers",
   "/dashboard/agent/profile",
   "/dashboard/agent/profile/branding",
+  "/dashboard/agent/referrals",
   "/dashboard/agent/reviews",
   "/dashboard/agent/sales",
   "/dashboard/agent/sales/appraisal",
   "/dashboard/agent/sales/reports",
+  "/dashboard/agent/saved",
+  "/dashboard/agent/searches",
+  "/dashboard/agent/services",
   "/dashboard/agent/team/branches",
   "/dashboard/agent/team/roles",
+  "/dashboard/agent/tenancy",
+  "/dashboard/agent/viewings/book",
   "/dashboard/agent/viewings/feedback",
-  // Broker — sub-pages reached from in-page tabs, not the sidebar.
+  // Broker — shared `[role]` tools plus broker-specific pages, none in nav.
+  "/dashboard/broker/ai-match",
+  "/dashboard/broker/applications",
   "/dashboard/broker/billing",
+  "/dashboard/broker/billing/checkout/one-time",
+  "/dashboard/broker/billing/checkout/subscription",
+  "/dashboard/broker/billing/confirmation",
+  "/dashboard/broker/billing/failed",
+  "/dashboard/broker/billing/invoices",
+  "/dashboard/broker/billing/payment-methods",
+  "/dashboard/broker/billing/refund",
+  "/dashboard/broker/billing/subscription",
   "/dashboard/broker/calculators",
+  "/dashboard/broker/documents",
+  "/dashboard/broker/listings",
+  "/dashboard/broker/listings/new",
+  "/dashboard/broker/moving",
+  "/dashboard/broker/offers",
   "/dashboard/broker/profile",
+  "/dashboard/broker/referrals",
   "/dashboard/broker/reviews",
-  // Landlord — deep tools/sub-pages not in the sidebar.
+  "/dashboard/broker/saved",
+  "/dashboard/broker/searches",
+  "/dashboard/broker/services",
+  "/dashboard/broker/tenancy",
+  "/dashboard/broker/viewings",
+  "/dashboard/broker/viewings/book",
+  // Homebuyer — shared `[role]` tools not wired into the homebuyer nav.
+  "/dashboard/homebuyer/ai-match",
+  "/dashboard/homebuyer/applications",
+  "/dashboard/homebuyer/billing",
+  "/dashboard/homebuyer/billing/checkout/one-time",
+  "/dashboard/homebuyer/billing/checkout/subscription",
+  "/dashboard/homebuyer/billing/confirmation",
+  "/dashboard/homebuyer/billing/failed",
+  "/dashboard/homebuyer/billing/invoices",
+  "/dashboard/homebuyer/billing/payment-methods",
+  "/dashboard/homebuyer/billing/refund",
+  "/dashboard/homebuyer/billing/subscription",
+  "/dashboard/homebuyer/calculators",
+  "/dashboard/homebuyer/listings",
+  "/dashboard/homebuyer/listings/new",
+  "/dashboard/homebuyer/moving",
+  "/dashboard/homebuyer/offers",
+  "/dashboard/homebuyer/referrals",
+  "/dashboard/homebuyer/services",
+  "/dashboard/homebuyer/tenancy",
+  "/dashboard/homebuyer/viewings/book",
+  // Landlord — deep tools/sub-pages plus shared `[role]` tools, none in nav.
+  "/dashboard/landlord/ai-match",
+  "/dashboard/landlord/applications",
+  "/dashboard/landlord/billing",
+  "/dashboard/landlord/billing/checkout/one-time",
+  "/dashboard/landlord/billing/checkout/subscription",
+  "/dashboard/landlord/billing/confirmation",
+  "/dashboard/landlord/billing/failed",
+  "/dashboard/landlord/billing/invoices",
+  "/dashboard/landlord/billing/payment-methods",
+  "/dashboard/landlord/billing/refund",
+  "/dashboard/landlord/billing/subscription",
+  "/dashboard/landlord/calculators",
   "/dashboard/landlord/compliance-guide",
   "/dashboard/landlord/compliance/alerts",
   "/dashboard/landlord/compliance/upload",
+  "/dashboard/landlord/documents",
   "/dashboard/landlord/finance/report",
   "/dashboard/landlord/finance/tax",
   "/dashboard/landlord/find-tradespeople",
+  "/dashboard/landlord/listings",
+  "/dashboard/landlord/listings/new",
+  "/dashboard/landlord/moving",
+  "/dashboard/landlord/offers",
   "/dashboard/landlord/properties/add",
-  // Provider — sub-pages reached from in-page tabs, not the bottom tabs.
+  "/dashboard/landlord/referrals",
+  "/dashboard/landlord/saved",
+  "/dashboard/landlord/searches",
+  "/dashboard/landlord/services",
+  "/dashboard/landlord/tenancy",
+  "/dashboard/landlord/viewings",
+  "/dashboard/landlord/viewings/book",
+  // Provider — provider-specific sub-pages plus shared `[role]` tools, none in nav.
+  "/dashboard/provider/ai-match",
   "/dashboard/provider/analytics",
+  "/dashboard/provider/applications",
   "/dashboard/provider/billing",
+  "/dashboard/provider/billing/checkout/one-time",
+  "/dashboard/provider/billing/checkout/subscription",
+  "/dashboard/provider/billing/confirmation",
+  "/dashboard/provider/billing/failed",
+  "/dashboard/provider/billing/invoices",
+  "/dashboard/provider/billing/payment-methods",
+  "/dashboard/provider/billing/refund",
+  "/dashboard/provider/billing/subscription",
   "/dashboard/provider/boost",
+  "/dashboard/provider/calculators",
   "/dashboard/provider/documents",
   "/dashboard/provider/field",
   "/dashboard/provider/field/jobs",
   "/dashboard/provider/field/payments",
   "/dashboard/provider/jobs/active",
   "/dashboard/provider/jobs/completed",
+  "/dashboard/provider/listings",
+  "/dashboard/provider/listings/new",
+  "/dashboard/provider/moving",
+  "/dashboard/provider/offers",
   "/dashboard/provider/portfolio",
   "/dashboard/provider/profile",
   "/dashboard/provider/quotes",
   "/dashboard/provider/referrals",
+  "/dashboard/provider/saved",
+  "/dashboard/provider/searches",
   "/dashboard/provider/services",
   "/dashboard/provider/services/areas",
+  "/dashboard/provider/tenancy",
   "/dashboard/provider/verification/badges",
   "/dashboard/provider/verification/client-references",
   "/dashboard/provider/verification/credentials",
   "/dashboard/provider/verification/peer-references",
-  // Seller — sub-pages reached from in-page tabs, not the bottom tabs.
+  "/dashboard/provider/viewings",
+  "/dashboard/provider/viewings/book",
+  // Renter — shared `[role]` tools not wired into the renter nav.
+  "/dashboard/renter/ai-match",
+  "/dashboard/renter/billing",
+  "/dashboard/renter/billing/checkout/one-time",
+  "/dashboard/renter/billing/checkout/subscription",
+  "/dashboard/renter/billing/confirmation",
+  "/dashboard/renter/billing/failed",
+  "/dashboard/renter/billing/invoices",
+  "/dashboard/renter/billing/payment-methods",
+  "/dashboard/renter/billing/refund",
+  "/dashboard/renter/billing/subscription",
+  "/dashboard/renter/calculators",
+  "/dashboard/renter/listings",
+  "/dashboard/renter/listings/new",
+  "/dashboard/renter/moving",
+  "/dashboard/renter/offers",
+  "/dashboard/renter/referrals",
+  "/dashboard/renter/searches",
+  "/dashboard/renter/services",
+  "/dashboard/renter/viewings",
+  "/dashboard/renter/viewings/book",
+  // Seller — seller-specific sub-pages plus shared `[role]` tools, none in nav.
   "/dashboard/seller/agents",
   "/dashboard/seller/agents/compare",
+  "/dashboard/seller/ai-match",
   "/dashboard/seller/analytics",
+  "/dashboard/seller/applications",
+  "/dashboard/seller/billing",
+  "/dashboard/seller/billing/checkout/one-time",
+  "/dashboard/seller/billing/checkout/subscription",
+  "/dashboard/seller/billing/confirmation",
+  "/dashboard/seller/billing/failed",
+  "/dashboard/seller/billing/invoices",
+  "/dashboard/seller/billing/payment-methods",
+  "/dashboard/seller/billing/refund",
+  "/dashboard/seller/billing/subscription",
+  "/dashboard/seller/calculators",
   "/dashboard/seller/enquiries",
   "/dashboard/seller/listings/create",
+  "/dashboard/seller/listings/new",
+  "/dashboard/seller/moving",
+  "/dashboard/seller/referrals",
+  "/dashboard/seller/saved",
+  "/dashboard/seller/searches",
+  "/dashboard/seller/services",
+  "/dashboard/seller/tenancy",
   "/dashboard/seller/valuation",
+  "/dashboard/seller/viewings/book",
 ];

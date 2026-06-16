@@ -149,6 +149,35 @@ describe("navigation contract", () => {
   });
 });
 
+describe("staticRoutesForRole", () => {
+  it("expands shared [role] static pages for homebuyer and renter", () => {
+    const homebuyer = staticRoutesForRole("homebuyer");
+    const renter = staticRoutesForRole("renter");
+
+    expect(homebuyer.length).toBeGreaterThan(0);
+    expect(renter.length).toBeGreaterThan(0);
+    expect(homebuyer).toContain("/dashboard/homebuyer/saved");
+    expect(renter).toContain("/dashboard/renter/saved");
+  });
+
+  it("includes both literal-dir and shared [role] pages for role-specific roles", () => {
+    const landlord = staticRoutesForRole("landlord");
+
+    // Literal-dir page (physically under landlord/).
+    expect(landlord).toContain("/dashboard/landlord/properties");
+    // Shared [role] page expanded to the landlord slug.
+    expect(landlord).toContain("/dashboard/landlord/saved");
+  });
+
+  it("never emits a dynamic [param] route for any role", () => {
+    for (const role of ALL_ROLES) {
+      for (const url of staticRoutesForRole(role)) {
+        expect(url, `dynamic route leaked for ${role}: ${url}`).not.toContain("[");
+      }
+    }
+  });
+});
+
 describe("nav-parity guard", () => {
   it("flags exactly the known off-nav static pages", () => {
     // 1. Every static dashboard URL reachable per role, plus shared pages.
