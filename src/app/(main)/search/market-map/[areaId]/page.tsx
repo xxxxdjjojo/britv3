@@ -6,13 +6,17 @@
  * The explorer fetches the area's bbox from /api/market-search on mount and
  * flies the map to it. Scale defaults to "local" per DESIGN.md §11.
  *
+ * The dynamic import (ssr:false) lives in MarketMapExplorerLoader (a Client
+ * Component) because next/dynamic with ssr:false is not permitted directly
+ * inside a Server Component.
+ *
  * areaId examples: "SW1A", "kensington-and-chelsea", "E01000001"
  */
 
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { MarketMapExplorerLoader } from "@/components/market-map/MarketMapExplorerLoader";
 
 // ---------------------------------------------------------------------------
 // Metadata — resolved server-side from the areaId segment
@@ -34,25 +38,6 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
 }
 
 // ---------------------------------------------------------------------------
-// Explorer (client component, lazy-loaded)
-// ---------------------------------------------------------------------------
-
-const MarketMapExplorer = dynamic(
-  () =>
-    import("@/components/market-map/MarketMapExplorer").then(
-      (m) => ({ default: m.MarketMapExplorer }),
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-full w-full items-center justify-center bg-[#E2E2E8]">
-        <p className="font-sans text-sm text-[#7A7A88]">Loading area map…</p>
-      </div>
-    ),
-  },
-);
-
-// ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
@@ -65,7 +50,7 @@ export default async function AreaMapPage({ params }: RouteParams) {
 
   return (
     <main
-      className="flex h-[calc(100vh-var(--header-height,64px))] flex-col overflow-hidden"
+      className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden md:h-[calc(100dvh-4rem)]"
       aria-labelledby="area-map-heading"
     >
       {/* Visually-hidden page heading */}
@@ -107,7 +92,7 @@ export default async function AreaMapPage({ params }: RouteParams) {
         aria-label={`${humanName} price explorer`}
         className="min-h-0 flex-1"
       >
-        <MarketMapExplorer
+        <MarketMapExplorerLoader
           focusAreaId={areaId}
           focusAreaName={humanName}
           initialScaleMode="local"

@@ -62,6 +62,12 @@ export type MarketMapProps = Readonly<{
   onAreaSelect?: (props: MarketMapFeatureProperties | null) => void;
   /** Surfaces metadata (scale_mode, band_label) to parent. */
   onMetadata?: (m: MarketMapMetadata) => void;
+  /**
+   * Fired whenever the viewport GeoJSON data updates. Provides the full
+   * FeatureCollection so callers can populate the area list without a
+   * duplicate fetch.
+   */
+  onFeatures?: (fc: import("@/hooks/useMarketMap").MarketMapFeatureCollection) => void;
   className?: string;
 }>;
 
@@ -101,6 +107,7 @@ export function MarketMap({
   onViewportChange,
   onAreaSelect,
   onMetadata,
+  onFeatures,
   className,
 }: MarketMapProps) {
   const mapRef = useRef<MapRef>(null);
@@ -129,12 +136,16 @@ export function MarketMap({
     scaleMode,
   });
 
-  // Surface metadata to parent when it changes
+  // Surface metadata + features to parent when data changes
   useEffect(() => {
-    if (featureCollection?.metadata && onMetadata) {
+    if (!featureCollection) return;
+    if (onMetadata) {
       onMetadata(featureCollection.metadata);
     }
-  }, [featureCollection?.metadata, onMetadata]);
+    if (onFeatures) {
+      onFeatures(featureCollection);
+    }
+  }, [featureCollection, onMetadata, onFeatures]);
 
   // ---------------------------------------------------------------------------
   // fitTo: fly/fit when prop changes
@@ -283,8 +294,8 @@ export function MarketMap({
         onClick={handleClick}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* Navigation controls */}
-        <NavigationControl position="bottom-right" showCompass={false} />
+        {/* Navigation controls — top-right to avoid overlapping the detail card at bottom-right */}
+        <NavigationControl position="top-right" showCompass={false} />
 
         {/* Choropleth source — viewport-scoped GeoJSON from /api/market-map */}
         {/* TODO(pmtiles): replace with <Source type="vector" url="pmtiles://..."> */}

@@ -18,7 +18,7 @@
 
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { priceColour, INSUFFICIENT_COLOUR } from "@/lib/market-map/colour";
+import { priceColour } from "@/lib/market-map/colour";
 import { confidenceFor } from "@/lib/market-map/confidence";
 import { computeClampBounds } from "@/lib/market-map/stats";
 import type {

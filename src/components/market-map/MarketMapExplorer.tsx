@@ -43,6 +43,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import type { MarketMapFeatureProperties, MarketMapMetadata, MarketMapScaleMode } from "@/services/market-map/types";
+import type { MarketMapFeatureCollection } from "@/hooks/useMarketMap";
 import type { FitBoundsParams } from "@/lib/market-map/fit-bounds";
 import type { PropertyTypeFilter, DateWindowMonths } from "./MarketMapFilters";
 import type { SummaryCardData } from "./MarketMapSummaryCards";
@@ -182,41 +183,14 @@ export function MarketMapExplorer({
     [setUrlParams],
   );
 
-  // Track all loaded features for the area list
-  // We piggyback on onMetadata — but actually we need the FeatureCollection.
-  // Since MarketMap doesn't expose it directly, we use a workaround:
-  // listen to onAreaSelect for individual selections; for the full list we
-  // receive features via a viewport-level hook. To keep the API clean, we
-  // expose an optional onFeaturesChange prop on MarketMap instead.
-  // For now: area list is populated from what the map reports via clicks.
-  // The full feature set is fetched separately below.
-  const handleViewportChange = useCallback(
-    async (v: { zoom: number; bbox: [number, number, number, number] }) => {
-      // Fetch features for the visible viewport to populate area list
-      try {
-        const [west, south, east, north] = v.bbox;
-        const params = new URLSearchParams({
-          bbox: `${west},${south},${east},${north}`,
-          zoom: String(Math.round(v.zoom)),
-          property_type: propertyType,
-          months: String(months),
-          scale_mode: scaleMode,
-        });
-        const res = await fetch(`/api/market-map?${params.toString()}`);
-        if (!res.ok) return;
-        const fc = (await res.json()) as {
-          features?: Array<{ properties: MarketMapFeatureProperties }>;
-        };
-        const feats = (fc.features ?? []).map((f) => f.properties);
-        setAllFeatures(feats);
-        if (fc.features?.[0]?.properties?.scale_mode && metadata === null) {
-          // surface metadata if not yet received
-        }
-      } catch {
-        // non-critical
-      }
+  // Receive the full FeatureCollection from MarketMap to populate the area list.
+  // This avoids a duplicate /api/market-map fetch that the previous design made.
+  const handleFeatures = useCallback(
+    (fc: MarketMapFeatureCollection) => {
+      const feats = fc.features.map((f) => f.properties);
+      setAllFeatures(feats);
     },
-    [propertyType, months, scaleMode, metadata],
+    [],
   );
 
   // ---------------------------------------------------------------------------
@@ -456,7 +430,7 @@ export function MarketMapExplorer({
           months={months}
           scaleMode={scaleMode}
           fitTo={fitTo}
-          onViewportChange={handleViewportChange}
+          onFeatures={handleFeatures}
           onAreaSelect={handleAreaSelect}
           onMetadata={handleMetadata}
           className="h-full w-full"
