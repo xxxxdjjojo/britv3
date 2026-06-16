@@ -9,6 +9,8 @@ on:
       - ".github/workflows/app-ci.yml"
       - "e2e/**"
       - "src/**"
+      - "scripts/**"
+      - "supabase/migrations/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
@@ -41,6 +43,9 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+
+      - name: Check migration versions
+        run: pnpm check:migrations
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

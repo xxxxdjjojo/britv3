@@ -171,6 +171,7 @@ Planning docs in `.planning/`:
 
 - Supabase PostgreSQL with 266 tables across 7 domains (Users, Properties, Marketplace, Transactions, Communication, Analytics, Admin)
 - Migrations in `supabase/migrations/`
+- **Always create migrations with `supabase migration new <description>`** (full 14-digit UTC `YYYYMMDDHHMMSS_*` prefix); never hand-pick short numeric prefixes, and keep one logical change per file. Colliding version prefixes break `db reset`/`db push` — see `supabase/migrations/README.md`. CI guards this via `pnpm check:migrations`.
 - RLS policies on every table
 - pgvector extension for AI embeddings
 
