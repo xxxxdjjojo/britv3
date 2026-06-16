@@ -6,7 +6,7 @@ import { getNearbyTransport } from "@/services/properties/transport-service";
 import { getBroadbandCoverage } from "@/services/properties/broadband-service";
 import { getFloodRisk } from "@/services/properties/flood-service";
 import { SchoolCatchmentWidget } from "./SchoolCatchmentWidget";
-import { CrimeStatsChart } from "./CrimeStatsChart";
+import { CrimeStatsChartLazy } from "./CrimeStatsChartLazy";
 import { TransportWidget } from "./TransportWidget";
 import { BroadbandWidget } from "./BroadbandWidget";
 import { FloodRiskWidget } from "./FloodRiskWidget";
@@ -71,7 +71,7 @@ export async function LocalAreaSection({
         )}
         {hasCrime && crime && (
           <div>
-            <CrimeStatsChart stats={crime.stats} boroughAvg={crime.boroughAvg} />
+            <CrimeStatsChartLazy stats={crime.stats} boroughAvg={crime.boroughAvg} />
             <SourceNote>
               Source: data.police.uk · {crime.month} (Open Government Licence
               v3.0)
