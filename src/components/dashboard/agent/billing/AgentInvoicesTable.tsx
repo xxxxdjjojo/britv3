@@ -64,7 +64,7 @@ const STATE_BADGES: Record<
   string,
   { label: string; className: string }
 > = {
-  open: { label: "Open", className: "bg-slate-100 text-slate-700" },
+  open: { label: "Open", className: "bg-muted text-slate-700" },
   collecting: { label: "Collecting", className: "bg-blue-100 text-blue-700" },
   paid: { label: "Paid", className: "bg-emerald-100 text-emerald-700" },
   overdue: { label: "Overdue", className: "bg-amber-100 text-amber-800" },
@@ -74,7 +74,7 @@ const STATE_BADGES: Record<
   },
   suspended: { label: "Suspended", className: "bg-red-100 text-red-700" },
   disputed: { label: "Disputed", className: "bg-violet-100 text-violet-700" },
-  cancelled: { label: "Cancelled", className: "bg-slate-100 text-slate-500" },
+  cancelled: { label: "Cancelled", className: "bg-muted text-slate-500" },
   charged_back: { label: "Charged back", className: "bg-red-100 text-red-700" },
 };
 
@@ -153,7 +153,7 @@ export function AgentInvoicesTable({ invoices }: Props) {
           {invoices.map((invoice) => {
             const badge = STATE_BADGES[invoice.state] ?? {
               label: invoice.state,
-              className: "bg-slate-100 text-slate-700",
+              className: "bg-muted text-slate-700",
             };
             const canDispute =
               DISPUTABLE_STATES.has(invoice.state) && !invoice.hasDispute;
