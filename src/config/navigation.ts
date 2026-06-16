@@ -365,6 +365,8 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Cookies", href: "/legal/cookies" },
       { label: "Accessibility", href: "/legal/accessibility" },
       { label: "Complaints", href: "/legal/complaints" },
+      { label: "Fair Housing", href: "/legal/fair-housing" },
+      { label: "Regulatory", href: "/legal/regulatory" },
     ],
   },
   {
