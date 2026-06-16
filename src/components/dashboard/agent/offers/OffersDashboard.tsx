@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Building2, Search } from "lucide-react";
+import { Building2, Search, SlidersHorizontal, TrendingUp, Users, Clock } from "lucide-react";
 import type { AgentOffer, OfferStatus, AipStatus } from "@/types/agent";
 
 function formatGBP(amount: number): string {
@@ -24,17 +22,17 @@ function formatGBP(amount: number): string {
   }).format(amount);
 }
 
-function offerStatusClass(status: OfferStatus): string {
-  if (status === "pending") return "bg-blue-100 text-blue-700";
-  if (status === "accepted") return "bg-green-100 text-green-700";
-  if (status === "rejected") return "bg-red-100 text-red-700";
-  if (status === "countered") return "bg-orange-100 text-orange-700";
+function offerStatusClasses(status: OfferStatus): string {
+  if (status === "pending") return "bg-info/10 text-info";
+  if (status === "accepted") return "bg-success/10 text-success";
+  if (status === "rejected") return "bg-error/10 text-error";
+  if (status === "countered") return "bg-warning/10 text-warning";
   return "bg-neutral-100 text-neutral-600";
 }
 
-function aipStatusClass(status: AipStatus): string {
-  if (status === "verified") return "bg-green-100 text-green-700";
-  if (status === "provided") return "bg-yellow-100 text-yellow-700";
+function aipStatusClasses(status: AipStatus): string {
+  if (status === "verified") return "bg-success/10 text-success";
+  if (status === "provided") return "bg-warning/10 text-warning";
   return "bg-neutral-100 text-neutral-500";
 }
 
@@ -44,40 +42,198 @@ function aipLabel(status: AipStatus): string {
   return "No AIP";
 }
 
-function OfferCard({ offer }: Readonly<{ offer: AgentOffer }>) {
+function buyerInitial(name: string): string {
+  return name.trim().charAt(0).toUpperCase();
+}
+
+/** Rank badge shown at the top of each offer card (TOP OFFER / NEGOTIATING / position). */
+function rankBadge(rank: number, status: OfferStatus): React.ReactNode {
+  if (rank === 0) {
+    return (
+      <span className="inline-flex items-center rounded-full bg-brand-primary px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">
+        Top Offer
+      </span>
+    );
+  }
+  if (status === "countered") {
+    return (
+      <span className="inline-flex items-center rounded-full bg-warning/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-warning">
+        Negotiating
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+      #{rank + 1}
+    </span>
+  );
+}
+
+type OfferCardProps = Readonly<{
+  offer: AgentOffer;
+  rank: number;
+}>;
+
+function OfferCard({ offer, rank }: OfferCardProps) {
   const router = useRouter();
+
+  function navigate() {
+    router.push(`/dashboard/agent/offers/${offer.id}`);
+  }
 
   return (
     <div
-      className="flex cursor-pointer flex-wrap items-start justify-between gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/40"
-      onClick={() => router.push(`/dashboard/agent/offers/${offer.id}`)}
+      className="flex cursor-pointer flex-col gap-3 rounded-xl border border-border bg-surface p-4 transition-shadow hover:shadow-md"
+      onClick={navigate}
     >
-      <div className="min-w-0">
-        <p className="font-medium">{offer.buyer_name}</p>
-        {offer.buyer_email && (
-          <p className="text-xs text-muted-foreground">{offer.buyer_email}</p>
-        )}
-        <p className="mt-1 text-xs text-muted-foreground">
+      {/* rank + date row */}
+      <div className="flex items-center justify-between gap-2">
+        {rankBadge(rank, offer.status)}
+        <span className="text-[11px] text-neutral-400">
           {new Date(offer.created_at).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
             year: "numeric",
           })}
-        </p>
+        </span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-lg font-bold">{formatGBP(offer.amount)}</span>
+      {/* amount */}
+      <p className="font-heading text-2xl font-bold tracking-tight text-brand-primary-dark">
+        {formatGBP(offer.amount)}
+      </p>
+
+      {/* buyer type chips */}
+      <div className="flex flex-wrap gap-1.5">
         <span
-          className={`rounded-full px-2 py-0.5 text-xs font-medium ${aipStatusClass(offer.aip_status)}`}
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${aipStatusClasses(offer.aip_status)}`}
         >
           {aipLabel(offer.aip_status)}
         </span>
         <span
-          className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${offerStatusClass(offer.status)}`}
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${offerStatusClasses(offer.status)}`}
         >
           {offer.status}
         </span>
+      </div>
+
+      {/* buyer identity */}
+      <div className="flex items-center gap-2">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-xs font-bold text-brand-primary">
+          {buyerInitial(offer.buyer_name)}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-neutral-900">
+            {offer.buyer_name}
+          </p>
+          {offer.buyer_email && (
+            <p className="truncate text-[11px] text-neutral-400">
+              {offer.buyer_email}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* conditions excerpt */}
+      {offer.conditions && (
+        <p className="line-clamp-2 text-xs text-neutral-500 italic">
+          &ldquo;{offer.conditions}&rdquo;
+        </p>
+      )}
+
+    </div>
+  );
+}
+
+type PropertyGroupProps = Readonly<{
+  propertyId: string;
+  offers: AgentOffer[];
+}>;
+
+function PropertyGroup({ propertyId, offers }: PropertyGroupProps) {
+  const shortId = propertyId.slice(0, 8);
+
+  return (
+    <div className="rounded-xl border border-border bg-white shadow-sm">
+      {/* property header */}
+      <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+        {/* thumbnail placeholder */}
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10">
+          <Building2 className="size-5 text-brand-primary" />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold text-neutral-900">
+            Property {shortId}…
+          </p>
+          <p className="text-xs text-neutral-400">
+            {offers.length} active offer{offers.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+
+      </div>
+
+      {/* offers grid */}
+      <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
+        {offers.map((offer, i) => (
+          <OfferCard key={offer.id} offer={offer} rank={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Aggregate stats derived purely from the filtered grouped offers. */
+function PerformanceSummary({
+  grouped,
+}: Readonly<{ grouped: Record<string, AgentOffer[]> }>) {
+  const allOffers = Object.values(grouped).flat();
+  const total = allOffers.length;
+  const accepted = allOffers.filter((o) => o.status === "accepted").length;
+  const propertyCount = Object.keys(grouped).length;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* card 1 */}
+      <div className="flex items-center gap-4 rounded-xl border border-border bg-brand-primary p-5 text-white">
+        <TrendingUp className="size-8 shrink-0 opacity-80" />
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] opacity-70">
+            Performance Summary
+          </p>
+          <p className="font-heading text-2xl font-bold">
+            {total > 0 ? `${Math.round((accepted / total) * 100)}%` : "—"}
+          </p>
+          <p className="text-xs opacity-70">of offers accepted</p>
+        </div>
+      </div>
+
+      {/* card 2 */}
+      <div className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5">
+        <Users className="size-8 shrink-0 text-brand-primary/60" />
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Active Listings
+          </p>
+          <p className="font-heading text-2xl font-bold text-brand-primary-dark">
+            {propertyCount}
+          </p>
+          <p className="text-xs text-neutral-500">properties with offers</p>
+        </div>
+      </div>
+
+      {/* card 3 */}
+      <div className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5">
+        <Clock className="size-8 shrink-0 text-brand-primary/60" />
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Total Offers
+          </p>
+          <p className="font-heading text-2xl font-bold text-brand-primary-dark">
+            {total}
+          </p>
+          <p className="text-xs text-neutral-500">across all listings</p>
+        </div>
       </div>
     </div>
   );
@@ -118,10 +274,10 @@ export function OffersDashboard({
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
           <Input
             className="pl-8"
@@ -130,11 +286,15 @@ export function OffersDashboard({
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <Button variant="outline" className="gap-1.5 shrink-0">
+          <SlidersHorizontal className="size-4" />
+          Filter
+        </Button>
         <Select
           value={statusFilter}
           onValueChange={(v) => setStatusFilter(v as StatusFilter)}
         >
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-40 shrink-0">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -149,38 +309,30 @@ export function OffersDashboard({
       </div>
 
       {totalOffers === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <Building2 className="mb-3 size-10 text-muted-foreground" />
-            <p className="font-medium">No offers found</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {Object.keys(grouped).length === 0
-                ? "No offers have been received yet."
-                : "No offers match your current filters."}
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {Object.entries(filteredGrouped).map(([propertyId, offers]) => (
-            <Card key={propertyId}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                  <Building2 className="size-4 text-muted-foreground" />
-                  Property: {propertyId.slice(0, 8)}…
-                  <Badge variant="secondary" className="ml-auto">
-                    {offers.length} offer{offers.length !== 1 ? "s" : ""}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {offers.map((offer) => (
-                  <OfferCard key={offer.id} offer={offer} />
-                ))}
-              </CardContent>
-            </Card>
-          ))}
+        <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-surface py-16 text-center">
+          <Building2 className="mb-3 size-10 text-neutral-300" />
+          <p className="font-semibold text-neutral-700">No offers found</p>
+          <p className="mt-1 text-sm text-neutral-400">
+            {Object.keys(grouped).length === 0
+              ? "No offers have been received yet."
+              : "No offers match your current filters."}
+          </p>
         </div>
+      ) : (
+        <>
+          <div className="space-y-5">
+            {Object.entries(filteredGrouped).map(([propertyId, offers]) => (
+              <PropertyGroup
+                key={propertyId}
+                propertyId={propertyId}
+                offers={offers}
+              />
+            ))}
+          </div>
+
+          {/* Performance summary strip */}
+          <PerformanceSummary grouped={filteredGrouped} />
+        </>
       )}
     </div>
   );

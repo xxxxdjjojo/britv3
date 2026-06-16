@@ -48,13 +48,13 @@ export function PasswordChangeCard({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Lock className="size-5 text-brand-primary" />
+    <Card className="rounded-xl border border-border">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 font-heading text-base font-semibold text-brand-primary-dark">
+          <Lock className="size-4 text-brand-primary" />
           {hasPassword ? "Change Password" : "Set Password"}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm text-muted-foreground">
           {hasPassword
             ? "Update your password to keep your account secure."
             : "Set a password to enable email/password login alongside your social sign-in."}
@@ -62,7 +62,7 @@ export function PasswordChangeCard({
       </CardHeader>
       <CardContent>
         {!hasPassword && (
-          <div className="mb-4 flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-200">
+          <div className="mb-4 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-200">
             <Info className="mt-0.5 size-4 shrink-0" />
             <p>
               Your account uses Google Sign-In. Set a password to enable
@@ -72,8 +72,10 @@ export function PasswordChangeCard({
         )}
         <form onSubmit={handleFormSubmit} className="space-y-4">
           {hasPassword && (
-            <div className="space-y-2">
-              <Label htmlFor="current-password">Current Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="current-password" className="text-sm font-medium">
+                Current Password
+              </Label>
               <Input
                 id="current-password"
                 type="password"
@@ -84,8 +86,10 @@ export function PasswordChangeCard({
               />
             </div>
           )}
-          <div className="space-y-2">
-            <Label htmlFor="new-password">New Password</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="new-password" className="text-sm font-medium">
+              New Password
+            </Label>
             <Input
               id="new-password"
               type="password"
@@ -96,8 +100,10 @@ export function PasswordChangeCard({
             />
             <PasswordStrengthMeter password={newPassword} />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm New Password</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirm-password" className="text-sm font-medium">
+              Confirm New Password
+            </Label>
             <Input
               id="confirm-password"
               type="password"
@@ -112,7 +118,7 @@ export function PasswordChangeCard({
               </p>
             )}
           </div>
-          <Button type="submit" disabled={changingPassword}>
+          <Button type="submit" disabled={changingPassword} className="w-full sm:w-auto">
             {changingPassword && (
               <Loader2 className="size-4 animate-spin" />
             )}

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Building2, Plus, Pencil, Trash2, MapPin, Phone, Mail } from "lucide-react";
 import type { AgentBranch, AgentTeamMember } from "@/types/agent";
 
 type Props = Readonly<{
@@ -36,6 +36,14 @@ const EMPTY_FORM: BranchFormData = {
   is_head_office: false,
 };
 
+const AVATAR_COLOURS = [
+  "bg-blue-100 text-blue-700",
+  "bg-green-100 text-green-700",
+  "bg-purple-100 text-purple-700",
+  "bg-amber-100 text-amber-700",
+  "bg-rose-100 text-rose-700",
+];
+
 function getInitials(name: string): string {
   return name
     .split(" ")
@@ -43,6 +51,10 @@ function getInitials(name: string): string {
     .join("")
     .toUpperCase()
     .slice(0, 2);
+}
+
+function avatarColour(index: number): string {
+  return AVATAR_COLOURS[index % AVATAR_COLOURS.length];
 }
 
 export function BranchManager({ branches: initialBranches, members }: Props) {
@@ -168,44 +180,66 @@ export function BranchManager({ branches: initialBranches, members }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Page header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Branch Management</h1>
-          <p className="text-muted-foreground">{branches.length} branch{branches.length !== 1 ? "es" : ""}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Organisation &rsaquo; Team &amp; Branches
+          </p>
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+            Branch Management
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {branches.length} branch{branches.length !== 1 ? "es" : ""}
+          </p>
         </div>
-        <Button onClick={() => { setAddForm(EMPTY_FORM); setAddOpen(true); }}>
+        <Button
+          className="shrink-0"
+          onClick={() => { setAddForm(EMPTY_FORM); setAddOpen(true); }}
+        >
           <Plus className="mr-2 size-4" />
           Add Branch
         </Button>
       </div>
 
       {branches.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <Building2 className="mx-auto mb-3 size-10 opacity-30" />
-            No branches yet. Add your first branch to get started.
+        <Card className="rounded-xl border-border shadow-sm">
+          <CardContent className="py-16 text-center">
+            <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-surface">
+              <Building2 className="size-7 text-neutral-400" />
+            </div>
+            <p className="font-semibold text-neutral-700">No branches yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Add your first branch to get started.
+            </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {branches.map((branch) => {
             const branchMembers = getBranchMembers(branch.id);
             const addressParts = [branch.address_line_1, branch.city, branch.postcode].filter(Boolean);
             return (
-              <Card key={branch.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-base">{branch.name}</CardTitle>
-                      {branch.is_head_office && (
-                        <Badge variant="default" className="mt-1 text-xs">Head Office</Badge>
-                      )}
+              <Card key={branch.id} className="rounded-xl border-border shadow-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <CardTitle className="text-base font-semibold leading-tight">
+                          {branch.name}
+                        </CardTitle>
+                        {branch.is_head_office && (
+                          <Badge className="bg-brand-gold text-brand-gold-foreground text-[10px] font-bold uppercase tracking-wide">
+                            Head Office
+                          </Badge>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex shrink-0 gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="size-8"
+                        className="size-8 text-muted-foreground hover:text-neutral-900"
                         onClick={() => {
                           setEditBranch(branch);
                           setEditForm({
@@ -232,29 +266,53 @@ export function BranchManager({ branches: initialBranches, members }: Props) {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {addressParts.length > 0 && (
-                    <p className="text-xs text-muted-foreground">{addressParts.join(", ")}</p>
-                  )}
-                  {branch.phone && <p className="text-xs text-muted-foreground">{branch.phone}</p>}
-                  {branch.email && <p className="text-xs text-muted-foreground">{branch.email}</p>}
 
-                  {/* Member avatars */}
+                <CardContent className="space-y-4">
+                  {/* Contact details */}
+                  <div className="space-y-1.5">
+                    {addressParts.length > 0 && (
+                      <div className="flex items-start gap-1.5">
+                        <MapPin className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground leading-tight">{addressParts.join(", ")}</p>
+                      </div>
+                    )}
+                    {branch.phone && (
+                      <div className="flex items-center gap-1.5">
+                        <Phone className="size-3.5 shrink-0 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">{branch.phone}</p>
+                      </div>
+                    )}
+                    {branch.email && (
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="size-3.5 shrink-0 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">{branch.email}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Divider */}
+                  <div className="border-t border-border" />
+
+                  {/* Member count + avatars */}
                   <div>
-                    <p className="text-xs font-medium mb-1">{branchMembers.length} member{branchMembers.length !== 1 ? "s" : ""}</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-semibold text-neutral-700">
+                        {branchMembers.length} member{branchMembers.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
                     {branchMembers.length > 0 && (
-                      <div className="flex -space-x-1">
-                        {branchMembers.slice(0, 5).map((m) => (
+                      <div className="flex -space-x-2">
+                        {branchMembers.slice(0, 5).map((m, i) => (
                           <div
                             key={m.id}
                             title={m.name}
-                            className="flex size-6 items-center justify-center rounded-full bg-muted text-xs font-medium ring-2 ring-background"
+                            className={`flex size-7 items-center justify-center rounded-full text-[10px] font-semibold ring-2 ring-white ${avatarColour(i)}`}
                           >
                             {getInitials(m.name)}
                           </div>
                         ))}
                         {branchMembers.length > 5 && (
-                          <div className="flex size-6 items-center justify-center rounded-full bg-muted text-xs ring-2 ring-background">
+                          <div className="flex size-7 items-center justify-center rounded-full bg-muted text-[10px] font-medium ring-2 ring-white text-muted-foreground">
                             +{branchMembers.length - 5}
                           </div>
                         )}

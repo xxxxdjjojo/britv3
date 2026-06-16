@@ -264,59 +264,70 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
       {/* Email */}
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={initialData.email}
-          readOnly
-          className="cursor-default opacity-70"
-        />
         {!changingEmail ? (
-          <button
-            type="button"
-            onClick={() => setChangingEmail(true)}
-            className="font-body text-xs text-brand-primary hover:underline"
-          >
-            Change email address
-          </button>
-        ) : (
-          <div className="space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3">
-            <Label htmlFor="new-email" className="text-xs">
-              New email address
-            </Label>
+          <div className="flex items-center gap-2">
             <Input
-              id="new-email"
+              id="email"
               type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="Enter new email"
-              autoFocus
+              value={initialData.email}
+              readOnly
+              className="cursor-default opacity-70"
             />
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => handleEmailChange()}
-                disabled={sendingEmailChange || !newEmail.trim()}
-              >
-                {sendingEmailChange && (
-                  <Loader2 className="size-3.5 animate-spin" />
-                )}
-                Send confirmation
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setChangingEmail(false);
-                  setNewEmail("");
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setChangingEmail(true)}
+              className="shrink-0 rounded-md border border-border px-3 py-1.5 font-body text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+            >
+              Change email address
+            </button>
           </div>
+        ) : (
+          <>
+            <Input
+              id="email"
+              type="email"
+              value={initialData.email}
+              readOnly
+              className="cursor-default opacity-70"
+            />
+            <div className="mt-2 space-y-2 rounded-lg border border-border p-3">
+              <Label htmlFor="new-email" className="text-xs">
+                New email address
+              </Label>
+              <Input
+                id="new-email"
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="Enter new email"
+                autoFocus
+              />
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => handleEmailChange()}
+                  disabled={sendingEmailChange || !newEmail.trim()}
+                >
+                  {sendingEmailChange && (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  )}
+                  Send confirmation
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setChangingEmail(false);
+                    setNewEmail("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
@@ -459,19 +470,24 @@ export function ProfileForm({ initialData, activeRole, roleData }: ProfileFormPr
       )}
 
       {/* Save / Cancel bar */}
-      <div className="flex items-center justify-end gap-3 border-t border-neutral-100 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleCancel}
-          disabled={saving || !isDirty}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={saving || !isDirty}>
-          {saving && <Loader2 className="size-4 animate-spin" />}
-          Save Changes
-        </Button>
+      <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="font-body text-xs text-neutral-400">
+          All changes to core identity are logged for security purposes.
+        </p>
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleCancel}
+            disabled={saving || !isDirty}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={saving || !isDirty}>
+            {saving && <Loader2 className="size-4 animate-spin" />}
+            Save Changes
+          </Button>
+        </div>
       </div>
       <ReauthDialog
         open={emailReauthOpen}
