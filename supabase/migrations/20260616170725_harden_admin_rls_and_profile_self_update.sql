@@ -1,45 +1,19 @@
--- Harden admin RLS gates and prevent privilege self-escalation.
+-- Prevent privilege self-escalation via profiles.is_admin.
 --
--- Fixes two CRITICAL issues introduced by 20260429000001_rls_policies.sql
--- (formerly 20260429_rls_policies.sql), already live in production:
---   1. The admin-only SELECT policies on email_logs / audit_logs were gated on
---      auth.users.raw_user_meta_data->>'role', a USER-WRITABLE field
---      (auth.updateUser({ data }) writes it) — any signed-in user could set
---      role:'admin' and read those tables.
---   2. The profiles "allow_own_update" policy lets a user UPDATE any column of
---      their own row, including is_admin — i.e. self-promote to admin (the JWT
---      custom_access_token_hook then mints admin claims from profiles.is_admin).
+-- Production's "Users can update own profile" policy is
+--   USING (auth.uid() = id) WITH CHECK (auth.uid() = id)
+-- with NO column restriction, so a user can UPDATE their own row including
+-- is_admin. The admin gate (is_admin() / profiles.is_admin) would then grant
+-- them admin. This trigger blocks any change to is_admin unless the caller is
+-- the service role or an already-existing admin. Ordinary self-updates
+-- (display_name, avatar, active_role role-switching, etc.) are unaffected.
 --
--- Canonical admin gate in this codebase is the server-controlled
--- public.profiles.is_admin column; these changes bring the two outlier policies
--- in line and lock the is_admin flag against self-service writes.
+-- NOTE: the email_logs/audit_logs admin-view policies originally drafted in this
+-- migration were removed. audit_logs does not exist on this database, and
+-- email_logs already carries its own admin policies. The companion
+-- 20260429000001_rls_policies.sql was never applied to this project (verified
+-- against prod), so there were no live spoofable policies to re-gate.
 
--- 1. Re-gate the admin-only views on profiles.is_admin instead of user metadata.
-DROP POLICY IF EXISTS "allow_admin_view_logs" ON public.email_logs;
-CREATE POLICY "allow_admin_view_logs"
-  ON public.email_logs
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND is_admin = true
-    )
-  );
-
-DROP POLICY IF EXISTS "allow_admin_view_audit" ON public.audit_logs;
-CREATE POLICY "allow_admin_view_audit"
-  ON public.audit_logs
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND is_admin = true
-    )
-  );
-
--- 2. Reject self-service changes to is_admin. Only the service role or an
---    existing admin may flip the flag; normal self-updates (name, avatar,
---    active_role role-switching, etc.) continue to work via allow_own_update.
 CREATE OR REPLACE FUNCTION public.prevent_privileged_self_update()
 RETURNS TRIGGER
 LANGUAGE plpgsql
