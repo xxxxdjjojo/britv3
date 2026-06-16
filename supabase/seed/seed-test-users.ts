@@ -30,10 +30,12 @@ interface TestUser {
 
 const TEST_USERS: ReadonlyArray<TestUser> = [
   { email: "test-buyer@britestate.test", role: "homebuyer" },
+  { email: "test-renter@britestate.test", role: "renter" },
   { email: "test-seller@britestate.test", role: "seller" },
   { email: "test-landlord@britestate.test", role: "landlord" },
   { email: "test-agent@britestate.test", role: "agent" },
   { email: "test-provider@britestate.test", role: "service_provider" },
+  { email: "test-broker@britestate.test", role: "mortgage_broker" },
   { email: "test-admin@britestate.test", role: "admin" },
 ];
 
