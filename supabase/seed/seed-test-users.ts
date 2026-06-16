@@ -110,4 +110,50 @@ for (const { email, role } of TEST_USERS) {
   console.log(`OK ${email} (${role})`);
 }
 
+// ---------------------------------------------------------------------------
+// Provider business record for the E2E provider user.
+//
+// `dashboard/provider/layout.tsx` → `resolveProviderId()` queries
+// `service_provider_details` for the current user and redirects away (404) when
+// no row exists. The demo SQL seed only creates a row for a different user, so
+// the E2E provider user (`test-provider@britestate.test`) has none. Seed a
+// minimal valid row here so all provider routes render under E2E auth.
+//
+// Required columns (per migration 002_marketplace.sql): user_id (PK),
+// business_name (NOT NULL), slug (UNIQUE NOT NULL). `services` and
+// `service_postcodes` are NOT NULL but have defaults. Values mirror the demo
+// seed's shape; slug is unique to this user to avoid the UNIQUE collision.
+// Idempotent: keyed on user_id with onConflict ignore.
+const PROVIDER_EMAIL = "test-provider@britestate.test";
+
+const { data: providerList, error: providerListError } =
+  await supabase.auth.admin.listUsers();
+if (providerListError) {
+  console.error("Lookup E2E provider user:", providerListError);
+} else {
+  const providerUserId = providerList.users.find(
+    (u) => u.email === PROVIDER_EMAIL,
+  )?.id;
+
+  if (!providerUserId) {
+    console.error(`No userId resolved for ${PROVIDER_EMAIL} — skipping provider record`);
+  } else {
+    const { error: providerDetailsError } = await supabase
+      .from("service_provider_details")
+      .upsert(
+        {
+          user_id: providerUserId,
+          business_name: "Britestate Test Plumbing",
+          slug: "britestate-test-plumbing",
+        },
+        { onConflict: "user_id", ignoreDuplicates: true },
+      );
+    if (providerDetailsError) {
+      console.error(`Upsert service_provider_details for ${PROVIDER_EMAIL}:`, providerDetailsError);
+    } else {
+      console.log(`OK service_provider_details for ${PROVIDER_EMAIL}`);
+    }
+  }
+}
+
 console.log("Seed complete.");
