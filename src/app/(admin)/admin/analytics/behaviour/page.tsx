@@ -169,7 +169,7 @@ async function BehaviourContent() {
 
 function FunnelsPlaceholder() {
   return (
-    <div className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 p-6">
+    <div className="rounded-xl border border-dashed border-neutral-200 bg-muted p-6">
       <h2
         className="text-base font-semibold text-neutral-600 mb-2"
         style={{ fontFamily: "Plus Jakarta Sans" }}

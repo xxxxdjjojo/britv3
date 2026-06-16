@@ -121,7 +121,7 @@ export default async function ApiUsagePage() {
             ) : (
               <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
                 <table className="w-full text-sm">
-                  <thead className="border-b border-neutral-200 bg-neutral-50">
+                  <thead className="border-b border-neutral-200 bg-muted">
                     <tr>
                       <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                         Endpoint
@@ -133,7 +133,7 @@ export default async function ApiUsagePage() {
                   </thead>
                   <tbody className="divide-y divide-neutral-100">
                     {stats.topEndpoints.map((ep) => (
-                      <tr key={ep.endpoint} className="hover:bg-neutral-50 transition-colors">
+                      <tr key={ep.endpoint} className="hover:bg-muted transition-colors">
                         <td className="px-4 py-3 font-mono text-xs text-neutral-700">
                           {ep.endpoint}
                         </td>

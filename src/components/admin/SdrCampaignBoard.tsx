@@ -106,7 +106,7 @@ export function SdrCampaignBoard({ initialJobs }: Props) {
             type="button"
             disabled={pending}
             onClick={() => startTransition(() => { void submit(); })}
-            className="bg-[#1B4D3E] hover:bg-[#2D7A5F]"
+            className="bg-brand-primary hover:bg-brand-primary-light"
           >
             {pending ? "Enqueuing…" : "Enqueue"}
           </Button>

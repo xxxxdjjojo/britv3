@@ -197,7 +197,7 @@ export function CmsEditor({ article, articleType, backHref }: Props) {
             <Label>Content</Label>
             <div className="border border-neutral-200 rounded-lg overflow-hidden">
               {/* Toolbar */}
-              <div className="flex flex-wrap gap-1 border-b border-neutral-200 p-2 bg-neutral-50">
+              <div className="flex flex-wrap gap-1 border-b border-neutral-200 p-2 bg-muted">
                 <button
                   type="button"
                   onClick={() =>
