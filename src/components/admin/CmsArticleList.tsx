@@ -47,9 +47,9 @@ export function CmsArticleList({
           description={emptyMessage}
         />
       ) : (
-        <div className="rounded-lg border border-neutral-200 overflow-hidden">
+        <div className="rounded-lg border border-border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-muted border-b border-neutral-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-neutral-600">
                   Title

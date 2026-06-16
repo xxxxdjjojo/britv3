@@ -72,7 +72,7 @@ function FlagRow({ flag }: { flag: FeatureFlag }) {
   }
 
   return (
-    <div className="p-4 border border-neutral-200 rounded-lg bg-white">
+    <div className="p-4 border border-border rounded-lg bg-card">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">

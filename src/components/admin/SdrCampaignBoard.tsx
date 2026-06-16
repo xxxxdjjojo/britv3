@@ -54,7 +54,7 @@ export function SdrCampaignBoard({ initialJobs }: Props) {
 
   return (
     <div className="space-y-8">
-      <div className="rounded-xl border border-neutral-200 p-6">
+      <div className="rounded-xl border border-border p-6">
         <h2 className="font-heading text-lg font-bold text-neutral-900">
           Enqueue an outbound target
         </h2>
@@ -113,13 +113,13 @@ export function SdrCampaignBoard({ initialJobs }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 p-6">
+      <div className="rounded-xl border border-border p-6">
         <h2 className="font-heading text-lg font-bold text-neutral-900">
           Recent jobs
         </h2>
         <table className="mt-4 w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-neutral-200 text-neutral-600">
+            <tr className="border-b border-border text-neutral-600">
               <th className="py-2 pr-4">Job ID</th>
               <th className="py-2 pr-4">Audience</th>
               <th className="py-2 pr-4">Contact</th>

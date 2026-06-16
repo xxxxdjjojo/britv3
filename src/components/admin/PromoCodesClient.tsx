@@ -134,7 +134,7 @@ export function PromoCodesClient({ promoCodes }: Props) {
       {showCreate && (
         <form
           onSubmit={handleCreate}
-          className="rounded-lg border border-neutral-200 p-4 space-y-4 bg-muted"
+          className="rounded-lg border border-border p-4 space-y-4 bg-muted"
         >
           <h3 className="font-semibold text-neutral-800">Create Promo Code</h3>
 
@@ -256,9 +256,9 @@ export function PromoCodesClient({ promoCodes }: Props) {
           description="Create promo codes to offer discounts to your users."
         />
       ) : (
-        <div className="rounded-lg border border-neutral-200 overflow-hidden">
+        <div className="rounded-lg border border-border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-muted border-b border-neutral-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-neutral-600">
                   Code

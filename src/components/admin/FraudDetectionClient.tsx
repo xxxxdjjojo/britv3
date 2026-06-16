@@ -137,9 +137,9 @@ export function FraudDetectionClient({ signals }: Props) {
       </Dialog>
 
       {/* Table */}
-      <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-border rounded-lg overflow-hidden bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 bg-muted">
+          <thead className="border-b border-border bg-muted">
             <tr>
               <th className="px-4 py-3 w-10">
                 <Checkbox

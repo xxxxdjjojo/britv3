@@ -114,7 +114,7 @@ async function SearchContent() {
           message="PostHog is not configured. Set POSTHOG_PERSONAL_API_KEY and POSTHOG_PROJECT_ID to enable search analytics."
         />
         {/* Placeholder chart so layout is useful even without data */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
             className="text-base font-semibold text-neutral-900 mb-1"
             style={{ fontFamily: "Plus Jakarta Sans" }}
@@ -133,7 +133,7 @@ async function SearchContent() {
   return (
     <div className="space-y-8">
       {/* Search Volume Chart */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <h2
           className="text-base font-semibold text-neutral-900 mb-1"
           style={{ fontFamily: "Plus Jakarta Sans" }}
@@ -148,7 +148,7 @@ async function SearchContent() {
       {/* Tables */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Top queries */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
             className="text-base font-semibold text-neutral-900 mb-4"
             style={{ fontFamily: "Plus Jakarta Sans" }}
@@ -180,7 +180,7 @@ async function SearchContent() {
         </div>
 
         {/* Zero-result queries */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
             className="text-base font-semibold text-neutral-900 mb-4"
             style={{ fontFamily: "Plus Jakarta Sans" }}

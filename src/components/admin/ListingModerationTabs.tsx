@@ -141,7 +141,7 @@ function ListingTable({
     <div className="overflow-x-auto">
       <table className="w-full text-left">
         <thead>
-          <tr className="border-b border-neutral-200">
+          <tr className="border-b border-border">
             <th className="pb-3 text-xs font-semibold text-neutral-500 uppercase tracking-wide">
               Title
             </th>

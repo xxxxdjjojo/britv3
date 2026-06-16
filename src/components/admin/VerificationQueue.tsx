@@ -32,7 +32,7 @@ function VerificationCard({
       : null;
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="mb-3 flex items-start justify-between gap-4">
         <div>
           <h3 className="font-medium text-neutral-900">
@@ -103,7 +103,7 @@ function VerificationCard({
 export function VerificationQueue({ verifications, onApprove, onReject }: Props) {
   if (verifications.length === 0) {
     return (
-      <div className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-sm text-neutral-500">
+      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-neutral-500">
         No pending verifications. All applications have been reviewed.
       </div>
     );

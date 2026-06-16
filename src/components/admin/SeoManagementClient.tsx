@@ -90,7 +90,7 @@ export function SeoManagementClient({ articles }: Props) {
       {articles.map((article) => (
         <div
           key={article.id}
-          className="rounded-lg border border-neutral-200 p-4"
+          className="rounded-lg border border-border p-4"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">

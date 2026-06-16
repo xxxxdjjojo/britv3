@@ -138,9 +138,9 @@ export function AuditLogClient({
       </div>
 
       {/* Table */}
-      <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-border rounded-lg overflow-hidden bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 bg-muted">
+          <thead className="border-b border-border bg-muted">
             <tr>
               <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                 Action
