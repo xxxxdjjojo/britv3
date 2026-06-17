@@ -38,7 +38,7 @@ import { expectNoAppError } from "./fixtures/smoke-helpers";
 
 // Hosted Supabase under parallel load occasionally drops a fetch on the auth
 // path; retries let those transient flakes self-heal (mirrors dashboard-smoke).
-test.describe.configure({ retries: 2 });
+test.describe.configure({ retries: 2, timeout: 90_000 });
 
 const skipOnMobile = () =>
   test.skip(

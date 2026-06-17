@@ -32,7 +32,7 @@ import {
 // Hosted Supabase under parallel load occasionally drops a fetch (token-refresh
 // race, aborted-on-navigation). Retries let those transient flakes self-heal so
 // only genuinely-broken routes stay red. Matches dashboard-smoke.spec.ts.
-test.describe.configure({ retries: 2 });
+test.describe.configure({ retries: 2, timeout: 90_000 });
 
 /** Static (non-dynamic) admin routes from the manifest — never hand-listed. */
 const ADMIN_ROUTES: readonly string[] = getDashboardRoutes()

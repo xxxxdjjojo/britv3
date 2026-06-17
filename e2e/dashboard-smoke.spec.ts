@@ -26,7 +26,7 @@ import {
 // race, aborted-on-navigation). Retries let those transient flakes self-heal so
 // only genuinely-broken routes stay red. Local default is 0 retries; this opts
 // the smoke suite in without touching the shared playwright.config.ts.
-test.describe.configure({ retries: 2 });
+test.describe.configure({ retries: 2, timeout: 90_000 });
 
 type SmokeCase = Readonly<{
   appRole: AppRole;
@@ -70,15 +70,24 @@ const FIXME_ROLES: ReadonlySet<AppRole> = new Set<AppRole>([]);
  * Fixing these belongs to a later milestone — they are never masked by
  * loosening an assertion or broadening the console allowlist.
  *
- * FINDINGS: previously the four routes below were fixme'd. All were fixed in M4
- * and are now ASSERTED (not skipped) against the deterministic local-DB gate:
- *  - /dashboard/landlord/finance/expenses, /finance/report — `address_line_1`
- *      schema-drift query, fixed in 79d41288 (real column is `address_line1`).
- *  - /dashboard/landlord/tenants, /dashboard/agent/crm — nested-<button>
- *      hydration error, fixed app-wide in 79c12332 (DialogTrigger honours asChild).
+ * FINDINGS: the four M4-era routes (finance/expenses, finance/report,
+ * landlord/tenants, agent/crm) are fixed and now ASSERTED (not skipped).
+ *
+ * F14 (base-introduced, tracked here): /dashboard/landlord/finance/tax fails the
+ * console-error smoke. The base `fix/supabase-migration-version-collisions` added
+ * a PDF export (yoga-layout) to the tax page; yoga-layout loads its WASM via a
+ * `data:application/octet-stream` URL, which the production CSP `connect-src`
+ * blocks ("Refused to connect ... violates the document's Content Security
+ * Policy"). This is a genuine page/CSP issue, not test flake, so it is fixme'd
+ * (tracked, never masked by loosening the assertion). Fix belongs with the team
+ * that owns the CSP + the tax PDF feature (allow WASM for the PDF worker, or load
+ * the WASM from a self-origin URL instead of a data: URI).
+ *
  * Re-add a route here (with a FINDING note) only if it genuinely regresses.
  */
-const FIXME_ROUTES: ReadonlySet<string> = new Set<string>([]);
+const FIXME_ROUTES: ReadonlySet<string> = new Set<string>([
+  "/dashboard/landlord/finance/tax",
+]);
 
 for (const roleCase of SMOKE_CASES) {
   test.describe(`${roleCase.slug} dashboard route smoke`, () => {

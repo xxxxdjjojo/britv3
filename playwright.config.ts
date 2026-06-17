@@ -15,6 +15,10 @@ export default defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
+    // First-hit route compilation under `next dev` (the local-DB gate) can take
+    // 30s+ on a large App Router tree. Raise the navigation ceiling so cold
+    // `page.goto` doesn't abort mid-compile. Harmless for fast/warm responses.
+    navigationTimeout: 60_000,
   },
   projects: [
     {
