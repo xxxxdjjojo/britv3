@@ -76,12 +76,35 @@ describe("JobLeadCard — render with data", () => {
     expect(screen.getByText("Location TBC")).toBeInTheDocument();
   });
 
-  it("renders Accept, Decline and Message actions", () => {
-    render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={vi.fn()} />);
+  it("renders Accept, Decline and Message actions (hero variant)", () => {
+    // The redesign splits the card into a featured "hero" layout (explicit
+    // Accept / Decline / Message buttons) and a compact "grid" layout (Accept +
+    // a More-options menu that opens the decline dialog). The labelled Decline
+    // and Message actions live on the hero variant.
+    render(
+      <JobLeadCard
+        lead={makeLead()}
+        providerId="prov-1"
+        onRemove={vi.fn()}
+        variant="hero"
+      />,
+    );
 
     expect(screen.getByRole("button", { name: /Accept Lead/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Decline/i })).toBeInTheDocument();
     expect(screen.getByLabelText("Message client")).toBeInTheDocument();
+  });
+
+  it("renders Accept and a More-options menu in the default grid variant", () => {
+    render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: /Accept Lead/i })).toBeInTheDocument();
+    // The compact grid card replaces the labelled Decline/Message buttons with
+    // a single More-options control that opens the decline dialog.
+    expect(screen.getByLabelText("More options")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /^Decline$/i }),
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -115,7 +138,8 @@ describe("JobLeadCard — decline flow", () => {
   it("opens the decline dialog with a reason selector", () => {
     render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Decline$/i }));
+    // The grid card opens the decline dialog via the More-options control.
+    fireEvent.click(screen.getByLabelText("More options"));
 
     expect(screen.getByText("Decline lead?")).toBeInTheDocument();
     // Default reason is selected
@@ -128,7 +152,7 @@ describe("JobLeadCard — decline flow", () => {
 
     render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={onRemove} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Decline$/i }));
+    fireEvent.click(screen.getByLabelText("More options"));
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "Budget too low" } });
     // The confirm button lives inside the dialog (next to Cancel)
     const dialog = screen.getByText("Decline lead?").closest("div") as HTMLElement;
@@ -147,7 +171,7 @@ describe("JobLeadCard — decline flow", () => {
   it("cancelling the dialog closes it without calling declineLead", async () => {
     render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Decline$/i }));
+    fireEvent.click(screen.getByLabelText("More options"));
     fireEvent.click(screen.getByRole("button", { name: /Cancel/i }));
 
     await waitFor(() => expect(screen.queryByText("Decline lead?")).not.toBeInTheDocument());
@@ -159,7 +183,7 @@ describe("JobLeadCard — decline flow", () => {
 
     render(<JobLeadCard lead={makeLead()} providerId="prov-1" onRemove={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Decline$/i }));
+    fireEvent.click(screen.getByLabelText("More options"));
     const dialog = screen.getByText("Decline lead?").closest("div") as HTMLElement;
     fireEvent.click(within(dialog).getByRole("button", { name: "Decline" }));
 

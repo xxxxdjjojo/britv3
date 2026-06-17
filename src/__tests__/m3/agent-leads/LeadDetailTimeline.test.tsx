@@ -16,7 +16,7 @@ beforeEach(() => {
 });
 
 describe("LeadDetailTimeline — render with data", () => {
-  it("renders the contact name and contact methods", () => {
+  it("renders the contact information section and contact methods", () => {
     render(
       <LeadDetailTimeline
         lead={makeLead()}
@@ -26,7 +26,10 @@ describe("LeadDetailTimeline — render with data", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "Jane Buyer" })).toBeInTheDocument();
+    // The redesigned component renders the lead name in the page-level header
+    // (the [id] page <h1>), not inside this component. The contact card here
+    // holds the section header plus the email/phone methods.
+    expect(screen.getByText("Contact Information")).toBeInTheDocument();
     expect(screen.getByText("jane@example.com")).toBeInTheDocument();
     expect(screen.getByText("07700900001")).toBeInTheDocument();
   });
@@ -168,7 +171,7 @@ describe("LeadDetailTimeline — add note", () => {
       />,
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/add a note/i), {
+    fireEvent.change(screen.getByPlaceholderText(/internal note/i), {
       target: { value: "Follow-up scheduled" },
     });
     fireEvent.click(screen.getByRole("button", { name: /add note/i }));

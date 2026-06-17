@@ -19,37 +19,46 @@ beforeEach(() => {
 // and is marked it.todo below. Stage GROUPING, column counts, card rendering
 // and the detail dialog are covered.
 
-describe("SaleProgressionKanban — stage grouping + columns", () => {
-  it("renders a column for every sale stage", () => {
+describe("SaleProgressionKanban — stage grouping + tabs", () => {
+  it("lists the active-tab sales with their stage labels and a tab bar", () => {
     render(<SaleProgressionKanban initialProgressions={PROGRESSIONS_BY_STAGE} />);
-    // Column headers use the stage label; "Offer Accepted" also appears on the
-    // card badge, so assert each label is present at least once.
-    expect(screen.getAllByText("Offer Accepted").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Searches").length).toBeGreaterThan(0);
-    expect(screen.getByText("Completion")).toBeInTheDocument();
+    // The redesign is a two-pane layout: a left sale list grouped under two
+    // tabs (Listing Active / Under Offer) and a right detail pane — not a
+    // column per stage. The default "Listing Active" tab holds the
+    // offer_accepted + searches stages, so their labels appear on the list
+    // cards (once per sale).
+    expect(screen.getByText("Listing Active")).toBeInTheDocument();
+    expect(screen.getByText("Under Offer")).toBeInTheDocument();
+    expect(screen.getAllByText("Offer Accepted")).toHaveLength(2);
+    expect(screen.getAllByText("Searches")).toHaveLength(1);
+    // "Completion" belongs to the Under Offer tab, so it is not rendered until
+    // that tab is selected.
+    expect(screen.queryByText("Completion")).not.toBeInTheDocument();
     // 8 stages total.
     expect(SALE_STAGES).toHaveLength(8);
   });
 
-  it("shows the correct card count per populated stage column", () => {
+  it("shows the per-tab sale count badge", () => {
     render(<SaleProgressionKanban initialProgressions={PROGRESSIONS_BY_STAGE} />);
-    // offer_accepted column header → count "2"; searches → "1".
-    // The "Offer Accepted" column header div contains a count span.
-    const offerHeader = screen.getAllByText("Offer Accepted")[0];
-    const offerColumn = offerHeader.closest("div")?.parentElement?.parentElement;
-    expect(offerColumn).toBeTruthy();
-    expect(within(offerColumn as HTMLElement).getByText("2")).toBeInTheDocument();
+    // Listing Active = offer_accepted (2) + searches (1) = 3; Under Offer = 0.
+    const listingTab = screen.getByText("Listing Active").closest("button");
+    const underOfferTab = screen.getByText("Under Offer").closest("button");
+    expect(within(listingTab as HTMLElement).getByText("3")).toBeInTheDocument();
+    expect(within(underOfferTab as HTMLElement).getByText("0")).toBeInTheDocument();
   });
 
-  it("renders the 'No sales' placeholder in empty stage columns", () => {
+  it("shows the empty-view placeholder when the active tab has no sales", () => {
     render(<SaleProgressionKanban initialProgressions={PROGRESSIONS_BY_STAGE} />);
-    // 8 stages, 2 populated → 6 empty columns each showing "No sales".
-    expect(screen.getAllByText("No sales")).toHaveLength(6);
+    // Listing Active has 3 sales, so its pane is populated. Switching to the
+    // empty Under Offer tab reveals the single empty-view placeholder.
+    fireEvent.click(screen.getByText("Under Offer"));
+    expect(screen.getByText("No sales in this view")).toBeInTheDocument();
   });
 
-  it("renders 'No sales' in every column when no progressions are given", () => {
+  it("shows the empty-view placeholder when no progressions are given", () => {
     render(<SaleProgressionKanban initialProgressions={{}} />);
-    expect(screen.getAllByText("No sales")).toHaveLength(8);
+    // One empty-view placeholder for the (default) active tab's empty list.
+    expect(screen.getByText("No sales in this view")).toBeInTheDocument();
   });
 });
 

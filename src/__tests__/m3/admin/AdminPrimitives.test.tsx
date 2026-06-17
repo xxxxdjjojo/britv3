@@ -11,24 +11,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { Inbox } from "lucide-react";
 
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { CountCard } from "@/components/admin/CountCard";
+import { StatCard } from "@/components/dashboard/StatCard";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
-
-// next/link renders a plain anchor under test.
-vi.mock("next/link", () => ({
-  default: ({
-    href,
-    children,
-    ...rest
-  }: {
-    href: string;
-    children: React.ReactNode;
-  }) => (
-    <a href={href} {...rest}>
-      {children}
-    </a>
-  ),
-}));
 
 describe("StatusBadge", () => {
   it("maps a known status to its human label", () => {
@@ -53,35 +37,30 @@ describe("StatusBadge", () => {
   });
 });
 
-describe("CountCard", () => {
-  it("renders the title, locale-formatted count and an href link", () => {
-    render(
-      <CountCard
-        title="Pending verifications"
-        count={1234}
-        href="/admin/verifications"
-        icon="ShieldCheck"
+describe("StatCard", () => {
+  it("renders the label, the value as given and a mapped icon", () => {
+    const { container } = render(
+      <StatCard
+        label="Pending verifications"
+        value="1,234"
+        icon="BadgeCheck"
       />,
     );
 
     expect(screen.getByText("Pending verifications")).toBeInTheDocument();
+    // The caller is responsible for formatting; StatCard renders value verbatim.
     expect(screen.getByText("1,234")).toBeInTheDocument();
-    expect(screen.getByRole("link")).toHaveAttribute(
-      "href",
-      "/admin/verifications",
-    );
+    // A known icon name from the ICON_MAP renders an svg.
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
-  it("renders a zero count without an icon when the icon name is unknown", () => {
-    render(
-      <CountCard
-        title="Flagged"
-        count={0}
-        href="/admin/fraud"
-        icon="NotARealLucideIcon"
-      />,
+  it("renders the value without an icon when the icon name is unknown", () => {
+    const { container } = render(
+      <StatCard label="Flagged" value="0" icon="NotARealLucideIcon" />,
     );
     expect(screen.getByText("0")).toBeInTheDocument();
+    // Unknown icon names are not in the ICON_MAP, so no icon is rendered.
+    expect(container.querySelector("svg")).not.toBeInTheDocument();
   });
 });
 

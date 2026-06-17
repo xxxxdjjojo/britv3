@@ -16,8 +16,8 @@ describe("OffersDashboard — grouping + render", () => {
   it("renders one card group per property with an offer count badge", () => {
     render(<OffersDashboard grouped={GROUPED_OFFERS} />);
     // Property A has 2 offers, Property B has 1.
-    expect(screen.getByText("2 offers")).toBeInTheDocument();
-    expect(screen.getByText("1 offer")).toBeInTheDocument();
+    expect(screen.getByText("2 active offers")).toBeInTheDocument();
+    expect(screen.getByText("1 active offer")).toBeInTheDocument();
   });
 
   it("renders every buyer name across the groups", () => {
@@ -102,8 +102,8 @@ describe("OffersDashboard — search filter (controlled input)", () => {
     });
     // Property B (Carol) survives with 1 offer; Property A is gone.
     expect(screen.getByText("Carol Client")).toBeInTheDocument();
-    expect(screen.getByText("1 offer")).toBeInTheDocument();
-    expect(screen.queryByText("2 offers")).not.toBeInTheDocument();
+    expect(screen.getByText("1 active offer")).toBeInTheDocument();
+    expect(screen.queryByText("2 active offers")).not.toBeInTheDocument();
   });
 });
 

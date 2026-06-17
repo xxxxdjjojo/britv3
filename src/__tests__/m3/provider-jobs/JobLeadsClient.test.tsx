@@ -57,13 +57,29 @@ describe("JobLeadsClient — render with data", () => {
       <JobLeadsClient
         providerId="prov-1"
         initialLeads={[
-          makeLead({ id: "a", serviceCategory: "Plumbing" }),
-          makeLead({ id: "b", serviceCategory: "Electrical", clientName: "Bob" }),
+          makeLead({
+            id: "a",
+            serviceCategory: "Plumbing",
+            description: "Plumbing job description",
+          }),
+          makeLead({
+            id: "b",
+            serviceCategory: "Electrical",
+            clientName: "Bob",
+            description: "Electrical job description",
+          }),
         ]}
       />,
     );
 
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+    // The first lead renders as the featured "hero" card (which shows the
+    // service category but not the client name); the rest render as compact
+    // "grid" cards (which show the client name). The bare category label also
+    // appears in the filter tabs, so assert one card per lead via the unique
+    // card description, which both variants render.
+    expect(screen.getByText("Plumbing job description")).toBeInTheDocument();
+    expect(screen.getByText("Electrical job description")).toBeInTheDocument();
+    // The grid card for lead "b" still shows its client name.
     expect(screen.getByText("Bob")).toBeInTheDocument();
   });
 
@@ -96,16 +112,26 @@ describe("JobLeadsClient — category filter tabs", () => {
       <JobLeadsClient
         providerId="prov-1"
         initialLeads={[
-          makeLead({ id: "a", serviceCategory: "Plumbing", clientName: "Plumber Client" }),
-          makeLead({ id: "b", serviceCategory: "Electrical", clientName: "Spark Client" }),
+          makeLead({
+            id: "a",
+            serviceCategory: "Plumbing",
+            description: "Plumbing job description",
+          }),
+          makeLead({
+            id: "b",
+            serviceCategory: "Electrical",
+            description: "Electrical job description",
+          }),
         ]}
       />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Electrical" }));
 
-    expect(screen.getByText("Spark Client")).toBeInTheDocument();
-    expect(screen.queryByText("Plumber Client")).not.toBeInTheDocument();
+    // Assert on the card description (rendered by both variants and not by the
+    // category filter tabs, unlike the bare category label).
+    expect(screen.getByText("Electrical job description")).toBeInTheDocument();
+    expect(screen.queryByText("Plumbing job description")).not.toBeInTheDocument();
   });
 
   it("shows the empty state when a category filter matches no leads after another is selected", async () => {
@@ -114,16 +140,22 @@ describe("JobLeadsClient — category filter tabs", () => {
       <JobLeadsClient
         providerId="prov-1"
         initialLeads={[
-          makeLead({ id: "a", serviceCategory: "Plumbing", clientName: "Plumber Client" }),
+          makeLead({
+            id: "a",
+            serviceCategory: "Plumbing",
+            description: "Plumbing job description",
+          }),
         ]}
       />,
     );
 
+    // The single lead renders as the featured hero card (no client name), so
+    // assert on the card description rather than the client name.
     // Only one category — filter to it then back to All
     fireEvent.click(screen.getByRole("button", { name: "Plumbing" }));
-    expect(screen.getByText("Plumber Client")).toBeInTheDocument();
+    expect(screen.getByText("Plumbing job description")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "All" }));
-    expect(screen.getByText("Plumber Client")).toBeInTheDocument();
+    expect(screen.getByText("Plumbing job description")).toBeInTheDocument();
   });
 
   it("does not render filter tabs when there are no leads", () => {
@@ -165,8 +197,8 @@ describe("JobLeadsClient — active tab styling", () => {
     const plumbingTab = screen.getByRole("button", { name: "Plumbing" });
     fireEvent.click(plumbingTab);
 
-    // Active tab uses the deep-green brand background
-    expect(plumbingTab.className).toContain("#1B4D3E");
+    // Active tab uses the brand-primary background token (deep green).
+    expect(plumbingTab.className).toContain("bg-brand-primary");
     // Sanity: the tab container holds both All and Plumbing
     const allTab = screen.getByRole("button", { name: "All" });
     expect(within(allTab.parentElement as HTMLElement).getAllByRole("button").length).toBeGreaterThanOrEqual(2);

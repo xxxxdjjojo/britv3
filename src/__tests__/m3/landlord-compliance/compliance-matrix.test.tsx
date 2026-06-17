@@ -80,7 +80,10 @@ describe("ComplianceMatrix — render with data", () => {
       ],
     });
     render(<ComplianceMatrix data={data} />);
-    expect(screen.getByText("Valid")).toBeInTheDocument();
+    // The redesigned matrix header carries a status legend that also contains a
+    // "Valid" label, so scope to the table to assert the cell badge specifically.
+    const table = screen.getByRole("table");
+    expect(within(table).getByText("Valid")).toBeInTheDocument();
     expect(screen.queryByText("HMO")).not.toBeInTheDocument();
   });
 });

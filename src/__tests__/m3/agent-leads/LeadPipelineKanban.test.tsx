@@ -16,14 +16,26 @@ beforeEach(() => {
 });
 
 describe("LeadPipelineKanban — render with data", () => {
-  it("renders all five pipeline stage columns with their labels", () => {
+  it("renders the table column headers and a stage status badge per populated lead", () => {
     render(<LeadPipelineKanban initialLeads={LEADS_BY_STAGE} />);
 
-    expect(screen.getByText("New Enquiry")).toBeInTheDocument();
-    expect(screen.getByText("Qualified")).toBeInTheDocument();
-    expect(screen.getByText("Viewing Booked")).toBeInTheDocument();
-    expect(screen.getByText("Offer Made")).toBeInTheDocument();
-    expect(screen.getByText("Closed")).toBeInTheDocument();
+    // The redesigned view is a paginated table (not stage columns). Each lead
+    // row carries its stage as a status badge, so a stage label appears once
+    // per lead in that stage — and only for stages that actually have leads.
+    // Column headers are always present.
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Source")).toBeInTheDocument();
+    expect(screen.getByText("Status")).toBeInTheDocument();
+
+    // new_enquiry has 2 leads → "New Enquiry" badge appears twice.
+    expect(screen.getAllByText("New Enquiry")).toHaveLength(2);
+    // qualified has 1 lead.
+    expect(screen.getAllByText("Qualified")).toHaveLength(1);
+    // offer_made has 1 lead → its badge, plus the "Offer Made" stat-card label.
+    expect(screen.getAllByText("Offer Made")).toHaveLength(2);
+    // viewing_booked and closed have no leads, so no row badge is rendered.
+    expect(screen.queryByText("Viewing Booked")).not.toBeInTheDocument();
+    expect(screen.queryByText("Closed")).not.toBeInTheDocument();
   });
 
   it("renders each lead in its stage with the contact name", () => {
@@ -35,15 +47,26 @@ describe("LeadPipelineKanban — render with data", () => {
     expect(screen.getByText("Dan Davies")).toBeInTheDocument();
   });
 
-  it("shows a per-stage count badge reflecting the number of leads in that stage", () => {
+  it("shows summary stat cards reflecting the lead totals per stage", () => {
     render(<LeadPipelineKanban initialLeads={LEADS_BY_STAGE} />);
 
-    // new_enquiry has 2, qualified 1, viewing_booked 0, offer_made 1, closed 0
-    expect(screen.getByText("2")).toBeInTheDocument();
-    // two stages have count 1 — assert both present
-    expect(screen.getAllByText("1").length).toBeGreaterThanOrEqual(2);
-    // two stages have count 0
-    expect(screen.getAllByText("0").length).toBeGreaterThanOrEqual(2);
+    // The redesigned header is a stats strip, not per-stage count badges.
+    // Each StatCard pairs an uppercase label <p> with its computed value <span>.
+    // "Offer Made" also appears as a row status badge, so resolve the label to
+    // the stat-card <p> specifically before reading the sibling value.
+    const statValue = (label: string): string | null => {
+      const labelEl = screen
+        .getAllByText(label)
+        .find((el) => el.tagName === "P");
+      return labelEl?.parentElement?.querySelector("span")?.textContent ?? null;
+    };
+
+    // 4 leads total across the fixture.
+    expect(statValue("Total Leads")).toBe("4");
+    // offer_made has 1 lead.
+    expect(statValue("Offer Made")).toBe("1");
+    // viewing_booked (Active Viewings) has 0 leads.
+    expect(statValue("Active Viewings")).toBe("0");
   });
 
   it("links each lead card to its detail page", () => {
@@ -55,12 +78,15 @@ describe("LeadPipelineKanban — render with data", () => {
 });
 
 describe("LeadPipelineKanban — empty state", () => {
-  it("renders all columns with 'No leads' when the pipeline is empty", () => {
+  it("renders a single 'No leads found' row when the pipeline is empty", () => {
     render(<LeadPipelineKanban initialLeads={{}} />);
 
-    expect(screen.getByText("New Enquiry")).toBeInTheDocument();
-    // every one of the five columns shows the empty placeholder
-    expect(screen.getAllByText("No leads")).toHaveLength(5);
+    // The redesigned table shows one empty-state row (not a per-column
+    // placeholder), and the column headers remain.
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("No leads found")).toBeInTheDocument();
+    // Stat cards read zero with no leads.
+    expect(screen.getByText("Total Leads")).toBeInTheDocument();
   });
 });
 
@@ -88,16 +114,21 @@ describe("LeadPipelineKanban — search filtering", () => {
     expect(screen.queryByText("Alice Anderson")).not.toBeInTheDocument();
   });
 
-  it("keeps the stage count badge at the unfiltered total while filtering", () => {
+  it("keeps the Total Leads stat at the unfiltered total while filtering", () => {
     render(<LeadPipelineKanban initialLeads={LEADS_BY_STAGE} />);
 
     fireEvent.change(screen.getByPlaceholderText(/search leads/i), {
       target: { value: "alice" },
     });
 
-    // new_enquiry column still reports its true total of 2 even though only
-    // one card is shown (totalCount is computed off the unfiltered list).
-    expect(screen.getByText("2")).toBeInTheDocument();
+    // Only Alice's row is shown, but the stats strip is computed off the
+    // unfiltered list, so Total Leads still reports the true total of 4.
+    const totalValue = screen
+      .getByText("Total Leads")
+      .parentElement?.querySelector("span")?.textContent;
+    expect(totalValue).toBe("4");
+    expect(screen.getByText("Alice Anderson")).toBeInTheDocument();
+    expect(screen.queryByText("Bob Brown")).not.toBeInTheDocument();
   });
 });
 
