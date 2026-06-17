@@ -24,7 +24,7 @@ export default async function ProviderLayout({ children }: Readonly<{ children: 
   try {
     providerIdentity = await resolveProviderId(supabase);
   } catch {
-    redirect("/onboarding/provider");
+    redirect("/register/onboarding/provider");
   }
 
   const { data: stripeAccount } = await supabase
