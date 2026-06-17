@@ -72,13 +72,13 @@ export default async function AgentComparisonPage({ searchParams }: Props) {
                     {agent.avatar_url ? (
                       <Image src={agent.avatar_url} alt={agent.full_name} width={36} height={36} className="rounded-full object-cover" />
                     ) : (
-                      <div className="h-9 w-9 rounded-full bg-[#1B4D3E]/10 flex items-center justify-center text-[#1B4D3E] font-bold text-sm">
+                      <div className="h-9 w-9 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary font-bold text-sm">
                         {agent.full_name.charAt(0)}
                       </div>
                     )}
                     <div>
                       <p className="text-sm font-bold text-slate-900">{agent.full_name}</p>
-                      <Link href={`/dashboard/seller/agents/${agent.id}`} className="text-xs text-[#1B4D3E] hover:underline">
+                      <Link href={`/dashboard/seller/agents/${agent.id}`} className="text-xs text-brand-primary hover:underline">
                         View profile
                       </Link>
                     </div>
@@ -89,7 +89,7 @@ export default async function AgentComparisonPage({ searchParams }: Props) {
           </thead>
           <tbody>
             {rows.map(({ label, getValue }) => (
-              <tr key={label} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
+              <tr key={label} className="border-b border-slate-50 last:border-0 hover:bg-surface/50">
                 <td className="text-xs font-semibold text-slate-500 px-6 py-3">{label}</td>
                 {agents.map((agent) => (
                   <td key={agent.id} className="text-sm text-slate-700 px-6 py-3">{getValue(agent)}</td>
@@ -102,7 +102,7 @@ export default async function AgentComparisonPage({ searchParams }: Props) {
                 <td key={agent.id} className="px-6 py-4">
                   <Link
                     href={`/dashboard/seller/agents/${agent.id}`}
-                    className="inline-flex px-4 py-2 rounded-xl bg-[#1B4D3E] text-white text-xs font-semibold hover:bg-[#2D7A5F] transition-colors"
+                    className="inline-flex px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-semibold hover:bg-brand-primary-light transition-colors"
                   >
                     Request Valuation
                   </Link>

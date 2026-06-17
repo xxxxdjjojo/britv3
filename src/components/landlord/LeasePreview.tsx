@@ -299,7 +299,7 @@ export default function LeasePreview({
   return (
     <div className="space-y-6">
       {/* HTML Preview */}
-      <div className="rounded-lg border border-border bg-white p-8 text-black dark:bg-gray-50">
+      <div className="rounded-lg border border-border bg-white p-8 text-black dark:bg-surface">
         <h2 className="text-center text-xl font-bold">
           Assured Shorthold Tenancy Agreement
         </h2>

@@ -1,4 +1,4 @@
-import { Train, Circle, Bus, Cable } from "lucide-react";
+import { Train, Circle, Bus, Cable, Ship } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -6,7 +6,7 @@ import { Train, Circle, Bus, Cable } from "lucide-react";
 
 export type TransportStop = {
   name: string;
-  type: "rail" | "tube" | "bus" | "tram";
+  type: "rail" | "tube" | "bus" | "tram" | "ferry";
   distance_miles: number;
   lines?: string[];
 };
@@ -29,6 +29,8 @@ function StopIcon({ type }: { type: TransportStop["type"] }) {
       return <Bus className="size-4 shrink-0 text-muted-foreground" />;
     case "tram":
       return <Cable className="size-4 shrink-0 text-muted-foreground" />;
+    case "ferry":
+      return <Ship className="size-4 shrink-0 text-muted-foreground" />;
   }
 }
 
@@ -42,6 +44,8 @@ function typeLabel(type: TransportStop["type"]): string {
       return "Bus";
     case "tram":
       return "Tram";
+    case "ferry":
+      return "Ferry";
   }
 }
 
@@ -59,17 +63,9 @@ function formatDistance(miles: number): string {
  * Server Component — purely presentational, driven by the `nearbyStations` prop.
  */
 export function TransportWidget({ nearbyStations }: TransportWidgetProps) {
+  // Graceful absence: render nothing when there is no data to show.
   if (!nearbyStations || nearbyStations.length === 0) {
-    return (
-      <div className="rounded-xl border bg-card p-4">
-        <h3 className="font-semibold mb-2 flex items-center gap-2">
-          <Train className="size-4" /> Transport
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          Transport information not available
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (

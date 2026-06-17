@@ -137,9 +137,9 @@ export function FraudDetectionClient({ signals }: Props) {
       </Dialog>
 
       {/* Table */}
-      <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-border rounded-lg overflow-hidden bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 bg-neutral-50">
+          <thead className="border-b border-border bg-muted">
             <tr>
               <th className="px-4 py-3 w-10">
                 <Checkbox
@@ -173,8 +173,8 @@ export function FraudDetectionClient({ signals }: Props) {
               <tr
                 key={signal.userId}
                 className={cn(
-                  "hover:bg-neutral-50 transition-colors",
-                  selected.has(signal.userId) && "bg-blue-50",
+                  "hover:bg-muted transition-colors",
+                  selected.has(signal.userId) && "bg-brand-primary/5",
                 )}
               >
                 <td className="px-4 py-3">

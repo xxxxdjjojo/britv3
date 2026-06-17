@@ -88,13 +88,13 @@ function EmbeddedCheckoutView() {
           <Link href={`${basePath}/checkout/subscription`}><ArrowLeft size={16} /></Link>
         </Button>
         <div>
-          <h1
-            className="text-2xl font-semibold text-gray-900 dark:text-gray-100"
-            style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-          >
+          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+            Subscription Checkout
+          </p>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-brand-primary-dark">
             Complete your subscription
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-neutral-500">
             Secure checkout powered by Stripe
           </p>
         </div>
@@ -104,41 +104,41 @@ function EmbeddedCheckoutView() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
         {/* Left: Plan details */}
         <div className="lg:col-span-2 space-y-5">
-          <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-            <h2
-              className="text-lg font-semibold text-gray-900 dark:text-gray-100"
-              style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}
-            >
+          <div className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+              Selected Plan
+            </p>
+            <h2 className="font-heading mt-1 text-2xl font-bold tracking-tight text-brand-primary-dark">
               {planName}
             </h2>
             {formattedPrice && (
-              <div className="mt-2">
+              <div className="mt-3">
                 {isAnnual && monthlyEquivalent ? (
                   <>
-                    <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    <span className="text-3xl font-bold text-brand-primary-dark">
                       {monthlyEquivalent}
                     </span>
-                    <span className="text-sm text-gray-500">/mo</span>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-neutral-500">/mo</span>
+                    <p className="mt-1 text-xs text-neutral-500">
                       {formattedPrice} billed annually
                     </p>
                   </>
                 ) : (
                   <>
-                    <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    <span className="text-3xl font-bold text-brand-primary-dark">
                       {formattedPrice}
                     </span>
-                    <span className="text-sm text-gray-500">/month</span>
+                    <span className="text-sm text-neutral-500">/month</span>
                   </>
                 )}
               </div>
             )}
 
             {features.length > 0 && (
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-5 space-y-2.5 border-t border-border pt-4">
                 {features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-[#1B4D3E] dark:text-emerald-400" />
+                  <li key={f} className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                    <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-brand-primary" />
                     {f}
                   </li>
                 ))}
@@ -146,8 +146,8 @@ function EmbeddedCheckoutView() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-600">
-            <ShieldCheck size={14} />
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-3 text-xs text-neutral-500">
+            <ShieldCheck size={14} className="shrink-0 text-brand-primary" />
             <span>14-day refund guarantee. Cancel anytime.</span>
           </div>
         </div>
@@ -182,7 +182,7 @@ function PlanSelectionView() {
   if (loading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#1B4D3E]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
       </div>
     );
   }
@@ -190,10 +190,13 @@ function PlanSelectionView() {
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100" style={{ fontFamily: "Plus Jakarta Sans, sans-serif" }}>
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Subscription Management
+        </p>
+        <h1 className="font-heading mt-1 text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
           Choose your plan
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-neutral-500">
           All plans include a 14-day refund guarantee. Cancel anytime.
         </p>
       </div>
@@ -209,7 +212,7 @@ function PlanSelectionView() {
         </Link>
       </div>
 
-      <p className="text-center text-xs text-gray-400 dark:text-gray-600">
+      <p className="text-center text-xs text-neutral-400">
         A 2.5% platform commission applies on sales transactions. All billing is managed securely via Stripe.
       </p>
     </div>
@@ -236,7 +239,7 @@ export default function SubscriptionCheckoutPage() {
     <Suspense
       fallback={
         <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#1B4D3E]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
         </div>
       }
     >

@@ -114,10 +114,9 @@ async function SearchContent() {
           message="PostHog is not configured. Set POSTHOG_PERSONAL_API_KEY and POSTHOG_PROJECT_ID to enable search analytics."
         />
         {/* Placeholder chart so layout is useful even without data */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
-            className="text-base font-semibold text-neutral-900 mb-1"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-base font-semibold text-neutral-900 mb-1"
           >
             Search Volume (Placeholder)
           </h2>
@@ -133,10 +132,9 @@ async function SearchContent() {
   return (
     <div className="space-y-8">
       {/* Search Volume Chart */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <h2
-          className="text-base font-semibold text-neutral-900 mb-1"
-          style={{ fontFamily: "Plus Jakarta Sans" }}
+          className="font-heading text-base font-semibold text-neutral-900 mb-1"
         >
           Search Volume (Last 30 days)
         </h2>
@@ -148,10 +146,9 @@ async function SearchContent() {
       {/* Tables */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Top queries */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-base font-semibold text-neutral-900 mb-4"
           >
             Top 20 Search Queries
           </h2>
@@ -180,10 +177,9 @@ async function SearchContent() {
         </div>
 
         {/* Zero-result queries */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-base font-semibold text-neutral-900 mb-4"
           >
             Zero-Result Queries
           </h2>
@@ -233,6 +229,7 @@ export default function SearchQueryInsightsPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Analytics"
         title="Search Query Insights"
         description="Top search queries, zero-result searches, and search volume trends."
       />

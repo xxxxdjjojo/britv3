@@ -90,7 +90,7 @@ export function MaintenanceInboxClient(
             <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
               Maintenance Requests
             </h1>
-            <span className="rounded-full bg-[#1B4D3E]/10 px-2.5 py-0.5 text-sm font-bold text-[#1B4D3E] dark:bg-[#1B4D3E]/30 dark:text-emerald-300">
+            <span className="rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-sm font-bold text-brand-primary dark:bg-brand-primary/30 dark:text-emerald-300">
               {props.initialData.length}
             </span>
           </div>
@@ -101,7 +101,7 @@ export function MaintenanceInboxClient(
         </div>
         <Link
           href="/dashboard/landlord/maintenance/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-[#1B4D3E] px-5 py-3 text-sm font-bold text-white shadow-md shadow-[#1B4D3E]/20 hover:bg-[#1B4D3E]/90 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-5 py-3 text-sm font-bold text-white shadow-md shadow-brand-primary/20 hover:bg-brand-primary/90 transition-colors"
         >
           <Plus className="size-4" />
           New Request
@@ -137,8 +137,8 @@ export function MaintenanceInboxClient(
               onClick={() => setPriorityFilter(p)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 priorityFilter === p
-                  ? "bg-[#1B4D3E] text-white"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                  ? "bg-brand-primary text-white"
+                  : "text-slate-600 hover:bg-muted dark:text-slate-400 dark:hover:bg-slate-800"
               }`}
             >
               {p === "all"
@@ -159,8 +159,8 @@ export function MaintenanceInboxClient(
               onClick={() => setStatusFilter(s)}
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 statusFilter === s
-                  ? "bg-[#1B4D3E] text-white"
-                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                  ? "bg-brand-primary text-white"
+                  : "text-slate-600 hover:bg-muted dark:text-slate-400 dark:hover:bg-slate-800"
               }`}
             >
               {s === "all"
@@ -174,8 +174,8 @@ export function MaintenanceInboxClient(
       {/* Request list */}
       {filtered.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center dark:border-slate-800">
-          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-[#1B4D3E]/10">
-            <Wrench className="size-8 text-[#1B4D3E]" />
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-brand-primary/10">
+            <Wrench className="size-8 text-brand-primary" />
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">
             No requests found
@@ -201,7 +201,7 @@ export function MaintenanceInboxClient(
                     ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
                     : request.priority === "high"
                       ? "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
-                      : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                      : "bg-muted text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                 }`}
               >
                 <CategoryIcon
@@ -213,7 +213,7 @@ export function MaintenanceInboxClient(
               {/* Main content */}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-bold text-slate-900 group-hover:text-[#1B4D3E] transition-colors dark:text-white dark:group-hover:text-emerald-400">
+                  <h3 className="font-bold text-slate-900 group-hover:text-brand-primary transition-colors dark:text-white dark:group-hover:text-emerald-400">
                     {request.title}
                   </h3>
                   <MaintenancePriorityBadge priority={request.priority} />

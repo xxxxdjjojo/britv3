@@ -85,7 +85,7 @@ export default async function FieldPaymentsPage() {
             <p className="text-sm text-neutral-500">No invoices awaiting payment.</p>
             <Link
               href="/dashboard/provider/payments"
-              className="mt-3 inline-block text-sm font-medium text-[#1B4D3E] hover:underline"
+              className="mt-3 inline-block text-sm font-medium text-brand-primary hover:underline"
             >
               Create an invoice
             </Link>
@@ -117,7 +117,7 @@ export default async function FieldPaymentsPage() {
 
                     <Link
                       href={`/dashboard/provider/payments/invoices/${invoice.id}`}
-                      className="min-h-10 rounded-lg bg-[#1B4D3E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#163d31]"
+                      className="min-h-10 rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-[#163d31]"
                     >
                       Collect
                     </Link>
@@ -132,7 +132,7 @@ export default async function FieldPaymentsPage() {
       {/* Link to full payments view */}
       <Link
         href="/dashboard/provider/payments"
-        className="block w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-center text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50"
+        className="block w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-center text-sm font-medium text-neutral-700 shadow-sm hover:bg-surface"
       >
         View all payments
       </Link>

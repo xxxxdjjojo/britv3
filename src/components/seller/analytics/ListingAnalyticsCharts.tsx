@@ -63,14 +63,14 @@ export function ListingAnalyticsCharts({ listingId, initialSummary }: Props) {
             className={cn(
               "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150",
               days === d
-                ? "bg-[#1B4D3E] text-white shadow-sm"
+                ? "bg-brand-primary text-white shadow-sm"
                 : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300",
             )}
           >
             {label}
           </button>
         ))}
-        {loading && <div className="h-4 w-4 rounded-full border-2 border-[#1B4D3E]/30 border-t-[#1B4D3E] animate-spin ml-2" />}
+        {loading && <div className="h-4 w-4 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin ml-2" />}
       </div>
 
       <div className={cn("bg-white rounded-2xl shadow-sm border border-slate-200 p-6 transition-opacity duration-200", loading ? "opacity-50" : "opacity-100")}>

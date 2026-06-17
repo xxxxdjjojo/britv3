@@ -8,11 +8,11 @@ import {
 } from "@/services/provider/provider-dashboard-service";
 import { getCashPosition } from "@/services/provider/provider-cash-position-service";
 import { getSmartActions } from "@/services/provider/provider-smart-actions-service";
-import { KPICard } from "@/components/dashboard/provider/KPICard";
 import { ActivityFeed } from "@/components/dashboard/provider/ActivityFeed";
 import { UpcomingJobsList } from "@/components/dashboard/provider/UpcomingJobsList";
 import { CashPositionWidget } from "@/components/dashboard/provider/CashPositionWidget";
 import { SmartActionsCard } from "@/components/dashboard/provider/SmartActionsCard";
+import { SectionHeader } from "@/components/dashboard/SectionHeader";
 import { Button } from "@/components/ui/button";
 import {
   Inbox,
@@ -23,6 +23,7 @@ import {
   CreditCard,
   Image,
   ArrowRight,
+  type LucideIcon,
 } from "lucide-react";
 
 export default async function ProviderDashboardPage() {
@@ -49,13 +50,14 @@ export default async function ProviderDashboardPage() {
   const monthlyEarnings = `£${(stats.totalEarningsPence / 100).toFixed(2)}`;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl">
-      {/* ── Page Header ─────────────────────────────────────────────────────── */}
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
-          {businessName
-            ? `Welcome back, ${businessName}`
-            : "Provider Dashboard"}
+    <div className="flex flex-col gap-8 p-6 md:p-8 max-w-screen-xl">
+      {/* ── Page Header — Stitch editorial: eyebrow above a large heading ────── */}
+      <div className="flex flex-col gap-1">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Welcome back
+        </p>
+        <h1 className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark md:text-4xl">
+          {businessName ?? "Provider Dashboard"}
         </h1>
         <p className="mt-1 text-sm text-neutral-500">
           Here&apos;s what&apos;s happening with your business today.
@@ -64,7 +66,7 @@ export default async function ProviderDashboardPage() {
 
       {/* ── Verification Banner ──────────────────────────────────────────────── */}
       {!isVerified && (
-        <div className="w-full rounded-xl bg-[#1B4D3E] p-5 text-white">
+        <div className="w-full rounded-xl bg-brand-primary p-5 text-white">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1 space-y-3">
               <p className="text-sm font-semibold">
@@ -85,102 +87,107 @@ export default async function ProviderDashboardPage() {
                 </div>
               </div>
             </div>
-            <Link href="/dashboard/provider/verification">
-              <Button
-                size="sm"
-                className="shrink-0 bg-white text-[#1B4D3E] hover:bg-white/90 font-semibold"
-              >
+            <Button
+              asChild
+              size="sm"
+              className="shrink-0 bg-white text-brand-primary hover:bg-white/90 font-semibold"
+            >
+              <Link href="/dashboard/provider/verification">
                 Complete Verification
                 <ArrowRight className="ml-1.5 size-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       )}
 
+      {/* ── 4 KPI Tiles — Stitch editorial row ──────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {(
+          [
+            { label: "New Leads", value: stats.totalLeads, Icon: Inbox },
+            { label: "Active Jobs", value: stats.activeJobs, Icon: Briefcase },
+            {
+              label: "Pending Reviews",
+              value: stats.averageRating > 0 ? `${stats.averageRating}★` : "—",
+              Icon: Star,
+            },
+            { label: "Total Earnings", value: monthlyEarnings, Icon: PoundSterling },
+          ] satisfies { label: string; value: string | number; Icon: LucideIcon }[]
+        ).map(({ label, value, Icon }) => (
+          <div
+            key={label}
+            className="flex items-start justify-between gap-3 rounded-xl border border-border bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+          >
+            <div className="flex flex-col gap-1.5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+                {label}
+              </p>
+              <p className="font-heading text-3xl font-bold tracking-tight text-brand-primary-dark">
+                {value}
+              </p>
+            </div>
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary">
+              <Icon className="size-5" />
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* ── Smart Action Suggestions ─────────────────────────────────────────── */}
       <SmartActionsCard actions={smartActions} />
 
-      {/* ── 4 KPI Cards ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <KPICard
-          title="New Leads"
-          value={stats.totalLeads}
-          icon={Inbox}
-        />
-        <KPICard
-          title="Active Jobs"
-          value={stats.activeJobs}
-          icon={Briefcase}
-        />
-        <KPICard
-          title="Pending Reviews"
-          value={stats.averageRating > 0 ? `${stats.averageRating}★` : "—"}
-          icon={Star}
-        />
-        <KPICard
-          title="Total Earnings"
-          value={monthlyEarnings}
-          icon={PoundSterling}
-        />
+      {/* ── Two-Column Grid: Upcoming Jobs + Activity Feed ───────────────────── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Upcoming Jobs */}
+        <section className="flex flex-col gap-4 rounded-xl border border-border bg-white p-6 shadow-sm">
+          <SectionHeader
+            title="Upcoming Jobs"
+            action={{ label: "View all", href: "/dashboard/provider/jobs/active" }}
+          />
+          <UpcomingJobsList jobs={upcomingJobs} />
+        </section>
+
+        {/* Recent Activity */}
+        <section className="flex flex-col gap-4 rounded-xl border border-border bg-white p-6 shadow-sm">
+          <SectionHeader title="Recent Activity" />
+          <ActivityFeed items={activity} />
+        </section>
       </div>
 
       {/* ── Cash Position Widget ─────────────────────────────────────────────── */}
       <CashPositionWidget cashPosition={cashPosition} />
 
-      {/* ── Two-Column Grid: Activity + Upcoming Jobs ────────────────────────── */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <h2 className="mb-4 text-base font-semibold text-neutral-900">Recent Activity</h2>
-          <ActivityFeed items={activity} />
-        </div>
-
-        {/* Upcoming Jobs */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-neutral-900">Upcoming Jobs</h2>
-            <Link
-              href="/dashboard/provider/jobs/active"
-              className="text-xs font-medium text-[#1B4D3E] hover:underline"
-            >
-              View all
-            </Link>
-          </div>
-          <UpcomingJobsList jobs={upcomingJobs} />
-        </div>
-      </div>
-
       {/* ── Quick Actions ────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-        <h2 className="mb-4 text-base font-semibold text-neutral-900">Quick Actions</h2>
+      <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
+        <SectionHeader title="Quick Actions" className="mb-4" />
         <div className="flex flex-wrap gap-3">
-          <Link href="/dashboard/provider/quotes/builder">
-            <Button className="bg-[#1B4D3E] text-white hover:bg-[#163d31]">
+          <Button asChild className="bg-brand-primary text-white hover:bg-brand-primary/90">
+            <Link href="/dashboard/provider/quotes/builder">
               <FileText className="mr-2 size-4" />
               New Quote
-            </Button>
-          </Link>
-          <Link href="/dashboard/provider/payments">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="border-border text-neutral-700 hover:bg-surface">
+            <Link href="/dashboard/provider/payments">
               <CreditCard className="mr-2 size-4" />
               Log Payment
-            </Button>
-          </Link>
-          <Link href="/dashboard/provider/portfolio">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="border-border text-neutral-700 hover:bg-surface">
+            <Link href="/dashboard/provider/portfolio">
               <Image className="mr-2 size-4" />
               Add Portfolio Item
-            </Button>
-          </Link>
-          <Link href="/dashboard/provider/reviews">
-            <Button variant="outline" className="border-neutral-200 text-neutral-700 hover:bg-neutral-50">
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="border-border text-neutral-700 hover:bg-surface">
+            <Link href="/dashboard/provider/reviews">
               <Star className="mr-2 size-4" />
               Invite to Review
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -7,13 +7,22 @@ import { toast } from "sonner";
 import type { DepositRegistration, DepositScheme, DepositStatus } from "@/types/landlord";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { DepositCard } from "@/components/landlord/DepositCard";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Shield, AlertCircle, Clock, CheckCircle2, Filter, Download, PoundSterling } from "lucide-react";
 
 type DepositWithTenancy = DepositRegistration & {
   tenancy: {
@@ -58,6 +67,156 @@ const gbpFormatter = new Intl.NumberFormat("en-GB", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
+
+// ---------------------------------------------------------------------------
+// DepositTableRow — one row in the tenancy deposits table
+// ---------------------------------------------------------------------------
+
+function formatUKDate(dateStr: string | null): string {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+const SCHEME_LABELS: Record<string, string> = {
+  TDS: "TDS",
+  DPS: "DPS",
+  mydeposits: "mydeposits",
+  other: "Other",
+};
+
+const STATUS_STYLES: Record<
+  DepositStatus,
+  { bg: string; text: string; label: string }
+> = {
+  pending: {
+    bg: "bg-warning/10",
+    text: "text-warning",
+    label: "Pending",
+  },
+  registered: {
+    bg: "bg-success/10",
+    text: "text-success",
+    label: "Registered",
+  },
+  returned: {
+    bg: "bg-neutral-100",
+    text: "text-neutral-500",
+    label: "Returned",
+  },
+  disputed: {
+    bg: "bg-error/10",
+    text: "text-error",
+    label: "Disputed",
+  },
+};
+
+type DepositTableRowProps = Readonly<{
+  deposit: DepositWithTenancy;
+  onEdit: (deposit: DepositWithTenancy) => void;
+  onMarkRegistered: (id: string) => void;
+}>;
+
+function DepositTableRow({ deposit, onEdit, onMarkRegistered }: DepositTableRowProps) {
+  const statusStyle = STATUS_STYLES[deposit.status] ?? STATUS_STYLES.pending;
+  const schemeName = SCHEME_LABELS[deposit.scheme] ?? deposit.scheme;
+
+  // Initials avatar from tenant name
+  const initials = deposit.tenancy.tenant_name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0] ?? "")
+    .join("")
+    .toUpperCase();
+
+  return (
+    <TableRow className="border-border">
+      {/* Tenant & Property */}
+      <TableCell className="pl-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-[11px] font-bold text-brand-primary">
+            {initials}
+          </div>
+          <div className="space-y-0.5">
+            <p className="text-sm font-semibold text-neutral-900">
+              {deposit.tenancy.tenant_name}
+            </p>
+            <p className="text-xs text-neutral-500">
+              {deposit.tenancy.property_address || "Unknown property"}
+            </p>
+          </div>
+        </div>
+      </TableCell>
+
+      {/* Deposit Amount */}
+      <TableCell className="text-sm font-semibold text-neutral-900">
+        {gbpFormatter.format(deposit.amount)}
+      </TableCell>
+
+      {/* Scheme */}
+      <TableCell>
+        <span className="inline-flex items-center rounded bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-700">
+          {schemeName}
+        </span>
+      </TableCell>
+
+      {/* Registration date */}
+      <TableCell className="text-sm">
+        {deposit.registration_date ? (
+          <span className="text-neutral-700">{formatUKDate(deposit.registration_date)}</span>
+        ) : (
+          <span className="text-warning text-xs font-medium">Not registered</span>
+        )}
+      </TableCell>
+
+      {/* Prescribed info sent */}
+      <TableCell className="text-sm">
+        {deposit.prescribed_info_sent_date ? (
+          <span className="text-neutral-700">{formatUKDate(deposit.prescribed_info_sent_date)}</span>
+        ) : (
+          <span className="text-warning text-xs font-medium">Not sent</span>
+        )}
+      </TableCell>
+
+      {/* Status */}
+      <TableCell>
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyle.bg} ${statusStyle.text}`}
+        >
+          {statusStyle.label}
+        </span>
+      </TableCell>
+
+      {/* Actions */}
+      <TableCell className="pr-5">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={() => onEdit(deposit)}
+          >
+            Edit
+          </Button>
+          {deposit.status === "pending" && (
+            <Button
+              size="sm"
+              className="h-7 px-3 text-xs"
+              onClick={() => onMarkRegistered(deposit.id)}
+            >
+              Mark Registered
+            </Button>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+// ---------------------------------------------------------------------------
 
 /**
  * Client wrapper for Deposit Management page (9.25).
@@ -228,8 +387,9 @@ export function DepositManagementClient({
     <div className="space-y-6">
       {/* Compliance warning banner */}
       {unregisteredDeposits.length > 0 && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/20">
-          <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+        <div className="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/5 p-4">
+          <AlertCircle className="mt-0.5 size-4 shrink-0 text-warning" />
+          <p className="text-sm font-medium text-warning">
             Compliance warning: {unregisteredDeposits.length} deposit
             {unregisteredDeposits.length > 1 ? "s" : ""} unregistered for more
             than 30 days. Register with a government-approved scheme to avoid
@@ -238,68 +398,194 @@ export function DepositManagementClient({
         </div>
       )}
 
-      {/* Summary stats */}
+      {/* Summary stats + CTA */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Total Deposits Held</p>
-            <p className="mt-1 text-2xl font-bold">
-              {gbpFormatter.format(totalHeld)}
-            </p>
-          </div>
-        </Card>
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Registered</p>
-            <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
-              {registeredCount}
-            </p>
-          </div>
-        </Card>
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Pending</p>
-            <p className="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">
-              {pendingCount}
-            </p>
-          </div>
-        </Card>
-        <Card>
-          <div className="p-4">
-            <p className="text-sm text-muted-foreground">Disputed</p>
-            <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
-              {disputedCount}
-            </p>
-          </div>
-        </Card>
-      </div>
-
-      {/* Register New Deposit button */}
-      <div className="flex justify-end">
-        <Button size="sm" onClick={handleOpenCreate}>
-          Register New Deposit
-        </Button>
-      </div>
-
-      {/* Deposit cards grid */}
-      {deposits.length === 0 ? (
-        <Card>
-          <CardContent className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-            No deposit registrations found.
+        {/* Stat 1 — Total Deposits Held */}
+        <Card className="rounded-xl border-border">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-primary/10">
+              <PoundSterling className="size-5 text-brand-primary" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-400">
+                Total Deposits Held
+              </p>
+              <p className="font-heading text-2xl font-bold tracking-tight text-brand-primary-dark">
+                {gbpFormatter.format(totalHeld)}
+              </p>
+            </div>
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {deposits.map((deposit) => (
-            <DepositCard
-              key={deposit.id}
-              deposit={deposit}
-              onEdit={handleOpenEdit}
-              onMarkRegistered={(id) => markRegisteredMutation.mutate(id)}
-            />
-          ))}
+
+        {/* Stat 2 — Registered */}
+        <Card className="rounded-xl border-border">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-success/10">
+              <CheckCircle2 className="size-5 text-success" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-400">
+                Registered
+              </p>
+              <p className="font-heading text-2xl font-bold tracking-tight text-success">
+                {registeredCount}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stat 3 — Pending */}
+        <Card className="rounded-xl border-border">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-warning/10">
+              <Clock className="size-5 text-warning" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-400">
+                Pending
+              </p>
+              <p className="font-heading text-2xl font-bold tracking-tight text-warning">
+                {pendingCount}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stat 4 — Disputed */}
+        <Card className="rounded-xl border-border">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-error/10">
+              <AlertCircle className="size-5 text-error" />
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-400">
+                Disputed
+              </p>
+              <p className="font-heading text-2xl font-bold tracking-tight text-error">
+                {disputedCount}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tenancy Deposits section header */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="font-heading text-lg font-bold tracking-tight text-neutral-900">
+            Tenancy Deposits
+          </h2>
+          {deposits.length > 0 && (
+            <Badge className="border-0 bg-brand-primary/10 text-brand-primary text-[11px] font-bold uppercase tracking-[0.08em]">
+              {deposits.length} Total
+            </Badge>
+          )}
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+            <Filter className="size-3.5" />
+            Filter
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+            <Download className="size-3.5" />
+            Export CSV
+          </Button>
+          <Button size="sm" className="text-xs" onClick={handleOpenCreate}>
+            Register New Deposit
+          </Button>
+        </div>
+      </div>
+
+      {/* Deposit table */}
+      <Card className="rounded-xl border-border">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border">
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400 pl-5">
+                  Tenant &amp; Property
+                </TableHead>
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400">
+                  Deposit Amount
+                </TableHead>
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400">
+                  Scheme
+                </TableHead>
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400">
+                  Registered
+                </TableHead>
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400">
+                  Prescribed Info Sent
+                </TableHead>
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400">
+                  Status
+                </TableHead>
+                <TableHead className="text-[11px] font-bold uppercase tracking-[0.08em] text-neutral-400 pr-5">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deposits.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="h-32 text-center text-sm text-muted-foreground"
+                  >
+                    No deposit registrations found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                deposits.map((deposit) => (
+                  <DepositTableRow
+                    key={deposit.id}
+                    deposit={deposit}
+                    onEdit={handleOpenEdit}
+                    onMarkRegistered={(id) => markRegisteredMutation.mutate(id)}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
+
+      {/* Protection Compliance Reminder */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="md:col-span-2 rounded-xl border border-border bg-brand-primary/5 p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-success/10">
+              <Shield className="size-5 text-success" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-neutral-900">
+                Protection Compliance Reminder
+              </p>
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                In the UK, you must protect a tenant&apos;s deposit within 30 days of
+                receiving it. Failure to do so can result in penalties of up to 3 times
+                the deposit amount. Register with a government-approved scheme to stay compliant.
+              </p>
+            </div>
+          </div>
+        </div>
+        <Card className="rounded-xl border-border">
+          <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
+            <div className="flex size-9 items-center justify-center rounded-full bg-brand-primary/10">
+              <Shield className="size-5 text-brand-primary" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-neutral-900">Need Help?</p>
+              <p className="text-xs text-neutral-500">
+                Our compliance experts are available to help with deposit registration and dispute resolution.
+              </p>
+            </div>
+            <Button variant="outline" size="sm" className="w-full text-xs">
+              Open Support Ticket
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Register / Edit Deposit Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>

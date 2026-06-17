@@ -66,7 +66,7 @@ export default function AgentSidebar({
       </div>
 
       {/* Map placeholder */}
-      <div className="h-32 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-sm border border-slate-200 dark:border-slate-700">
+      <div className="h-32 rounded-lg bg-muted dark:bg-slate-800 flex items-center justify-center text-slate-400 text-sm border border-slate-200 dark:border-slate-700">
         Map view
       </div>
 
@@ -121,10 +121,10 @@ export default function AgentSidebar({
           <div className="space-y-3">
             {[1, 2].map((i) => (
               <div key={i} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                <div className="w-10 h-10 rounded-full bg-muted dark:bg-slate-800 animate-pulse" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded animate-pulse w-3/4" />
-                  <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded animate-pulse w-1/2" />
+                  <div className="h-3 bg-muted dark:bg-slate-800 rounded animate-pulse w-3/4" />
+                  <div className="h-2.5 bg-muted dark:bg-slate-800 rounded animate-pulse w-1/2" />
                 </div>
               </div>
             ))}

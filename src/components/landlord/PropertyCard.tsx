@@ -39,7 +39,7 @@ export function PropertyCard(
                   ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                   : isOccupied
                     ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                    : "bg-gray-100 text-gray-600 dark:bg-gray-800/30 dark:text-gray-400"
+                    : "bg-muted text-gray-600 dark:bg-gray-800/30 dark:text-gray-400"
               }`}
             >
               {expired ? "Expired" : isOccupied ? "Occupied" : "Vacant"}

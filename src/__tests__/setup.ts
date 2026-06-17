@@ -26,6 +26,22 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 // ---------------------------------------------------------------------------
+// IntersectionObserver stub (happy-dom does not implement it).
+// Used by LegalRightToc scroll-spy in legal page render tests.
+// ---------------------------------------------------------------------------
+vi.stubGlobal(
+  "IntersectionObserver",
+  class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  },
+);
+
+// ---------------------------------------------------------------------------
 // Reset all mocks between tests
 // ---------------------------------------------------------------------------
 

@@ -115,7 +115,7 @@ export function Step4Description({ listing, listingId }: Props) {
                   className={cn(
                     "flex-1 py-3 px-3 rounded-xl border-2 text-left transition-all duration-150",
                     tone === key
-                      ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
+                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
                       : "border-slate-200 text-slate-600 hover:border-slate-300",
                   )}
                 >
@@ -142,7 +142,7 @@ export function Step4Description({ listing, listingId }: Props) {
                   "flex items-center gap-1.5 text-sm font-bold transition-colors",
                   attemptsUsed >= 3
                     ? "text-slate-300 cursor-not-allowed"
-                    : "text-[#1B4D3E] hover:text-[#2D7A5F]",
+                    : "text-brand-primary hover:text-brand-primary-light",
                 )}
               >
                 <Sparkles size={16} />
@@ -157,7 +157,7 @@ export function Step4Description({ listing, listingId }: Props) {
               onChange={(e) => setDescription(e.target.value.slice(0, MAX_CHARS))}
               rows={10}
               placeholder="Write your property description here, or use AI to generate one above..."
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30 focus:border-[#1B4D3E]"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               style={{ minHeight: 300 }}
             />
             <div className="absolute bottom-3 right-3 flex items-center gap-2">
@@ -182,7 +182,7 @@ export function Step4Description({ listing, listingId }: Props) {
                     value={point.value}
                     onChange={(e) => updateKeyPoint(point.id, e.target.value)}
                     placeholder={`e.g. ${["South-facing garden", "Walking distance to tube", "Recently refurbished kitchen"][i % 3]}`}
-                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/30"
+                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                   />
                   {keyPoints.length > 1 && (
                     <button
@@ -198,7 +198,7 @@ export function Step4Description({ listing, listingId }: Props) {
               <button
                 type="button"
                 onClick={addKeyPoint}
-                className="text-sm text-[#1B4D3E] font-semibold hover:underline"
+                className="text-sm text-brand-primary font-semibold hover:underline"
               >
                 + Add another point
               </button>
@@ -220,7 +220,7 @@ export function Step4Description({ listing, listingId }: Props) {
                 className="w-full rounded-xl aspect-video object-cover"
               />
             ) : (
-              <div className="w-full rounded-xl aspect-video bg-slate-100 flex items-center justify-center text-slate-300 text-xs">
+              <div className="w-full rounded-xl aspect-video bg-muted flex items-center justify-center text-slate-300 text-xs">
                 No photo yet
               </div>
             )}
@@ -234,7 +234,7 @@ export function Step4Description({ listing, listingId }: Props) {
               ) : (
                 <div className="mt-2 space-y-1.5">
                   {[100, 80, 90, 60].map((w, i) => (
-                    <div key={i} className="h-2.5 bg-slate-100 rounded-full animate-pulse" style={{ width: `${w}%` }} />
+                    <div key={i} className="h-2.5 bg-muted rounded-full animate-pulse" style={{ width: `${w}%` }} />
                   ))}
                 </div>
               )}

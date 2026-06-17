@@ -103,7 +103,7 @@ export default async function NationalMarketTrendsPage() {
             >
               <span className="text-[11px] text-neutral-400 font-medium uppercase tracking-wide">{label}</span>
               <span className="text-xl font-extrabold text-neutral-900 dark:text-neutral-100 leading-none">{value}</span>
-              <span className={`text-xs font-semibold ${up ? "text-emerald-600" : "text-red-500"}`}>{sub}</span>
+              <span className={`text-xs font-semibold ${up ? "text-success" : "text-red-500"}`}>{sub}</span>
             </div>
           ))}
         </div>
@@ -170,7 +170,7 @@ export default async function NationalMarketTrendsPage() {
                   return (
                     <tr
                       key={r.slug}
-                      className={`border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors ${i % 2 === 0 ? "" : "bg-neutral-50 dark:bg-neutral-800/30"}`}
+                      className={`border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors ${i % 2 === 0 ? "" : "bg-muted dark:bg-neutral-800/30"}`}
                     >
                       <td className="px-4 py-3">
                         <Link
@@ -183,7 +183,7 @@ export default async function NationalMarketTrendsPage() {
                       <td className="px-4 py-3 text-right font-semibold text-neutral-800 dark:text-neutral-200">
                         {r.avgPriceFormatted}
                       </td>
-                      <td className={`px-4 py-3 text-right font-bold ${r.yoyChange >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                      <td className={`px-4 py-3 text-right font-bold ${r.yoyChange >= 0 ? "text-success" : "text-red-500"}`}>
                         {r.yoyChangeFormatted}
                       </td>
                       <td className="px-4 py-3 text-right text-neutral-600 dark:text-neutral-400 hidden sm:table-cell">

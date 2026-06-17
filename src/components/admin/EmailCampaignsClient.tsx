@@ -170,7 +170,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
       {showCreate && (
         <form
           onSubmit={handleCreate}
-          className="rounded-lg border border-neutral-200 p-4 space-y-4 bg-neutral-50"
+          className="rounded-lg border border-border p-4 space-y-4 bg-muted"
         >
           <h3 className="font-semibold text-neutral-800">
             Create Email Campaign
@@ -204,8 +204,8 @@ export function EmailCampaignsClient({ campaigns }: Props) {
 
           <div className="space-y-1.5">
             <Label>Content</Label>
-            <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
-              <div className="flex flex-wrap gap-1 border-b border-neutral-200 p-2 bg-neutral-50">
+            <div className="border border-border rounded-lg overflow-hidden bg-card">
+              <div className="flex flex-wrap gap-1 border-b border-border p-2 bg-muted">
                 <button
                   type="button"
                   onClick={() => editor?.chain().focus().toggleBold().run()}
@@ -256,8 +256,8 @@ export function EmailCampaignsClient({ campaigns }: Props) {
                   onClick={() => toggleRole(role)}
                   className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors capitalize ${
                     form.target_roles.includes(role)
-                      ? "bg-[#1B4D3E] text-white border-[#1B4D3E]"
-                      : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400"
+                      ? "bg-brand-primary text-white border-brand-primary"
+                      : "bg-card text-neutral-600 border-border hover:border-neutral-400"
                   }`}
                 >
                   {role}
@@ -308,9 +308,9 @@ export function EmailCampaignsClient({ campaigns }: Props) {
           description="Create email campaigns to reach your users."
         />
       ) : (
-        <div className="rounded-lg border border-neutral-200 overflow-hidden">
+        <div className="rounded-lg border border-border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-neutral-50 border-b border-neutral-200">
+            <thead className="bg-muted border-b border-border">
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-neutral-600">
                   Name
@@ -332,7 +332,7 @@ export function EmailCampaignsClient({ campaigns }: Props) {
             </thead>
             <tbody className="divide-y divide-neutral-100">
               {campaigns.map((campaign) => (
-                <tr key={campaign.id} className="hover:bg-neutral-50">
+                <tr key={campaign.id} className="hover:bg-muted">
                   <td className="px-4 py-3 font-medium text-neutral-800">
                     {campaign.name}
                   </td>

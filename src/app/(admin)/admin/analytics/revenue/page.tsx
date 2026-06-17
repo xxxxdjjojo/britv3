@@ -98,11 +98,10 @@ function KpiCard({
   subtitle,
 }: Readonly<{ label: string; value: string; subtitle?: string }>) {
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-5">
+    <div className="rounded-xl border border-border bg-card p-5">
       <p className="text-xs text-neutral-500 mb-0.5">{label}</p>
       <p
-        className="text-2xl font-semibold text-neutral-900"
-        style={{ fontFamily: "Plus Jakarta Sans" }}
+        className="font-heading text-2xl font-semibold text-neutral-900"
       >
         {value}
       </p>
@@ -159,10 +158,9 @@ async function RevenueContent() {
 
       {/* Subscription breakdown */}
       {stripeData && stripeData.planBreakdown.length > 0 && (
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-border bg-card p-6">
           <h2
-            className="text-base font-semibold text-neutral-900 mb-4"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading text-base font-semibold text-neutral-900 mb-4"
           >
             Subscription Breakdown
           </h2>
@@ -188,10 +186,9 @@ async function RevenueContent() {
       )}
 
       {/* Monthly Revenue Chart */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <h2
-          className="text-base font-semibold text-neutral-900 mb-1"
-          style={{ fontFamily: "Plus Jakarta Sans" }}
+          className="font-heading text-base font-semibold text-neutral-900 mb-1"
         >
           Monthly Revenue
         </h2>
@@ -223,6 +220,7 @@ export default function RevenueReportsPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow="Analytics"
         title="Revenue Reports"
         description="Subscription MRR, transaction volume, and platform commission."
       />

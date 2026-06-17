@@ -36,11 +36,11 @@ const CONTACT_TYPE_LABELS: Record<IntroductionContactType, string> = {
 const STATUS_BADGES: Record<IntroductionStatus, { label: string; className: string }> = {
   active: { label: "Active", className: "bg-green-100 text-green-700" },
   rebutted: { label: "Rebutted", className: "bg-red-100 text-red-700" },
-  cancelled_manifest_error: { label: "Cancelled", className: "bg-gray-100 text-gray-600" },
+  cancelled_manifest_error: { label: "Cancelled", className: "bg-muted text-gray-600" },
   converted_sstc: { label: "SSTC", className: "bg-blue-100 text-blue-700" },
   converted_exchanged: { label: "Exchanged", className: "bg-blue-100 text-blue-700" },
   converted_completed: { label: "Completed", className: "bg-blue-100 text-blue-700" },
-  expired: { label: "Expired", className: "bg-gray-100 text-gray-600" },
+  expired: { label: "Expired", className: "bg-muted text-gray-600" },
 };
 
 export type IntroductionRow = AgentIntroduction & {

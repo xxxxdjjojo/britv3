@@ -340,7 +340,7 @@ export function QuoteModal({
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-2.5 px-4 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm"
+                  className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-2.5 px-4 rounded-lg font-semibold hover:bg-surface dark:hover:bg-slate-800 transition-colors text-sm"
                 >
                   &larr; Back
                 </button>
@@ -360,7 +360,7 @@ export function QuoteModal({
         {/* Step 3 — Confirmation */}
         {step === 3 && (
           <div className="py-6 text-center space-y-4">
-            <CheckCircle className="w-12 h-12 text-[#1B4D3E] mx-auto" />
+            <CheckCircle className="w-12 h-12 text-brand-primary mx-auto" />
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Request Sent!
@@ -373,7 +373,7 @@ export function QuoteModal({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="bg-[#1B4D3E] text-white py-2.5 px-8 rounded-lg font-semibold hover:bg-emerald-800 transition-colors text-sm"
+              className="bg-brand-primary text-white py-2.5 px-8 rounded-lg font-semibold hover:bg-emerald-800 transition-colors text-sm"
             >
               Done
             </button>

@@ -10,6 +10,7 @@ export default async function FeatureFlagsPage() {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="Feature Flags"
         description="Toggle features on/off and control rollout percentages."
       />

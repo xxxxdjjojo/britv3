@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -18,13 +19,17 @@ function AccountSuspendedContent() {
   const reason = SUSPENSION_REASONS[code] ?? SUSPENSION_REASONS.manual_review;
 
   return (
-    <div className="space-y-6 text-center">
-      <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-error/10">
-        <ShieldAlert className="size-8 text-error" />
+    <div className="space-y-6">
+      {/* Icon */}
+      <div className="flex justify-center">
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-error/10">
+          <ShieldAlert className="size-8 text-error" />
+        </div>
       </div>
 
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-neutral-900">
+      {/* Heading + description */}
+      <div className="text-center">
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">
           Your account has been suspended
         </h1>
         <p className="mt-2 font-body text-sm text-neutral-500">
@@ -32,15 +37,29 @@ function AccountSuspendedContent() {
         </p>
       </div>
 
+      {/* Actions */}
       <div className="flex flex-col gap-3">
-        <a href="mailto:support@britestate.co.uk">
-          <Button size="lg">Contact Support</Button>
-        </a>
-        <a href="mailto:appeals@britestate.co.uk">
-          <Button variant="outline" size="lg">
-            Appeal This Decision
-          </Button>
-        </a>
+        <Button asChild size="lg" className="w-full">
+          <a href="mailto:support@britestate.co.uk">Contact Support</a>
+        </Button>
+        <Button asChild variant="outline" size="lg" className="w-full">
+          <a href="mailto:appeals@britestate.co.uk">Appeal This Decision</a>
+        </Button>
+      </div>
+
+      {/* Footer */}
+      <div className="space-y-2 text-center">
+        <p className="font-body text-xs text-neutral-400">
+          Please contact our support team to appeal this decision.
+        </p>
+        <div className="flex justify-center gap-4">
+          <Link href="/legal/terms" className="font-body text-xs text-neutral-400 underline hover:text-neutral-600">
+            Terms of Service
+          </Link>
+          <Link href="/legal/privacy" className="font-body text-xs text-neutral-400 underline hover:text-neutral-600">
+            Privacy Policy
+          </Link>
+        </div>
       </div>
     </div>
   );

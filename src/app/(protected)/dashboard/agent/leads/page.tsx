@@ -37,8 +37,13 @@ export default async function AgentLeadsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Leads & Pipeline</h1>
-        <p className="text-muted-foreground">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Pipeline
+        </p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark mt-1">
+          Leads &amp; Pipeline
+        </h1>
+        <p className="text-muted-foreground mt-1">
           Manage client enquiries and track your sales pipeline
         </p>
       </div>

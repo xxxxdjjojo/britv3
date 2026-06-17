@@ -32,22 +32,17 @@ export function SubscriptionActions({ returnUrl }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-3 pt-2">
-      <Button
-        onClick={() => void handlePortal()}
-        disabled={isRedirecting}
-        className="bg-[#1B4D3E] text-white hover:bg-[#2D7A5F] gap-1.5"
-      >
-        {isRedirecting ? (
-          <Loader2 size={14} className="animate-spin" />
-        ) : (
-          <ExternalLink size={14} />
-        )}
-        {isRedirecting ? "Opening portal…" : "Manage via Stripe"}
-      </Button>
-      <p className="text-xs text-gray-400 dark:text-gray-500">
-        Upgrade, downgrade, cancel, or update payment via Stripe
-      </p>
-    </div>
+    <Button
+      onClick={() => void handlePortal()}
+      disabled={isRedirecting}
+      className="w-full gap-1.5 bg-brand-primary text-white hover:bg-brand-primary-light"
+    >
+      {isRedirecting ? (
+        <Loader2 size={14} className="animate-spin" />
+      ) : (
+        <ExternalLink size={14} />
+      )}
+      {isRedirecting ? "Opening portal…" : "Manage via Stripe"}
+    </Button>
   );
 }

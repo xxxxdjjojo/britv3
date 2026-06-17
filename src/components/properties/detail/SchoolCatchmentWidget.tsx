@@ -83,23 +83,15 @@ export function SchoolCatchmentWidget({
 }: SchoolCatchmentWidgetProps) {
   if (isLoading) return <SchoolSkeleton />;
 
+  // Graceful absence: render nothing when there is no data to show.
   if (!schools || schools.length === 0) {
-    return (
-      <div className="rounded-xl border bg-card p-4">
-        <h3 className="font-semibold mb-2 flex items-center gap-2">
-          <GraduationCap className="size-4" /> Schools
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          School catchment data unavailable
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div className="rounded-xl border bg-card p-4">
       <h3 className="font-semibold mb-3 flex items-center gap-2">
-        <GraduationCap className="size-4" /> Schools
+        <GraduationCap className="size-4" /> Nearest schools
       </h3>
       <ul className="space-y-3">
         {schools.map((school) => (

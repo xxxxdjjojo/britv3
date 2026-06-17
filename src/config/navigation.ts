@@ -37,6 +37,8 @@ import {
   BarChart3,
   Handshake,
   Grid3X3,
+  Sparkles,
+  Truck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROUTES, dashboardPathForRole } from "@/lib/routes";
@@ -116,6 +118,8 @@ export const NAV_ITEMS: NavItem[] = [
         heading: "Data",
         links: [
           { label: "Sold Prices", href: "/sold-prices" },
+          { label: "Price Heatmap Map", href: "/search/map" },
+          { label: "Wandsworth Market Map", href: "/search/market-map/wandsworth" },
           { label: "Market Trends", href: "/market-trends" },
         ],
       },
@@ -361,6 +365,8 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "Cookies", href: "/legal/cookies" },
       { label: "Accessibility", href: "/legal/accessibility" },
       { label: "Complaints", href: "/legal/complaints" },
+      { label: "Fair Housing", href: "/legal/fair-housing" },
+      { label: "Regulatory", href: "/legal/regulatory" },
     ],
   },
   {
@@ -515,7 +521,11 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: "/dashboard/homebuyer/saved", label: "Saved Properties", icon: Heart },
     { href: "/dashboard/homebuyer/searches", label: "Searches", icon: Search },
     { href: "/dashboard/homebuyer/viewings", label: "Viewings", icon: Eye },
+    { href: "/dashboard/homebuyer/offers", label: "Offers", icon: PoundSterling },
+    { href: "/dashboard/homebuyer/ai-match", label: "AI Match", icon: Sparkles },
     { href: "/dashboard/homebuyer/documents", label: "Documents", icon: FileText },
+    { href: "/dashboard/homebuyer/moving", label: "Moving Checklist", icon: Truck },
+    { href: "/dashboard/homebuyer/calculators", label: "Financial Tools", icon: Calculator },
   ],
   renter: [
     { href: "/dashboard/renter", label: "Overview", icon: LayoutDashboard },
@@ -571,6 +581,21 @@ export const ROLE_NAV_ITEMS: Record<UserRole, RoleNavItem[]> = {
     { href: dashboardPathForRole("mortgage_broker", "analytics"), label: "Analytics", icon: TrendingUp },
     { href: dashboardPathForRole("mortgage_broker", "fca-verification"), label: "FCA Verification", icon: BadgeCheck },
   ],
+};
+
+// ---------------------------------------------------------------------------
+// ROLE_PRIMARY_CTA — Stitch sidebar bottom call-to-action per role.
+// Each href targets an existing route (no invented destinations).
+// ---------------------------------------------------------------------------
+
+export const ROLE_PRIMARY_CTA: Record<UserRole, { label: string; href: string }> = {
+  homebuyer: { label: "Book a Viewing", href: "/search" },
+  renter: { label: "Find a Rental", href: "/search" },
+  seller: { label: "List New Property", href: "/dashboard/seller/listings/new" },
+  landlord: { label: "Add Property", href: "/dashboard/landlord/listings/new" },
+  agent: { label: "New Listing", href: "/dashboard/agent/listings/new" },
+  service_provider: { label: "Find Work", href: "/dashboard/provider/jobs/leads" },
+  mortgage_broker: { label: "New Lead", href: "/dashboard/broker/leads" },
 };
 
 // ---------------------------------------------------------------------------
@@ -645,6 +670,8 @@ export const COMMAND_PALETTE_ROUTES: CommandPaletteRoute[] = [
   // Public — Data
   { label: "Sold Prices", href: "/sold-prices", section: "Data", keywords: ["sold", "prices", "history", "data"] },
   { label: "Market Trends", href: "/market-trends", section: "Data", keywords: ["market", "trends", "data", "analytics"] },
+  { label: "Price Heatmap Map", href: "/search/map", section: "Data", keywords: ["map", "heatmap", "median", "sold", "price", "area", "wandsworth"] },
+  { label: "Wandsworth Market Map", href: "/search/market-map/wandsworth", section: "Data", keywords: ["wandsworth", "market", "map", "median", "sold", "price", "district"] },
 
   // Public — Tools & Valuations
   { label: "Free Instant Valuation", href: "/valuation", section: "Tools", keywords: ["valuation", "value", "estimate", "free"] },
@@ -775,7 +802,7 @@ export function navLinkClasses(options?: {
         base,
         "flex items-center gap-3 rounded-lg px-3 py-2",
         active
-          ? "bg-brand-primary/10 text-brand-primary"
+          ? "bg-brand-primary/10 text-brand-primary border-r-2 border-brand-primary rounded-r-none font-semibold"
           : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
       );
     case "mobile":

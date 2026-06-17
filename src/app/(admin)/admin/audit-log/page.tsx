@@ -28,6 +28,7 @@ export default async function AuditLogPage({
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Operations"
         title="Audit Log"
         description="Chronological record of all admin actions."
       />

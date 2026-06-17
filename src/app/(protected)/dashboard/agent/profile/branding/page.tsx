@@ -22,12 +22,15 @@ export default async function AgencyBrandingPage() {
     .maybeSingle();
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+          Agent Profile
+        </p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark mt-1">
           Agency Branding
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-muted-foreground">
           Customise your logo, brand colours, and social media links.
         </p>
       </div>

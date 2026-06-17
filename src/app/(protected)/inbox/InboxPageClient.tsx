@@ -59,11 +59,11 @@ export default function InboxPageClient() {
   }, [user?.id, queryClient]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden border-t">
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden border-t border-border">
       {/* Conversation list - hidden on mobile when a thread is selected */}
       <div
         className={cn(
-          "w-full max-w-xs border-r bg-card flex-shrink-0",
+          "w-full max-w-xs border-r border-border bg-surface flex-shrink-0",
           activeConversation ? "hidden md:flex md:flex-col" : "flex flex-col",
         )}
       >
@@ -86,7 +86,7 @@ export default function InboxPageClient() {
         {activeConversation ? (
           <MessageThread conversationId={activeConversation} recipientId={activeRecipientId ?? ""} />
         ) : (
-          <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+          <div className="flex-1 flex items-center justify-center bg-surface text-sm text-muted-foreground">
             Select a conversation to start messaging
           </div>
         )}

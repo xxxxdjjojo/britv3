@@ -74,7 +74,7 @@ export default async function SdrAdminPage() {
 
 function Stat({ label, value }: Readonly<{ label: string; value: number }>) {
   return (
-    <div className="rounded-xl border border-neutral-200 p-4">
+    <div className="rounded-xl border border-border p-4">
       <p className="text-xs uppercase tracking-wide text-neutral-500">{label}</p>
       <p className="mt-1 font-heading text-2xl font-bold text-neutral-900">{value}</p>
     </div>

@@ -161,7 +161,7 @@ export default function YieldCalculatorPage() {
               Results
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-gray-50 p-4 text-center">
+              <div className="rounded-lg bg-surface p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
                   Gross Yield
                 </p>
@@ -171,7 +171,7 @@ export default function YieldCalculatorPage() {
                   {result.grossYield}%
                 </p>
               </div>
-              <div className="rounded-lg bg-gray-50 p-4 text-center">
+              <div className="rounded-lg bg-surface p-4 text-center">
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
                   Net Yield
                 </p>

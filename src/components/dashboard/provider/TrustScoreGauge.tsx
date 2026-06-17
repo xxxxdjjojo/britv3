@@ -9,6 +9,27 @@ type TrustScoreGaugeProps = Readonly<{
 const RADIUS = 54;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
+/** Map score to a CSS custom-property-backed color token class. */
+function scoreColorVar(score: number): string {
+  if (score >= 80) return "var(--color-brand-primary)";
+  if (score >= 50) return "var(--color-warning)";
+  return "var(--color-error)";
+}
+
+/** Human-readable tier label for the score band. */
+function scoreTierLabel(score: number): string {
+  if (score >= 80) return "Excellent — you unlock premium placement";
+  if (score >= 50) return "Good — complete remaining steps to improve";
+  return "Complete your profile to build trust";
+}
+
+/** Tailwind text-color class for the centre numeral (no inline hex). */
+function scoreTierTextClass(score: number): string {
+  if (score >= 80) return "text-brand-primary";
+  if (score >= 50) return "text-warning";
+  return "text-error";
+}
+
 export function TrustScoreGauge({ score }: TrustScoreGaugeProps) {
   const clampedScore = Math.max(0, Math.min(100, score));
   const arcRef = useRef<SVGCircleElement>(null);
@@ -29,22 +50,23 @@ export function TrustScoreGauge({ score }: TrustScoreGaugeProps) {
     return () => cancelAnimationFrame(raf);
   }, [clampedScore]);
 
-  const scoreColor =
-    clampedScore >= 80
-      ? "#1B4D3E"
-      : clampedScore >= 50
-        ? "#CA8A04"
-        : "#DC2626";
+  const arcColor = scoreColorVar(clampedScore);
+  const textClass = scoreTierTextClass(clampedScore);
 
   return (
     <div className="flex flex-col items-center gap-4">
+      {/* Section label */}
+      <p className="self-start text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400">
+        Trust Score
+      </p>
+
       {/* SVG gauge */}
       <div className="relative inline-flex items-center justify-center">
         <svg
           width="140"
           height="140"
           viewBox="0 0 140 140"
-          aria-label={`Trust score: ${clampedScore}%`}
+          aria-label={`Trust score: ${clampedScore} out of 100`}
           role="img"
         >
           {/* Track */}
@@ -53,7 +75,7 @@ export function TrustScoreGauge({ score }: TrustScoreGaugeProps) {
             cy="70"
             r={RADIUS}
             fill="none"
-            stroke="#e5e7eb"
+            stroke="var(--color-neutral-200)"
             strokeWidth="12"
           />
           {/* Filled arc */}
@@ -63,7 +85,7 @@ export function TrustScoreGauge({ score }: TrustScoreGaugeProps) {
             cy="70"
             r={RADIUS}
             fill="none"
-            stroke={scoreColor}
+            stroke={arcColor}
             strokeWidth="12"
             strokeLinecap="round"
             strokeDasharray={CIRCUMFERENCE}
@@ -73,27 +95,17 @@ export function TrustScoreGauge({ score }: TrustScoreGaugeProps) {
         </svg>
         {/* Centre text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span
-            className="text-3xl font-black leading-none"
-            style={{ color: scoreColor }}
-          >
+          <span className={["text-3xl font-black leading-none", textClass].join(" ")}>
             {clampedScore}
           </span>
           <span className="text-xs font-semibold text-neutral-500">/ 100</span>
         </div>
       </div>
 
-      {/* Label + description */}
-      <div className="text-center">
-        <p className="text-sm font-semibold text-neutral-900">Trust Score</p>
-        <p className="mt-0.5 text-xs text-neutral-500">
-          {clampedScore >= 80
-            ? "Excellent — you unlock premium placement"
-            : clampedScore >= 50
-              ? "Good — complete remaining steps to improve"
-              : "Complete your profile to build trust"}
-        </p>
-      </div>
+      {/* Description */}
+      <p className="text-center text-xs text-neutral-500">
+        {scoreTierLabel(clampedScore)}
+      </p>
     </div>
   );
 }

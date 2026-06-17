@@ -53,9 +53,9 @@ function StepIndicator(props: Readonly<{ currentStep: number }>) {
             className={cn(
               "flex size-8 items-center justify-center rounded-full text-sm font-bold transition-colors",
               props.currentStep > step.number
-                ? "bg-[#1B4D3E] text-white"
+                ? "bg-brand-primary text-white"
                 : props.currentStep === step.number
-                  ? "border-2 border-[#1B4D3E] text-[#1B4D3E]"
+                  ? "border-2 border-brand-primary text-brand-primary"
                   : "border-2 border-slate-200 text-slate-400",
             )}
           >
@@ -69,7 +69,7 @@ function StepIndicator(props: Readonly<{ currentStep: number }>) {
             className={cn(
               "text-sm font-medium",
               props.currentStep === step.number
-                ? "text-[#1B4D3E]"
+                ? "text-brand-primary"
                 : "text-slate-400",
             )}
           >
@@ -189,7 +189,7 @@ export default function CreateListingPage(
         <div className="mb-8">
           <Link
             href={`/dashboard/landlord/properties/${propertyId}`}
-            className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-[#1B4D3E]"
+            className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-brand-primary"
           >
             <ChevronLeft className="size-4" />
             Back to Property
@@ -289,7 +289,7 @@ export default function CreateListingPage(
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit" className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white">
+              <Button type="submit" className="bg-brand-primary hover:bg-brand-primary/90 text-white">
                 Next: Photos
                 <ChevronRight className="ml-2 size-4" />
               </Button>
@@ -325,7 +325,7 @@ export default function CreateListingPage(
               </Button>
               <Button
                 onClick={() => setStep(3)}
-                className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white"
+                className="bg-brand-primary hover:bg-brand-primary/90 text-white"
               >
                 Next: Review
                 <ChevronRight className="ml-2 size-4" />
@@ -357,7 +357,7 @@ export default function CreateListingPage(
                   </div>
                   <div>
                     <dt className="text-xs font-medium uppercase text-slate-400">Monthly Rent</dt>
-                    <dd className="mt-1 text-sm font-bold text-[#1B4D3E]">
+                    <dd className="mt-1 text-sm font-bold text-brand-primary">
                       £{step1Data.rent_amount.toLocaleString("en-GB")}/mo
                     </dd>
                   </div>
@@ -387,7 +387,7 @@ export default function CreateListingPage(
               <Button
                 onClick={handlePublish}
                 disabled={isSubmitting}
-                className="bg-[#1B4D3E] hover:bg-[#1B4D3E]/90 text-white"
+                className="bg-brand-primary hover:bg-brand-primary/90 text-white"
               >
                 {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Publish Listing

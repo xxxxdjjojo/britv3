@@ -41,6 +41,7 @@ export default async function AdminBlogEditorPage({ params }: Props) {
   return (
     <div>
       <AdminPageHeader
+        eyebrow="Content"
         title={isNew ? "New Blog Article" : "Edit Blog Article"}
         description="Write and publish blog content."
       />

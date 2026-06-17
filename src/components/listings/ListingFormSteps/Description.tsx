@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, FileText, Sparkles, ClipboardList } from "lucide-react";
 import type { ListingFormValues } from "../ListingForm";
 
 const EPC_RATINGS = ["A", "B", "C", "D", "E", "F", "G"] as const;
@@ -62,7 +62,14 @@ export function Description(
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Listing Copy */}
+      <div className="space-y-4">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-brand-primary-dark">
+          <FileText className="size-4 text-brand-primary" />
+          Listing Copy
+        </h3>
+
       {/* Title */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -103,10 +110,17 @@ export function Description(
           <p className="text-xs text-error">{errors.description.message}</p>
         )}
       </div>
+      </div>
 
       {/* Features (tag input) */}
-      <div className="space-y-2">
-        <Label htmlFor="feature-input">Features</Label>
+      <div className="space-y-3 border-t border-border pt-6">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-brand-primary-dark">
+          <Sparkles className="size-4 text-brand-primary" />
+          Key Features
+        </h3>
+        <Label htmlFor="feature-input" className="sr-only">
+          Features
+        </Label>
         <div className="flex gap-2">
           <Input
             id="feature-input"
@@ -143,6 +157,13 @@ export function Description(
           </div>
         )}
       </div>
+
+      {/* Property Information */}
+      <div className="space-y-4 border-t border-border pt-6">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-brand-primary-dark">
+          <ClipboardList className="size-4 text-brand-primary" />
+          Property Information
+        </h3>
 
       {/* EPC */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -238,6 +259,7 @@ export function Description(
         <p className="text-xs text-neutral-400">
           Required under NTSELAT material information rules.
         </p>
+      </div>
       </div>
     </div>
   );

@@ -118,7 +118,7 @@ export default async function PortfolioAnalyticsPage() {
         </div>
         <div className="rounded-xl border bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Avg Gross Yield</p>
-          <p className="mt-1 text-2xl font-bold text-[#1B4D3E]">
+          <p className="mt-1 text-2xl font-bold text-brand-primary">
             {avgYield ? `${avgYield.grossYield}%` : "\u2014"}
           </p>
           <p className="text-xs text-gray-500">Across portfolio</p>

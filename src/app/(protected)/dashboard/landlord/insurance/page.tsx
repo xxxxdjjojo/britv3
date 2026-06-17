@@ -130,7 +130,7 @@ export default function InsurancePage() {
                     Usually Required
                   </span>
                 ) : (
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-gray-600">
                     Optional
                   </span>
                 )}
@@ -147,7 +147,7 @@ export default function InsurancePage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">UK Insurance Providers</h2>
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
           <table className="min-w-full divide-y divide-gray-200 text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-surface">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Provider
@@ -168,14 +168,14 @@ export default function InsurancePage() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {PROVIDERS.map((provider) => (
-                <tr key={provider.name} className="hover:bg-gray-50">
+                <tr key={provider.name} className="hover:bg-surface">
                   <td className="px-4 py-4 font-medium text-gray-900">{provider.name}</td>
                   <td className="px-4 py-4">
                     <div className="flex flex-wrap gap-1">
                       {provider.products.map((product) => (
                         <span
                           key={product}
-                          className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-700"
+                          className="rounded bg-muted px-1.5 py-0.5 text-xs text-gray-700"
                         >
                           {product}
                         </span>

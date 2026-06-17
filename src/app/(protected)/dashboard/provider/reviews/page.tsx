@@ -113,7 +113,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
           href="/dashboard/provider/reviews"
           className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
             !ratingFilter
-              ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
+              ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
               : "border-border text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -125,7 +125,7 @@ export default async function ProviderReviewsPage(props: Readonly<{
             href={`/dashboard/provider/reviews?rating=${star}`}
             className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
               ratingFilter === star
-                ? "border-[#1B4D3E] bg-[#1B4D3E]/10 text-[#1B4D3E]"
+                ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
                 : "border-border text-muted-foreground hover:text-foreground"
             }`}
           >

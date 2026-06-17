@@ -63,13 +63,13 @@ describe("Footer", () => {
     expect(screen.getByText("Popular Areas")).toBeInTheDocument();
   });
 
-  it("has total link count <= 40", () => {
-    // Footer link count smell check. Limit raised from 35 -> 40 in 2026-05 as
-    // the site grew (per Sprint 1 launch-readiness decision). Treat as a
-    // smell signal, not a hard rule.
+  it("has total link count <= 45", () => {
+    // Footer link count smell check. Limit raised from 35 -> 40 in 2026-05 and
+    // 40 -> 45 in 2026-06 as 5 new legal pages were wired into the footer Legal
+    // column (feature/marketing-legal-pages). Treat as a smell signal, not a hard rule.
     const { container } = render(<Footer />);
     const allLinks = container.querySelectorAll("a");
-    expect(allLinks.length).toBeLessThanOrEqual(40);
+    expect(allLinks.length).toBeLessThanOrEqual(45);
   });
 
   it("all links have href attributes", () => {

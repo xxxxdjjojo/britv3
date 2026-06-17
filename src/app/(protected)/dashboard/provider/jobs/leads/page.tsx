@@ -29,10 +29,16 @@ export default async function ProviderLeadsPage() {
   const leads = await getProviderLeads(providerId, supabase);
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl">
+    <div className="p-6 md:p-8 space-y-6 max-w-7xl">
+      {/* Page header — editorial pattern */}
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900">New Leads</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-400 mb-1">
+          Job Leads
+        </p>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-brand-primary-dark">
+          New Leads
+        </h1>
+        <p className="mt-1.5 text-sm text-neutral-500">
           Open service requests matching your categories. Leads expire after 48 hours.
         </p>
       </div>

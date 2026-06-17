@@ -23,7 +23,7 @@ function MiniBarChart({ values }: Readonly<{ values: number[] }>) {
       {values.map((v, i) => (
         <div
           key={i}
-          className="w-3 bg-[#1B4D3E]/20 rounded-sm hover:bg-[#1B4D3E]/40 transition-colors"
+          className="w-3 bg-brand-primary/20 rounded-sm hover:bg-brand-primary/40 transition-colors"
           style={{ height: `${Math.max(4, (v / max) * 40)}px` }}
         />
       ))}
@@ -41,15 +41,15 @@ export function ListingCard({ listing, onArchive }: Props) {
   const STATUS_COLORS: Record<string, string> = {
     active: "bg-emerald-100 text-emerald-700",
     under_offer: "bg-amber-100 text-amber-700",
-    sold: "bg-slate-100 text-slate-600",
+    sold: "bg-muted text-slate-600",
     draft: "bg-blue-100 text-blue-700",
     paused: "bg-orange-100 text-orange-700",
-    archived: "bg-slate-100 text-slate-400",
+    archived: "bg-muted text-slate-400",
   };
 
   return (
     <div className="group flex bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      <div className="relative w-72 h-48 flex-shrink-0 overflow-hidden bg-slate-100">
+      <div className="relative w-72 h-48 flex-shrink-0 overflow-hidden bg-muted">
         {thumb ? (
           <img
             src={thumb}
@@ -63,7 +63,7 @@ export function ListingCard({ listing, onArchive }: Props) {
         )}
         <span className={cn(
           "absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full capitalize",
-          STATUS_COLORS[listing.status] ?? "bg-slate-100 text-slate-500",
+          STATUS_COLORS[listing.status] ?? "bg-muted text-slate-500",
         )}>
           {listing.status.replace("_", " ")}
         </span>
@@ -107,12 +107,12 @@ export function ListingCard({ listing, onArchive }: Props) {
         <div className="flex flex-col gap-2 w-full">
           <Link
             href={`/dashboard/seller/listings/${listing.id}/edit`}
-            className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#1B4D3E] text-white text-xs font-semibold hover:bg-[#2D7A5F] transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-brand-primary text-white text-xs font-semibold hover:bg-brand-primary-light transition-colors"
           >
             <Edit2 size={12} /> Edit
           </Link>
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 transition-colors w-full">
+            <DropdownMenuTrigger className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-surface transition-colors w-full">
               <MoreVertical size={12} /> More
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

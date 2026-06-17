@@ -8,7 +8,7 @@ type Props = Readonly<{
 
 export function AnalyticsDegraded({ service, message }: Props) {
   return (
-    <div className="animate-pulse rounded-xl border border-neutral-200 bg-neutral-50 p-8 flex flex-col items-center justify-center gap-3 text-center">
+    <div className="animate-pulse rounded-xl border border-border bg-muted p-8 flex flex-col items-center justify-center gap-3 text-center">
       <div className="rounded-full bg-neutral-200 p-3">
         <AlertTriangle className="h-6 w-6 text-neutral-400" />
       </div>

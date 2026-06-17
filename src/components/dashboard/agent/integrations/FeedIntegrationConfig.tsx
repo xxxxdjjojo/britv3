@@ -44,7 +44,7 @@ const SYNC_STATUS_CONFIG: Record<
 > = {
   disconnected: {
     label: "Disconnected",
-    classes: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400",
+    classes: "bg-muted dark:bg-gray-800 text-gray-600 dark:text-gray-400",
     dotClass: "bg-gray-400",
   },
   connected: {
@@ -353,7 +353,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                     type="button"
                     onClick={handleTestConnection}
                     disabled={testingConnection}
-                    className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
+                    className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
                   >
                     {testingConnection ? "Testing..." : "Test Connection"}
                   </button>
@@ -375,7 +375,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Webhook URL
                   </label>
-                  <div className="rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2">
+                  <div className="rounded-md bg-surface dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-2">
                     <code className="text-xs text-gray-600 dark:text-gray-400 break-all">
                       {typeof window !== "undefined" ? window.location.origin : "https://app.britestate.co.uk"}
                       /api/agent/feeds/webhook/{dialogState.integration.id}
@@ -394,7 +394,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                 </label>
                 <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <table className="w-full text-xs">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+                    <thead className="bg-muted dark:bg-gray-800">
                       <tr>
                         <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
                           Source Field ({PROVIDER_LABELS[formProvider]})
@@ -439,7 +439,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                 <button
                   type="button"
                   onClick={closeDialog}
-                  className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800"
                 >
                   Cancel
                 </button>
@@ -472,7 +472,7 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
               <button
                 type="button"
                 onClick={() => setConfirmDeleteId(null)}
-                className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800"
               >
                 Cancel
               </button>
@@ -607,14 +607,14 @@ export function FeedIntegrationConfig({ initialIntegrations }: Props) {
                     type="button"
                     onClick={() => handleSyncNow(integration.id)}
                     disabled={syncingId === integration.id || integration.sync_status === "syncing"}
-                    className="rounded border border-gray-300 dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+                    className="rounded border border-gray-300 dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800 disabled:opacity-50"
                   >
                     {syncingId === integration.id ? "Syncing..." : "Sync Now"}
                   </button>
                   <button
                     type="button"
                     onClick={() => openEditDialog(integration)}
-                    className="rounded border border-gray-300 dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="rounded border border-gray-300 dark:border-gray-600 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800"
                   >
                     Edit
                   </button>

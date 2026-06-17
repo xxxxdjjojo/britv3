@@ -15,18 +15,18 @@ export default function TradersLanding() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="text-center">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#1B4D3E]">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-brand-primary">
           For property traders
         </p>
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 sm:text-5xl">
+        <h1 className="font-heading text-4xl font-bold text-brand-primary-dark sm:text-5xl">
           Off-market deals, AI comps, dedicated deal scout.
         </h1>
-        <p className="mx-auto mt-4 max-w-3xl text-lg text-neutral-600">
+        <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
           Built for flippers and property traders. Subscription unlocks the
           off-market feed; you pay 0.50% on resale through Britestate.
         </p>
         <div className="mt-8 flex justify-center gap-3">
-          <Button asChild className="bg-[#1B4D3E] hover:bg-[#2D7A5F]">
+          <Button asChild className="bg-brand-primary hover:bg-brand-primary-light">
             <Link href="/pricing?tab=traders">View trader plans</Link>
           </Button>
           <Button asChild variant="outline">
@@ -55,10 +55,10 @@ function Card({
 }: Readonly<{ title: string; highlighted?: boolean; children: React.ReactNode }>) {
   return (
     <div
-      className={`rounded-xl border p-6 ${highlighted ? "border-[#1B4D3E] ring-2 ring-[#1B4D3E]/20" : "border-neutral-200"}`}
+      className={`rounded-xl border p-6 ${highlighted ? "border-brand-primary ring-2 ring-brand-primary/20" : "border-border"}`}
     >
-      <h3 className="font-heading text-xl font-bold text-neutral-900">{title}</h3>
-      <p className="mt-3 text-sm text-neutral-700">{children}</p>
+      <h3 className="font-heading text-xl font-bold text-foreground">{title}</h3>
+      <p className="mt-3 text-sm text-muted-foreground">{children}</p>
     </div>
   );
 }

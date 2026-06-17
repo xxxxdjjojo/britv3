@@ -10,9 +10,7 @@ import {
   Square,
   MapPin,
   Zap,
-  Home,
   FileText,
-  Tag,
   Calendar as CalendarIcon,
 } from "lucide-react";
 import { Gallery } from "@/components/properties/Gallery";
@@ -43,12 +41,8 @@ import { WhatIfFloorPlan } from "@/components/properties/roi/WhatIfFloorPlan";
 import { VirtualTourViewer } from "@/components/properties/detail/VirtualTourViewer";
 import { VideoTourPlayer } from "@/components/properties/detail/VideoTourPlayer";
 
-// Wave 6 — Local area intelligence widgets
-import { TransportWidget } from "@/components/properties/detail/TransportWidget";
-import { SchoolCatchmentWidget } from "@/components/properties/detail/SchoolCatchmentWidget";
-import { BroadbandWidget } from "@/components/properties/detail/BroadbandWidget";
-import { FloodRiskWidget } from "@/components/properties/detail/FloodRiskWidget";
-import { CrimeStatsChart } from "@/components/properties/detail/CrimeStatsChart";
+// Local area — real-data section (self-gates per layer; widgets degrade to null)
+import { LocalAreaSection } from "@/components/properties/detail/LocalAreaSection";
 
 // Wave 6 — Sidebar calculators
 import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
@@ -64,17 +58,22 @@ import { SavePropertyButton } from "@/components/properties/detail/SavePropertyB
 import { SocialProofBadge } from "@/components/properties/detail/SocialProofBadge";
 import { PropertyDetailActions } from "@/components/properties/detail/PropertyDetailActions";
 import { extractFeatureItems } from "@/lib/properties/extract-features";
+import { buildPropertyFacts } from "@/lib/properties/build-property-facts";
+import { groupImagesByRoom } from "@/lib/properties/group-images-by-room";
+import { MapEmbedClient } from "@/components/maps/MapEmbedClient";
 import { buildPropertyJsonLd } from "@/lib/seo/property-jsonld";
 import { buildBreadcrumbJsonLd } from "@/lib/seo/breadcrumb-jsonld";
-import { isFeatureEnabled } from "@/lib/features";
 
 // ---------------------------------------------------------------------------
-// Static params — ISR handles on-demand rendering
+// Rendering mode
 // ---------------------------------------------------------------------------
+// This route renders per-user data via cookies()-backed Supabase auth
+// (save state, existing viewing, view count). Marking it dynamic prevents the
+// DYNAMIC_SERVER_USAGE error that a static/ISR render produces when cookies()
+// is read (previously: HTTP 500 on a direct GET). See PERFORMANCE_AUDIT.md R2.
+// A static-shell + per-user islands refactor (R4) is the follow-up for caching.
 
-export async function generateStaticParams() {
-  return [];
-}
+export const dynamic = "force-dynamic";
 
 // ---------------------------------------------------------------------------
 // Metadata
@@ -128,27 +127,6 @@ function formatPropertyType(raw: string): string {
     .join(" ");
 }
 
-function formatTenure(raw: string | null): string {
-  if (!raw) return "Unknown";
-  return formatPropertyType(raw);
-}
-
-function formatPlanningStatus(raw: string | null | undefined): string {
-  switch (raw) {
-    case "granted":
-      return "Permission granted";
-    case "pending":
-      return "Decision pending";
-    case "refused":
-      return "Refused";
-    case "none_known":
-      return "None known";
-    default:
-      return "Not declared";
-  }
-}
-
-
 function formatPriceHistory(
   rows: PriceHistoryEntry[],
 ): { date: string; price: number; event?: string }[] {
@@ -166,9 +144,9 @@ function postcodeDistrict(postcode: string): string {
 
 const EPC_BANDS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const EPC_COLORS: Record<string, string> = {
-  A: "bg-green-600",
-  B: "bg-green-500",
-  C: "bg-lime-500",
+  A: "bg-success",
+  B: "bg-success/80",
+  C: "bg-success/60",
   D: "bg-yellow-400",
   E: "bg-orange-400",
   F: "bg-orange-600",
@@ -222,16 +200,22 @@ export default async function PropertyPage({
   const priceFormatted = `£${listing.price.toLocaleString("en-GB")}${rentSuffix}`;
   const sqft = property.squareFootage ?? 0;
   const propertyTypeLabel = formatPropertyType(property.propertyType);
-  const tenureLabel = formatTenure(property.tenure ?? null);
   const epc: EpcRating | "N/A" = (property.epcRating as EpcRating | null) ?? "N/A";
-  const councilTax = property.councilTaxBand
-    ? `Band ${property.councilTaxBand}`
-    : "Unknown";
   const features = extractFeatureItems(property.features);
 
   const images = media
     .filter((m) => m.mediaType === "image")
-    .map((m) => ({ src: m.url, alt: m.altText ?? "" }));
+    .map((m) => ({ src: m.url, alt: m.altText ?? "", caption: m.caption ?? null }));
+  const galleryImages = images.map(({ src, alt }) => ({ src, alt }));
+  const roomGroups = groupImagesByRoom(images);
+
+  // Categorized facts — only non-empty groups are returned (graceful absence)
+  const factGroups = buildPropertyFacts(property, listing);
+
+  // Map renders only when we have coordinates AND a tile key (else section absent)
+  const showMap =
+    property.coordinates != null &&
+    Boolean(process.env.NEXT_PUBLIC_MAPTILER_API_KEY);
 
   const floors = media
     .filter((m) => m.mediaType === "floor_plan")
@@ -350,7 +334,7 @@ export default async function PropertyPage({
 
       <div className="mx-auto max-w-7xl px-4 pb-24 lg:pb-8">
         {/* Gallery */}
-        <Gallery images={images} className="mt-2 mb-6" />
+        <Gallery images={galleryImages} className="mt-2 mb-6" />
 
         {/* Hero media — Virtual Tour & Video */}
         {(virtualTourUrl || videoTourUrl) && (
@@ -376,7 +360,7 @@ export default async function PropertyPage({
             <div>
               <p className="text-2xl font-bold text-primary">{priceFormatted}</p>
               {priceReduced && originalPrice != null && (
-                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                <Badge variant="secondary" className="text-xs bg-success/10 text-success dark:bg-success/20 dark:text-success">
                   Reduced from £{originalPrice.toLocaleString("en-GB")}
                 </Badge>
               )}
@@ -461,80 +445,58 @@ export default async function PropertyPage({
               )}
             </section>
 
-            {/* Property features grid */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Property details</h2>
-              <Separator className="mb-4" />
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {[
-                  {
-                    icon: <Home className="size-4" />,
-                    label: "Type",
-                    value: propertyTypeLabel,
-                  },
-                  {
-                    icon: <FileText className="size-4" />,
-                    label: "Tenure",
-                    value: tenureLabel,
-                  },
-                  {
-                    icon: <Tag className="size-4" />,
-                    label: "Council Tax",
-                    value: councilTax,
-                  },
-                  {
-                    icon: <FileText className="size-4" />,
-                    label: "Planning",
-                    value: formatPlanningStatus(property.planningPermissionStatus),
-                  },
-                  {
-                    icon: <Zap className="size-4" />,
-                    label: "EPC Rating",
-                    value: epc,
-                  },
-                  {
-                    icon: <Bed className="size-4" />,
-                    label: "Bedrooms",
-                    value: String(property.bedrooms),
-                  },
-                  {
-                    icon: <Bath className="size-4" />,
-                    label: "Bathrooms",
-                    value: String(property.bathrooms),
-                  },
-                  ...(property.receptionRooms != null ? [{
-                    icon: <Home className="size-4" />,
-                    label: "Receptions",
-                    value: String(property.receptionRooms),
-                  }] : []),
-                  {
-                    icon: <CalendarIcon className="size-4" />,
-                    label: "Listed",
-                    value: new Date(listing.listedDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-                  },
-                  ...(property.tenure === "leasehold" && property.leaseRemainingYears != null ? [{
-                    icon: <FileText className="size-4" />,
-                    label: "Lease Remaining",
-                    value: `${property.leaseRemainingYears} years`,
-                  }] : []),
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-start gap-3 rounded-xl border bg-card p-3"
-                  >
-                    <span className="text-muted-foreground mt-0.5">
-                      {item.icon}
-                    </span>
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        {item.label}
-                      </p>
-                      <p className="font-medium text-sm">{item.value}</p>
+            {/* Facts & features — categorized, only non-empty groups render */}
+            {factGroups.length > 0 && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">Facts &amp; features</h2>
+                <Separator className="mb-4" />
+                <div className="space-y-6">
+                  {factGroups.map((group) => (
+                    <div key={group.title}>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                        {group.title}
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {group.facts.map((fact) => (
+                          <div
+                            key={fact.label}
+                            className="rounded-xl border bg-card p-3"
+                          >
+                            <p className="text-xs text-muted-foreground">
+                              {fact.label}
+                            </p>
+                            <p className="font-medium text-sm">{fact.value}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </section>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Photos by room — only when captions provide real room metadata */}
+            {roomGroups && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">Photos by room</h2>
+                <Separator className="mb-4" />
+                <div className="space-y-6">
+                  {roomGroups.map((group) => (
+                    <div key={group.room}>
+                      <h3 className="text-sm font-medium mb-2">
+                        {group.room}{" "}
+                        <span className="text-muted-foreground font-normal">
+                          ({group.images.length})
+                        </span>
+                      </h3>
+                      <Gallery
+                        images={group.images.map(({ src, alt }) => ({ src, alt }))}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Floor Plan */}
             {floors.length > 0 && (
@@ -545,17 +507,27 @@ export default async function PropertyPage({
               </section>
             )}
 
-            {/* Location map placeholder */}
-            <section>
-              <h2 className="text-xl font-semibold mb-3">Location</h2>
-              <Separator className="mb-4" />
-              <div className="relative h-64 rounded-xl overflow-hidden border bg-neutral-100 flex items-center justify-center">
-                <MapPin className="size-10 text-muted-foreground opacity-40" />
-                <p className="absolute bottom-3 right-3 text-sm text-muted-foreground">
+            {/* Location map — rendered only when we have coordinates + a tile key */}
+            {showMap && property.coordinates && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3">Location</h2>
+                <Separator className="mb-4" />
+                <MapEmbedClient
+                  latitude={property.coordinates.lat}
+                  longitude={property.coordinates.lng}
+                  zoom={15}
+                  className="h-64 w-full rounded-xl overflow-hidden border"
+                />
+                <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+                  <MapPin className="size-3.5" />
                   {address}
                 </p>
-              </div>
-            </section>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  Location is approximate. Map data © MapTiler &amp; OpenStreetMap
+                  contributors.
+                </p>
+              </section>
+            )}
 
             {/* Price history + HM Land Registry sale history & nearby sales */}
             <section>
@@ -640,36 +612,24 @@ export default async function PropertyPage({
               </section>
             )}
 
-            {/* ── LOCAL AREA INTELLIGENCE (Wave 6) ── */}
-            {isFeatureEnabled("local_area_intelligence") && (
-              <section>
-                <h2 className="text-xl font-semibold mb-3">
-                  Local Area Intelligence
-                </h2>
-                <Separator className="mb-4" />
-                <Suspense
-                  fallback={
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
-                      ))}
-                    </div>
-                  }
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <TransportWidget nearbyStations={[]} />
-                    <SchoolCatchmentWidget schools={[]} />
-                    <BroadbandWidget
-                      downloadMbps={null}
-                      uploadMbps={null}
-                      provider={null}
-                      connectionType={null}
-                    />
-                    <FloodRiskWidget riskLevel={null} source={null} />
-                    <CrimeStatsChart stats={[]} boroughAvg={null} />
+            {/* ── LOCAL AREA — real data, each layer self-gates on data ── */}
+            {property.coordinates && (
+              <Suspense
+                fallback={
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[1, 2].map((n) => (
+                      <div key={n} className="h-48 bg-muted rounded-xl animate-pulse" />
+                    ))}
                   </div>
-                </Suspense>
-              </section>
+                }
+              >
+                <LocalAreaSection
+                  lat={property.coordinates.lat}
+                  lng={property.coordinates.lng}
+                  postcode={property.postcode}
+                  propertyId={property.id}
+                />
+              </Suspense>
             )}
 
             {/* ── ROI SECTION (Wave 4) ── */}

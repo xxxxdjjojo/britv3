@@ -171,9 +171,9 @@ export function GdprQueueClient({ requests, allRequests, statusFilter }: Props) 
         <StatusFilter current={statusFilter} counts={counts} />
       </div>
 
-      <div className="border border-neutral-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-border rounded-lg overflow-hidden bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-neutral-200 bg-neutral-50">
+          <thead className="border-b border-border bg-muted">
             <tr>
               <th className="text-left px-4 py-3 text-xs font-medium text-neutral-500 uppercase tracking-wide">
                 Request ID
@@ -198,7 +198,7 @@ export function GdprQueueClient({ requests, allRequests, statusFilter }: Props) 
           </thead>
           <tbody className="divide-y divide-neutral-100">
             {requests.map((req) => (
-              <tr key={req.id} className="hover:bg-neutral-50 transition-colors">
+              <tr key={req.id} className="hover:bg-muted transition-colors">
                 <td className="px-4 py-3 font-mono text-xs text-neutral-500">
                   {req.id.slice(0, 8)}…
                 </td>

@@ -31,7 +31,7 @@ export function OfferCompareTable({ offers }: Props) {
         </thead>
         <tbody>
           {rows.map(({ label, getValue }) => (
-            <tr key={label} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
+            <tr key={label} className="border-b border-slate-50 last:border-0 hover:bg-surface/50">
               <td className="text-xs font-semibold text-slate-500 px-6 py-3">{label}</td>
               {displayed.map((offer) => (
                 <td key={offer.id} className="text-sm text-slate-700 px-6 py-3 capitalize">{getValue(offer)}</td>

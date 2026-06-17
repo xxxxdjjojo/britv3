@@ -7,9 +7,9 @@ export default function DashboardLayout(
   }>,
 ) {
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-[calc(100vh-3.5rem)] bg-surface">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-neutral-50 p-6">
+      <main className="flex-1 overflow-y-auto bg-surface p-4 md:p-6 lg:p-8">
         <DeletionPendingBanner />
         {props.children}
       </main>

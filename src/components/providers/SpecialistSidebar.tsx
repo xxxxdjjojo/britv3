@@ -35,7 +35,7 @@ export default function SpecialistSidebar({
   return (
     <div className="sticky top-24 space-y-4" id="quote">
       {/* CTA card */}
-      <div className="bg-[#1B4D3E] text-white rounded-xl p-6">
+      <div className="bg-brand-primary text-white rounded-xl p-6">
         <h2 className="text-xl font-bold">Ready to get started?</h2>
         <p className="text-sm text-green-100 mt-2 leading-relaxed">
           {provider.business_name} typically responds within{" "}
@@ -43,7 +43,7 @@ export default function SpecialistSidebar({
         </p>
         <a
           href={ctaHref}
-          className="mt-4 block w-full text-center bg-white text-[#1B4D3E] font-semibold py-2.5 px-4 rounded-lg text-sm hover:bg-green-50 transition-colors"
+          className="mt-4 block w-full text-center bg-white text-brand-primary font-semibold py-2.5 px-4 rounded-lg text-sm hover:bg-green-50 transition-colors"
         >
           {ctaLabel}
         </a>
@@ -77,7 +77,7 @@ export default function SpecialistSidebar({
       {/* Britestate protection blurb */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 w-10 h-10 bg-[#1B4D3E] rounded-full flex items-center justify-center">
+          <div className="shrink-0 w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center">
             <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>

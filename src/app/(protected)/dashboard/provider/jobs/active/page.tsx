@@ -37,11 +37,11 @@ function formatDate(iso: string | null): string {
 function ActiveJobRow({ job }: Readonly<{ job: ActiveJob }>) {
   const { label, className } = daysRunningBadge(job.daysRunning);
   return (
-    <tr className="border-b border-neutral-100 hover:bg-neutral-50 transition">
+    <tr className="border-b border-neutral-100 hover:bg-surface transition">
       <td className="py-3 px-4">
         <Link
           href={`/dashboard/provider/jobs/${job.id}`}
-          className="text-sm font-medium text-[#1B4D3E] hover:underline"
+          className="text-sm font-medium text-brand-primary hover:underline"
         >
           {job.title}
         </Link>
@@ -76,7 +76,7 @@ function ActiveJobCard({ job }: Readonly<{ job: ActiveJob }>) {
       <div className="flex items-start justify-between gap-3">
         <Link
           href={`/dashboard/provider/jobs/${job.id}`}
-          className="text-sm font-semibold text-[#1B4D3E] hover:underline leading-snug"
+          className="text-sm font-semibold text-brand-primary hover:underline leading-snug"
         >
           {job.title}
         </Link>
@@ -135,12 +135,12 @@ export default async function ActiveJobsPage() {
       </div>
 
       {jobs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50 py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-surface py-16 text-center">
           <Briefcase className="size-10 text-neutral-300" />
           <p className="mt-3 text-sm font-medium text-neutral-500">No active jobs</p>
           <p className="mt-1 text-xs text-neutral-400">
             Accept a lead to create your first job.{" "}
-            <Link href="/dashboard/provider/jobs/leads" className="text-[#1B4D3E] hover:underline">
+            <Link href="/dashboard/provider/jobs/leads" className="text-brand-primary hover:underline">
               Browse leads
             </Link>
           </p>
@@ -151,7 +151,7 @@ export default async function ActiveJobsPage() {
           <div className="hidden md:block overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
             <table className="w-full">
               <thead>
-                <tr className="bg-neutral-50 border-b border-neutral-200">
+                <tr className="bg-surface border-b border-neutral-200">
                   <th className="py-3 px-4 text-left text-xs font-semibold text-neutral-500 uppercase tracking-wide">
                     Job Title
                   </th>

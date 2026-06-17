@@ -62,8 +62,7 @@ export function AdminConfirmModal({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle
-            className="font-semibold text-lg"
-            style={{ fontFamily: "Plus Jakarta Sans" }}
+            className="font-heading font-semibold text-lg"
           >
             {title}
           </DialogTitle>

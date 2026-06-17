@@ -73,7 +73,7 @@ function NavLink(props: Readonly<{ item: NavItem; pathname: string }>) {
       href={item.href}
       className={
         isActive
-          ? "flex items-center gap-3 rounded-lg border-l-4 border-[#1B4D3E] bg-[#1B4D3E]/10 px-4 py-3 text-sm font-semibold text-[#1B4D3E]"
+          ? "flex items-center gap-3 rounded-lg border-l-4 border-brand-primary bg-brand-primary/10 px-4 py-3 text-sm font-semibold text-brand-primary"
           : "flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       }
     >
@@ -88,10 +88,10 @@ function SidebarInner(props: Readonly<{ pathname: string }>) {
     <div className="flex h-full flex-col overflow-y-auto">
       {/* Logo */}
       <div className="flex items-center gap-3 border-b p-6">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-[#1B4D3E] text-white">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-brand-primary text-white">
           <Building2 className="size-5" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-[#1B4D3E]">Britestate</h1>
+        <h1 className="text-xl font-bold tracking-tight text-brand-primary">Britestate</h1>
       </div>
 
       {/* Nav items */}

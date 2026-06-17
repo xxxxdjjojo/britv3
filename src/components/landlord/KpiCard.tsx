@@ -20,7 +20,7 @@ export function KpiCard({ title, value, icon: Icon, trend, variant = "default" }
 
   const iconContainerClass = cn(
     "flex size-12 items-center justify-center rounded-xl",
-    variant === "default" && "bg-[#1B4D3E]/10 text-[#1B4D3E]",
+    variant === "default" && "bg-brand-primary/10 text-brand-primary",
     variant === "warning" && "bg-amber-100 text-amber-600",
     variant === "danger" && "bg-red-100 text-red-600",
   );

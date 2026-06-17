@@ -61,11 +61,19 @@ export default function AccountDeletionConfirmPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-neutral-100">
-          <CalendarX className="size-8 text-neutral-600" />
+      {/* Icon + badge */}
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-warning/10">
+          <CalendarX className="size-8 text-warning" />
         </div>
-        <h1 className="mt-4 font-heading text-2xl font-bold text-neutral-900">
+        <span className="inline-flex items-center rounded-full border border-warning/30 bg-warning/10 px-3 py-0.5 font-body text-xs font-semibold uppercase tracking-wide text-warning">
+          Scheduled
+        </span>
+      </div>
+
+      {/* Heading + date */}
+      <div className="text-center">
+        <h1 className="font-heading text-2xl font-bold text-brand-primary-dark">
           Your account deletion is scheduled
         </h1>
         <p className="mt-2 font-body text-sm text-neutral-500">
@@ -74,7 +82,8 @@ export default function AccountDeletionConfirmPage() {
         </p>
       </div>
 
-      <div className="rounded-xl bg-neutral-50 p-4">
+      {/* Deletion items list */}
+      <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
         <p className="mb-3 font-body text-sm font-medium text-neutral-700">
           The following will be permanently deleted:
         </p>
@@ -88,13 +97,15 @@ export default function AccountDeletionConfirmPage() {
         </ul>
       </div>
 
+      {/* Error state */}
       {cancelError && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="flex items-center gap-2 rounded-lg border border-error/20 bg-error/5 px-4 py-3 text-sm text-error">
           <AlertCircle className="size-4 shrink-0" />
           {cancelError}
         </div>
       )}
 
+      {/* Primary action */}
       <Button
         onClick={handleCancel}
         disabled={cancelling || proceeding}
@@ -104,6 +115,7 @@ export default function AccountDeletionConfirmPage() {
         {cancelling ? "Cancelling…" : "Cancel Deletion — Keep My Account"}
       </Button>
 
+      {/* Destructive secondary */}
       <p className="text-center">
         <button
           onClick={handleProceed}

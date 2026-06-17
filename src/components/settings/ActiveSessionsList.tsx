@@ -8,7 +8,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Monitor,
   Smartphone,
@@ -90,93 +89,106 @@ export function ActiveSessionsList({
   onSignOutSession: (sessionId: string) => void;
 }>) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Monitor className="size-5 text-brand-primary" />
-          Active Sessions
-        </CardTitle>
-        <CardDescription>
-          Manage your active sessions across all devices.
-        </CardDescription>
+    <Card className="rounded-xl border border-border">
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <CardTitle className="flex items-center gap-2 font-heading text-base font-semibold text-brand-primary-dark">
+              <Monitor className="size-4 text-brand-primary" />
+              Active Sessions
+            </CardTitle>
+            <CardDescription className="mt-1 text-sm text-muted-foreground">
+              Manage your active sessions across all devices.
+            </CardDescription>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSignOutAll}
+            disabled={signingOut}
+            className="shrink-0"
+          >
+            {signingOut ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <LogOut className="size-4" />
+            )}
+            Sign Out of All Devices
+          </Button>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-2">
         {sessionsLoading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" />
             Loading sessions…
           </div>
         ) : sessions.length === 0 ? (
-          <div className="flex items-center gap-3 rounded-lg border p-3">
-            <Monitor className="size-5 text-success" />
+          <div className="flex items-center gap-3 rounded-lg border border-border p-4">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-success/10">
+              <Monitor className="size-4 text-success" />
+            </div>
             <div className="flex-1">
               <p className="text-sm font-medium">Current Device</p>
               <p className="text-xs text-muted-foreground">
                 You are currently signed in on this device
               </p>
             </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
+              <span className="size-1.5 rounded-full bg-success" />
+              Active
+            </span>
           </div>
         ) : (
-          <div className="space-y-2">
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className="flex items-center gap-3 rounded-lg border p-3"
-              >
+          sessions.map((session) => (
+            <div
+              key={session.id}
+              className="flex items-center gap-3 rounded-lg border border-border p-4"
+            >
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
                 {deviceIcon(session.user_agent)}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium truncate">
-                      {friendlyUserAgent(session.user_agent)}
-                    </p>
-                    {session.is_current && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-success/20 text-success text-xs"
-                      >
-                        Current session
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {session.last_sign_in_at
-                      ? `Last active ${formatDate(session.last_sign_in_at)}`
-                      : `Started ${formatDate(session.created_at)}`}
-                  </p>
-                </div>
-                {!session.is_current && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onSignOutSession(session.id)}
-                    disabled={signingOutSession === session.id}
-                  >
-                    {signingOutSession === session.id ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <LogOut className="size-4" />
-                    )}
-                    <span className="sr-only">Sign out this session</span>
-                  </Button>
-                )}
               </div>
-            ))}
-          </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium truncate">
+                    {friendlyUserAgent(session.user_agent)}
+                  </p>
+                  {session.is_current ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success">
+                      <span className="size-1.5 rounded-full bg-success" />
+                      Current session
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/10 px-2.5 py-0.5 text-xs font-medium text-warning-foreground">
+                      <span className="size-1.5 rounded-full bg-warning" />
+                      Active
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {session.last_sign_in_at
+                    ? `Last active ${formatDate(session.last_sign_in_at)}`
+                    : `Started ${formatDate(session.created_at)}`}
+                </p>
+              </div>
+              {!session.is_current && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onSignOutSession(session.id)}
+                  disabled={signingOutSession === session.id}
+                >
+                  {signingOutSession === session.id ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <LogOut className="size-4" />
+                  )}
+                  <span className="sr-only">Sign out this session</span>
+                </Button>
+              )}
+            </div>
+          ))
         )}
-
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={onSignOutAll}
-          disabled={signingOut}
-        >
-          {signingOut ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <LogOut className="size-4" />
-          )}
-          Sign Out of All Devices
-        </Button>
       </CardContent>
     </Card>
   );

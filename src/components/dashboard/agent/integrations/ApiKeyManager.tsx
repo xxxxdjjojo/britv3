@@ -147,7 +147,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                   <button
                     type="button"
                     onClick={handleCloseDialog}
-                    className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800"
                   >
                     Cancel
                   </button>
@@ -188,7 +188,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
                   <button
                     type="button"
                     onClick={handleCloseDialog}
-                    className="rounded-md bg-gray-900 dark:bg-gray-100 px-4 py-2 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200"
+                    className="rounded-md bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200"
                   >
                     I have copied my key
                   </button>
@@ -213,7 +213,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
               <button
                 type="button"
                 onClick={() => setConfirmRevoke(null)}
-                className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-surface dark:hover:bg-gray-800"
               >
                 Cancel
               </button>
@@ -240,7 +240,7 @@ export function ApiKeyManager({ initialKeys }: Props) {
       ) : (
         <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-800/50">
+            <thead className="bg-muted dark:bg-gray-800/50">
               <tr>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Key Prefix</th>
@@ -259,14 +259,14 @@ export function ApiKeyManager({ initialKeys }: Props) {
                   className={
                     key.is_active
                       ? "bg-white dark:bg-gray-900"
-                      : "bg-gray-50 dark:bg-gray-800/30 opacity-60"
+                      : "bg-muted dark:bg-gray-800/30 opacity-60"
                   }
                 >
                   <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
                     {key.name}
                   </td>
                   <td className="px-4 py-3">
-                    <code className="rounded bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-xs font-mono text-gray-700 dark:text-gray-300">
+                    <code className="rounded bg-muted dark:bg-gray-800 px-2 py-0.5 text-xs font-mono text-gray-700 dark:text-gray-300">
                       {key.key_prefix}...
                     </code>
                   </td>

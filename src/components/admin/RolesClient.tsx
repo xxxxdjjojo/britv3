@@ -71,7 +71,7 @@ function PromoteDemoteForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border border-neutral-200 rounded-lg bg-white mb-6">
+    <form onSubmit={handleSubmit} className="p-4 border border-border rounded-lg bg-card mb-6">
       <h3 className="text-sm font-semibold text-neutral-700 mb-3">
         Change User Role
       </h3>
@@ -124,7 +124,7 @@ export function RolesClient({ roleCounts, isSuperAdmin = false }: Props) {
         {roleCounts.map(({ role, count }) => (
           <div
             key={role}
-            className="p-4 border border-neutral-200 rounded-lg bg-white"
+            className="p-4 border border-border rounded-lg bg-card"
           >
             <div className="flex items-center gap-2 mb-2">
               <Users className="h-4 w-4 text-neutral-400" />

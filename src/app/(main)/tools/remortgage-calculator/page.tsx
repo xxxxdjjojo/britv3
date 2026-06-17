@@ -42,10 +42,10 @@ const gbpExact = (value: number) =>
 // ---------------------------------------------------------------------------
 
 const LTV_TIERS = [
-  { label: "< 60% LTV", description: "Best rates available", color: "text-green-600", max: 60 },
-  { label: "60–75% LTV", description: "Good rates", color: "text-emerald-600", max: 75 },
-  { label: "75–85% LTV", description: "Standard rates", color: "text-amber-600", max: 85 },
-  { label: "85–90%+ LTV", description: "Limited options, higher rates", color: "text-red-600", max: Infinity },
+  { label: "< 60% LTV", description: "Best rates available", color: "text-success", max: 60 },
+  { label: "60–75% LTV", description: "Good rates", color: "text-success", max: 75 },
+  { label: "75–85% LTV", description: "Standard rates", color: "text-brand-gold-foreground", max: 85 },
+  { label: "85–90%+ LTV", description: "Limited options, higher rates", color: "text-error", max: Infinity },
 ];
 
 function getUrlParam(key: string, defaultValue: number): number {
@@ -374,9 +374,9 @@ export default function RemortgageCalculatorPage() {
             <Card
               className={
                 monthlySaving > 0
-                  ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950"
+                  ? "border-success/20 bg-success/10"
                   : monthlySaving < 0
-                    ? "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950"
+                    ? "border-error/20 bg-error/10"
                     : undefined
               }
             >
@@ -389,9 +389,9 @@ export default function RemortgageCalculatorPage() {
                     <p
                       className={`text-2xl font-bold tabular-nums ${
                         monthlySaving > 0
-                          ? "text-green-700 dark:text-green-400"
+                          ? "text-success"
                           : monthlySaving < 0
-                            ? "text-red-700 dark:text-red-400"
+                            ? "text-error"
                             : ""
                       }`}
                     >
@@ -406,9 +406,9 @@ export default function RemortgageCalculatorPage() {
                     <p
                       className={`text-2xl font-bold tabular-nums ${
                         totalInterestSaved > 0
-                          ? "text-green-700 dark:text-green-400"
+                          ? "text-success"
                           : totalInterestSaved < 0
-                            ? "text-red-700 dark:text-red-400"
+                            ? "text-error"
                             : ""
                       }`}
                     >
@@ -524,17 +524,17 @@ export default function RemortgageCalculatorPage() {
                 </div>
                 <h3 className="text-lg font-bold">Ready to Switch?</h3>
               </div>
-              <p className="mb-6 text-sm text-blue-100">
+              <p className="mb-6 text-sm text-brand-primary-lighter">
                 Get a free, no-obligation remortgage quote from an FCA-regulated
                 broker on our marketplace.
               </p>
               <Link
                 href="/marketplace?category=mortgage-broker"
-                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-neutral-50"
+                className="block w-full rounded-lg bg-white py-3 text-center font-bold text-brand-primary transition-colors hover:bg-muted"
               >
                 Find a Broker
               </Link>
-              <p className="mt-4 text-center text-[10px] text-blue-200">
+              <p className="mt-4 text-center text-[10px] text-brand-primary-lighter">
                 Free, no-obligation quote
               </p>
             </div>
@@ -547,7 +547,7 @@ export default function RemortgageCalculatorPage() {
                 </h3>
                 <Link
                   href="/tools/mortgage-calculator"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <PiggyBank className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -559,7 +559,7 @@ export default function RemortgageCalculatorPage() {
                 </Link>
                 <Link
                   href="/tools/mortgage-comparison"
-                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                  className="flex items-center gap-3 rounded-lg border border-neutral-200 p-3 transition-colors hover:bg-muted dark:border-neutral-700 dark:hover:bg-neutral-800"
                 >
                   <Calculator className="h-5 w-5 text-brand-primary" />
                   <div>
@@ -575,7 +575,7 @@ export default function RemortgageCalculatorPage() {
             </Card>
 
             {/* Disclaimer */}
-            <div className="rounded-xl border border-dashed border-neutral-300 bg-neutral-50/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
+            <div className="rounded-xl border border-dashed border-neutral-300 bg-muted/50 p-5 dark:border-neutral-700 dark:bg-neutral-900/30">
               <div className="flex gap-3">
                 <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-[11px] italic leading-relaxed text-neutral-500 dark:text-neutral-400">
