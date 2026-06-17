@@ -180,20 +180,21 @@ describe("ProviderProfileForm", () => {
     });
   });
 
-  // FINDING (component bug): The three pricing inputs register with
-  // { valueAsNumber: true }. When the optional pricing fields are left blank
-  // (the common case for a provider who does not publish rates), their values
-  // become NaN, which fails the optional z.number() pricing schema. react-hook-
-  // form then silently blocks submission, and the markup renders NO error for
-  // the pricing fieldset -- so the user gets a dead Submit button with no
-  // feedback. Confirmed by submitting the <form> directly (not click), so this
-  // is a genuine component defect, not a test-harness artefact.
-  describe("FINDING: empty pricing silently blocks submission", () => {
-    it("does NOT submit when pricing fields are left blank", async () => {
-      const fetchMock = vi.fn();
+  // FIXED (BUG F9): The three pricing inputs previously registered with
+  // { valueAsNumber: true }. When left blank (the common case for a provider
+  // who does not publish rates), their values became NaN, which failed the
+  // optional z.number() pricing schema. react-hook-form then silently blocked
+  // submission, leaving a dead Submit button. The fix registers them with
+  // setValueAs so a blank field resolves to undefined and the optional schema
+  // passes.
+  describe("empty pricing no longer blocks submission", () => {
+    it("submits when pricing fields are left blank", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
       vi.stubGlobal("fetch", fetchMock);
 
-      // Required fields valid, but no pricing -> inputs render blank -> NaN.
+      // Required fields valid, but no pricing -> inputs render blank.
       const noPricing: Partial<ProviderProfileInput> = {
         ...VALID_DEFAULTS,
         pricing: undefined,
@@ -203,12 +204,15 @@ describe("ProviderProfileForm", () => {
       );
       submitForm(container);
 
-      // Give react-hook-form a tick to run async validation.
-      await new Promise((r) => setTimeout(r, 100));
-      expect(fetchMock).not.toHaveBeenCalled();
-      expect(toastMock.success).not.toHaveBeenCalled();
-      // No visible error is rendered for the pricing fieldset -> dead button.
-      expect(screen.queryByText(/expected number/i)).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          "/api/providers/profile",
+          expect.objectContaining({ method: "POST" }),
+        ),
+      );
+      expect(toastMock.success).toHaveBeenCalledWith(
+        "Profile created successfully",
+      );
     });
   });
 
