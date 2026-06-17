@@ -197,3 +197,16 @@ Use the `/browse` skill from gstack for **all web browsing**. Never use `mcp__cl
 - `/qa` — Quality assurance testing
 - `/setup-browser-cookies` — Set up browser cookies
 - `/retro` — Retrospective
+
+## Branch & Landing Discipline (MANDATORY)
+
+`origin/main` is the ONLY source of truth and the ONLY long-lived branch. Every change lands or is closed — nothing lingers. Full policy: `docs/BRANCH_WORKFLOW.md`.
+
+1. **Start synced, in your own worktree.** `git fetch origin` then
+   `git worktree add ../wt-<name> -b <type>/<scope> origin/main`.
+   One agent = one worktree. NEVER branch-switch a shared checkout or edit another agent's worktree.
+2. **Keep it small** — one PR's worth of work (< ~1 day). If it grows, split it.
+3. **Land it the same day.** Green locally first (`pnpm lint` 0 errors, `pnpm build` exit 0, `pnpm test`, and `pnpm check:migrations` once that script exists) → open a PR → CI green → **squash-merge** → branch auto-deletes → remove the worktree.
+4. **No exceptions:** no long-lived branches, no "merge later", no unsquashed merges, no PR open > 48h. A branch with no PR within 48h, or a PR red > 24h, gets closed.
+
+Use the gstack `/ship` then `/land-and-deploy` skills for the mechanics.
