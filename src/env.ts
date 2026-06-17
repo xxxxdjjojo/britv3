@@ -8,7 +8,13 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
     ANTHROPIC_API_KEY: z.string().min(1).optional(),
     RESEND_API_KEY: z.string().min(1).optional(),
-    INNGEST_SIGNING_KEY: z.string().min(1).optional(),
+    // Required in production so a misconfigured deploy cannot expose the
+    // Inngest endpoint without signature verification (BRIT-S010). Optional in
+    // dev/test where Inngest runs in dev mode and signs nothing.
+    INNGEST_SIGNING_KEY:
+      process.env.NODE_ENV === "production"
+        ? z.string().min(1)
+        : z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
