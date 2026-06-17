@@ -3,14 +3,26 @@
  *
  * Server page (guard idiom from dashboard/agent/introductions/page.tsx).
  * Data is fetched with the service-role client, scoped to the signed-in
- * agent (invoices has no agent-facing RLS read path).
+ * agent (invoices has no agent-facing RLS read path). Phase 5 adds the
+ * dispute affordance: each invoice carries its clause-9.5 window end and
+ * whether a dispute already exists, and the rendered table is the client
+ * component AgentInvoicesTable that owns the DisputeInvoiceModal state and
+ * POSTs to /api/truedeed/disputes.
  */
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isGoCardlessConfigured } from "@/lib/truedeed/gocardless-client";
+import {
+  addBusinessDays,
+  getEnglandWalesBankHolidays,
+} from "@/lib/business-days";
 import { MandateSetupButton } from "@/components/dashboard/agent/billing/MandateSetupButton";
+import {
+  AgentInvoicesTable,
+  type AgentInvoiceRow,
+} from "@/components/dashboard/agent/billing/AgentInvoicesTable";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -19,20 +31,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Truedeed Billing | Agent | Britestate",
 };
+
+const CLAUSE_9_5_WINDOW_BUSINESS_DAYS = 10;
 
 type BillingProfile = {
   gocardless_mandate_id: string | null;
@@ -45,6 +51,7 @@ type InvoiceRow = {
   invoice_number: string;
   gross_pence: number;
   due_at: string;
+  issued_at: string;
   state: string;
   introductions: {
     listings: {
@@ -54,21 +61,7 @@ type InvoiceRow = {
       } | null;
     } | null;
   } | null;
-};
-
-const STATE_BADGES: Record<
-  string,
-  { label: string; className: string }
-> = {
-  open: { label: "Open", className: "bg-muted text-slate-700" },
-  collecting: { label: "Collecting", className: "bg-blue-100 text-blue-700" },
-  paid: { label: "Paid", className: "bg-emerald-100 text-emerald-700" },
-  overdue: { label: "Overdue", className: "bg-amber-100 text-amber-800" },
-  final_notice: { label: "Final notice", className: "bg-orange-100 text-orange-800" },
-  suspended: { label: "Suspended", className: "bg-red-100 text-red-700" },
-  disputed: { label: "Disputed", className: "bg-violet-100 text-violet-700" },
-  cancelled: { label: "Cancelled", className: "bg-muted text-slate-500" },
-  charged_back: { label: "Charged back", className: "bg-red-100 text-red-700" },
+  invoice_disputes: { id: string }[] | null;
 };
 
 const MANDATE_STATUS_LABELS: Record<string, string> = {
@@ -79,15 +72,6 @@ const MANDATE_STATUS_LABELS: Record<string, string> = {
   cancelled: "Cancelled",
   expired: "Expired",
 };
-
-const EN_GB_DATE = new Intl.DateTimeFormat("en-GB", {
-  dateStyle: "medium",
-  timeZone: "Europe/London",
-});
-
-function formatPounds(pence: number): string {
-  return `£${(pence / 100).toFixed(2)}`;
-}
 
 export default async function AgentTruedeedBillingPage() {
   const supabase = await createClient();
@@ -114,7 +98,9 @@ export default async function AgentTruedeedBillingPage() {
       admin
         .from("invoices")
         .select(
-          "id, invoice_number, gross_pence, due_at, state, introductions(listings(properties(address_line1, postcode)))",
+          "id, invoice_number, gross_pence, due_at, issued_at, state, " +
+            "introductions(listings(properties(address_line1, postcode))), " +
+            "invoice_disputes(id)",
         )
         .eq("org_agent_id", user.id)
         .order("due_at", { ascending: false }),
@@ -128,6 +114,38 @@ export default async function AgentTruedeedBillingPage() {
   const hasMandate = Boolean(profile?.gocardless_mandate_id);
   const mandateStatus = profile?.mandate_status ?? null;
   const gcConfigured = isGoCardlessConfigured();
+
+  // Clause-9.5 window: server-side so the table is deterministic across
+  // client clock skew.
+  const holidays = await getEnglandWalesBankHolidays();
+  const now = Date.now();
+  const tableInvoices: AgentInvoiceRow[] = invoices.map((row) => {
+    const issuedAt = row.issued_at;
+    const windowEnd = addBusinessDays(
+      new Date(issuedAt),
+      CLAUSE_9_5_WINDOW_BUSINESS_DAYS,
+      holidays,
+    );
+    const property = row.introductions?.listings?.properties;
+    const address =
+      [property?.address_line1, property?.postcode].filter(Boolean).join(", ") ||
+      "—";
+    const hasDispute = Array.isArray(row.invoice_disputes)
+      ? row.invoice_disputes.length > 0
+      : false;
+    return {
+      id: row.id,
+      invoiceNumber: row.invoice_number,
+      grossPence: row.gross_pence,
+      dueAt: row.due_at,
+      issuedAt,
+      state: row.state,
+      propertyAddress: address,
+      hasDispute,
+      windowOpen: now <= windowEnd.getTime(),
+      windowEnd: windowEnd.toISOString(),
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -200,55 +218,13 @@ export default async function AgentTruedeedBillingPage() {
         <CardHeader>
           <CardTitle>Invoices</CardTitle>
           <CardDescription>
-            Success-fee invoices for completions introduced via Truedeed
+            Success-fee invoices for completions introduced via Truedeed. You
+            have 10 business days from the invoice date to dispute under
+            clause 9.5.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {invoices.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No invoices yet.</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Invoice</TableHead>
-                  <TableHead>Property</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Due date</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice) => {
-                  const property = invoice.introductions?.listings?.properties;
-                  const address =
-                    [property?.address_line1, property?.postcode]
-                      .filter(Boolean)
-                      .join(", ") || "—";
-                  const badge = STATE_BADGES[invoice.state] ?? {
-                    label: invoice.state,
-                    className: "bg-muted text-slate-700",
-                  };
-                  return (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-medium">
-                        {invoice.invoice_number}
-                      </TableCell>
-                      <TableCell>{address}</TableCell>
-                      <TableCell className="text-right">
-                        {formatPounds(invoice.gross_pence)}
-                      </TableCell>
-                      <TableCell>
-                        {EN_GB_DATE.format(new Date(invoice.due_at))}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={badge.className}>{badge.label}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
+          <AgentInvoicesTable invoices={tableInvoices} />
         </CardContent>
       </Card>
     </div>

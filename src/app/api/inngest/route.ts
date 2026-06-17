@@ -32,6 +32,11 @@ import {
   truedeedDunningTick,
   truedeedInvoiceCandidateApproved,
 } from "@/inngest/functions/truedeed-dunning-tick";
+import {
+  truedeedDisputeRaised,
+  truedeedDisputeResolved,
+  truedeedInvoiceChargedBack,
+} from "@/inngest/functions/truedeed-dispute-emails";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -62,5 +67,8 @@ export const { GET, POST, PUT } = serve({
     truedeedMandateBroken,
     truedeedDunningTick,
     truedeedInvoiceCandidateApproved,
+    truedeedDisputeRaised,
+    truedeedDisputeResolved,
+    truedeedInvoiceChargedBack,
   ],
 });

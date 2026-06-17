@@ -479,7 +479,7 @@ describe("recordPaymentFailed", () => {
 });
 
 describe("recordChargeback", () => {
-  it("transitions charged_back + writes invoice_events and audit rows; NO inngest event, NO billing suspension (clause 8.6: freeze auto-collection only)", async () => {
+  it("transitions charged_back + writes invoice_events and audit rows; emits truedeed/invoice.charged_back so the ops-director letter goes (Phase 5 annex); NO billing suspension (clause 8.6: freeze auto-collection only — recovery is the ops/dispute path)", async () => {
     // Arrange
     const { rpc, invoiceEvents, auditLog } = arm(
       createSupabaseMock({ invoicesSelect: ok({ id: INVOICE_ID }) }),
@@ -495,7 +495,12 @@ describe("recordChargeback", () => {
     expect(JSON.stringify(call![1])).toContain("charged_back");
     expect(invoiceEvents.insert).toHaveBeenCalledTimes(1);
     expect(auditLog.insert).toHaveBeenCalledTimes(1);
-    // Ops-only path: no automated email, no suspension of the org
-    expect(inngest.send).not.toHaveBeenCalled();
+    // Phase 5 annex: the ops-director letter consumer needs this event.
+    expect(vi.mocked(inngest.send)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "truedeed/invoice.charged_back",
+        data: expect.objectContaining({ invoiceId: INVOICE_ID }),
+      }),
+    );
   });
 });

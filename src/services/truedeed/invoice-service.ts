@@ -348,6 +348,13 @@ export async function recordChargeback(gcPaymentId: string): Promise<boolean> {
       entity_id: invoiceId,
       detail: { gocardless_payment_id: gcPaymentId },
     });
+    // Phase 5 annex: the ops-director letter goes via this event. Recovery
+    // is still the ops/dispute path — there is deliberately no automatic
+    // suspension here (clause 8.6: freeze auto-collection only).
+    await inngest.send({
+      name: "truedeed/invoice.charged_back",
+      data: { invoiceId, gocardlessPaymentId: gcPaymentId },
+    });
     return true;
   } catch (error: unknown) {
     console.error("[truedeed] recordChargeback failed", {
