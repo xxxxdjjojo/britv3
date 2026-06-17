@@ -4,18 +4,10 @@
 name: App CI
 
 on:
+  # Run on ALL pull requests (no path filter) so the required `app` check
+  # reports on every PR — including docs-only and migration-only PRs — and
+  # branch protection cannot deadlock them.
   pull_request:
-    paths:
-      - ".github/workflows/app-ci.yml"
-      - "e2e/**"
-      - "src/**"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "next.config.ts"
-      - "vitest.config.mts"
-      - "playwright.config.ts"
-      - "tsconfig.json"
   workflow_dispatch:
 
 jobs:
