@@ -14,7 +14,7 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
       - run: cd britv3.0 && bun install
       - run: cd .. && bun test test/gstack/integration.test.ts
       - name: Run QA Validation
