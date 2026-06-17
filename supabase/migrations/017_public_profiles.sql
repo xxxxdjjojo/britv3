@@ -9,7 +9,7 @@
 
 CREATE TABLE IF NOT EXISTS provider_portfolio_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  provider_id UUID NOT NULL REFERENCES service_provider_details(id) ON DELETE CASCADE,
+  provider_id UUID NOT NULL REFERENCES service_provider_details(user_id) ON DELETE CASCADE,
   image_url TEXT NOT NULL,
   title TEXT NOT NULL DEFAULT '',
   description TEXT,
@@ -28,7 +28,7 @@ ALTER TABLE provider_portfolio_items ENABLE ROW LEVEL SECURITY;
 
 CREATE TABLE IF NOT EXISTS provider_leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  provider_id UUID NOT NULL REFERENCES service_provider_details(id) ON DELETE CASCADE,
+  provider_id UUID NOT NULL REFERENCES service_provider_details(user_id) ON DELETE CASCADE,
   contact_name TEXT NOT NULL,
   contact_email TEXT NOT NULL,
   contact_phone TEXT,
@@ -64,9 +64,9 @@ CREATE POLICY "Anon can view rating stats"
   ON provider_rating_stats FOR SELECT TO anon
   USING (TRUE);
 
-CREATE POLICY "Anon can view provider services"
-  ON provider_services FOR SELECT TO anon
-  USING (TRUE);
+-- NOTE: anon-view policy for provider_services is defined in
+-- 20260316100001_provider_dashboard_tables.sql, the migration that creates the
+-- table. The table does not exist at this point in the chain (schema-drift fix).
 
 CREATE POLICY "Anon can view portfolio items"
   ON provider_portfolio_items FOR SELECT TO anon
@@ -80,7 +80,7 @@ CREATE POLICY "Provider can view own leads"
   ON provider_leads FOR SELECT TO authenticated
   USING (
     provider_id IN (
-      SELECT id FROM service_provider_details WHERE user_id = auth.uid()
+      SELECT user_id FROM service_provider_details WHERE user_id = auth.uid()
     )
   );
 
@@ -93,7 +93,9 @@ RETURNS TABLE(category TEXT, location TEXT, provider_count BIGINT)
 LANGUAGE sql STABLE SECURITY DEFINER AS $$
   SELECT
     unnest(services)::TEXT AS category,
-    LOWER(REPLACE(COALESCE(city, service_postcodes[1], 'uk'), ' ', '-')) AS location,
+    -- service_provider_details has no `city` column; fall back to the first
+    -- service postcode (schema-drift fix).
+    LOWER(REPLACE(COALESCE(service_postcodes[1], 'uk'), ' ', '-')) AS location,
     COUNT(*) AS provider_count
   FROM service_provider_details spd
   JOIN profiles p ON p.id = spd.user_id

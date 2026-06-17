@@ -13,19 +13,35 @@ export type VerificationQueueItem = {
 export async function getVerificationQueue(
   supabase: SupabaseClient,
 ): Promise<VerificationQueueItem[]> {
+  // profiles has no full_name/email/verification_status columns. The display
+  // name is `display_name`; provider verification state is
+  // `provider_verification_status`. Email lives on auth.users, not profiles.
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, full_name, email, verification_status, provider_details, created_at",
+      "id, display_name, provider_verification_status, created_at",
     )
-    .eq("verification_status", "pending")
+    .eq("provider_verification_status", "pending_review")
     .order("created_at", { ascending: true });
 
   if (error) {
     console.error("[admin:verification-service] getVerificationQueue failed", { error: error.message });
     return [];
   }
-  return (data as VerificationQueueItem[]) ?? [];
+  const rows = (data as Array<{
+    id: string;
+    display_name: string | null;
+    provider_verification_status: string | null;
+    created_at: string | null;
+  }>) ?? [];
+  return rows.map((row) => ({
+    id: row.id,
+    full_name: row.display_name,
+    email: null,
+    verification_status: row.provider_verification_status,
+    provider_details: null,
+    created_at: row.created_at,
+  }));
 }
 
 export async function reviewVerification(
@@ -34,12 +50,14 @@ export async function reviewVerification(
   decision: "approved" | "rejected",
   notes?: string,
 ): Promise<{ success: boolean }> {
+  // Real column is provider_verification_status (enum
+  // unverified|pending_review|verified|suspended|rejected). "approved" maps to
+  // the enum's "verified". profiles has no notes column, so review notes are not
+  // persisted here.
+  void notes;
   const update: Record<string, unknown> = {
-    verification_status: decision,
+    provider_verification_status: decision === "approved" ? "verified" : "rejected",
   };
-  if (notes !== undefined) {
-    update.verification_notes = notes;
-  }
 
   const { error } = await supabase
     .from("profiles")

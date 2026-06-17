@@ -17,7 +17,7 @@ CREATE POLICY "email_logs_user_read" ON email_logs
 
 CREATE POLICY "email_logs_admin_all" ON email_logs
   FOR ALL USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
   );
 
 CREATE POLICY "email_logs_service_insert" ON email_logs

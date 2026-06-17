@@ -24,7 +24,7 @@ export default async function ExpenseTrackerPage() {
   // Fetch all entries for this landlord across all properties
   const { data: entries, error } = await supabase
     .from("financial_entries")
-    .select("*, properties(address_line_1, city, postcode)")
+    .select("*, properties(address_line1, city, postcode)")
     .eq("user_id", user.id)
     .order("entry_date", { ascending: false });
 
@@ -35,9 +35,9 @@ export default async function ExpenseTrackerPage() {
   // Fetch landlord properties for filter dropdown
   const { data: properties } = await supabase
     .from("properties")
-    .select("id, address_line_1, city, postcode")
+    .select("id, address_line1, city, postcode")
     .eq("landlord_id", user.id)
-    .order("address_line_1");
+    .order("address_line1");
 
   return (
     <ExpenseTrackerClient

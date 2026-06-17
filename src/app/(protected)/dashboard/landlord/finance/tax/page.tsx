@@ -89,7 +89,7 @@ export default async function TaxSummaryPage({ searchParams }: Props) {
 
   const { data: incomeEntries } = await supabase
     .from("financial_entries")
-    .select("*, properties(address_line_1, city, postcode)")
+    .select("*, properties(address_line1, city, postcode)")
     .eq("user_id", user.id)
     .eq("type", "income")
     .gte("entry_date", startDate)
@@ -109,12 +109,12 @@ export default async function TaxSummaryPage({ searchParams }: Props) {
 
   for (const entry of incomeEntries ?? []) {
     const prop = entry.properties as {
-      address_line_1: string;
+      address_line1: string;
       city: string;
       postcode: string;
     } | null;
     const label = prop
-      ? `${prop.address_line_1}, ${prop.city}`
+      ? `${prop.address_line1}, ${prop.city}`
       : entry.property_id?.slice(0, 8) + "…";
 
     const key = entry.property_id ?? "unknown";

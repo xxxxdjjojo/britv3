@@ -15,15 +15,24 @@ export async function getSubscriptions(
 ): Promise<AdminSubscription[]> {
   // TODO: integrate with Stripe API for live data
   // For now return DB subscriptions
+  // Real column is `plan_name` (billing_tables migration), not `plan`. Alias it
+  // back onto the AdminSubscription.plan field the UI expects.
   const { data, error } = await supabase
     .from("subscriptions")
-    .select("id, user_id, plan, status, created_at")
+    .select("id, user_id, plan_name, status, created_at")
     .order("created_at", { ascending: false });
   if (error) {
     console.error("[admin:subscription-service] getSubscriptions failed", { error: error.message });
     return [];
   }
-  return (data as AdminSubscription[]) ?? [];
+  const rows = (data as Array<{ id: string; user_id: string; plan_name: string; status: string; created_at: string }>) ?? [];
+  return rows.map((row) => ({
+    id: row.id,
+    user_id: row.user_id,
+    plan: row.plan_name,
+    status: row.status,
+    created_at: row.created_at,
+  }));
 }
 
 export async function cancelSubscription(

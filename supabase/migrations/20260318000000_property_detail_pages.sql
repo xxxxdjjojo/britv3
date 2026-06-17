@@ -7,7 +7,7 @@
 -- Cache for external API data (land registry, ofsted, crime, broadband, ROI)
 -- ============================================================================
 
-CREATE TABLE property_insights (
+CREATE TABLE IF NOT EXISTS property_insights (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   insight_type TEXT NOT NULL,
@@ -19,29 +19,25 @@ CREATE TABLE property_insights (
 
 ALTER TABLE property_insights ENABLE ROW LEVEL SECURITY;
 
--- Public can read insights for active properties
-CREATE POLICY "public_read_insights" ON property_insights
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM properties p
-      WHERE p.id = property_insights.property_id
-      AND p.status = 'active'
-    )
-  );
+-- Public-read policy for property_insights is already defined in
+-- 20260315050000_property_detail_tables.sql (property_insights_public_read),
+-- keyed off listings.status. This migration duplicated that table and
+-- referenced a non-existent properties.status column (schema-drift fix —
+-- redundant broken policy removed).
 
 -- ============================================================================
 -- TABLE 2: property_views
 -- Real-time view tracking (anonymous session-based, not user_id)
 -- ============================================================================
 
-CREATE TABLE property_views (
+CREATE TABLE IF NOT EXISTS property_views (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   session_id TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_property_views_property_id_created ON property_views(property_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_property_views_property_id_created ON property_views(property_id, created_at);
 
 ALTER TABLE property_views ENABLE ROW LEVEL SECURITY;
 
@@ -54,7 +50,7 @@ CREATE POLICY "anon_insert_views" ON property_views
 -- Saved "What if" renovation scenarios per user
 -- ============================================================================
 
-CREATE TABLE property_renovation_scenarios (
+CREATE TABLE IF NOT EXISTS property_renovation_scenarios (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -66,7 +62,7 @@ CREATE TABLE property_renovation_scenarios (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_property_renovation_scenarios_user_property ON property_renovation_scenarios(user_id, property_id);
+CREATE INDEX IF NOT EXISTS idx_property_renovation_scenarios_user_property ON property_renovation_scenarios(user_id, property_id);
 
 ALTER TABLE property_renovation_scenarios ENABLE ROW LEVEL SECURITY;
 
@@ -81,7 +77,7 @@ CREATE POLICY "users_own_scenarios" ON property_renovation_scenarios
 -- Regional cost and value uplift benchmarks by renovation type
 -- ============================================================================
 
-CREATE TABLE renovation_type_benchmarks (
+CREATE TABLE IF NOT EXISTS renovation_type_benchmarks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   renovation_type TEXT NOT NULL,
   region TEXT NOT NULL,
@@ -111,7 +107,9 @@ ALTER TABLE saved_properties RENAME COLUMN notes TO note;
 -- INDEXES FOR PROPERTY DETAIL QUERIES
 -- ============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_properties_slug ON properties(slug);
+-- slug lives on listings, not properties; the listings slug index is created in
+-- 20260315050000_property_detail_tables.sql (idx_listings_slug). Removed broken
+-- idx_properties_slug (properties has no slug column — schema-drift fix).
 
 -- ============================================================================
 -- SEED DATA: renovation_type_benchmarks

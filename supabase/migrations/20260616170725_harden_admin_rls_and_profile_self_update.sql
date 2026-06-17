@@ -26,16 +26,11 @@ CREATE POLICY "allow_admin_view_logs"
     )
   );
 
-DROP POLICY IF EXISTS "allow_admin_view_audit" ON public.audit_logs;
-CREATE POLICY "allow_admin_view_audit"
-  ON public.audit_logs
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND is_admin = true
-    )
-  );
+-- NOTE: the original migration also re-gated public.audit_logs, but that table
+-- never existed in the real schema — it was part of the fictional schema in the
+-- 20260429000001 audit worksheet (now neutralized). The real audit table is
+-- public.admin_audit_log, already gated on profiles.is_admin in
+-- 20260316000000_admin_wave1_foundation.sql. Block removed (schema-drift fix).
 
 -- 2. Reject self-service changes to is_admin. Only the service role or an
 --    existing admin may flip the flag; normal self-updates (name, avatar,

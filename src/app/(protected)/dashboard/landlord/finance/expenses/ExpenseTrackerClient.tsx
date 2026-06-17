@@ -61,7 +61,7 @@ import {
 
 type Property = {
   id: string;
-  address_line_1: string;
+  address_line1: string;
   city: string;
   postcode: string;
 };
@@ -266,7 +266,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
             <SelectItem value="all">All Properties</SelectItem>
             {properties.map((p) => (
               <SelectItem key={p.id} value={p.id}>
-                {p.address_line_1}, {p.city}
+                {p.address_line1}, {p.city}
               </SelectItem>
             ))}
           </SelectContent>
@@ -324,7 +324,7 @@ export function ExpenseTrackerClient({ initialEntries, properties }: Props) {
                   // Find property name from properties list
                   const prop = properties.find((p) => p.id === entry.property_id);
                   const propLabel = prop
-                    ? `${prop.address_line_1}, ${prop.city}`
+                    ? `${prop.address_line1}, ${prop.city}`
                     : entry.property_id.slice(0, 8) + "…";
 
                   return (
