@@ -84,6 +84,26 @@ local instance) seeded fresh per run — not a shared hosted DB driven by multip
 treat the E2E suite as a coverage scaffold whose green status must be read per-isolated-run, and
 prioritise standing up an isolated test DB before relying on it as a gate.
 
-## Next (M3)
-Feature-level tests dashboard-by-dashboard (filters, forms, sort, pagination, tabs, empty/loading/
-error states) + runtime smoke of dynamic routes with seeded entity fixtures. M4 fixes F1–F7 via TDD.
+## Milestone 3 — feature-level component/unit tests (delivered)
+
+10 parallel agents wrote **deterministic Vitest + Testing-Library tests** (existing mocks, no hosted
+DB) across all dashboard areas — `src/__tests__/m3/<area>/`. **726 passing, 4 skip, 42 `it.todo`,
+76 files.** The `it.todo`/skip are genuine environment limits, not dropped work.
+
+### M3 findings (real bugs / debt — for M4)
+| # | Severity | Where | Issue |
+|---|---|---|---|
+| F8 | Medium (a11y) | `ClientList`, `NegotiationThread`, `ArchivedDraftListings` + others using `DialogTrigger asChild` | base-ui `*Trigger asChild` around a `<Button>` → **nested `<button>`** (invalid DOM; same class as F7); `asChild` is effectively a no-op in the wrapper. |
+| F9 | Medium (UX) | `ProviderProfileForm` | empty pricing `<input>` → `valueAsNumber` = `NaN` → fails optional `z.number()` → submit **silently blocked, no error shown**. |
+| F10 | Low (testability) | `[role]/calculators/page.tsx`, `tools/buy-vs-rent-calculator` | affordability (×4.5 stress) + buy-vs-rent logic **trapped inline in `useMemo`** → not unit-testable. Extract to `src/lib/calculators/`. (mortgage, SDLT, LBTT/LTT, yield ARE extracted + covered: 38 unit tests.) |
+| F11 | Low (scope) | `src/components/provider/` | PRD-implied `VerificationStepper`, `TrustScoreGauge`, badges, references UI, service-area map editor, portfolio gallery **don't exist** — only `DocumentUpload`, `AvailabilityCalendar`, `ProviderProfileForm`. |
+
+### M3 tooling notes
+- **`@testing-library/user-event` is not installed** — all tests use `fireEvent`.
+- **happy-dom can't drive base-ui `Select`/`Slider`/`Checkbox`-in-`<label>`** → the 42 `it.todo`s are
+  these interaction paths; they need a real-browser runner (Playwright component tests), not more unit work.
+
+## Next (M4)
+
+Fix F1–F11 via TDD. Stand up an isolated/ephemeral Supabase so the M2 E2E smoke becomes a reliable
+gate, and add Playwright component/browser tests to close the base-ui interaction `it.todo`s.
