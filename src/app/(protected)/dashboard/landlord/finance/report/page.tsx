@@ -69,7 +69,7 @@ export default async function IncomeExpenseReportPage() {
   // Fetch all financial entries for this landlord
   const { data: rawEntries, error } = await supabase
     .from("financial_entries")
-    .select("*, properties(address_line_1, city, postcode, id)")
+    .select("*, properties(address_line1, city, postcode, id)")
     .eq("user_id", user.id)
     .order("entry_date", { ascending: true });
 
@@ -78,7 +78,7 @@ export default async function IncomeExpenseReportPage() {
   }
 
   const entries = (rawEntries ?? []) as (FinancialEntry & {
-    properties: { address_line_1: string; city: string; postcode: string; id: string } | null;
+    properties: { address_line1: string; city: string; postcode: string; id: string } | null;
   })[];
 
   // -- Build monthly trend data (last 12 months) ------------------------------
@@ -146,7 +146,7 @@ export default async function IncomeExpenseReportPage() {
 
   for (const entry of entries) {
     const label = entry.properties
-      ? `${entry.properties.address_line_1}, ${entry.properties.city}`
+      ? `${entry.properties.address_line1}, ${entry.properties.city}`
       : entry.property_id.slice(0, 8) + "…";
 
     if (!propertyMap.has(entry.property_id)) {

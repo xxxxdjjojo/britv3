@@ -70,21 +70,15 @@ const FIXME_ROLES: ReadonlySet<AppRole> = new Set<AppRole>([]);
  * Fixing these belongs to a later milestone — they are never masked by
  * loosening an assertion or broadening the console allowlist.
  *
- * FINDINGS (confirmed reproducible after retries — not transient flake):
- *  - /dashboard/landlord/finance/expenses — console server error
- *      `column properties_1.address_line_1 does not exist` (DB query / schema
- *      mismatch); the page shell renders but the data query throws.
- *  - /dashboard/landlord/finance/report   — same address_line_1 DB error.
- *  - /dashboard/landlord/tenants — React hydration error: a <button> is nested
- *      inside another <button> (invalid DOM nesting).
- *  - /dashboard/agent/crm        — same nested-<button> hydration error.
+ * FINDINGS: previously the four routes below were fixme'd. All were fixed in M4
+ * and are now ASSERTED (not skipped) against the deterministic local-DB gate:
+ *  - /dashboard/landlord/finance/expenses, /finance/report — `address_line_1`
+ *      schema-drift query, fixed in 79d41288 (real column is `address_line1`).
+ *  - /dashboard/landlord/tenants, /dashboard/agent/crm — nested-<button>
+ *      hydration error, fixed app-wide in 79c12332 (DialogTrigger honours asChild).
+ * Re-add a route here (with a FINDING note) only if it genuinely regresses.
  */
-const FIXME_ROUTES: ReadonlySet<string> = new Set<string>([
-  "/dashboard/landlord/finance/expenses",
-  "/dashboard/landlord/finance/report",
-  "/dashboard/landlord/tenants",
-  "/dashboard/agent/crm",
-]);
+const FIXME_ROUTES: ReadonlySet<string> = new Set<string>([]);
 
 for (const roleCase of SMOKE_CASES) {
   test.describe(`${roleCase.slug} dashboard route smoke`, () => {

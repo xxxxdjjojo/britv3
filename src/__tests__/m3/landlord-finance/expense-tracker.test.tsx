@@ -13,10 +13,10 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-type Property = { id: string; address_line_1: string; city: string; postcode: string };
+type Property = { id: string; address_line1: string; city: string; postcode: string };
 
 const PROPERTIES: Property[] = [
-  { id: "prop-1", address_line_1: "42 Baker Street", city: "London", postcode: "NW1 6XE" },
+  { id: "prop-1", address_line1: "42 Baker Street", city: "London", postcode: "NW1 6XE" },
 ];
 
 function buildEntry(overrides: Partial<FinancialEntry> = {}): FinancialEntry {

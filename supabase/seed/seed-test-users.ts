@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- CLI seed script: console output is the intended progress/diagnostic channel (run via `node`/`tsx`, not shipped to the client). */
 /**
  * supabase/seed/seed-test-users.ts
  *
@@ -153,6 +154,70 @@ if (providerListError) {
     } else {
       console.log(`OK service_provider_details for ${PROVIDER_EMAIL}`);
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Subscription + verification state for the gated roles.
+//
+// `middleware.ts` gates /dashboard/{agent,landlord,provider}/* behind an active
+// subscription, and /dashboard/{agent,provider}/* behind a verified status —
+// via a DB query whenever the `jwt_claims_middleware` flag is off (the default).
+// Without this state, every non-exempt gated route 307-redirects to billing
+// checkout / verification, so the smoke would exercise those pages instead of
+// the real dashboards, and the negative-path 404 test (landlord) would see the
+// redirect instead of a true HTTP 404. Hosted's test users had this state set up
+// out-of-band; replicate it here so the local gate is faithful and meaningful.
+//
+// NOTE: middleware checks `provider_verification_status === "approved"`, but the
+// enum has no "approved" value (unverified|pending_review|verified|suspended|
+// rejected). So provider non-exempt routes still redirect to /verification even
+// with status "verified" set below — tracked as finding F12. The correct data is
+// still seeded so the fix is a one-line middleware change, not a data change.
+const GATED_ROLE_STATE: ReadonlyArray<{
+  email: string;
+  verificationLevel?: string;
+  providerStatus?: string;
+}> = [
+  { email: "test-landlord@britestate.test" },
+  { email: "test-agent@britestate.test", verificationLevel: "professional" },
+  { email: "test-provider@britestate.test", providerStatus: "verified" },
+];
+
+const { data: gatedUsers, error: gatedListError } =
+  await supabase.auth.admin.listUsers();
+if (gatedListError) {
+  console.error("Lookup gated-role users:", gatedListError);
+} else {
+  for (const { email, verificationLevel, providerStatus } of GATED_ROLE_STATE) {
+    const userId = gatedUsers.users.find((u) => u.email === email)?.id;
+    if (!userId) {
+      console.error(`No userId resolved for ${email} — skipping gated state`);
+      continue;
+    }
+
+    const { error: subError } = await supabase.from("subscriptions").upsert(
+      { user_id: userId, status: "active", plan_name: "professional" },
+      { onConflict: "user_id" },
+    );
+    if (subError) {
+      console.error(`Upsert subscription for ${email}:`, subError);
+    }
+
+    const profileUpdate: Record<string, string> = {};
+    if (verificationLevel) profileUpdate.verification_level = verificationLevel;
+    if (providerStatus) profileUpdate.provider_verification_status = providerStatus;
+    if (Object.keys(profileUpdate).length > 0) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update(profileUpdate)
+        .eq("id", userId);
+      if (profileError) {
+        console.error(`Update verification for ${email}:`, profileError);
+      }
+    }
+
+    console.log(`OK gated-role state for ${email}`);
   }
 }
 

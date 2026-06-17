@@ -151,19 +151,33 @@ data-integrity item. This is its own task, separate from the dashboard effort.
 
 ---
 
-## Part E — Local-only fix required for Task 2 (not a hosted change)
+## Part E — Local-only fixes required for Task 2 (not hosted changes)
 
+Two pieces of **function/enum drift** broke the all-role seed against a fresh local `db reset`. In both
+cases hosted is already correct (fixed out-of-band) but no committed migration captured the fix, so the
+on-disk schema lagged. Both fixes are authored as forward migrations that are **no-ops against hosted**.
+
+### E1 — `user_role` enum missing `mortgage_broker`
 The local `user_role` enum (from `001_foundation.sql`) has only 6 values; **hosted has 7** (adds
-`mortgage_broker`, applied to hosted out-of-band — no committed migration adds it). The all-roles seed
-(`supabase/seed/seed-test-users.ts`) assigns a `mortgage_broker` user via `assign_role_atomic`, which
-`INSERT`s into `user_roles.role` and `UPDATE`s `profiles.active_role` — both `user_role`-typed. Against
-the local baseline this **fails the enum cast**, breaking the seed (and therefore the broker E2E routes).
+`mortgage_broker`). The seed assigns a `mortgage_broker` user, written into `user_roles.role` and
+`profiles.active_role` (both `user_role`-typed). Against the local baseline this **fails the enum cast**.
 
-**Fix (on-disk, faithful to hosted):** add a migration
-`ALTER TYPE public.user_role ADD VALUE IF NOT EXISTS 'mortgage_broker';`. This makes local match hosted
-and is a **no-op on hosted** (value already present), so it is safe in both environments. Tracked under
-Task 2. (`assign_role_atomic`'s text `valid_roles` list already includes `mortgage_broker`; only the
-enum type is missing.)
+**Fix:** `supabase/migrations/20260617000001_user_role_add_mortgage_broker.sql` —
+`ALTER TYPE public.user_role ADD VALUE IF NOT EXISTS 'mortgage_broker';`. No-op on hosted.
+
+### E2 — `assign_role_atomic` missing the `text → user_role` cast
+The on-disk `assign_role_atomic` (`20260318_atomic_role_assignment.sql`) inserts/updates the **text**
+parameter `p_role` directly into the `user_role`-typed columns with **no cast**, raising
+`column "role" is of type user_role but expression is of type text` (SQLSTATE 42804) for **every**
+non-admin role on a fresh DB. **Hosted's function already casts `p_role::user_role`** (verified via
+`pg_get_functiondef`) — its body was fixed out-of-band; the on-disk migration never was. (Note: hosted's
+body also dropped the `valid_roles` validation block; the fix below keeps that block.)
+
+**Fix:** `supabase/migrations/20260617000002_fix_assign_role_atomic_enum_cast.sql` — a
+`CREATE OR REPLACE` that keeps the validation block and adds `p_role::user_role` casts. Idempotent;
+behaviourally equivalent to hosted for the cast. ⚠️ If this migration is ever pushed to hosted it would
+also *add* the `valid_roles` validation back to hosted's function (hosted currently has none) — a safe
+hardening, but call it out before any hosted push.
 
 ---
 
@@ -174,5 +188,6 @@ enum type is missing.)
 | Keep `251d34dd` edits as-is | — | none | ✅ no hosted change needed |
 | Keep F2/F3/F5/F6 query fixes | — | none | ✅ correct vs hosted |
 | Apply `listing_moderation→listings` FK | **hosted** | low (0 rows/0 orphans) | ⏳ **propose — needs user approval** |
-| Add `mortgage_broker` to `user_role` enum | local on-disk migration | none (no-op on hosted) | ⏳ Task 2 |
+| Add `mortgage_broker` to `user_role` enum (E1) | local on-disk migration | none (no-op on hosted) | ✅ Task 2 |
+| Cast `p_role::user_role` in `assign_role_atomic` (E2) | local on-disk migration | none (no-op on hosted) | ✅ Task 2 |
 | Full migration-baseline reconciliation of broader drift | both | medium | 📋 separate task — do not blind-apply |

@@ -28,12 +28,22 @@ function generateNonce(): string {
  */
 function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
+  // In dev only, when pointed at a LOCAL Supabase (e.g. the E2E gate's
+  // http://127.0.0.1:54321), allow that origin so the browser auth/storage
+  // fetches aren't blocked by connect-src/img-src. Inert in production
+  // (NODE_ENV=production) and when NEXT_PUBLIC_SUPABASE_URL is the hosted https URL.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const isLocalSupabase =
+    isDev && /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(supabaseUrl);
+  const localSupabase = isLocalSupabase
+    ? ` ${supabaseUrl} ${supabaseUrl.replace(/^http/, "ws")}`
+    : "";
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com https://appleid.cdn-apple.com https://us.i.posthog.com https://us-assets.i.posthog.com https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com",
+    `img-src 'self' data: blob: https://*.supabase.co https://api.maptiler.com https://*.maptiler.com https://*.stripe.com${localSupabase}`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://us.i.posthog.com https://us-assets.i.posthog.com https://api.maptiler.com https://api.stripe.com${localSupabase}`,
     "frame-src https://accounts.google.com https://appleid.apple.com https://js.stripe.com",
     "worker-src 'self' blob:",
     "form-action 'self'",

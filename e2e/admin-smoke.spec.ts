@@ -41,36 +41,20 @@ const ADMIN_ROUTES: readonly string[] = getDashboardRoutes()
   .sort();
 
 /**
- * Admin routes confirmed to genuinely fail the smoke assertions (real crash /
- * missing heading / unexpected console error). Each is skipped via `test.fixme`
- * so the suite ends GREEN while every real breakage stays tracked. Fixing these
- * belongs to a later milestone — never masked by loosening an assertion or
- * broadening the console allowlist.
+ * Admin routes that previously failed the smoke (schema-drift queries) and were
+ * fixme'd. All four were fixed in 79d41288 and are now ASSERTED (not skipped)
+ * against the deterministic local-DB gate, whose schema matches hosted:
+ *  - /admin/email-campaigns — `email_campaigns.content` is jsonb NOT NULL; the
+ *      POST now inserts `{ body }` instead of an empty string.
+ *  - /admin/verifications — uses `profiles.display_name` (not `full_name`).
+ *  - /admin/moderation — reads listings + properties(title) + listing_moderation
+ *      (embed enabled by the listing_moderation→listings FK migration).
+ *  - /admin/subscriptions — uses `subscriptions.plan_name` (not `plan`).
  *
- * FINDINGS (confirmed reproducible after retries — not transient flake):
- *  - /admin/email-campaigns — HTTP 500. The server component queries
- *      `email_campaigns` and the page throws (blank body, status 500); the
- *      table/columns selected do not resolve against the hosted DB.
- *  - /admin/verifications — page shell renders but a server query throws
- *      `column profiles.full_name does not exist`
- *      ([admin:verification-service] getVerificationQueue), logged to console.
- *  - /admin/moderation — page shell renders but a server query throws
- *      `column properties.status does not exist`
- *      ([admin:listing-service] getListingQueue), logged to console.
- *  - /admin/subscriptions — page shell renders but a server query throws
- *      `column subscriptions.plan does not exist`
- *      ([admin:subscription-service] getSubscriptions), logged to console.
- *
- * All four are app/DB-schema bugs (query column drift), not test issues. The
- * three console-error cases are NOT added to the allowlist — that would mask the
- * symptom; they are fixme'd as findings instead.
+ * Re-add a route here (with a FINDING note) only if it genuinely regresses —
+ * never mask a real failure by loosening an assertion or broadening the allowlist.
  */
-const FIXME_ROUTES: ReadonlySet<string> = new Set<string>([
-  "/admin/email-campaigns",
-  "/admin/verifications",
-  "/admin/moderation",
-  "/admin/subscriptions",
-]);
+const FIXME_ROUTES: ReadonlySet<string> = new Set<string>([]);
 
 test.describe("admin route smoke", () => {
   test.use({ role: "admin" });
