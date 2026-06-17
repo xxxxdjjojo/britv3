@@ -47,7 +47,8 @@ From transaction count (`src/lib/market-map/confidence.ts`):
 
 `src/lib/market-map/colour.ts`. Property prices are skewed, so we work in
 `log10(median)` and clamp the domain to the **5th–95th percentile** of the
-area medians, then interpolate across an 8-stop green→yellow/orange→red ramp.
+area medians, then interpolate across an 8-stop sequential brand-green ramp
+(light green = lower median → deep green = higher median).
 This stops one luxury area from washing out the map. The scale is **local**
 (quantiles across the borough's areas); the legend states this. National fixed
 percentiles + finer geography (sector / LSOA / hex) are designed-for but not

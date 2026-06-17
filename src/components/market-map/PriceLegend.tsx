@@ -6,9 +6,8 @@ interface Props {
 }
 
 /**
- * Fixed legend for the price heatmap: green (lower median sold price) →
- * yellow/orange → red (higher), plus the insufficient-data swatch and the
- * scale note.
+ * Fixed legend for the price heatmap: light green (lower median sold price) →
+ * deep green (higher), plus the insufficient-data swatch and the scale note.
  */
 export function PriceLegend({ scaleLabel }: Props) {
   return (

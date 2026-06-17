@@ -3,7 +3,7 @@ import { assignColours, bucketForLog } from "./colour";
 import { PRICE_RAMP, INSUFFICIENT_COLOUR } from "./constants";
 
 describe("assignColours", () => {
-  it("maps cheaper areas to lower (greener) buckets than pricier areas", () => {
+  it("maps cheaper areas to lower (lighter-green) buckets than pricier areas", () => {
     const areas = [
       { medianPrice: 300_000, transactionCount: 100 },
       { medianPrice: 600_000, transactionCount: 100 },

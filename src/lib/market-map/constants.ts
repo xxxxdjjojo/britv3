@@ -19,20 +19,21 @@ export const CONFIDENCE_THRESHOLDS = {
 } as const;
 
 /**
- * Sequential price ramp: green (lower median) -> yellow/orange -> red (higher
- * median). This is a functional data-visualisation scale (semantic price
- * encoding), distinct from the brand palette. Based on a ColorBrewer
- * RdYlGn ramp, reversed so green = low and red = high.
+ * Sequential price ramp in the brand green system: light green (lower median)
+ * -> deep green (higher median). Anchored on the brand greens
+ * (--color-brand-primary-lighter #E8F5EE through --color-brand-primary-dark
+ * #003629) so the public heatmap stays on-brand: single-hue, no blue or
+ * multi-hue rainbow. Higher price reads as a deeper, richer green.
  */
 export const PRICE_RAMP: readonly string[] = [
-  "#1A9850", // 0 — lowest
-  "#66BD63",
-  "#A6D96A",
-  "#D9EF8B",
-  "#FEE08B",
-  "#FDAE61",
-  "#F46D43",
-  "#D73027", // 7 — highest
+  "#E8F5EE", // 0 — lowest  (brand-primary-lighter)
+  "#C7E6D6",
+  "#9FD2BA",
+  "#6FB897",
+  "#2D7A5F", //            (brand-primary-light)
+  "#1B4D3E", //            (brand-primary)
+  "#0F3B2E",
+  "#003629", // 7 — highest (brand-primary-dark)
 ];
 
 /** Neutral grey used for areas with insufficient data (no strong colour). */

@@ -41,8 +41,11 @@ const ORPHAN_ALLOWLIST = new Set<string>([
   "/legal/gdpr-rights",
   "/legal/modern-slavery",
   "/legal/privacy",
+  "/legal/professional-standards",
+  "/legal/refunds",
   "/legal/review-policy",
   "/legal/terms",
+  "/legal/third-party-services",
   // Hub-linked sub-pages reached from their parent hub, not the global nav.
   "/help/contact", // linked from /help
   "/market-trends/national", // linked from /market-trends
