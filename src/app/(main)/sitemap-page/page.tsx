@@ -81,6 +81,7 @@ const sections = [
       { label: "Regulatory Information", href: "/legal/regulatory" },
       { label: "Professional Standards", href: "/legal/professional-standards" },
       { label: "Fair Housing Policy", href: "/legal/fair-housing" },
+      { label: "Review Policy", href: "/legal/review-policy" },
     ],
   },
 ];
