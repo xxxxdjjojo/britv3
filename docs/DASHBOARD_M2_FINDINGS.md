@@ -152,3 +152,43 @@ Full read-only introspection of hosted `ynkqzzpcbpphjczmrfva` vs the clean local
 - **Local seed gap (Task 2 blocker):** on-disk `user_role` enum lacks `mortgage_broker` (hosted has it),
   so the seed's broker user fails the enum cast on a fresh local `db reset`. Fix on-disk with
   `ALTER TYPE … ADD VALUE IF NOT EXISTS 'mortgage_broker'` (no-op on hosted). Addressed in Task 2.
+
+## Milestone 6 — deterministic local-DB E2E gate (Task 2, delivered)
+
+The M2 Playwright smoke now runs against an **isolated local Supabase** via `scripts/e2e-local.sh`
+(`supabase start` + `db reset` + seed all 7 roles + `dashboard-smoke`/`admin-smoke`/`dashboard-access`).
+**Result: 299 passed, 0 failed** across repeated runs (one cold-start compile flake self-heals on retry).
+This replaces the shared-hosted-DB flake described in the determinism caveat above — the suite is now a
+reliable gate. Commit `dcab7779`.
+
+**What it took to reach deterministic green** (each verified against the local schema oracle; all the
+schema fixes are no-ops against hosted):
+- **Two on-disk schema fixes** (migrations `20260617000001`, `20260617000002`) — `user_role` enum gains
+  `mortgage_broker`; `assign_role_atomic` casts `p_role::user_role` (was inserting text into the enum
+  column → 42804, failing every role assignment). Both already correct on hosted. See reconciliation
+  report Part E.
+- **Dev-only CSP allowance** (`middleware.ts`) — when `NEXT_PUBLIC_SUPABASE_URL` is a localhost origin,
+  permit it in `connect-src`/`img-src` so the browser auth fetch to the local Supabase isn't CSP-blocked.
+  Inert in production and against hosted.
+- **Seed now sets gated-role state** — active subscriptions for landlord/agent/provider + verification
+  for agent/provider, matching what hosted's test users had. Without it the middleware subscription /
+  verification gates 307-redirect every non-exempt gated route to billing/verification, which masked
+  real page content and the negative-path 404.
+- **Gate hardening** — waits for the PostgREST schema cache after `db reset` (a PGRST002 race left the
+  seed partial ~1 run in 3) and verifies the seeded state before running, so a partial seed fails loudly
+  rather than as confusing test failures; runs on a dedicated port (`E2E_BASE_URL`) so it never collides
+  with another worktree's dev server; `auth.setup` timeouts widened for cold-start route compilation.
+
+### F6 finalized (was incompletely fixed)
+The M4 F6 fix (`79d41288`) corrected `portfolio-service.ts` but **missed the finance pages**:
+`/dashboard/landlord/finance/{expenses,report,tax}` still queried `properties.address_line_1`. The
+un-fixme'd smoke caught `expenses`/`report` (console server error: `column properties_1.address_line_1
+does not exist`); `tax` had the same latent bug. All three corrected to the real column `address_line1`
+(query + inline types + display + one M3 fixture); they now render with **0 DB errors**. The 8 smoke
+routes previously `test.fixme`'d for F2–F7 are now **asserted** (un-fixme'd) — the gate proves the M4
+fixes instead of skipping them.
+
+### New finding
+| # | Severity | Where | Issue |
+|---|---|---|---|
+| F12 | Medium | `src/middleware.ts` (provider verification gate) | Gate checks `provider_verification_status === "approved"`, but the `provider_verification_status` enum has no `approved` value (`unverified, pending_review, verified, suspended, rejected`). So a *verified* provider is still redirected off non-exempt `/dashboard/provider/*` routes to `/verification`. Seed sets the correct `"verified"` status, so the fix is a one-line middleware change (`"approved"` → `"verified"`), not a data change. The local gate still passes because the affected provider routes are exempt or redirect to a valid page; flagged for a focused fix. |
